@@ -10,6 +10,8 @@ import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
+import { isAdminRole } from '../../../../server/utils/adminUtils';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -85,7 +87,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         message: 'User not found.',
       },
       {
-        name: 503,
+        name: 500,
         message: 'Unable to authenticate user.',
       },
       {
@@ -124,24 +126,25 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             // update the establishment service state with the given establishment id
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
-          if (response.body.role === 'Admin') {
+          if (isAdminRole(response.body.role)) {
             this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
+            this.router.navigate(['/sfcadmin']);
           } else {
             this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
-          }
-          if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
-            this.router.navigateByUrl(this.authService.redirectLocation);
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
-          this.authService.clearPreviousUser();
+            if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
+              this.router.navigateByUrl(this.authService.redirectLocation);
+            } else {
+              this.router.navigate(['/dashboard']);
+            }
+            this.authService.clearPreviousUser();
 
-          if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
-            this.router.navigate(['/migrated-user-terms-and-conditions']);
-          }
+            if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
+              this.router.navigate(['/migrated-user-terms-and-conditions']);
+            }
 
-          if (response.body.registrationSurveyCompleted === false) {
-            this.router.navigate(['/registration-survey']);
+            if (response.body.registrationSurveyCompleted === false) {
+              this.router.navigate(['/registration-survey']);
+            }
           }
         },
         (error: HttpErrorResponse) => {

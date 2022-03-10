@@ -76,7 +76,12 @@
 
       <section
         class="govuk-tabs__panel has-border"
-        *ngIf="form.type !== 'registrations' && form.type !== 'parent-requests' && form.type !== 'cqc-status-changes' && form.type !== 'emails'"
+        *ngIf="
+          form.type !== 'registrations' &&
+          form.type !== 'parent-requests' &&
+          form.type !== 'cqc-status-changes' &&
+          form.type !== 'emails'
+        "
       >
         <form (ngSubmit)="onSubmit()" novalidate id="server-error">
           <fieldset class="govuk-fieldset">
@@ -154,13 +159,13 @@
 
               <div class="govuk-grid-column-one-third" *ngIf="form.type === 'establishments'">
                 <div class="govuk-form-group" [class.govuk-form-group--error]="form.errors.length">
-                  <label class="govuk-label" for="locationid"> Location ID </label>
+                  <label class="govuk-label" for="locationId"> Location ID </label>
                   <input
                     class="govuk-input govuk-input--width-20"
-                    [(ngModel)]="form.locationid"
+                    [(ngModel)]="form.locationId"
                     [ngModelOptions]="{ standalone: true }"
-                    id="locationid"
-                    name="locationid"
+                    id="locationId"
+                    name="locationId"
                     [class.govuk-input--error]="form.errors && form.errors.length"
                     type="text"
                   />
@@ -548,6 +553,6 @@
     <app-registrations *ngIf="form.type === 'registrations'"></app-registrations>
     <app-parent-requests *ngIf="form.type === 'parent-requests'"></app-parent-requests>
     <app-cqc-status-changes *ngIf="form.type === 'cqc-status-changes'"></app-cqc-status-changes>
-    <app-emails *ngIf="form.type ==='emails'"></app-emails>
+    <app-emails *ngIf="form.type === 'emails'"></app-emails>
   </div>
 </div>

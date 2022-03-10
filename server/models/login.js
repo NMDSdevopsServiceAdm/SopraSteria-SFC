@@ -117,20 +117,20 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Login.findByUsername = async function(username) {
+  Login.findByUsername = async function (username) {
     return await this.findOne({
-      attributes: ['registrationId', 'username'],
+      attributes: ['id', 'registrationId', 'username'],
       where: {
-        username
+        username,
       },
       include: [
         {
           model: sequelize.models.user,
-          attributes: ['establishmentId']
-        }
-      ]
-    })
-  }
+          attributes: ['id', 'establishmentId'],
+        },
+      ],
+    });
+  };
 
   return Login;
 };

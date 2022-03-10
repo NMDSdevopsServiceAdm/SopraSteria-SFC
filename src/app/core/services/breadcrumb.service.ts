@@ -4,21 +4,30 @@ import { NavigationEnd, PRIMARY_OUTLET, Router, UrlSegment } from '@angular/rout
 import { JourneyRoute, JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { accountJourney, editUserJourney } from '@core/breadcrumb/journey.accounts';
 import {
-  benchmarkMetricPayJourney,
-  benchmarkMetricQualificationsJourney,
-  benchmarkMetricSicknessJourney,
-  benchmarkMetricTurnoverJourney,
-  benchmarkRankingPayJourney,
-  benchmarkRankingQualificationsJourney,
-  benchmarkRankingSicknessJourney,
-  benchmarkRankingTurnoverJourney,
+  adminCqcStatusChangeJournery,
+  adminJourney,
+  adminPendingRegistrationJourney,
+  adminRejectedRegistrationJourney,
+} from '@core/breadcrumb/journey.admin';
+import {
+  benchmarksPayJourney,
+  benchmarksQualificationsJourney,
+  benchmarksSicknessJourney,
+  benchmarksTurnoverJourney,
 } from '@core/breadcrumb/journey.benchmark_metric';
-import { bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
+import {
+  benchmarksSubsidiariesPayJourney,
+  benchmarksSubsidiariesQualificationsJourney,
+  benchmarksSubsidiariesSicknessJourney,
+  benchmarksSubsidiariesTurnoverJourney,
+} from '@core/breadcrumb/journey.benchmark_subsidiaries';
+import { benefitsBundleJourney } from '@core/breadcrumb/journey.benefits-bundle';
+import { bulkUploadHelpJourney, bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
+import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
 import { publicJourney } from '@core/breadcrumb/journey.public';
-import { reportJourney, subsidiaryReportJourney } from '@core/breadcrumb/journey.report';
-import { wdfJourney } from '@core/breadcrumb/journey.wdf';
+import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import { allWorkplacesJourney, myWorkplaceJourney } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -95,12 +104,8 @@ export class BreadcrumbService {
   }
 
   private getPath(url: string, segments: UrlSegment[]) {
-    const reportUrl = url;
     const path = this.getParts(url).map((part, index) => {
       if (this.isParameter(part)) {
-        if (reportUrl === '/reports/workplace/:workplaceUid/wdf') {
-          return segments[index - 1] ? segments[index - 1].path : part;
-        }
         return segments[index] ? segments[index].path : part;
       }
       return part;
@@ -141,12 +146,20 @@ export class BreadcrumbService {
   private getRoutesConfig(journey: JourneyType) {
     let routes: JourneyRoute;
     switch (journey) {
-      case JourneyType.REPORTS: {
-        routes = reportJourney;
+      case JourneyType.CQC_MAIN_SERVICE_CHANGE: {
+        routes = adminCqcStatusChangeJournery;
         break;
       }
-      case JourneyType.SUBSIDIARY_REPORTS: {
-        routes = subsidiaryReportJourney;
+      case JourneyType.ADMIN: {
+        routes = adminJourney;
+        break;
+      }
+      case JourneyType.ADMIN_PENDING_REGISTRATIONS: {
+        routes = adminPendingRegistrationJourney;
+        break;
+      }
+      case JourneyType.ADMIN_REJECTED_REGISTRATIONS: {
+        routes = adminRejectedRegistrationJourney;
         break;
       }
       case JourneyType.MY_WORKPLACE: {
@@ -165,6 +178,10 @@ export class BreadcrumbService {
         routes = bulkUploadJourney;
         break;
       }
+      case JourneyType.BULK_UPLOAD_HELP: {
+        routes = bulkUploadHelpJourney;
+        break;
+      }
       case JourneyType.ACCOUNT: {
         routes = accountJourney;
         break;
@@ -181,40 +198,52 @@ export class BreadcrumbService {
         routes = mandatoryTrainingJourney;
         break;
       }
-      case JourneyType.BENCHMARK_METRIC_PAY: {
-        routes = benchmarkMetricPayJourney;
+      case JourneyType.BENCHMARKS_PAY: {
+        routes = benchmarksPayJourney;
         break;
       }
-      case JourneyType.BENCHMARK_METRIC_SICKNESS: {
-        routes = benchmarkMetricSicknessJourney;
+      case JourneyType.BENCHMARKS_SICKNESS: {
+        routes = benchmarksSicknessJourney;
         break;
       }
-      case JourneyType.BENCHMARK_METRIC_TURNOVER: {
-        routes = benchmarkMetricTurnoverJourney;
+      case JourneyType.BENCHMARKS_TURNOVER: {
+        routes = benchmarksTurnoverJourney;
         break;
       }
-      case JourneyType.BENCHMARK_METRIC_QUALIFICATIONS: {
-        routes = benchmarkMetricQualificationsJourney;
-        break;
-      }
-      case JourneyType.BENCHMARK_RANKINGS_PAY: {
-        routes = benchmarkRankingPayJourney;
-        break;
-      }
-      case JourneyType.BENCHMARK_RANKINGS_TURNOVER: {
-        routes = benchmarkRankingTurnoverJourney;
-        break;
-      }
-      case JourneyType.BENCHMARK_RANKINGS_SICKNESS: {
-        routes = benchmarkRankingSicknessJourney;
-        break;
-      }
-      case JourneyType.BENCHMARK_RANKINGS_QUALIFICATIONS: {
-        routes = benchmarkRankingQualificationsJourney;
+      case JourneyType.BENCHMARKS_QUALIFICATIONS: {
+        routes = benchmarksQualificationsJourney;
         break;
       }
       case JourneyType.WDF: {
         routes = wdfJourney;
+        break;
+      }
+      case JourneyType.WDF_PARENT: {
+        routes = wdfParentJourney;
+        break;
+      }
+      case JourneyType.BENCHMARKS_SUBSIDIARIES_PAY: {
+        routes = benchmarksSubsidiariesPayJourney;
+        break;
+      }
+      case JourneyType.BENCHMARKS_SUBSIDIARIES_TURNOVER: {
+        routes = benchmarksSubsidiariesTurnoverJourney;
+        break;
+      }
+      case JourneyType.BENCHMARKS_SUBSIDIARIES_SICKNESS: {
+        routes = benchmarksSubsidiariesSicknessJourney;
+        break;
+      }
+      case JourneyType.BENCHMARKS_SUBSIDIARIES_QUALIFICATIONS: {
+        routes = benchmarksSubsidiariesQualificationsJourney;
+        break;
+      }
+      case JourneyType.PAGES_ARTICLES: {
+        routes = pagesArticlesJourney;
+        break;
+      }
+      case JourneyType.BENEFITS_BUNDLE: {
+        routes = benefitsBundleJourney;
         break;
       }
       default: {

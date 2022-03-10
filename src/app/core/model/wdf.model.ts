@@ -14,3 +14,9 @@ export interface WDFValue {
   isEligible: Eligibility;
   updatedSinceEffectiveDate: boolean;
 }
+
+export interface WdfEligibilityStatus {
+  overall?: boolean;
+  currentStaff?: boolean;
+  currentWorkplace?: boolean;
+}

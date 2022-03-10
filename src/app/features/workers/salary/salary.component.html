@@ -6,9 +6,7 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              Are they paid hourly or annually?
-            </h1>
+            <h1 class="govuk-fieldset__heading">Are they paid hourly or do they have an annual salary?</h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
@@ -21,22 +19,16 @@
                 value="Hourly"
                 aria-controls="conditional-terms-conditional-1"
               />
-              <label class="govuk-label govuk-radios__label" for="terms-conditional-1">
-                Hourly
-              </label>
+              <label class="govuk-label govuk-radios__label" for="terms-conditional-1"> Hourly </label>
             </div>
             <div
-              class="govuk-radios__conditional "
+              class="govuk-radios__conditional"
               [class.govuk-radios__conditional--hidden]="form.get('terms').value !== 'Hourly'"
               id="conditional-terms-conditional-1"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="hourlyRate">
-                  Standard hourly rate
-                </label>
-                <span id="hourlyRate-hint" class="govuk-hint">
-                  For example 10.40
-                </span>
+                <label class="govuk-label" for="hourlyRate"> Standard hourly rate </label>
+                <span id="hourlyRate-hint" class="govuk-hint"> For example 10.40 </span>
                 <span
                   *ngIf="submitted && form.get('hourlyRate').errors"
                   id="hourlyRate-error"
@@ -79,22 +71,16 @@
                 value="Annually"
                 aria-controls="conditional-terms-conditional-2"
               />
-              <label class="govuk-label govuk-radios__label" for="terms-conditional-2">
-                Annually
-              </label>
+              <label class="govuk-label govuk-radios__label" for="terms-conditional-2"> Annually </label>
             </div>
             <div
-              class="govuk-radios__conditional "
+              class="govuk-radios__conditional"
               [class.govuk-radios__conditional--hidden]="form.get('terms').value !== 'Annually'"
               id="conditional-terms-conditional-2"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="annualRate">
-                  Standard annual rate
-                </label>
-                <span id="annualRate-hint" class="govuk-hint">
-                  For example 30000
-                </span>
+                <label class="govuk-label" for="annualRate"> Standard annual rate </label>
+                <span id="annualRate-hint" class="govuk-hint"> For example 30000 </span>
                 <span
                   *ngIf="submitted && form.get('annualRate').errors"
                   id="annualRate-error"
@@ -136,9 +122,7 @@
                 type="radio"
                 value="Don't know"
               />
-              <label class="govuk-label govuk-radios__label" for="terms-3">
-                Don't know
-              </label>
+              <label class="govuk-label govuk-radios__label" for="terms-3"> Don't know </label>
             </div>
           </div>
         </fieldset>

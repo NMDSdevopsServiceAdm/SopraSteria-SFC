@@ -1,0 +1,32 @@
+<app-error-summary
+  *ngIf="(form.invalid || serverError) && submitted"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row" id="server-error">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-m">User account</h1>
+    <app-summary-list
+      [topBorder]="true"
+      [summaryList]="userInfo"
+      (setReturn)="onSetReturn()"
+      data-testid="userInfo"
+    ></app-summary-list>
+    <app-summary-list
+      [topBorder]="true"
+      [summaryList]="loginInfo"
+      [displayShowPasswordToggle]="true"
+      (setReturn)="onSetReturn()"
+      data-testid="loginInfo"
+    ></app-summary-list>
+    <app-summary-list
+      [wrapBorder]="true"
+      [summaryList]="securityInfo"
+      (setReturn)="onSetReturn()"
+      data-testid="securityInfo"
+    ></app-summary-list>
+  </div>
+</div>

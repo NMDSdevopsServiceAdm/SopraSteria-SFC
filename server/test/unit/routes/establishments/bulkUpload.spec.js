@@ -17,22 +17,12 @@ const {
 const {
   validateDuplicateLocations,
 } = require('../../../../routes/establishments/bulkUpload/validate/validateDuplicateLocations');
-const {
-  validateDuplicateWorkerID,
-} = require('../../../../routes/establishments/bulkUpload/validate/validateDuplicateWorkerID');
-const {
-  validatePartTimeSalary,
-} = require('../../../../routes/establishments/bulkUpload/validate/validatePartTimeSalary');
 
-const { exportToCsv } = require('../../../../routes/establishments/bulkUpload/download');
 const { sendCountToSlack } = require('../../../../routes/establishments/bulkUpload/slack');
 
 const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments');
-const WorkerCsvValidator = require('../../../../models/BulkImport/csv/workers');
-const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
 const { Establishment } = require('../../../../models/classes/establishment');
 const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
-const buildWorkerCSV = require('../../../../test/factories/worker/csv');
 
 const errorsBuilder = build('Error', {
   fields: {
@@ -242,368 +232,17 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
     });
   });
 
-  describe('validateDuplicateWorkerID()', () => {
-    it('errors when CHGUNIQUEWRKID is not unique', async () => {
-      const csvWorkerSchemaErrors = [];
-      const allWorkersByKey = {};
-      const myAPIWorkers = [];
-      const myWorkers = [
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'Worker 1',
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'Worker 2',
-            CHGUNIQUEWRKID: 'Worker 1',
-          },
-        }),
-      ].map((currentLine, currentLineNumber) => {
-        const worker = new WorkerCsvValidator.Worker(currentLine, currentLineNumber, []);
-
-        worker.validate();
-
-        return worker;
-      });
-
-      const allKeys = myWorkers.map((worker) => (worker.local + worker.uniqueWorker).replace(/\s/g, ''));
-
-      myWorkers.forEach((thisWorker) => {
-        // uniquness for a worker is across both the establishment and the worker
-        const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, '');
-        const changeKeyNoWhitespace = thisWorker.changeUniqueWorker
-          ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, '')
-          : null;
-
-        if (
-          validateDuplicateWorkerID(
-            myWorkers[1],
-            allKeys,
-            changeKeyNoWhitespace,
-            keyNoWhitespace,
-            allWorkersByKey,
-            myAPIWorkers,
-            csvWorkerSchemaErrors,
-          )
-        ) {
-          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
-
-          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
-          if (changeKeyNoWhitespace) {
-            allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber;
-          }
-        }
-      });
-
-      expect(csvWorkerSchemaErrors.length).equals(1);
-      expect(csvWorkerSchemaErrors[0]).to.eql({
-        origin: 'Workers',
-        lineNumber: 1,
-        errCode: 998,
-        errType: 'DUPLICATE_ERROR',
-        error: 'CHGUNIQUEWRKID Worker 1 is not unique',
-        name: 'foo',
-        source: 'Worker 2',
-        worker: 'Worker 2',
-        column: 'CHGUNIQUEWRKID',
-      });
-    });
-  });
-  describe('validatePartTimeSalary()', () => {
-    // FTE / PTE : Full / Part Time Employee . FTE > 36 hours a week, PTE < 37
-    it('errors when one worker has the same salary as a FTE but works PTE', async () => {
-      const csvWorkerSchemaErrors = [];
-      const myWorkers = [
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'FTE',
-            CONTHOURS: '50',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'PTE',
-            CONTHOURS: '10',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-      ].map((currentLine, currentLineNumber) => {
-        const worker = new WorkerCsvValidator.Worker(currentLine, currentLineNumber, []);
-
-        worker.validate();
-
-        return worker;
-      });
-
-      myWorkers.forEach((thisWorker) => {
-        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
-      });
-      expect(csvWorkerSchemaErrors.length).equals(1);
-      expect(csvWorkerSchemaErrors[0]).to.eql({
-        origin: 'Workers',
-        lineNumber: 1,
-        warnCode: 1260,
-        warnType: 'SALARY_ERROR',
-        warning:
-          'SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay',
-        source: 'foo',
-        worker: 'PTE',
-        name: 'foo',
-        column: 'SALARY',
-      });
-    });
-    it('shouldnt error when two worker has the same salary, different job and one is FTE and one is PTE ', async () => {
-      const csvWorkerSchemaErrors = [];
-      const myWorkers = [
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'FTE',
-            CONTHOURS: '50',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '3',
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'PTE',
-            CONTHOURS: '10',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-      ].map((currentLine, currentLineNumber) => {
-        const worker = new WorkerCsvValidator.Worker(currentLine, currentLineNumber, []);
-
-        worker.validate();
-
-        return worker;
-      });
-
-      myWorkers.forEach((thisWorker) => {
-        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
-      });
-      console.log(csvWorkerSchemaErrors);
-      expect(csvWorkerSchemaErrors.length).equals(0);
-    });
-    it('shouldnt error when two worker has the same salary, same job and both are FTE ', async () => {
-      const csvWorkerSchemaErrors = [];
-      const myWorkers = [
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'FTE',
-            CONTHOURS: '50',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'FTE',
-            CONTHOURS: '50',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-      ].map((currentLine, currentLineNumber) => {
-        const worker = new WorkerCsvValidator.Worker(currentLine, currentLineNumber, []);
-
-        worker.validate();
-
-        return worker;
-      });
-
-      myWorkers.forEach((thisWorker) => {
-        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
-      });
-      expect(csvWorkerSchemaErrors.length).equals(0);
-    });
-    it('shouldnt error when the worker status is DELETE ', async () => {
-      const csvWorkerSchemaErrors = [];
-      const myWorkers = [
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'FTE',
-            CONTHOURS: '50',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'PTE',
-            CONTHOURS: '10',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-            STATUS: 'DELETE',
-          },
-        }),
-      ].map((currentLine, currentLineNumber) => {
-        const worker = new WorkerCsvValidator.Worker(currentLine, currentLineNumber, []);
-
-        worker.validate();
-
-        return worker;
-      });
-
-      myWorkers.forEach((thisWorker) => {
-        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
-      });
-      expect(csvWorkerSchemaErrors.length).equals(0);
-    });
-    it('shouldnt error when the compared worker status is DELETE ', async () => {
-      const csvWorkerSchemaErrors = [];
-      const myWorkers = [
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'FTE',
-            CONTHOURS: '50',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-            STATUS: 'DELETE',
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'PTE',
-            CONTHOURS: '10',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-      ].map((currentLine, currentLineNumber) => {
-        const worker = new WorkerCsvValidator.Worker(currentLine, currentLineNumber, []);
-
-        worker.validate();
-
-        return worker;
-      });
-
-      myWorkers.forEach((thisWorker) => {
-        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
-      });
-      expect(csvWorkerSchemaErrors.length).equals(0);
-    });
-    it('should only show errors on PTEs', async () => {
-      const csvWorkerSchemaErrors = [];
-      const myWorkers = [
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'FTE',
-            CONTHOURS: '50',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'PTE',
-            CONTHOURS: '10',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-        buildWorkerCSV({
-          overrides: {
-            LOCALESTID: 'foo',
-            UNIQUEWORKERID: 'PTE 2',
-            CONTHOURS: '10',
-            SALARY: '50',
-            SALARYINT: '1', //Annually
-            HOURLYRATE: '',
-            MAINJOBROLE: '5',
-          },
-        }),
-      ].map((currentLine, currentLineNumber) => {
-        const worker = new WorkerCsvValidator.Worker(currentLine, currentLineNumber, []);
-
-        worker.validate();
-
-        return worker;
-      });
-
-      myWorkers.forEach((thisWorker) => {
-        validatePartTimeSalary(thisWorker, myWorkers, {}, csvWorkerSchemaErrors);
-      });
-      expect(csvWorkerSchemaErrors.length).equals(2);
-      expect(csvWorkerSchemaErrors[0]).to.eql({
-        origin: 'Workers',
-        lineNumber: 1,
-        warnCode: 1260,
-        warnType: 'SALARY_ERROR',
-        warning:
-          'SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay',
-        source: 'foo',
-        worker: 'PTE',
-        name: 'foo',
-        column: 'SALARY',
-      });
-      expect(csvWorkerSchemaErrors[1]).to.eql({
-        origin: 'Workers',
-        lineNumber: 2,
-        warnCode: 1260,
-        warnType: 'SALARY_ERROR',
-        warning:
-          'SALARY is the same as other staff on different hours. Please check you have not entered full time equivalent (FTE) pay',
-        source: 'foo',
-        worker: 'PTE 2',
-        name: 'foo',
-        column: 'SALARY',
-      });
-    });
-  });
   describe('validateEstablishmentCsv()', () => {
     it('should validate each line of the establishments CSV', async () => {
       const workplace = {
-        Address1: 'First Line',
-        Address2: 'Second Line',
-        Address3: '',
-        Town: 'My Town',
-        Postcode: 'LN11 9JG',
-        LocationId: '1-12345678',
-        ProvId: '1-12345678',
-        IsCQCRegulated: true,
+        address1: 'First Line',
+        address2: 'Second Line',
+        address3: '',
+        town: 'My Town',
+        postcode: 'LN11 9JG',
+        locationId: '1-12345678',
+        provId: '1-12345678',
+        isCQCRegulated: true,
         reasonsForLeaving: '',
         status: null,
         name: 'WOZiTech, with even more care',
@@ -625,16 +264,16 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       sinon.stub(EstablishmentCsvValidator.Establishment.prototype, 'transform').resolves({});
       sinon
         .stub(Establishment.prototype, 'initialise')
-        .callsFake((Address1, Address2, Address3, Town, test, LocationId, ProvId, Postcode, IsCQCRegulated) => {
-          expect(Address1).to.deep.equal(workplace.Address1);
-          expect(Address2).to.deep.equal(workplace.Address2);
-          expect(Address3).to.deep.equal(workplace.Address3);
-          expect(Town).to.deep.equal(workplace.Town);
+        .callsFake((address1, address2, address3, town, test, locationId, provId, postcode, isCQCRegulated) => {
+          expect(address1).to.deep.equal(workplace.address1);
+          expect(address2).to.deep.equal(workplace.address2);
+          expect(address3).to.deep.equal(workplace.address3);
+          expect(town).to.deep.equal(workplace.town);
           expect(test).to.deep.equal(null);
-          expect(LocationId).to.deep.equal(workplace.LocationId);
-          expect(ProvId).to.deep.equal(workplace.ProvId);
-          expect(Postcode).to.deep.equal(workplace.Postcode);
-          expect(IsCQCRegulated).to.deep.equal(workplace.IsCQCRegulated);
+          expect(locationId).to.deep.equal(workplace.locationId);
+          expect(provId).to.deep.equal(workplace.provId);
+          expect(postcode).to.deep.equal(workplace.postcode);
+          expect(isCQCRegulated).to.deep.equal(workplace.isCQCRegulated);
         });
       sinon.stub(EstablishmentCsvValidator.Establishment.prototype, 'toAPI').callsFake(() => {
         return workplace;
@@ -879,116 +518,6 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
             _logLevel: 300,
           },
         ],
-      );
-    });
-  });
-
-  describe('exportToCsv()', () => {
-    it('should have a blank UNIQUEWORKERID if worker does not have a LocalIdentifier', async () => {
-      sinon.stub(dbmodels.workerTrainingCategories, 'findAll').returns([
-        {
-          id: 1,
-        },
-      ]);
-
-      const trainingCategory = 1;
-
-      const lines = [];
-
-      const responseSend = (line) => {
-        lines.push(line);
-      };
-
-      const establishment = new Establishment('foo');
-      await establishment.load(
-        {
-          name: 'foo',
-          workers: [
-            {
-              nameOrId: 'foobar',
-              training: [
-                {
-                  trainingCategory: {
-                    id: trainingCategory,
-                  },
-                },
-              ],
-            },
-          ],
-        },
-        true,
-      );
-
-      await exportToCsv(
-        '',
-        [establishment],
-        'foo',
-        'training',
-        [
-          {
-            maxqualifications: '10',
-          },
-        ],
-        responseSend,
-      );
-
-      expect(lines[1]).to.equal(
-        `${establishment.name},,${BUDI.trainingCategory(BUDI.FROM_ASC, trainingCategory)},,,,,`,
-      );
-    });
-
-    it('should have a UNIQUEWORKERID if worker has a LocalIdentifier', async () => {
-      sinon.stub(dbmodels.workerTrainingCategories, 'findAll').returns([
-        {
-          id: 1,
-        },
-      ]);
-
-      const trainingCategory = 1;
-      const workerName = 'TesterMcTesterson';
-
-      const lines = [];
-
-      const responseSend = (line) => {
-        lines.push(line);
-      };
-
-      const establishment = new Establishment('foo');
-      await establishment.load(
-        {
-          name: 'foo',
-          workers: [
-            {
-              nameOrId: 'foobar',
-              localIdentifier: workerName,
-              training: [
-                {
-                  trainingCategory: {
-                    id: trainingCategory,
-                  },
-                },
-              ],
-            },
-          ],
-        },
-        true,
-      );
-
-      await exportToCsv(
-        '',
-        [establishment],
-        'foo',
-        'training',
-        [
-          {
-            maxqualifications: '10',
-          },
-        ],
-        responseSend,
-      );
-
-      expect(lines[1]).to.equal(
-        `${establishment.name},${workerName},${BUDI.trainingCategory(BUDI.FROM_ASC, trainingCategory)},,,,,`,
       );
     });
   });

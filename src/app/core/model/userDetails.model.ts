@@ -19,13 +19,23 @@ export interface UserDetails {
   securityQuestion?: string;
   securityQuestionAnswer?: string;
   status?: UserStatus;
+  password?: string;
   uid?: string;
   updated?: string;
   updatedBy?: string;
   username?: string;
+  canManageWdfClaims?: boolean;
 }
 
 export enum UserStatus {
   Pending = 'Pending',
   Active = 'Active',
+}
+
+export interface UserPermissionsType {
+  userTableValue?: string;
+  role?: Roles;
+  canManageWdfClaims?: boolean;
+  permissionsQuestionValue?: string;
+  isPrimary?: boolean;
 }

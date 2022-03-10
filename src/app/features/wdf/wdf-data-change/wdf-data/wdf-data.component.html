@@ -1,0 +1,47 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      <span class="govuk-caption-xl">Workforce Development Fund (WDF)</span>
+      WDF data<ng-container *ngIf="workplace && !isStandalone">: {{ workplace.name }}</ng-container>
+    </h1>
+    <app-wdf-data-status-message
+      [wdfStartDate]="wdfStartDate"
+      [wdfEndDate]="wdfEndDate"
+      [wdfEligibilityStatus]="wdfEligibilityStatus"
+      [isStandalone]="isStandalone"
+    ></app-wdf-data-status-message>
+  </div>
+</div>
+
+<app-tabs>
+  <app-tab
+    [greenTick]="wdfEligibilityStatus.currentWorkplace"
+    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
+    [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
+    [title]="'Workplace'"
+  >
+    <app-workplace-summary
+      *ngIf="workplace"
+      [workplace]="workplace"
+      [workerCount]="workerCount"
+      [return]="returnUrl"
+      [wdfView]="true"
+      [overallWdfEligibility]="wdfEligibilityStatus.overall"
+      (allFieldsConfirmed)="getWdfReport()"
+    ></app-workplace-summary>
+  </app-tab>
+  <app-tab
+    *ngIf="canViewWorker"
+    [greenTick]="wdfEligibilityStatus.currentStaff"
+    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
+    [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
+    [title]="'Staff records'"
+  >
+    <app-wdf-staff-summary
+      *ngIf="workers && workplace"
+      [workplace]="workplace"
+      [workers]="workers"
+      [canEditWorker]="canEditWorker"
+    ></app-wdf-staff-summary>
+  </app-tab>
+</app-tabs>

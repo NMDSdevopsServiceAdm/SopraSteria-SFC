@@ -14,7 +14,16 @@ convict.addFormat(require('convict-format-with-validator').url);
 const config = convict({
   env: {
     doc: 'The application environment',
-    format: ['production', 'preproduction', 'benchmarks', 'development', 'test', 'accessibility', 'localhost'],
+    format: [
+      'production',
+      'preproduction',
+      'benchmarks',
+      'development',
+      'test',
+      'accessibility',
+      'localhost',
+      'example',
+    ],
     default: 'localhost',
     env: 'NODE_ENV',
   },
@@ -230,8 +239,7 @@ const config = convict({
     },
     secrets: {
       use: {
-        doc:
-          'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
+        doc: 'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
         format: 'Boolean',
         default: false,
       },
@@ -258,6 +266,12 @@ const config = convict({
         default: 'sns-feedback-arn',
       },
     },
+    sqsqueue: {
+      doc: 'SQS queue to send email requests',
+      format: '*',
+      default: '',
+      env: 'SEND_EMAILS_SQS_QUEUE',
+    },
   },
   bulkupload: {
     region: {
@@ -281,11 +295,6 @@ const config = convict({
         format: 'int',
         default: 300,
       },
-      storeIntermediaries: {
-        doc: 'If true, intermediary trace data will be stored',
-        format: 'Boolean',
-        default: false,
-      },
     },
     completion: {
       timeout: {
@@ -300,6 +309,25 @@ const config = convict({
         format: 'int',
         default: 300,
       },
+    },
+    lambda: {
+      stage: {
+        doc: 'The name of the stage for bulk upload validations',
+        format: String,
+        default: 'dev',
+      },
+    },
+  },
+  disbursement: {
+    region: {
+      doc: 'AWS region override for disbursement S3 only',
+      format: '*',
+      default: 'eu-west-2',
+    },
+    bucketname: {
+      doc: 'Bucket used to create disbursement',
+      format: '*',
+      default: 'wdf-disbursement',
     },
   },
   locks: {
@@ -342,12 +370,12 @@ const config = convict({
         fromDate: {
           doc: 'A fixed from reporting date; in the format YYYY-MM-DD',
           format: String,
-          default: '2020-09-14',
+          default: '2021-09-13',
         },
         toDate: {
           doc: 'A fixed to reporting date; in the format YYYY-MM-DD',
           format: String,
-          default: '2020-10-31',
+          default: '2021-10-31',
         },
         timeout: {
           doc: 'The timeout, in seconds, on the Local Authority user and admin API endpoints',
@@ -419,7 +447,7 @@ const config = convict({
     dsn: {
       doc: 'Sentry Endpoint',
       format: String,
-      default: 'https://59c078b68dc0429aa404e59920f288fd@o409195.ingest.sentry.io/5281212',
+      default: 'https://b5e1291ec8934cf7b6b426bc45f1dbbd@o409195.ingest.sentry.io/5972061',
       sensitive: true,
       env: 'SENTRY_DSN',
     },
@@ -430,7 +458,7 @@ const config = convict({
           throw new Error('must be a float between 0 and 1, inclusive');
         }
       },
-      default: 0.3,
+      default: 1.0,
     },
   },
   honeycomb: {
@@ -452,26 +480,6 @@ const config = convict({
       doc: 'The unit of time to use (e.g days in moment format)',
       format: String,
       default: 'd',
-    },
-  },
-  encryption: {
-    publicKey: {
-      doc: 'The public key for encryption',
-      format: String,
-      default: '',
-      env: 'ENCRYPTION_PUBLIC_KEY',
-    },
-    privateKey: {
-      doc: 'The private key for encryption',
-      format: String,
-      default: '',
-      env: 'ENCRYPTION_PRIVATE_KEY',
-    },
-    passphrase: {
-      doc: 'The passphrase used for encryption',
-      format: String,
-      default: '',
-      env: 'ENCRYPTION_PASSPHRASE',
     },
   },
   sendInBlue: {
@@ -591,10 +599,9 @@ if (config.get('aws.secrets.use')) {
     // Send in Blue
     config.set('sendInBlue.apiKey', AWSSecrets.sendInBlueKey());
     config.set('sendInBlue.whitelist', AWSSecrets.sendInBlueWhitelist());
-    // openPgp
-    config.set('encryption.privateKey', AWSSecrets.encryptionPrivateKey());
-    config.set('encryption.publicKey', AWSSecrets.encryptionPublicKey());
-    config.set('encryption.passphrase', AWSSecrets.encryptionPassphrase());
+
+    // sqs queue
+    config.set('aws.sqsqueue', AWSSecrets.sendEmailsToSQSQueue());
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());

@@ -6,11 +6,13 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const Establishment = require('../../models/classes/establishment');
 
+const moment = require('moment');
+const get = require('lodash/get');
+
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
 const models = require('../../models');
-const Training = require('../../models/classes/training').Training;
-const Qualification = require('../../models/classes/qualification').Qualification;
+const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculator;
 
 // parent route defines the "id" parameter
 
@@ -18,6 +20,8 @@ const Qualification = require('../../models/classes/qualification').Qualificatio
 const TrainingRoutes = require('./training');
 const QualificationRoutes = require('./qualification');
 const MandatoryTrainingRoutes = require('./mandatoryTraining');
+const MutipleTrainingRecordsRoute = require('./training/multiple');
+const TrainingAndQualificationsRoutes = require('./trainingAndQualifications');
 
 const { hasPermission } = require('../../utils/security/hasPermission');
 
@@ -57,7 +61,7 @@ const viewWorker = async (req, res) => {
     );
 
     console.error('worker::GET/:workerId - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -67,13 +71,6 @@ const createWorker = async (req, res) => {
   const newWorker = new Workers.Worker(establishmentId);
 
   try {
-    if (req.body.postcode) {
-      const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.postcode)) || {};
-
-      req.body.Latitude = Latitude;
-      req.body.Longitude = Longitude;
-    }
-
     // TODO: JSON validation
     const isValidWorker = await newWorker.load(req.body);
 
@@ -97,10 +94,10 @@ const createWorker = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
       console.error('Worker POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     }
     console.error('Worker POST: unexpected exception: ', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -127,13 +124,6 @@ const editWorker = async (req, res) => {
         thisWorker.establishmentId = req.body.establishmentId;
         thisWorker.establishmentFk = req.body.establishmentId;
         req.body.establishmentFk = req.body.establishmentId;
-      }
-
-      if (req.body.postcode && req.body.postcode !== thisWorker.postcode) {
-        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.postcode)) || {};
-
-        req.body.Latitude = Latitude;
-        req.body.Longitude = Longitude;
       }
 
       // by loading after the restore, only those properties defined in the
@@ -167,11 +157,11 @@ const editWorker = async (req, res) => {
       return res.send(err.safe);
     } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
       console.error('Worker PUT: ', err.message);
-      res.status(503);
+      res.status(500);
       return res.send(err.safe);
     }
 
-    res.status(503);
+    res.status(500);
     return res.send(err);
   }
 };
@@ -217,7 +207,7 @@ const deleteWorker = async (req, res) => {
   } catch (err) {
     if (err instanceof Workers.WorkerExceptions.WorkerDeleteException) {
       console.error('Worker DELETE: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     } else {
       console.error('Worker DELETE - unexpected exception: ', err);
       return res.status(500).send();
@@ -225,60 +215,68 @@ const deleteWorker = async (req, res) => {
   }
 };
 
-router.route('/total').get(async (req, res) => {
+const getTotalWorkers = async (req, res) => {
   const establishmentId = req.establishmentId;
 
+  const where = {
+    archived: false,
+  };
+
   try {
-    const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+    const allWorkers = await models.establishment.workers(establishmentId, where, []);
+
     return res.status(200).json({
-      total: allTheseWorkers.length,
+      total: get(allWorkers, 'workers') ? allWorkers.workers.length : 0,
     });
   } catch (err) {
     console.error('worker::GET:total - failed', err);
-    return res.status(503).send('Failed to get total workers for establishment having id: ' + establishmentId);
+    return res.status(500).send('Failed to get total workers for establishment having id: ' + establishmentId);
   }
-});
+};
 
 const viewAllWorkers = async (req, res) => {
   const establishmentId = req.establishmentId;
+  const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
 
   try {
-    let trainingAlert;
-    let allTheseWorkers = await Workers.Worker.fetch(establishmentId);
-    if (allTheseWorkers && allTheseWorkers.length) {
-      const updateTrainingRecords = await Training.getAllRequiredCounts(establishmentId, allTheseWorkers);
-      if (updateTrainingRecords) {
-        const updateQualsRecords = await Qualification.getQualsCounts(establishmentId, updateTrainingRecords);
-        if (updateQualsRecords) {
-          if (updateQualsRecords.length > 0) {
-            const expiriedTrainingCountFlag =
-              updateQualsRecords.filter((worker) => worker.expiredTrainingCount > 0).length || 0;
-            const expiringTrainingCountFlag =
-              updateQualsRecords.filter((worker) => worker.expiringTrainingCount > 0).length || 0;
-            const missingMandatoryTrainingCountFlag =
-              updateQualsRecords.filter((worker) => worker.missingMandatoryTrainingCount > 0).length || 0;
-            if (expiriedTrainingCountFlag > 0 || missingMandatoryTrainingCountFlag > 0) {
-              trainingAlert = 2;
-            } else if (expiringTrainingCountFlag > 0) {
-              trainingAlert = 1;
-            } else {
-              trainingAlert = 0;
-            }
-          } else {
-            trainingAlert = 0;
-          }
-          if (updateQualsRecords.length > 0) {
-            updateQualsRecords[0].trainingAlert = trainingAlert;
-          }
-          return res.status(200).json({
-            workers: updateQualsRecords,
-          });
-        }
-      }
-    }
+    const establishmentWorkersAndTraining = await models.establishment.workersAndTraining(establishmentId);
+    const allWorkers = establishmentWorkersAndTraining[0].workers;
+
+    res.status(200).send({
+      workers: allWorkers
+        ? allWorkers.map((worker) => {
+            return {
+              uid: worker.uid,
+              localIdentifier: worker.LocalIdentifierValue ? worker.LocalIdentifierValue : null,
+              nameOrId: worker.NameOrIdValue,
+              contract: worker.ContractValue,
+              mainJob: {
+                jobId: worker.mainJob.id,
+                title: worker.mainJob.title,
+                other: worker.MainJobFkOther ? worker.MainJobFkOther : undefined,
+              },
+              completed: worker.CompletedValue,
+              created: worker.created,
+              updated: worker.updated,
+              updatedBy: worker.updatedBy,
+              effectiveFrom: effectiveFromIso,
+              wdfEligible: worker.wdfEligible && moment(worker.lastWdfEligibility).isAfter(effectiveFromIso),
+              wdfEligibilityLastUpdated: worker.lastWdfEligibility
+                ? worker.lastWdfEligibility.toISOString()
+                : undefined,
+              trainingCount: parseInt(worker.get('trainingCount')),
+              qualificationCount: parseInt(worker.get('qualificationCount')),
+              expiredTrainingCount: parseInt(worker.get('expiredTrainingCount')),
+              expiringTrainingCount: parseInt(worker.get('expiringTrainingCount')),
+              missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
+              longTermAbsence: worker.LongTermAbsence,
+            };
+          })
+        : [],
+    });
   } catch (err) {
     console.error('worker::GET:all - failed', err);
-    return res.status(503).send('Failed to get workers for establishment having id: ' + establishmentId);
+    return res.status(500).send('Failed to get workers for establishment having id: ' + establishmentId);
   }
 };
 
@@ -322,8 +320,8 @@ const updateLocalIdentifiers = async (req, res) => {
         return res.status(400).send({ duplicateValue: err.fields.LocalIdentifierValue });
       }
     }
-    console.log(err);
-    return res.status(503).send(err.message);
+    console.error(err);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -331,6 +329,9 @@ router.route('/').get(hasPermission('canViewWorker'), viewAllWorkers);
 router.route('/').post(hasPermission('canAddWorker'), createWorker);
 
 router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocalIdentifiers);
+router.route('/total').get(hasPermission('canViewEstablishment'), getTotalWorkers);
+
+router.use('/multiple-training', MutipleTrainingRecordsRoute);
 
 router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
@@ -339,6 +340,9 @@ router.route('/:workerId').delete(hasPermission('canDeleteWorker'), deleteWorker
 router.use('/:workerId/training', TrainingRoutes);
 router.use('/:workerId/qualification', QualificationRoutes);
 router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);
+router.use('/:workerId/trainingAndQualifications', TrainingAndQualificationsRoutes);
 
 module.exports = router;
 module.exports.editWorker = editWorker;
+module.exports.viewAllWorkers = viewAllWorkers;
+module.exports.getTotalWorkers = getTotalWorkers;

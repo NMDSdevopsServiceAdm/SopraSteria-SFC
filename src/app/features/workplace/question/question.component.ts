@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -82,6 +82,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
   protected navigate(): void {
     const action = this.submitAction.action;
+
     if (!action) {
       return;
     }
@@ -109,7 +110,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
     this.submitAction = payload;
     if (!this.submitAction.save) {
-      this.navigate();
+      this.establishment.showSharingPermissionsBanner
+        ? this.removeSharingPermissionsBanner(() => this.navigate())
+        : this.navigate();
       return;
     }
 
@@ -144,6 +147,10 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected generateUpdateProps(): any {}
   protected updateEstablishment(props): void {}
   protected onSuccess(): void {}
+  protected removeSharingPermissionsBanner(completeFunction: () => unknown): void {
+    // callback is invoked if func not declared in child to ensure navigation
+    completeFunction();
+  }
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });

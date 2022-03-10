@@ -9,11 +9,26 @@
     <dt class="govuk-summary-list__key">
       {{ item.label }}
     </dt>
-    <dd class="govuk-summary-list__value">
-      {{ item.data }}
-    </dd>
+    <ng-container *ngIf="item.label === 'Password' && displayShowPasswordToggle; else nonPassword">
+      <dd class="govuk-summary-list__value">
+        <span class="asc-password-wrap">{{ showPassword ? item.data : '******' }}</span>
+        <a
+          class="govuk-link govuk-link--no-visited-state govuk-util__float-right govuk-!-margin-right-6"
+          href="#"
+          role="button"
+          (click)="togglePassword($event)"
+          ><ng-container *ngIf="showPassword; else showText">Hide</ng-container
+          ><ng-template #showText>Show</ng-template> password</a
+        >
+      </dd>
+    </ng-container>
+    <ng-template #nonPassword>
+      <dd class="govuk-summary-list__value">
+        <span innerHtml="{{ item.data }}"></span>
+      </dd>
+    </ng-template>
     <ng-container *ngIf="item.route">
-      <dd *ngIf="canNavigate === undefined ? true: canNavigate" class="govuk-summary-list__actions">
+      <dd *ngIf="canNavigate === undefined ? true : canNavigate" class="govuk-summary-list__actions">
         <a [routerLink]="item.route.url" (click)="emitSetReturn()">
           Change
           <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>

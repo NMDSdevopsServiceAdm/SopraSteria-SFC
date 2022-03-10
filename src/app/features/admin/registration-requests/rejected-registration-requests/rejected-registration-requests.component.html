@@ -1,0 +1,20 @@
+<div class="govuk-grid-column-two-thirds">
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Workplace</th>
+        <th scope="col" class="govuk-table__header">Date rejected</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row" *ngFor="let registration of rejectedRegistrations">
+        <td class="govuk-table__cell">
+          <a [routerLink]="[registration.workplaceUid]">{{ registration.name }}</a>
+        </td>
+        <td class="govuk-table__cell">
+          {{ registration.updated | date: 'dd MMM yyyy' }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

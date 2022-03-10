@@ -55,19 +55,19 @@ describe('ParticipationComponent', () => {
     expect(nextPage.url).toEqual(['/registration-survey', 'why-create-account']);
   });
 
-  it('should navigate to dashboard when selecting no', async () => {
+  it('should navigate to the first login wizard when selecting no', async () => {
     const component = await setup();
     const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="No"]`);
     fireEvent.click(noRadioButton);
 
     const nextPage = component.fixture.componentInstance.nextPage;
-    expect(nextPage.url).toEqual(['/dashboard']);
+    expect(nextPage.url).toEqual(['/first-login-wizard']);
   });
 
-  it('should navigate to dashboard when not selecting anything', async () => {
+  it('should navigate to the first login wizard when not selecting anything', async () => {
     const component = await setup();
 
     const nextPage = component.fixture.componentInstance.nextPage;
-    expect(nextPage.url).toEqual(['/dashboard']);
+    expect(nextPage.url).toEqual(['/first-login-wizard']);
   });
 });

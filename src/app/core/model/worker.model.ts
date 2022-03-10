@@ -100,6 +100,7 @@ export interface Worker {
   expiringTrainingCount: number;
   missingMandatoryTrainingCount: number;
   qualificationCount: number;
+  longTermAbsence: string;
 }
 
 export interface WorkerPay {

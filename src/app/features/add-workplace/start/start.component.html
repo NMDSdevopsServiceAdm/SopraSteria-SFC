@@ -1,26 +1,18 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-xl">Add a new workplace</h1>
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h1 class="govuk-fieldset__heading">Add a new workplace</h1>
+    </legend>
 
-    <p>To add a new workplace you will need to tell us:</p>
+    <p>To add a new workplace, you'll need to know:</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>whether it is regulated by the Care Quality Commission (CQC) or not</li>
-      <li>the name and address</li>
-      <li>the main service it provides</li>
+      <li>the main service it provides and whether or not it's regulated by the Care Quality Commission (CQC)</li>
+      <li>the name and address of the workplace</li>
     </ul>
 
-    <p>
-      We aim to check and respond to all new workplace requests within 24
-      hours.
-    </p>
-
     <div class="govuk-button-group">
-      <a [routerLink]="['/add-workplace/regulated-by-cqc']" role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
-        Start now
-
-        <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
-          <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
-        </svg>
+      <a [routerLink]="['/add-workplace', 'regulated-by-cqc']" role="button" draggable="false" class="govuk-button">
+        Continue
       </a>
     </div>
   </div>

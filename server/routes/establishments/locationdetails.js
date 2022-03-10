@@ -5,7 +5,6 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const pCodeCheck = require('../../utils/postcodeSanitizer');
 
 // all user functionality is encapsulated
-const models = require('../../models');
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['LocationId', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'Postcode', 'Name'];
 
@@ -51,7 +50,7 @@ const getLocationDetails = async (req, res) => {
     );
 
     console.error('establishment::cqcLocationId GET/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -71,14 +70,6 @@ const updateLocationDetails = async (req, res) => {
 
       const newPostcode = pCodeCheck.sanitisePostcode(req.body.postalCode);
 
-      if (newPostcode && newPostcode !== thisEstablishment.postcode) {
-        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(newPostcode)) || {};
-
-        req.body.postalCode = newPostcode;
-        req.body.Latitude = Latitude;
-        req.body.Longitude = Longitude;
-      }
-
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in locationId and address
@@ -90,8 +81,6 @@ const updateLocationDetails = async (req, res) => {
         town: req.body.townCity,
         county: req.body.county,
         postcode: newPostcode,
-        Latitude: req.body.Latitude,
-        Longitude: req.body.Longitude,
         name: req.body.locationName,
       });
 
@@ -113,7 +102,7 @@ const updateLocationDetails = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
       console.error('Establishment::mainService POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
     }

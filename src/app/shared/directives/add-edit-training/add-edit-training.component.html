@@ -1,0 +1,171 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+<ng-container *ngIf="worker">
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
+        {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
+      </span>
+    </div>
+  </div>
+</ng-container>
+
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            {{ title }}
+          </h1>
+        </legend>
+        <p class="govuk-body" *ngIf="showWorkerCount">
+          <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
+          <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
+        </p>
+        <div *ngIf="missingTrainingRecord; then missingTrainingCategoryLabelBlock; else categoryListBLock"></div>
+        <ng-template #categoryListBLock>
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
+            <label class="govuk-label" for="category"> Training category </label>
+            <span *ngIf="submitted && form.get('category').invalid" id="category-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('category') }}
+            </span>
+            <select
+              class="govuk-select"
+              [class.govuk-select--error]="submitted && form.get('category').invalid"
+              [formControlName]="'category'"
+              id="category"
+              name="category"
+              data-testid="trainingSelect"
+            >
+              <option [ngValue]="null">Select a training category</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.category }}
+              </option>
+            </select>
+          </div>
+        </ng-template>
+        <ng-template #missingTrainingCategoryLabelBlock>
+          <p class="govuk-body govuk-!-margin-bottom-5">Training category: {{ missingTrainingRecord.category }}</p>
+        </ng-template>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
+          <label class="govuk-label" for="title"> Training name </label>
+          <span *ngIf="submitted && form.get('title').invalid" id="title-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('title') }}
+          </span>
+          <input
+            class="govuk-input govuk-date-input__input"
+            [class.govuk-input--error]="submitted && form.get('title').invalid"
+            [formControlName]="'title'"
+            id="title"
+            name="title"
+            type="text"
+          />
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('accredited').invalid">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend">Is this training accredited?</legend>
+            <span *ngIf="submitted && form.get('accredited').invalid" id="accredited-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('accredited') }}
+            </span>
+            <div class="govuk-radios">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  id="accredited-yes"
+                  [formControlName]="'accredited'"
+                  type="radio"
+                  value="Yes"
+                />
+                <label class="govuk-label govuk-radios__label" for="accredited-yes"> Yes </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  id="accredited-no"
+                  [formControlName]="'accredited'"
+                  type="radio"
+                  value="No"
+                />
+                <label class="govuk-label govuk-radios__label" for="accredited-no"> No </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  id="accredited-dont-know"
+                  [formControlName]="'accredited'"
+                  type="radio"
+                  value="Don't know"
+                />
+                <label class="govuk-label govuk-radios__label" for="accredited-dont-know"> Don't know </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('completed').invalid">
+          <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
+            <legend class="govuk-fieldset__legend">Date completed</legend>
+            <span id="completed-hint" class="govuk-hint"> For example, 31 3 1980 </span>
+            <span *ngIf="submitted && form.get('completed').invalid" id="completed-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('completed') }}
+            </span>
+            <app-date-picker [formGroup]="form" [formGroupName]="'completed'" [submitted]="submitted"></app-date-picker>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('expires').invalid">
+          <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
+            <legend class="govuk-fieldset__legend">Expiry date</legend>
+            <span id="expires-hint" class="govuk-hint"> For example, 31 3 1980 </span>
+            <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
+            </span>
+            <app-date-picker [formGroup]="form" [formGroupName]="'expires'" [submitted]="submitted"></app-date-picker>
+          </fieldset>
+        </div>
+
+        <div class="govuk-character-count">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
+            <label class="govuk-label" for="notes"> Add notes </label>
+            <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
+            </span>
+            <textarea
+              class="govuk-textarea"
+              [class.govuk-textarea--error]="submitted && form.get('notes').invalid"
+              [formControlName]="'notes'"
+              id="notes"
+              name="notes"
+              rows="5"
+            ></textarea>
+          </div>
+          <span class="govuk-character-count__message govuk-hint" aria-live="polite"> 1,000 characters or fewer </span>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="govuk-button-group">
+    <button type="submit" class="govuk-button govuk-!-margin-right-5">
+      {{ buttonText }}
+    </button>
+    <button
+      *ngIf="trainingRecordId"
+      type="button"
+      class="govuk-button govuk-button--warning govuk-!-margin-right-8"
+      [routerLink]="['../delete']"
+    >
+      Delete
+    </button>
+    <a
+      class="govuk-button govuk-button--link govuk-!-margin-left-9"
+      role="button"
+      draggable="false"
+      (click)="onCancel()"
+    >
+      Cancel
+    </a>
+  </div>
+</form>

@@ -6,6 +6,14 @@
   text-align: right;
 }
 
+.govuk-util__float-left {
+  float: left;
+}
+
+.govuk-util__align-left {
+  text-align: left;
+}
+
 .govuk-util__align-center {
   text-align: center;
 }
@@ -63,6 +71,10 @@
   display: flex;
 }
 
+.govuk__align-items-unset {
+  align-items: unset;
+}
+
 .govuk__align-items-center {
   align-items: center;
 }
@@ -96,4 +108,9 @@
 }
 .asc-font-19 {
   @include govuk-font($size: 19);
+}
+
+.asc-icon-align {
+  position: relative;
+  top: 4px;
 }

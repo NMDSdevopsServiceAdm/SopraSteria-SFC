@@ -108,7 +108,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
   public setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'Database error',
       },
     ];

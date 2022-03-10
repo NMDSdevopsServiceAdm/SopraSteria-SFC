@@ -1,14 +1,26 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { render, RenderResult } from '@testing-library/angular';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import {
+  longTermAbsentWorker,
+  workerWithExpiredTraining,
+  workerWithExpiringTraining,
+  workerWithMissingTraining,
+  workerWithOneExpiringTraining,
+  workerWithUpToDateTraining,
+} from '@core/test-utils/MockWorkerService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
 
 const sinon = require('sinon');
-const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
+const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
 const establishmentBuilder = build('Establishment', {
   fields: {
@@ -18,204 +30,160 @@ const establishmentBuilder = build('Establishment', {
   },
 });
 
-const workerBuilder = build('Worker', {
-  fields: {
-    id: sequence(),
-    uid: fake((f) => f.random.uuid()),
-    nameOrId: fake((f) => f.name.findName()),
-    mainJob: perBuild(() => {
-      return {
-        id: sequence(),
-        title: fake((f) => f.lorem.sentence()),
-      };
-    }),
-    expiredTrainingCount: 0,
-    expiringTrainingCount: 0,
-    missingMandatoryTrainingCount: 0,
-    qualificationCount: 0,
-    trainingAlert: 0,
-    trainingCount: 0,
-  },
-});
+const workers = [
+  workerWithExpiringTraining, // Alice
+  workerWithExpiredTraining, // Ben
+  workerWithOneExpiringTraining, // Carl
+  workerWithMissingTraining, // Darlyn
+  workerWithUpToDateTraining, // Ellie
+  longTermAbsentWorker, // John
+];
 
 describe('TrainingAndQualificationsSummaryComponent', () => {
-  let component: RenderResult<TrainingAndQualificationsSummaryComponent>;
+  const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
+    can: sinon.stub().returns(true),
+  });
 
-  it('should create', async () => {
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(true),
-    });
-
-    component = await render(TrainingAndQualificationsSummaryComponent, {
+  async function setup() {
+    const { fixture, getAllByText, getByText } = await render(TrainingAndQualificationsSummaryComponent, {
       imports: [HttpClientTestingModule, RouterTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
+      providers: [
+        { provide: PermissionsService, useValue: mockPermissionsService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+      ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
+        workers,
       },
     });
 
+    const component = fixture.componentInstance;
+
+    const router = TestBed.inject(Router) as Router;
+    const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    return {
+      component,
+      fixture,
+      getAllByText,
+      getByText,
+      spy,
+    };
+  }
+
+  it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
-  it('should list by Expired as default', async () => {
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(true),
-    });
-
-    const workers = [
-      workerBuilder({
-        // expired
-        overrides: {
-          nameOrId: 'Ben',
-          expiredTrainingCount: 3,
-          expiringTrainingCount: 0,
-          missingMandatoryTrainingCount: 0,
-          qualificationCount: 0,
-          trainingAlert: 0,
-          trainingCount: 0,
-        },
-      }),
-      workerBuilder({
-        // expiring
-        overrides: {
-          nameOrId: 'Alice',
-          expiredTrainingCount: 0,
-          expiringTrainingCount: 1,
-          missingMandatoryTrainingCount: 0,
-          qualificationCount: 0,
-          trainingAlert: 0,
-          trainingCount: 1,
-        },
-      }),
-      workerBuilder({
-        // up to date
-        overrides: {
-          nameOrId: 'Carl',
-          expiredTrainingCount: 0,
-          expiringTrainingCount: 0,
-          missingMandatoryTrainingCount: 0,
-          qualificationCount: 0,
-          trainingAlert: 0,
-          trainingCount: 2,
-        },
-      }),
-      workerBuilder({
-        // Missing
-        overrides: {
-          nameOrId: 'Darlyn',
-          expiredTrainingCount: 0,
-          expiringTrainingCount: 0,
-          missingMandatoryTrainingCount: 2,
-          qualificationCount: 0,
-          trainingAlert: 2,
-          trainingCount: 0,
-        },
-      }),
-    ];
-
-    const { fixture } = await render(TrainingAndQualificationsSummaryComponent, {
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
-      componentProperties: {
-        workplace: establishmentBuilder() as Establishment,
-        workers,
-      },
-    });
-    fixture.detectChanges();
+  it('should list by expired as default', async () => {
+    const { fixture } = await setup();
 
     const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
 
-    expect(rows.length).toBe(4);
-    expect(rows[0].innerHTML).toContain('3 Expired');
+    expect(rows.length).toBe(6);
+    expect(rows[0].innerHTML).toContain('3 expired');
+    expect(rows[0].innerHTML).toContain('Ben');
     expect(rows[1].innerHTML).toContain('Alice');
     expect(rows[2].innerHTML).toContain('Carl');
     expect(rows[3].innerHTML).toContain('Darlyn');
+    expect(rows[4].innerHTML).toContain('Ellie');
+    expect(rows[5].innerHTML).toContain('John');
   });
-  it('should list by Expired as default', async () => {
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(true),
-    });
 
-    const workers = [
-      workerBuilder({
-        // expired
-        overrides: {
-          nameOrId: 'Ben',
-          expiredTrainingCount: 3,
-          expiringTrainingCount: 0,
-          missingMandatoryTrainingCount: 0,
-          qualificationCount: 0,
-          trainingAlert: 0,
-          trainingCount: 0,
-        },
-      }),
-      workerBuilder({
-        // expiring
-        overrides: {
-          nameOrId: 'Alice',
-          expiredTrainingCount: 0,
-          expiringTrainingCount: 2,
-          missingMandatoryTrainingCount: 0,
-          qualificationCount: 0,
-          trainingAlert: 0,
-          trainingCount: 1,
-        },
-      }),
-      workerBuilder({
-        // up to date
-        overrides: {
-          nameOrId: 'Carl',
-          expiredTrainingCount: 0,
-          expiringTrainingCount: 1,
-          missingMandatoryTrainingCount: 0,
-          qualificationCount: 0,
-          trainingAlert: 1,
-          trainingCount: 3,
-        },
-      }),
-      workerBuilder({
-        // Missing
-        overrides: {
-          nameOrId: 'Darlyn',
-          expiredTrainingCount: 0,
-          expiringTrainingCount: 0,
-          missingMandatoryTrainingCount: 2,
-          qualificationCount: 0,
-          trainingAlert: 2,
-          trainingCount: 0,
-        },
-      }),
-    ];
-
-    const { fixture } = await render(TrainingAndQualificationsSummaryComponent, {
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      providers: [{ provide: PermissionsService, useValue: mockPermissionsService }],
-      componentProperties: {
-        workplace: establishmentBuilder() as Establishment,
-        workers,
-      },
-    });
-    fixture.detectChanges();
+  it('should sort by expiring soon', async () => {
+    const { fixture } = await setup();
 
     const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingStaff')).nativeElement;
     select.value = select.options[1].value; // Expiring Soon
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    let rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
 
-    expect(rows.length).toBe(4);
+    expect(rows.length).toBe(6);
+    expect(rows[0].innerHTML).toContain('2 expire soon');
     expect(rows[0].innerHTML).toContain('Alice');
+    expect(rows[1].innerHTML).toContain('1 expires soon');
     expect(rows[1].innerHTML).toContain('Carl');
     expect(rows[2].innerHTML).toContain('Ben');
     expect(rows[3].innerHTML).toContain('Darlyn');
+    expect(rows[4].innerHTML).toContain('Ellie');
+    expect(rows[5].innerHTML).toContain('John');
+  });
 
+  it('should sort by missing', async () => {
+    const { fixture } = await setup();
+
+    const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingStaff')).nativeElement;
     select.value = select.options[2].value; // Missing
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+
+    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+
+    expect(rows.length).toBe(6);
+    expect(rows[0].innerHTML).toContain('2 missing');
     expect(rows[0].innerHTML).toContain('Darlyn');
     expect(rows[1].innerHTML).toContain('Alice');
     expect(rows[2].innerHTML).toContain('Ben');
     expect(rows[3].innerHTML).toContain('Carl');
+    expect(rows[4].innerHTML).toContain('Ellie');
+    expect(rows[5].innerHTML).toContain('John');
+  });
+
+  it('should display the "OK" message if training is up to date', async () => {
+    const { fixture } = await setup();
+
+    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+
+    expect(rows[4].innerHTML).toContain('Ellie');
+    expect(rows[4].innerHTML).toContain('OK');
+  });
+
+  it('should display the "Long-term absent" tag if the worker is long term absent', async () => {
+    const { getAllByText } = await setup();
+
+    expect(getAllByText('Long-term absent').length).toBe(1);
+  });
+
+  it('should navigate to the persons training, when clicking on their name', async () => {
+    const { getByText, fixture, spy, component } = await setup();
+
+    const link = getByText('Darlyn');
+    fireEvent.click(link);
+    fixture.detectChanges();
+
+    const workplaceUid = component.workplace.uid;
+    const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');
+
+    expect(spy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'training-and-qualifications-record',
+      worker.uid,
+      'training',
+    ]);
+  });
+
+  it('should navigate to the persons wdf training, when the wdfView flag is true', async () => {
+    const { getByText, fixture, spy, component } = await setup();
+
+    component.wdfView = true;
+
+    const link = getByText('Darlyn');
+    fireEvent.click(link);
+    fixture.detectChanges();
+
+    const workplaceUid = component.workplace.uid;
+    const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');
+
+    expect(spy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'training-and-qualifications-record',
+      worker.uid,
+      'training',
+      'wdf-summary',
+    ]);
   });
 });

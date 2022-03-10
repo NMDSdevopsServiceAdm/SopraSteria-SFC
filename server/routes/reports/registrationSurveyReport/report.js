@@ -1,12 +1,13 @@
 const excelJS = require('exceljs');
 const express = require('express');
 const moment = require('moment');
+const get = require('lodash/get');
 const excelUtils = require('../../../utils/excelUtils');
 const models = require('../../../models');
 
 const printRow = (worksheet, item) => {
   worksheet.addRow({
-    workplaceId: item.user.establishment.nmdsId,
+    workplaceId: get(item, 'user.establishment.nmdsId'),
     whyCreateAccount: item.whyDidYouCreateAccount,
     howDidYouHearAboutASCWDS: item.howDidYouHearAboutASCWDS,
     dateCompleted: moment(item.submittedDate).format('DD-MM-YYYY'),
@@ -34,29 +35,32 @@ const generateReport = async (_, res) => {
     include: [
       {
         model: models.user,
-        as: "user",
-        attributes: ["id"],
+        as: 'user',
+        attributes: ['id'],
         include: [
           {
             model: models.establishment,
-            attributes: ["nmdsId"],
-          }
-        ]
-      }
-    ]
+            attributes: ['nmdsId'],
+          },
+        ],
+      },
+    ],
   });
-  registrationSurveyResponses.forEach(response => {
+  registrationSurveyResponses.forEach((response) => {
     printRow(worksheet, response);
   });
 
   excelUtils.fitColumnsToSize(worksheet);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename=' + moment().format('DD-MM-YYYY') + '-registration-survey-report.xlsx');
+  res.setHeader(
+    'Content-Disposition',
+    'attachment; filename=' + moment().format('DD-MM-YYYY') + '-registration-survey-report.xlsx',
+  );
 
   await workbook.xlsx.write(res);
   return res.status(200).end();
-}
+};
 
 const router = express.Router();
 router.route('/').get(generateReport);

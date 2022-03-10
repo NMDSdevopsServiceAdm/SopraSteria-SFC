@@ -11,7 +11,7 @@ export class InactiveWorkplacesResolver implements Resolve<any> {
   resolve(route: ActivatedRouteSnapshot) {
     return this.emailCampaignService.getInactiveWorkplaces().pipe(
       catchError(() => {
-        this.router.navigate(['/emails']);
+        this.router.navigate(['/problem-with-the-service']);
         return EMPTY;
       }),
     );

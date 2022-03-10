@@ -1,13 +1,15 @@
 'use strict';
 const csv = require('csvtojson');
+
 const config = require('../../../config/config');
-const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
-const WorkerCsvValidator = require('../../../models/BulkImport/csv/workers').Worker;
-const TrainingCsvValidator = require('../../../models/BulkImport/csv/training').Training;
 const S3 = require('./s3');
 const { buStates } = require('./states');
 const Bucket = S3.Bucket;
-const validatorFactory = require('../../../models/BulkImport/csv/validatorFactory').validatorFactory;
+const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
+const { getFileType } = require('./whichFile');
+const { validateWorkerHeaders } = require('../bulkUpload/validate/headers/worker');
+const { validateTrainingHeaders } = require('../bulkUpload/validate/headers/training');
+const buUtils = require('../../../utils/bulkUploadUtils');
 
 const createMyFileObject = (myfile, type) => {
   return {
@@ -28,8 +30,15 @@ const updateMetaData = async (file, username, establishmentId) => {
   const firstRow = 0;
   const firstLineNumber = 1;
 
-  const validator = validatorFactory(file.type, file.importedData[firstRow], firstLineNumber);
-  const passedCheck = validator.preValidate(file.header);
+  let passedCheck;
+  if (file.type === 'Worker') {
+    passedCheck = validateWorkerHeaders(file.header);
+  } else if (file.type === 'Training') {
+    passedCheck = validateTrainingHeaders(file.header);
+  } else {
+    const validator = new EstablishmentCsvValidator(file.importedData[firstRow], firstLineNumber);
+    passedCheck = validator.preValidate(file.header);
+  }
 
   if (!passedCheck) {
     file.metaData.fileType = null;
@@ -38,12 +47,7 @@ const updateMetaData = async (file, username, establishmentId) => {
   }
 
   // count records and update metadata
-  S3.uploadAsJSON(
-    username,
-    establishmentId,
-    file.metaData,
-    `${establishmentId}/latest/${file.metaData.filename}.metadata.json`,
-  );
+  S3.uploadJSONDataToS3(username, establishmentId, file.metaData, `latest/${file.metaData.filename}.metadata`);
 };
 
 const uploadedGet = async (req, res) => {
@@ -104,7 +108,7 @@ const uploadedGet = async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    await S3.saveResponse(req, res, 503, {});
+    await S3.saveResponse(req, res, 500, {});
   }
 };
 const uploadedPost = async (req, res) => {
@@ -144,9 +148,10 @@ const uploadedPost = async (req, res) => {
     await S3.saveResponse(req, res, 200, signedUrls);
   } catch (err) {
     console.error('API POST bulkupload/uploaded: ', err);
-    await S3.saveResponse(req, res, 503, {});
+    await S3.saveResponse(req, res, 500, {});
   }
 };
+
 const uploadedPut = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
@@ -174,16 +179,10 @@ const uploadedPut = async (req, res) => {
 
     const allContent = await Promise.all(createModelPromises);
 
-    allContent.forEach((myfile) => {
-      if (EstablishmentCsvValidator.isContent(myfile.data)) {
-        myDownloads.push(createMyFileObject(myfile, 'Establishment'));
-      } else if (WorkerCsvValidator.isContent(myfile.data)) {
-        myDownloads.push(createMyFileObject(myfile, 'Worker'));
-      } else if (TrainingCsvValidator.isContent(myfile.data)) {
-        myDownloads.push(createMyFileObject(myfile, 'Training'));
-      } else {
-        myDownloads.push(createMyFileObject(myfile, null));
-      }
+    allContent.forEach((file) => {
+      const fileType = getFileType(file.data);
+
+      myDownloads.push(createMyFileObject(file, fileType));
     });
 
     await Promise.all(
@@ -218,41 +217,46 @@ const uploadedPut = async (req, res) => {
     await S3.saveResponse(req, res, 200, returnData);
   } catch (err) {
     console.error(err);
-    await S3.saveResponse(req, res, 503, {});
+    await S3.saveResponse(req, res, 500, {});
   }
 };
+
 const uploadedStarGet = async (req, res) => {
   const Key = req.params['0'];
   const elements = Key.split('/');
 
   try {
-    const objHeadData = await S3.s3
-      .headObject({
-        Bucket,
-        Key,
-      })
-      .promise();
+    const { downloadType } = req.query;
+    const { data } = await S3.downloadContent(Key);
 
-    await S3.saveResponse(req, res, 200, {
-      file: {
-        filename: elements[elements.length - 1],
-        uploaded: objHeadData.LastModified,
-        username: objHeadData.Metadata.username,
-        size: objHeadData.ContentLength,
-        key: Key,
-        signedUrl: S3.s3.getSignedUrl('getObject', {
-          Bucket,
-          Key,
-          Expires: config.get('bulkupload.uploadSignedUrlExpire'),
-        }),
-      },
+    let updatedData;
+
+    switch (downloadType) {
+      case 'Workplace':
+      case 'Training': {
+        updatedData = data;
+        break;
+      }
+      case 'Staff': {
+        updatedData = await buUtils.staffData(data, downloadType);
+        break;
+      }
+      case 'StaffSanitise': {
+        updatedData = await buUtils.staffData(data, downloadType);
+        break;
+      }
+    }
+
+    await S3.saveResponse(req, res, 200, updatedData, {
+      'Content-Type': 'text/csv',
+      'Content-disposition': `attachment; filename=${elements[elements.length - 1]}`,
     });
   } catch (err) {
     if (err.code && err.code === 'NotFound') {
       await S3.saveResponse(req, res, 404, {});
     } else {
       console.error(err);
-      await S3.saveResponse(req, res, 503, {});
+      await S3.saveResponse(req, res, 500, {});
     }
   }
 };
@@ -260,10 +264,11 @@ const uploadedStarGet = async (req, res) => {
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 
-router.route('/').get(acquireLock.bind(null, uploadedGet, buStates.DOWNLOADING));
-router.route('/').post(acquireLock.bind(null, uploadedPost, buStates.UPLOADING));
-router.route('/').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING));
-router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING));
+router.route('/').get(acquireLock.bind(null, uploadedGet, buStates.DOWNLOADING, true));
+router.route('/').post(acquireLock.bind(null, uploadedPost, buStates.UPLOADING, true));
+router.route('/').put(acquireLock.bind(null, uploadedPut, buStates.UPLOADING, true));
+router.route('/*').get(acquireLock.bind(null, uploadedStarGet, buStates.DOWNLOADING, true));
 
 module.exports = router;
 module.exports.uploadedPut = uploadedPut;
+module.exports.uploadedStarGet = uploadedStarGet;

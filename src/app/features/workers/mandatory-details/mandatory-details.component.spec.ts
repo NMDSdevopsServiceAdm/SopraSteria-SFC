@@ -104,16 +104,6 @@ describe('MandatoryDetailsComponent', () => {
 
     expect(container.getAllByText('Mandatory details'));
   });
-  it('should return to previous page if you click on the change link', async () => {
-    const { getByTestId, fixture } = await setup;
-    fixture.detectChanges();
-
-    const container = within(getByTestId('summary'));
-    const change = container.getByText('Change');
-    expect(change.getAttribute('href')).toEqual(
-      `/workplace/${establishment.uid}/staff-record/${fixture.componentInstance.worker.uid}/staff-details`,
-    );
-  });
   it('should submit and move to next page when add details button clicked', async () => {
     const { getByTestId, fixture } = await setup;
 

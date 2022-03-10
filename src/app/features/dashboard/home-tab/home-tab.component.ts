@@ -1,8 +1,8 @@
 import { Overlay } from '@angular/cdk/overlay';
+import { HttpResponse } from '@angular/common/http';
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -10,31 +10,22 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WorkerService } from '@core/services/worker.service';
+import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import {
-  ChangeDataOwnerDialogComponent,
-} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import {
-  LinkToParentCancelDialogComponent,
-} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
-import {
-  LinkToParentRemoveDialogComponent,
-} from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
-import {
-  OwnershipChangeMessageDialogComponent,
-} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import {
-  SetDataPermissionDialogComponent,
-} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
+import { isAdminRole } from 'server/utils/adminUtils';
 
 declare global {
   interface Window {
@@ -52,9 +43,9 @@ window.dataLayer = window.dataLayer || {};
 })
 export class HomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
+  @Input() workerCount: number;
 
   private subscriptions: Subscription = new Subscription();
-  public adminRole: Roles = Roles.Admin;
   public canBulkUpload: boolean;
   public canEditEstablishment: boolean;
   public canViewWorkplaces: boolean;
@@ -73,9 +64,11 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public parentStatusRequested: boolean;
   public canRemoveParentAssociation: boolean;
   public canAddWorker: boolean;
-  public workers: any[];
-  public workersCount: number;
   public canViewListOfWorkers: boolean;
+  public isLocalAuthority = false;
+  public canRunLocalAuthorityReport: boolean;
+  public workplaceUid: string;
+  public now: Date = new Date();
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -87,34 +80,39 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private router: Router,
     private establishmentService: EstablishmentService,
+    private reportsService: ReportService,
     @Inject(WindowToken) private window: Window,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.user = this.userService.loggedInUser;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+
     this.setPermissionLinks();
 
     if (this.workplace) {
-      if (this.canEditEstablishment) {
-        this.subscriptions.add(
-          this.workerService.workers$.pipe(filter((workers) => workers !== null)).subscribe((workers) => {
-            this.updateStaffRecords = !(workers.length > 0);
-            this.workersCount = workers.length;
-          }),
-        );
-      }
-
       this.subscriptions.add(
         this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe((parentStatusRequested) => {
           this.parentStatusRequested = parentStatusRequested;
           this.setPermissionLinks();
         }),
       );
+
+      this.subscriptions.add(
+        this.establishmentService.establishment$.pipe(take(1)).subscribe((workplace) => {
+          this.isLocalAuthority =
+            this.workplace.employerType && this.workplace.employerType.value.startsWith('Local Authority');
+
+          this.canRunLocalAuthorityReport =
+            this.workplace.isParent &&
+            this.isLocalAuthority &&
+            this.permissionsService.can(this.workplace.uid, 'canRunLocalAuthorityReport');
+        }),
+      );
     }
 
     this.window.dataLayer.push({
-      isAdmin: this.user.role === 'Admin',
+      isAdmin: isAdminRole(this.user.role),
     });
 
     if (!this?.workplace?.employerType) {
@@ -126,6 +124,13 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         event: 'firstLogin',
       });
     }
+  }
+
+  public downloadLocalAuthorityReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getLocalAuthorityReport(this.workplace.uid).subscribe((response) => this.saveFile(response)),
+    );
   }
 
   public onChangeDataOwner($event: Event) {
@@ -208,6 +213,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.linkToParentRequestedStatus = true;
+        this.canBecomeAParent = false;
       }
     });
   }
@@ -223,6 +229,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.linkToParentRequestedStatus = false;
+        this.canBecomeAParent = true;
       }
     });
   }
@@ -287,7 +294,18 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.canLinkToParent = false;
-        this.canBecomeAParent = false;
+        this.parentStatusRequested = true;
+      }
+    });
+  }
+
+  public cancelBecomeAParent($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(BecomeAParentCancelDialogComponent, null);
+    dialog.afterClosed.subscribe((confirmToClose) => {
+      if (confirmToClose) {
+        this.canLinkToParent = true;
+        this.parentStatusRequested = false;
       }
     });
   }
@@ -322,7 +340,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.isOwnershipRequested = true;
     }
 
-    if (this.user.role === 'Admin') {
+    if (isAdminRole(this.user.role)) {
       this.canLinkToParent = this.workplace && this.workplace.parentUid === null && !this.parentStatusRequested;
       this.canRemoveParentAssociation = this.workplace && this.workplace.parentUid !== null;
     } else {
@@ -334,9 +352,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.linkToParentRequestedStatus = true;
     }
     this.canBecomeAParent =
-      this.permissionsService.can(workplaceUid, 'canBecomeAParent') &&
-      !this.parentStatusRequested &&
-      !this.linkToParentRequestedStatus;
+      this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.linkToParentRequestedStatus;
   }
 
   public selectStaffTab(event: Event) {
@@ -352,6 +368,19 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     }
     this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
     this.router.navigate(['/workplace', this.workplace.uid, 'total-staff']);
+  }
+
+  public saveFile(response: HttpResponse<Blob>) {
+    const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+    const header = response.headers.get('content-disposition');
+    const filenameMatches = header && header.match(filenameRegEx);
+    const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
+    const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, filename);
+  }
+
+  public convertToDate(dateString: string): Date {
+    return new Date(dateString);
   }
 
   ngOnDestroy(): void {

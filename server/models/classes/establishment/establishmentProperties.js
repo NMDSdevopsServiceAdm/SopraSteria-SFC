@@ -6,8 +6,7 @@ const employerTypeProperty = require('./properties/employerTypeProperty').Employ
 const staffProperty = require('./properties/staffProperty').StaffProperty;
 const otherServicesProperty = require('./properties/servicesProperty').ServicesProperty;
 const capacityServicesProperty = require('./properties/capacityProperties').CapacityProperty;
-const shareProperty = require('./properties/shareWithProperty').ShareWithProperty;
-const shareWithLAProperty = require('./properties/shareWithLAProperty').ShareWithLAProperty;
+const shareWithProperty = require('./properties/shareWithProperty').ShareWithProperty;
 const vacanciesProperty = require('./properties/vacanciesProperty').VacanciesProperty;
 const startersProperty = require('./properties/startersProperty').StartersProperty;
 const leaversProperty = require('./properties/leaversProperty').LeaversProperty;
@@ -22,8 +21,6 @@ const address3Property = require('./properties/address3Property').Address3Proper
 const townProperty = require('./properties/townProperty').TownProperty;
 const countyProperty = require('./properties/countyProperty').CountyProperty;
 const postcodeProperty = require('./properties/postcodeProperty').PostcodeProperty;
-const latitudeProperty = require('./properties/latitudeProperty').LatitudeProperty;
-const longitudeProperty = require('./properties/longitudeProperty').LongitudeProperty;
 const isRegulatedProperty = require('./properties/isRegulatedProperty').IsRegulatedProperty;
 
 class EstablishmentPropertyManager {
@@ -37,8 +34,7 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(otherServicesProperty);
     this._thisManager.registerProperty(serviceUsersProperty);
     this._thisManager.registerProperty(capacityServicesProperty);
-    this._thisManager.registerProperty(shareProperty);
-    this._thisManager.registerProperty(shareWithLAProperty);
+    this._thisManager.registerProperty(shareWithProperty);
     this._thisManager.registerProperty(vacanciesProperty);
     this._thisManager.registerProperty(startersProperty);
     this._thisManager.registerProperty(leaversProperty);
@@ -50,8 +46,6 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(townProperty);
     this._thisManager.registerProperty(countyProperty);
     this._thisManager.registerProperty(postcodeProperty);
-    this._thisManager.registerProperty(latitudeProperty);
-    this._thisManager.registerProperty(longitudeProperty);
     this._thisManager.registerProperty(isRegulatedProperty);
   }
 

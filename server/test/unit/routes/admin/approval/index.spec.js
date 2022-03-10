@@ -1,592 +1,354 @@
-const faker = require('faker');
-const expect = require('chai').expect;
+/* eslint-disable no-unused-vars */
+
+const chai = require('chai');
+const expect = chai.expect;
 const sinon = require('sinon');
-const Sequelize = require('sequelize');
-const models = require('../../../../../models/index');
+const sinonChai = require('sinon-chai');
+chai.should();
+chai.use(sinonChai);
+const httpMocks = require('node-mocks-http');
+
+const models = require('../../../../../models');
 const approval = require('../../../../../routes/admin/approval');
-const boobyTrappedEstablishmentId = 'this will not be populated for new users';
 
-var workplaceWithDuplicateId = null;
-var establishmentIdUsedToCheckForDuplicate = false;
+const buildRequest = (isApproval, isNewUserRegistration) => {
+  const request = {
+    method: 'POST',
+    url: '/api/admin/approval',
+    body: {
+      nmdsId: 'A1234567',
+      approve: isApproval,
+    },
+  };
 
-var testWorkplace = {};
-var foundWorkplace = {};
-const _initialiseTestWorkplace = () => {
-  testWorkplace.id = 4321;
-  testWorkplace.nmdsId = 'W1234567';
-  testWorkplace.ustatus = 'PENDING';
-  testWorkplace.update = (args) => { return true; };
-  testWorkplace.destroy = () => {return true;}
-  foundWorkplace = testWorkplace;
+  if (isNewUserRegistration) {
+    request.body.username = 'test_user';
+  } else {
+    request.body.establishmentId = '1311';
+  }
+  return request;
 };
 
-var testUser = {};
-var foundUser = {};
-const _initialiseTestUser = () => {
-  testUser.id = 1234;
-  testUser.establishment = testWorkplace;
-  testUser.destroy = () => { return true; };
-  foundUser = testUser;
+const mockLoginResponse = {
+  id: 123,
+  username: 'test_user',
+  user: { establishmentId: '1331' },
+  isActive: false,
+  status: 'PENDING',
+  update: (args) => {
+    return true;
+  },
 };
 
-var testLogin = {};
-const _initialiseTestLogin = () => {
-  testLogin.id = testUser.id;
-  testLogin.username = faker.name.findName();
-  testLogin.isActive = false;
-  testLogin.status = 'PENDING';
-  testLogin.user = testUser;
-  testLogin.update = (args) => { return true; };
+const mockWorkplaceResponse = {
+  id: 4321,
+  nmdsId: 'W1234567',
+  ustatus: 'PENDING',
+  update: (args) => {
+    return true;
+  },
+  destroy: () => {
+    return true;
+  },
 };
 
-var testRequestBody = {};
-const _initialiseTestRequestBody = () => {
-  testRequestBody.username = testLogin.username;
-  testRequestBody.approve = true;
-  testRequestBody.establishmentId = testWorkplace.id;
-  testRequestBody.nmdsId = testWorkplace.nmdsId;
+const mockUserResponse = {
+  id: 1234,
+  establishment: { id: 'A1234567' },
+  destroy: () => {
+    return true;
+  },
 };
 
-var returnedJson = null;
-var returnedStatus = null;
-const approvalJson = (json) => { returnedJson = json; };
-const approvalStatus = (status) => {
-  returnedStatus = status;
-  return {json: approvalJson, send: () => {} };
-};
-
-describe.skip('admin/Approval route', () => {
-
-  beforeEach(async() => {
-    workplaceWithDuplicateId = null;
-    establishmentIdUsedToCheckForDuplicate = false;
-    _initialiseTestWorkplace();
-    _initialiseTestUser();
-    _initialiseTestLogin();
-    _initialiseTestRequestBody();
-    returnedJson = null;
-    returnedStatus = null;
-    sinon.stub(models.login, 'findOne').callsFake(async (args) => {
-      if (args.where.username[models.Sequelize.Op.iLike] === testLogin.username) {
-        return testLogin;
-      } else {
-        return null;
-      }
-    });
-
-    sinon.stub(models.user, 'findOne').callsFake(async (args) => {
-      if (args.where.id === testUser.id) {
-        return foundUser;
-      } else {
-        return null;
-      }
-    });
-
-    sinon.stub(models.establishment, 'findOne').callsFake(async (args) => {
-      if (args.where.id === testWorkplace.id) {
-        return foundWorkplace;
-      } else if (args.where.id[Sequelize.Op.ne] === boobyTrappedEstablishmentId) {
-        establishmentIdUsedToCheckForDuplicate = true;
-        return null;
-      } else if ((args.where.id[Sequelize.Op.ne] === testWorkplace.id)
-                && (args.where.nmdsId === testWorkplace.nmdsId)) {
-        return workplaceWithDuplicateId;
-      } else {
-        return null;
-      }
-    });
-  });
+describe('adminApproval', async () => {
+  let req, res;
 
   afterEach(() => {
     sinon.restore();
   });
 
-  describe('approving a new user', () => {
-    beforeEach(async() => {
-      // For new user registrations, establishmentId is set to null. See onSubmit in registration.component.ts
-      testRequestBody.establishmentId = null;
-      testRequestBody.approve = true;
+  describe('User approval', async () => {
+    beforeEach(() => {
+      const request = buildRequest(true, true);
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+
+      sinon.stub(models.login, 'findByUsername').returns(mockLoginResponse);
+      sinon.stub(models.user, 'findByLoginId').returns(mockUserResponse);
+      sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
 
-    it('should return a confirmation message and status 200 when the user is approved', async() => {
-      // Arrange (see beforeEach)
+    it('should return a confirmation message and status 200 when the user is approved', async () => {
+      await approval.adminApproval(req, res);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(approval.userApprovalConfirmation);
-      expect(returnedStatus).to.deep.equal(200);
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.include(approval.userApprovalConfirmation);
     });
 
-    it('should mark the login as active when approving a new user', async () => {
-      // Arrange
-      var loginIsActive = false;
-      testLogin.update = (args) => {
-        loginIsActive = args.isActive;
-        return true;
-      }
+    it('should mark the login as active and set status to null when approving a new user', async () => {
+      const loginUpdateSpy = sinon.spy(mockLoginResponse, 'update');
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(loginIsActive).to.deep.equal(true, 'login should have isActive set to true');
+      expect(loginUpdateSpy.called).to.deep.equal(true);
+      expect(loginUpdateSpy.args[0][0]).to.deep.equal({ status: null, isActive: true });
     });
 
-    it('should remove the pending status from the login when approving a new user', async () => {
-      // Arrange
-      var loginStatus = 'PENDING';
-      testLogin.update =  (args) => {
-        loginStatus = args.status;
-        return true;
-      }
+    it('should update the workplace nmdsId and ustatus when approving a new user', async () => {
+      const workplaceUpdateSpy = sinon.spy(mockWorkplaceResponse, 'update');
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(loginStatus).to.deep.equal(null, "login should have status set to null (instead of 'PENDING')");
+      expect(workplaceUpdateSpy.called).to.deep.equal(true);
+      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({
+        inReview: false,
+        reviewer: null,
+        ustatus: null,
+        nmdsId: 'A1234567',
+      });
     });
 
-    it('should return status 400 if there is no login with matching username', async () => {
-      // Arrange
-      testRequestBody.username = 'no matching login available';
+    it('should return status 500 if login update returns false when approving a new user', async () => {
+      sinon.stub(mockLoginResponse, 'update').returns(false);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(returnedStatus).to.deep.equal(400);
+      expect(res.statusCode).to.deep.equal(500);
     });
 
-    it('should update the workplace Id when approving a new user', async () => {
-      // Arrange
-      testRequestBody.nmdsId = testWorkplace.nmdsId.concat('X');
-      var workplaceId = testWorkplace.nmdsId;
-      testWorkplace.update =  (args) => {
-        workplaceId = args.nmdsId;
-        return true;
-      }
+    it('should return 500 status if workplace update returns false when approving a new user', async () => {
+      sinon.stub(mockWorkplaceResponse, 'update').returns(false);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(workplaceId).to.deep.equal(testRequestBody.nmdsId);
+      expect(res.statusCode).to.deep.equal(500);
     });
 
-    it('should not use establishmentid to check for duplicate workplace id when approving new user', async () => {
-      // Arrange
-      testRequestBody.establishmentId = boobyTrappedEstablishmentId;
+    it('should return 500 status if login update throws error when approving a new user', async () => {
+      sinon.stub(mockLoginResponse, 'update').throws();
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(establishmentIdUsedToCheckForDuplicate).to.deep.equal(false, 'should not use establishment id to check for duplicate');
+      expect(res.statusCode).to.deep.equal(500);
     });
 
-    it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new user', async () => {
-      // Arrange
-      workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
+    it('should return status 500 if workplace update throws error when approving a new user', async () => {
+      sinon.stub(mockWorkplaceResponse, 'update').throws();
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(returnedJson.nmdsId).to.not.equal(undefined, 'returned json should have an nmdsId value');
-      expect(returnedJson.nmdsId).to.deep.equal(`This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`);
-      expect(returnedStatus).to.deep.equal(400);
-    });
-
-    it('should NOT update the login when approving a new user with duplicate workplace Id', async () => {
-      // Arrange
-      workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
-      var loginUpdated = false;
-      testLogin.update =  (args) => {
-        loginUpdated = true;
-        return true;
-      }
-
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(loginUpdated).to.equal(false, "login should not have been updated");
-    });
-
-    it('should NOT remove the pending status from the workplace when approving a new user with duplicate workplace Id', async () => {
-      // Arrange
-      workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
-      var workplaceUpdated = false;
-      testWorkplace.update =  (args) => {
-        workplaceUpdated = true;
-        return true;
-      }
-
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(workplaceUpdated).to.equal(false, "workplace should not have been updated");
-    });
-
-    it('should return status 503 if login update returns false when approving a new user', async () => {
-      // Arrange
-      testLogin.update = () => { return false; }
-
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(503);
-    });
-
-    it('should return status 503 if workplace update returns false when approving a new user', async () => {
-      // Arrange
-      testWorkplace.update = () => { return false; }
-
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(503);
-    });
-
-    it('should return status 503 if login update throws exception when approving a new user', async () => {
-      // Arrange
-      testLogin.update = () => { throw "Error"; }
-
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(503);
-    });
-
-    it('should return status 503 if workplace update throws exception when approving a new user', async () => {
-      // Arrange
-      testWorkplace.update = () => { throw "Error"; }
-
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 
-  describe('rejecting a new user', () => {
-    beforeEach(async() => {
-      // For new user registrations, establishmentId is set to null. See onSubmit in registration.component.ts
-      testRequestBody.establishmentId = null;
-      testRequestBody.approve = false;
+  describe('User rejection', async () => {
+    beforeEach(() => {
+      const request = buildRequest(false, true);
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+
+      sinon.stub(models.login, 'findByUsername').returns(mockLoginResponse);
+      sinon.stub(models.user, 'findByLoginId').returns(mockUserResponse);
+      sinon.stub(models.user, 'findByUUID').returns({ FullNameValue: 'Joe Bloggs' });
+      sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
 
-    it('should return a confirmation message and status 200 when the user is removed because the user is rejected', async () => {
-      // Arrange (see beforeEach)
+    it('should return a rejection confirmation message and 200 status when user is successfully rejected', async () => {
+      await approval.adminApproval(req, res);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(approval.userRejectionConfirmation);
-      expect(returnedStatus).to.deep.equal(200);
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.include(approval.userRejectionConfirmation);
     });
 
-    it('should delete the user when rejecting a new user', async () => {
-      // Arrange
-      var userDestroyed = false;
-      testUser.destroy =  (args) => {
-        userDestroyed = true;
-        return true;
-      }
+    it('should call the destroy method on the user when user is successfully rejected', async () => {
+      const userDestroySpy = sinon.spy(mockUserResponse, 'destroy');
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(userDestroyed).to.deep.equal(true, "user should have been destroyed");
+      expect(userDestroySpy.called).to.deep.equal(true);
     });
 
-    it('should delete the workplace when rejecting a new user', async () => {
-      // Arrange
-      var workplaceDestroyed = false;
-      testWorkplace.destroy =  (args) => {
-        workplaceDestroyed = true;
-        return true;
-      }
+    it('should call the update method on the workplace to update the status when user is successfully rejected', async () => {
+      const workplaceUpdateSpy = sinon.spy(mockWorkplaceResponse, 'update');
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(workplaceDestroyed).to.deep.equal(true, "workplace should have been destroyed");
+      expect(workplaceUpdateSpy.called).to.deep.equal(true);
+      expect(workplaceUpdateSpy.args[0][0]).to.contain({
+        ustatus: 'REJECTED',
+        inReview: false,
+        reviewer: null,
+        updatedBy: 'Joe Bloggs',
+        archived: true,
+      });
     });
 
-    it('should not reject a new login that does not have an associated user', async () => {
-      // Arrange
-      foundUser = null;
-      var workplaceDestroyed = false;
-      testWorkplace.destroy =  (args) => {
-        workplaceDestroyed = true;
-        return true;
-      }
+    it('should return status 500 if it is not possible to delete the user when rejecting a new user', async () => {
+      sinon.stub(mockUserResponse, 'destroy').returns(false);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(workplaceDestroyed).to.equal(false, "workplace should not have been destroyed");
+      expect(res.statusCode).to.deep.equal(500);
     });
 
-    it('should not reject a new user that does not have an associated workplace', async () => {
-      // Arrange
-      foundWorkplace = null;
-      var userDestroyed = false;
-      testUser.destroy =  (args) => {
-        userDestroyed = true;
-        return true;
-      }
+    it('should return 400 status if there is no login with matching username', async () => {
+      models.login.findByUsername.restore();
+      sinon.stub(models.login, 'findByUsername').returns(null);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(userDestroyed).to.equal(false, "user should not have been destroyed");
+      expect(res.statusCode).to.deep.equal(400);
     });
 
-    it('should return status 503 if it is not possible to delete a user when rejecting a new user', async () => {
-      // Arrange
-      testUser.destroy = () => { return false; }
+    it('should return 400 status when nmdsId already exists', async () => {
+      models.establishment.findEstablishmentWithSameNmdsId.restore();
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns({ id: 'A1234567' });
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      const expectedResponseMessage =
+        'This workplace ID (A1234567) belongs to another workplace. Enter a different workplace ID.';
 
-      // Assert
-      expect(returnedStatus).to.deep.equal(503);
+      await approval.adminApproval(req, res);
+
+      expect(res.statusCode).to.deep.equal(400);
+      expect(res._getData()).to.include(expectedResponseMessage);
     });
 
-    it('should return status 503 if it is not possible to delete a workplace when rejecting a new user', async () => {
-      // Arrange
-      testWorkplace.destroy = () => { return false; }
+    it('should return 500 status when error is thrown', async () => {
+      models.establishment.findbyId.restore();
+      sinon.stub(models.establishment, 'findbyId').throws();
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(returnedStatus).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 
-  describe('approving a new workplace', () => {
-    beforeEach(async() => {
-      // For new workplace registrations, username is set to null. See onSubmit in registration.component.ts
-      testRequestBody.username = null;
-      testRequestBody.approve = true;
+  describe('Workplace approval', async () => {
+    beforeEach(() => {
+      const request = buildRequest(true, false);
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+
+      sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
 
-    it('should return a confirmation message and status 200 when the workplace is approved', async () => {
-      // Arrange (see beforeEach)
+    it('should return an approval confirmation message and 200 status when workplace is successfully approved', async () => {
+      await approval.adminApproval(req, res);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(approval.workplaceApprovalConfirmation);
-      expect(returnedStatus).to.deep.equal(200);
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.include(approval.workplaceApprovalConfirmation);
     });
 
-    it('should remove the pending status from the workplace when approving a new workplace', async () => {
-      // Arrange
-      var workplaceStatus = 'PENDING';
-      testWorkplace.update =  (args) => {
-        workplaceStatus = args.ustatus;
-        return true;
-      }
+    it('should call the update method on the workplace to update status when workplace is successfully approved', async () => {
+      const workplaceUpdateSpy = sinon.spy(mockWorkplaceResponse, 'update');
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(workplaceStatus).to.deep.equal(null, "workplace should have status set to null (instead of 'PENDING')");
+      expect(workplaceUpdateSpy.called).to.deep.equal(true);
+      expect(workplaceUpdateSpy.args[0][0]).to.deep.equal({
+        inReview: false,
+        reviewer: null,
+        ustatus: null,
+        nmdsId: 'A1234567',
+      });
     });
 
-    it('should update the workplace Id when approving a new workplace', async () => {
-      // Arrange
-      testRequestBody.nmdsId = testWorkplace.nmdsId.concat('X');
-      var workplaceId = testWorkplace.nmdsId;
-      testWorkplace.update =  (args) => {
-        workplaceId = args.nmdsId;
-        return true;
-      }
+    it('should return 500 status when unable to update workplace when approving', async () => {
+      sinon.stub(mockWorkplaceResponse, 'update').returns(false);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(workplaceId).to.deep.equal(testRequestBody.nmdsId);
+      expect(res.statusCode).to.deep.equal(500);
     });
 
-    it('should return status 400 and error msg if there is workplace with duplicate workplace id when approving new workplace', async () => {
-      // Arrange
-      workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
+    it('should return 400 status when nmdsId already exists', async () => {
+      models.establishment.findEstablishmentWithSameNmdsId.restore();
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns({ id: 'A1234567' });
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      const expectedResponseMessage =
+        'This workplace ID (A1234567) belongs to another workplace. Enter a different workplace ID.';
 
-      // Assert
-      expect(returnedJson.nmdsId).to.not.equal(undefined, 'returned json should have an nmdsId value');
-      expect(returnedJson.nmdsId).to.deep.equal(`This workplace ID (${testWorkplace.nmdsId}) belongs to another workplace. Enter a different workplace ID.`);
-      expect(returnedStatus).to.deep.equal(400);
+      await approval.adminApproval(req, res);
+
+      expect(res.statusCode).to.deep.equal(400);
+      expect(res._getData()).to.include(expectedResponseMessage);
     });
 
-    it('should NOT remove the pending status from the workplace when approving a new workplace with duplicate workplace Id', async () => {
-      // Arrange
-      workplaceWithDuplicateId = { nmdsId: testWorkplace.nmdsId };
-      var workplaceUpdated = false;
-      testWorkplace.update =  (args) => {
-        workplaceUpdated = true;
-        return true;
-      }
+    it('should return 500 status when error is thrown when getting workplace', async () => {
+      models.establishment.findbyId.restore();
+      sinon.stub(models.establishment, 'findbyId').throws();
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(workplaceUpdated).to.equal(false, "workplace should not have been updated");
-    });
-
-    it('should return status 503 if workplace update returns false when approving a new workplace', async () => {
-      // Arrange
-      testWorkplace.update = () => { return false; }
-
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(503);
-    });
-
-    it('should return status 503 if workplace update throws exception when approving a new workplace', async () => {
-      // Arrange
-      testWorkplace.update = () => { throw "Error"; }
-
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedStatus).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 
-  describe('rejecting a new workplace', () => {
-    beforeEach(async() => {
-      // For new workplace registrations, username is set to null. See onSubmit in registration.component.ts
-      testRequestBody.username = null;
-      testRequestBody.approve = false;
+  describe('Workplace rejection', async () => {
+    beforeEach(() => {
+      const request = buildRequest(false, false);
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+
+      sinon.stub(models.user, 'findByUUID').returns({ FullNameValue: 'Joe Bloggs' });
+      sinon.stub(models.establishment, 'findbyId').returns(mockWorkplaceResponse);
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns(null);
     });
 
-    it('should return a confirmation message and status 200 when the workplace is removed because the workplace is rejected', async () => {
-      // Arrange (see beforeEach)
+    it('should return a rejection confirmation message and 200 status when workplace is successfully rejected', async () => {
+      await approval.adminApproval(req, res);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
-
-      // Assert
-      expect(returnedJson.status).to.deep.equal('0', 'returned Json should have status 0');
-      expect(returnedJson.message).to.deep.equal(approval.workplaceRejectionConfirmation);
-      expect(returnedStatus).to.deep.equal(200);
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.include(approval.workplaceRejectionConfirmation);
     });
 
-    it('should delete the workplace when rejecting a new workplace', async () => {
-      // Arrange
-      var workplaceDestroyed = false;
-      testWorkplace.destroy =  (args) => {
-        workplaceDestroyed = true;
-        return true;
-      }
+    it('should call the update method on the workplace to update the status when workplace is successfully rejected', async () => {
+      const workplaceUpdateSpy = sinon.spy(mockWorkplaceResponse, 'update');
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(workplaceDestroyed).to.deep.equal(true, "workplace should have been destroyed");
+      expect(workplaceUpdateSpy.called).to.deep.equal(true);
+      expect(workplaceUpdateSpy.args[0][0]).to.contain({
+        ustatus: 'REJECTED',
+        inReview: false,
+        reviewer: null,
+        updatedBy: 'Joe Bloggs',
+        archived: true,
+      });
+      expect(workplaceUpdateSpy.args[0][0]).to.haveOwnProperty('updated');
     });
 
-    it('should return status 503 if it is not possible to delete a workplace when rejecting a new workplace', async () => {
-      // Arrange
-      testWorkplace.destroy = () => { return false; }
+    it('should return 500 status when unable to update workplace when rejecting', async () => {
+      sinon.stub(mockWorkplaceResponse, 'update').returns(false);
 
-      // Act
-      await approval.adminApproval({
-        body: testRequestBody
-      }, {status: approvalStatus});
+      await approval.adminApproval(req, res);
 
-      // Assert
-      expect(returnedStatus).to.deep.equal(503);
+      expect(res.statusCode).to.deep.equal(500);
+    });
+
+    it('should return 400 status when nmdsId already exists', async () => {
+      models.establishment.findEstablishmentWithSameNmdsId.restore();
+      sinon.stub(models.establishment, 'findEstablishmentWithSameNmdsId').returns({ id: 'A1234567' });
+
+      const expectedResponseMessage =
+        'This workplace ID (A1234567) belongs to another workplace. Enter a different workplace ID.';
+
+      await approval.adminApproval(req, res);
+
+      expect(res.statusCode).to.deep.equal(400);
+      expect(res._getData()).to.include(expectedResponseMessage);
+    });
+
+    it('should return 500 status when error is thrown when getting workplace', async () => {
+      models.establishment.findbyId.restore();
+      sinon.stub(models.establishment, 'findbyId').throws();
+
+      await approval.adminApproval(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 });

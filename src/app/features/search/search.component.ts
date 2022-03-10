@@ -8,7 +8,7 @@ import { DialogService } from '@core/services/dialog.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import {
   AdminUnlockConfirmationDialogComponent,
-} from '@shared/components/link-to-parent-cancel copy/admin-unlock-confirmation';
+} from '@shared/components/admin-unlock-confirmation/admin-unlock-confirmation';
 
 @Component({
   selector: 'app-search',
@@ -29,7 +29,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     usernameLabel: '',
     name: '',
     nameLabel: '',
-    locationid: '',
+    locationId: '',
     employerType: 'All',
     parent: false,
     errors: [],
@@ -122,7 +122,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     if (
       this.form.username.length === 0 &&
       this.form.name.length === 0 &&
-      this.form.locationid.length === 0 &&
+      this.form.locationId.length === 0 &&
       this.form.employerType.length === 0
     ) {
       this.form.errors.push({
@@ -147,7 +147,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         data = {
           postcode: this.form.username,
           nmdsId: this.form.name,
-          locationid: this.form.locationid,
+          locationId: this.form.locationId,
         };
       }
 

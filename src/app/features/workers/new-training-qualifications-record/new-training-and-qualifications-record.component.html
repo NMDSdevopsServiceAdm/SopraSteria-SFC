@@ -1,0 +1,205 @@
+<ng-container *ngIf="worker">
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-one-third">
+      <div class="govuk-list--inline govuk-list govuk__flex">
+        <span class="govuk-caption-xl" data-testid="workerNameAndRole">
+          {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
+        </span>
+      </div>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-list--inline govuk-list">
+        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-top-1 asc-tag">
+          Long-term absent
+          <a
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'long-term-absence'
+            ]"
+            data-testid="longTermAbsence"
+            class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
+          >
+            View
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-bottom-5">
+    <div class="govuk-grid-column-one-half">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
+        Training and qualifications ({{
+          this.mandatoryTrainingCount + this.nonMandatoryTrainingCount + this.qualificationsCount
+        }})
+      </h1>
+      <span *ngIf="lastUpdatedDate" class="govuk-caption-m govuk-!-margin-bottom-3">
+        Last updated {{ lastUpdatedDate | date: 'd MMMM yyyy' }}
+      </span>
+      <a
+        *ngIf="canEditWorker"
+        class="govuk-list govuk-list--inline govuk-!-padding-left-0"
+        role="button"
+        draggable="false"
+        [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid]"
+      >
+        View staff record
+      </a>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <div class="govuk-!-margin-bottom-3">
+        <div class="govuk-button-group govuk-util__float-right govuk-!-margin-top-0">
+          <a
+            class="govuk-list govuk-list--inline govuk-!-margin-left-5"
+            *ngIf="canEditWorker && worker.longTermAbsence === null"
+            draggable="false"
+            role="button"
+            data-testid="flagLongTermAbsence"
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'long-term-absence'
+            ]"
+            >Flag long-term absence</a
+          >
+          <a
+            *ngIf="canEditWorker"
+            class="govuk-button govuk-util__float-right govuk-!-margin-left-9"
+            role="button"
+            draggable="false"
+            [routerLink]="['../select-record-type']"
+          >
+            Add a record
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-body govuk-!-font-size-24 govuk-!-margin-bottom-4 govuk-!-margin-top-4">
+        <span class="govuk-!-font-weight-bold">Care Certificate:</span>
+        {{ worker.careCertificate ? worker.careCertificate : 'Not answered' }}
+      </p>
+    </div>
+  </div>
+
+  <app-new-training-and-qualifications-record-summary
+    [trainingCount]="mandatoryTrainingCount + nonMandatoryTrainingCount"
+    [qualificationsCount]="qualificationsCount"
+    [expiresSoonTrainingCount]="expiresSoonTraining"
+    [expiredTrainingCount]="expiredTraining"
+    [missingMandatoryTraining]="missingMandatoryTraining.length"
+  ></app-new-training-and-qualifications-record-summary>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-quarter"></div>
+    <div class="govuk-grid-column-one-quarter govuk-util__float-right">
+      <div class="govuk-list govuk-list--inline govuk-!-margin-bottom-7">
+        <label class="govuk-label" for="filterByTrainingStatus">Filter training by</label>
+        <select
+          class="govuk-select govuk-!-width-full"
+          id="filterByTrainingStatus"
+          name="filterByTrainingStatus"
+          [value]="filterByDefault"
+          (change)="getFilterByStatus($event.target.value)"
+        >
+          <option
+            *ngFor="let filterTrainingOption of filterTrainingByStatus | keyvalue"
+            value="{{ filterTrainingOption.key }}"
+          >
+            {{ filterTrainingOption.value }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-5">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Mandatory training records ({{ mandatoryTrainingCount }})</h2>
+    </div>
+    <div class="govuk-grid-column-full">
+      <div *ngIf="jobRoleMandatoryTraining.length === 0">
+        <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
+          <p>
+            No mandatory training has been set for the
+            {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }} job role yet.
+          </p>
+        </div>
+        <div class="govuk-grid-column-one-third govuk-!-padding-right-0">
+          <a
+            class="govuk-list govuk-util__float-right"
+            *ngIf="canEditWorker"
+            draggable="false"
+            role="button"
+            [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
+          >
+            Manage mandatory training
+          </a>
+        </div>
+      </div>
+
+      <div *ngIf="missingJobRoleMandatoryTrainingCount > 0">
+        <app-missing-mandatory-training
+          [missingMandatoryTraining]="missingMandatoryTraining"
+          (addClicked)="addButtonClicked()"
+          [canEditWorker]="canEditWorker"
+        ></app-missing-mandatory-training>
+      </div>
+
+      <div *ngIf="mandatoryTrainingCount > 0">
+        <app-new-training
+          [trainingRecords]="mandatoryTraining"
+          [trainingType]="'mandatory'"
+          [setReturnRoute]="setReturnRoute"
+          [canEditWorker]="canEditWorker"
+          data-testid="mandatory-training"
+        ></app-new-training>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-5">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Non-mandatory training records ({{ nonMandatoryTrainingCount }})</h2>
+    </div>
+    <div class="govuk-grid-column-full">
+      <p *ngIf="nonMandatoryTrainingCount === 0; else nonMandatoryTrainingTable">
+        No non-mandatory training records have been added for this person yet.
+      </p>
+      <ng-template #nonMandatoryTrainingTable>
+        <app-new-training
+          [trainingRecords]="nonMandatoryTraining"
+          [trainingType]="'nonMandatory'"
+          [setReturnRoute]="setReturnRoute"
+          [canEditWorker]="canEditWorker"
+          data-testid="non-mandatory-training"
+        ></app-new-training>
+      </ng-template>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Qualification records ({{ qualificationsByGroup.count }})</h2>
+    </div>
+    <div class="govuk-grid-column-full">
+      <p *ngIf="qualificationsByGroup.count === 0; else qualificationTable">
+        No qualification records have been added for this person yet.
+      </p>
+      <ng-template #qualificationTable>
+        <app-new-qualifications
+          [canEditWorker]="canEditWorker"
+          [qualificationsByGroup]="qualificationsByGroup"
+          data-testid="qualification"
+        >
+        </app-new-qualifications>
+      </ng-template>
+    </div>
+  </div>
+</ng-container>

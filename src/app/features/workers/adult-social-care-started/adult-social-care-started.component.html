@@ -6,9 +6,7 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('year').invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              Do you know what year they started working in adult social care?
-            </h1>
+            <h1 class="govuk-fieldset__heading">Do you know what year they started working in adult social care?</h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
@@ -21,9 +19,7 @@
                 value="Yes"
                 aria-controls="conditional-yearKnown-conditional-1"
               />
-              <label class="govuk-label govuk-radios__label" for="yearKnown-conditional-1">
-                Yes
-              </label>
+              <label class="govuk-label govuk-radios__label" for="yearKnown-conditional-1"> Yes </label>
             </div>
             <div
               class="govuk-radios__conditional"
@@ -31,9 +27,7 @@
               id="conditional-yearKnown-conditional-1"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="year">
-                  Year
-                </label>
+                <label class="govuk-label" for="year"> Year </label>
                 <span *ngIf="submitted && form.get('year').errors" id="year-error" class="govuk-error-message">
                   <ng-container *ngIf="form.get('year').hasError('required')">
                     <span class="govuk-visually-hidden">Error:</span>
@@ -69,9 +63,7 @@
                 type="radio"
                 value="No"
               />
-              <label class="govuk-label govuk-radios__label" for="yearKnown-2">
-                No
-              </label>
+              <label class="govuk-label govuk-radios__label" for="yearKnown-2"> No </label>
             </div>
           </div>
         </fieldset>

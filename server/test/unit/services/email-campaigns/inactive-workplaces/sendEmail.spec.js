@@ -2,9 +2,9 @@ const expect = require('chai').expect;
 const moment = require('moment');
 const sinon = require('sinon');
 
-const config = require('../../../../../config/config');
 const sendEmail = require('../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
-const sendInBlueEmail = require('../../../../../utils/email/sendInBlueEmail');
+const isWhitelisted = require('../../../../../services/email-campaigns/isWhitelisted');
+const sendToSQSQueue = require('../../../../../utils/email/sendToSQSQueue');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', () => {
   afterEach(() => {
@@ -19,6 +19,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
       const inactiveWorkplace = {
         name: 'Workplace Name',
         nmdsId: 'J1234567',
+        lastLogin: '2020-06-01',
         lastUpdated: '2020-06-01',
         emailTemplate: {
           id: 13,
@@ -29,13 +30,17 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
           email: 'test@example.com',
         },
       };
+      const index = 1;
 
-      const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
+      const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
+      const sendToSQSQueueStub = sinon.stub(sendToSQSQueue, 'sendToSQSQueue').returns(Promise.resolve(true));
 
-      await sendEmail.sendEmail(inactiveWorkplace);
+      await sendEmail.sendEmail(inactiveWorkplace, index);
+
+      sinon.assert.calledWith(isWhitelistedStub, 'test@example.com');
 
       sinon.assert.calledWith(
-        sendEmailStub,
+        sendToSQSQueueStub,
         {
           email: 'test@example.com',
           name: 'Test Name',
@@ -53,6 +58,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
         id: 1,
         name: 'Test Name',
         nmdsId: 'A1234567',
+        lastLogin: endOfLastMonth.clone().subtract(3, 'months').format('YYYY-MM-DD'),
         lastUpdated: endOfLastMonth.clone().subtract(3, 'months').format('YYYY-MM-DD'),
         emailTemplate: {
           id: parentTemplateId,
@@ -68,18 +74,23 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             dataOwner: 'Parent',
           },
         ],
       };
+      const index = 1;
 
-      const sendEmailStub = sinon.stub(sendInBlueEmail, 'sendEmail').returns();
+      const isWhitelistedStub = sinon.stub(isWhitelisted, 'isWhitelisted').returns(true);
+      const sendToSQSQueueStub = sinon.stub(sendToSQSQueue, 'sendToSQSQueue').returns(Promise.resolve(true));
 
-      await sendEmail.sendEmail(parentWorkplace);
+      await sendEmail.sendEmail(parentWorkplace, index);
+
+      sinon.assert.calledWith(isWhitelistedStub, 'test@example.com');
 
       sinon.assert.calledWith(
-        sendEmailStub,
+        sendToSQSQueueStub,
         {
           email: 'test@example.com',
           name: 'Test Person',
@@ -93,7 +104,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
               id: 2,
               name: 'Workplace Name',
               nmdsId: 'A0045232',
-              lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
+              lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
+              lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
               dataOwner: 'Parent',
             },
           ],
@@ -107,6 +119,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
       const inactiveWorkplace = {
         name: 'Workplace Name',
         nmdsId: 'J1234567',
+        lastLogin: '2020-06-01',
         lastUpdated: '2020-06-01',
         emailTemplate: {
           id: 13,
@@ -130,6 +143,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
         id: 1,
         name: 'Test Name',
         nmdsId: 'A1234567',
+        lastLogin: endOfLastMonth.clone().subtract(3, 'months').format('YYYY-MM-DD'),
         lastUpdated: endOfLastMonth.clone().subtract(3, 'months').format('YYYY-MM-DD'),
         emailTemplate: {
           id: parentTemplateId,
@@ -145,6 +159,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             dataOwner: 'Parent',
           },
@@ -160,7 +175,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
-            lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
+            lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
             dataOwner: 'Parent',
           },
         ],
@@ -172,6 +188,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
         id: 1,
         name: 'Test Name',
         nmdsId: 'A1234567',
+        lastLogin: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
         lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
         emailTemplate: {
           id: parentTemplateId,
@@ -187,6 +204,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
             dataOwner: 'Parent',
           },
@@ -202,44 +220,20 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/sendEmail', ()
             id: 1,
             name: 'Test Name',
             nmdsId: 'A1234567',
-            lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
+            lastLogin: endOfLastMonth.clone().subtract(6, 'months').format('Mo MMMM YYYY'),
+            lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('Mo MMMM YYYY'),
             dataOwner: 'Workplace',
           },
           {
             id: 2,
             name: 'Workplace Name',
             nmdsId: 'A0045232',
-            lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('YYYY-MM-DD'),
+            lastLogin: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
+            lastUpdated: endOfLastMonth.clone().subtract(12, 'months').format('Mo MMMM YYYY'),
             dataOwner: 'Parent',
           },
         ],
       });
-    });
-  });
-
-  describe('isWhitelisted', () => {
-    it('should return true if there is no whitelist', () => {
-      sinon.stub(config, 'get').withArgs('sendInBlue.whitelist').returns('');
-
-      const whitelisted = sendEmail.isWhitelisted('test@test.com');
-
-      expect(whitelisted).to.equal(true);
-    });
-
-    it('should return true if the email is whitelisted', () => {
-      sinon.stub(config, 'get').withArgs('sendInBlue.whitelist').returns('test@test.com,name@name.com');
-
-      const whitelisted = sendEmail.isWhitelisted('test@test.com');
-
-      expect(whitelisted).to.equal(true);
-    });
-
-    it('should return false if the email is not whitelisted', () => {
-      sinon.stub(config, 'get').withArgs('sendInBlue.whitelist').returns('test@test.com,name@name.com');
-
-      const whitelisted = sendEmail.isWhitelisted('example@example.com');
-
-      expect(whitelisted).to.equal(false);
     });
   });
 });

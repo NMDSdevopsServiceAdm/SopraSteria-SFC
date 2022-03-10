@@ -5,6 +5,10 @@ var router = express.Router();
 require('../utils/security/passport')(passport);
 const crypto = require('crypto');
 const bcrypt = require('bcrypt-nodejs');
+const get = require('lodash/get');
+const moment = require('moment');
+const Sentry = require('@sentry/node');
+const { Op } = require('sequelize');
 
 const generateJWT = require('../utils/security/generateJWT');
 const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
@@ -12,10 +16,10 @@ const uuid = require('uuid');
 
 const config = require('..//config/config');
 const formatSuccessulLoginResponse = require('../utils/login/response');
+const { adminRoles } = require('../utils/adminUtils');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
-const get = require('lodash/get');
 const { authLimiter } = require('../utils/middleware/rateLimiting');
 
 const tribalHashCompare = (password, salt, expectedHash) => {
@@ -92,6 +96,7 @@ router.post('/', async (req, res) => {
                       'parentUid',
                       'parentId',
                       'lastBulkUploaded',
+                      'eightWeeksFromFirstLogin',
                     ],
                     include: [
                       {
@@ -146,7 +151,7 @@ router.post('/', async (req, res) => {
               'tribalId',
             ],
             where: {
-              UserRoleValue: 'Admin',
+              UserRoleValue: { [Op.or]: adminRoles },
             },
           },
         ],
@@ -314,6 +319,16 @@ router.post('/', async (req, res) => {
             if (!establishmentUser.firstLogin) {
               loginUpdate.firstLogin = new Date();
             }
+
+            if (
+              !get(establishmentUser, 'user.establishment.eightWeeksFromFirstLogin') &&
+              get(establishmentUser, 'user.establishment.id')
+            ) {
+              await models.establishment.updateEstablishment(establishmentUser.user.establishment.id, {
+                eightWeeksFromFirstLogin: moment().add(8, 'w').toDate(),
+              });
+            }
+
             establishmentUser.update(loginUpdate, { transaction: t });
 
             // add an audit record
@@ -330,6 +345,27 @@ router.post('/', async (req, res) => {
           req.sqreen.auth_track(true, {
             ...establishmentInfo,
             role: get(establishmentUser, 'user.UserRoleValue'),
+          });
+
+          Sentry.setUser({
+            username: establishmentUser.username,
+            id: establishmentUser.user.uid,
+            ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+          });
+
+          Sentry.setContext('establishment', {
+            id: establishmentUser.user.establishment ? establishmentUser.user.establishment.id : null,
+            uid: establishmentUser.user.establishment ? establishmentUser.user.establishment.uid : null,
+            isParent: establishmentUser.user.establishment ? establishmentUser.user.establishment.isParent : null,
+            nmdsID: establishmentUser.user.establishment ? establishmentUser.user.establishment.nmdsId : null,
+          });
+
+          Sentry.setContext('user', {
+            username: establishmentUser.username,
+            id: establishmentUser.user.uid,
+            ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+            isPrimary: establishmentUser.user.isPrimary,
+            role: establishmentUser.user.UserRoleValue,
           });
 
           // TODO: ultimately remove "Bearer" from the response; this should be added by client
@@ -408,7 +444,7 @@ router.post('/', async (req, res) => {
     );
   } catch (err) {
     console.error('POST .../login failed: ', err);
-    return res.status(503).send({});
+    return res.status(500).send({});
   }
 });
 

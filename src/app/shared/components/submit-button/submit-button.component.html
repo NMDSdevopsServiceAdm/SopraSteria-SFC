@@ -1,30 +1,29 @@
-<div class="govuk-grid-row govuk-!-margin-top-2 govuk-!-margin-right-9">
+<div class="govuk-button-group govuk__align-items-unset">
   <ng-container *ngIf="!return; else summary">
-    <div class="govuk-grid-column-one-quarter">
-      <button type="submit" class="govuk-button" (click)="onClick($event, 'continue', true)">
+    <div>
+      <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onClick($event, 'continue', true)">
         {{ callToAction }}
       </button>
     </div>
-    <div *ngIf="recordSummary" class="govuk-grid-column-one-third">
+    <div *ngIf="recordSummary" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
       <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)">View record summary</a>
-    </div>
-    <div *ngIf="this.canExit" class="govuk-grid-column-one-third">
-      <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'exit', false)"
-        >Exit</a
+      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)"
+        >View {{ isExistingStaffRecord ? 'this staff record' : 'record summary' }}</a
       >
+    </div>
+    <div *ngIf="this.canExit && !isExistingStaffRecord" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
+      <span class="govuk-visually-hidden">or</span>
+      <a class="govuk-button govuk-button--link" (click)="onClick($event, 'exit', false)">{{ exitText }}</a>
     </div>
   </ng-container>
   <ng-template #summary>
-    <div class="govuk-grid-column-one-third">
-      <button type="submit" class="govuk-button" (click)="onClick($event, 'return', true)">Save and return</button>
-    </div>
-    <div class="govuk-grid-column-one-half">
-      <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick($event, 'return', false)"
-        >Exit</a
-      >
-    </div>
+    <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onClick($event, 'return', true)">
+      Save and return
+    </button>
+
+    <span class="govuk-visually-hidden">or</span>
+    <a class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onClick($event, 'return', false)">{{
+      exitText
+    }}</a>
   </ng-template>
 </div>

@@ -10,7 +10,8 @@ import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ArrayUtil } from '@core/utils/array-util';
-import { filter, orderBy } from 'lodash';
+import filter from 'lodash/filter';
+import orderBy from 'lodash/orderBy';
 
 @Directive()
 export class BulkUploadReferencesDirective implements AfterViewInit {
@@ -63,7 +64,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   protected setWorkerServerErrors() {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'Service unavailable.',
       },
       {
@@ -75,7 +76,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   protected setWorkplaceServerErrors() {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'Service unavailable.',
       },
       {

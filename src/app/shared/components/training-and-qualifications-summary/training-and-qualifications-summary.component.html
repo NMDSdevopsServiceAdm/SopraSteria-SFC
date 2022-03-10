@@ -44,9 +44,15 @@
     <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of workers">
       <td class="govuk-table__cell govuk-!-font-weight-regular">
         <ng-container *ngIf="canViewWorker; else nameOrId">
-          <a [routerLink]="getWorkerTrainingAndQualificationsPath(worker)">
+          <a href="#" (click)="getWorkerTrainingAndQualificationsPath($event, worker)">
             {{ worker.nameOrId }}
           </a>
+          <p
+            *ngIf="worker.longTermAbsence"
+            class="govuk-tag govuk-tag--grey govuk-!-margin-left-2 govuk-!-margin-bottom-0 asc-tag"
+          >
+            Long-term absent
+          </p>
         </ng-container>
         <ng-template #nameOrId>
           {{ worker.nameOrId }}
@@ -57,20 +63,23 @@
         <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-1">
           <img src="/assets/images/flag-red.svg" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
           {{ worker.expiredTrainingCount }}
-          Expired
+          expired
         </div>
         <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-1">
           <img src="/assets/images/flag-red.svg" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
           {{ worker.missingMandatoryTrainingCount }}
-          Missing
+          missing
         </div>
         <div *ngIf="worker.expiringTrainingCount > 0" class="govuk-!-margin-bottom-1">
           <img
             src="/assets/images/flag-orange.svg"
             alt=""
-            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            class="govuk-!-margin-right-2 govuk-util__vertical-align-top"
           />
-          {{ worker.expiringTrainingCount }} Expiring soon
+          <ng-container [ngPlural]="worker.expiringTrainingCount">
+            <ng-template ngPluralCase="=1">{{ worker.expiringTrainingCount }} expires soon</ng-template>
+            <ng-template ngPluralCase="other">{{ worker.expiringTrainingCount }} expire soon</ng-template>
+          </ng-container>
         </div>
         <div
           *ngIf="
@@ -79,7 +88,7 @@
             worker.missingMandatoryTrainingCount === 0
           "
         >
-          Up-to-date
+          OK
         </div>
       </td>
     </tr>

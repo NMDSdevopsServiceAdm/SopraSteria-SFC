@@ -6,6 +6,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { IdleService } from '@core/services/idle.service';
 import { NestedRoutesService } from '@core/services/nested-routes.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
 
@@ -15,6 +16,7 @@ import { filter, take, takeWhile } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   private baseTitle = 'Skills for Care';
+  public isAdminSection = false;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -25,6 +27,7 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private idleService: IdleService,
     private angulartics2GoogleTagManager: Angulartics2GoogleTagManager,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     this.nestedRoutesService.routes$.subscribe((routes) => {
       if (routes) {
@@ -41,10 +44,12 @@ export class AppComponent implements OnInit {
     });
 
     this.angulartics2GoogleTagManager.startTracking();
+    this.featureFlagsService.start();
   }
 
   ngOnInit() {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
+      this.isAdminSection = nav.url.includes('sfcadmin');
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {
         (document.activeElement as HTMLElement).blur();

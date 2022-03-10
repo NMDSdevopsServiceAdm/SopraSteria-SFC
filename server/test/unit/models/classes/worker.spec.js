@@ -1,11 +1,18 @@
 const expect = require('chai').expect;
 const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
+const sinon = require('sinon');
 
 const Worker = require('../../../../models/classes/worker').Worker;
+const WdfCalculator = require('../../../../models/classes/wdfCalculator')
 
 const worker = new Worker();
 
 describe('Worker Class', () => {
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('load()', () => {
     it('should remove nurse specialism and registered nurse when not a registered nurse', async () => {
       const notRegisteredNurse = {
@@ -236,6 +243,103 @@ describe('Worker Class', () => {
       expect(qual.highestQualification.qualificationId).to.deep.equal(8);
       expect(qual.highestQualification.title).to.deep.equal('Level 7');
       expect(qualWorker).to.deep.equal(true);
+    });
+
+    describe('Resetting yearArrived', () => {
+      it('should remove year of entry when country of birth is set to Don\'t know', async () => {
+        const countryOfBirth = {
+          countryOfBirth: { value: `Don't know` },
+        };
+
+        const countryOfBirthWorker = await worker.load(countryOfBirth);
+
+        expect(countryOfBirth.countryOfBirth.value).to.deep.equal(`Don't know`);
+        expect(countryOfBirth.yearArrived).to.deep.equal({ value: null, year: null });
+        expect(countryOfBirthWorker).to.deep.equal(true);
+      });
+
+      it('should remove year of entry when country of birth is set to United Kingdom', async () => {
+        const countryOfBirth = {
+          countryOfBirth: { value: 'United Kingdom' },
+        };
+
+        const countryOfBirthWorker = await worker.load(countryOfBirth);
+
+        expect(countryOfBirth.countryOfBirth.value).to.deep.equal('United Kingdom');
+        expect(countryOfBirth.yearArrived).to.deep.equal({ value: null, year: null });
+        expect(countryOfBirthWorker).to.deep.equal(true);
+      });
+
+      it('should not change the year of entry when country of birth is set to Other', async () => {
+        const countryOfBirth = {
+          countryOfBirth: { value: 'Other', other: { country: 'Uganda' }}
+        };
+
+        const countryOfBirthWorker = await worker.load(countryOfBirth);
+
+        expect(countryOfBirth.countryOfBirth.value).to.deep.equal('Other');
+        expect(countryOfBirth.countryOfBirth.other).to.deep.equal({ country: 'Uganda' });
+        expect(countryOfBirth.yearArrived).to.deep.equal(undefined);
+        expect(countryOfBirthWorker).to.deep.equal(true);
+      });
+    });
+  });
+
+  describe('setWdfProperties()', async () => {
+    it('should set wdfEligible inside the document if true', async () => {
+      sinon.stub(worker, 'isWdfEligible').callsFake(() => {
+        return { isEligible: true }
+      });
+      const document = {};
+
+      await worker.setWdfProperties(document, '', 'test');
+      expect(document.wdfEligible).to.deep.equal(true);
+    });
+
+    it('should set wdfEligible inside the document if false', async () => {
+      sinon.stub(worker, 'isWdfEligible').callsFake(() => {
+        return { isEligible: false }
+      });
+      const document = {};
+
+      await worker.setWdfProperties(document, '', 'test');
+      expect(document.wdfEligible).to.deep.equal(false);
+    });
+
+    it('should set lastWdfEligibility inside the document if currently eligible and last eligiblity date is before effective date', async () => {
+      sinon.stub(worker, 'isWdfEligible').callsFake(() => {
+        return { isEligible: true }
+      });
+
+      worker._lastWdfEligibility = new Date('2021-03-01');
+
+      const document = {};
+      const updatedTimestamp = new Date();
+      const wdfAudit = await worker.setWdfProperties(document, updatedTimestamp, 'test');
+
+      expect(document.lastWdfEligibility).to.deep.equal(updatedTimestamp);
+      expect(wdfAudit).to.deep.equal({
+        username: 'test',
+        type: 'wdfEligible',
+      });
+    });
+
+    it('should set lastWdfEligibility inside the document if currently eligible and last eligiblity date is null', async () => {
+      sinon.stub(worker, 'isWdfEligible').callsFake(() => {
+        return { isEligible: true }
+      });
+
+      worker._lastWdfEligibility = null;
+
+      const document = {};
+      const updatedTimestamp = new Date();
+      const wdfAudit = await worker.setWdfProperties(document, updatedTimestamp, 'test');
+
+      expect(document.lastWdfEligibility).to.deep.equal(updatedTimestamp);
+      expect(wdfAudit).to.deep.equal({
+        username: 'test',
+        type: 'wdfEligible',
+      });
     });
   });
 });

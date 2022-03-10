@@ -35,6 +35,7 @@ yarn-error.log
 testem.log
 /typings
 /oldtest
+TESTS.xml
 
 # System Files
 .DS_Store
@@ -51,6 +52,7 @@ Thumbs.db
 # localhost config variations
 /server/config/localhost.*.yaml
 /server/config/localhost-*.yaml
+/server/config/localhost.yaml
 
 // nodemon localisations
 nodemon.json
@@ -62,3 +64,6 @@ CQCLocationAPICall/.nyc_output/
 
 # ESLint
 .eslintcache
+test-results.xml
+
+TESTS.xml

@@ -1,55 +1,76 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import {
   ConfirmAccountDetailsComponent,
-} from '@features/registration/confirm-account-details/confirm-account-details.component';
+} from '@features/create-account/user/confirm-account-details/confirm-account-details.component';
+import {
+  SecurityQuestionComponent,
+} from '@features/create-account/user/create-security-question/create-security-question.component';
+import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
+import { YourDetailsComponent } from '@features/create-account/user/your-details/your-details.component';
+import { AddTotalStaffComponent } from '@features/create-account/workplace/add-total-staff/add-total-staff.component';
+import { ConfirmDetailsComponent } from '@features/create-account/workplace/confirm-details/confirm-details.component';
 import {
   ConfirmWorkplaceDetailsComponent,
-} from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
-import { CreateUsernameComponent } from '@features/registration/create-username/create-username.component';
+} from '@features/create-account/workplace/confirm-workplace-details/confirm-workplace-details.component';
 import {
-  EnterWorkplaceAddressComponent,
-} from '@features/registration/enter-workplace-address/enter-workplace-address.component';
-import {
-  RegistrationAwaitingApprovalComponent,
-} from '@features/registration/registration-awaiting-approval/registration-awaiting-approval.component';
-import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
-import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
-import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
-import { SecurityQuestionComponent } from '@features/registration/security-question/security-question.component';
-import { SelectMainServiceComponent } from '@features/registration/select-main-service/select-main-service.component';
+  CouldNotFindWorkplaceAddressComponent,
+} from '@features/create-account/workplace/could-not-find-workplace-address/could-not-find-workplace-address.component';
+import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
 import {
   SelectWorkplaceAddressComponent,
-} from '@features/registration/select-workplace-address/select-workplace-address.component';
-import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
-import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
+} from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
+import { SelectWorkplaceComponent } from '@features/create-account/workplace/select-workplace/select-workplace.component';
+import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
+import {
+  WorkplaceNameAddressComponent,
+} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
+import {
+  WorkplaceNotFoundComponent,
+} from '@features/create-account/workplace/workplace-not-found/workplace-not-found.component';
+import { PagesModule } from '@features/pages/pages.module';
+import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
+import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
+import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 import { SharedModule } from '@shared/shared.module';
 
-import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
-import { StartComponent } from './start/start.component';
-import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import {
+  FindWorkplaceAddressComponent,
+} from '../create-account/workplace/find-workplace-address/find-workplace-address.component';
+import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
+import {
+  IsThisYourWorkplaceComponent,
+} from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
+import { RegulatedByCqcComponent } from '../create-account/workplace/regulated-by-cqc/regulated-by-cqc.component';
+import { AboutUsRegistrationComponent } from './about-us/about-us.component';
+import { CreateAccountComponent } from './create-account/create-account.component';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule, PagesModule],
   declarations: [
     ChangeYourDetailsComponent,
     ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
-    CreateUsernameComponent,
-    EnterWorkplaceAddressComponent,
+    WorkplaceNameAddressComponent,
     FindWorkplaceAddressComponent,
     RegistrationCompleteComponent,
-    RegistrationAwaitingApprovalComponent,
-    RegulatedByCqcComponent,
+    ThankYouComponent,
     SecurityQuestionComponent,
-    SelectMainServiceComponent,
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     YourDetailsComponent,
-    StartComponent,
+    AboutUsRegistrationComponent,
+    CreateAccountComponent,
+    FindYourWorkplaceComponent,
+    IsThisYourWorkplaceComponent,
+    RegulatedByCqcComponent,
     WorkplaceNotFoundComponent,
+    NameOfWorkplaceComponent,
+    UsernamePasswordComponent,
+    CouldNotFindWorkplaceAddressComponent,
+    ConfirmDetailsComponent,
+    AddTotalStaffComponent,
   ],
 })
 export class RegistrationModule {}

@@ -257,10 +257,6 @@ const getWorkersReportData = async (establishmentId) => {
   });
 
   workersArray.forEach((value) => {
-
-    if(value.DateOfBirthValue){
-      value.DateOfBirthValue = moment(value.DateOfBirthValue).format('DD/MM/YYYY').toString();
-    }
     if (value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know") {
       value.QualificationInSocialCare = 'N/A';
     }
@@ -1374,7 +1370,7 @@ const signedUrlGet = async (req, res) => {
     });
   } catch (err) {
     console.error('report/wdf/parent:PreSigned - failed', err.message);
-    await saveResponse(req, res, 503, {});
+    await saveResponse(req, res, 500, {});
   }
 };
 
@@ -1485,7 +1481,7 @@ const reportGet = async (req, res) => {
         } else {
           // failed to run the report
           console.error('report/wdf/parent - failed to run the report');
-          await saveResponse(req, res, 503, {});
+          await saveResponse(req, res, 500, {});
         }
       } else {
         // only allow on those establishments being a parent
@@ -1495,11 +1491,11 @@ const reportGet = async (req, res) => {
       }
     } else {
       console.error('report/wdf/parent - failed restoring establisment');
-      await saveResponse(req, res, 503, {});
+      await saveResponse(req, res, 500, {});
     }
   } catch (err) {
     console.error('report/wdf/parent - failed', err);
-    await saveResponse(req, res, 503, {});
+    await saveResponse(req, res, 500, {});
   }
 };
 

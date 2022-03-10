@@ -22,6 +22,11 @@
   background-image: url('/assets/images/flag-red.svg');
 }
 
+.govuk-tabs__tab--red-cross {
+  @extend .govuk-tabs__tab--generic-alert;
+  background-image: url('/assets/images/cross-icon.svg');
+}
+
 .govuk-tabs__tab--green-tick {
   @extend .govuk-tabs__tab--generic-alert;
   background-image: url('/assets/images/tick-icon.svg');

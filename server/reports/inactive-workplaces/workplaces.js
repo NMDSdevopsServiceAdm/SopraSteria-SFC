@@ -2,6 +2,7 @@ const buildRow = (workplace) => {
   return {
     workplace: workplace.name,
     workplaceId: workplace.nmdsId,
+    lastLogin: workplace.lastLogin,
     lastUpdated: workplace.lastUpdated,
     emailTemplate: workplace.emailTemplate.name,
     dataOwner: workplace.dataOwner,
@@ -19,7 +20,8 @@ const addWorksheet = (workbook) => {
   worksheet.columns = [
     { header: 'Workplace name', key: 'workplace' },
     { header: 'Workplace ID', key: 'workplaceId' },
-    { header: 'Date last updated', key: 'lastUpdated' },
+    { header: 'Date last logged in', key: 'lastLogin', style: { numFmt: 'dd/mm/yyyy' } },
+    { header: 'Date last updated', key: 'lastUpdated', style: { numFmt: 'dd/mm/yyyy' } },
     { header: 'Email template', key: 'emailTemplate' },
     { header: 'Data owner', key: 'dataOwner' },
     { header: 'Name of user', key: 'nameOfUser' },

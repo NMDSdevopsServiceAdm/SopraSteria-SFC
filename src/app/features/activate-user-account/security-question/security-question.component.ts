@@ -5,7 +5,7 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { SecurityQuestionDirective } from '@features/account/security-question/security-question';
+import { SecurityQuestionDirective } from '@shared/directives/user/security-question.directive';
 
 @Component({
   selector: 'app-security-question',

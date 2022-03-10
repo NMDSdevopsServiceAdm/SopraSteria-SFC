@@ -4,6 +4,8 @@ const router = express.Router();
 
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
+
+const { isAdminRole } = require('../../utils/adminUtils');
 const passwordCheck = require('../../utils/security/passwordValidation').isPasswordValid;
 const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
@@ -46,7 +48,7 @@ const listAllUsers = async (req, res) => {
     });
   } catch (err) {
     console.error('user::establishment - failed', err);
-    return res.status(503).send(`Failed to get users for establishment having id: ${establishmentId}`);
+    return res.status(500).send(`Failed to get users for establishment having id: ${establishmentId}`);
   }
 };
 
@@ -102,7 +104,7 @@ const getUser = async (req, res) => {
     );
 
     console.error('user::GET/:userId - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -202,7 +204,7 @@ const updateUser = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof User.UserExceptions.UserSaveException) {
       console.error('User PUT: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     }
   }
 };
@@ -283,7 +285,7 @@ const resetPassword = async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('User /resetPassword failed', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -385,26 +387,12 @@ const changePassword = async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('User /changePassword failed', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
-// registers (part add) a new user
-const partAddUser = async (req, res) => {
-  // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
-  const establishmentId = req.establishmentId;
-  const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
-
-  // ensure only a user having the role of Edit can register a new user
-  if (!req.role || req.role === 'Read') {
-    console.error('/add/establishment/:id - given user does not have sufficient permission');
-    return res.status(401).send();
-  }
-
-  if (!req.body.role || !(req.body.role == 'Edit' || req.body.role == 'Read')) {
-    console.error('/add/establishment/:id - Invalid request');
-    return res.status(403).send();
-  }
+const meetsMaxUserLimit = async (establishmentId, req) => {
+  if (isAdminRole(req.role)) return false;
 
   let limits = { Edit: User.User.MAX_EDIT_SINGLE_USERS, Read: User.User.MAX_READ_SINGLE_USERS };
 
@@ -415,6 +403,30 @@ const partAddUser = async (req, res) => {
   const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
 
   if (currentTypeLimits[req.body.role] + 1 > limits[req.body.role]) {
+    return true;
+  }
+
+  return false;
+};
+
+// registers (part add) a new user
+const partAddUser = async (req, res) => {
+  // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+  const establishmentId = req.establishmentId;
+  const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
+
+  // ensure only a user having the role of Edit can register a new user
+  if (notPermittedToRegisterNewUser(req.role)) {
+    console.error('/add/establishment/:id - given user does not have sufficient permission');
+    return res.status(401).send();
+  }
+
+  if (newUserRoleNotValid(req.body.role)) {
+    console.error('/add/establishment/:id - Invalid request');
+    return res.status(403).send();
+  }
+
+  if (await meetsMaxUserLimit(establishmentId, req)) {
     console.error('/add/establishment/:id - Invalid request');
     return res
       .status(400)
@@ -429,6 +441,7 @@ const partAddUser = async (req, res) => {
 
     // force email to be lowercase
     req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
+    req.body.canManageWdfClaims = req.body.canManageWdfClaims || false;
 
     // only those properties defined in the POST body will be updated (peristed)
     const isValidUser = await thisUser.load(req.body);
@@ -458,12 +471,16 @@ const partAddUser = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof User.UserExceptions.UserSaveException) {
       console.error('/add/establishment/:id POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     }
 
     console.error('Unexpected exception: ', err);
   }
 };
+
+const notPermittedToRegisterNewUser = (role) => !role || role === 'Read' || role === 'None';
+
+const newUserRoleNotValid = (role) => !['Edit', 'Read', 'None'].includes(role);
 
 // Resend activation link
 const resendActivationLink = async (req, res) => {
@@ -513,7 +530,7 @@ const resendActivationLink = async (req, res) => {
 
     return res.status(404).send('Not found');
   } catch (err) {
-    return res.status(503).send(err.safe);
+    return res.status(500).send(err.safe);
   }
 };
 
@@ -583,7 +600,7 @@ const finishAddUser = async (req, res) => {
     }
   } catch (err) {
     console.error('/add/validateAddUser - failed: ', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -592,7 +609,7 @@ const deleteUser = async (req, res) => {
 
   const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
   if (!uuidRegex.test(userId.toUpperCase())) {
-    return res.status(503).send('Invalid request');
+    return res.status(500).send('Invalid request');
   }
 
   const thisUser = new User.User(userId);
@@ -625,7 +642,7 @@ const deleteUser = async (req, res) => {
     );
 
     console.error('User::DELETE - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -661,8 +678,6 @@ const addUser = async (req, res) => {
       const thisUser = new User.User(trackingResponse.user.establishmentId, addUserUUID);
 
       if (await thisUser.restore(trackingResponse.user.uid, null, null)) {
-        // TODO: JSON validation
-
         // only those properties defined in the POST body will be updated (peristed) along with
         //   the additional role property - ovverwrites against that could be passed in the body
         const newUserProperties = {
@@ -710,7 +725,7 @@ const addUser = async (req, res) => {
       return res.status(400).send(err.message);
     } else if (err instanceof User.UserExceptions.UserSaveException) {
       console.error('/add/establishment/:id POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     }
 
     console.error('Unexpected exception: ', err);
@@ -734,7 +749,7 @@ const listEstablishments = async (req, res) => {
     return res.status(200).send(myEstablishments);
   } catch (err) {
     console.error('/user/my/establishments: ERR: ', err.message);
-    return res.status(503).send({}); // intentionally an empty JSON response
+    return res.status(500).send({}); // intentionally an empty JSON response
   }
 };
 
@@ -1023,7 +1038,7 @@ const swapEstablishment = async (req, res) => {
     establishment.uid,
     establishment.isParent,
     req.username,
-    'Admin',
+    req.role,
     thisUser.user.uid,
   );
   var date = new Date().getTime();
@@ -1039,7 +1054,7 @@ const swapEstablishment = async (req, res) => {
     thisUser.user.FullNameValue,
     false,
     thisUser.lastLogin,
-    'Admin',
+    req.role,
     establishment,
     req.username,
     new Date(date).toISOString(),
@@ -1083,3 +1098,5 @@ router.use('/swap/establishment/:id', authLimiter);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
 
 module.exports = router;
+module.exports.meetsMaxUserLimit = meetsMaxUserLimit;
+module.exports.partAddUser = partAddUser;

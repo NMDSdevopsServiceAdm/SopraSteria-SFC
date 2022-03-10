@@ -46,7 +46,7 @@ const getShareData = async (req, res) => {
     );
 
     console.error('establishment::share GET/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -68,13 +68,12 @@ const updateShareData = async (req, res) => {
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in share (options)
       const isValidEstablishment = await thisEstablishment.load({
-        share: req.body.share,
+        shareWith: req.body.shareWith,
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
       if (isValidEstablishment) {
         await thisEstablishment.save(req.username);
-
         return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
       } else {
         return res.status(400).send('Unexpected Input.');
@@ -89,7 +88,7 @@ const updateShareData = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
       console.error('Establishment::share POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
     }

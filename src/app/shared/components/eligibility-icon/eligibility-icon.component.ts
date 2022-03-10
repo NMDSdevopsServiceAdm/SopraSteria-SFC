@@ -5,15 +5,25 @@ import { Component, Input, OnInit } from '@angular/core';
   templateUrl: './eligibility-icon.component.html',
 })
 export class EligibilityIconComponent implements OnInit {
+  @Input() overallEligibility = false;
   @Input() eligible: boolean;
   @Input() check: boolean;
   @Input() num: number = null;
 
-  public icon: string;
-  public label: string;
+  public icon = '';
+  public label = '';
 
-  ngOnInit() {
-    this.icon = this.eligible ? 'tick' : 'cross';
-    this.label = this.check ? 'Check and confirm' : this.eligible ? 'Meeting requirements' : 'Not meeting requirements';
+  ngOnInit(): void {
+    this.displayCorrectIcon();
+  }
+
+  public displayCorrectIcon(): void {
+    if (!this.eligible && this.overallEligibility) {
+      this.icon = 'flag-orange';
+      this.label = 'You need to add this information';
+    } else if (!this.eligible && !this.overallEligibility) {
+      this.icon = 'cross-icon';
+      this.label = 'You need to add this information';
+    }
   }
 }

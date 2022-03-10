@@ -85,6 +85,9 @@ class Establishment extends EntityValidator {
     this._dataOwnershipRequested = null;
     this._linkToParentRequested = null;
     this._lastBulkUploaded = null;
+    this._eightWeeksFromFirstLogin = null;
+    this._showSharingPermissionsBanner = null;
+    this._expiresSoonAlertDate = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -205,14 +208,6 @@ class Establishment extends EntityValidator {
     return this._postcode;
   }
 
-  get latitude() {
-    return this._properties.get('Latitude') ? this._properties.get('Latitude').property : null;
-  }
-
-  get longitude() {
-    return this._properties.get('Longitude') ? this._properties.get('Longitude').property : null;
-  }
-
   get isRegulated() {
     return this._isRegulated;
   }
@@ -259,6 +254,10 @@ class Establishment extends EntityValidator {
 
   get vacancies() {
     return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
+  }
+
+  get showSharingPermissionsBanner() {
+    return this._showSharingPermissionsBanner;
   }
 
   get reasonsForLeaving() {
@@ -313,10 +312,15 @@ class Establishment extends EntityValidator {
     return this._status;
   }
 
+  get expiresSoonAlertDate() {
+    return this._expiresSoonAlertDate;
+  }
+
   get key() {
-    return (this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
-      ? this.localIdentifier.replace(/\s/g, '')
-      : this.name
+    return (
+      this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
+        ? this.localIdentifier.replace(/\s/g, '')
+        : this.name
     ).replace(/\s/g, '');
   }
 
@@ -330,6 +334,10 @@ class Establishment extends EntityValidator {
 
   get linkToParentRequested() {
     return this._linkToParentRequested;
+  }
+
+  get eightWeeksFromFirstLogin() {
+    return this._eightWeeksFromFirstLogin;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -407,12 +415,6 @@ class Establishment extends EntityValidator {
       }
       // Consequential updates when one value means another should be empty or null
 
-      if (document.share) {
-        if (!document.share.enabled || (document.share.enabled && !document.share.with.includes('Local Authority'))) {
-          document.localAuthorities = [];
-        }
-      }
-
       if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
         this.resetValidations();
 
@@ -428,7 +430,12 @@ class Establishment extends EntityValidator {
           allAssociatedServiceIndices.push(document.mainService.id);
           mainServiceAdded = true;
         }
-        if (document && document.otherServices && document.otherServices.services &&  Array.isArray(document.otherServices)) {
+        if (
+          document &&
+          document.otherServices &&
+          document.otherServices.services &&
+          Array.isArray(document.otherServices.services)
+        ) {
           document.otherServices.services.forEach((thisService) => {
             if (thisService.id) {
               allAssociatedServiceIndices.push(thisService.id);
@@ -440,7 +447,8 @@ class Establishment extends EntityValidator {
           });
           servicesAdded = true;
         }
-        if (document && document.services && document.services.services && Array.isArray(document.services)) {
+
+        if (document && document.services && document.services.services && Array.isArray(document.services.services)) {
           document.services.services.forEach((thisService) => allAssociatedServiceIndices.push(thisService.id));
 
           // if no main service given in document, then use the current known main service property
@@ -468,8 +476,8 @@ class Establishment extends EntityValidator {
           if (!this.isRegulated) {
             this._locationId = null;
 
-            if (this.shareWith && this.shareWith.with) {
-              this.shareWith.with = this.shareWith.with.filter((x) => x !== 'CQC');
+            if (this.shareWith && this.shareWith.cqc) {
+              this.shareWith.cqc = null;
             }
           }
         }
@@ -498,6 +506,14 @@ class Establishment extends EntityValidator {
 
         if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
           this._reasonsForLeaving = document.reasonsForLeaving;
+        }
+
+        if ('showSharingPermissionsBanner' in document) {
+          this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
+        }
+
+        if (document.expiresSoonAlertDate) {
+          this._expiresSoonAlertDate = document.expiresSoonAlertDate;
         }
       }
 
@@ -743,12 +759,12 @@ class Establishment extends EntityValidator {
           MainServiceFKValue: this.mainService.id,
           nmdsId: this._nmdsId,
           updatedBy: savedBy.toLowerCase(),
-          ShareDataValue: false,
-          shareWithCQC: false,
-          shareWithLA: false,
+          shareWithCQC: null,
+          shareWithLA: null,
           source: bulkUploaded ? 'Bulk' : 'Online',
           attributes: ['id', 'created', 'updated'],
           ustatus: this._ustatus,
+          expiresSoonAlertDate: '90',
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -918,11 +934,10 @@ class Establishment extends EntityValidator {
           const thisTransaction = externalTransaction || t;
           const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
-          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
-
+          const modifiedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
           // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
-            ...modifedUpdateDocument,
+            ...modifiedUpdateDocument,
             source: bulkUploaded ? 'Bulk' : 'Online',
             isRegulated: this._isRegulated, // to remove when a change managed property
             locationId: this._locationId, // to remove when a change managed property
@@ -938,6 +953,7 @@ class Establishment extends EntityValidator {
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
+            showSharingPermissionsBanner: bulkUploaded ? false : this._showSharingPermissionsBanner,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -964,6 +980,7 @@ class Establishment extends EntityValidator {
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
             returning: true,
+            individualHooks: true,
             where: {
               uid: this.uid,
             },
@@ -1235,6 +1252,8 @@ class Establishment extends EntityValidator {
         this._dataOwnershipRequested = fetchResults.dataOwnershipRequested;
         this._linkToParentRequested = fetchResults.linkToParentRequested;
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
+        this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
+        this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1266,7 +1285,7 @@ class Establishment extends EntityValidator {
           raw: true,
         });
 
-        const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([
+        const [otherServices, mainService, serviceUsers, capacity, jobs] = await Promise.all([
           ServiceCache.allMyOtherServices(establishmentServices.map((x) => x)),
           models.services.findOne({
             where: {
@@ -1311,12 +1330,6 @@ class Establishment extends EntityValidator {
             attributes: ['id', 'type', 'total'],
             order: [['type', 'ASC']],
           }),
-          models.establishmentLocalAuthority.findAll({
-            where: {
-              EstablishmentID: this._id,
-            },
-            attributes: ['id', 'cssrId', 'cssr'],
-          }),
         ]);
 
         // For services merge any other data into resultset
@@ -1350,7 +1363,6 @@ class Establishment extends EntityValidator {
 
         fetchResults.capacity = capacity;
         fetchResults.jobs = jobs;
-        fetchResults.localAuthorities = localAuthorities;
 
         fetchResults.mainService = { ...mainService, other: fetchResults.MainServiceFkOther };
 
@@ -1533,6 +1545,7 @@ class Establishment extends EntityValidator {
 
       const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
         returning: true,
+        individualHooks: true,
         where: {
           uid: this.uid,
         },
@@ -1597,8 +1610,8 @@ class Establishment extends EntityValidator {
       } else {
         externalTransaction.rollback();
       }
-      console.log('throwing error');
-      console.log(err);
+      console.error('throwing error');
+      console.error(err);
       const nameId = this._properties.get('NameOrId');
       throw new EstablishmentExceptions.EstablishmentDeleteException(
         null,
@@ -1696,8 +1709,6 @@ class Establishment extends EntityValidator {
         myDefaultJSON.town = this.town;
         myDefaultJSON.county = this.county;
         myDefaultJSON.postcode = this.postcode;
-        myDefaultJSON.Latitude = this.latitude;
-        myDefaultJSON.Longitude = this.longitude;
         myDefaultJSON.locationId = this.locationId;
         myDefaultJSON.provId = this.provId;
         myDefaultJSON.isRegulated = this.isRegulated;
@@ -1710,6 +1721,11 @@ class Establishment extends EntityValidator {
         myDefaultJSON.dataPermissions = this.isParent ? undefined : this.dataPermissions;
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
+        myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
+      }
+
+      if (this.showSharingPermissionsBanner !== null) {
+        myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
       }
 
       if (this._ustatus) {
@@ -2116,6 +2132,12 @@ class Establishment extends EntityValidator {
               },
             },
           ],
+          ustatus: {
+            [models.Sequelize.Op.or]: {
+              [models.Sequelize.Op.ne]: 'REJECTED',
+              [models.Sequelize.Op.is]: null,
+            },
+          },
         }
       : { id: primaryEstablishmentId };
 
@@ -2139,6 +2161,7 @@ class Establishment extends EntityValidator {
           'NumberOfStaffValue',
           'ustatus',
           'postcode',
+          'isParent',
           [models.sequelize.fn('COUNT', models.sequelize.col('"workers"."ID"')), 'workerCount'],
           [
             models.sequelize.fn(
@@ -2205,6 +2228,7 @@ class Establishment extends EntityValidator {
           'dataOwnershipRequested',
           'ustatus',
           'postcode',
+          'isParent',
         ],
         include: [
           {
@@ -2242,6 +2266,7 @@ class Establishment extends EntityValidator {
           dataOwnershipRequested,
           ustatus,
           postcode,
+          isParent,
         } = thisSub;
 
         return {
@@ -2257,6 +2282,7 @@ class Establishment extends EntityValidator {
           dataOwnershipRequested,
           ustatus,
           postCode: postcode,
+          isParent,
           wdf: isWDF
             ? await WdfCalculator.calculateData({
                 thisEstablishment: thisSub,
@@ -2275,7 +2301,6 @@ class Establishment extends EntityValidator {
 
     // Add a boolean flag to indicate the establishment is a parent
 
-    primary.isParent = !!mappedResults.length;
     return {
       primary,
       subsidaries: primary.isParent
@@ -2331,6 +2356,7 @@ class Establishment extends EntityValidator {
       },
       {
         returning: true,
+        individualHooks: true,
         where: {
           uid: thisGivenEstablishment.uid,
         },

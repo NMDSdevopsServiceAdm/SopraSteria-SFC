@@ -11,12 +11,14 @@ import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { BenchmarksRankingsComponent } from '@shared/components/benchmarks-tab/rankings/rankings.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
-import * as moment from 'moment';
-import { from } from 'rxjs';
+import dayjs from 'dayjs';
+import { of } from 'rxjs';
 
 const payTileData = {
   workplaceValue: { value: 1000, hasValue: true },
@@ -46,24 +48,6 @@ const qualificationsTileData = {
   lowTurnover: { value: 1.2, hasValue: true },
 };
 
-const noPayTileData = {
-  workplaceValue: { value: null, hasValue: false, stateMessage: 'no-pay-data' },
-  comparisonGroup: { value: null, hasValue: false },
-  goodCqc: { value: null, hasValue: false },
-  lowTurnover: { value: null, hasValue: false },
-};
-
-const payRankingData = {
-  currentRank: 2,
-  maxRank: 3,
-  hasValue: true,
-};
-
-const noPayRankingData = {
-  hasValue: false,
-  stateMessage: 'no-data',
-};
-
 const metrics: string[] = ['Pay', 'Turnover', 'Sickness', 'Qualifications'];
 
 const getBenchmarksRankingsComponent = async () => {
@@ -82,29 +66,15 @@ const getBenchmarksRankingsComponent = async () => {
         provide: BreadcrumbService,
         useClass: MockBreadcrumbService,
       },
+      { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       {
         provide: ActivatedRoute,
         useValue: new MockActivatedRoute({
-          fragment: from('pay'),
+          fragment: of('pay'),
         }),
       },
     ],
   });
-};
-
-const setup = (payTile, payRanking) => {
-  const establishmentUid = TestBed.inject(EstablishmentService).establishment.uid;
-  const metric = 'pay';
-
-  const httpTestingController = TestBed.inject(HttpTestingController);
-
-  const req = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/?tiles=${metric}`);
-  req.flush({
-    pay: payTile,
-  });
-
-  const req2 = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/rankings/${metric}`);
-  req2.flush(payRanking);
 };
 
 describe('BenchmarksRankingsComponent', () => {
@@ -114,7 +84,7 @@ describe('BenchmarksRankingsComponent', () => {
   });
 
   it('should create a page with all 4 titles', async () => {
-    const { fixture, getAllByText } = await getBenchmarksRankingsComponent();
+    const { getAllByText } = await getBenchmarksRankingsComponent();
 
     metrics.forEach((metric: string) => {
       const content = getAllByText(MetricsContent[metric].title);
@@ -126,7 +96,7 @@ describe('BenchmarksRankingsComponent', () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
     fixture.componentInstance.metaDataAvailable = true;
-    fixture.componentInstance.lastUpdated = moment('2020-11-24').toDate();
+    fixture.componentInstance.lastUpdated = dayjs('2020-11-24').toDate();
     fixture.detectChanges();
 
     const comparisonGroupText = getByText('Your comparison group');
@@ -161,6 +131,7 @@ describe('BenchmarksRankingsComponent', () => {
     expect(comparisonGroupText).toBeTruthy();
     expect(notAvailable).toBeTruthy();
   });
+
   it('should show description of metric', async () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
@@ -169,6 +140,7 @@ describe('BenchmarksRankingsComponent', () => {
       expect(content).toBeTruthy();
     });
   });
+
   it('should show tile info for pay in the title', async () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
@@ -178,6 +150,7 @@ describe('BenchmarksRankingsComponent', () => {
     const content = getByText(`: ${FormatUtil.formatMoney(payTileData.workplaceValue.value)}`);
     expect(content).toBeTruthy();
   });
+
   it('should show tile info for turnover in the title', async () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
@@ -187,6 +160,7 @@ describe('BenchmarksRankingsComponent', () => {
     const content = getByText(`: ${FormatUtil.formatPercent(turnoverTileData.workplaceValue.value)}`);
     expect(content).toBeTruthy();
   });
+
   it('should show tile info for sickness in the title', async () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
@@ -196,6 +170,7 @@ describe('BenchmarksRankingsComponent', () => {
     const content = getByText(`: ${sicknessTileData.workplaceValue.value} Days`);
     expect(content).toBeTruthy();
   });
+
   it('should show tile info for qualifications in the title', async () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
@@ -212,6 +187,7 @@ describe('BenchmarksRankingsComponent', () => {
     const content = queryAllByText(`Days`);
     expect(content.length).toEqual(0);
   });
+
   it('should create 4 gauges with workplace rankings data', async () => {
     const { fixture, queryAllByTestId } = await getBenchmarksRankingsComponent();
 
@@ -255,5 +231,29 @@ describe('BenchmarksRankingsComponent', () => {
     expect(lowestRank.length).toEqual(4);
     expect(highestRank.length).toEqual(4);
     expect(currentRank.length).toEqual(4);
+  });
+
+  describe('calculateJourneyType', () => {
+    it('should calculate the correct journey type when the workplace is the primary workplace', async () => {
+      const { fixture } = await getBenchmarksRankingsComponent();
+
+      fixture.componentInstance.establishmentUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
+      fixture.componentInstance.primaryWorkplaceUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
+      fixture.componentInstance.calculateJourneyType();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.journeyType).toEqual('dashboard');
+    });
+
+    it('should calculate the correct journey type when the workplace is a subsidiary', async () => {
+      const { fixture } = await getBenchmarksRankingsComponent();
+
+      fixture.componentInstance.establishmentUid = '1234';
+      fixture.componentInstance.primaryWorkplaceUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
+      fixture.componentInstance.calculateJourneyType();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.journeyType).toEqual('workplace');
+    });
   });
 });

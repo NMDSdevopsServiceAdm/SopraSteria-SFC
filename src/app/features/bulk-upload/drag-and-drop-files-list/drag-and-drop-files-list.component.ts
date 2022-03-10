@@ -1,6 +1,6 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   BulkUploadFileType,
@@ -14,8 +14,10 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { FileUtil } from '@core/utils/file-util';
 import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
-import { filter, findIndex } from 'lodash';
+import filter from 'lodash/filter';
+import findIndex from 'lodash/findIndex';
 import { combineLatest, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -26,6 +28,7 @@ import { take } from 'rxjs/operators';
   providers: [I18nPluralPipe],
 })
 export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
+  @Input() public sanitise: boolean;
   private subscriptions: Subscription = new Subscription();
   public bulkUploadFileTypeEnum = BulkUploadFileType;
   public preValidationError: boolean;
@@ -42,6 +45,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   public preValidationErrorMessage = '';
   public showPreValidateErrorMessage = false;
   public disableButton = false;
+
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
@@ -52,7 +56,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getUploadedFiles();
     this.preValidateFilesSubscription();
     this.subscriptions.add(
@@ -186,17 +190,30 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     return `bulk-upload-validation-${transformedFileName}`;
   }
 
-  public downloadFile(event: Event, key: string) {
+  public downloadFile(event: Event, key: string): void {
     event.preventDefault();
 
+    let type: BulkUploadFileType = null;
+
+    if (key.includes('staff')) {
+      type = this.sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker;
+    } else if (key.includes('workplace')) {
+      type = BulkUploadFileType.Establishment;
+    } else if (key.includes('training')) {
+      type = BulkUploadFileType.Training;
+    }
+
     this.bulkUploadService
-      .getUploadedFileSignedURL(this.establishmentService.primaryWorkplace.uid, key)
-      .subscribe((signedURL) => {
-        window.open(signedURL);
+      .getUploadedFileFromS3(this.establishmentService.primaryWorkplace.uid, key, type)
+      .pipe(take(1))
+      .subscribe((response) => {
+        const filename = FileUtil.getFileName(response);
+        const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+        saveAs(blob, filename);
       });
   }
 
-  public deleteFile(event, fileName: string): void {
+  public deleteFile(event: Event, fileName: string): void {
     event.preventDefault();
     this.uploadedFiles = this.uploadedFiles.filter((file: ValidatedFile) => file.filename !== fileName);
     this.validationComplete = false;
@@ -362,8 +379,8 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
    */
   private onValidateError(response: HttpErrorResponse): void {
     const error: ValidatedFilesResponse = response.error;
-    //handle 503 with custom message to prevent service unavailable redirection
-    if (response.status === 503) {
+    //handle 500 with custom message to prevent service unavailable redirection
+    if (response.status === 500) {
       const customeMessage = [
         {
           name: response.status,

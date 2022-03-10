@@ -6,7 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 
 import { QuestionComponent } from '../question/question.component';
 
@@ -15,7 +15,7 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './main-job-start-date.component.html',
 })
 export class MainJobStartDateComponent extends QuestionComponent {
-  private dateMin = moment().subtract(100, 'years');
+  private dateMin = dayjs().subtract(100, 'years');
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -23,7 +23,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -41,7 +41,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
 
   init() {
     if (this.worker.mainJobStartDate) {
-      const date = moment(this.worker.mainJobStartDate, DATE_PARSE_FORMAT);
+      const date = dayjs(this.worker.mainJobStartDate, DATE_PARSE_FORMAT);
       this.form.get('mainJobStartDate').patchValue({
         year: date.year(),
         month: date.format('M'),
@@ -50,9 +50,9 @@ export class MainJobStartDateComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('other-job-roles');
-    this.previous = this.workerService.addStaffRecordInProgress$.value
-      ? this.getRoutePath('staff-details')
-      : ['/dashboard'];
+    this.previous = this.getReturnPath();
+
+    if (history.state?.navigatedFrom) this.return = null;
   }
 
   public setupFormErrorsMap(): void {
@@ -79,7 +79,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
 
   generateUpdateProps() {
     const { day, month, year } = this.form.get('mainJobStartDate').value;
-    const date = day && month && year ? moment(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
+    const date = day && month && year ? dayjs(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
 
     if (date) {
       return {
@@ -88,5 +88,15 @@ export class MainJobStartDateComponent extends QuestionComponent {
     }
 
     return { mainJobStartDate: null };
+  }
+
+  private getReturnPath() {
+    if (this.workerService.addStaffRecordInProgress$.value) {
+      return this.getRoutePath('staff-details');
+    }
+    if (this.workplace.uid === this.primaryWorkplace.uid) {
+      return ['/dashboard'];
+    }
+    return [`/workplace/${this.workplace.uid}`];
   }
 }

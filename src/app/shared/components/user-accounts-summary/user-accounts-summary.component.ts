@@ -1,65 +1,57 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
-import { UserDetails, UserStatus } from '@core/model/userDetails.model';
+import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { UserService } from '@core/services/user.service';
-import { orderBy } from 'lodash';
-import { Subscription } from 'rxjs';
+import { getUserPermissionsTypes } from '@core/utils/users-util';
+import orderBy from 'lodash/orderBy';
 
 @Component({
   selector: 'app-user-accounts-summary',
   templateUrl: './user-accounts-summary.component.html',
 })
-export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
+export class UserAccountsSummaryComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() showSecondUserBanner: boolean;
 
-  private subscriptions: Subscription = new Subscription();
   public users: Array<UserDetails> = [];
   public canAddUser: boolean;
   public canViewUser: boolean;
+  public userPermissionsTypes: UserPermissionsType[];
 
-  constructor(private userService: UserService, private permissionsService: PermissionsService) {}
+  constructor(private route: ActivatedRoute, private permissionsService: PermissionsService) {}
 
-  ngOnInit() {
-    this.subscriptions.add(
-      this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermissions) => {
-        if (hasPermissions && hasPermissions.permissions) {
-          this.permissionsService.setPermissions(this.workplace.uid, hasPermissions.permissions);
-          this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
-          this.userService.getAllUsersForEstablishment(this.workplace.uid).subscribe((users) => {
-            this.canAddUser =
-              this.permissionsService.can(this.workplace.uid, 'canAddUser') && this.userSlotsAvailable(users);
-            this.users = orderBy(
-              users,
-              [
-                'status',
-                'isPrimary',
-                'role',
-                (user: UserDetails) => (user.fullname ? user.fullname.toLowerCase() : 'a'),
-              ],
-              ['desc', 'desc', 'asc', 'asc'],
-            );
-          });
-        }
-      }),
+  ngOnInit(): void {
+    const users = this.route.snapshot.data.users ? this.route.snapshot.data.users : [];
+    this.userPermissionsTypes = getUserPermissionsTypes(true);
+
+    this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
+    this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser') && this.userSlotsAvailable(users);
+
+    this.users = orderBy(
+      users,
+      ['status', 'isPrimary', 'role', (user: UserDetails) => (user.fullname ? user.fullname.toLowerCase() : 'a')],
+      ['desc', 'desc', 'asc', 'asc'],
     );
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  public getUserType(user: UserDetails): string {
+    const userType = this.userPermissionsTypes.find(
+      (type) =>
+        type.role === user.role &&
+        type.canManageWdfClaims === user.canManageWdfClaims &&
+        !!user.isPrimary === !!type.isPrimary,
+    );
+
+    return userType?.userTableValue;
   }
 
-  public getUserType(user: UserDetails) {
-    return user.isPrimary ? 'Primary edit' : user.role === 'Read' ? 'Read only' : user.role;
-  }
-
-  public isPending(user: UserDetails) {
+  public isPending(user: UserDetails): boolean {
     return user.status === UserStatus.Pending;
   }
 
-  private userSlotsAvailable(users: Array<UserDetails>) {
+  private userSlotsAvailable(users: Array<UserDetails>): boolean {
     const readOnlyLimit = this.workplace.isParent ? 20 : 3;
     const editUsers = users.filter((user) => user.role === Roles.Edit);
     const readOnlyUsers = users.filter((user) => user.role === Roles.Read);

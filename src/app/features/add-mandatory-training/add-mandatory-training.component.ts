@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import {
   allMandatoryTrainingCategories,
@@ -26,7 +26,7 @@ import { take } from 'rxjs/internal/operators/take';
   selector: 'app-add-mandatory-training',
   templateUrl: './add-mandatory-training.component.html',
 })
-export class AddMandatoryTrainingComponent implements OnInit {
+export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public submitted = false;
   public categories: TrainingCategory[];
@@ -60,6 +60,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
     protected establishmentService: EstablishmentService,
     private jobService: JobService,
     protected router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   get categoriesArray(): FormArray {
@@ -71,33 +72,38 @@ export class AddMandatoryTrainingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.return = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
-
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.establishment = this.route.parent.snapshot.data.establishment;
     this.setBackLink();
+
     this.getAllTrainingCategories();
     this.getAlJobs();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe((establishment) => {
-        this.establishment = establishment;
-        this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
-          (trainings) => {
-            this.existingMandatoryTrainings = trainings;
-            this.prefill(trainings);
-          },
-          (error) => {
-            if (error.error.message) {
-              this.serverError = error.error.message;
-            }
-          },
-        );
-      }),
+      this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe(
+        (trainings) => {
+          this.existingMandatoryTrainings = trainings;
+          this.prefill(trainings);
+        },
+        (error) => {
+          if (error.error.message) {
+            this.serverError = error.error.message;
+          }
+        },
+      ),
     );
   }
 
-  private setBackLink(): void {
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  public setBackLink(): void {
+    const url =
+      this.establishment.uid === this.primaryWorkplace.uid ? ['/dashboard'] : ['/workplace', this.establishment.uid];
+    this.return = { url: url, fragment: 'training-and-qualifications' };
     this.backService.setBackLink(this.return);
   }
 
@@ -153,7 +159,7 @@ export class AddMandatoryTrainingComponent implements OnInit {
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'There has been a problem saving your mandatory training. Please try again.',
       },
       {

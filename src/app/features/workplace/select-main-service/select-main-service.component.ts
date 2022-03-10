@@ -6,13 +6,15 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectMainService } from '@features/workplace-find-and-select/select-main-service/select-main-service';
+import {
+  SelectMainServiceDirective,
+} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
   selector: 'app-select-main-service',
-  templateUrl: '../../workplace-find-and-select/select-main-service/select-main-service.component.html',
+  templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
 })
-export class SelectMainServiceComponent extends SelectMainService {
+export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public workplace: Establishment;
   constructor(
     private route: ActivatedRoute,
@@ -21,7 +23,7 @@ export class SelectMainServiceComponent extends SelectMainService {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected workplaceService: WorkplaceService
+    protected workplaceService: WorkplaceService,
   ) {
     super(backService, errorSummaryService, formBuilder, router, workplaceService);
   }
@@ -47,9 +49,9 @@ export class SelectMainServiceComponent extends SelectMainService {
       },
     };
     this.subscriptions.add(
-      this.establishmentService.updateMainService(this.workplace.uid, request).subscribe(data => {
+      this.establishmentService.updateMainService(this.workplace.uid, request).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
-        if(this.establishmentService.mainServiceCQC && !this.workplace.isRegulated) {
+        if (this.establishmentService.mainServiceCQC && !this.workplace.isRegulated) {
           this.router.navigate(['/workplace', this.workplace.uid, 'main-service-cqc-confirm']);
         } else {
           this.router.navigate(this.establishmentService.returnTo.url, {
@@ -57,7 +59,7 @@ export class SelectMainServiceComponent extends SelectMainService {
           });
           this.establishmentService.setReturnTo(null);
         }
-      })
+      }),
     );
   }
 

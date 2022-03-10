@@ -1,5 +1,5 @@
-<h2 class="govuk-!-margin-top-6 govuk-heading-s">Download your current data</h2>
-<ul class="govuk-list govuk-list--download">
+<h2 class="govuk-heading-s govuk-!-margin-top-6">Download your current data</h2>
+<ul class="govuk-list govuk-list--download govuk-!-margin-bottom-0">
   <li>
     <a
       href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-workplace.csv"
@@ -10,8 +10,9 @@
   </li>
   <li>
     <a
+      class="govuk-!-padding-top-2"
       href="/bulk-upload/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-bulk-upload-staff.csv"
-      (click)="downloadFile($event, BulkUploadFileType.Worker)"
+      (click)="downloadFile($event, sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker)"
     >
       Staff
     </a>

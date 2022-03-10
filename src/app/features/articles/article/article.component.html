@@ -1,0 +1,18 @@
+<div *ngIf="article; else notFound" class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-5">
+      <span class="govuk-caption-xl">ASC-WDS news</span>
+      <span [innerHTML]="article.title"></span>
+    </h1>
+    <div class="asc-cms-content" [innerHTML]="article.content"></div>
+    <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-3" [routerLink]="['/']">
+      Return to home
+    </a>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <app-article-list></app-article-list>
+  </div>
+</div>
+<ng-template #notFound>
+  <app-page-not-found></app-page-not-found>
+</ng-template>

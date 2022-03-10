@@ -18,8 +18,11 @@ const changeDataPermissions = async (req, res) => {
 
     const thisEstablishment = new Establishment.Establishment(req.username);
     if (await thisEstablishment.restore(req.establishmentId, false)) {
-      let establishmentResponse = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(thisEstablishment.id, params);
-      if(establishmentResponse){
+      let establishmentResponse = await Establishment.Establishment.fetchAndUpdateEstablishmentDetails(
+        thisEstablishment.id,
+        params,
+      );
+      if (establishmentResponse) {
         return res.status(201).send(establishmentResponse);
       }
     } else {
@@ -29,7 +32,7 @@ const changeDataPermissions = async (req, res) => {
     }
   } catch (e) {
     console.error('/establishment/:id/dataPermissions: ERR: ', e.message);
-    return res.status(503).send({}); // intentionally an empty JSON response
+    return res.status(500).send({}); // intentionally an empty JSON response
   }
 };
 

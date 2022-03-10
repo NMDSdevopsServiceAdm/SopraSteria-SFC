@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const moment = require('moment');
-const { pRateLimit } = require('p-ratelimit');
 
 const models = require('../../../../models');
 const findInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
@@ -19,7 +18,7 @@ const getInactiveWorkplaces = async (_req, res) => {
   } catch (err) {
     console.error(err);
 
-    return res.status(503).json({});
+    return res.status(500).json({});
   }
 };
 
@@ -44,6 +43,7 @@ const createCampaign = async (req, res) => {
         template: workplace.emailTemplate.id,
         data: {
           dataOwner: workplace.dataOwner,
+          lastLogin: workplace.lastLogin,
           lastUpdated: workplace.lastUpdated,
           subsidiaries: workplace.subsidiaries ? workplace.subsidiaries : [],
         },
@@ -54,13 +54,8 @@ const createCampaign = async (req, res) => {
 
     await models.EmailCampaignHistory.bulkCreate(history);
 
-    const limit = pRateLimit({
-      interval: 1000,
-      rate: 5, // 5 emails per second
-    });
-
-    totalInactiveWorkplaces.map((inactiveWorkplace) => {
-      return limit(() => sendEmail.sendEmail(inactiveWorkplace));
+    totalInactiveWorkplaces.map((inactiveWorkplace, index) => {
+      return sendEmail.sendEmail(inactiveWorkplace, index);
     });
 
     return res.json({
@@ -69,7 +64,7 @@ const createCampaign = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(503).json();
+    return res.status(500).json();
   }
 };
 

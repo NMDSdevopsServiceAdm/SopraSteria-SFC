@@ -1,0 +1,70 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-7">Admin reports</h2>
+
+    <div class="govuk-!-margin-top-4 govuk__flex govuk-util__horizontal-align-center">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
+        <a
+          class="govuk__flex govuk__align-items-center"
+          href="/download/{{ now }}-sfc-local-authority-report.xls'"
+          (click)="downloadLocalAuthorityAdminReport($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" />
+          <span class="govuk-!-margin-left-1">Admin local authority progress</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="govuk-!-margin-top-4 govuk__flex govuk-util__horizontal-align-center">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
+        <a
+          class="govuk__flex govuk__align-items-center"
+          href="/download/{{ now }}-delete-report.xlsx"
+          (click)="downloadDeleteReport($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" />
+          <span class="govuk-!-margin-left-1">Deletion report</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="govuk-!-margin-top-4 govuk__flex govuk-util__horizontal-align-center">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
+        <a
+          class="govuk__flex govuk__align-items-center"
+          href="/download/{{ now }}-registration-survey-report.xlsx"
+          (click)="downloadRegistrationSurveyReport($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" />
+          <span class="govuk-!-margin-left-1">Registration survey</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="govuk-!-margin-top-4 govuk__flex govuk-util__horizontal-align-center">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
+        <a
+          class="govuk__flex govuk__align-items-center"
+          href="/download/{{ now }}-satisfaction-survey-report.xlsx"
+          (click)="downloadSatisfactionSurveyReport($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" />
+          <span class="govuk-!-margin-left-1">Satisfaction survey</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="govuk-!-margin-top-4 govuk__flex govuk-util__horizontal-align-center">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
+        <a
+          class="govuk__flex govuk__align-items-center"
+          href="/download/{{ now }}-sfc-wdf-summary-report.csv"
+          (click)="downloadWdfSummaryReport($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" />
+          <span class="govuk-!-margin-left-1">WDF summary report</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

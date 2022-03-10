@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
-const moment = require('moment-timezone');
-const config = require('../../../config/config');
 const notifications = require('../../../data/notifications');
+const { convertIndividualParentRequest } = require('../../../utils/parentIndividualRequestUtils');
 const uuid = require('uuid');
 
 const parentApprovalConfirmation = 'Parent request approved';
@@ -11,12 +10,33 @@ const parentRejectionConfirmation = 'Parent request rejected';
 
 const getParentRequests = async (req, res) => {
   try {
-    let approvalResults = await models.Approvals.findAllPending('BecomeAParent');
+    let approvalResults = await models.Approvals.findAllPendingAndInProgress('BecomeAParent');
     let parentRequests = await _mapResults(approvalResults);
     return res.status(200).json(parentRequests);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(400).send();
+  }
+};
+
+const getIndividualParentRequest = async (req, res) => {
+  try {
+    const { establishmentUid } = req.params;
+    const establishment = await models.establishment.findByUid(establishmentUid);
+
+    if (!establishment) {
+      return res.status(400).json({
+        message: 'Establishment could not be found',
+      });
+    }
+
+    const individualParentRequest = await models.Approvals.findbyEstablishmentId(establishment.id, 'BecomeAParent');
+
+    const convertedIndividualParentRequest = convertIndividualParentRequest(individualParentRequest);
+    res.status(200).send(convertedIndividualParentRequest);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'There was an error retrieving the parent request' });
   }
 };
 
@@ -28,26 +48,26 @@ const parentApproval = async (req, res) => {
       await _rejectParent(req, res);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(400).send();
   }
 };
 
 const _mapResults = async (approvalResults) => {
-  return approvalResults.map(approval => {
-      return {
-        requestId: approval.ID,
-        requestUUID: approval.UUID,
-        establishmentId: approval.EstablishmentID,
-        establishmentUid: approval.Establishment.uid,
-        userId: approval.UserID,
-        workplaceId: approval.Establishment.nmdsId,
-        userName: approval.User.FullNameValue,
-        orgName: approval.Establishment.NameValue,
-        requested: moment.utc(approval.createdAt).tz(config.get('timezone')).format('D/M/YYYY h:mma')
-      };
-    }
-  );
+  return approvalResults.map((approval) => {
+    return {
+      requestId: approval.ID,
+      requestUUID: approval.UUID,
+      establishmentId: approval.EstablishmentID,
+      establishmentUid: approval.Establishment.uid,
+      userId: approval.UserID,
+      workplaceId: approval.Establishment.nmdsId,
+      userName: approval.User.FullNameValue,
+      orgName: approval.Establishment.NameValue,
+      requested: approval.createdAt,
+      status: approval.Status,
+    };
+  });
 };
 
 const _approveParent = async (req, res) => {
@@ -77,7 +97,7 @@ const _updateApprovalStatus = async (approvalId, status) => {
 
 const _makeWorkplaceIntoParent = async (id) => {
   let workplace = await models.establishment.findbyId(id);
-  if(workplace) {
+  if (workplace) {
     workplace.isParent = true;
     await workplace.save();
   } else {
@@ -91,27 +111,30 @@ const _notify = async (approvalId, userUid, establishmentId) => {
   const params = {
     type: 'BECOMEAPARENT',
     typeUid: typUid,
-    userUid: userUid
+    userUid: userUid,
   };
-  const users = await notifications.getAllUser({establishmentId: establishmentId});
-  await Promise.all(users.map(async (user) => {
-    const userparams = {
-      ...params,
-      recipientUserUid: user.UserUID,
-      notificationUid: uuid.v4(),
-    };
-    await notifications.insertNewNotification(userparams);
-  }));
+  const users = await notifications.getAllUser({ establishmentId: establishmentId });
+  await Promise.all(
+    users.map(async (user) => {
+      const userparams = {
+        ...params,
+        recipientUserUid: user.UserUID,
+        notificationUid: uuid.v4(),
+      };
+      await notifications.insertNewNotification(userparams);
+    }),
+  );
 };
 
 router.route('/').post(parentApproval);
 router.route('/').get(getParentRequests);
-
+router.route('/:establishmentUid').get(getIndividualParentRequest);
+router.use('/updateStatus', require('./updateStatus.js'));
 
 module.exports = router;
 module.exports.parentApproval = parentApproval;
 module.exports.getParentRequests = getParentRequests;
 
-
+module.exports.getIndividualParentRequest = getIndividualParentRequest;
 module.exports.parentApprovalConfirmation = parentApprovalConfirmation;
 module.exports.parentRejectionConfirmation = parentRejectionConfirmation;

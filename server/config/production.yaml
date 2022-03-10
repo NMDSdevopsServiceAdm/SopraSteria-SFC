@@ -18,8 +18,8 @@ jwt:
 
 db:
   pool:
-    min: 100
-    max: 300
+    min: 50
+    max: 150
     acquire: 240000
     idle: 200000
   ssl: true
@@ -36,9 +36,15 @@ bulkupload:
   bucketname: sfc-bulkupload-prod
   validation:
     timeout: 300
-    storeIntermediaries: false
   completion:
     timeout: 120
+  lambda:
+    stage: sfcprod
+
+ disbursement:
+    region: eu-west-2
+    bucketname: wdf-disbursement-prod
+
 
 locks:
   region: eu-west-1

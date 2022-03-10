@@ -10,6 +10,7 @@ export interface LocationAddress {
   mainServiceOther?: string;
   postalCode: string;
   townCity: string;
+  numberOfStaff?: string;
 }
 
 export interface LocationSearchResponse {
@@ -17,4 +18,5 @@ export interface LocationSearchResponse {
   message: string;
   postcodedata?: Array<LocationAddress>;
   success: number;
+  searchmethod: string;
 }

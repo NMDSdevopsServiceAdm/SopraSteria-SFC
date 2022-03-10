@@ -1,0 +1,71 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <h2 class="govuk-heading-l">Registration request: {{ registration.establishment.name }}</h2>
+    <p>Received {{ registration.created }}</p>
+    <p data-testid="banner">
+      <strong class="govuk-tag govuk-tag--red">
+        {{ registration.establishment.status | uppercase }}
+      </strong>
+    </p>
+    <h2 class="govuk-heading-m">Workplace details</h2>
+    <dl class="govuk-summary-list asc-summarylist-border-top">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Workplace ID</dt>
+        <dd class="govuk-summary-list__value">{{ registration.establishment.nmdsId }}<br /></dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name and address</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.name }}<br />
+          {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
+          {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
+          {{ registration.establishment.address3 }}<br />
+          {{ registration.establishment.county }}<br />
+          {{ registration.establishment.town }}<br />
+          {{ registration.establishment.postcode }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Provider ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.provid }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Location ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.locationId }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Parent ID</dt>
+        <dd class="govuk-summary-list__value">
+          <a (click)="navigateToParentAccount($event)" href="#">{{
+            registration.establishment.parentEstablishmentId
+          }}</a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Regulated</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.isRegulated ? 'Yes' : 'No' }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Main service</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.mainService }}
+        </dd>
+      </div>
+    </dl>
+    <app-add-note
+      [addNote]="addNote"
+      [registration]="registration"
+      [notes]="notes"
+      [getNotes]="getNotes"
+      [notesError]="notesError"
+      [notesForm]="notesForm"
+      [loggedInUser]="loggedInUser"
+    ></app-add-note>
+  </div>
+</div>

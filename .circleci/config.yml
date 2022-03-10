@@ -73,6 +73,16 @@ commands:
             # Ensure dark route is exclusive to dark app
             cf unmap-route "<<parameters.appname>>" "<<parameters.dark_domain>>"<<# parameters.dark_subdomain>> -n "<<parameters.dark_subdomain>>"<</ parameters.dark_subdomain>> || echo "Already exclusive"
           name: Cloud Foundry Dark Deployment
+  attach_autoscale_policy:
+    parameters:
+      appname:
+        description: App Name
+        type: string
+    steps:
+      - run:
+          command: |
+            cf attach-autoscaling-policy <<parameters.appname>> policy.<<parameters.appname>>.json
+          name: Cloud Foundry Bind auto scaling policy
   install:
     description: Installs and authenticates with the latest CLI version if not present.
     parameters:
@@ -98,6 +108,7 @@ commands:
             cf api "<<parameters.endpoint>>"
             cf auth "$CF_USERNAME" "$CF_PASSWORD"
             cf target -o "<<parameters.org>>" -s "<<parameters.space>>"
+            cf install-plugin -r CF-Community app-autoscaler-plugin -f
           name: Setup CF CLI
   live_deploy:
     parameters:
@@ -126,24 +137,53 @@ commands:
             # Switch name of "dark" version to claim correct name
             cf rename "<<parameters.appname>>-dark" "<<parameters.appname>>"
           name: Cloud Foundry - Re-route live Domain
+  deploy_lambda:
+    parameters:
+      appname:
+        description: App Name
+        type: string
+      folder:
+        description: Folder where the lambda lives
+        type: string
+    steps:
+      - run:
+          command: |
+            cd lambdas/<<parameters.folder>>
+            npm ci
+            npx serverless deploy --stage <<parameters.appname>>
 
 orbs:
   node: circleci/node@3.0.0
+  slack: circleci/slack@4.4.4
+  codecov: codecov/codecov@1.0.2
 
 jobs:
   install:
+    resource_class: large
     working_directory: ~/project
     docker:
       - image: circleci/node:12.19.0-browsers
-    environment: NODE_OPTIONS=--max_old_space_size=4096
+    environment: NODE_OPTIONS=--max_old_space_size=8192
     steps:
       - checkout
-      - node/install-packages:
-          cache-path: ~/project/node_modules
-          cache-version: v2
+      - restore_cache:
+          keys:
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run: |
-          if [ -n "$CIRCLE_TAG" ] || [ "$CIRCLE_BRANCH" == 'live' ]; then
+          if [ -d "/home/circleci/project/node_modules" ]; then
+            echo "Skipping install as node modules already exists"
+          else
+            npm ci
+          fi
+      - save_cache:
+          key: node-deps-v2-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/project/node_modules
+      - run: |
+          if [ -n "$CIRCLE_TAG" ]; then
               npm run build:prod
+          elif [ "$CIRCLE_BRANCH" == 'live' ]; then
+              npm run build:preprod
           else
               npm run build:test
           fi
@@ -152,17 +192,31 @@ jobs:
           paths:
             - dist
   test_frontend:
+    resource_class: large
     docker:
       - image: circleci/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
           command: sudo apt-get install -yq libxss1
       - run:
-          command: npm run test
+          command: npm run test-headless
+          environment:
+            JUNIT_REPORT_PATH: ./junit/
+            JUNIT_REPORT_NAME: test-results.xml
+          when: always
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./junit
+      - store_artifacts:
+          path: ./fecoverage
+      - codecov/upload:
+          file: ./fecoverage/lcov.info
+          flags: frontend
   test_backend:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -170,9 +224,22 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
-          command: npm run server:test:unit
+          command: npm run server:lambda:cover:unit:ci
+          environment:
+            MOCHA_FILE: ./junit/test-results.xml
+            NODE_ENV: example
+          when: always
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./junit
+      - store_artifacts:
+          path: ./coverage
+      - codecov/upload:
+          file: ./coverage/lcov.info
+          flags: backend
   performance:
     docker:
       - image: circleci/node:12.19.0-browsers
@@ -182,9 +249,29 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
           command: $(npm bin)/lhci autorun
+  feature_flag:
+    description: Checks for redundant feature flags
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          command: sudo apt-get install silversearcher-ag
+      - run:
+          command: sudo pip install configcat-flag-reference-validator==2.0.1
+      - run:
+          command: |
+            if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
+              echo "Please, set the feature flag environment variables. Will stop now."
+              exit 1
+            fi
+            configcat-validator.py "${CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=false
+
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
@@ -257,7 +344,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - node-deps-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}
       - when:
           condition: <<parameters.build_steps>>
           steps: << parameters.build_steps >>
@@ -285,12 +372,89 @@ jobs:
           appname: <<parameters.appname>>
           live_subdomain: <<parameters.live_subdomain>>
           live_domain: <<parameters.live_domain>>
+      - slack/notify:
+          branch_pattern: test
+          channel: $STAGING_SLACK_CHANNEL_ID
+          event: pass
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "New feature by $CIRCLE_USERNAME ready for testing in staging! :tada:"
+                  }
+                }
+              ]
+            }
+      - slack/notify:
+          branch_pattern: live
+          channel: $PREPROD_SLACK_CHANNEL_ID
+          event: pass
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "New feature by $CIRCLE_USERNAME ready for testing in pre-prod! :tada:"
+                  }
+                }
+              ]
+            }
+  attach_autoscale_policy:
+    description: Attach an auto scaling policy
+    docker:
+      - image: circleci/node:lts
+    parameters:
+      appname:
+        description: App Name
+        type: string
+      build_steps:
+        default: []
+        description: Steps to generate application package or files. Alternately provide
+          `workspace_path`
+        type: steps
+      endpoint:
+        default: https://api.run.pivotal.io
+        description: The domain of the Cloud Foundry runtime API endpoint. Defaults
+          to https://api.run.pivotal.io
+        type: string
+      org:
+        description: Cloud Foundry Org to target
+        type: string
+      space:
+        description: Cloud Foundry space to target
+        type: string
+      workspace_path:
+        default: ''
+        description: The key of a workflow workspace which contains artifact. Alternately
+          provide `build_steps`
+        type: string
+      validate_steps:
+        default: []
+        description: Optional steps to run between the dark and live deployments.
+        type: steps
+    steps:
+      - checkout
+      - install:
+          endpoint: <<parameters.endpoint>>
+          org: <<parameters.org>>
+          space: <<parameters.space>>
+      - attach_autoscale_policy:
+          appname: <<parameters.appname>>
+      - when:
+          condition: <<parameters.validate_steps>>
+          steps: << parameters.validate_steps >>
   sentry_release:
     docker:
       - image: circleci/node:12.19.0-browsers
     environment:
       SENTRY_ORG: skills-for-care
       SENTRY_PROJECT: skills-for-care
+      SENTRY_BACKEND_PROJECT: asc-wds-backend
     parameters:
       env:
         description: Environment
@@ -306,6 +470,27 @@ jobs:
           sentry-cli releases set-commits --auto $SENTRY_RELEASE
           sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps dist
           sentry-cli releases finalize $SENTRY_RELEASE
+          sentry-cli releases new -p $SENTRY_BACKEND_PROJECT $SENTRY_RELEASE
+          sentry-cli releases set-commits --auto $SENTRY_RELEASE
+          sentry-cli releases finalize $SENTRY_RELEASE
+  serverless_deployment:
+    description: Deploying all lambdas
+    docker:
+      - image: circleci/node:lts
+    parameters:
+      appname:
+        description: App Name
+        type: string
+      folder:
+        description: Folder where the lambda lives
+        type: string
+    steps:
+      - checkout
+      - run: |
+          npm install serverless@2.72.2
+      - deploy_lambda:
+          appname: <<parameters.appname>>
+          folder: <<parameters.folder>>
 workflows:
   build-test-deploy:
     jobs:
@@ -331,6 +516,63 @@ workflows:
               only: /^v[0-9]+(\.[0-9]+)*$/
           requires:
             - install
+      - feature_flag:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
+      - serverless_deployment:
+          appname: sfcbenchmarks
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            branches:
+              only:
+                - feat/benchmarks
+      - serverless_deployment:
+          appname: sfcstaging
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            branches:
+              only:
+                - test
+      - serverless_deployment:
+          appname: sfcpreprod
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            branches:
+              only:
+                - live
+      - serverless_deployment:
+          appname: sfcprod
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
       - blue_green:
           name: blue_green_benchmarks
           appname: sfcbenchmarks
@@ -375,6 +617,7 @@ workflows:
           live_subdomain: sfcstaging
           live_domain: cloudapps.digital
           workspace_path: .
+          context: slack-secrets
       - blue_green:
           name: preprod_deploy
           appname: sfcpreprod
@@ -397,6 +640,23 @@ workflows:
           dark_domain: cloudapps.digital
           live_subdomain: sfcpreprod
           live_domain: cloudapps.digital
+          workspace_path: .
+          context: slack-secrets
+      - attach_autoscale_policy:
+          appname: sfcpreprod
+          requires:
+            - preprod_deploy
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              only:
+                - live
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: production
           workspace_path: .
       - hold_prod:
           type: approval
@@ -434,6 +694,21 @@ workflows:
           live_subdomain: asc-wds
           live_domain: skillsforcare.org.uk
           workspace_path: .
+      # - attach_autoscale_policy:
+      #     appname: sfcprod
+      #     requires:
+      #       - prod_deploy
+      #     filters:
+      #       # ignore any commit on any branch by default
+      #       branches:
+      #         ignore: /.*/
+      #       # only act on version tags
+      #       tags:
+      #         only: /^v[0-9]+(\.[0-9]+)*$/
+      #     endpoint: https://api.cloud.service.gov.uk
+      #     org: dhsc-skills-for-care-nmds-sc-2
+      #     space: production
+      #     workspace_path: .
       - sentry_release:
           requires:
             - blue_green_benchmarks

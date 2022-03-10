@@ -1,0 +1,64 @@
+<div class="govuk-grid-row govuk-!-margin-1 govuk-!-margin-top-4">
+  <div class="asc-summary-box">
+    <div class="govuk-grid-row govuk-!-margin-top-3">
+      <div class="govuk-grid-column-one-half govuk-util__align-left">
+        <h1 class="govuk-heading-l">Help to get you started</h1>
+      </div>
+      <div class="govuk-grid-column-one-half govuk-util__align-right">
+        <a class="govuk-button govuk-button--link" routerLink="/dashboard">Close</a>
+      </div>
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-bottom-5">
+      <div class="govuk-grid-column-one-half">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2">
+          {{ wizards[currentIndex].title }}
+        </h2>
+        <div class="asc-cms-content" [innerHTML]="wizards[currentIndex].content"></div>
+      </div>
+      <div class="govuk-grid-column-one-half govuk-util__align-center">
+        <div *ngIf="!wizards[currentIndex].video; then imageBlock; else videoBlock"></div>
+        <ng-template #imageBlock>
+          <img
+            class="asc-shadow-box govuk-!-margin-top-3 asc-image-width"
+            src="{{ imageUrl }}{{ wizards[currentIndex].image }}"
+            alt="{{ wizards[currentIndex].title }}"
+            data-testid="image"
+          />
+        </ng-template>
+        <ng-template #videoBlock>
+          <div class="video_wrapper">
+            <iframe
+              class="video"
+              [src]="rawVideoUrl | sanitizeVideoUrl"
+              frameborder="0"
+              allow="fullscreen; picture-in-picture"
+              allowfullscreen
+              loading="eager"
+              data-testid="video"
+            ></iframe>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-bottom-4">
+      <div *ngIf="!isFirst" class="govuk-grid-column-one-half govuk-util__float-left">
+        <a class="govuk-util__float-left" href="#" (click)="nextOrPreviousWizard($event, false)">
+          <div class="asc-chevron-before asc-no-underline govuk-!-font-size-26">Previous</div>
+          <div class="govuk-link govuk-!-padding-left-3">{{ wizards[currentIndex - 1].title }}</div>
+        </a>
+      </div>
+      <div *ngIf="!isLast" class="govuk-grid-column-one-half govuk-util__float-right">
+        <a
+          class="govuk-util__float-right govuk-util__align-right"
+          href="#"
+          (click)="nextOrPreviousWizard($event, true)"
+        >
+          <div class="asc-chevron-after asc-no-underline govuk-!-font-size-26">Next</div>
+          <div class="govuk-link govuk-!-padding-right-3">
+            {{ wizards[currentIndex + 1].title }}
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -8,7 +8,7 @@ const filteredProperties = ['LocalIdentifier'];
 /*
     New endpoint `[GET]/[PUT] api/establishment/:eid/localIdentifier` - to retrieve and update the property "localIdentifier".
     Returns 400 if the given localidentifier is not unqiue.
-    Returns 503 on service error.
+    Returns 500 on service error.
     Otherwise returns 200 for GET and 202 for PUT.
 */
 
@@ -50,7 +50,7 @@ const getLocalIdentifier = async (req, res) => {
     );
 
     console.error('establishment::localIdentifier GET/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -86,10 +86,10 @@ const addLocalIdentifier = async (req, res) => {
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
       console.error('Establishment::localidentifier POST: ', err.message);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
-      return res.status(503).send(err.safe);
+      return res.status(500).send(err.safe);
     }
   }
 };
@@ -133,7 +133,7 @@ const updateMultipleLocalIdentifiers = async (req, res) => {
       }
     }
     console.error('Establishment::localidentifier PUT: ', err.message);
-    return res.status(503).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 

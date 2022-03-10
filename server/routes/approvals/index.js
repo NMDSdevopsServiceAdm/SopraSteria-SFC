@@ -17,7 +17,7 @@ const getApprovalRequest = async (req, res) => {
       return res.status(200).json(null);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(400).send();
   }
 };

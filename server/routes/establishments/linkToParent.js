@@ -84,7 +84,7 @@ const linkToParent = async (req, res) => {
     }
   } catch (err) {
     console.error('Error occured: ', err);
-    return res.status(503).send({});
+    return res.status(500).send({});
   }
 };
 
@@ -138,7 +138,7 @@ const cancelLinkToParent = async (req, res) => {
     }
   } catch (e) {
     console.error(' /establishment/:id/linkToParent/cancel : ERR: ', e.message);
-    return res.status(503).send({}); //intentionally an empty JSON response
+    return res.status(500).send({}); //intentionally an empty JSON response
   }
 };
 
@@ -227,7 +227,7 @@ const actionLinkToParent = async (req, res) => {
     }
   } catch (e) {
     console.error('/establishment/:id/linkToParent/action : ERR: ', e.message);
-    return res.status(503).send({});
+    return res.status(500).send({});
   }
 };
 
@@ -293,7 +293,7 @@ const delink = async (req, res) => {
     }
   } catch (e) {
     console.error(' /establishment/:id/linkToParent/delink : ERR: ', e.message);
-    return res.status(503).send({}); //intentionally an empty JSON response
+    return res.status(500).send({}); //intentionally an empty JSON response
   }
 };
 

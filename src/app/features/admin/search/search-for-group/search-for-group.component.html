@@ -1,0 +1,91 @@
+<div class="govuk-grid-column-full">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p>Search by employer type. You can also choose to only search for parents.</p>
+      <div *ngIf="submitted && !results.length" data-testid="no-search-results">
+        <div class="govuk-warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">Information</span>
+            Your search returned no results. Please refine your search criteria.
+          </strong>
+        </div>
+      </div>
+      <div *ngIf="results && results.length">
+        <p class="govuk-!-font-weight-bold">
+          Your search returned {{ results.length | number }} {{ results.length > 1 ? 'results' : 'result' }}
+        </p>
+        <table class="govuk-table" data-testid="group-search-results">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-third" scope="col">Workplace</th>
+              <th class="govuk-table__header" scope="col">Workplace ID</th>
+              <th class="govuk-table__header" scope="col">Employer type</th>
+              <th class="govuk-table__header" scope="col">&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <ng-container *ngFor="let item of results; index as workplaceIndex">
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <a (click)="navigateToWorkplace(item.uid, '', item.nmdsId, $event)" href="#">{{ item.name }}</a>
+                </td>
+                <td class="govuk-table__cell">{{ item.nmdsId || '-' }}</td>
+                <td class="govuk-table__cell">
+                  {{ item.employerType?.other ? item.employerType.other : item.employerType?.value || '-' }}
+                </td>
+                <td class="govuk-table__cell">
+                  <a class="govuk-link--no-visited-state" href="#" (click)="toggleDetails(item.uid, $event)">{{
+                    searchDetailsLabel[item.uid] ? searchDetailsLabel[item.uid] : 'Open'
+                  }}</a>
+                </td>
+              </tr>
+              <tr *ngIf="searchDetails[item.uid]" class="govuk-panel--gray" data-testid="groups-workplace-details">
+                <td colspan="4">
+                  <app-workplace-dropdown
+                    [item]="item"
+                    [workplaceIndex]="workplaceIndex"
+                    [(navigateToWorkplace)]="navigateToWorkplace"
+                    [(unlockUser)]="unlockUser"
+                  ></app-workplace-dropdown>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="employerType"> Employer Type </label>
+          <select class="govuk-select" id="employerType" name="employerType" [formControlName]="'employerType'">
+            <option value="All">All</option>
+            <option value="Local Authority (adult services)">Local Authority (adult services)</option>
+            <option value="Local Authority (generic/other)">Local Authority (generic/other)</option>
+            <option value="Private Sector">Private Sector</option>
+            <option value="Voluntary / Charity">Voluntary / Charity</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="govuk-form-group">
+          <div class="govuk-checkboxes">
+            <div class="govuk-checkboxes__item">
+              <input
+                id="parent"
+                name="parent"
+                class="govuk-checkboxes__input"
+                type="checkbox"
+                value="true"
+                [formControlName]="'parent'"
+              />
+              <label class="govuk-label govuk-checkboxes__label" for="parent"> Only search for parents </label>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="govuk-button" data-testid="searchButton">Search</button>
+      </form>
+    </div>
+  </div>
+</div>

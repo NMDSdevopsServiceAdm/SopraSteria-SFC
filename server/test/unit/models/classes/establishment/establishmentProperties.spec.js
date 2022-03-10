@@ -1,9 +1,7 @@
-const { NameProperty } = require('../../../../../models/classes/establishment/properties/nameProperty');
-
 const expect = require('chai').expect;
 
-const EstablishmentPropertyManager = require('../../../../../models/classes/establishment/establishmentProperties')
-  .EstablishmentPropertyManager;
+const EstablishmentPropertyManager =
+  require('../../../../../models/classes/establishment/establishmentProperties').EstablishmentPropertyManager;
 
 describe('EstablishmentPropertyManager', () => {
   const properties = [
@@ -27,13 +25,11 @@ describe('EstablishmentPropertyManager', () => {
     'TownProperty',
     'CountyProperty',
     'PostcodeProperty',
-    'LatitudeProperty',
-    'LongitudeProperty',
     'IsRegulatedProperty',
   ];
   it('should have the correct property types', () => {
     const establishmentProperties = new EstablishmentPropertyManager();
-    expect(establishmentProperties._thisManager._propertyTypes.length).to.deep.equal(23);
+    expect(establishmentProperties._thisManager._propertyTypes.length).to.deep.equal(20);
     establishmentProperties._thisManager._propertyTypes.forEach((propertyType) => {
       expect(typeof propertyType).to.deep.equal('function');
       expect(properties).to.include(propertyType.name);

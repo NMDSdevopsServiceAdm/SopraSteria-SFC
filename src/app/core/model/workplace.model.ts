@@ -9,8 +9,8 @@ export interface AddWorkplaceRequest {
   mainService: string;
   postalCode: string;
   townCity: string;
+  totalStaff?: string;
 }
-
 export interface AddWorkplaceResponse {
   establishmentId: number;
   establishmentUid: string;

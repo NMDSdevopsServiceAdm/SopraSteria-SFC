@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
@@ -145,6 +145,18 @@ export class BulkUploadService {
     ).pipe(map((response) => response.file.signedUrl));
   }
 
+  public getUploadedFileFromS3(workplaceUid: string, key: string, type: BulkUploadFileType): Observable<any> {
+    const params = new HttpParams().set('downloadType', type);
+
+    return this.checkLockStatus(
+      () => this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}/${key}`, { params }),
+      {
+        observe: 'response',
+        responseType: 'blob' as 'json',
+      },
+    );
+  }
+
   public validateFiles(workplaceUid: string): Observable<ValidatedFilesResponse> {
     return this.checkLockStatus(
       () => this.http.put<ValidatedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/validate`, null),
@@ -199,6 +211,9 @@ export class BulkUploadService {
       case BulkUploadFileType.Worker:
         url = 'workers';
         break;
+      case BulkUploadFileType.WorkerSanitise:
+        url = 'workersSanitise';
+        break;
       case BulkUploadFileType.Training:
         url = 'training';
         break;
@@ -233,6 +248,14 @@ export class BulkUploadService {
     this.uploadedFiles$.next(null);
     this.validationErrors$.next(null);
     this.serverError$.next(null);
+  }
+
+  public getLockStatus(workplaceUid: string): Observable<BulkUploadStatus> {
+    return this.http.get<BulkUploadStatus>(`/api/establishment/${workplaceUid}/bulkupload/lockstatus`);
+  }
+
+  public unlockBulkUpload(workplaceUid: string): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${workplaceUid}/bulkupload/unlock`);
   }
 
   public formErrorsMap(): Array<ErrorDetails> {
@@ -276,7 +299,7 @@ export class BulkUploadService {
         message: 'Validation failed.',
       },
       {
-        name: 503,
+        name: 500,
         message: 'There is a problem with the service.',
       },
     ];

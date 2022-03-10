@@ -9,6 +9,7 @@ module.exports = {
   extends: ['eslint:recommended', 'prettier'],
   rules: {
     quotes: [2, 'single', 'avoid-escape'],
+    'no-unused-vars': ['error', { argsIgnorePattern: '^next$' }],
   },
   parserOptions: {
     ecmaVersion: 2018,

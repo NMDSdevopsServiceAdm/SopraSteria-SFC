@@ -7,68 +7,80 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  ConfirmWorkplaceDetails,
-} from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
-import { combineLatest } from 'rxjs';
+import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 
 @Component({
   selector: 'app-confirm-workplace-details',
   templateUrl: './confirm-workplace-details.component.html',
 })
-export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
+export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDirective {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = this.workplaceService.serverErrorsMap;
 
   constructor(
-    private errorSummaryService: ErrorSummaryService,
-    private establishmentService: EstablishmentService,
-    private router: Router,
-    private workplaceService: WorkplaceService,
-    protected backService: BackService
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    protected router: Router,
+    protected workplaceService: WorkplaceService,
+    public backService: BackService,
   ) {
     super(backService);
   }
 
   protected init(): void {
     this.flow = '/add-workplace';
+    this.setBackLink();
+    this.resetReturnTo();
     this.getWorkplaceData();
   }
 
   protected getWorkplaceData(): void {
-    this.subscriptions.add(
-      combineLatest([
-        this.workplaceService.selectedLocationAddress$,
-        this.workplaceService.selectedWorkplaceService$,
-      ]).subscribe(([locationAddress, workplace]) => {
-        this.locationAddress = locationAddress;
-        this.workplace = workplace;
-      })
-    );
+    this.locationAddress = this.workplaceService.selectedLocationAddress$.value;
+    this.workplace = this.workplaceService.selectedWorkplaceService$.value;
+    this.WorkplaceTotalStaff = this.workplaceService.totalStaff$.value;
+  }
+
+  public setBackLink(): void {
+    const backLinkUrl = 'add-total-staff';
+    this.backService.setBackLink({ url: [this.flow, backLinkUrl] });
   }
 
   public continue(): void {
-     this.addWorkplace();
-   }
+    this.addWorkplace();
+  }
 
   private addWorkplace(): void {
     this.subscriptions.add(
       this.workplaceService
         .addWorkplace(
           this.establishmentService.primaryWorkplace.uid,
-          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace)
+          this.workplaceService.generateAddWorkplaceRequest(
+            this.locationAddress,
+            this.workplace,
+            this.WorkplaceTotalStaff,
+          ),
         )
         .subscribe(
           (response: AddWorkplaceResponse) => {
             this.workplaceService.newWorkplaceUid = response.establishmentUid;
             this.workplaceService.addWorkplaceFlow$.next(AddWorkplaceFlow.NON_CQC);
-            this.router.navigate([`${this.flow}/complete`]);
+            this.router.navigate([`${this.flow}/thank-you`]);
           },
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
             this.errorSummaryService.scrollToErrorSummary();
-          }
-        )
+          },
+        ),
     );
+  }
+
+  public onSetReturn(): void {
+    this.workplaceService.setReturnTo({
+      url: [`${this.flow}/confirm-details`],
+    });
+  }
+
+  private resetReturnTo(): void {
+    this.workplaceService.returnTo$.next(null);
   }
 }

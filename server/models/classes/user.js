@@ -196,6 +196,10 @@ class User {
     return this._displayStatus;
   }
 
+  get canManageWdfClaims() {
+    return this._properties.get('CanManageWdfClaims') ? this._properties.get('CanManageWdfClaims').property : null;
+  }
+
   set establishmentUid(uid) {
     this._establishmentUid = uid;
   }
@@ -911,8 +915,8 @@ class User {
         }
       });
     } catch (err) {
-      console.log('throwing error');
-      console.log(err);
+      console.error('throwing error');
+      console.error(err);
       throw new UserExceptions.UserDeleteException(
         null,
         this.uid,
@@ -968,6 +972,7 @@ class User {
         'updated',
         'updatedBy',
         'isPrimary',
+        'CanManageWdfClaimsValue',
       ],
       order: [['updated', 'DESC']],
     });
@@ -986,6 +991,7 @@ class User {
           updatedBy: thisUser.updatedBy,
           isPrimary: thisUser.isPrimary ? true : false,
           status: User.statusTranslator(thisUser.login),
+          canManageWdfClaims: thisUser.CanManageWdfClaimsValue,
         });
       });
 

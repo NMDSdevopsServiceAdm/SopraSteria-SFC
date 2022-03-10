@@ -5,7 +5,7 @@ const { buStates } = require('./states');
 
 // Prevent multiple bulk upload requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
-const acquireLock = async function (logic, newState, req, res) {
+const acquireLock = async function (logic, newState, complete, req, res) {
   const { establishmentId } = req;
 
   req.startTime = new Date().toISOString();
@@ -84,6 +84,12 @@ const acquireLock = async function (logic, newState, req, res) {
     console.error(e);
   }
 
+  if (complete) {
+    await completeLock(req, res, newState, nextState);
+  }
+};
+
+const completeLock = async (req, res, newState, nextState) => {
   if (newState === buStates.VALIDATING) {
     switch (res.buValidationResult) {
       case buStates.PASSED:
@@ -158,3 +164,4 @@ module.exports = router;
 
 module.exports.acquireLock = acquireLock;
 module.exports.releaseLock = releaseLock;
+module.exports.completeLock = completeLock;

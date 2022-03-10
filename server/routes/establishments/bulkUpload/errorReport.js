@@ -1,17 +1,17 @@
 'use strict';
 
+const excelJS = require('exceljs');
+const moment = require('moment');
+
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
 const s3 = require('./s3');
 const { buStates } = require('./states');
 const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
 const { EstablishmentFileHeaders } = require('../../../models/BulkImport/csv/establishments');
-const { WorkersFileHeaders } = require('../../../models/BulkImport/csv/workers');
-const { TrainingFileHeaders } = require('../../../models/BulkImport/csv/training');
-
-const excelJS = require('exceljs');
-const moment = require('moment');
 const excelUtils = require('../../../utils/excelUtils');
+const { workerHeadersWithCHGUNIQUEWRKID } = require('./data/workerHeaders');
+const { trainingHeaders } = require('./data/trainingHeaders');
 
 const reportHeaders = [
   { header: 'Type', key: 'type' },
@@ -74,10 +74,10 @@ const createTableHeader = (currentWorksheet) => {
   }
 };
 
-const generateHeaderArray = (establishmentFileHeaders, workersFileHeaders, trainingFileHeaders) => {
+const generateHeaderArray = (establishmentFileHeaders) => {
   allFileHeaders = allFileHeaders.concat(establishmentFileHeaders.split(','));
-  allFileHeaders = allFileHeaders.concat(workersFileHeaders.split(','));
-  allFileHeaders = allFileHeaders.concat(trainingFileHeaders.split(','));
+  allFileHeaders = allFileHeaders.concat(workerHeadersWithCHGUNIQUEWRKID.split(','));
+  allFileHeaders = allFileHeaders.concat(trainingHeaders.split(','));
 };
 
 const fillData = (WS, errorData) => {
@@ -111,10 +111,10 @@ const printRow = (WS, data, type) => {
 const generateBUReport = async (req, res) => {
   if (!req.establishmentId) {
     console.error('EstablishmentID invalid');
-    return res.status(503).end();
+    return res.status(500).end();
   }
 
-  generateHeaderArray(EstablishmentFileHeaders, WorkersFileHeaders, TrainingFileHeaders);
+  generateHeaderArray(EstablishmentFileHeaders);
   const data = await getErrorReport(req.establishmentId);
   let workbook = new excelJS.Workbook();
 
@@ -147,7 +147,7 @@ const generateBUReport = async (req, res) => {
   return res.status(200).end();
 };
 
-router.route('/').get(acquireLock.bind(null, errorReport, buStates.DOWNLOADING));
+router.route('/').get(acquireLock.bind(null, errorReport, buStates.DOWNLOADING, true));
 router.route('/report').get(generateBUReport);
 
 module.exports = router;

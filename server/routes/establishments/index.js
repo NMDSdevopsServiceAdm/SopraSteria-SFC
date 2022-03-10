@@ -19,7 +19,6 @@ const Capacity = require('./capacity');
 const ShareData = require('./shareData');
 const Staff = require('./staff');
 const Jobs = require('./jobs');
-const LA = require('./la');
 const Worker = require('./worker');
 const BulkUpload = require('./bulkUpload');
 const LocalIdentifier = require('./localIdentifier');
@@ -32,6 +31,9 @@ const LocationDetails = require('./locationdetails');
 const MandatoryTraining = require('./mandatoryTraining');
 const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
+const SharingPermissionsBanner = require('./sharingPermissionsBanner');
+const ExpiresSoonAlertDates = require('./expiresSoonAlertDates');
+const WdfClaims = require('./wdfClaims');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -70,7 +72,6 @@ router.use('/:id/capacity', Capacity);
 router.use('/:id/share', ShareData);
 router.use('/:id/staff', Staff);
 router.use('/:id/jobs', Jobs);
-router.use('/:id/localAuthorities', LA);
 router.use('/:id/worker', Worker);
 router.use('/:id/bulkupload', BulkUpload);
 router.use('/:id/localIdentifier', LocalIdentifier);
@@ -83,6 +84,9 @@ router.use('/:id/locationDetails', LocationDetails);
 router.use('/:id/mandatoryTraining', MandatoryTraining);
 router.use('/:id/workers', Workers);
 router.use('/:id/benchmarks', Benchmarks);
+router.use('/:id/updateSharingPermissionsBanner', SharingPermissionsBanner);
+router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
+router.use('/:id/wdfClaims', WdfClaims);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {
@@ -102,6 +106,7 @@ const addEstablishment = async (req, res) => {
     MainServiceId: null,
     MainServiceOther: req.body.mainServiceOther,
     IsRegulated: req.body.isRegulated,
+    NumberOfStaff: req.body.totalStaff,
   };
 
   try {
@@ -147,13 +152,6 @@ const addEstablishment = async (req, res) => {
         );
       }
 
-      if (establishmentData.PostCode) {
-        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(establishmentData.PostCode)) || {};
-
-        establishmentData.Latitude = Latitude;
-        establishmentData.Longitude = Longitude;
-      }
-
       const newEstablishment = new Establishment.Establishment();
       newEstablishment.initialise(
         establishmentData.Address1,
@@ -175,9 +173,8 @@ const addEstablishment = async (req, res) => {
           id: establishmentData.MainServiceId,
           other: establishmentData.MainServiceOther,
         },
-        Latitude: establishmentData.Latitude,
-        Longitude: establishmentData.Longitude,
         ustatus: 'PENDING',
+        numberOfStaff: establishmentData.NumberOfStaff,
       });
 
       // no Establishment properties on registration
@@ -221,7 +218,7 @@ const addEstablishment = async (req, res) => {
       });
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     console.error('Add establishment: rolling back all changes because: ', err.errCode, err.errMessage);
     if (err.errCode > -99) {
       console.error('Add establishment: original error: ', err.err);
@@ -229,7 +226,7 @@ const addEstablishment = async (req, res) => {
 
     if (err.errCode > -99) {
       // we have an unexpected error
-      res.status(503);
+      res.status(500);
     } else {
       // we have an expected error owing to given establishment data
       res.status(400);
@@ -299,7 +296,7 @@ const getEstablishment = async (req, res) => {
     );
 
     console.error('establishment::GET/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -327,7 +324,7 @@ const deleteEstablishment = async (req, res) => {
     );
 
     console.error('establishment::DELETE/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -341,12 +338,6 @@ const updateEstablishment = async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  PUT body will be updated (peristed)
-      if (req.body.PostCode && req.body.PostCode !== thisEstablishment.postcode) {
-        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(req.body.PostCode)) || {};
-
-        req.body.Latitude = Latitude;
-        req.body.Longitude = Longitude;
-      }
 
       const isValidEstablishment = await thisEstablishment.load(req.body);
 
@@ -362,7 +353,7 @@ const updateEstablishment = async (req, res) => {
     }
   } catch (err) {
     console.error('Worker PUT: ', err);
-    return res.status(503).send({});
+    return res.status(500).send({});
   }
 };
 

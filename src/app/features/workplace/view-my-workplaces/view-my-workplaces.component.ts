@@ -30,7 +30,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private userService: UserService
+    private userService: UserService,
   ) {}
 
   ngOnInit() {
@@ -44,7 +44,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'Service unavailable.',
       },
     ];
@@ -56,22 +56,23 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
         (workplaces: GetWorkplacesResponse) => {
           if (workplaces.subsidaries) {
             this.workplaces = workplaces.subsidaries.establishments;
-            this.workplaces = this.workplaces.filter(item => item.ustatus !== 'PENDING');
-            this.pendingWorkplaces = workplaces.subsidaries.establishments.filter(item => item.ustatus === 'PENDING');
-            this.pendingWorkplaces.sort((a: any,b: any) => {
+            this.workplaces = this.workplaces.filter((item) => item.ustatus === null);
+            this.pendingWorkplaces = workplaces.subsidaries.establishments.filter(
+              (item) => item.ustatus === 'PENDING' || item.ustatus === 'IN PROGRESS',
+            );
+            this.pendingWorkplaces.sort((a: any, b: any) => {
               const dateA = new Date(a.updated).getTime();
               const dateB = new Date(b.updated).getTime();
               return dateB > dateA ? 1 : -1;
             });
-            this.workplacesCount = workplaces.subsidaries.count  >  this.pendingWorkplaces.length ?
-            workplaces.subsidaries.count  -  this.pendingWorkplaces.length : this.pendingWorkplaces.length  - workplaces.subsidaries.count;
+            this.workplacesCount = this.workplaces.length;
           }
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
-        }
-      )
+        },
+      ),
     );
   }
 

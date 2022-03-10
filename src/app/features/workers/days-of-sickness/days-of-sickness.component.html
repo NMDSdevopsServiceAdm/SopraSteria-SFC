@@ -7,7 +7,7 @@
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
             <h1 class="govuk-fieldset__heading">
-              Do you know how many days sickness they have taken in the last 12 months?
+              Do you know how many days sickness they've taken in the last 12 months?
             </h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
@@ -21,9 +21,7 @@
                 value="Yes"
                 aria-controls="conditional-daysKnown-conditional-1"
               />
-              <label class="govuk-label govuk-radios__label" for="daysKnown-conditional-1">
-                Yes
-              </label>
+              <label class="govuk-label govuk-radios__label" for="daysKnown-conditional-1"> Yes </label>
             </div>
             <div
               class="govuk-radios__conditional govuk-input--width-20"
@@ -31,9 +29,7 @@
               id="conditional-daysKnown-conditional-1"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="days">
-                  Number of days
-                </label>
+                <label class="govuk-label" for="days"> Number of days </label>
                 <span *ngIf="submitted && form.get('days').errors" id="days-error" class="govuk-error-message">
                   <ng-container *ngIf="form.get('days').hasError('required')">
                     <span class="govuk-visually-hidden">Error:</span>
@@ -69,9 +65,7 @@
                 type="radio"
                 value="No"
               />
-              <label class="govuk-label govuk-radios__label" for="daysKnown-2">
-                No
-              </label>
+              <label class="govuk-label govuk-radios__label" for="daysKnown-2"> No </label>
             </div>
           </div>
         </fieldset>

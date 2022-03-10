@@ -15,6 +15,8 @@ export class WhyCreateAccountComponent implements OnInit {
   public responses = [
     'To help the Department of Health and Social Care and others to better understand the adult social care sector',
     'To get access to the Workforce Development Fund',
+    'To get access to the rapid induction/essential training programme',
+    'To get access to the Benefits Bundle',
     'To help us with the Care Quality Commission',
     'To help us with our local authority',
     'To record and manage staff training and qualifications',

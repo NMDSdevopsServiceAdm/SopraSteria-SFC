@@ -1,0 +1,167 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <h2 class="govuk-heading-l">Registration request: {{ registration.establishment.name }}</h2>
+    <p>Received {{ registration.created }}</p>
+    <app-review-checkbox
+      [toggleCheckbox]="toggleCheckbox"
+      [registration]="registration"
+      [userFullName]="userFullName"
+      [checkBoxError]="checkBoxError"
+      [getUpdatedRegistration]="getUpdatedRegistration"
+    ></app-review-checkbox>
+    <h2 class="govuk-heading-m">Workplace details</h2>
+    <dl class="govuk-summary-list asc-summarylist-border-top">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Workplace ID</dt>
+        <dd class="govuk-summary-list__value">
+          <form #formEl (ngSubmit)="updateWorkplaceId()" [formGroup]="workplaceIdForm" id="workplaceIdForm">
+            <input
+              class="govuk-input govuk-input--width-10"
+              id="nmdsId"
+              name="nmdsId"
+              [formControlName]="'nmdsId'"
+              pattern="^[A-Z].*"
+              type="text"
+            />
+            <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-left-6">
+              Save this ID
+            </button>
+            <span *ngIf="nmdsId.invalid && invalidWorkplaceIdEntered" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.required">
+                To update, enter a valid workplace ID
+              </span>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.minlength">
+                Workplace ID must be 8 characters long
+              </span>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.maxlength">
+                Workplace ID must be 8 characters long
+              </span>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.pattern">
+                Workplace ID must start with an uppercase letter
+              </span>
+              <span *ngIf="nmdsId.errors | getFirstError: nmdsId.errors?.serverError">
+                {{ nmdsId.errors?.serverError }}
+              </span>
+            </span>
+          </form>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name and address</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.name }}<br />
+          {{ registration.establishment.address }}<br *ngIf="registration.establishment.address2" />
+          {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
+          {{ registration.establishment.address3 }}<br />
+          {{ registration.establishment.county }}<br />
+          {{ registration.establishment.town }}<br />
+          {{ registration.establishment.postcode }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Provider ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.provid }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Location ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.locationId }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Parent ID</dt>
+        <dd class="govuk-summary-list__value">
+          <a (click)="navigateToParentAccount($event)" href="#">{{
+            registration.establishment.parentEstablishmentId
+          }}</a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Regulated</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.isRegulated ? 'Yes' : 'No' }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Main service</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.establishment.mainService }}
+        </dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-m govuk-!-margin-top-8">Account details</h2>
+    <dl class="govuk-summary-list asc-summarylist-border-top">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Name</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.name }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Email address</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.email }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Phone number</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.phone }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Username</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.username }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Security question</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.securityQuestion }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Answer</dt>
+        <dd class="govuk-summary-list__value">
+          {{ registration.securityQuestionAnswer }}
+        </dd>
+      </div>
+    </dl>
+
+    <app-add-note
+      [addNote]="addNote"
+      [registration]="registration"
+      [notes]="notes"
+      [getNotes]="getNotes"
+      [notesError]="notesError"
+      [notesForm]="notesForm"
+      [loggedInUser]="loggedInUser"
+    ></app-add-note>
+  </div>
+  <div class="govuk-grid-column-three-quarters">
+    <div class="govuk-button-group">
+      <button
+        class="govuk-button govuk-!-padding-left-6 govuk-!-padding-right-6"
+        (click)="approveOrRejectRegistration(true)"
+      >
+        Approve
+      </button>
+      <button
+        class="govuk-button govuk-button--warning govuk-!-padding-left-6 govuk-!-padding-right-6 govuk-!-margin-left-6"
+        (click)="approveOrRejectRegistration(false)"
+      >
+        Reject
+      </button>
+      <a [routerLink]="['/sfcadmin', 'registrations']" class="govuk-!-margin-left-9 govuk-list">Exit</a>
+    </div>
+    <span *ngIf="approvalOrRejectionServerError" id="approvalOrRejectionServerError" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ approvalOrRejectionServerError }}
+    </span>
+  </div>
+</div>

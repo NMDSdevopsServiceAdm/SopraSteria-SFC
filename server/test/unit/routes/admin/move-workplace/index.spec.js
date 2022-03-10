@@ -71,7 +71,7 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
     expect(res.statusCode).to.deep.equal(200);
   });
 
-  it('should return a 503 when the save fails', async () => {
+  it('should return a 500 when the save fails', async () => {
     const req = httpMocks.createRequest(request);
     const res = httpMocks.createResponse();
     const saveStub = sinon_sandbox.stub(subEstablishment, 'save').throws();
@@ -79,7 +79,7 @@ describe('server/routes/admin/moveWorkplaceAdmin.js', () => {
     await moveWorkplaceAdmin(req, res);
 
     expect(saveStub.calledOnce).be.true;
-    expect(res.statusCode).to.deep.equal(503);
+    expect(res.statusCode).to.deep.equal(500);
   });
 
   it('Finds the correct parent and child workplace', async () => {

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -27,7 +27,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public returnToRecord: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
-
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -37,38 +36,39 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    private workerService: WorkerService
-  ) { }
+    private router: Router,
+    private workerService: WorkerService,
+  ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
     this.workplace = this.route.parent.snapshot.data.establishment;
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
 
     this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
-        this.returnToRecord = {
-          url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
-          fragment: 'staff-record',
-        };
-      })
+      }),
     );
 
     this.subscriptions.add(
-      this.workerService.alert$.subscribe(alert => {
+      this.workerService.alert$.subscribe((alert) => {
         if (alert) {
           this.alertService.addAlert(alert);
         }
-      })
+      }),
     );
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
-  deleteWorker(event) {
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  deleteWorker(event: Event): void {
     event.preventDefault();
     this.dialogService.open(DeleteWorkerDialogComponent, {
       worker: this.worker,
@@ -79,7 +79,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     });
   }
 
-  public moveWorker(event) {
+  public moveWorker(event: Event): void {
     event.preventDefault();
     this.dialogService.open(MoveWorkerDialogComponent, {
       worker: this.worker,
@@ -90,7 +90,35 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  public saveAndComplete(): void {
+    const props = {
+      completed: true,
+    };
+
+    this.subscriptions.add(
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
+        (data) => {
+          this.workerService.setState({ ...this.worker, ...data });
+          this.returnToHomeTab();
+        },
+        (error) => {
+          console.log(error);
+        },
+      ),
+    );
+  }
+
+  public returnToHomeTab() {
+    const isLoggedInWorkplace = this.establishmentService.establishmentId === this.workplace.uid;
+    const url = isLoggedInWorkplace ? ['/dashboard'] : ['/workplace', this.workplace.uid];
+    this.router.navigate(url, { fragment: 'staff-records', state: { showBanner: true } });
+  }
+
+  public setReturnTo(): void {
+    this.returnToRecord = {
+      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
+      fragment: 'staff-record',
+    };
+    this.workerService.setReturnTo(this.returnToRecord);
   }
 }

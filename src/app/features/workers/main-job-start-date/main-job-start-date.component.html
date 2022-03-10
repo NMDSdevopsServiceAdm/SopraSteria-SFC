@@ -6,13 +6,9 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
         <fieldset class="govuk-fieldset" aria-describedby="mainJobStartDate-hint" role="group">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              What date did they start their main job role?
-            </h1>
+            <h1 class="govuk-fieldset__heading">When did they start in their main job role?</h1>
           </legend>
-          <span id="mainJobStartDate-hint" class="govuk-hint">
-            For example, 31 3 1980
-          </span>
+          <span id="mainJobStartDate-hint" class="govuk-hint"> For example, 31 3 1980 </span>
           <span
             *ngIf="submitted && form.get('mainJobStartDate').errors"
             id="mainJobStartDate-error"

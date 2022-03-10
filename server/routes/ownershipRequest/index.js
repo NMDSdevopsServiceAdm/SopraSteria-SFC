@@ -118,7 +118,7 @@ const ownershipRequest = async (req, res) => {
     }
   } catch (e) {
     console.error('/ownershipRequest/:id: ERR: ', e.message);
-    return res.status(503).send({});
+    return res.status(500).send({});
   }
 };
 

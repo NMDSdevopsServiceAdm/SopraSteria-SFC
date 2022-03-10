@@ -64,7 +64,10 @@ export class MetricsContent {
   tileDescription: string;
   noData: NoData;
   type: Metric;
-  journey: JourneyType;
+  journey: {
+    dashboard: JourneyType;
+    workplace: JourneyType;
+  };
 
   static get Pay(): MetricsContent {
     return {
@@ -75,7 +78,10 @@ export class MetricsContent {
         'no-pay-data': "You've not added any data about hourly pay yet.",
       },
       type: Metric.pay,
-      journey: JourneyType.BENCHMARK_METRIC_PAY,
+      journey: {
+        dashboard: JourneyType.BENCHMARKS_PAY,
+        workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_PAY,
+      },
     };
   }
 
@@ -91,7 +97,10 @@ export class MetricsContent {
         'no-perm-or-temp': 'You need records for permanent or temporary staff to see turnover.',
       },
       type: Metric.turnover,
-      journey: JourneyType.BENCHMARK_METRIC_TURNOVER,
+      journey: {
+        dashboard: JourneyType.BENCHMARKS_TURNOVER,
+        workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_TURNOVER,
+      },
     };
   }
 
@@ -104,7 +113,10 @@ export class MetricsContent {
         'no-sickness-data': "You've not added any data about sickness yet.",
       },
       type: Metric.sickness,
-      journey: JourneyType.BENCHMARK_METRIC_SICKNESS,
+      journey: {
+        dashboard: JourneyType.BENCHMARKS_SICKNESS,
+        workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_SICKNESS,
+      },
     };
   }
 
@@ -117,7 +129,10 @@ export class MetricsContent {
         'no-qualifications-data': "You've not added any data about social care qualifications yet.",
       },
       type: Metric.qualifications,
-      journey: JourneyType.BENCHMARK_METRIC_QUALIFICATIONS,
+      journey: {
+        dashboard: JourneyType.BENCHMARKS_QUALIFICATIONS,
+        workplace: JourneyType.BENCHMARKS_SUBSIDIARIES_QUALIFICATIONS,
+      },
     };
   }
 }

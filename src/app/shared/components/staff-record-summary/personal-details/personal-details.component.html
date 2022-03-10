@@ -1,19 +1,17 @@
 <h2 class="govuk-heading-m">Personal details</h2>
 <dl class="govuk-summary-list asc-summarylist-border-top">
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Flu vaccination</dt>
+    <dt class="govuk-summary-list__key">Flu vaccination since <br />1 September 2021</dt>
     <dd class="govuk-summary-list__value">
       {{ worker.fluJab || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('flu-jab')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.fluJab">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.fluJab"> Change </ng-container>
-        <span class="govuk-visually-hidden"> flu vaccination</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' flu vaccination'"
+        [link]="getRoutePath('flu-jab')"
+        [hasData]="!!worker.fluJab"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -27,49 +25,54 @@
         <div class="govuk-!-display-inline-block govuk-!-width-one-third">
           {{ ninoHidden ? '*********' : worker.nationalInsuranceNumber }}
         </div>
-        <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
-          <a class="govuk-link" href="#" (click)="toggleNinoHide($event)">
-            {{ ninoHidden ? 'Show' : 'Hide' }}
-          </a>
-        </div>
+        <ng-container *ngIf="canViewNinoDob">
+          <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
+            <a class="govuk-link" href="#" (click)="toggleNinoHide($event)">
+              {{ ninoHidden ? 'Show' : 'Hide' }}
+            </a>
+          </div>
+        </ng-container>
       </dd>
     </ng-template>
+
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('national-insurance-number')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.nationalInsuranceNumber; else changeNino">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-template #changeNino> Change </ng-template>
-        <span class="govuk-visually-hidden"> national insurance number</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' national insurance number'"
+        [link]="getRoutePath('national-insurance-number')"
+        [hasData]="!!worker.nationalInsuranceNumber"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Date of birth</dt>
     <dd class="govuk-summary-list__value govuk-list--inline">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.dateOfBirth">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="worker.wdf?.dateOfBirth"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         <div class="govuk-!-display-inline-block govuk-!-width-one-third">
           <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
           <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
         </div>
-        <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
-          <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
-            >{{ dobHidden ? 'Show' : 'Hide' }}
-          </a>
-        </div>
+        <ng-container *ngIf="canViewNinoDob">
+          <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
+            <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
+              >{{ dobHidden ? 'Show' : 'Hide' }}
+            </a>
+          </div>
+        </ng-container>
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('date-of-birth')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.dateOfBirth">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.dateOfBirth"> Change </ng-container>
-        <span class="govuk-visually-hidden"> date of birth</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' date of birth'"
+        [link]="getRoutePath('date-of-birth')"
+        [hasData]="!!worker.dateOfBirth"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -79,14 +82,12 @@
       {{ worker.postcode || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('home-postcode')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.postcode">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.postcode"> Change </ng-container>
-        <span class="govuk-visually-hidden"> home postcode</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' home postcode'"
+        [link]="getRoutePath('home-postcode')"
+        [hasData]="!!worker.postcode"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -94,36 +95,36 @@
     <dt class="govuk-summary-list__key">Gender</dt>
 
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.gender">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="worker.wdf?.gender"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         {{ worker.gender || '-' | closedEndedAnswer }}
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('gender')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.gender">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.gender"> Change </ng-container>
-        <span class="govuk-visually-hidden"> gender</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' gender'"
+        [link]="getRoutePath('gender')"
+        [hasData]="!!worker.gender"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Disability</dt>
+    <dt class="govuk-summary-list__key">Disabled</dt>
     <dd class="govuk-summary-list__value">
       {{ worker.disability || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('disability')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.disability">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.disability"> Change </ng-container>
-        <span class="govuk-visually-hidden"> disability</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' disability'"
+        [link]="getRoutePath('disability')"
+        [hasData]="!!worker.disability"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -133,21 +134,23 @@
       {{ worker.ethnicity?.ethnicity | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('ethnicity')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.ethnicity">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.ethnicity"> Change </ng-container>
-        <span class="govuk-visually-hidden"> ethnicity</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' ethnicity'"
+        [link]="getRoutePath('ethnicity')"
+        [hasData]="!!worker.ethnicity"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Nationality</dt>
     <dd class="govuk-summary-list__value">
-      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf?.nationality">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="worker.wdf?.nationality"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
         {{
           worker.nationality?.other?.nationality !== null
             ? worker.nationality?.other?.nationality
@@ -156,14 +159,12 @@
       </app-summary-record-value>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('nationality')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.nationality">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.nationality"> Change </ng-container>
-        <span class="govuk-visually-hidden"> nationality</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' nationality'"
+        [link]="getRoutePath('nationality')"
+        [hasData]="!!worker.nationality"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -173,14 +174,12 @@
       {{ worker.britishCitizenship | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('british-citizenship')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.britishCitizenship">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.britishCitizenship"> Change </ng-container>
-        <span class="govuk-visually-hidden"> british citizenship</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' british citizenship'"
+        [link]="getRoutePath('british-citizenship')"
+        [hasData]="!!worker.britishCitizenship"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 
@@ -194,14 +193,12 @@
       }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <a [routerLink]="getRoutePath('country-of-birth')" (click)="setReturn()">
-        <ng-container *ngIf="!worker.countryOfBirth">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="worker.countryOfBirth"> Change </ng-container>
-        <span class="govuk-visually-hidden"> country of birth</span>
-      </a>
+      <app-summary-record-change
+        [explanationText]="' country of birth'"
+        [link]="getRoutePath('country-of-birth')"
+        [hasData]="!!worker.countryOfBirth"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
     </dd>
   </div>
 </dl>

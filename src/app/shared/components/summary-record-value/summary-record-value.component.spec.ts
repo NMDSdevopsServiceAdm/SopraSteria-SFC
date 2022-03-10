@@ -1,17 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { EligibilityIconComponent } from '../eligibility-icon/eligibility-icon.component';
 import { SummaryRecordValueComponent } from './summary-record-value.component';
 
-describe('StaffRecordValueComponent', () => {
+describe('SummaryRecordValueComponent', () => {
   let component: SummaryRecordValueComponent;
   let fixture: ComponentFixture<SummaryRecordValueComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [SummaryRecordValueComponent, EligibilityIconComponent],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [SummaryRecordValueComponent, EligibilityIconComponent],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SummaryRecordValueComponent);

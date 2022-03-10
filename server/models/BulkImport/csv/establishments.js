@@ -2,8 +2,9 @@ const BUDI = require('../BUDI').BUDI;
 const models = require('../../index');
 const clonedeep = require('lodash.clonedeep');
 const moment = require('moment');
-
+const { sanitisePostcode } = require('../../../utils/postcodeSanitizer');
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
+const OGEstablishment = require('../../../models/classes/establishment').Establishment;
 
 const employedContractStatusIds = [1, 2];
 const cqcRegulatedServiceCodes = [24, 25, 20, 22, 21, 23, 19, 27, 28, 26, 29, 30, 32, 31, 33, 34];
@@ -36,7 +37,7 @@ function isPerm(worker) {
 
 const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
-  'PERMCQC,PERMLA,SHARELA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
+  'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
 
 class Establishment {
@@ -63,7 +64,6 @@ class Establishment {
 
     this._shareWithCqc = null;
     this._shareWithLA = null;
-    this._localAuthorities = null;
 
     this._regType = null;
     this._provID = null;
@@ -129,10 +129,10 @@ class Establishment {
   static get ESTABLISHMENT_TYPE_ERROR() {
     return 1070;
   }
-  static get SHARE_WITH_ERROR() {
-    return 1070;
+  static get SHARE_WITH_CQC_ERROR() {
+    return 1080;
   }
-  static get LOCAL_AUTHORITIES_ERROR() {
+  static get SHARE_WITH_LA_ERROR() {
     return 1090;
   }
   static get REGTYPE_ERROR() {
@@ -189,14 +189,8 @@ class Establishment {
   static get ESTABLISHMENT_TYPE_WARNING() {
     return 2070;
   }
-  static get SHARE_WITH_WARNING() {
-    return 2070;
-  }
   static get TOTAL_PERM_TEMP_WARNING() {
     return 2200;
-  }
-  static get LOCAL_AUTHORITIES_WARNING() {
-    return 2090;
   }
   static get REGTYPE_WARNING() {
     return 2100;
@@ -229,7 +223,6 @@ class Establishment {
   static get LEAVERS_WARNING() {
     return 2320;
   }
-
   static get REASONS_FOR_LEAVING_WARNING() {
     return 2360;
   }
@@ -333,10 +326,6 @@ class Establishment {
 
   get shareWithLa() {
     return this._shareWithLA;
-  }
-
-  get localAuthorities() {
-    return this._localAuthorities;
   }
 
   get regType() {
@@ -638,7 +627,6 @@ class Establishment {
       });
     }
     // TODO - registration/establishment APIs do not validate postcode (relies on the frontend - this must be fixed)
-    const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
     const POSTCODE_MAX_LENGTH = 10;
     if (!myPostcode || myPostcode.length === 0) {
       localValidationErrors.push({
@@ -660,7 +648,7 @@ class Establishment {
         column: 'POSTCODE',
         name: this._currentLine.LOCALESTID,
       });
-    } else if (!postcodeRegex.test(myPostcode)) {
+    } else if (sanitisePostcode(myPostcode) === null) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
@@ -795,123 +783,43 @@ class Establishment {
   }
 
   _validateShareWithCQC() {
-    const ALLOWED_VALUES = [0, 1];
-    const myShareWithCqc = parseInt(this._currentLine.PERMCQC, 10);
+    const ALLOWED_VALUES = ['0', '1', ''];
 
-    if (!this._currentLine.PERMCQC || this._currentLine.PERMCQC.length === 0) {
+    if (!ALLOWED_VALUES.includes(this._currentLine.PERMCQC)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
-        error: 'PERMCQC has not been supplied',
-        source: this._currentLine.PERMCQC,
-        column: 'PERMCQC',
-        name: this._currentLine.PERMCQC,
-      });
-      return false;
-    } else if (Number.isNaN(myShareWithCqc)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
+        errCode: Establishment.SHARE_WITH_CQC_ERROR,
+        errType: 'SHARE_WITH_CQC_ERROR',
         error: 'The code you have entered for PERMCQC is incorrect',
         source: this._currentLine.PERMCQC,
         column: 'PERMCQC',
-        name: this._currentLine.PERMCQC,
-      });
-      return false;
-    } else if (!ALLOWED_VALUES.includes(myShareWithCqc)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
-        error: 'The code you have entered for PERMCQC is incorrect',
-        source: myShareWithCqc,
-        column: 'PERMCQC',
-        name: this._currentLine.PERMCQC,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
-      this._shareWithCqc = myShareWithCqc;
+      const shareWithCqcAsInt = parseInt(this._currentLine.PERMCQC, 10);
+      this._shareWithCqc = Number.isNaN(shareWithCqcAsInt) ? this._currentLine.PERMCQC : shareWithCqcAsInt;
       return true;
     }
   }
 
   _validateShareWithLA() {
-    const ALLOWED_VALUES = [0, 1];
-    const myShareWithLa = parseInt(this._currentLine.PERMLA, 10);
+    const ALLOWED_VALUES = ['0', '1', ''];
 
-    if (!this._currentLine.PERMLA || this._currentLine.PERMLA.length === 0) {
+    if (!ALLOWED_VALUES.includes(this._currentLine.PERMLA)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
-        error: 'PERMLA has not been supplied',
-        source: this._currentLine.PERMLA,
-        column: 'PERMLA',
-        name: this._currentLine.PERMLA,
-      });
-      return false;
-    } else if (Number.isNaN(myShareWithLa)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
+        errCode: Establishment.SHARE_WITH_LA_ERROR,
+        errType: 'SHARE_WITH_LA_ERROR',
         error: 'The code you have entered for PERMLA is incorrect',
         source: this._currentLine.PERMLA,
         column: 'PERMLA',
-        name: this._currentLine.PERMLA,
-      });
-      return false;
-    } else if (!ALLOWED_VALUES.includes(myShareWithLa)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_ERROR,
-        errType: 'SHARE_WITH_ERROR',
-        error: 'The code you have entered for PERMLA is incorrect',
-        source: myShareWithLa,
-        column: 'PERMLA',
-        name: this._currentLine.PERMLA,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
-      this._shareWithLA = myShareWithLa;
-      return true;
-    }
-  }
-
-  _validateLocalAuthorities() {
-    // local authorities is optional or is a semi colon delimited list of integers
-    if (this._currentLine.SHARELA && this._currentLine.SHARELA.length > 0) {
-      const listOfLAs = this._currentLine.SHARELA.split(';');
-      const isValid = listOfLAs.every((thisLA) => !Number.isNaN(parseInt(thisLA, 10)));
-
-      if (!isValid) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.LOCAL_AUTHORITIES_ERROR,
-          errType: 'LOCAL_AUTHORITIES_ERROR',
-          error: 'An entry for code in SHARELA will be ignored as this is invalid',
-          source: this._currentLine.SHARELA,
-          column: 'SHARELA',
-          name: this._currentLine.LOCALESTID,
-        });
-        return false;
-      } else if (this._shareWithLA !== null && this._shareWithLA === 0 && listOfLAs && listOfLAs.length > 0) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.LOCAL_AUTHORITIES_WARNING,
-          errType: 'LOCAL_AUTHORITIES_WARNING',
-          error: 'SHARELAS will be ignored',
-          source: this._currentLine.SHARELA,
-          column: 'SHARELA',
-          name: this._currentLine.LOCALESTID,
-        });
-      } else {
-        this._localAuthorities = listOfLAs.map((thisLA) => parseInt(thisLA, 10));
-        return true;
-      }
-    } else {
+      const shareWithLaAsInt = parseInt(this._currentLine.PERMLA, 10);
+      this._shareWithLA = Number.isNaN(shareWithLaAsInt) ? this._currentLine.PERMLA : shareWithLaAsInt;
       return true;
     }
   }
@@ -983,7 +891,7 @@ class Establishment {
 
   _validateProvID() {
     // must be given if "REGTYPE" is 2 - but if given must be in the format "n-nnnnnnnnn"
-    const provIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
+    const provIDRegex = /^[0-9]{1}-[0-9]{8,12}$/;
     const myprovID = this._currentLine.PROVNUM;
 
     if (this._regType === 2 && (!myprovID || myprovID.length === 0)) {
@@ -1315,10 +1223,8 @@ class Establishment {
 
     return true;
   }
-  _ignoreZerosIfNo(listOfEntities) {
-    const allServices = this._currentLine.ALLSERVICES.split(';');
-
-    if (this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2 && allServices.length === 2) {
+  _ignoreZerosIfNo(listOfEntities, zeroInService, allServices) {
+    if (zeroInService.length > 0 && listOfEntities.length === 2 && allServices.length === 2) {
       const indexOfZero = allServices.indexOf('0');
       if (indexOfZero > -1) {
         listOfEntities[indexOfZero] = listOfEntities[indexOfZero] === '0' ? '' : listOfEntities[indexOfZero];
@@ -1327,14 +1233,18 @@ class Establishment {
     return listOfEntities;
   }
   _prepArray(listOfEntities) {
-    listOfEntities = this._ignoreZerosIfNo(listOfEntities);
-    listOfEntities = this._checkForTrailingSemiColon(listOfEntities);
+    const allServices = this._currentLine.ALLSERVICES.split(';');
+    const zeroInService = allServices.filter((service) => {
+      return service === '0';
+    });
+    listOfEntities = this._ignoreZerosIfNo(listOfEntities, zeroInService, allServices);
+    listOfEntities = this._checkForTrailingSemiColon(listOfEntities, zeroInService);
     return listOfEntities;
   }
 
-  _checkForTrailingSemiColon(listOfEntities) {
+  _checkForTrailingSemiColon(listOfEntities, zeroInService) {
     if (
-      (this._currentLine.ALLSERVICES.includes('0') && listOfEntities.length === 2) ||
+      (zeroInService.length !== 0 && listOfEntities.length === 2) ||
       this._currentLine.ALLSERVICES.split(';').length === 1
     ) {
       listOfEntities = listOfEntities.filter((thisItem) => !Number.isNaN(parseInt(thisItem, 10)));
@@ -2196,33 +2106,6 @@ class Establishment {
     }
   }
 
-  _transformLocalAuthorities() {
-    // integer in source; object in target comprised of CSSR ID and CSSR Name
-    if (this._localAuthorities && Array.isArray(this._localAuthorities)) {
-      const mappedAuthorities = [];
-
-      this._localAuthorities.forEach((thisLA) => {
-        const mappedAuthority = BUDI.localAuthority(BUDI.TO_ASC, thisLA);
-
-        if (mappedAuthority) {
-          mappedAuthorities.push(mappedAuthority);
-        } else {
-          this._validationErrors.push({
-            lineNumber: this._lineNumber,
-            errCode: Establishment.LOCAL_AUTHORITIES_ERROR,
-            errType: 'LOCAL_AUTHORITIES_ERROR',
-            error: `The code ${thisLA} in SHARELA will be ignored as this is invalid`,
-            source: this._currentLine.SHARELA,
-            column: 'SHARELA',
-            name: this._currentLine.LOCALESTID,
-          });
-        }
-      });
-
-      this._localAuthorities = mappedAuthorities;
-    }
-  }
-
   _transformAllCapacities() {
     if (this._capacities && Array.isArray(this._capacities) && this._allServices) {
       const mappedCapacities = [];
@@ -2524,7 +2407,6 @@ class Establishment {
 
       this._validateShareWithCQC();
       this._validateShareWithLA();
-      this._validateLocalAuthorities();
 
       this._validateMainService();
       this._validateRegType();
@@ -2548,7 +2430,7 @@ class Establishment {
 
   // Adds items to csvEstablishmentSchemaErrors if validations that depend on
   // worker totals give errors or warnings
-  async crossValidate({ csvEstablishmentSchemaErrors, myWorkers, fetchMyEstablishmentsWorkers }) {
+  async crossValidate(csvEstablishmentSchemaErrors, myJSONWorkers) {
     // if establishment isn't being added or updated then exit early
     if (!['NEW', 'UPDATE', 'NOCHANGE'].includes(this._status)) {
       return;
@@ -2564,7 +2446,7 @@ class Establishment {
     let registeredManagers = 0;
 
     const dataInCSV = ['NEW', 'UPDATE', 'CHGSUB']; //For theses statuses trust the data in the CSV
-    myWorkers.forEach((worker) => {
+    myJSONWorkers.forEach((worker) => {
       if (this.key === worker.establishmentKey && dataInCSV.includes(worker.status)) {
         /* update totals */
         if (isPerm(worker)) {
@@ -2580,9 +2462,9 @@ class Establishment {
     // get all the other records that may already exist in the db but aren't being updated or deleted
     // and check how many registered managers there is
     const dataInDB = ['UNCHECKED', 'NOCHANGE']; // for theses statuses trust the data in the DB
-    (await fetchMyEstablishmentsWorkers(this.id, this._key)).forEach((worker) => {
-      const workerFromCSV = myWorkers.find((w) => {
-        return w._uniqueWorkerId === worker.uniqueWorker;
+    (await OGEstablishment.fetchMyEstablishmentsWorkers(this.id, this._key)).forEach((worker) => {
+      const workerFromCSV = myJSONWorkers.find((w) => {
+        return w.uniqueWorkerId === worker.uniqueWorker;
       });
       if (workerFromCSV && dataInDB.includes(workerFromCSV._status)) {
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
@@ -2609,7 +2491,6 @@ class Establishment {
 
       status = !this._transformMainService() ? false : status;
       status = !this._transformEstablishmentType() ? false : status;
-      status = !this._transformLocalAuthorities() ? false : status;
       status = !this._transformAllServices() ? false : status;
       status = !this._transformServiceUsers() ? false : status;
       status = !this._transformAllJobs() ? false : status;
@@ -2637,7 +2518,6 @@ class Establishment {
       employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
       shareWithCQC: this._shareWithCqc,
       shareWithLA: this._shareWithLA,
-      localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
       regType: this._regType,
       locationId: this._regType ? this._locationID : undefined,
       provId: this._regType ? this._provID : undefined,
@@ -2695,14 +2575,14 @@ class Establishment {
   // returns an API representation of this Establishment
   toAPI() {
     const fixedProperties = {
-      Address1: this._address1 ? this._address1 : '',
-      Address2: this._address2 ? this._address2 : '',
-      Address3: this._address3 ? this._address3 : '',
-      Town: this._town ? this._town : '',
-      Postcode: this._postcode ? this._postcode : '',
-      LocationId: this._regType ? this._locationID : undefined,
-      ProvId: this._regType ? this._provID : undefined,
-      IsCQCRegulated: this._regType === 2,
+      address1: this._address1 ? this._address1 : '',
+      address2: this._address2 ? this._address2 : '',
+      address3: this._address3 ? this._address3 : '',
+      town: this._town ? this._town : '',
+      postcode: this._postcode ? this._postcode : '',
+      locationId: this._regType ? this._locationID : undefined,
+      provId: this._regType ? this._provID : undefined,
+      isCQCRegulated: this._regType === 2,
     };
 
     // interim solution for reasons for leaving
@@ -2723,7 +2603,6 @@ class Establishment {
         value: this.establishmentType,
         other: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
       },
-      localAuthorities: this._localAuthorities ? this._localAuthorities : [],
       mainService: this._mainService,
       services: {
         value: null,
@@ -2773,26 +2652,17 @@ class Establishment {
       changeProperties.locationId = this._locationID;
     }
 
-    // share options
-    if (this._shareWithCqc || this._shareWithLA) {
-      const shareWith = [];
+    // shareWith options
+    const shareWithMapping = {
+      0: false,
+      1: true,
+      '': null,
+    };
 
-      if (this._shareWithCqc) {
-        shareWith.push('CQC');
-      }
-      if (this._shareWithLA) {
-        shareWith.push('Local Authority');
-      }
-
-      changeProperties.share = {
-        enabled: true,
-        with: shareWith,
-      };
-    } else {
-      changeProperties.share = {
-        enabled: false,
-      };
-    }
+    changeProperties.shareWith = {
+      cqc: shareWithMapping[this._shareWithCqc],
+      localAuthorities: shareWithMapping[this._shareWithLA],
+    };
 
     // capacities - we combine both capacities and utilisations
     changeProperties.capacities = [];
@@ -2821,111 +2691,69 @@ class Establishment {
 
   // takes the given establishment entity and writes it out to CSV string (one line)
   static toCSV(entity) {
-    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
+    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
-    columns.push(csvQuote(entity.localIdentifier)); // todo - this will be local identifier
+    columns.push(csvQuote(entity.LocalIdentifierValue));
     columns.push('UNCHECKED');
-    columns.push(csvQuote(entity.name));
+    columns.push(csvQuote(entity.NameValue));
     columns.push(csvQuote(entity.address1));
     columns.push(csvQuote(entity.address2));
     columns.push(csvQuote(entity.address3));
     columns.push(csvQuote(entity.town));
-    columns.push(entity.postcode);
+    columns.push(csvQuote(entity.postcode));
+    columns.push(entity.EmployerTypeValue ? BUDI.establishmentType(BUDI.FROM_ASC, entity.EmployerTypeValue) : '');
+    columns.push(csvQuote(entity.EmployerTypeOther ? entity.EmployerTypeOther : ''));
 
-    let employerType = '';
-    let employerTypeOther = '';
-    if (entity.employerType) {
-      employerType = BUDI.establishmentType(BUDI.FROM_ASC, entity.employerType.value);
+    const shareWithMapping = {
+      true: '1',
+      false: '0',
+      null: '',
+    };
 
-      if (entity.employerType.other) {
-        employerTypeOther = csvQuote(entity.employerType.other);
-      }
-    }
-    columns.push(employerType);
-    columns.push(employerTypeOther);
-
-    // share with CQC/LA, LAs sharing with
-    const shareWith = entity.shareWith;
-    const shareWithLA = entity.shareWithLA;
-    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('CQC') ? 1 : 0);
-    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? 1 : 0);
-    columns.push(
-      shareWith &&
-        shareWith.enabled &&
-        shareWith.with.includes('Local Authority') &&
-        shareWithLA &&
-        Array.isArray(shareWithLA)
-        ? shareWithLA.map((thisLA) => thisLA.cssrId).join(';')
-        : '',
-    );
+    columns.push(shareWithMapping[entity.shareWithCQC]);
+    columns.push(shareWithMapping[entity.shareWithLA]);
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);
     columns.push(entity.isRegulated ? entity.provId : '');
     columns.push(entity.isRegulated ? entity.locationId : '');
 
+    const services = entity.otherServices;
+    services.unshift(entity.mainService);
     // main service - this is mandatory in ASC WDS so no need to check for it being available or not
-    const mainService = entity.mainService;
-    const budiMappedMainService = BUDI.services(BUDI.FROM_ASC, mainService.id);
-    columns.push(budiMappedMainService);
-    let otherServices = [];
-    // all services - this is main service and other services
-    if (entity.otherServices.value === 'Yes' && Array.isArray(entity.otherServices.services)) {
-      otherServices = entity.otherServices.services;
-    }
-    otherServices.unshift(mainService);
-    const transformedOtherService = otherServices.map((thisService) => BUDI.services(BUDI.FROM_ASC, thisService.id));
+    columns.push(entity.mainService.reportingID);
+
     if (entity.otherServices.value === 'No') {
-      transformedOtherService.push('0');
+      columns.push('0');
+    } else {
+      columns.push(services.map((service) => service.reportingID).join(';'));
     }
-    columns.push(transformedOtherService.join(';'));
 
-    // capacities and utilisations - these are semi colon delimited in the order of ALLSERVICES (so main service and other services) - empty if not a capacity or a utilisation
-    const entityCapacities = Array.isArray(entity.capacities)
-      ? entity.capacities.map((thisCap) => {
-          const isCapacity = BUDI.serviceFromCapacityId(thisCap.reference.id);
-          const isUtilisation = BUDI.serviceFromUtilisationId(thisCap.reference.id);
+    const capacities = [];
+    const utilisations = [];
 
-          return {
-            isUtilisation: isUtilisation !== null,
-            isCapacity: isCapacity !== null,
-            serviceId: isCapacity !== null ? isCapacity : isUtilisation,
-            answer: thisCap.answer,
-          };
-        })
-      : [];
+    const findUtilCap = (type, service, capacities) =>
+      capacities.find((capacity) => capacity.reference.service.id === service.id && capacity.reference.type === type);
 
-    // for CSV output, the capacities need to be separated from utilisations
+    services.map((service) => {
+      const capacity = findUtilCap('Capacity', service, entity.capacity);
+      const utilisation = findUtilCap('Utilisation', service, entity.capacity);
+      capacities.push(capacity && capacity.answer ? capacity.answer : '');
+      utilisations.push(utilisation && utilisation.answer ? utilisation.answer : '');
+    });
 
-    // the capacities must be written out in the same sequence of semi-colon delimited values as ALLSERVICES
-    columns.push(
-      otherServices
-        .map((thisService) => {
-          // capacities only
-          const matchedCapacityForGivenService = entityCapacities.find(
-            (thisCap) => thisCap.isCapacity && thisCap.serviceId === thisService.id,
-          );
-          return matchedCapacityForGivenService ? matchedCapacityForGivenService.answer : '';
-        })
-        .join(';'),
-    );
-
-    columns.push(
-      otherServices
-        .map((thisService) => {
-          // capacities only
-          const matchedUtilisationForGivenService = entityCapacities.find(
-            (thisCap) => thisCap.isUtilisation && thisCap.serviceId === thisService.id,
-          );
-          return matchedUtilisationForGivenService ? matchedUtilisationForGivenService.answer : '';
-        })
-        .join(';'),
-    );
+    columns.push(capacities.join(';'));
+    columns.push(utilisations.join(';'));
 
     // all service "other" descriptions
+
     columns.push(
-      otherServices
-        .map((thisService) => (thisService.other && thisService.other.length > 0 ? thisService.other : ''))
+      services
+        .map((thisService) =>
+          thisService.establishmentServices && thisService.establishmentServices.other
+            ? thisService.establishmentServices.other
+            : '',
+        )
         .join(';'),
     );
 
@@ -2933,113 +2761,58 @@ class Establishment {
     const serviceUsers = Array.isArray(entity.serviceUsers) ? entity.serviceUsers : [];
     columns.push(serviceUsers.map((thisUser) => BUDI.serviceUsers(BUDI.FROM_ASC, thisUser.id)).join(';'));
     columns.push(
-      serviceUsers.map((thisUser) => (thisUser.other && thisUser.other.length > 0 ? thisUser.other : '')).join(';'),
+      serviceUsers
+        .map((thisServiceUser) =>
+          thisServiceUser.establishmentServiceUsers && thisServiceUser.establishmentServiceUsers.other
+            ? thisServiceUser.establishmentServiceUsers.other
+            : '',
+        )
+        .join(';'),
     );
 
     // total perm/temp staff
-    columns.push(entity.numberOfStaff ? entity.numberOfStaff : 0);
+    columns.push(entity.NumberOfStaffValue ? entity.NumberOfStaffValue : 0);
 
     // all job roles, starters, leavers and vacancies
-
-    const allJobs = [];
-
-    if (entity.starters && Array.isArray(entity.starters)) {
-      entity.starters.forEach((thisStarter) => allJobs.push(thisStarter));
-    }
-
-    if (entity.leavers && Array.isArray(entity.leavers)) {
-      entity.leavers.forEach((thisLeaver) => allJobs.push(thisLeaver));
-    }
-
-    if (entity.vacancies && Array.isArray(entity.vacancies)) {
-      entity.vacancies.forEach((thisVacancy) => allJobs.push(thisVacancy));
-    }
-
     // all jobs needs to be a set of unique ids (which across starters, leavers and vacancies may be repeated)
-    const uniqueJobs = [];
-
-    allJobs.forEach((thisAllJob) => {
-      if (!uniqueJobs.includes(thisAllJob.jobId)) {
-        uniqueJobs.push(thisAllJob.jobId);
-      }
-    });
+    const uniqueJobs = entity.jobs
+      .map((job) => job.jobId)
+      .filter((value, index, self) => self.indexOf(value) === index);
 
     columns.push(uniqueJobs.map((thisJob) => BUDI.jobRoles(BUDI.FROM_ASC, thisJob)).join(';'));
 
-    let starters = '';
-    if (entity.starters && !Array.isArray(entity.starters)) {
-      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        starters = '0';
-      } else if (entity.starters === 'None') {
-        starters = uniqueJobs.length ? uniqueJobs.map(() => 0).join(';') : '0';
-      } else if (entity.starters === "Don't know") {
-        starters = 999;
-      }
-    } else if (entity.starters !== null) {
-      starters = uniqueJobs
-        .map((thisJob) => {
-          const isThisJobAStarterJob = entity.starters
-            ? entity.starters.find((myStarter) => myStarter.jobId === thisJob)
-            : false;
-          if (isThisJobAStarterJob) {
-            return isThisJobAStarterJob.total;
-          } else {
-            return 0;
-          }
-        })
-        .join(';');
-    }
-    columns.push(starters);
+    const starters = entity.jobs.filter((value) => value.type === 'Starters');
+    const leavers = entity.jobs.filter((value) => value.type === 'Leavers');
+    const vacancies = entity.jobs.filter((value) => value.type === 'Vacancies');
 
-    let leavers = '';
-    if (entity.leavers && !Array.isArray(entity.leavers)) {
-      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        leavers = '0';
-      } else if (entity.leavers === 'None') {
-        leavers = uniqueJobs.length ? uniqueJobs.map(() => 0).join(';') : '0';
-      } else if (entity.leavers === "Don't know") {
-        leavers = 999;
-      }
-    } else if (entity.leavers !== null) {
-      leavers = uniqueJobs
-        .map((thisJob) => {
-          const isThisJobALeaverJob = entity.leavers
-            ? entity.leavers.find((myLeaver) => myLeaver.jobId === thisJob)
-            : false;
-          if (isThisJobALeaverJob) {
-            return isThisJobALeaverJob.total;
-          } else {
-            return 0;
-          }
-        })
-        .join(';');
-    }
-    columns.push(leavers);
+    const starterCounts = [];
+    const leaverCounts = [];
+    const vacancyCounts = [];
 
-    let vacancies = '';
-    if (entity.vacancies && !Array.isArray(entity.vacancies)) {
-      if (entity.starters === 'None' && entity.leavers === 'None' && entity.vacancies === 'None') {
-        vacancies = '0';
-      } else if (entity.vacancies === 'None') {
-        vacancies = uniqueJobs.length ? uniqueJobs.map(() => 0).join(';') : '0';
-      } else if (entity.vacancies === "Don't know") {
-        vacancies = 999;
+    uniqueJobs.map((job) => {
+      const starterCount = starters.find((starter) => starter.jobId === job);
+      const leaverCount = leavers.find((leaver) => leaver.jobId === job);
+      const vacancyCount = vacancies.find((vacancy) => vacancy.jobId === job);
+      starterCounts.push(starterCount && starterCount.total ? starterCount.total : 0);
+      leaverCounts.push(leaverCount && leaverCount.total ? leaverCount.total : 0);
+      vacancyCounts.push(vacancyCount && vacancyCount.total ? vacancyCount.total : 0);
+    });
+
+    const slv = (value, counts) => {
+      if (value === "Don't know") {
+        return 999;
+      } else if (value === null) {
+        return '';
+      } else if (value === 'None') {
+        return uniqueJobs.map(() => 0).join(';');
+      } else {
+        return counts.join(';');
       }
-    } else {
-      vacancies = uniqueJobs
-        .map((thisJob) => {
-          const isThisJobAVacancyJob = entity.vacancies
-            ? entity.vacancies.find((myVacancy) => myVacancy.jobId === thisJob)
-            : false;
-          if (isThisJobAVacancyJob) {
-            return isThisJobAVacancyJob.total;
-          } else {
-            return 0;
-          }
-        })
-        .join(';');
-    }
-    columns.push(vacancies);
+    };
+
+    columns.push(slv(entity.StartersValue, starterCounts));
+    columns.push(slv(entity.LeaversValue, leaverCounts));
+    columns.push(slv(entity.VacanciesValue, vacancyCounts));
 
     // reasons for leaving - currently can't be mapped - interim solution is a string of "reasonID:count|reasonId:count" (without BUDI mapping)
     if (entity.reasonsForLeaving && entity.reasonsForLeaving.length > 0) {

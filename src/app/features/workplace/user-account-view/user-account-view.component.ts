@@ -12,9 +12,10 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import { UserAccountDeleteDialogComponent } from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
 import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
+
+import { isAdminRole } from '../../../../../server/utils/adminUtils';
 
 @Component({
   selector: 'app-user-account-view',
@@ -32,6 +33,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public return: URLStructure;
   public user: UserDetails;
   public userInfo: SummaryList[];
+  public allUsers: UserDetails[];
 
   constructor(
     private alertService: AlertService,
@@ -48,7 +50,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.setAccountDetails();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
 
@@ -58,7 +60,8 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
         .pipe(take(1), withLatestFrom(this.userService.loggedInUser$))
         .subscribe(([users, loggedInUser]) => {
           this.loggedInUser = loggedInUser;
-          this.setPermissions(users, loggedInUser);
+          this.allUsers = users;
+          this.setPermissions();
         }),
     );
 
@@ -69,11 +72,11 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  public resendActivationLink(evet: Event) {
+  public resendActivationLink(event: Event): void {
     event.preventDefault();
     this.subscriptions.add(
       this.userService.resendActivationLink(this.user.uid).subscribe(
@@ -88,44 +91,6 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
           this.alertService.addAlert({
             type: 'warning',
             message: 'There was an error resending the user set-up email.',
-          });
-        },
-      ),
-    );
-  }
-
-  public onDeleteUser(event: Event) {
-    event.preventDefault();
-    const dialog = this.dialogService.open(UserAccountDeleteDialogComponent, { user: this.user });
-    dialog.afterClosed.subscribe((deleteConfirmed) => {
-      if (deleteConfirmed) {
-        this.deleteUser();
-      }
-    });
-  }
-
-  private deleteUser() {
-    if (this.user.isPrimary) {
-      this.subscriptions.add(
-        this.userService
-          .updateUserDetails(this.establishment.uid, this.loggedInUser.uid, {
-            ...this.loggedInUser,
-            ...{ isPrimary: true },
-          })
-          .subscribe((data) => (this.userService.loggedInUser = data)),
-      );
-    }
-
-    this.subscriptions.add(
-      this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
-        () => {
-          this.router.navigate(this.return.url, { fragment: 'users' });
-          this.alertService.addAlert({ type: 'success', message: 'The user has been deleted.' });
-        },
-        () => {
-          this.alertService.addAlert({
-            type: 'warning',
-            message: 'There was an error deleting the user.',
           });
         },
       ),
@@ -161,18 +126,29 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private setPermissions(users: Array<UserDetails>, loggedInUser: UserDetails) {
-    const canEditUser = this.permissionsService.can(this.establishment.uid, 'canEditUser');
+  public deleteUserNavigation(event: Event): void {
+    event.preventDefault();
+    const route = this.user.isPrimary ? 'select-primary-user-delete' : 'delete-user';
+    this.router.navigate([route], { relativeTo: this.route });
+  }
+
+  private setPermissions(): void {
+    const hasCanEditUserPermission = this.permissionsService.can(this.establishment.uid, 'canEditUser');
     const isPending = this.user.username === null;
-    const editUsersList = users.filter((user) => user.role === Roles.Edit);
 
     this.canDeleteUser =
-      this.permissionsService.can(this.establishment.uid, 'canDeleteUser') &&
-      users.length > 1 &&
-      !this.user.isPrimary &&
-      loggedInUser.uid !== this.user.uid;
-    this.canResendActivationLink = canEditUser && isPending;
-    this.canEditUser = canEditUser && (!this.user.isPrimary || (this.user.isPrimary && editUsersList.length > 1));
-    this.canNavigate = Roles.Admin === loggedInUser.role;
+      this.permissionsService.can(this.establishment.uid, 'canDeleteUser') && this.loggedInUser.uid !== this.user.uid;
+
+    this.canResendActivationLink = hasCanEditUserPermission && isPending;
+    this.canEditUser = hasCanEditUserPermission && (!this.user.isPrimary || this.moreThanOneActiveEditUser());
+    this.canNavigate = isAdminRole(this.loggedInUser.role);
+  }
+
+  public moreThanOneActiveEditUser(): boolean {
+    return (
+      this.allUsers.filter((user) => {
+        return user.status === 'Active' && user.role === Roles.Edit;
+      }).length > 1
+    );
   }
 }

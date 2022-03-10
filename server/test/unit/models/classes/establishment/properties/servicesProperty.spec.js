@@ -3,7 +3,6 @@ const expect = require('chai').expect;
 const servicesPropertyClass = require('../../../../../../models/classes/establishment/properties/servicesProperty')
   .ServicesProperty;
 
-
 describe('servicesProperty Property', () => {
   const allMyServices = [
     { id: 1, name: 'Carers support', category: 'Adult community care', other: false },
@@ -66,6 +65,7 @@ describe('servicesProperty Property', () => {
       await servicesProperty.restoreFromJson(document);
       expect(servicesProperty.property).to.deep.equal({
         value: 'No',
+        services: [],
       });
     });
     it('should return correct JSON when null', async () => {
@@ -82,6 +82,7 @@ describe('servicesProperty Property', () => {
       await servicesProperty.restoreFromJson(document);
       expect(servicesProperty.property).to.deep.equal({
         value: null,
+        services: [],
       });
     });
   });
@@ -163,9 +164,8 @@ describe('servicesProperty Property', () => {
             { serviceId: 11, other: null },
             { serviceId: 17, other: null },
           ],
-        }
+        },
       });
-
     });
     it('should save to sequelize with additional Models when no', async () => {
       const servicesProperty = new servicesPropertyClass();
@@ -178,7 +178,6 @@ describe('servicesProperty Property', () => {
       expect(result).to.deep.equal({
         otherServicesValue: 'No',
       });
-
     });
     it('should save to sequelize with additional Models when null', async () => {
       const servicesProperty = new servicesPropertyClass();
@@ -191,7 +190,6 @@ describe('servicesProperty Property', () => {
       expect(result).to.deep.equal({
         otherServicesValue: null,
       });
-
     });
   });
   describe('isEqual()', () => {
@@ -213,6 +211,7 @@ describe('servicesProperty Property', () => {
       const servicesProperty = new servicesPropertyClass();
       const newValue = {
         value: 'No',
+        services: [],
       };
       const oldValue = {
         value: 'Yes',
@@ -256,8 +255,10 @@ describe('servicesProperty Property', () => {
         otherServices: [
           { id: 2, name: 'Community support and outreach', category: 'Adult community care', other: false },
         ],
-        allMyServices: [{ id: 1, name: 'Carers support', category: 'Adult community care', other: false },
-          { id: 2, name: 'Community support and outreach', category: 'Adult community care', other: false },],
+        allMyServices: [
+          { id: 1, name: 'Carers support', category: 'Adult community care', other: false },
+          { id: 2, name: 'Community support and outreach', category: 'Adult community care', other: false },
+        ],
 
         mainService: {
           id: 1,
@@ -272,7 +273,7 @@ describe('servicesProperty Property', () => {
           name: undefined,
           other: undefined,
           category: undefined,
-          isCQC: undefined
+          isCQC: undefined,
         },
         otherServices: {
           value: 'Yes',
@@ -281,27 +282,30 @@ describe('servicesProperty Property', () => {
               category: 'Adult community care',
               services: [
                 {
-                  id: 2, name: 'Community support and outreach',
-                  other: undefined
-                }
-              ]
+                  id: 2,
+                  name: 'Community support and outreach',
+                  other: undefined,
+                },
+              ],
             },
-          ]
+          ],
         },
         allOtherServices: [
           {
             category: 'Adult community care',
-            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }]
+            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }],
           },
-        ]
+        ],
       });
     });
     it('should return JSON correctly when No', async () => {
       const servicesProperty = new servicesPropertyClass();
       const document = {
         otherServicesValue: 'No',
-        allMyServices: [{ id: 1, name: 'Carers support', category: 'Adult community care', other: false },
-          { id: 2, name: 'Community support and outreach', category: 'Adult community care', other: false },],
+        allMyServices: [
+          { id: 1, name: 'Carers support', category: 'Adult community care', other: false },
+          { id: 2, name: 'Community support and outreach', category: 'Adult community care', other: false },
+        ],
 
         mainService: {
           id: 1,
@@ -316,7 +320,7 @@ describe('servicesProperty Property', () => {
           name: undefined,
           other: undefined,
           category: undefined,
-          isCQC: undefined
+          isCQC: undefined,
         },
         otherServices: {
           value: 'No',
@@ -325,17 +329,19 @@ describe('servicesProperty Property', () => {
         allOtherServices: [
           {
             category: 'Adult community care',
-            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }]
+            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }],
           },
-        ]
+        ],
       });
     });
     it('should return JSON correctly when null', async () => {
       const servicesProperty = new servicesPropertyClass();
       const document = {
         otherServicesValue: null,
-        allMyServices: [{ id: 1, name: 'Carers support', category: 'Adult community care', other: false },
-          { id: 2, name: 'Community support and outreach', category: 'Adult community care', other: false },],
+        allMyServices: [
+          { id: 1, name: 'Carers support', category: 'Adult community care', other: false },
+          { id: 2, name: 'Community support and outreach', category: 'Adult community care', other: false },
+        ],
 
         mainService: {
           id: 1,
@@ -350,7 +356,7 @@ describe('servicesProperty Property', () => {
           name: undefined,
           other: undefined,
           category: undefined,
-          isCQC: undefined
+          isCQC: undefined,
         },
         otherServices: {
           value: null,
@@ -359,9 +365,9 @@ describe('servicesProperty Property', () => {
         allOtherServices: [
           {
             category: 'Adult community care',
-            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }]
+            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }],
           },
-        ]
+        ],
       });
     });
   });

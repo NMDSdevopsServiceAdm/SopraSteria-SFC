@@ -1,23 +1,89 @@
-<dl class="govuk-list--definition">
-  <ng-container *ngIf="totalExpiredTraining > 0">
-    <dt>Expired</dt>
-    <dd>
-      <img src="/assets/images/flag-red.svg" alt="" />
-      {{ totalExpiredTraining }}
-    </dd>
-  </ng-container>
-  <ng-container *ngIf="totalMissingMandatoryTraining > 0">
-    <dt>Missing</dt>
-    <dd>
-      <img src="/assets/images/flag-red.svg" alt="" />
-      {{ totalMissingMandatoryTraining }}
-    </dd>
-  </ng-container>
-  <ng-container *ngIf="totalExpiringTraining > 0">
-    <dt>Expiring soon</dt>
-    <dd>
-      <img src="/assets/images/flag-orange.svg" alt="" />
-      {{ totalExpiringTraining }}
-    </dd>
-  </ng-container>
-</dl>
+<div
+  class="asc-summary-box"
+  [ngClass]="summaryColumns === 3 ? 'asc-full-width' : 'asc-partial-width'"
+  *ngIf="summaryColumns !== 0"
+  data-testid="summary-box"
+>
+  <div class="asc-container">
+    <div
+      class="asc-container--column"
+      [ngClass]="summaryColumns === 3 ? 'asc-columns-full-width' : 'asc-columns-partial-width'"
+      *ngIf="totalStaffMissingMandatoryTraining"
+      data-testid="missing-column"
+    >
+      <div class="asc-title">Summary</div>
+      <div class="asc-content">
+        <div class="asc-content--image">
+          <img src="/assets/images/flag-red.svg" alt="" />
+        </div>
+        <div class="asc-content--phrase">
+          <span class="asc-content--count"
+            ><strong>{{ totalStaffMissingMandatoryTraining }}</strong></span
+          >
+          <ng-container [ngPlural]="totalStaffMissingMandatoryTraining">
+            <ng-template ngPluralCase="=1">
+              <span>staff is missing mandatory training</span>
+            </ng-template>
+            <ng-template ngPluralCase="other">
+              <span>staff are missing mandatory training</span>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <hr *ngIf="totalExpiredTraining && totalStaffMissingMandatoryTraining" />
+    <div
+      class="asc-container--column"
+      [ngClass]="summaryColumns === 3 ? 'asc-columns-full-width' : 'asc-columns-partial-width'"
+      *ngIf="totalExpiredTraining"
+      data-testid="expired-column"
+    >
+      <div class="asc-title" *ngIf="!totalStaffMissingMandatoryTraining">Summary</div>
+      <div class="asc-content">
+        <div class="asc-content--image">
+          <img src="/assets/images/flag-red.svg" alt="" />
+        </div>
+        <div class="asc-content--phrase">
+          <span class="asc-content--count"
+            ><strong>{{ totalExpiredTraining }}</strong></span
+          >
+          <ng-container [ngPlural]="totalExpiredTraining">
+            <ng-template ngPluralCase="=1">
+              <span>record has expired</span>
+            </ng-template>
+            <ng-template ngPluralCase="other">
+              <span>records have expired</span>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <hr *ngIf="totalExpiringTraining && (totalExpiredTraining || totalStaffMissingMandatoryTraining)" />
+    <div
+      class="asc-container--column"
+      [ngClass]="summaryColumns === 3 ? 'asc-columns-full-width' : 'asc-columns-partial-width'"
+      *ngIf="totalExpiringTraining"
+      data-testid="expiring-column"
+    >
+      <div class="asc-title" *ngIf="!totalStaffMissingMandatoryTraining && !totalExpiredTraining">Summary</div>
+      <div class="asc-content">
+        <div class="asc-content--image">
+          <img src="/assets/images/flag-orange.svg" alt="" />
+        </div>
+        <div class="asc-content--phrase">
+          <span class="asc-content--count"
+            ><strong>{{ totalExpiringTraining }}</strong></span
+          >
+          <ng-container [ngPlural]="totalExpiringTraining">
+            <ng-template ngPluralCase="=1">
+              <span>record expires soon</span>
+            </ng-template>
+            <ng-template ngPluralCase="other">
+              <span>records expire soon</span>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

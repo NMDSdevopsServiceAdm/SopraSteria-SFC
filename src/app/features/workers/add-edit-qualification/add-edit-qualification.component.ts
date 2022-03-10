@@ -8,7 +8,7 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
-import * as moment from 'moment';
+import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -36,19 +36,12 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     private router: Router,
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
   ) {
-    this.yearValidators = [
-      Validators.max(moment().year()),
-      Validators.min(
-        moment()
-          .subtract(100, 'years')
-          .year()
-      ),
-    ];
+    this.yearValidators = [Validators.max(dayjs().year()), Validators.min(dayjs().subtract(100, 'years').year())];
   }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.form = this.formBuilder.group({
       type: [null, Validators.required],
     });
@@ -57,16 +50,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.qualificationId = this.route.snapshot.params.qualificationId;
 
-    this.workerService.getRoute$.subscribe(route => {
-      if (route) {
-        this.previousUrl = route;
-      }
-    });
-    this.backService.setBackLink({
-      url: [this.previousUrl],
-    });
-
-    Object.keys(QualificationType).forEach(key => {
+    Object.keys(QualificationType).forEach((key) => {
       this.qualificationTypes[key] = QualificationType[key];
       this.form.addControl(key, this.createQualificationGroup());
     });
@@ -75,25 +59,25 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       this.workerService
         .getAvailableQualifcations(this.workplace.uid, this.worker.uid, QualificationType.Award)
         .subscribe(
-          qualifications => {
+          (qualifications) => {
             if (qualifications) {
               this.qualifications = qualifications;
             }
           },
-          error => {
+          (error) => {
             console.error(error.error);
-          }
-        )
+          },
+        ),
     );
 
     if (this.qualificationId) {
       this.subscriptions.add(
         this.workerService.getQualification(this.workplace.uid, this.worker.uid, this.qualificationId).subscribe(
-          record => {
+          (record) => {
             if (record) {
               this.record = record;
               const typeKey = Object.keys(this.qualificationTypes).find(
-                key => this.qualificationTypes[key] === this.record.qualification.group
+                (key) => this.qualificationTypes[key] === this.record.qualification.group,
               );
 
               this.form.patchValue({
@@ -107,16 +91,16 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
               });
             }
           },
-          error => {
+          (error) => {
             console.error(error.error);
-          }
-        )
+          },
+        ),
       );
     }
 
-    this.form.get('type').valueChanges.subscribe(value => {
+    this.form.get('type').valueChanges.subscribe((value) => {
       this.submitted = false;
-      Object.keys(QualificationType).forEach(key => {
+      Object.keys(QualificationType).forEach((key) => {
         const group = this.form.get(key) as FormGroup;
         const { qualification, year, notes } = group.controls;
 
@@ -137,6 +121,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     });
 
     this.setupFormErrorsMap();
+
+    this.setTrainingPathAndBackLink();
   }
 
   ngOnDestroy(): void {
@@ -150,13 +136,13 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Qualification type is required.',
+            message: 'Select the qualification type',
           },
         ],
       },
     ];
 
-    Object.keys(QualificationType).forEach(key => {
+    Object.keys(QualificationType).forEach((key) => {
       this.formErrorsMap.push(
         ...[
           {
@@ -164,7 +150,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
             type: [
               {
                 name: 'required',
-                message: 'Qualification is required.',
+                message: 'Select the qualification name',
               },
             ],
           },
@@ -173,11 +159,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
             type: [
               {
                 name: 'min',
-                message: 'This qualification wasn’t available in the year provided. Enter a valid year.',
+                message: 'Year achieved must be this year or fewer than 100 years in the past',
               },
               {
                 name: 'max',
-                message: 'This qualification wasn’t available in the year provided. Enter a valid year.',
+                message: 'Year achieved must be this year or fewer than 100 years in the past',
               },
             ],
           },
@@ -186,21 +172,26 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
             type: [
               {
                 name: 'maxlength',
-                message: `Notes must be ${this.notesMaxLength} characters or less`,
+                message: `Notes must be ${this.notesMaxLength} characters or fewer`,
               },
             ],
           },
-        ]
+        ],
       );
     });
   }
 
   private createQualificationGroup(): FormGroup {
-    return this.formBuilder.group({
-      qualification: null,
-      year: null,
-      notes: null,
-    });
+    return this.formBuilder.group(
+      {
+        qualification: null,
+        year: null,
+        notes: null,
+      },
+      {
+        updateOn: 'submit',
+      },
+    );
   }
 
   public getFirstErrorMessage(item: string): string {
@@ -208,7 +199,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public onSubmit() {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -218,7 +209,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     }
 
     const { type } = this.form.value;
-    const typeKey = Object.keys(this.qualificationTypes).find(key => this.qualificationTypes[key] === type);
+    const typeKey = Object.keys(this.qualificationTypes).find((key) => this.qualificationTypes[key] === type);
     const group = this.form.get(typeKey) as FormGroup;
     const { qualification, year, notes } = group.value;
 
@@ -237,20 +228,20 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
           .updateQualification(this.workplace.uid, this.worker.uid, this.qualificationId, record)
           .subscribe(
             () => this.onSuccess(),
-            error => this.onError(error)
-          )
+            (error) => this.onError(error),
+          ),
       );
     } else {
       this.subscriptions.add(
         this.workerService.createQualification(this.workplace.uid, this.worker.uid, record).subscribe(
           () => this.onSuccess(),
-          error => this.onError(error)
-        )
+          (error) => this.onError(error),
+        ),
       );
     }
   }
 
-  private onSuccess() {
+  private onSuccess(): void {
     this.router
       .navigate([`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`])
       .then(() => {
@@ -262,10 +253,23 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       });
   }
 
-  private onError(error) {
+  private onError(error): void {
     console.log(error);
   }
-  public navigateToPreviousPage() {
+  public navigateToPreviousPage(): void {
     this.router.navigate([this.previousUrl]);
+  }
+
+  private setTrainingPathAndBackLink(): void {
+    this.workerService.getRoute$.subscribe((route) => {
+      if (route) {
+        this.previousUrl = route;
+      } else {
+        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
+      }
+    });
+    this.backService.setBackLink({
+      url: [this.previousUrl],
+    });
   }
 }

@@ -1,45 +1,104 @@
 <ng-container *ngIf="worker">
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk-!-margin-bottom-3 govuk__align-items-center">
+        <span class="govuk-caption-xl govuk-!-margin-right-3 govuk-!-margin-bottom-0">{{ worker.nameOrId }}</span>
+        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-bottom-0 asc-tag">
+          Long-term absent
+          <a
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'long-term-absence'
+            ]"
+            data-testid="longTermAbsence"
+            class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
+            (click)="setReturnTo()"
+            >View</a
+          >
+        </p>
+      </div>
+    </div>
+  </div>
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-l">
-        <span class="govuk-caption-xl govuk-!-margin-bottom-3">{{ worker.nameOrId }}</span>
-        Staff record
-      </h1>
-
-      <a *ngIf="canEditWorker" class="govuk-list govuk-list--inline govuk-!-padding-left-0" role="button"
+    <div class="govuk-grid-column-one-third">
+      <h1 class="govuk-heading-l">Staff record</h1>
+      <a
+        *ngIf="canEditWorker && worker.completed"
+        class="govuk-button govuk-button--link govuk-!-padding-left-0"
+        role="button"
         draggable="false"
-        [routerLink]="['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training']">
+        [routerLink]="['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training']"
+      >
         Training and qualifications
       </a>
-
     </div>
 
-    <div class="govuk-grid-column-one-half govuk-!-margin-top-8">
-      <div class="govuk-grid-row govuk-!-margin-bottom-3">
-        <a class="govuk-list govuk-list--inline govuk-!-margin-left-9" *ngIf="(canEditWorker && isParent)"
-          draggable="false" role="button" href="#" (click)="moveWorker($event)"> Transfer staff record</a>
+    <div class="govuk-grid-column-two-thirds">
+      <div *ngIf="worker.completed" class="govuk-grid-row govuk-!-margin-bottom-3 govuk-!-margin-top-0">
+        <div class="govuk-button-group govuk__align-items-center govuk-util__float-right govuk-!-margin-top-0">
+          <a
+            class="govuk-button govuk-button--link"
+            *ngIf="canEditWorker && worker.longTermAbsence === null"
+            draggable="false"
+            role="button"
+            data-testid="flagLongTermAbsence"
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'long-term-absence'
+            ]"
+            (click)="setReturnTo()"
+            >Flag long-term absence</a
+          >
 
-        <a class="govuk-list govuk-list--inline govuk__flex govuk__align-items-center govuk-util__float-right"
-          *ngIf="canDeleteWorker" draggable="false" role="button" href="#" (click)="deleteWorker($event)"> <img
-            src="/assets/images/bin.svg" alt="" />
-          <span class="govuk-!-margin-left-1">
-            Delete staff record
-          </span></a>
-      </div>
-      <div class="govuk-grid-row govuk-util__float-right">
-        <a *ngIf="canEditWorker && !worker.completed" class="govuk-button  " role="button" draggable="false"
-          [routerLink]="['../main-job-start-date']">
-          Complete Full Record
-        </a>
+          <a
+            class="govuk-button govuk-button--link"
+            *ngIf="canEditWorker && isParent"
+            draggable="false"
+            role="button"
+            href="#"
+            (click)="moveWorker($event)"
+          >
+            Transfer staff record</a
+          >
+
+          <a
+            class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
+            *ngIf="canDeleteWorker"
+            draggable="false"
+            role="button"
+            href="#"
+            (click)="deleteWorker($event)"
+          >
+            <img src="/assets/images/bin.svg" alt="" />
+            <span class="govuk-!-margin-left-1"> Delete staff record </span></a
+          >
+        </div>
       </div>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-!-margin-top-5">
-    <p class="govuk-!-margin-left-3">Check the information provided on this staff record is correct.</p>
+  <div class="govuk-grid-row">
+    <ng-container *ngIf="worker.completed; else button">
+      <div class="govuk-grid-column-two-thirds">
+        <p>Check the record details you've added are correct.</p>
+      </div>
+    </ng-container>
+    <ng-template #button>
+      <div class="govuk-grid-column-full">
+        <div class="govuk-button-group govuk__flex govuk__justify-content-space-between govuk-!-margin-top-0">
+          <p>Check the record details you've added before you confirm them.</p>
+          <button type="button" class="govuk-button" (click)="saveAndComplete()">Confirm record details</button>
+        </div>
+      </div>
+    </ng-template>
   </div>
-  <app-basic-record [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-basic-record>
-  <app-personal-details [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-personal-details>
-  <app-employment [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-employment>
-  <app-qualifications-and-training [workplace]="workplace" [worker]="worker" [return]="returnToRecord">
-  </app-qualifications-and-training>
+  <app-basic-record [workplace]="workplace" [worker]="worker"></app-basic-record>
+  <app-personal-details [workplace]="workplace" [worker]="worker"></app-personal-details>
+  <app-employment [workplace]="workplace" [worker]="worker"></app-employment>
+  <app-qualifications-and-training [workplace]="workplace" [worker]="worker"> </app-qualifications-and-training>
 </ng-container>

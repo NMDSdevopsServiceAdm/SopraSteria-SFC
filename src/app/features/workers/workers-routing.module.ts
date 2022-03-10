@@ -1,8 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
+import { QualificationResolver } from '@core/resolvers/qualification.resolver';
+import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
+import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
-import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
@@ -12,7 +16,6 @@ import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-week
 import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
-import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
@@ -20,13 +23,17 @@ import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.com
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
+import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
+import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
+import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -35,20 +42,13 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
-import {
-  TrainingAndQualificationsRecordComponent,
-} from './training-qualifications-record/training-and-qualifications-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
-import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { FluJabComponent } from './flu-jab/flu-jab.component';
 
 const routes: Routes = [
   {
@@ -91,12 +91,6 @@ const routes: Routes = [
         path: '',
         component: StaffRecordComponent,
         data: { title: 'Staff Record' },
-      },
-      {
-        path: 'wdf-summary',
-        canActivate: [CheckPermissionsGuard],
-        component: WdfStaffSummaryComponent,
-        data: { permissions: ['canViewWdfReport'], title: 'Staff Record' },
       },
       {
         path: 'staff-details',
@@ -263,24 +257,27 @@ const routes: Routes = [
         data: { title: 'Highest Level of Other Qualifications' },
       },
       {
-        path: 'check-answers',
-        component: CheckStaffRecordComponent,
-        data: { title: 'Check Answers' },
-      },
-      {
-        path: 'save-success',
-        component: WorkerSaveSuccessComponent,
-        data: { title: 'Success' },
-      },
-      {
         path: 'add-qualification',
         component: AddEditQualificationComponent,
         data: { title: 'Add Qualification' },
       },
       {
         path: 'qualification/:qualificationId',
-        component: AddEditQualificationComponent,
-        data: { title: 'Qualification' },
+        children: [
+          {
+            path: '',
+            component: AddEditQualificationComponent,
+            data: { title: 'Qualification' },
+          },
+          {
+            path: 'delete',
+            component: DeleteRecordComponent,
+            data: { title: 'Delete Qualification' },
+            resolve: {
+              qualificationRecord: QualificationResolver,
+            },
+          },
+        ],
       },
       {
         path: 'add-training',
@@ -289,13 +286,37 @@ const routes: Routes = [
       },
       {
         path: 'training/:trainingRecordId',
-        component: AddEditTrainingComponent,
-        data: { title: 'Training' },
+        children: [
+          {
+            path: '',
+            component: AddEditTrainingComponent,
+            data: { title: 'Training' },
+          },
+          {
+            path: 'delete',
+            component: DeleteRecordComponent,
+            data: { title: 'Delete Training' },
+            resolve: {
+              trainingRecord: TrainingRecordResolver,
+            },
+          },
+        ],
       },
       {
         path: 'training',
-        component: TrainingAndQualificationsRecordComponent,
+        component: NewTrainingAndQualificationsRecordComponent,
+        resolve: {
+          worker: WorkerResolver,
+          trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
+          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
+        },
         data: { title: 'Training and qualification record' },
+      },
+      {
+        path: 'long-term-absence',
+        component: LongTermAbsenceComponent,
+        resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
+        data: { title: 'Flag long term absence' },
       },
     ],
   },

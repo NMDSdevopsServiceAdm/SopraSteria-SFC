@@ -8,7 +8,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ServiceUsersService } from '@core/services/service-users.service';
 import { Question } from '@features/workplace/question/question.component';
-import { filter, find } from 'lodash';
+import filter from 'lodash/filter';
+import find from 'lodash/find';
 
 @Component({
   selector: 'app-service-users',
@@ -26,7 +27,7 @@ export class ServiceUsersComponent extends Question {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private serviceUsersService: ServiceUsersService
+    private serviceUsersService: ServiceUsersService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -41,21 +42,21 @@ export class ServiceUsersComponent extends Question {
         this.serviceUserGroups = serviceUserGroups;
         this.serviceUserGroups.forEach((group: ServiceUserGroup) => this.allUserServices.push(...group.services));
         this.addFormControls();
-      })
+      }),
     );
 
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
-        response => {
+        (response) => {
           this.previousRoute =
             response.allServiceCapacities && response.allServiceCapacities.length
               ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
               : ['/workplace', `${this.establishment.uid}`, 'other-services'];
           this.setBackLink();
         },
-        error => this.onError(error)
-      )
+        (error) => this.onError(error),
+      ),
     );
   }
 
@@ -63,7 +64,7 @@ export class ServiceUsersComponent extends Question {
     filter(this.allUserServices, { other: true }).forEach((service: ServiceForUser) => {
       this.form.addControl(
         `serviceUsers-${service.id}-otherService`,
-        new FormControl(null, [Validators.maxLength(this.otherMaxLength)])
+        new FormControl(null, [Validators.maxLength(this.otherMaxLength)]),
       );
 
       this.formErrorsMap.push({
@@ -120,7 +121,7 @@ export class ServiceUsersComponent extends Question {
     const { serviceUsers } = this.form.value;
 
     return {
-      serviceUsers: serviceUsers.map(id => {
+      serviceUsers: serviceUsers.map((id) => {
         const otherAllowed = !!find(this.allUserServices, { id, other: true });
         return {
           id,
@@ -134,9 +135,10 @@ export class ServiceUsersComponent extends Question {
 
   protected updateEstablishment(props) {
     this.subscriptions.add(
-      this.establishmentService
-        .updateServiceUsers(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateServiceUsers(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 }

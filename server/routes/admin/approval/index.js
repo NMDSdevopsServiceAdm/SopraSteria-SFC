@@ -2,11 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../../../models');
-const Sequelize = require('sequelize');
 const userApprovalConfirmation = 'User has been set as active';
-const userRejectionConfirmation = 'User has been removed';
+const userRejectionConfirmation = 'User has been rejected';
 const workplaceApprovalConfirmation = 'Workplace has been set as active';
-const workplaceRejectionConfirmation = 'Workplace has been removed';
+const workplaceRejectionConfirmation = 'Workplace has been rejected';
 
 router.route('/').post(async (req, res) => {
   await adminApproval(req, res);
@@ -21,17 +20,17 @@ const adminApproval = async (req, res) => {
 };
 
 const _approveOrRejectNewUser = async (req, res) => {
-  const username = _parseEscapedInputAndSanitizeUsername(req.body.username);
-
   try {
-    const login = await _findLoginMatchingUsername(username);
+    const username = _parseEscapedInputAndSanitizeUsername(req.body.username);
 
-    // Make sure we have the matching user
-    if ((login && login.id) && (username === login.username)) {
-      const workplace = await _findWorkplace(login.user.establishment.id);
-      const user = await _findUser(login.user.id);
+    const login = await models.login.findByUsername(username);
 
-      var workplaceIsUnique = await _workplaceIsUnique(login.user.establishment.id, req.body.nmdsId);
+    if (login && login.id && username === login.username) {
+      const workplace = await models.establishment.findbyId(login.user.establishmentId);
+      const user = await models.user.findByLoginId(login.user.id);
+
+      const workplaceIsUnique = await _workplaceIsUnique(workplace.uid, req.body.nmdsId);
+
       if (!workplaceIsUnique) {
         return res.status(400).json({
           nmdsId: `This workplace ID (${req.body.nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
@@ -41,166 +40,146 @@ const _approveOrRejectNewUser = async (req, res) => {
       if (req.body.approve && workplace) {
         await _approveNewUser(login, workplace, req.body.nmdsId, res);
       } else {
-        await _rejectNewUser(user, workplace, res);
+        await _rejectNewUser(user, workplace, req, res);
       }
     } else {
       return res.status(400).send();
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res.status(500).send();
   }
 };
 
 const _approveOrRejectNewWorkplace = async (req, res) => {
-  const nmdsId = req.body.nmdsId;
+  try {
+    const nmdsId = req.body.nmdsId;
 
-  var workplaceIsUnique = await _workplaceIsUnique(req.body.establishmentId, req.body.nmdsId);
-  if (!workplaceIsUnique) {
-    return res.status(400).json({
-      nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
-    });
+    const workplace = await models.establishment.findbyId(req.body.establishmentId);
+
+    const workplaceIsUnique = await _workplaceIsUnique(workplace.uid, req.body.nmdsId);
+
+    if (!workplaceIsUnique) {
+      return res.status(400).json({
+        nmdsId: `This workplace ID (${nmdsId}) belongs to another workplace. Enter a different workplace ID.`,
+      });
+    }
+
+    if (req.body.approve && req.body.establishmentId) {
+      await _approveNewWorkplace(workplace, nmdsId, res);
+    } else {
+      await _rejectNewWorkplace(workplace, req, res);
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
   }
-
-  const workplace = await _findWorkplace(req.body.establishmentId);
-
-  if (req.body.approve && req.body.establishmentId) {
-    await _approveNewWorkplace(workplace, nmdsId, res);
-  } else {
-    await _rejectNewWorkplace(workplace, res);
-  }
-};
-
-const _workplaceIsUnique = async (establishmentId, nmdsId) => {
-  const workplaceWithDuplicateId = await models.establishment.findOne({
-    where: {
-      id: {
-        [Sequelize.Op.ne]: establishmentId
-      },
-      nmdsId: nmdsId,
-    },
-    attributes: ['id']
-  });
-  return (workplaceWithDuplicateId === null);
-};
-
-const _parseEscapedInputAndSanitizeUsername = (username) => {
-  return escape(username.toLowerCase());
-};
-
-const _findLoginMatchingUsername = async (username) => {
-  return await models.login.findOne({
-    where: {
-      username: {
-        [models.Sequelize.Op.iLike]: username
-      }
-    },
-    attributes: ['id', 'username'],
-    include: [
-      {
-        model: models.user,
-        attributes: ['id'],
-        include: [
-          {
-            model: models.establishment,
-            attributes: ['id']
-          }
-        ]
-      }
-    ]
-  });
-};
-
-const _findWorkplace = async (establishmentId) => {
-  return await models.establishment.findOne({
-    where: {
-      id: establishmentId
-    },
-    attributes: ['id']
-  });
-};
-
-const _findUser = async (loginId) => {
-  return await models.user.findOne({
-    where: {
-      id: loginId
-    },
-    attributes: ['id']
-  });
 };
 
 const _approveNewUser = async (login, workplace, nmdsId, res) => {
-  // TODO: Email saying they've been accepted
-  // Update their active status to true
   try {
     const updatedLogin = await login.update({
       isActive: true,
-      status: null
+      status: null,
     });
-    const updatedworkplace = await workplace.update({
+    const updatedWorkplace = await workplace.update({
       nmdsId: nmdsId,
-      ustatus: null
+      ustatus: null,
+      inReview: false,
+      reviewer: null,
     });
-    if (updatedLogin && updatedworkplace) {
-      return res.status(200).json({ status: '0', message: userApprovalConfirmation })
+    if (updatedLogin && updatedWorkplace) {
+      return res.status(200).json({ status: '0', message: userApprovalConfirmation });
     } else {
-      return res.status(503).send();
+      return res.status(500).send();
     }
   } catch (error) {
     console.error(error);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
-const _rejectNewUser = async (user, workplace, res) => {
-  // TODO: Email saying they've been rejected
-  // Remove the user
+const _rejectNewUser = async (user, workplace, req, res) => {
   try {
     if (user && workplace) {
-      const deleteduser = await user.destroy();
-      const deletedworkplace = await workplace.destroy();
-      if (deleteduser && deletedworkplace) {
+      const deletedUser = await user.destroy();
+
+      const adminUser = await models.user.findByUUID(req.userUid);
+
+      const rejectedWorkplace = await workplace.update({
+        ustatus: 'REJECTED',
+        inReview: false,
+        reviewer: null,
+        updated: new Date(),
+        updatedBy: adminUser.FullNameValue,
+        archived: true,
+      });
+
+      if (deletedUser && rejectedWorkplace) {
         return res.status(200).json({ status: '0', message: userRejectionConfirmation });
       } else {
-        return res.status(503).send();
+        return res.status(500).send();
       }
     } else {
-      return res.status(503).send();
+      return res.status(500).send();
     }
   } catch (error) {
     console.error(error);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
 const _approveNewWorkplace = async (workplace, nmdsId, res) => {
   try {
-    const updatedworkplace = await workplace.update({
+    const updatedWorkplace = await workplace.update({
       nmdsId: nmdsId,
-      ustatus: null
+      ustatus: null,
+      inReview: false,
+      reviewer: null,
     });
-    if (updatedworkplace) {
-      return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation })
+    if (updatedWorkplace) {
+      return res.status(200).json({ status: '0', message: workplaceApprovalConfirmation });
     } else {
-      return res.status(503).send();
+      return res.status(500).send();
     }
   } catch (error) {
     console.error(error);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
-const _rejectNewWorkplace = async (workplace, res) => {
+const _rejectNewWorkplace = async (workplace, req, res) => {
   try {
-    const deletedworkplace = await workplace.destroy();
-    if (deletedworkplace) {
+    const adminUser = await models.user.findByUUID(req.userUid);
+
+    const rejectedWorkplace = await workplace.update({
+      ustatus: 'REJECTED',
+      inReview: false,
+      reviewer: null,
+      updated: new Date(),
+      updatedBy: adminUser.FullNameValue,
+      archived: true,
+    });
+
+    if (rejectedWorkplace) {
       return res.status(200).json({ status: '0', message: workplaceRejectionConfirmation });
     } else {
-      return res.status(503).send();
+      return res.status(500).send();
     }
   } catch (error) {
     console.error(error);
-    return res.status(503).send();
+    return res.status(500).send();
   }
+};
+
+const _workplaceIsUnique = async (establishmentUid, nmdsId) => {
+  const workplaceWithDuplicateId = await models.establishment.findEstablishmentWithSameNmdsId(establishmentUid, nmdsId);
+
+  return workplaceWithDuplicateId === null;
+};
+
+const _parseEscapedInputAndSanitizeUsername = (username) => {
+  return escape(username.toLowerCase());
 };
 
 module.exports = router;

@@ -10,6 +10,8 @@ import { WindowRef } from '@core/services/window.ref';
 import { CqcStatusChangeComponent } from './cqc-status-change.component';
 import { CqcChangeData } from '@core/model/cqc-change-data.model';
 import { ApprovalRequest } from '@core/model/approval-request.model';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 const testChangeRequestId = 9999;
 const testParentRequestUuid = '360c62a1-2e20-410d-a72b-9d4100a11f4e';
@@ -80,6 +82,7 @@ describe('CqcStatusChangeComponent', () => {
         RouterTestingModule
       ],
       providers: [
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService},
         {
           provide: WindowRef,
           useClass: WindowRef

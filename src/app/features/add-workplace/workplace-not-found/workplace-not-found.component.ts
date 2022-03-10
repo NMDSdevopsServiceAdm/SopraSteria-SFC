@@ -1,35 +1,27 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-import { LocationSearchResponse } from '@core/model/location.model';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { LocationService } from '@core/services/location.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { WorkplaceNotFound } from '@features/workplace-find-and-select/workplace-not-found/workplace-not-found';
+import { NewWorkplaceNotFoundDirective } from '@shared/directives/create-workplace/new-workplace-not-found/new-workplace-not-found.directive';
 
 @Component({
   selector: 'app-workplace-not-found',
-  templateUrl: './workplace-not-found.component.html',
+  templateUrl:
+    '../../../shared/directives/create-workplace/new-workplace-not-found/new-workplace-not-found.component.html',
 })
-export class WorkplaceNotFoundComponent extends WorkplaceNotFound {
+export class WorkplaceNotFoundComponent extends NewWorkplaceNotFoundDirective {
   constructor(
-    private workplaceService: WorkplaceService,
+    protected establishmentService: EstablishmentService,
     protected formBuilder: FormBuilder,
+    public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected locationService: LocationService,
+    protected workplaceService: WorkplaceService,
     protected router: Router,
-    protected backService: BackService
+    protected route: ActivatedRoute,
   ) {
-    super(formBuilder, backService, errorSummaryService, locationService, router);
-  }
-
-  protected init(): void {
-    this.flow = '/add-workplace';
-  }
-
-  public onSuccess(data: LocationSearchResponse) {
-    this.workplaceService.locationAddresses$.next(data.postcodedata);
-    this.navigateToSelectWorkplaceAddressRoute();
+    super(establishmentService, formBuilder, backService, errorSummaryService, workplaceService, router, route);
   }
 }

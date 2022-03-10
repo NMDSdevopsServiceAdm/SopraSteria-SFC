@@ -21,7 +21,9 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
   let missingMandatoryTraining = [];
   try {
     let allTrainingRecords = await Training.fetch(establishmentId, workerUid);
+
     const mandatoryTrainingforWorker = await MandatoryTraining.fetchMandatoryTrainingForWorker(workerUid);
+
     if (allTrainingRecords.count === 0) {
       missingMandatoryTraining = mandatoryTrainingforWorker;
     } else if (mandatoryTrainingforWorker.length > 0) {
@@ -55,11 +57,12 @@ const getTrainingListWithMissingMandatoryTraining = async (req, res) => {
         updatedBy: thisRecord.updatedBy,
       });
     });
+
     res.status(200);
     return res.json(allTrainingRecords);
   } catch (err) {
     console.error('Training::root - failed', err);
-    res.status(503);
+    res.status(500);
     return res.send(`Failed to get Training Records for Worker having uid: ${escape(workerUid)}`);
   }
 };
@@ -81,7 +84,19 @@ const viewTrainingRecord = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
+  }
+};
+
+const createSingleTrainingRecord = async (req, res, establishmentId, workerUid, trainingRecord) => {
+  const thisTrainingRecord = new Training(establishmentId, workerUid);
+  const isValidRecord = await thisTrainingRecord.load(trainingRecord);
+
+  if (isValidRecord) {
+    await thisTrainingRecord.save(req.username);
+    return thisTrainingRecord;
+  } else {
+    return res.status(400).send('Unexpected Input.');
   }
 };
 
@@ -90,24 +105,13 @@ const createTrainingRecord = async (req, res) => {
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
 
-  const thisTrainingRecord = new Training(establishmentId, workerUid);
-
   try {
-    // by loading after the restore, only those properties defined in the
-    //  PUT body will be updated (peristed)
-    const isValidRecord = await thisTrainingRecord.load(req.body);
+    const thisTrainingRecord = await createSingleTrainingRecord(req, res, establishmentId, workerUid, req.body);
 
-    // this is an update to an existing User, so no mandatory properties!
-    if (isValidRecord) {
-      await thisTrainingRecord.save(req.username);
-
-      return res.status(200).json(thisTrainingRecord.toJSON());
-    } else {
-      return res.status(400).send('Unexpected Input.');
-    }
+    return res.status(200).json(thisTrainingRecord.toJSON());
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -144,7 +148,7 @@ const updateTrainingRecord = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -177,7 +181,7 @@ const deleteTrainingRecord = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -189,3 +193,4 @@ router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrain
 
 module.exports = router;
 module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
+module.exports.createSingleTrainingRecord = createSingleTrainingRecord;

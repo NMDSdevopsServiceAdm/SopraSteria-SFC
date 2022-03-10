@@ -31,8 +31,8 @@ describe('EmailCampaignService', () => {
     expect(req.request.method).toBe('GET');
   });
 
-  it('should create a campaign', () => {
-    service.createCampaign().subscribe();
+  it('should create a campaign for inactive workplaces', () => {
+    service.createInactiveWorkplacesCampaign().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
     const req = http.expectOne('/api/admin/email-campaigns/inactive-workplaces');
@@ -41,7 +41,7 @@ describe('EmailCampaignService', () => {
   });
 
   it('should get the history', () => {
-    service.getHistory().subscribe();
+    service.getInactiveWorkplacesHistory().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
     const req = http.expectOne('/api/admin/email-campaigns/inactive-workplaces/history');
@@ -50,11 +50,40 @@ describe('EmailCampaignService', () => {
   });
 
   it('should get a report of inactive workplaces', () => {
-    service.getReport().subscribe();
+    service.getInactiveWorkplacesReport().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
     const req = http.expectOne('/api/admin/email-campaigns/inactive-workplaces/report');
 
     expect(req.request.method).toBe('GET');
+  });
+
+  it('should get a total number of emails been sent to targeted users', () => {
+    service.getTargetedTotalEmails('primaryUsers').subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/email-campaigns/targeted-emails/total?groupType=primaryUsers');
+
+    expect(req.request.method).toBe('GET');
+  });
+
+  it('should get a list of templates that can be sent to targeted users', () => {
+    service.getTargetedTemplates().subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/email-campaigns/targeted-emails/templates');
+
+    expect(req.request.method).toBe('GET');
+  });
+
+  it('should create a campaign for targeted users', () => {
+    service.createTargetedEmailsCampaign('primaryUsers', '1').subscribe();
+
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne('/api/admin/email-campaigns/targeted-emails');
+
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body.groupType).toEqual('primaryUsers');
+    expect(req.request.body.templateId).toEqual('1');
   });
 });

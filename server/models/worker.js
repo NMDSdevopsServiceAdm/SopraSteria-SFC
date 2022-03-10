@@ -1,6 +1,4 @@
 const { Op } = require('sequelize');
-const { encrypt } = require('../utils/db/openpgp/encrypt');
-const { decrypt } = require('../utils/db/openpgp/decrypt');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -74,6 +72,10 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.DATE,
         allowNull: true,
         field: '"LastWdfEligibility"',
+      },
+      wdfEligible: {
+        type: DataTypes.BOOLEAN,
+        field: '"WdfEligible"',
       },
       NameOrIdValue: {
         type: DataTypes.TEXT,
@@ -207,7 +209,7 @@ module.exports = function (sequelize, DataTypes) {
       NationalInsuranceNumberValue: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"NationalInsuranceNumberEncryptedValue"',
+        field: '"NationalInsuranceNumberValue"',
       },
       NationalInsuranceNumberSavedAt: {
         type: DataTypes.DATE,
@@ -230,9 +232,9 @@ module.exports = function (sequelize, DataTypes) {
         field: '"NationalInsuranceNumberChangedBy"',
       },
       DateOfBirthValue: {
-        type: DataTypes.TEXT,
+        type: DataTypes.DATE,
         allowNull: true,
-        field: '"DateOfBirthEncryptedValue"',
+        field: '"DateOfBirthValue"',
       },
       DateOfBirthSavedAt: {
         type: DataTypes.DATE,
@@ -278,16 +280,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
         field: '"PostcodeChangedBy"',
-      },
-      Latitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Latitude"',
-      },
-      Longitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Longitude"',
       },
       GenderValue: {
         type: DataTypes.ENUM,
@@ -1010,6 +1002,32 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"FluJabChangedBy"',
       },
+      LastYearFluJabValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"LastYearFluJabValue"',
+      },
+      LastYearFluJabSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"LastYearFluJabSavedAt"',
+      },
+      LastYearFluJabChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"LastYearFluJabChangedAt"',
+      },
+      LastYearFluJabSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"LastYearFluJabSavedBy"',
+      },
+      LastYearFluJabChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"LastYearFluJabChangedBy"',
+      },
       created: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -1045,6 +1063,12 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'MainJobFkOther',
       },
+      LongTermAbsence: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other'],
+        field: '"LongTermAbsence"',
+      },
       source: {
         type: DataTypes.ENUM,
         allowNull: false,
@@ -1054,32 +1078,6 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      hooks: {
-        beforeBulkUpdate: async (workerUpdate) => {
-          if (workerUpdate.attributes.NationalInsuranceNumberValue) {
-            const encrypted = await encrypt(workerUpdate.attributes.NationalInsuranceNumberValue);
-            workerUpdate.attributes.NationalInsuranceNumberValue = encrypted;
-          }
-
-          if (workerUpdate.attributes.DateOfBirthValue) {
-            const encrypted = await encrypt(workerUpdate.attributes.DateOfBirthValue);
-            workerUpdate.attributes.DateOfBirthValue = encrypted;
-          }
-        },
-        afterFind: async (worker) => {
-          if (worker && worker.dataValues) {
-            if (worker.dataValues.NationalInsuranceNumberValue) {
-              const decrypted = await decrypt(worker.dataValues.NationalInsuranceNumberValue);
-              worker.dataValues.NationalInsuranceNumberValue = decrypted;
-            }
-
-            if (worker.dataValues.DateOfBirthValue) {
-              const decrypted = await decrypt(worker.dataValues.DateOfBirthValue);
-              worker.dataValues.DateOfBirthValue = decrypted;
-            }
-          }
-        },
-      },
       scopes: {
         active: {
           where: {
@@ -1100,6 +1098,11 @@ module.exports = function (sequelize, DataTypes) {
       updatedAt: false, // intentionally keeping these false; updated timestamp will be managed within the Worker business model not this DB model
     },
   );
+
+  Worker.addHook('afterUpdate', (record) => {
+    const postcode = record.dataValues.PostcodeValue;
+    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
+  });
 
   Worker.associate = (models) => {
     Worker.belongsTo(models.establishment, {
@@ -1170,6 +1173,12 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'workerFk',
       otherKey: 'nurseSpecialismFk',
       as: 'nurseSpecialisms',
+    });
+    Worker.belongsToMany(models.workerQualifications, {
+      foreignKey: 'workerFk',
+      through: 'workerQualifications',
+      otherKey: 'ID',
+      as: 'qualifications',
     });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {
@@ -1260,6 +1269,53 @@ module.exports = function (sequelize, DataTypes) {
         establishmentFk: establishmentId,
       },
       raw: true,
+    });
+  };
+
+  Worker.getEstablishmentTrainingRecords = async function (establishmentId) {
+    return this.findAll({
+      attributes: [
+        'NameOrIdValue',
+        'LongTermAbsence',
+        [
+          sequelize.literal(
+            `
+              (
+                SELECT json_agg(cqc."TrainingCategories"."Category")
+                  FROM cqc."MandatoryTraining"
+                  RIGHT JOIN cqc."TrainingCategories" ON
+                  "TrainingCategoryFK" = cqc."TrainingCategories"."ID"
+                  WHERE "EstablishmentFK" = "worker"."EstablishmentFK"
+                  AND "JobFK" = "worker"."MainJobFKValue"
+              )
+            `,
+          ),
+          'mandatoryTrainingCategories',
+        ],
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+        },
+        {
+          model: sequelize.models.workerTraining,
+          as: 'workerTraining',
+          attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+          include: [
+            {
+              model: sequelize.models.workerTrainingCategories,
+              as: 'category',
+              attributes: ['category'],
+            },
+          ],
+        },
+      ],
     });
   };
 

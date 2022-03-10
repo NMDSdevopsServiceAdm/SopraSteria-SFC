@@ -1,0 +1,40 @@
+<div class="govuk-grid-column-full">
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Workplace</th>
+        <th scope="col" class="govuk-table__header">Postcode</th>
+        <th scope="col" class="govuk-table__header">Parent ID</th>
+        <th scope="col" class="govuk-table__header">Received</th>
+        <th scope="col" class="govuk-table__header">Status</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row" *ngFor="let registration of pendingRegistrations">
+        <td class="govuk-table__cell">
+          <a [routerLink]="[registration.workplaceUid]">{{ registration.name }}</a>
+        </td>
+        <td class="govuk-table__cell">
+          {{ registration.postcode }}
+        </td>
+        <td class="govuk-table__cell">
+          <a
+            (click)="navigateToParentPage(registration.parentUid, '', registration.parentEstablishmentId, $event)"
+            href="#"
+            [attr.data-testid]="'parentId-' + registration.parentEstablishmentId"
+          >
+            {{ registration.parentEstablishmentId }}
+          </a>
+        </td>
+        <td class="govuk-table__cell">
+          {{ registration.created | date: 'dd MMM yyyy hh:mm a' }}
+        </td>
+        <td class="govuk-table__cell">
+          <strong class="govuk-tag" [ngClass]="setStatusClass(registration.status)">
+            {{ registration.status | uppercase }}
+          </strong>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

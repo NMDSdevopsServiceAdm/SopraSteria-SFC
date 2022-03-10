@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ServiceUnavailableComponent } from './service-unavailable.component';
 
@@ -6,7 +6,7 @@ describe('ServiceUnavailableComponent', () => {
   let component: ServiceUnavailableComponent;
   let fixture: ComponentFixture<ServiceUnavailableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ServiceUnavailableComponent],
     }).compileComponents();

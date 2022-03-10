@@ -1,0 +1,34 @@
+@import '~govuk-frontend/govuk/base';
+
+.asc-summary-box {
+  border: 1px solid $govuk-border-colour;
+  background-color: govuk-colour('light-grey');
+  padding: 20px 40px;
+}
+
+.asc-shadow-box {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.asc-no-underline {
+  text-decoration: none;
+}
+
+.asc-image-width {
+  max-width: 100%;
+  height: auto;
+}
+
+.video_wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  border: solid 3px #8accd2;
+}
+.video_wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

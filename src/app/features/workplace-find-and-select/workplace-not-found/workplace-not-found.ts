@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { AfterViewInit, ElementRef, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { POSTCODE_PATTERN } from '@core/constants/constants';
@@ -23,7 +23,7 @@ export class WorkplaceNotFound implements OnInit, AfterViewInit {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected locationService: LocationService,
-    protected router: Router
+    protected router: Router,
   ) {}
 
   ngOnInit() {
@@ -51,12 +51,10 @@ export class WorkplaceNotFound implements OnInit, AfterViewInit {
     this.submitted = true;
     if (this.form.valid) {
       this.subscriptions.add(
-        this.locationService
-          .getAddressesByPostCode(this.postcodeControl.value)
-          .subscribe(
-            (data: LocationSearchResponse) => this.onSuccess(data),
-            (error: HttpErrorResponse) => this.onError(error)
-          )
+        this.locationService.getAddressesByPostCode(this.postcodeControl.value).subscribe(
+          (data: LocationSearchResponse) => this.onSuccess(data),
+          (error: HttpErrorResponse) => this.onError(error),
+        ),
       );
     }
   }
@@ -103,7 +101,7 @@ export class WorkplaceNotFound implements OnInit, AfterViewInit {
         message: 'Invalid Postcode.',
       },
       {
-        name: 503,
+        name: 500,
         message: 'Database error.',
       },
     ];

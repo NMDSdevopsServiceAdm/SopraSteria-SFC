@@ -19,7 +19,7 @@ const viewMandatoryTraining = async (req, res) => {
     return res.status(200).json(allMandatoryTrainingRecords);
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -33,7 +33,7 @@ const viewAllMandatoryTraining = async (req, res) => {
     return res.status(200).json(allMandatoryTrainingRecords);
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 
@@ -59,7 +59,7 @@ const createMandatoryTraining = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 

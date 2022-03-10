@@ -12,6 +12,6 @@ export class ThankYouComponent implements OnInit {
   constructor(protected registrationSurveyService: RegistrationSurveyService) {}
 
   ngOnInit(): void {
-    this.nextPage = { url: ['/dashboard'] };
+    this.nextPage = { url: ['/first-login-wizard'] };
   }
 }

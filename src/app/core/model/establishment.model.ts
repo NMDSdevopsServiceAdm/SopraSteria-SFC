@@ -23,9 +23,9 @@ export interface Capacity {
   answer: number;
 }
 
-export interface Share {
-  enabled: boolean;
-  with: string[];
+export interface ShareWith {
+  cqc: boolean;
+  localAuthorities: boolean;
 }
 
 export interface LocalAuthority {
@@ -109,7 +109,7 @@ export interface Establishment {
   };
   serviceUsers: ServiceUser[];
   capacities: Capacity[];
-  share: Share;
+  shareWith: ShareWith;
   localAuthorities: LocalAuthority[];
   primaryAuthority: PrimaryAuthority;
   parentPermissions?: string;
@@ -134,6 +134,8 @@ export interface Establishment {
   county?: string;
   locationId?: string;
   lastBulkUploaded?: string;
+  eightWeeksFromFirstLogin?: string;
+  showSharingPermissionsBanner?: boolean;
 }
 
 export interface UpdateJobsRequest {
@@ -223,6 +225,13 @@ export enum WdfSortStaffOptions {
   '2_not_meeting' = 'WDF requirements (not meeting)',
 }
 
+export enum WdfParentSortWorkplacesOptions {
+  '1_not_meeting' = 'WDF requirements (not meeting)',
+  '2_meeting' = 'WDF requirements (meeting)',
+  '3_asc' = 'Workplace name (A to Z)',
+  '4_dsc' = 'Workplace name (Z to A)',
+}
+
 export enum SortTrainingAndQualsOptionsWorker {
   '0_expired' = 'Expired',
   '1_expires_soon' = 'Expires soon',
@@ -234,4 +243,10 @@ export enum SortTrainingAndQualsOptionsCat {
   '1_expires_soon' = 'Expires soon',
   '2_missing' = 'Missing',
   '3_category' = 'Category',
+}
+
+export enum FilterTrainingAndQualsOptions {
+  '0_showall' = 'Show all',
+  '1_expired' = 'Expired',
+  '2_expires_soon' = 'Expires soon',
 }

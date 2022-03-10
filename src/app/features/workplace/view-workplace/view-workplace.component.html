@@ -26,12 +26,19 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-tabs>
-      <app-tab [title]="'Workplace'">
-        <app-workplace-tab [workplace]="workplace" [summaryReturnUrl]="summaryReturnUrl"></app-workplace-tab>
+      <app-tab
+        [title]="'Workplace'"
+        [redAlert]="workplace?.employerType && (showCQCDetailsBanner || showSharingPermissionsBanner)"
+      >
+        <app-workplace-tab
+          [workplace]="workplace"
+          [summaryReturnUrl]="summaryReturnUrl"
+          [workerCount]="workerCount"
+        ></app-workplace-tab>
       </app-tab>
 
       <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
-        <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
+        <app-staff-records-tab [workplace]="workplace" [workers]="workers"></app-staff-records-tab>
       </app-tab>
       <app-tab
         *ngIf="workplace && canViewListOfWorkers"
@@ -39,7 +46,10 @@
         [redAlert]="trainingAlert === 2"
         [title]="'Training and qualifications'"
       >
-        <app-training-and-qualifications-tab [workplace]="workplace"></app-training-and-qualifications-tab>
+        <app-training-and-qualifications-tab
+          [workplace]="workplace"
+          [workers]="workers"
+        ></app-training-and-qualifications-tab>
       </app-tab>
       <app-tab *ngIf="canViewBenchmarks" [title]="'Benchmarks'">
         <app-benchmarks-tab class="asc-benchmarks-tab" [workplace]="workplace"></app-benchmarks-tab>

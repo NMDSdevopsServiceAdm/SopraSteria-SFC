@@ -1,6 +1,5 @@
 'use strict';
 
-const models = require('../../../../models');
 const { Establishment } = require('../../../../models/classes/establishment');
 const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments').Establishment;
 
@@ -25,31 +24,16 @@ const validateEstablishmentCsv = async (
     try {
       const thisApiEstablishment = new Establishment();
       thisApiEstablishment.initialise(
-        thisEstablishmentAsAPI.Address1,
-        thisEstablishmentAsAPI.Address2,
-        thisEstablishmentAsAPI.Address3,
-        thisEstablishmentAsAPI.Town,
+        thisEstablishmentAsAPI.address1,
+        thisEstablishmentAsAPI.address2,
+        thisEstablishmentAsAPI.address3,
+        thisEstablishmentAsAPI.town,
         null,
-        thisEstablishmentAsAPI.LocationId,
-        thisEstablishmentAsAPI.ProvId,
-        thisEstablishmentAsAPI.Postcode,
-        thisEstablishmentAsAPI.IsCQCRegulated,
+        thisEstablishmentAsAPI.locationId,
+        thisEstablishmentAsAPI.provId,
+        thisEstablishmentAsAPI.postcode,
+        thisEstablishmentAsAPI.isCQCRegulated,
       );
-
-      const foundCurrentEstablishment = myCurrentEstablishments.find(
-        (thisCurrentEstablishment) => thisCurrentEstablishment.key === lineValidator.key,
-      );
-
-      if (
-        thisApiEstablishment.postcode &&
-        foundCurrentEstablishment &&
-        foundCurrentEstablishment.postcode !== thisApiEstablishment.postcode
-      ) {
-        const { Latitude, Longitude } = (await models.postcodes.firstOrCreate(thisApiEstablishment.postcode)) || {};
-
-        thisEstablishmentAsAPI.Latitude = Latitude;
-        thisEstablishmentAsAPI.Longitude = Longitude;
-      }
 
       await thisApiEstablishment.load(thisEstablishmentAsAPI);
 

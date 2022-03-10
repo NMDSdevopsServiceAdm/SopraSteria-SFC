@@ -10,13 +10,17 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -42,7 +46,7 @@ describe('view-workplace', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory([], isAdmin),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -66,6 +70,8 @@ describe('view-workplace', () => {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        { provide: WorkerService, useClass: MockWorkerService },
       ],
     });
 
@@ -121,6 +127,15 @@ describe('view-workplace', () => {
       component.fixture.detectChanges();
 
       expect(component.getByText('Users')).toBeTruthy();
+    });
+
+    it('should display a flag on the workplace tab when the sharing permisson banner is true', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.showSharingPermissionsBanner = true;
+      component.fixture.detectChanges();
+
+      expect(component.getByTestId('red-flag')).toBeTruthy();
     });
   });
 

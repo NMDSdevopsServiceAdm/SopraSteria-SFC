@@ -1,4 +1,5 @@
 const { Op } = require('sequelize');
+const moment = require('moment');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -18,7 +19,8 @@ module.exports = function (sequelize, DataTypes) {
         field: '"EstablishmentUID"',
       },
       ustatus: {
-        type: DataTypes.TEXT,
+        type: DataTypes.ENUM,
+        values: ['PENDING', 'IN PROGRESS', 'REJECTED'],
         allowNull: true,
         field: '"Status"',
       },
@@ -201,16 +203,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
         field: '"PostcodeChangedBy"',
-      },
-      Latitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Latitude"',
-      },
-      Longitude: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: '"Longitude"',
       },
       isRegulated: {
         type: DataTypes.BOOLEAN,
@@ -472,11 +464,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CapacityServicesChangedBy"',
       },
-      ShareDataValue: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        field: '"ShareDataValue"',
-      },
       ShareDataSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
@@ -499,33 +486,13 @@ module.exports = function (sequelize, DataTypes) {
       },
       shareWithCQC: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         field: '"ShareDataWithCQC"',
       },
       shareWithLA: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         field: '"ShareDataWithLA"',
-      },
-      ShareWithLASavedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"ShareWithLASavedAt"',
-      },
-      ShareWithLAChangedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"ShareWithLAChangedAt"',
-      },
-      ShareWithLASavedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"ShareWithLASavedBy"',
-      },
-      ShareWithLAChangedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"ShareWithLAChangedBy"',
       },
       VacanciesValue: {
         type: DataTypes.ENUM,
@@ -686,17 +653,45 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'updatedby',
       },
-      trainingReportLockHeld: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-        field: 'TrainingReportLockHeld',
-      },
       laReportLockHeld: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
         field: 'LaReportLockHeld',
+      },
+      eightWeeksFromFirstLogin: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'eightWeeksFromFirstLogin',
+      },
+      reviewer: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'Reviewer',
+      },
+      inReview: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+        field: 'InReview',
+      },
+      showSharingPermissionsBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'ShowSharingPermissionsBanner',
+      },
+      expiresSoonAlertDate: {
+        type: DataTypes.ENUM,
+        allowNull: false,
+        values: ['90', '60', '30'],
+        default: '90',
+        field: 'ExpiresSoonAlertDate',
+      },
+      dataChangesLastUpdated: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'DataChangesLastUpdated',
       },
     },
     {
@@ -750,6 +745,11 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
+  Establishment.addHook('afterUpdate', (record) => {
+    const postcode = record.dataValues.PostCode;
+    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
+  });
+
   Establishment.associate = (models) => {
     Establishment.belongsTo(models.establishment, {
       as: 'Parent',
@@ -794,11 +794,6 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'jobs',
     });
-    Establishment.hasMany(models.establishmentLocalAuthority, {
-      foreignKey: 'establishmentId',
-      sourceKey: 'id',
-      as: 'localAuthorities',
-    });
     Establishment.hasMany(models.establishmentAudit, {
       foreignKey: 'establishmentFk',
       sourceKey: 'id',
@@ -811,6 +806,22 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'workers',
       onDelete: 'CASCADE',
+    });
+    Establishment.hasMany(models.notes, {
+      foreignKey: 'establishmentFk',
+      sourceKey: 'id',
+      as: 'notes',
+      onDelete: 'CASCADE',
+    });
+    Establishment.hasMany(models.establishment, {
+      foreignKey: 'parentId',
+      sourceKey: 'id',
+      as: 'Subsidiaries',
+    });
+    Establishment.hasMany(models.Approvals, {
+      foreignKey: 'ID',
+      sourceKey: 'id',
+      as: 'Approvals',
     });
   };
 
@@ -855,11 +866,24 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.findByUid = async function (uid) {
+  Establishment.findByUid = async function (uid, isRegistration = false) {
     return await this.findOne({
       where: {
         uid,
+        archived: isRegistration ? { [Op.or]: [true, false] } : false,
       },
+    });
+  };
+
+  Establishment.findEstablishmentWithSameNmdsId = async function (uid, nmdsId) {
+    return await this.findOne({
+      where: {
+        uid: {
+          [Op.ne]: uid,
+        },
+        nmdsId: nmdsId,
+      },
+      attributes: ['id'],
     });
   };
 
@@ -942,6 +966,7 @@ module.exports = function (sequelize, DataTypes) {
         'locationId',
         'dataOwner',
         'updated',
+        'provId',
         'EmployerTypeValue',
         'EmployerTypeOther',
       ],
@@ -960,6 +985,12 @@ module.exports = function (sequelize, DataTypes) {
           required: false,
         },
         {
+          model: sequelize.models.establishment,
+          attributes: ['NameValue'],
+          as: 'Subsidiaries',
+          required: false,
+        },
+        {
           model: sequelize.models.user,
           attributes: ['id', 'uid', 'FullNameValue', 'SecurityQuestionValue', 'SecurityQuestionAnswerValue'],
           as: 'users',
@@ -971,7 +1002,19 @@ module.exports = function (sequelize, DataTypes) {
           include: [
             {
               model: sequelize.models.login,
-              attributes: ['username', 'status'],
+              attributes: ['username', 'isActive'],
+            },
+          ],
+        },
+        {
+          model: sequelize.models.notes,
+          attributes: ['note', 'createdAt', 'noteType'],
+          as: 'notes',
+          include: [
+            {
+              model: sequelize.models.user,
+              attributes: ['FullNameValue'],
+              as: 'user',
             },
           ],
         },
@@ -1036,6 +1079,96 @@ module.exports = function (sequelize, DataTypes) {
     return await this.scope(scopes).count();
   };
 
+  Establishment.getEstablishmentWithPrimaryUser = async function (uid, isRegistration = false) {
+    return await this.findOne({
+      attributes: [
+        'NameValue',
+        'IsRegulated',
+        'LocationID',
+        'ProvID',
+        'Address1',
+        'Address2',
+        'Address3',
+        'Town',
+        'County',
+        'PostCode',
+        'NmdsID',
+        'EstablishmentID',
+        'ParentID',
+        'ParentUID',
+        'created',
+        'updatedBy',
+        'Status',
+        'EstablishmentUID',
+        'Reviewer',
+        'InReview',
+      ],
+      where: {
+        uid,
+        archived: isRegistration ? { [Op.or]: [true, false] } : false,
+      },
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: sequelize.models.user,
+          as: 'users',
+          attributes: [
+            'EmailValue',
+            'PhoneValue',
+            'FullNameValue',
+            'SecurityQuestionValue',
+            'SecurityQuestionAnswerValue',
+            'created',
+          ],
+          where: {
+            isPrimary: true,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.login,
+              attributes: ['id', 'username'],
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getEstablishmentRegistrationsByStatus = async function (isRejection) {
+    const params = isRejection
+      ? { ustatus: 'REJECTED', archived: true }
+      : { ustatus: { [Op.or]: ['PENDING', 'IN PROGRESS'] } };
+
+    return await this.findAll({
+      attributes: [
+        'NameValue',
+        'PostCode',
+        'ParentID',
+        'ParentUID',
+        'created',
+        'updated',
+        'Status',
+        'EstablishmentUID',
+      ],
+      where: params,
+      order: [['created', 'DESC']],
+    });
+  };
+
+  Establishment.getNmdsIdUsingEstablishmentId = async function (id) {
+    return await this.findOne({
+      where: {
+        id: id,
+      },
+      attributes: ['NmdsID'],
+    });
+  };
+
   Establishment.getEstablishmentsWithMissingWorkerRef = async function (establishmentId, isParent) {
     const scopes = ['defaultScope', 'noUstatus'];
 
@@ -1068,6 +1201,728 @@ module.exports = function (sequelize, DataTypes) {
         model: sequelize.models.worker.scope('active', 'noLocalIdentifier'),
         as: 'workers',
       },
+    });
+  };
+
+  Establishment.downloadEstablishments = async function (establishmentId) {
+    return await this.findAll({
+      attributes: [
+        'LocalIdentifierValue',
+        'id',
+        'NameValue',
+        'address1',
+        'address2',
+        'address3',
+        'town',
+        'postcode',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
+        'isRegulated',
+        'shareWithCQC',
+        'shareWithLA',
+        'provId',
+        'locationId',
+        'NumberOfStaffValue',
+        'VacanciesValue',
+        'StartersValue',
+        'LeaversValue',
+        'reasonsForLeaving',
+      ],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          attributes: ['id', 'uid', 'nmdsId'],
+          as: 'Parent',
+          required: false,
+        },
+        {
+          model: sequelize.models.services,
+          attributes: ['id', 'reportingID'],
+          as: 'mainService',
+        },
+        {
+          model: sequelize.models.services,
+          attributes: ['id', 'reportingID'],
+          as: 'otherServices',
+        },
+        {
+          model: sequelize.models.serviceUsers,
+          as: 'serviceUsers',
+        },
+        {
+          model: sequelize.models.establishmentCapacity,
+          attributes: ['id', 'serviceCapacityId', 'answer'],
+          as: 'capacity',
+          include: [
+            {
+              model: sequelize.models.serviceCapacity,
+              as: 'reference',
+              attributes: ['id', 'question', 'type'],
+              include: [
+                {
+                  model: sequelize.models.services,
+                  attributes: ['id', 'reportingID'],
+                  as: 'service',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: sequelize.models.establishmentJobs,
+          attributes: ['jobId', 'type', 'total'],
+          as: 'jobs',
+        },
+      ],
+    });
+  };
+
+  Establishment.downloadWorkers = async function (establishmentId) {
+    return await this.findAll({
+      attributes: ['LocalIdentifierValue', 'id'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          attributes: [
+            'id',
+            'uid',
+            'LocalIdentifierValue',
+            'NameOrIdValue',
+            'FluJabValue',
+            'NationalInsuranceNumberValue',
+            'PostcodeValue',
+            'DateOfBirthValue',
+            'GenderValue',
+            'NationalityValue',
+            'BritishCitizenshipValue',
+            'CountryOfBirthValue',
+            'YearArrivedValue',
+            'YearArrivedYear',
+            'DisabilityValue',
+            'CareCertificateValue',
+            'RecruitedFromValue',
+            'MainJobStartDateValue',
+            'SocialCareStartDateValue',
+            'SocialCareStartDateYear',
+            'ApprenticeshipTrainingValue',
+            'ContractValue',
+            'ZeroHoursContractValue',
+            'DaysSickValue',
+            'DaysSickDays',
+            'AnnualHourlyPayValue',
+            'AnnualHourlyPayRate',
+            'MainJobFkOther',
+            'WeeklyHoursContractedValue',
+            'WeeklyHoursContractedHours',
+            'WeeklyHoursAverageValue',
+            'WeeklyHoursAverageHours',
+            'OtherJobsValue',
+            'NurseSpecialismsValue',
+            'RegisteredNurseValue',
+            'ApprovedMentalHealthWorkerValue',
+            'QualificationInSocialCareValue',
+            'OtherQualificationsValue',
+          ],
+          as: 'workers',
+          where: {
+            archived: false,
+          },
+          include: [
+            {
+              model: sequelize.models.ethnicity,
+              as: 'ethnicity',
+            },
+            {
+              model: sequelize.models.nationality,
+              as: 'nationality',
+            },
+            {
+              model: sequelize.models.country,
+              as: 'countryOfBirth',
+            },
+            {
+              model: sequelize.models.recruitedFrom,
+              as: 'recruitedFrom',
+            },
+            {
+              model: sequelize.models.job,
+              as: 'otherJobs',
+            },
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+            },
+            {
+              model: sequelize.models.qualification,
+              as: 'highestQualification',
+            },
+            {
+              model: sequelize.models.qualification,
+              as: 'socialCareQualification',
+            },
+            {
+              model: sequelize.models.workerNurseSpecialism,
+              as: 'nurseSpecialisms',
+            },
+            {
+              model: sequelize.models.workerQualifications,
+              as: 'qualifications',
+              include: {
+                model: sequelize.models.workerAvailableQualifications,
+                as: 'qualification',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.downloadTrainingRecords = async function (establishmentId) {
+    return await this.findAll({
+      attributes: ['LocalIdentifierValue', 'id'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+            dataOwner: 'Workplace',
+          },
+          {
+            parentId: establishmentId,
+            dataOwner: 'Parent',
+          },
+        ],
+        archived: false,
+        ustatus: {
+          [Op.is]: null,
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          attributes: ['LocalIdentifierValue', 'id'],
+          as: 'workers',
+          where: {
+            archived: false,
+          },
+          include: [
+            {
+              attributes: ['title', 'completed', 'expires', 'accredited', 'notes'],
+              model: sequelize.models.workerTraining,
+              as: 'workerTraining',
+              include: {
+                model: sequelize.models.workerTrainingCategories,
+                as: 'category',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  // DO NOT USE if property is tracked (updatedBy, audit logs etc.)
+  Establishment.updateEstablishment = async function (establishmentId, updatedEstablishment) {
+    return await this.update(updatedEstablishment, {
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
+  Establishment.findByLocationID = async function (locationID) {
+    return await this.findAll({
+      where: {
+        locationId: locationID,
+      },
+      attributes: ['locationId'],
+    });
+  };
+
+  Establishment.findEstablishmentsByLocationID = async function (locationIDs) {
+    return await this.findAll({
+      where: {
+        locationId: {
+          [Op.or]: locationIDs,
+        },
+      },
+      attributes: ['locationId'],
+    });
+  };
+
+  Establishment.workersAndTraining = async function (
+    establishmentId,
+    includeMandatoryTrainingBreakdown = false,
+    isParent = false,
+  ) {
+    const currentDate = moment().toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+
+    let attributes = [
+      'id',
+      'uid',
+      'LocalIdentifierValue',
+      'NameOrIdValue',
+      'ContractValue',
+      'CompletedValue',
+      'created',
+      'updated',
+      'updatedBy',
+      'lastWdfEligibility',
+      'wdfEligible',
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
+        'trainingCount',
+      ],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
+        'qualificationCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
+        ),
+        'expiredTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
+        ),
+        'expiringTrainingCount',
+      ],
+      [
+        sequelize.literal(
+          `
+            (
+              SELECT
+                  COUNT(0)
+                FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+                AND "TrainingCategoryFK" NOT IN (
+                  SELECT
+                    DISTINCT "CategoryFK"
+                  FROM cqc."WorkerTraining"
+                  WHERE "WorkerFK" = "workers"."ID"
+                )
+            )
+            `,
+        ),
+        'missingMandatoryTrainingCount',
+      ],
+      'LongTermAbsence',
+    ];
+
+    if (includeMandatoryTrainingBreakdown) {
+      const mandatoryTrainingAttributes = [
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiredMandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID"  AND "CategoryFK"  IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'mandatoryTrainingCount',
+        ],
+        [
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" IN
+              (
+                SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+              )
+            )`,
+          ),
+          'expiringMandatoryTrainingCount',
+        ],
+      ];
+
+      attributes = [...attributes, ...mandatoryTrainingAttributes];
+    }
+
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+
+    return this.findAll({
+      attributes: ['id', 'NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes,
+          where: {
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getEstablishmentTrainingRecords = async function (establishmentId, isParent = false) {
+    let attributes = [
+      'id',
+      'NameOrIdValue',
+      [
+        sequelize.literal(
+          `
+            (
+              SELECT json_agg(cqc."TrainingCategories"."Category")
+                FROM cqc."MandatoryTraining"
+                RIGHT JOIN cqc."TrainingCategories" ON
+                "TrainingCategoryFK" = cqc."TrainingCategories"."ID"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
+            )
+          `,
+        ),
+        'mandatoryTrainingCategories',
+      ],
+      'LongTermAbsence',
+    ];
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+    return this.findAll({
+      attributes: ['id', 'NameValue', 'ExpiresSoonAlertDate'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes,
+          where: {
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+            {
+              model: sequelize.models.workerTraining,
+              as: 'workerTraining',
+              attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+              required: false,
+              include: [
+                {
+                  model: sequelize.models.workerTrainingCategories,
+                  as: 'category',
+                  attributes: ['category'],
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getWorkerQualifications = async function (establishmentId, isParent = false) {
+    let subsidiaries = [];
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+
+    return this.findAll({
+      attributes: ['NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['NameOrIdValue'],
+          where: {
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+            {
+              model: sequelize.models.workerQualifications,
+              as: 'qualifications',
+              attributes: ['Year'],
+              include: [
+                {
+                  model: sequelize.models.workerAvailableQualifications,
+                  as: 'qualification',
+                  attributes: ['group', 'title', 'level'],
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getWorkersWithCareCertificateStatus = async function (establishmentId, isParent = false) {
+    let subsidiaries = [];
+
+    if (isParent) {
+      subsidiaries = [
+        {
+          parentId: establishmentId,
+          dataOwner: 'Parent',
+        },
+        {
+          parentId: establishmentId,
+          dataOwner: 'Workplace',
+          dataPermissions: 'Workplace and Staff',
+        },
+      ];
+    }
+
+    return this.findAll({
+      attributes: ['id', 'NameValue'],
+      where: {
+        [Op.or]: [
+          {
+            id: establishmentId,
+          },
+          ...subsidiaries,
+        ],
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['NameOrIdValue', 'CareCertificateValue'],
+          where: {
+            CareCertificateValue: { [Op.ne]: null },
+            archived: false,
+          },
+          required: false,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['id', 'title'],
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
+  };
+
+  Establishment.getExpiresSoonAlertDate = async function (establishmentId) {
+    return this.findOne({
+      attributes: ['ExpiresSoonAlertDate'],
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
+  Establishment.getInfoForPermissions = async function (establishmentId) {
+    return this.findOne({
+      attributes: [
+        'IsRegulated',
+        [
+          sequelize.literal(`
+            CASE WHEN "establishment"."ParentID" IS NULL THEN
+              false
+            ELSE
+              true
+            END
+          `),
+          'hasParent',
+        ],
+        [
+          sequelize.literal(`
+            CASE WHEN "establishment"."DataOwnershipRequested" IS NULL THEN
+              false
+            ELSE
+              true
+            END
+          `),
+          'dataOwnershipRequested',
+        ],
+        [
+          sequelize.literal(`
+            CASE WHEN COUNT("Approvals"."ID") = 0 THEN
+              false
+            ELSE
+              true
+            END
+          `),
+          'hasRequestedToBecomeAParent',
+        ],
+      ],
+      where: {
+        id: establishmentId,
+      },
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['id'],
+        },
+        {
+          model: sequelize.models.Approvals,
+          as: 'Approvals',
+          where: {
+            Status: 'Pending',
+            ApprovalType: 'BecomeAParent',
+          },
+          attributes: ['ID'],
+          required: false,
+        },
+      ],
+      group: ['establishment.EstablishmentID', 'mainService.id', 'Approvals.ID'],
+    });
+  };
+
+  Establishment.updateDataChangesLastUpdatedDate = async function (establishmentId, lastUpdated) {
+    return await this.update(
+      {
+        dataChangesLastUpdated: lastUpdated,
+      },
+      {
+        where: {
+          id: establishmentId,
+        },
+        logging: true,
+      },
+    );
+  };
+
+  Establishment.getdataChangesLastUpdated = async function (establishmentId) {
+    return await this.findOne({
+      attributes: ['DataChangesLastUpdated'],
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
+  Establishment.authenticateEstablishment = async function (where) {
+    return await this.findOne({
+      attributes: ['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent'],
+      where,
     });
   };
 

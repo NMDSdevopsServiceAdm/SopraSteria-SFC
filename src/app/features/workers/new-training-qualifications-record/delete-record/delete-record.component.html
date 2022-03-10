@@ -1,0 +1,69 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-0">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
+      {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
+    </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-9">
+      You're about to delete this {{ trainingOrQualification }} record
+    </h1>
+
+    <ng-container *ngIf="trainingView; else qualificationView">
+      <dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wide-key">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Name or ID number</dt>
+          <dd class="govuk-summary-list__value" data-testid="workerName">
+            {{ worker.nameOrId }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Training category</dt>
+          <dd class="govuk-summary-list__value" data-testid="trainingCategory">
+            {{ trainingRecord.trainingCategory.category }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Training name</dt>
+          <dd class="govuk-summary-list__value" data-testid="trainingName">{{ trainingRecord.title }}</dd>
+        </div>
+      </dl>
+    </ng-container>
+
+    <ng-template #qualificationView>
+      <dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wide-key">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Name or ID number</dt>
+          <dd class="govuk-summary-list__value" data-testid="workerName">
+            {{ worker.nameOrId }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Type of qualification</dt>
+          <dd class="govuk-summary-list__value" data-testid="qualificationType">
+            {{ qualificationRecord.qualification.group }}
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Qualification name</dt>
+          <dd class="govuk-summary-list__value" data-testid="qualificationName">
+            {{ qualificationRecord.qualification.title }}
+          </dd>
+        </div>
+      </dl>
+    </ng-template>
+
+    <div class="govuk-button-group govuk-!-margin-top-7">
+      <button type="button" class="govuk-button govuk-button--warning govuk-!-margin-right-2" (click)="deleteRecord()">
+        Delete this {{ trainingOrQualification }} record
+      </button>
+      <a
+        class="govuk-button govuk-button--link govuk-!-margin-left-9"
+        role="button"
+        draggable="false"
+        href="#"
+        (click)="returnToEditPage($event)"
+      >
+        Cancel
+      </a>
+    </div>
+  </div>
+</div>

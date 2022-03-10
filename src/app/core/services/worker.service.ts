@@ -9,7 +9,8 @@ import {
   QualificationsResponse,
   QualificationType,
 } from '@core/model/qualification.model';
-import { TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
+import { MultipleTrainingResponse, TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
+import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -69,7 +70,7 @@ export class WorkerService {
   }
 
   public hasJobRole(worker: Worker, id: number) {
-    return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.jobs.some(j => j.jobId === id));
+    return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.jobs.some((j) => j.jobId === id));
   }
 
   setState(worker) {
@@ -94,17 +95,17 @@ export class WorkerService {
   }
 
   public getAllWorkers(establishmentuid: string): Observable<Worker[]> {
-    return this.http.get<WorkersResponse>(`/api/establishment/${establishmentuid}/worker`).pipe(map(w => w.workers));
+    return this.http.get<WorkersResponse>(`/api/establishment/${establishmentuid}/worker`).pipe(map((w) => w.workers));
   }
 
   public getTotalStaffRecords(establishmentuid: string): Observable<number> {
     return this.http
       .get<TotalStaffRecordsResponse>(`/api/establishment/${establishmentuid}/worker/total`)
-      .pipe(map(response => response.total));
+      .pipe(map((response) => response.total));
   }
 
   getLeaveReasons() {
-    return this.http.get<LeaveReasonsResponse>('/api/worker/leaveReasons').pipe(map(r => r.reasons));
+    return this.http.get<LeaveReasonsResponse>('/api/worker/leaveReasons').pipe(map((r) => r.reasons));
   }
 
   createWorker(workplaceUid: string, props) {
@@ -131,22 +132,22 @@ export class WorkerService {
         `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/available`,
         {
           params,
-        }
+        },
       )
-      .pipe(map(res => res.qualifications));
+      .pipe(map((res) => res.qualifications));
   }
 
   createQualification(workplaceUid: string, workerId: string, record: QualificationRequest) {
     return this.http.post<QualificationRequest>(
       `/api/establishment/${workplaceUid}/worker/${workerId}/qualification`,
-      record
+      record,
     );
   }
 
   updateQualification(workplaceUid: string, workerId: string, qualificationId: string, record) {
     return this.http.put(
       `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`,
-      record
+      record,
     );
   }
 
@@ -160,14 +161,21 @@ export class WorkerService {
 
   getQualification(workplaceUid: string, workerId: string, qualificationId: string) {
     return this.http.get<QualificationResponse>(
-      `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`
+      `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`,
     );
+  }
+
+  createMultipleTrainingRecords(workplaceUid: string, workerUids: string[], record: TrainingRecordRequest) {
+    return this.http.post<MultipleTrainingResponse>(`/api/establishment/${workplaceUid}/worker/multiple-training`, {
+      trainingRecord: record,
+      workerUids,
+    });
   }
 
   createTrainingRecord(workplaceUid: string, workerId: string, record: TrainingRecordRequest) {
     return this.http.post<TrainingRecordRequest>(
       `/api/establishment/${workplaceUid}/worker/${workerId}/training`,
-      record
+      record,
     );
   }
 
@@ -175,11 +183,11 @@ export class WorkerService {
     workplaceUid: string,
     workerId: string,
     trainingRecordId: string,
-    record: TrainingRecordRequest
+    record: TrainingRecordRequest,
   ) {
     return this.http.put<TrainingRecordRequest>(
       `/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`,
-      record
+      record,
     );
   }
 
@@ -189,6 +197,15 @@ export class WorkerService {
 
   getTrainingRecords(workplaceUid: string, workerId: string) {
     return this.http.get<TrainingResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}/training`);
+  }
+
+  getAllTrainingAndQualificationRecords(
+    workplaceUid: string,
+    workerId: string,
+  ): Observable<TrainingAndQualificationRecords> {
+    return this.http.get<TrainingAndQualificationRecords>(
+      `/api/establishment/${workplaceUid}/worker/${workerId}/trainingAndQualifications/getAllTrainingAndQualifications`,
+    );
   }
 
   getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {
@@ -207,11 +224,15 @@ export class WorkerService {
 
   public updateLocalIdentifiers(
     establishmentUid: string,
-    request: LocalIdentifiersRequest
+    request: LocalIdentifiersRequest,
   ): Observable<LocalIdentifiersResponse> {
     return this.http.put<LocalIdentifiersResponse>(
       `/api/establishment/${establishmentUid}/worker/localIdentifier`,
-      request
+      request,
     );
+  }
+
+  public getLongTermAbsenceReasons(): Observable<Array<string>> {
+    return this.http.get<any>('/api/longTermAbsence').pipe(map((res) => res.reasons));
   }
 }

@@ -1,19 +1,21 @@
-<ng-container *ngIf="wdfView && wdfValue?.isEligible === ELIGIBILITY.NO; else answer">
-  <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+<ng-container>
+  <ng-container
+    *ngIf="wdfView && overallWdfEligibility && wdfValue?.isEligible === ELIGIBILITY.NO; then orangeFlags; else redFlags"
+  ></ng-container>
+
+  <ng-template #orangeFlags>
+    <app-eligibility-icon [overallEligibility]="true" [eligible]="false"></app-eligibility-icon>
+  </ng-template>
+
+  <ng-template #redFlags>
+    <ng-container *ngIf="wdfView && !overallWdfEligibility && wdfValue?.isEligible === ELIGIBILITY.NO; else response">
+      <app-eligibility-icon [overallEligibility]="false" [eligible]="false"></app-eligibility-icon>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #response>
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </ng-template>
 </ng-container>
 
-<ng-template #answer>
-  <div
-    [class.govuk-util__bold]="
-      wdfView && !wdfValue?.updatedSinceEffectiveDate && wdfValue?.isEligible === ELIGIBILITY.YES
-    "
-  >
-    <ng-content></ng-content>
-    <div
-      *ngIf="wdfView && !wdfValue?.updatedSinceEffectiveDate && wdfValue?.isEligible === ELIGIBILITY.YES"
-      class="govuk-!-margin-top-2"
-    >
-      <app-eligibility-icon [eligible]="false" [check]="true"></app-eligibility-icon>
-    </div>
-  </div>
-</ng-template>
+<ng-template #content><ng-content></ng-content></ng-template>

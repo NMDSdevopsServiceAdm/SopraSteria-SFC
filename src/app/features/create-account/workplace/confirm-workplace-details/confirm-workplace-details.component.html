@@ -1,0 +1,28 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <div class="govuk-!-margin-bottom-7">
+      <p class="govuk-heading-m">Workplace</p>
+
+      <app-summary-list
+        [topBorder]="true"
+        [summaryList]="workplaceNameAndAddress"
+        (setReturn)="onSetReturn()"
+        data-testid="workplaceNameAddress"
+      ></app-summary-list>
+
+      <app-summary-list
+        [topBorder]="true"
+        [summaryList]="mainService"
+        (setReturn)="onSetReturn()"
+        data-testid="mainService"
+      ></app-summary-list>
+
+      <app-summary-list
+        [wrapBorder]="true"
+        [summaryList]="totalStaff"
+        (setReturn)="onSetReturn()"
+        data-testid="totalStaff"
+      ></app-summary-list>
+    </div>
+  </div>
+</div>

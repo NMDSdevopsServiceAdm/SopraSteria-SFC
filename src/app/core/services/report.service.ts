@@ -47,6 +47,20 @@ export class ReportService {
     });
   }
 
+  public getTrainingAndQualificationsReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get<any>(`/api/reports/trainingAndQualifications/${workplaceUid}/report`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
+  public getParentTrainingAndQualificationsReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get<any>(`/api/reports/trainingAndQualifications/parent/${workplaceUid}/report`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
   public getSatisfactionSurveyReport(): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/reports/satisfactionSurvey/new`, {
       observe: 'response',
@@ -86,18 +100,6 @@ export class ReportService {
     );
   }
 
-  // get Training report from training and qualifications
-  public getTrainingReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
-    return this.checkLockStatus(
-      {
-        observe: 'response',
-        responseType: 'blob' as 'json',
-      },
-      workplaceUid,
-      'training',
-    );
-  }
-
   // Function to check for the lock status
   private checkLockStatus(httpOptions, workplaceUid, report): Observable<any> {
     let requestId;
@@ -105,6 +107,7 @@ export class ReportService {
       training: `/api/reports/training/establishment/${workplaceUid}/training`,
       la: `/api/reports/localAuthority/establishment/${workplaceUid}/user`,
       adminla: '/api/reports/localauthority/admin',
+      trainingAndQuals: '/api/reports/trainingAndQualifications',
     };
     const apiPath = reportData[report];
     // Run function every second until lock aquired

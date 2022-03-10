@@ -1,7 +1,9 @@
 const Sqreen = process.env.SQREEN_APP_NAME ? require('sqreen') : require('./server/utils/middleware/sqreen.mock');
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
-const { Integrations } = require('@sentry/tracing');
+const Tracing = require('@sentry/tracing');
+const Integrations = require('@sentry/integrations');
+
 const beeline = require('honeycomb-beeline')({
   dataset: config.get('env'),
   serviceName: 'sfc',
@@ -26,6 +28,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var proxy = require('express-http-proxy'); // for service public/download content
 var compression = require('compression');
+var toobusy = require('toobusy-js');
 
 // app config
 var AppConfig = require('./server/config/appConfig');
@@ -39,7 +42,7 @@ const { authLimiter, dbLimiter } = require('./server/utils/middleware/rateLimiti
 var helmet = require('helmet');
 var xssClean = require('xss-clean');
 var sanitizer = require('express-sanitizer');
-var locations = require('./server/routes/locations');
+var locations = require('./server/routes/locations/index');
 var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
@@ -65,6 +68,8 @@ var availableQualifications = require('./server/routes/availableQualifications')
 var approvals = require('./server/routes/approvals');
 var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
 var registrationSurvey = require('./server/routes/registrationSurvey');
+var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
+var longTermAbsence = require('./server/routes/longTermAbsence');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -72,14 +77,14 @@ var admin = require('./server/routes/admin');
 // reports
 var ReportsRoute = require('./server/routes/reports/index');
 
+// wdf
+var WDFRoute = require('./server/routes/wdf/index');
+
 var errors = require('./server/routes/errors');
 
 // SNS
 const AWSsns = require('./server/aws/sns');
 AWSsns.initialise(config.get('aws.region'));
-
-// test only routes - helpers to setup and execute automated tests
-var testOnly = require('./server/routes/testOnly');
 
 var app = express();
 
@@ -89,10 +94,19 @@ if (config.get('sentry.dsn')) {
   Sentry.init({
     dsn: config.get('sentry.dsn'),
     integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
       // enable Express.js middleware tracing
-      new Integrations.Express({ app }),
+      new Tracing.Integrations.Express({ app }),
+      new Integrations.CaptureConsole({
+        levels: ['error'],
+      }),
+      new Tracing.Integrations.Postgres({
+        usePgNative: false,
+      }),
     ],
     environment: config.get('env'),
+    tracesSampleRate: config.get('sentry.sample_rate'),
+    serverName: process.env.CF_INSTANCE_INDEX,
   });
 }
 app.use(
@@ -100,7 +114,18 @@ app.use(
     user: ['id'],
   }),
 );
+app.use(Sentry.Handlers.tracingHandler());
 app.use(compression());
+
+// middleware which blocks requests when we're too busy
+app.use(function (req, res, next) {
+  if (toobusy()) {
+    res.setHeader('Retry-After', '1');
+    res.status(503).send('Server busy, try again later');
+  } else {
+    next();
+  }
+});
 
 /* public/download - proxy interception */
 const publicDownloadBaseUrl = config.get('public.download.baseurl');
@@ -234,6 +259,7 @@ app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
 app.use('/api/trainingCategories', workingTrainingCategories);
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
 app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
+app.use('/api/longTermAbsence', [refCacheMiddleware.refcache, longTermAbsence]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
@@ -246,11 +272,12 @@ app.use('/api/establishment', [cacheMiddleware.nocache, establishments]);
 app.use('/api/ownershipRequest', [cacheMiddleware.nocache, ownershipRequest]);
 app.use('/api/parentLinkingDetails', [cacheMiddleware.nocache, linkParent]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
-app.use('/api/test', [cacheMiddleware.nocache, testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 app.use('/api/satisfactionSurvey', [cacheMiddleware.nocache, satisfactionSurvey]);
 app.use('/api/registrationSurvey', [cacheMiddleware.nocache, registrationSurvey]);
+app.use('/api/cqcStatusCheck', [cacheMiddleware.nocache], cqcStatusCheck);
+app.use('/api/wdf', [cacheMiddleware.nocache, WDFRoute]);
 
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
@@ -262,46 +289,19 @@ app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
 
 app.use('*', authLimiter);
 app.get('*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'dist/index.html'));
+  return res.sendFile(path.join(__dirname, 'dist/index.html'));
+});
+
+app.all('*', function (req, res) {
+  res.status(404);
+  return res.send({ message: 'Not Found' });
 });
 
 app.use(Sentry.Handlers.errorHandler());
-// Optional fallthrough error handler
-app.use(function onError(err, req, res) {
-  // The error id is attached to `res.sentry` to be returned
-  // and optionally displayed to the user for support.
-  res.statusCode = 500;
-  res.end(res.sentry + '\n');
-});
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function (err, req, res) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err,
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function (err, req, res) {
+// catches errors and returns a sentry ID
+app.use(function onError(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {},
-  });
+  return res.send({ errorId: res.sentry + '\n', message: err.message || undefined });
 });
 
 const startApp = () => {

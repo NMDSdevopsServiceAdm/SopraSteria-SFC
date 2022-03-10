@@ -1,14 +1,21 @@
 <h2 class="govuk-heading-s">Related content</h2>
 <ul class="govuk-list">
-  <li>
+  <li class="govuk-!-margin-bottom-2" *ngIf="showGetHelpWithBulkUploads">
+    <a [routerLink]="['/bulk-upload', 'get-help']">Get help with bulk uploads</a>
+  </li>
+  <li class="govuk-!-margin-bottom-2" *ngIf="showViewReferences">
+    <a [routerLink]="['/bulk-upload', 'workplace-references']">View references</a>
+  </li>
+  <li class="govuk-!-margin-bottom-2" *ngIf="showDataChanges">
+    <a [routerLink]="['/bulk-upload', 'data-change']">Data changes</a>
+    <span *ngIf="showFlagBUChanges" data-testid="showFlag">
+      <img src="/assets/images/flag-orange.svg" alt="" class="govuk-util__vertical-align-top govuk-!-margin-left-1" />
+    </span>
+  </li>
+  <li class="govuk-!-margin-bottom-2" *ngIf="showAboutBulkUpload">
     <a [routerLink]="['/bulk-upload', 'about-bulk-upload']">About bulk upload</a>
   </li>
-  <ng-container *ngIf="showAll">
-    <li *ngIf="this.authService.isAdmin">
-      <a [routerLink]="['/bulk-upload', 'last-bulk-upload']">View last bulk upload</a>
-    </li>
-    <li>
-      <a [routerLink]="['/bulk-upload', 'workplace-references']">View references</a>
-    </li>
-  </ng-container>
+  <li class="govuk-!-margin-bottom-2" *ngIf="this.authService.isAdmin && showViewLastBulkUpload">
+    <a [routerLink]="['/bulk-upload', 'last-bulk-upload']">View last bulk upload</a>
+  </li>
 </ul>

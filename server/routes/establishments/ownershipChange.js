@@ -5,6 +5,7 @@ const Establishment = require('../../models/classes/establishment');
 const notifications = require('../../data/notifications');
 const ownership = require('../../data/ownership');
 const models = require('../../models');
+const { isAdminRole } = require('../../utils/adminUtils');
 
 // POST request for ownership change request
 const ownershipChangeRequest = async (req, res) => {
@@ -80,7 +81,7 @@ const ownershipChangeRequest = async (req, res) => {
             return res.status(201).send(resp[0]);
           }
         } else {
-          if (req.role === 'Admin') {
+          if (isAdminRole(req.role)) {
             try {
               let workplace = await models.establishment.findbyId(params.subEstablishmentId);
               if (workplace) {
@@ -95,7 +96,7 @@ const ownershipChangeRequest = async (req, res) => {
               }
             } catch (err) {
               console.error(err);
-              res.status(503).send({});
+              res.status(500).send({});
             }
           }
         }
@@ -107,7 +108,7 @@ const ownershipChangeRequest = async (req, res) => {
     }
   } catch (e) {
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
-    return res.status(503).send({}); // intentionally an empty JSON response
+    return res.status(500).send({}); // intentionally an empty JSON response
   }
 };
 
@@ -170,7 +171,7 @@ const cancelOwnershipChangeRequest = async (req, res) => {
     }
   } catch (e) {
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
-    return res.status(503).send({}); // intentionally an empty JSON response
+    return res.status(500).send({}); // intentionally an empty JSON response
   }
 };
 
@@ -218,7 +219,7 @@ const getOwnershipChangeRequest = async (req, res) => {
     }
   } catch (e) {
     console.error(' /establishment/:id/ownershipChange/details : ERR: ', e.message);
-    return res.status(503).send({}); //intentionally an empty JSON response
+    return res.status(500).send({}); //intentionally an empty JSON response
   }
 };
 

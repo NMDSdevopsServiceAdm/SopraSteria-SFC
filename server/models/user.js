@@ -190,7 +190,7 @@ module.exports = function (sequelize, DataTypes) {
       UserRoleValue: {
         type: DataTypes.ENUM,
         allowNull: false,
-        values: ['Read', 'Edit', 'Admin'],
+        values: ['None', 'Read', 'Edit', 'Admin', 'AdminManager'],
         default: 'Edit',
         field: '"UserRoleValue"',
       },
@@ -247,6 +247,31 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'RegistrationSurveyCompleted',
       },
+      CanManageWdfClaimsValue: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        field: '"CanManageWdfClaimsValue"',
+      },
+      CanManageWdfClaimsSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CanManageWdfClaimsSavedAt"',
+      },
+      CanManageWdfClaimsChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CanManageWdfClaimsChangedAt"',
+      },
+      CanManageWdfClaimsSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CanManageWdfClaimsSavedBy"',
+      },
+      CanManageWdfClaimsChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CanManageWdfClaimsChangedBy"',
+      },
     },
     {
       tableName: '"User"',
@@ -255,30 +280,6 @@ module.exports = function (sequelize, DataTypes) {
       updatedAt: false,
     },
   );
-
-  const buildUserQuery = (where) => {
-    let userQuery = {};
-    if (where.name) {
-      userQuery = {
-        FullNameValue: {
-          [Op.iLike]: sanitise(where.name),
-        },
-      };
-    }
-    return userQuery;
-  };
-
-  const buildLoginQuery = (where) => {
-    let loginQuery = {};
-    if (where.username) {
-      loginQuery = {
-        username: {
-          [Op.iLike]: sanitise(where.username),
-        },
-      };
-    }
-    return loginQuery;
-  };
 
   User.associate = (models) => {
     User.belongsTo(models.establishment, {
@@ -302,8 +303,34 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  const buildSearchQuery = (field, columnName) => {
+    let query = {};
+    if (field) {
+      query = {
+        [columnName]: {
+          [Op.iLike]: sanitise(field),
+        },
+      };
+    }
+    return query;
+  };
+
   User.findByUUID = function (uuId) {
     return this.findOne({ where: { uid: uuId } });
+  };
+
+  User.findByLoginId = function (loginId) {
+    return this.findOne({
+      where: { id: loginId },
+      attributes: ['id'],
+    });
+  };
+
+  User.getCanManageWdfClaims = function (userUid) {
+    return this.findOne({
+      where: { uid: userUid },
+      attributes: ['CanManageWdfClaimsValue'],
+    });
   };
 
   User.closeLock = async function (LockHeldTitle, userUid) {
@@ -319,6 +346,7 @@ module.exports = function (sequelize, DataTypes) {
       },
     );
   };
+
   User.openLock = async function (LockHeldTitle, userId) {
     return await this.update(
       {
@@ -331,9 +359,11 @@ module.exports = function (sequelize, DataTypes) {
       },
     );
   };
+
   User.searchUsers = async function (where) {
-    const userQuery = buildUserQuery(where);
-    const loginQuery = buildLoginQuery(where);
+    const userQuery = buildSearchQuery(where.name, 'FullNameValue');
+    const emailQuery = buildSearchQuery(where.emailAddress, 'EmailValue');
+    const loginQuery = buildSearchQuery(where.username, 'username');
 
     return await this.findAll({
       attributes: [
@@ -348,6 +378,7 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         archived: false,
         ...userQuery,
+        ...emailQuery,
       },
       include: [
         {
@@ -382,6 +413,27 @@ module.exports = function (sequelize, DataTypes) {
               required: false,
             },
           ],
+        },
+      ],
+    });
+  };
+
+  User.allPrimaryUsers = async function (where = {}) {
+    return await this.findAll({
+      attributes: [
+        [sequelize.literal('DISTINCT ON ("user"."EmailValue") "user"."EmailValue"'), 'email'],
+        'id',
+        'FullNameValue',
+      ],
+      where: {
+        isPrimary: true,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          attributes: ['id', 'nmdsId', 'NameValue'],
+          where,
         },
       ],
     });

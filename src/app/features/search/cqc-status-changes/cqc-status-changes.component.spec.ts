@@ -10,6 +10,8 @@ import { of } from 'rxjs';
 
 import { CqcStatusChangeComponent } from '../cqc-status-change/cqc-status-change.component';
 import { CqcStatusChangesComponent } from '../cqc-status-changes/cqc-status-changes.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('CqcStatusChangesComponent', () => {
   let component: RenderResult<CqcStatusChangesComponent>;
@@ -74,6 +76,7 @@ describe('CqcStatusChangesComponent', () => {
             provide: WindowRef,
             useClass: WindowRef,
           },
+          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService},
           {
             provide: CqcStatusChangeService,
             useClass: cqcStatusChangeService,
@@ -143,6 +146,8 @@ describe('CqcStatusChangesComponent', () => {
           provide: WindowRef,
           useClass: WindowRef,
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService},
+
       ],
       componentProperties: {
         cqcStatusChanges,

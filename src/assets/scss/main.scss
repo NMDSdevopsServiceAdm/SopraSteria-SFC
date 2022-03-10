@@ -20,6 +20,7 @@ body {
 @import 'partials/links';
 
 // Custom Components
+@import 'components/accordions';
 @import 'components/auto-suggest';
 @import 'components/breadcrumbs';
 @import 'components/buttons';
@@ -40,3 +41,6 @@ body {
 @import 'components/tabs';
 @import 'components/tag';
 @import 'components/notifications';
+
+// CMS
+@import 'cms/cms';

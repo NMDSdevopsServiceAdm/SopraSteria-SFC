@@ -1,7 +1,8 @@
 const moment = require('moment');
 
 const config = require('../../../config/config');
-const sendInBlueEmail = require('../../../utils/email/sendInBlueEmail');
+const sendToSQSQueue = require('../../../utils/email/sendToSQSQueue');
+const isWhitelisted = require('../isWhitelisted');
 
 const endOfLastMonth = moment().subtract(1, 'months').endOf('month').endOf('day');
 
@@ -13,12 +14,37 @@ const getParams = (workplace) => {
 
   switch (workplace.emailTemplate.id) {
     case config.get('sendInBlue.templates.parent').id:
-      params.WORKPLACES = workplace.subsidiaries;
+      params.WORKPLACES = workplace.subsidiaries.map((subsidiary) => {
+        const { id, name, nmdsId, lastLogin, lastUpdated, dataOwner } = subsidiary;
+        const lastLoginFormatted = moment(lastLogin).format('Mo MMMM YYYY');
+        const lastUpdatedFormatted = moment(lastUpdated).format('Mo MMMM YYYY');
 
-      if (moment(workplace.lastUpdated) <= endOfLastMonth.clone().subtract(6, 'months')) {
-        const { id, name, nmdsId, lastUpdated, dataOwner } = workplace;
+        return {
+          id,
+          name,
+          nmdsId,
+          lastLogin: lastLoginFormatted,
+          lastUpdated: lastUpdatedFormatted,
+          dataOwner,
+        };
+      });
 
-        params.WORKPLACES.unshift({ id, name, nmdsId, lastUpdated, dataOwner });
+      if (
+        moment(workplace.lastLogin) <= endOfLastMonth.clone().subtract(6, 'months') &&
+        moment(workplace.lastUpdated) <= endOfLastMonth.clone().subtract(6, 'months')
+      ) {
+        const { id, name, nmdsId, lastLogin, lastUpdated, dataOwner } = workplace;
+        const lastLoginFormatted = moment(lastLogin).format('Mo MMMM YYYY');
+        const lastUpdatedFormatted = moment(lastUpdated).format('Mo MMMM YYYY');
+
+        params.WORKPLACES.unshift({
+          id,
+          name,
+          nmdsId,
+          lastLogin: lastLoginFormatted,
+          lastUpdated: lastUpdatedFormatted,
+          dataOwner,
+        });
       }
       break;
   }
@@ -26,33 +52,25 @@ const getParams = (workplace) => {
   return params;
 };
 
-const isWhitelisted = (email) => {
-  if (!config.get('sendInBlue.whitelist')) {
-    return true;
-  }
-
-  return config.get('sendInBlue.whitelist').split(',').includes(email);
-};
-
-const sendEmail = async (workplace) => {
-  if (!isWhitelisted(workplace.user.email)) {
+const sendEmail = async (workplace, index) => {
+  if (!isWhitelisted.isWhitelisted(workplace.user.email)) {
     return;
   }
 
   const params = getParams(workplace);
 
-  sendInBlueEmail.sendEmail(
+  sendToSQSQueue.sendToSQSQueue(
     {
       email: workplace.user.email,
       name: workplace.user.name,
     },
     workplace.emailTemplate.id,
     params,
+    index,
   );
 };
 
 module.exports = {
   sendEmail,
   getParams,
-  isWhitelisted,
 };

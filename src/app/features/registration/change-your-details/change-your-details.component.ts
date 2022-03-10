@@ -5,7 +5,7 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
-import { AccountDetailsDirective } from '@features/account/account-details/account-details';
+import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 
 @Component({
   selector: 'app-change-your-details',

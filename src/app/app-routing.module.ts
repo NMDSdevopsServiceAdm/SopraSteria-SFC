@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
@@ -11,16 +9,25 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
+import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
+import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
+import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
+import { WorkersResolver } from '@core/resolvers/workers.resolver';
+import { AdminComponent } from '@features/admin/admin.component';
+import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
+import { BenefitsELearningComponent } from '@features/benefits-bundle/benefits-elearning/benefits-elearning.component';
+import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
+import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import {
-  MigratedUserTermsConditionsComponent,
-} from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 
@@ -104,12 +111,6 @@ const routes: Routes = [
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
       },
-
-      {
-        path: 'reports',
-        loadChildren: () => import('@features/reports/reports.module').then((m) => m.ReportsModule),
-        data: { title: 'Reports' },
-      },
       {
         path: 'add-workplace',
         loadChildren: () => import('@features/add-workplace/add-workplace.module').then((m) => m.AddWorkplaceModule),
@@ -128,7 +129,21 @@ const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent,
+        resolve: {
+          articleList: ArticleListResolver,
+          users: AllUsersForEstablishmentResolver,
+          workers: WorkersResolver,
+          totalStaffRecords: TotalStaffRecordsResolver,
+        },
         data: { title: 'Dashboard' },
+      },
+      {
+        path: 'first-login-wizard',
+        component: FirstLoginPageComponent,
+        resolve: {
+          wizard: WizardResolver,
+        },
+        data: { title: 'First Login Wizard' },
       },
       {
         path: 'bulk-upload',
@@ -136,93 +151,67 @@ const routes: Routes = [
         data: { title: 'Bulk Upload' },
       },
       {
-        path: 'search-users',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
+        path: 'sfcadmin',
+        loadChildren: () => import('@features/admin/admin.module').then((m) => m.AdminModule),
         canActivate: [RoleGuard],
         data: {
-          roles: [Roles.Admin],
-          title: 'Search Users',
+          roles: [Roles.Admin, Roles.AdminManager],
+          title: 'Admin',
         },
-      },
-      {
-        path: 'search-establishments',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Search Establishments',
-        },
-      },
-      {
-        path: 'search-groups',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Search Groups',
-        },
-      },
-      {
-        path: 'registrations',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Registrations',
-        },
+        component: AdminComponent,
       },
       {
         path: 'wdf',
-        loadChildren: () => import('@features/wdf/wdf.module').then((m) => m.WdfModule),
-        data: { title: 'Workforce Development Fund' },
+        loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
+        data: { title: 'Workforce Development Fund Data' },
       },
       {
-        path: 'parent-requests',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Parent Requests',
-        },
-      },
-      {
-        path: 'cqc-status-changes',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'CQC Status Change',
-        },
-      },
-      {
-        path: 'emails',
-        loadChildren: () => import('@features/search/search.module').then((m) => m.SearchModule),
-        canActivate: [RoleGuard],
-        data: {
-          roles: [Roles.Admin],
-          title: 'Emails',
-        },
+        path: 'wdf-claims',
+        loadChildren: () => import('@features/wdf/wdf-claims/wdf-claims.module').then((m) => m.WdfClaimsModule),
+        data: { title: 'Workforce Development Fund Claims' },
       },
       {
         path: 'notifications',
         loadChildren: () => import('@features/notifications/notifications.module').then((m) => m.NotificationsModule),
       },
       {
-        path: 'add-mandatory-training',
-        loadChildren: () =>
-          import('@features/add-mandatory-training/add-mandatory-training.module').then(
-            (m) => m.AddMandatoryTrainingModule,
-          ),
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canAddEstablishment'],
-          title: 'Add Mandatory Training',
-        },
-      },
-      {
         path: 'registration-survey',
         loadChildren: () =>
           import('@features/registration-survey/registration-survey.module').then((m) => m.RegistrationSurveyModule),
+      },
+      {
+        path: 'articles',
+        loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
+      },
+      {
+        path: '',
+        loadChildren: () => import('@features/pages/pages.module').then((m) => m.PagesModule),
+      },
+      {
+        path: 'benefits-bundle',
+        children: [
+          {
+            path: '',
+            component: BenefitsBundleComponent,
+            data: { title: 'Benefits Bundle' },
+          },
+          {
+            path: 'training-discounts',
+            component: BenefitsTrainingDiscountsComponent,
+            data: { title: 'Endorsed Training Providers Discounts' },
+            resolve: {
+              pages: PageResolver,
+            },
+          },
+          {
+            path: 'elearning-discounts',
+            component: BenefitsELearningComponent,
+            data: { title: 'eLearning Modules' },
+            resolve: {
+              pages: PageResolver,
+            },
+          },
+        ],
       },
     ],
   },
@@ -238,6 +227,7 @@ const routes: Routes = [
       anchorScrolling: 'enabled',
       onSameUrlNavigation: 'reload',
       paramsInheritanceStrategy: 'always',
+      relativeLinkResolution: 'legacy',
     }),
   ],
   exports: [RouterModule],

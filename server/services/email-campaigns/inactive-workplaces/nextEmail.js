@@ -1,47 +1,50 @@
 const moment = require('moment');
+
 const config = require('../../../config/config');
 
 const lastMonth = moment().subtract(1, 'months');
 
 const templates = {
   sixMonths: {
-    lastUpdated: lastMonth.clone().subtract(6, 'months'),
+    lastActivity: lastMonth.clone().subtract(6, 'months'),
     template: config.get('sendInBlue.templates.sixMonthsInactive'),
-    matches: function (lastUpdated) {
-      return lastUpdated.isSame(this.lastUpdated, 'month');
+    matches: function (lastActivity) {
+      return lastActivity.isSame(this.lastActivity, 'month');
     },
   },
   twelveMonths: {
-    lastUpdated: lastMonth.clone().subtract(12, 'months'),
+    lastActivity: lastMonth.clone().subtract(12, 'months'),
     template: config.get('sendInBlue.templates.twelveMonthsInactive'),
-    matches: function (lastUpdated) {
-      return lastUpdated.isSame(this.lastUpdated, 'month');
+    matches: function (lastActivity) {
+      return lastActivity.isSame(this.lastActivity, 'month');
     },
   },
   eighteenMonths: {
-    lastUpdated: lastMonth.clone().subtract(18, 'months'),
+    lastActivity: lastMonth.clone().subtract(18, 'months'),
     template: config.get('sendInBlue.templates.eighteenMonthsInactive'),
-    matches: function (lastUpdated) {
-      return lastUpdated.isSame(this.lastUpdated, 'month');
+    matches: function (lastActivity) {
+      return lastActivity.isSame(this.lastActivity, 'month');
     },
   },
   twentyFourMonths: {
-    lastUpdated: lastMonth.clone().subtract(24, 'months'),
+    lastActivity: lastMonth.clone().subtract(24, 'months'),
     template: config.get('sendInBlue.templates.twentyFourMonthsInactive'),
-    matches: function (lastUpdated) {
-      return lastUpdated.isSameOrBefore(this.lastUpdated, 'month');
+    matches: function (lastActivity) {
+      return lastActivity.isSame(this.lastActivity, 'month');
     },
   },
 };
 
 const getTemplate = (inactiveWorkplace) => {
+  const lastLogin = moment(inactiveWorkplace.LastLogin);
   const lastUpdated = moment(inactiveWorkplace.LastUpdated);
 
   for (const [, month] of Object.entries(templates)) {
     const nextTemplate = month.template;
-    const notReceivedTemplate = inactiveWorkplace.LastTemplate !== nextTemplate.id;
+    const lastTemplate = inactiveWorkplace.LastTemplate ? parseInt(inactiveWorkplace.LastTemplate) : null;
+    const notReceivedTemplate = lastTemplate !== nextTemplate.id;
 
-    if (month.matches(lastUpdated) && notReceivedTemplate) {
+    if (month.matches(lastUpdated) && month.matches(lastLogin) && notReceivedTemplate) {
       return nextTemplate;
     }
   }

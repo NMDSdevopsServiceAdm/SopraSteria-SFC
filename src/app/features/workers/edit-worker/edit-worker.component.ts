@@ -17,6 +17,5 @@ export class EditWorkerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.workerService.setState(null);
-    this.workerService.setReturnTo(null);
   }
 }

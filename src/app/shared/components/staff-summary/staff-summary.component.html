@@ -46,7 +46,8 @@
             worker.uid,
             worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
           ]"
-          >Provide more information <span class="govuk-visually-hidden"> for {{ worker.nameOrId }}</span></a
+          [state]="{ navigatedFrom: 'staff-records' }"
+          >Add more details <span class="govuk-visually-hidden"> for {{ worker.nameOrId }}</span></a
         >
       </td>
       <td *ngIf="wdfView" class="govuk-table__cell">

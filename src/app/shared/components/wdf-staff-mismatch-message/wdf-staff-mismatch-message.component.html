@@ -1,0 +1,8 @@
+<span class="govuk-!-margin-bottom-2 govuk-!-margin-top-2 govuk__flex govuk__nowrap">
+  <img class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />{{ staffMismatchMessage }}
+</span>
+<span *ngIf="workplace.numberOfStaff !== 0" class="govuk__nowrap">
+  Either change the total or
+  <a [routerLink]="staffRecordsUrl.url" [fragment]="staffRecordsUrl.fragment">view staff records</a> to
+  {{ addOrDeleteRecordsMessage }}.
+</span>

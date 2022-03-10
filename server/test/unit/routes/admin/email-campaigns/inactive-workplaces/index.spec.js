@@ -24,6 +24,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       id: 478,
       name: 'Workplace Name',
       nmdsId: 'J1234567',
+      lastLogin: '2020-06-01',
       lastUpdated: '2020-06-01',
       emailTemplate: {
         id: sixMonthTemplateId,
@@ -38,6 +39,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       id: 479,
       name: 'Second Workplace Name',
       nmdsId: 'A0012345',
+      lastLogin: '2020-01-01',
       lastUpdated: '2020-01-01',
       emailTemplate: {
         id: twelveMonthTemplateId,
@@ -55,6 +57,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       id: 1,
       name: 'Test Name',
       nmdsId: 'A1234567',
+      lastLogin: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
       lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
       emailTemplate: {
         id: parentTemplateId,
@@ -70,6 +73,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
           id: 2,
           name: 'Workplace Name',
           nmdsId: 'A0045232',
+          lastLogin: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
           lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
           dataOwner: 'Parent',
         },
@@ -77,6 +81,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
           id: 3,
           name: 'Workplace Name',
           nmdsId: 'A1245232',
+          lastLogin: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
           lastUpdated: endOfLastMonth.clone().subtract(6, 'months').format('YYYY-MM-DD'),
           dataOwner: 'Parent',
         },
@@ -119,7 +124,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
       const response = res._getJSONData();
 
-      expect(res.statusCode).to.equal(503);
+      expect(res.statusCode).to.equal(500);
       expect(response).to.deep.equal({});
     });
   });

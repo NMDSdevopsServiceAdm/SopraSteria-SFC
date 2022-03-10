@@ -8,5 +8,6 @@ import { Eligibility, WDFValue } from '@core/model/wdf.model';
 export class SummaryRecordValueComponent {
   @Input() wdfView: boolean;
   @Input() wdfValue: WDFValue;
+  @Input() overallWdfEligibility: boolean;
   public ELIGIBILITY = Eligibility;
 }

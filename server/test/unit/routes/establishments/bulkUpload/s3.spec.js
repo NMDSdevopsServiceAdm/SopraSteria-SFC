@@ -11,19 +11,19 @@ const latestFiles = {
   Contents: [
     {
       Key: 'EstablishmentFile',
-      ...extraData
+      ...extraData,
     },
     {
       Key: 'EstablishmentFile.metadata.json',
-      ...extraData
+      ...extraData,
     },
     {
       Key: 'WorkerFile',
-      ...extraData
+      ...extraData,
     },
     {
       Key: 'WorkerFile.metadata.json',
-      ...extraData
+      ...extraData,
     },
   ],
 };
@@ -31,19 +31,19 @@ const intermediaryFiles = {
   Contents: [
     {
       Key: 'intermediary1',
-      ...extraData
+      ...extraData,
     },
     {
       Key: 'intermediary1.metadata.json',
-      ...extraData
+      ...extraData,
     },
     {
       Key: 'intermediary2',
-      ...extraData
+      ...extraData,
     },
     {
       Key: 'intermediary2.metadata.json',
-      ...extraData
+      ...extraData,
     },
   ],
 };
@@ -51,19 +51,19 @@ const validationFiles = {
   Contents: [
     {
       Key: 'OldFile1',
-      ...extraData
+      ...extraData,
     },
     {
       Key: 'OldFile1.metadata.json',
-      ...extraData
+      ...extraData,
     },
     {
       Key: 'OldFile2',
-      ...extraData
+      ...extraData,
     },
     {
       Key: 'OldFile2.metadata.json',
-      ...extraData
+      ...extraData,
     },
   ],
 };
@@ -118,25 +118,23 @@ describe('s3', () => {
     });
   });
   describe('purgeBulkUploadS3Objects', () => {
-
-
     it('should delete all the files', async () => {
       const listObjects = sinon.stub(S3.s3, 'listObjects');
 
       listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/latest/' }).returns({
         promise: async () => {
           return latestFiles;
-        }
+        },
       });
       listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/validation/' }).returns({
         promise: async () => {
           return validationFiles;
-        }
+        },
       });
       listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/intermediary/' }).returns({
         promise: async () => {
           return intermediaryFiles;
-        }
+        },
       });
 
       const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
@@ -146,29 +144,25 @@ describe('s3', () => {
         },
       });
 
-      const consolidateFiles = [
-        ...latestFiles.Contents,
-        ...validationFiles.Contents,
-        ...intermediaryFiles.Contents,
-    ];
+      const consolidateFiles = [...latestFiles.Contents, ...validationFiles.Contents, ...intermediaryFiles.Contents];
 
-      const justTheKeys = consolidateFiles.map(file => {return {Key: file.Key};});
+      const justTheKeys = consolidateFiles.map((file) => {
+        return { Key: file.Key };
+      });
 
       const expectedResult = {
         Bucket: 'sfcbulkuploadfiles',
         Delete: {
           Objects: justTheKeys,
-          Quiet: true
-        }
+          Quiet: true,
+        },
       };
       await S3.purgeBulkUploadS3Objects(1);
 
       sinon.assert.calledWith(deleteObjects, expectedResult);
-
     });
   });
   describe('listMetaData', () => {
-
     it('should list the files from s3', async () => {
       sinon.stub(S3.s3, 'listObjects').returns({
         promise: async () => {
@@ -177,59 +171,69 @@ describe('s3', () => {
       });
       const getObject = sinon.stub(S3.s3, 'getObject');
 
-      var workerFileBuffer = Buffer.from('{\n' + '  "username": "george-benchmarking",\n' +
-        '  "filename": "WorkerFile.csv",\n' +
-        '  "fileType": "Worker",\n' +
-        '  "records": 11,\n' +
-        '  "errors": 0,\n' +
-        '  "warnings": 0,\n' +
-        '  "deleted": 0\n' +
-        '}');
-      getObject.withArgs({
-        Bucket: S3.Bucket,
-        Key: 'WorkerFile.metadata.json',
-      }).returns({
-        promise: async () => {
-          return {
-            AcceptRanges: 'bytes',
-            Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
-            LastModified: '2021-01-26T14:28:35.000Z',
-            ContentLength: 171,
-            ETag: '""',
-            VersionId: 'null',
-            ContentType: 'application/json',
-            Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-            Body: workerFileBuffer,
-          };
-        },
-      });
-      var establishmentFileBuffer = Buffer.from('{\n' + '  "username": "george-benchmarking",\n' +
-        '  "filename": "EstablishmentFile.csv",\n' +
-        '  "fileType": "Establishment",\n' +
-        '  "records": 11,\n' +
-        '  "errors": 0,\n' +
-        '  "warnings": 0,\n' +
-        '  "deleted": 0\n' +
-        '}');
-      getObject.withArgs({
-        Bucket: S3.Bucket,
-        Key: 'EstablishmentFile.metadata.json',
-      }).returns({
-        promise: async () => {
-          return {
-            AcceptRanges: 'bytes',
-            Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
-            LastModified: '2021-01-26T14:28:35.000Z',
-            ContentLength: 171,
-            ETag: '""',
-            VersionId: 'null',
-            ContentType: 'application/json',
-            Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-            Body: establishmentFileBuffer,
-          };
-        },
-      });
-      const results =  await S3.listMetaData(123, '/lastBulkUpload/');
+      var workerFileBuffer = Buffer.from(
+        '{\n' +
+          '  "username": "george-benchmarking",\n' +
+          '  "filename": "WorkerFile.csv",\n' +
+          '  "fileType": "Worker",\n' +
+          '  "records": 11,\n' +
+          '  "errors": 0,\n' +
+          '  "warnings": 0,\n' +
+          '  "deleted": 0\n' +
+          '}',
+      );
+      getObject
+        .withArgs({
+          Bucket: S3.Bucket,
+          Key: 'WorkerFile.metadata.json',
+        })
+        .returns({
+          promise: async () => {
+            return {
+              AcceptRanges: 'bytes',
+              Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+              LastModified: '2021-01-26T14:28:35.000Z',
+              ContentLength: 171,
+              ETag: '""',
+              VersionId: 'null',
+              ContentType: 'application/json',
+              Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+              Body: workerFileBuffer,
+            };
+          },
+        });
+      var establishmentFileBuffer = Buffer.from(
+        '{\n' +
+          '  "username": "george-benchmarking",\n' +
+          '  "filename": "EstablishmentFile.csv",\n' +
+          '  "fileType": "Establishment",\n' +
+          '  "records": 11,\n' +
+          '  "errors": 0,\n' +
+          '  "warnings": 0,\n' +
+          '  "deleted": 0\n' +
+          '}',
+      );
+      getObject
+        .withArgs({
+          Bucket: S3.Bucket,
+          Key: 'EstablishmentFile.metadata.json',
+        })
+        .returns({
+          promise: async () => {
+            return {
+              AcceptRanges: 'bytes',
+              Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+              LastModified: '2021-01-26T14:28:35.000Z',
+              ContentLength: 171,
+              ETag: '""',
+              VersionId: 'null',
+              ContentType: 'application/json',
+              Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+              Body: establishmentFileBuffer,
+            };
+          },
+        });
+      const results = await S3.listMetaData(123, '/lastBulkUpload/');
       const expectedResult = [
         {
           key: 'EstablishmentFile.metadata.json',
@@ -241,12 +245,12 @@ describe('s3', () => {
             errors: 0,
             warnings: 0,
             deleted: 0,
-            key: 'EstablishmentFile'
+            key: 'EstablishmentFile',
           },
           filename: 'EstablishmentFile.metadata.json',
           username: 'george-benchmarking',
           size: 431,
-          lastModified: '2021-02-03T14:39:08.000Z'
+          lastModified: '2021-02-03T14:39:08.000Z',
         },
         {
           key: 'WorkerFile.metadata.json',
@@ -258,14 +262,13 @@ describe('s3', () => {
             errors: 0,
             warnings: 0,
             deleted: 0,
-            key: 'WorkerFile'
+            key: 'WorkerFile',
           },
           filename: 'WorkerFile.metadata.json',
           username: 'george-benchmarking',
           size: 431,
-          lastModified: '2021-02-03T14:39:08.000Z'
+          lastModified: '2021-02-03T14:39:08.000Z',
         },
-
       ];
 
       expect(results).to.deep.equal(expectedResult);

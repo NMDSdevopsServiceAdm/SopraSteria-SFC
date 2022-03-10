@@ -1,0 +1,38 @@
+aws:
+  region: eu-west-1
+  secrets:
+    use: false
+    wallet: dev/api
+  sns:
+    enabled: true
+    registrations: arn:aws:sns:eu-west-1:364648107127:registrations-dev
+    feedback: arn:aws:sns:eu-west-1:364648107127:feedback-dev
+
+slack:
+  level: 0 # disables Slack notifications
+jwt:
+  iss: 'localhost'
+  ttl:
+    login: 60
+db:
+  pool:
+    min: 15
+    max: 15
+  ssl: false
+  username: sfcadmin
+
+log:
+  sequelize: false
+
+bulkupload:
+  region: eu-west-2
+  bucketname: sfcbulkuploadfiles
+  validation:
+    timeout: 600
+  completion:
+    timeout: 600
+sentry:
+  sample_rate: 0.0
+satisfactionSurvey:
+  timeSpan: 1
+  unit: m

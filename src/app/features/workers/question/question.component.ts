@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, OnDestroy, OnInit, ViewChild, Directive } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -37,16 +37,15 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.return = this.workerService.returnTo;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
-
     this.subscriptions.add(
-      this.workerService.worker$.subscribe(worker => {
+      this.workerService.worker$.subscribe((worker) => {
         this.worker = worker;
 
         if (!this.initiated) {
@@ -60,7 +59,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
               };
           this.backService.setBackLink(this.back);
         }
-      })
+      }),
     );
 
     this.setupFormErrorsMap();
@@ -98,14 +97,12 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'summary':
-        this.router.navigate(this.getRoutePath('check-answers'));
+        this.router.navigate(this.getRoutePath(''));
         break;
 
       case 'exit':
         const url =
-          this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid
-            ? ['/dashboard']
-            : ['/workplace', this.workplace.uid];
+          this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
         this.router.navigate(url, { fragment: 'staff-records' });
         break;
 
@@ -116,7 +113,11 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public getRoutePath(name: string) {
-    return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
+    if (name) {
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
+    } else {
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+    }
   }
 
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
@@ -144,16 +145,16 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.worker) {
       this.subscriptions.add(
         this.workerService.createWorker(this.workplace.uid, props).subscribe(
-          data => this._onSuccess(data, payload.action),
-          error => this.onError(error)
-        )
+          (data) => this._onSuccess(data, payload.action),
+          (error) => this.onError(error),
+        ),
       );
     } else {
       this.subscriptions.add(
         this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
-          data => this._onSuccess(data, payload.action),
-          error => this.onError(error)
-        )
+          (data) => this._onSuccess(data, payload.action),
+          (error) => this.onError(error),
+        ),
       );
     }
   }

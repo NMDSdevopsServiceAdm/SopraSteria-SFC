@@ -7,14 +7,15 @@ import { WorkplaceService } from '@core/services/workplace.service';
   templateUrl: './start.component.html',
 })
 export class StartComponent implements OnInit {
-  constructor(private backService: BackService, private workplaceService: WorkplaceService) {}
+  constructor(public backService: BackService, private workplaceService: WorkplaceService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.workplaceService.resetService();
     this.workplaceService.addWorkplaceInProgress$.next(true);
     this.setBackLink();
   }
 
-  private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/workplace/view-all-workplaces'] });
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: ['/workplace', 'view-all-workplaces'] });
   }
 }

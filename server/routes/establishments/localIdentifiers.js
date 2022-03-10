@@ -34,7 +34,7 @@ const isFirstBulkUpload = async (req, res) => {
     );
 
     console.error('establishment::localIdentifier GET/:eID - failed', thisError.message);
-    return res.status(503).send(thisError.safe);
+    return res.status(500).send(thisError.safe);
   }
 };
 
@@ -60,7 +60,7 @@ const getMissingLocalIdentifierCount = async (req, res) => {
       establishmentList: uniqueEstablishments,
     });
   } catch (_) {
-    return res.status(503).send();
+    return res.status(500).send();
   }
 };
 

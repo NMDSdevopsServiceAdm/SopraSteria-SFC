@@ -1,0 +1,58 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <span class="govuk-caption-l">Bulk upload</span>
+      <h1 class="govuk-fieldset__heading">Get help with bulk uploads</h1>
+    </legend>
+    <div class="govuk-!-margin-bottom-7">
+      <h2 class="govuk-heading-m govuk-!-padding-bottom-1">Top tips and 'how to' guides</h2>
+      <p>Quick and easy help on how to do bulk uploads.</p>
+      <ul class="govuk-list">
+        <li class="govuk-!-margin-bottom-3">
+          <a
+            class="govuk-body"
+            [routerLink]="['/bulk-upload', 'get-help', 'step-by-step-guide']"
+            (click)="setReturnUrl()"
+            >Step by step bulk upload guide</a
+          >
+        </li>
+        <li class="govuk-!-margin-bottom-3" *ngFor="let topTip of topTipsList">
+          <a [routerLink]="['/bulk-upload', 'get-help', topTip.slug]" (click)="setReturnUrl(topTip.slug)">{{
+            topTip.title
+          }}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="govuk-!-margin-bottom-7">
+      <h2 class="govuk-heading-m govuk-!-padding-bottom-1">Troubleshooting</h2>
+      <a class="govuk-body" [routerLink]="['/bulk-upload', 'get-help', 'troubleshooting']"
+        >Get handy troubleshooting hints to help you fix common problems and errors</a
+      >
+    </div>
+    <div>
+      <h2 class="govuk-heading-m govuk-!-padding-bottom-1">Contact us</h2>
+      <p>Contact us if you need more help and support with bulk uploads.</p>
+      <h3 class="govuk-heading-s">Phone</h3>
+      <p>
+        Call the ASC-WDS support team on <strong>0113 241 0969</strong><br />
+        (available Monday to Friday, 9am to 5pm, not including public holidays).
+      </p>
+      <h3 class="govuk-heading-s">Email</h3>
+      <p>
+        Send an email to
+        <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a>
+      </p>
+    </div>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-!-margin-top-6">
+      <app-bulk-upload-related-content
+        [showViewLastBulkUpload]="false"
+        [showViewReferences]="false"
+        [showGetHelpWithBulkUploads]="false"
+      >
+      </app-bulk-upload-related-content>
+    </div>
+    <app-codes-and-guidance></app-codes-and-guidance>
+  </div>
+</div>

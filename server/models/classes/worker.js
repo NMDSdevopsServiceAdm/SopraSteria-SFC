@@ -61,6 +61,7 @@ class Worker extends EntityValidator {
     // local attributes
     this._reason = null;
     this._lastWdfEligibility = null;
+    this._wdfEligible = null;
 
     // associated entities
     this._qualificationsEntities = [];
@@ -175,9 +176,10 @@ class Worker extends EntityValidator {
   }
 
   get key() {
-    return (this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
-      ? this.localIdentifier.replace(/\s/g, '')
-      : this.nameOrId
+    return (
+      this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property
+        ? this.localIdentifier.replace(/\s/g, '')
+        : this.nameOrId
     ).replace(/\s/g, '');
   }
 
@@ -322,7 +324,7 @@ class Worker extends EntityValidator {
     return this._properties.get('NurseSpecialism') ? this._properties.get('NurseSpecialism').property : null;
   }
 
-  get nurseSpecialisms () {
+  get nurseSpecialisms() {
     return this._properties.get('NurseSpecialisms') ? this._properties.get('NurseSpecialisms').property : null;
   }
 
@@ -365,9 +367,9 @@ class Worker extends EntityValidator {
         document.britishCitizenship = null;
       }
 
-      // Remove year arriced if born in the UK
+      // Remove year arrived if born in the UK or setting to Don't know
       if (document.countryOfBirth) {
-        if (document.countryOfBirth.value === 'United Kingdom') {
+        if (document.countryOfBirth.value === 'United Kingdom' || document.countryOfBirth.value === "Don't know") {
           document.yearArrived = { value: null, year: null };
         }
       }
@@ -625,21 +627,7 @@ class Worker extends EntityValidator {
           // every time the worker is saved, need to calculate
           //  it's current WDF Eligibility, and if it is eligible, update
           //  the last WDF Eligibility status
-          const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
-
-          const effectiveDateTime = WdfCalculator.effectiveTime;
-
-          let wdfAudit = null;
-          if (
-            currentWdfEligibiity.isEligible &&
-            (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
-          ) {
-            modifedCreationDocument.lastWdfEligibility = updatedTimestamp;
-            wdfAudit = {
-              username: savedBy.toLowerCase(),
-              type: 'wdfEligible',
-            };
-          }
+          const wdfAudit = await this.setWdfProperties(modifedCreationDocument, updatedTimestamp, savedBy);
 
           // now save the document
           const creation = await models.worker.create(modifedCreationDocument, { transaction: thisTransaction });
@@ -657,7 +645,13 @@ class Worker extends EntityValidator {
           }
 
           if (this.nurseSpecialisms && this.nurseSpecialisms.value === 'Yes') {
-            await models.workerNurseSpecialisms.bulkCreate(this.nurseSpecialisms.specialisms.map(thisSpecialism => ({nurseSpecialismFk: thisSpecialism.id, workerFk: this._id})), { transaction: thisTransaction });
+            await models.workerNurseSpecialisms.bulkCreate(
+              this.nurseSpecialisms.specialisms.map((thisSpecialism) => ({
+                nurseSpecialismFk: thisSpecialism.id,
+                workerFk: this._id,
+              })),
+              { transaction: thisTransaction },
+            );
           }
 
           // having the worker id we can now create the audit record; inserting the workerFk
@@ -733,25 +727,12 @@ class Worker extends EntityValidator {
           // every time the worker is saved, need to calculate
           //  it's current WDF Eligibility, and if it is eligible, update
           //  the last WDF Eligibility status
-          const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
-
-          const effectiveDateTime = WdfCalculator.effectiveTime;
-
-          let wdfAudit = null;
-          if (
-            currentWdfEligibiity.isEligible &&
-            (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
-          ) {
-            updateDocument.lastWdfEligibility = updatedTimestamp;
-            wdfAudit = {
-              username: savedBy.toLowerCase(),
-              type: 'wdfEligible',
-            };
-          }
+          const wdfAudit = await this.setWdfProperties(updateDocument, updatedTimestamp, savedBy);
 
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
             returning: true,
+            individualHooks: true,
             where: {
               uid: this.uid,
             },
@@ -887,6 +868,26 @@ class Worker extends EntityValidator {
     return mustSave;
   }
 
+  async setWdfProperties(document, updatedTimestamp, savedBy) {
+    const currentWdfEligibility = await this.isWdfEligible(WdfCalculator.effectiveDate);
+    const effectiveDateTime = WdfCalculator.effectiveTime;
+
+    document.wdfEligible = currentWdfEligibility.isEligible;
+
+    if (
+      currentWdfEligibility.isEligible &&
+      (this._lastWdfEligibility === null || this._lastWdfEligibility.getTime() < effectiveDateTime)
+    ) {
+      document.lastWdfEligibility = updatedTimestamp;
+      return {
+        username: savedBy.toLowerCase(),
+        type: 'wdfEligible',
+      };
+    } else {
+      return null;
+    }
+  }
+
   // loads the Worker (with given id) from DB, but only if it belongs to the given Establishment
   // returns true on success; false if no Worker
   // Can throw WorkerRestoreException exception.
@@ -957,14 +958,14 @@ class Worker extends EntityValidator {
           {
             model: models.workerNurseSpecialism,
             as: 'nurseSpecialism',
-            attributes: ['id', 'specialism']
+            attributes: ['id', 'specialism'],
           },
           {
             model: models.workerNurseSpecialism,
             as: 'nurseSpecialisms',
-            attributes: ['id', 'specialism']
-          }
-        ]
+            attributes: ['id', 'specialism'],
+          },
+        ],
       };
 
       const fetchResults = await models.worker.findOne(fetchQuery);
@@ -977,6 +978,7 @@ class Worker extends EntityValidator {
         this._updated = fetchResults.updated;
         this._updatedBy = fetchResults.updatedBy;
         this._lastWdfEligibility = fetchResults.lastWdfEligibility;
+        this._wdfEligible = fetchResults.wdfEligible;
 
         // if history of the Worker is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1084,6 +1086,7 @@ class Worker extends EntityValidator {
       // now save the document
       const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
         returning: true,
+        individualHooks: true,
         where: {
           uid: this.uid,
         },
@@ -1607,36 +1610,28 @@ class Worker extends EntityValidator {
     let weeklyHoursContractedEligible;
     let weeklyHoursAverageEligible;
 
-    if (this._properties.get('ZeroHoursContract').property === null) {
-      // we have insufficient information to calculate whether the average/contracted weekly hours is WDF eligibnle
+    if (this._properties.get('ZeroHoursContract').property === 'Yes') {
+      // regardless of contract, all workers on zero hours contract, have an average set of weekly hours
       weeklyHoursContractedEligible = 'Not relevant';
-      weeklyHoursAverageEligible = 'Not relevant';
+      weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(
+        effectiveFromEpoch,
+        this._properties.get('WeeklyHoursAverage'),
+      )
+        ? 'Yes'
+        : 'No';
     } else {
-      if (this._properties.get('ZeroHoursContract').property === 'No') {
-        if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
-          weeklyHoursContractedEligible = this._isPropertyWdfBasicEligible(
-            effectiveFromEpoch,
-            this._properties.get('WeeklyHoursContracted'),
-          )
-            ? 'Yes'
-            : 'No';
-        } else {
-          weeklyHoursContractedEligible = 'Not relevant';
-        }
-
-        if (['Pool/Bank', 'Agency', 'Other'].includes(this._properties.get('Contract').property)) {
-          weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(
-            effectiveFromEpoch,
-            this._properties.get('WeeklyHoursAverage'),
-          )
-            ? 'Yes'
-            : 'No';
-        } else {
-          weeklyHoursAverageEligible = 'Not relevant';
-        }
-      } else if (this._properties.get('ZeroHoursContract').property === 'Yes') {
-        // regardless of contract, all workers on zero hours contract, have an average set of weekly hours
+      if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
+        weeklyHoursContractedEligible = this._isPropertyWdfBasicEligible(
+          effectiveFromEpoch,
+          this._properties.get('WeeklyHoursContracted'),
+        )
+          ? 'Yes'
+          : 'No';
+      } else {
         weeklyHoursContractedEligible = 'Not relevant';
+      }
+
+      if (['Pool/Bank', 'Agency', 'Other'].includes(this._properties.get('Contract').property)) {
         weeklyHoursAverageEligible = this._isPropertyWdfBasicEligible(
           effectiveFromEpoch,
           this._properties.get('WeeklyHoursAverage'),
@@ -1644,8 +1639,6 @@ class Worker extends EntityValidator {
           ? 'Yes'
           : 'No';
       } else {
-        // if zero hours contract is neither Yes or No, the average/contracted hour egligibility is not relevant
-        weeklyHoursContractedEligible = 'Not relevant';
         weeklyHoursAverageEligible = 'Not relevant';
       }
     }
@@ -1790,6 +1783,7 @@ class Worker extends EntityValidator {
       },
       {
         returning: true,
+        individualHooks: true,
         where: {
           uid: thisGivenWorker.uid,
         },
@@ -1867,47 +1861,6 @@ class Worker extends EntityValidator {
     } catch (err) {
       console.error('Worker::bulkUpdateLocalIdentifiers error: ', err);
       throw err;
-    }
-  }
-
-  static async recalcWdf(username, establishmentId, workerUid, externalTransaction) {
-    try {
-      const thisWorker = new Worker(establishmentId);
-      await thisWorker.restore(workerUid);
-
-      // only try to update if not yet eligible
-      if (thisWorker._lastWdfEligibility === null) {
-        const wdfEligibility = await thisWorker.wdfToJson();
-        if (wdfEligibility.isEligible) {
-          const updatedWorker = await models.worker.update(
-            {
-              lastWdfEligibility: new Date(),
-            },
-            {
-              where: {
-                uid: workerUid,
-              },
-              returning: true,
-              plain: true,
-              transaction: externalTransaction,
-            },
-          );
-
-          await models.workerAudit.create(
-            {
-              workerFk: updatedWorker[1].dataValues.ID,
-              username,
-              type: 'wdfEligible',
-            },
-            { transaction: externalTransaction },
-          );
-        }
-      } // end if _lastWdfEligibility
-
-      return true;
-    } catch (err) {
-      console.error('Worker::recalcWdf error: ', err);
-      return false;
     }
   }
 }

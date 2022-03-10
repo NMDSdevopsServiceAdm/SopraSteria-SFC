@@ -1,0 +1,27 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-3">
+      <span class="govuk-caption-xl">Workforce Development Fund (WDF)</span>
+      Workplaces
+    </h1>
+
+    <app-wdf-parent-status-message
+      [wdfStartDate]="wdfStartDate"
+      [wdfEndDate]="wdfEndDate"
+      [overallEligibilityStatus]="parentOverallEligibilityStatus"
+      [currentEligibilityStatus]="parentCurrentEligibilityStatus"
+    ></app-wdf-parent-status-message>
+  </div>
+</div>
+
+<ul *ngIf="canDownloadReport" class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-bottom-5">
+  <li>
+    <a
+      href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-parent-report.xls"
+      (click)="downloadWdfParentReport($event)"
+      >Download your WDF report (Excel)</a
+    >
+  </li>
+</ul>
+
+<app-wdf-workplaces-summary-table [workplaces]="workplaces"></app-wdf-workplaces-summary-table>

@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-
-import { PasswordResetService } from '@core/services/password-reset.service';
-import { Subscription } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { PasswordResetService } from '@core/services/password-reset.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-forgot-your-password',
@@ -25,7 +24,7 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.submitted = false;
 
-    this._passwordResetService.resetPasswordUUID$.subscribe(uuid => (this.uuid = uuid));
+    this._passwordResetService.resetPasswordUUID$.subscribe((uuid) => (this.uuid = uuid));
     this.setupServerErrorsMap();
   }
 
@@ -39,13 +38,13 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
 
       this.subscriptions.add(
         this._passwordResetService.requestPasswordReset(this.usernameOrEmail).subscribe(
-          data => {
+          (data) => {
             this.displayConfirmation(data);
           },
           (error: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          }
-        )
+          },
+        ),
       );
     }
   }
@@ -53,7 +52,7 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
   public setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
-        name: 503,
+        name: 500,
         message: 'Database error.',
       },
     ];
@@ -63,8 +62,5 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     this._passwordResetService.updateState(data);
-
-    const resetPasswordUuid = data.uuid;
-    this.resetPasswordLink = '/reset-password/?reset=' + resetPasswordUuid;
   }
 }

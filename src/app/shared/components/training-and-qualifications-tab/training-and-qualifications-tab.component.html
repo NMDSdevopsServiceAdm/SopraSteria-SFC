@@ -1,5 +1,19 @@
-<h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
-<app-training-link-panel [workplace]="workplace"></app-training-link-panel>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
+  </div>
+  <div class="govuk-grid-column-one-third govuk-util__align-right">
+    <button
+      *ngIf="canEditWorker"
+      class="govuk-button"
+      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
+    >
+      Add training for multiple staff
+    </button>
+  </div>
+</div>
+
+<app-training-link-panel [workplace]="workplace" [workers]="workers"></app-training-link-panel>
 <ng-container *ngIf="workers; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">
@@ -13,10 +27,9 @@
   </div>
   <app-training-info-panel
     *ngIf="workers"
-    [workplace]="workplace"
     [totalExpiredTraining]="totalExpiredTraining"
     [totalExpiringTraining]="totalExpiringTraining"
-    [totalMissingMandatoryTraining]="missingMandatoryTraining"
+    [totalStaffMissingMandatoryTraining]="staffMissingMandatoryTraining"
   ></app-training-info-panel>
 
   <app-training-and-qualifications-categories

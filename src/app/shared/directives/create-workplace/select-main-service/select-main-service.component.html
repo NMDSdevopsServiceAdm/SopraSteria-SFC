@@ -1,0 +1,111 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">Select {{ isParent ? 'its' : 'your' }} main service</h1>
+          </legend>
+          <div *ngIf="displayIntro">
+            <ng-container *ngIf="isRegulated">
+              <ng-container *ngIf="isParent; else notParent">
+                <p>
+                  Because you said the main service it provides is regulated by the Care Quality Commission (CQC),
+                  Skills for Care will need to check your selection matches the CQC database.
+                </p>
+              </ng-container>
+              <ng-template #notParent>
+                <p>
+                  Because you said the main service you provide is regulated by the Care Quality Commission (CQC),
+                  Skills for Care will need to check your selection matches the CQC database.
+                </p>
+              </ng-template>
+            </ng-container>
+          </div>
+
+          <span
+            *ngIf="submitted && form.get('workplaceService').errors"
+            id="workplaceService-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('workplaceService') }}
+          </span>
+
+          <fieldset
+            class="govuk-fieldset"
+            *ngFor="let item of categories; let last = last"
+            [class.govuk-!-padding-bottom-6]="!last"
+          >
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">
+                {{ item.category }}
+              </h2>
+            </legend>
+            <div class="govuk-radios">
+              <ng-container *ngFor="let service of item.services | orderOther; let i = index">
+                <div class="govuk-radios__item">
+                  <input
+                    [attr.aria-controls]="'workplaceService-conditional-' + i"
+                    class="govuk-radios__input"
+                    id="workplaceService-{{ service.id }}"
+                    [value]="service.id"
+                    name="workplaceService"
+                    type="radio"
+                    [formControlName]="'workplaceService'"
+                    [class.govuk-input--error]="submitted && form.get('workplaceService').errors"
+                    [attr.data-testid]="'workplaceService-' + service.id"
+                  />
+                  <label class="govuk-label govuk-radios__label" for="workplaceService-{{ service.id }}">
+                    {{ service.name }}
+                  </label>
+                </div>
+
+                <div
+                  *ngIf="service.other"
+                  class="govuk-radios__conditional"
+                  [class.govuk-radios__conditional--hidden]="serviceNotSelected('workplaceService-' + service.id)"
+                  id="workplaceService-conditional-{{ i }}"
+                  [attr.data-testid]="'workplaceServiceOther-' + service.id"
+                >
+                  <div class="govuk-form-group govuk-!-margin-bottom-2">
+                    <label class="govuk-label" for="otherWorkplaceService-{{ service.id }}">
+                      Enter your other service
+                    </label>
+                    <span
+                      id="otherWorkplaceService-error"
+                      class="govuk-error-message"
+                      *ngIf="submitted && form.get('otherWorkplaceService' + service.id).errors"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getFirstErrorMessage('otherWorkplaceService' + service.id) }}
+                    </span>
+                    <input
+                      class="govuk-input govuk-!-width-one-third"
+                      id="otherWorkplaceService-{{ service.id }}"
+                      name="otherWorkplaceService"
+                      type="text"
+                      [formControlName]="'otherWorkplaceService' + service.id"
+                      [class.govuk-input--error]="submitted && form.get('otherWorkplaceService' + service.id).errors"
+                      spellcheck="false"
+                    />
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </fieldset>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <app-submit-exit-buttons [cta]="callToActionLabel"></app-submit-exit-buttons>
+  </div>
+</form>

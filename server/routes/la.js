@@ -27,7 +27,7 @@ router.route('/').get(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('la GET - failed', err);
-    return res.status(503).send('Unable to retrive Local Authorities');
+    return res.status(500).send('Unable to retrive Local Authorities');
   }
 });
 
@@ -95,7 +95,7 @@ router.route('/:postcode').get(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('la GET:postcode - failed', err);
-    return res.status(503).send('Unable to retrive primary authority');
+    return res.status(500).send('Unable to retrive primary authority');
   }
 });
 

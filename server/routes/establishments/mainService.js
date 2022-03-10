@@ -62,7 +62,7 @@ const getMainService = async (req, res) => {
     );
 
     console.error('establishment::mainService GET/:eID - failed', thisError.message);
-    return res.status(503).json(thisError.safe);
+    return res.status(500).json(thisError.safe);
   }
 };
 
@@ -88,7 +88,7 @@ const updateMainService = async (req, res) => {
       return res.status(400).json(err.safe);
     } else if (err instanceof EstablishmentExceptions.EstablishmentSaveException) {
       console.error('Establishment::mainService POST: ', err.message);
-      return res.status(503).json(err.safe);
+      return res.status(500).json(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
     }
@@ -121,7 +121,7 @@ async function changeMainService(res, establishment, cqc, mainService, username)
     }
   } catch (err) {
     console.error(err);
-    return res.status(503).json();
+    return res.status(500).json();
   }
 }
 

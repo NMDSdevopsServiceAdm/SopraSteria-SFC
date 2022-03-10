@@ -26,7 +26,7 @@ router.route('/').post(async function (req, res) {
     });
   } catch (err) {
     console.error('admin recalcWdf error: ', err);
-    return res.status(503).send();
+    return res.status(500).send();
   }
 });
 

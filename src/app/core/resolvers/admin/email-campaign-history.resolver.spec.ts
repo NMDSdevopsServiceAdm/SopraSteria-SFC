@@ -24,10 +24,10 @@ describe('EmailCampaignHistoryResolver', () => {
 
   it('should resolve', () => {
     const emailCampaignService = TestBed.inject(EmailCampaignService);
-    spyOn(emailCampaignService, 'getHistory').and.callThrough();
+    spyOn(emailCampaignService, 'getInactiveWorkplacesHistory').and.callThrough();
 
     resolver.resolve({} as ActivatedRouteSnapshot);
 
-    expect(emailCampaignService.getHistory).toHaveBeenCalled();
+    expect(emailCampaignService.getInactiveWorkplacesHistory).toHaveBeenCalled();
   });
 });

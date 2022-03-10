@@ -1,11 +1,11 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { within } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { PermissionsList } from '../../../../mockdata/permissions';
+import { Permissions } from '../../../../mockdata/permissions';
 import { TotalStaffPanelComponent } from './total-staff-panel.component';
 
 describe('TotalStaffPanelComponent', () => {
@@ -13,17 +13,19 @@ describe('TotalStaffPanelComponent', () => {
   let fixture: ComponentFixture<TotalStaffPanelComponent>;
   let permissionsService: PermissionsService;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [TotalStaffPanelComponent],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule, HttpClientTestingModule],
+        declarations: [TotalStaffPanelComponent],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TotalStaffPanelComponent);
     permissionsService = TestBed.inject(PermissionsService);
-    permissionsService.setPermissions(Establishment.uid, PermissionsList);
+    permissionsService.setPermissions(Establishment.uid, Permissions.permissions);
     component = fixture.componentInstance;
     component.workplace = Establishment;
     fixture.detectChanges();
@@ -41,7 +43,20 @@ describe('TotalStaffPanelComponent', () => {
     const totalStaffText = within(document.body).queryByTestId('totalStaffText');
 
     expect(totalStaffNumber.innerHTML).toContain('23');
+    expect(totalStaffNumber.innerHTML).toContain('Change');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
+  });
+
+  it('should show different text, when total staff is undefined', () => {
+    component.totalStaff = undefined;
+    fixture.detectChanges();
+
+    const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffText = within(document.body).queryByTestId('totalStaffText');
+
+    expect(totalStaffNumber.innerHTML).toContain('Add');
+    expect(totalStaffText.innerHTML).toContain('Total number of staff is missing');
   });
 
   it('should show staff added', () => {
@@ -80,6 +95,27 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('24');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
+    expect(staffAddedNumber.innerHTML).toContain('24');
+    expect(staffAddedText.textContent).toContain('Staff records added');
+    expect(changeNumber.length).toEqual(0);
+    expect(changeText.length).toEqual(0);
+  });
+
+  it('should show total staff and staff added but not changes if total staff is undefined', () => {
+    component.totalStaff = undefined;
+    component.totalWorkers = 24;
+    fixture.detectChanges();
+
+    const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffText = within(document.body).queryByTestId('totalStaffText');
+    const staffAddedNumber = within(document.body).queryByTestId('staffAddedNumber');
+    const staffAddedText = within(document.body).queryByTestId('staffAddedText');
+    const changeNumber = within(document.body).queryAllByTestId('changeNumber');
+    const changeText = within(document.body).queryAllByTestId('changeText');
+
+    expect(totalStaffNumber.innerHTML).toContain('Add');
+    expect(totalStaffText.innerHTML).toContain('Total number of staff is missing');
     expect(staffAddedNumber.innerHTML).toContain('24');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.length).toEqual(0);
@@ -100,6 +136,7 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('24');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('25');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.innerHTML).toContain('1');
@@ -120,6 +157,7 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('24');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('300');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.innerHTML).toContain('276');
@@ -140,6 +178,7 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('25');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('24');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.innerHTML).toContain('1');
@@ -160,6 +199,7 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('200');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('25');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.innerHTML).toContain('175');

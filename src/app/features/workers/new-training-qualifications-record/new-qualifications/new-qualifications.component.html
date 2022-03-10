@@ -1,0 +1,44 @@
+<div *ngFor="let qualificationType of qualificationsByGroup.groups">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body-l govuk-!-margin-bottom-0">
+        Type: {{ qualificationType.group }} ({{ qualificationType.records.length }})
+      </p>
+    </div>
+  </div>
+
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header govuk-!-width-two-third" scope="col" style="width: 15%">Qualification name</th>
+        <th class="govuk-table__header" scope="col" style="width: 12%">Year achieved</th>
+        <th class="govuk-table__header" scope="col" style="width: 20%">Notes</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <ng-container *ngFor="let record of qualificationType.records">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            <ng-container *ngIf="canEditWorker; else viewOnly">
+              <a
+                class="govuk-link--no-visited-state"
+                [attr.data-testid]="'Title-' + record.uid"
+                [routerLink]="['../qualification', record.uid]"
+                >{{ record.title }}</a
+              >
+            </ng-container>
+            <ng-template #viewOnly>
+              <span [attr.data-testid]="'Title-no-link-' + record.uid">{{ record.title }}</span>
+            </ng-template>
+          </td>
+          <td class="govuk-table__cell">
+            {{ record.year }}
+          </td>
+          <td class="govuk-table__cell">
+            {{ record.notes ? record.notes : 'None' }}
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

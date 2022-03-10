@@ -20,6 +20,8 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WorkplaceReferencesComponent } from './workplace-references-page.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 const establishmentBuilder = build('Workplace', {
   fields: {
@@ -38,6 +40,8 @@ describe('WorkplaceReferencesComponent', () => {
     const component = await render(WorkplaceReferencesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
+        { provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService},
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,

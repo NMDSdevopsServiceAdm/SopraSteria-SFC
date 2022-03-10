@@ -1,0 +1,12 @@
+<ng-container *ngIf="articleList?.length > 0">
+  <h3 class="govuk-heading-s govuk-!-margin-top-1">ASC-WDS news</h3>
+  <ul class="govuk-list govuk-!-margin-bottom-6">
+    <li
+      class="govuk-!-margin-bottom-3"
+      [ngClass]="{ 'govuk-!-font-weight-bold': article.slug === currentArticleSlug }"
+      *ngFor="let article of articleList"
+    >
+      <a [routerLink]="['/articles', article.slug]">{{ article.title }}</a>
+    </li>
+  </ul>
+</ng-container>

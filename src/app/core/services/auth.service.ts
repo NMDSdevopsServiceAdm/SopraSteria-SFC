@@ -4,10 +4,12 @@ import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { UserToken } from '@core/model/auth.model';
 import * as Sentry from '@sentry/browser';
-import { isNull } from 'lodash';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import isNull from 'lodash/isNull';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
 
+import { isAdminRole } from '../../../../server/utils/adminUtils';
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
 import { UserService } from './user.service';
@@ -29,6 +31,7 @@ export class AuthService {
     private establishmentService: EstablishmentService,
     private userService: UserService,
     private permissionsService: PermissionsService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   public get isAutheticated$(): Observable<boolean> {
@@ -45,7 +48,7 @@ export class AuthService {
   }
 
   public get isAdmin(): boolean {
-    return this.isAuthenticated() && this.userInfo().role === 'Admin';
+    return this.isAuthenticated() && isAdminRole(this.userInfo().role);
   }
 
   public get isOnAdminScreen$(): Observable<boolean> {
@@ -85,6 +88,7 @@ export class AuthService {
   }
 
   public authenticate(username: string, password: string) {
+    this.featureFlagsService.configCatClient.forceRefreshAsync();
     return this.http.post<any>('/api/login/', { username, password }, { observe: 'response' }).pipe(
       tap(
         (response) => {

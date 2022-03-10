@@ -27,9 +27,14 @@ bulkupload:
     bucketname: sfc-bulkupload-dev
     validation:
         timeout: 300
-        storeIntermediaries: true
     completion:
         timeout: 180
+    lambda:
+        stage: sfcbenchmarks
+
+disbursement:
+    region: eu-west-2
+    bucketname: wdf-disbursement-dev
 
 locks:
     region: eu-west-1

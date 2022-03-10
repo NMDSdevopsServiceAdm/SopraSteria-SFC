@@ -1,0 +1,41 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            How many members of staff does {{ isParent ? 'the' : 'your' }} workplace have?
+          </h1>
+        </legend>
+        <p data-testid="info">
+          The number should include all staff (care-providing and none care-providing, those on permanent or temporary
+          contracts, pool, bank and agency workers).
+        </p>
+        <app-details [title]="appDetailTitle">
+          <p>
+            You can enter an estimate to save time, but remember to update this number in ASC-WDS once your account has
+            been validated by Skills for Care.
+          </p>
+        </app-details>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+          <label class="govuk-label" for="totalStaff"> Number of staff</label>
+          <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('totalStaff') }}
+          </span>
+
+          <input
+            class="govuk-input govuk-input--width-4"
+            formControlName="totalStaff"
+            id="totalStaff"
+            name="totalStaff"
+            [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
+            type="text"
+            aria-describedby="totalStaff-hint"
+          />
+        </div>
+      </fieldset>
+      <button class="govuk-button" type="submit">Continue</button>
+    </form>
+  </div>
+</div>
