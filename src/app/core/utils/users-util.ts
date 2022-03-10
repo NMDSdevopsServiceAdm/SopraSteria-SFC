@@ -1,5 +1,5 @@
 import { Roles } from '@core/model/roles.enum';
-import { UserPermissionsType } from '@core/model/userDetails.model';
+import { UserDetails, UserPermissionsType } from '@core/model/userDetails.model';
 
 export const getUserPermissionsTypes = (withPrimary: boolean): UserPermissionsType[] => {
   const userPermissionTypes: UserPermissionsType[] = [
@@ -38,12 +38,14 @@ export const getUserPermissionsTypes = (withPrimary: boolean): UserPermissionsTy
   if (withPrimary) {
     const primaryRoles = [
       {
+        permissionsQuestionValue: 'ASC-WDS edit with manage WDF claims',
         userTableValue: 'Primary edit and WDF',
         role: Roles.Edit,
         canManageWdfClaims: true,
         isPrimary: true,
       },
       {
+        permissionsQuestionValue: 'ASC-WDS edit',
         userTableValue: 'Primary edit',
         role: Roles.Edit,
         canManageWdfClaims: false,
@@ -55,4 +57,17 @@ export const getUserPermissionsTypes = (withPrimary: boolean): UserPermissionsTy
   }
 
   return userPermissionTypes;
+};
+
+export const getUserType = (user: UserDetails, fullName = false): string => {
+  const userPermissionsTypes = getUserPermissionsTypes(true);
+
+  const userType = userPermissionsTypes.find(
+    (type) =>
+      type.role === user.role &&
+      type.canManageWdfClaims === user.canManageWdfClaims &&
+      !!user.isPrimary === !!type.isPrimary,
+  );
+
+  return fullName ? userType?.permissionsQuestionValue : userType?.userTableValue;
 };

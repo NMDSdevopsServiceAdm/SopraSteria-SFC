@@ -13,37 +13,55 @@
             <span class="govuk-caption-l">{{ user?.fullname }}</span>
             <h1 class="govuk-fieldset__heading">Permissions</h1>
           </legend>
+
+          <ng-container *ngIf="wdfUserFlag">
+            <p>
+              If this user needs to manage Workforce Development Fund (WDF) claims, make sure you select the WDF option
+              that matches their needs.
+            </p>
+            <app-details [title]="'What are WDF claims?'">
+              <p>
+                WDF claims are a way for you to recover money your organisation has spent on staff development. Costs
+                can be claimed for a wide range of adult social care qualifications, learning programmes and digital
+                learning modules.
+              </p>
+            </app-details>
+          </ng-container>
+
           <div class="govuk-radios">
-            <ng-container *ngFor="let item of roleRadios; let i = index">
+            <ng-container *ngFor="let item of permissionsTypeRadios; let i = index">
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
-                  [formControlName]="'role'"
-                  id="role-{{ i }}"
-                  name="role"
-                  value="{{ item.value }}"
+                  [formControlName]="'permissionsType'"
+                  id="permissionsType-{{ i }}"
+                  name="permissionsType"
+                  value="{{ item.permissionsQuestionValue }}"
                   type="radio"
                 />
-                <label class="govuk-label govuk-radios__label" for="role-{{ i }}">
-                  {{ item.label }}
+                <label class="govuk-label govuk-radios__label" for="permissionsType-{{ i }}">
+                  {{ item.permissionsQuestionValue }}
                 </label>
               </div>
               <div
-                *ngIf="user?.displayStatus !== 'Pending' && item.value === 'Edit'"
+                *ngIf="user?.displayStatus !== 'Pending' && item.role === 'Edit'"
                 class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="form.get('role').value !== 'Edit'"
-                id="role-conditional-{{ i }}"
+                [class.govuk-radios__conditional--hidden]="
+                  form.get('permissionsType').value !== item.permissionsQuestionValue
+                "
+                id="permissionsType-conditional-{{ i }}"
+                [attr.data-testid]="'primaryCheckbox-' + i"
               >
                 <div class="govuk-checkboxes">
                   <div class="govuk-checkboxes__item">
                     <input
                       class="govuk-checkboxes__input"
-                      id="primary"
-                      name="primary"
+                      id="isPrimary"
+                      name="isPrimary"
                       type="checkbox"
-                      [formControlName]="'primary'"
+                      [formControlName]="'isPrimary'"
                     />
-                    <label class="govuk-label govuk-checkboxes__label" for="primary">Make primary user</label>
+                    <label class="govuk-label govuk-checkboxes__label" for="isPrimary">Make primary user</label>
                   </div>
                 </div>
               </div>

@@ -12,8 +12,9 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { getUserType } from '@core/utils/users-util';
 import { Subscription } from 'rxjs';
-import { take, withLatestFrom } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 
 import { isAdminRole } from '../../../../../server/utils/adminUtils';
 
@@ -34,6 +35,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public user: UserDetails;
   public userInfo: SummaryList[];
   public allUsers: UserDetails[];
+  public userPermissionType: string;
 
   constructor(
     private alertService: AlertService,
@@ -47,23 +49,18 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   ) {
     this.user = this.route.snapshot.data.user;
     this.establishment = this.route.parent.snapshot.data.establishment;
+    this.loggedInUser = this.route.snapshot.data.loggedInUser;
+    this.allUsers = this.route.snapshot.data.allUsers;
+    this.userPermissionType = getUserType(this.user);
+
     this.setAccountDetails();
   }
 
   ngOnInit(): void {
+    this.setPermissions();
+
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
-
-    this.subscriptions.add(
-      this.userService
-        .getAllUsersForEstablishment(this.establishment.uid)
-        .pipe(take(1), withLatestFrom(this.userService.loggedInUser$))
-        .subscribe(([users, loggedInUser]) => {
-          this.loggedInUser = loggedInUser;
-          this.allUsers = users;
-          this.setPermissions();
-        }),
-    );
 
     this.subscriptions.add(
       this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {

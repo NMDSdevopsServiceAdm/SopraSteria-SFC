@@ -2,18 +2,19 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { CreateAccountRequest } from '@core/model/account.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { RadioFieldData } from '@core/model/form-controls.model';
 import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
-import { UserDetails } from '@core/model/userDetails.model';
+import { UserDetails, UserPermissionsType } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
+import { getUserPermissionsTypes, getUserType } from '@core/utils/users-util';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -23,20 +24,12 @@ import { Subscription } from 'rxjs';
 export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public workplace: Establishment;
+  public wdfUserFlag: boolean;
   public user: UserDetails;
   public form: FormGroup;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
-  public roleRadios: RadioFieldData[] = [
-    {
-      value: Roles.Edit,
-      label: 'Edit',
-    },
-    {
-      value: Roles.Read,
-      label: 'Read only',
-    },
-  ];
+  public permissionsTypeRadios: UserPermissionsType[];
   public return: URLStructure;
   public submitted = false;
 
@@ -46,10 +39,10 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
-    private dialogService: DialogService,
     private userService: UserService,
     private alertService: AlertService,
     private establishmentService: EstablishmentService,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     this.user = this.route.snapshot.data.user;
     this.workplace = this.route.parent.snapshot.data.establishment;
@@ -68,10 +61,14 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.setupServerErrorsMap();
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
+    this.featureFlagsService.configCatClient.getValueAsync('wdfUser', false).then((value) => {
+      this.wdfUserFlag = value;
+      this.setPermissionsTypeRadios();
+    });
 
     this.form = this.formBuilder.group({
-      role: [this.user.role, Validators.required],
-      primary: this.user.isPrimary,
+      permissionsType: [getUserType(this.user, true), Validators.required],
+      isPrimary: this.user.isPrimary,
     });
   }
 
@@ -95,22 +92,19 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
 
     this.submitted = true;
 
-    const { role, primary } = this.form.value;
-    const updatedPrimary = role === Roles.Read ? false : primary;
+    // const { role, primary } = this.form.value;
+    // const updatedPrimary = role === Roles.Read ? false : primary;
 
-    if (this.user.isPrimary && !updatedPrimary) {
-      this.navigateToSelectPrimaryUserPage();
-      return;
-    }
+    // if (this.user.isPrimary && !updatedPrimary) {
+    //   this.navigateToSelectPrimaryUserPage();
+    //   return;
+    // }
 
-    this.save(role, updatedPrimary);
+    this.save();
   }
 
-  private save(role: Roles, primary: boolean, name: string = null): void {
-    const props = {
-      role,
-      isPrimary: primary,
-    };
+  private save(name: string = null): void {
+    const props = this.convertPermissions(this.form.value);
 
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplace.uid, this.user.uid, { ...this.user, ...props }).subscribe(
@@ -129,6 +123,40 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
         (error) => this.onError(error),
       ),
     );
+  }
+
+  private setPermissionsTypeRadios(): void {
+    this.permissionsTypeRadios = this.wdfUserFlag
+      ? getUserPermissionsTypes(false)
+      : [
+          {
+            permissionsQuestionValue: Roles.Edit,
+          },
+          {
+            permissionsQuestionValue: Roles.Read,
+          },
+        ];
+  }
+
+  private convertPermissions(formValue): CreateAccountRequest {
+    if (!this.wdfUserFlag) {
+      formValue.role = formValue.permissionsType;
+      delete formValue.permissionsType;
+
+      return formValue;
+    }
+
+    const radio = this.permissionsTypeRadios.find(
+      (radio) => radio.permissionsQuestionValue === formValue.permissionsType,
+    );
+
+    delete formValue.permissionsType;
+
+    return {
+      ...formValue,
+      role: radio.role,
+      canManageWdfClaims: radio.canManageWdfClaims,
+    };
   }
 
   private navigateToSelectPrimaryUserPage(): void {

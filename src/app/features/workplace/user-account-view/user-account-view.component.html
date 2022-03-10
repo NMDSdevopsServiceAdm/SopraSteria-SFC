@@ -17,7 +17,13 @@
       >
 
       <a
-        class="govuk-list govuk-button-link govuk-list--inline govuk__flex govuk__align-items-center govuk-util__float-right govuk-!-margin-left-9"
+        class="
+          govuk-list govuk-button-link
+          govuk-list--inline
+          govuk__flex govuk__align-items-center
+          govuk-util__float-right
+          govuk-!-margin-left-9
+        "
         *ngIf="canDeleteUser"
         draggable="false"
         role="button"
@@ -40,7 +46,7 @@
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Permissions</dt>
         <dd class="govuk-summary-list__value">
-          {{ user.isPrimary ? 'Primary edit' : user.role === 'Read' ? 'Read only' : user.role }}
+          {{ userPermissionType }}
         </dd>
         <dd *ngIf="canEditUser" class="govuk-summary-list__actions">
           <a [routerLink]="['permissions']">
