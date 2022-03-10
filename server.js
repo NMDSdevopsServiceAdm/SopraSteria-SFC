@@ -182,6 +182,8 @@ app.use(
     },
     expectCt: {
       maxAge: 86400,
+      enforce: true,
+      reportUri: config.get('sentry.report_uri'),
     },
     dnsPrefetchControl: {
       allow: true,
