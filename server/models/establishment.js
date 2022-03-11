@@ -1642,7 +1642,7 @@ module.exports = function (sequelize, DataTypes) {
       }[sortBy],
     ];
 
-    return this.findAll({
+    return this.findAndCountAll({
       subQuery: false,
       attributes: ['id', 'NameValue'],
       where: {

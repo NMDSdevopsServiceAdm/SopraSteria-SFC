@@ -24,10 +24,10 @@ describe('worker route', () => {
     sinon.stub(models.worker, 'findOne').callsFake(async (args) => {
       return args.i === 3 ? {} : worker;
     });
-    sinon.stub(models.worker, 'create').callsFake(async (args) => {
+    sinon.stub(models.worker, 'create').callsFake(async () => {
       return worker;
     });
-    sinon.stub(models.worker, 'update').callsFake(async (args) => {
+    sinon.stub(models.worker, 'update').callsFake(async () => {
       const mockWorker = {
         get: () => {
           return worker;
@@ -35,10 +35,10 @@ describe('worker route', () => {
       };
       return [1, [mockWorker]];
     });
-    sinon.stub(models.workerAudit, 'bulkCreate').callsFake(async (args) => {
+    sinon.stub(models.workerAudit, 'bulkCreate').callsFake(async () => {
       return {};
     });
-    sinon.stub(models.establishment, 'findOne').callsFake(async (args) => {
+    sinon.stub(models.establishment, 'findOne').callsFake(async () => {
       return establishment;
     });
   });
@@ -168,11 +168,9 @@ describe('worker route', () => {
     const worker = workerBuilder();
     let workersAndTrainingStub;
     beforeEach(() => {
-      workersAndTrainingStub = sinon.stub(models.establishment, 'workersAndTraining').returns([
-        {
-          workers: [worker],
-        },
-      ]);
+      workersAndTrainingStub = sinon.stub(models.establishment, 'workersAndTraining').returns({
+        rows: [{ workers: [worker], workerCount: 1 }],
+      });
     });
 
     afterEach(() => {

@@ -250,11 +250,12 @@ const viewAllWorkers = async (req, res) => {
       pageNumber,
       sortBy,
     );
-    const allWorkers = establishmentWorkersAndTraining[0].workers;
+    const foundWorkers = establishmentWorkersAndTraining.rows[0].workers;
+    const workerCount = establishmentWorkersAndTraining.count;
 
     res.status(200).send({
-      workers: allWorkers
-        ? allWorkers.map((worker) => {
+      workers: foundWorkers
+        ? foundWorkers.map((worker) => {
             return {
               uid: worker.uid,
               localIdentifier: worker.LocalIdentifierValue ? worker.LocalIdentifierValue : null,
@@ -283,6 +284,7 @@ const viewAllWorkers = async (req, res) => {
             };
           })
         : [],
+      workerCount,
     });
   } catch (err) {
     console.error('worker::GET:all - failed', err);
