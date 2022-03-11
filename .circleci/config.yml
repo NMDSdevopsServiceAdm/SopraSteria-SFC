@@ -153,7 +153,7 @@ commands:
             npx serverless deploy --stage <<parameters.appname>>
 
 orbs:
-  node: circleci/node@3.0.0
+  node: circleci/node@5.0.0
   slack: circleci/slack@4.4.4
   codecov: codecov/codecov@1.0.2
 
@@ -162,7 +162,7 @@ jobs:
     resource_class: large
     working_directory: ~/project
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     environment: NODE_OPTIONS=--max_old_space_size=8192
     steps:
       - checkout
@@ -194,7 +194,7 @@ jobs:
   test_frontend:
     resource_class: large
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
@@ -219,7 +219,7 @@ jobs:
           flags: frontend
   test_backend:
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
@@ -242,7 +242,7 @@ jobs:
           flags: backend
   performance:
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     steps:
       - checkout
       - attach_workspace:
@@ -450,7 +450,7 @@ jobs:
           steps: << parameters.validate_steps >>
   sentry_release:
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     environment:
       SENTRY_ORG: skills-for-care
       SENTRY_PROJECT: skills-for-care
