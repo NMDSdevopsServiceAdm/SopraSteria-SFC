@@ -1,7 +1,21 @@
 <div *ngIf="pages.length > 1" class="govuk-button-group">
   <ng-container *ngIf="pages.length <= 10; else greaterThanTen">
     <ng-container *ngIf="currentPageNo != 0">
-      <a class="govuk-link" href="#" (click)="goToPage($event, currentPageNo - 1)">Previous</a>
+      <a class="govuk-link" id="previous-link" href="#" (click)="goToPage($event, currentPageNo - 1)">
+        <svg
+          class="govuk-link__start-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="12"
+          height="12"
+          viewBox="0 0 33 40"
+          aria-hidden="true"
+          focusable="false"
+          transform="scale(-1,1)"
+        >
+          <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+        </svg>
+        Previous</a
+      >
     </ng-container>
     <ng-container *ngFor="let page of pages; let i = index">
       <ng-container *ngIf="currentPageNo == i; else showLink">
@@ -16,13 +30,40 @@
       </ng-template>
     </ng-container>
     <ng-container *ngIf="currentPageNo != pages.length - 1">
-      <a class="govuk-link" href="#" (click)="goToPage($event, currentPageNo + 1)">Next</a>
+      <a class="govuk-link" id="next-link" href="#" (click)="goToPage($event, currentPageNo + 1)"
+        >Next
+        <svg
+          class="govuk-link__start-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="12"
+          height="12"
+          viewBox="0 0 33 40"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+        </svg>
+      </a>
     </ng-container>
   </ng-container>
 
   <ng-template #greaterThanTen>
     <ng-container *ngIf="currentPageNo != 0">
-      <a class="govuk-link" href="#" (click)="goToPage($event, currentPageNo - 1)">Previous</a>
+      <a class="govuk-link" id="previous-link" href="#" (click)="goToPage($event, currentPageNo - 1)">
+        <svg
+          class="govuk-link__start-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="12"
+          height="12"
+          viewBox="0 0 33 40"
+          aria-hidden="true"
+          focusable="false"
+          transform="scale(-1,1)"
+        >
+          <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+        </svg>
+        Previous
+      </a>
     </ng-container>
     <ng-container *ngFor="let page of pages; let i = index">
       <ng-container *ngIf="i === 0 || i === pages.length - 1 || withinTwoOfCurrentPage(i) || showElipsisCheck(i)">
@@ -35,7 +76,7 @@
           <ng-container *ngIf="showElipsisCheck(i); else showLink">
             <ng-container *ngIf="i === 0 || i === pages.length - 1; then showLink; else showElipsis"></ng-container>
             <ng-template #showElipsis>
-              <p>...</p>
+              <p id="paginationElipsis">...</p>
             </ng-template>
           </ng-container>
         </ng-template>
@@ -47,7 +88,20 @@
       </ng-container>
     </ng-container>
     <ng-container *ngIf="currentPageNo != pages.length - 1">
-      <a class="govuk-link" href="#" (click)="goToPage($event, currentPageNo + 1)">Next</a>
+      <a class="govuk-link" id="next-link" href="#" (click)="goToPage($event, currentPageNo + 1)"
+        >Next
+        <svg
+          class="govuk-link__start-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="12"
+          height="12"
+          viewBox="0 0 33 40"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+        </svg>
+      </a>
     </ng-container>
   </ng-template>
 </div>

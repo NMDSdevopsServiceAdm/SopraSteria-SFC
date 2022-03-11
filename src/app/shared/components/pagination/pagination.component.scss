@@ -1,0 +1,29 @@
+#paginationElipsis {
+  text-align: left;
+  margin-right: 15px;
+  margin-bottom: 0;
+}
+
+.govuk-link {
+  text-decoration: none;
+  margin-bottom: 0;
+}
+
+#next-link {
+  margin-left: 16px;
+  margin-right: 5px;
+}
+
+#previous-link {
+  margin-left: 5px;
+  margin-right: 31px;
+}
+
+.govuk-button-group {
+  box-sizing: border-box;
+  padding: 1px;
+  border: 0.5px solid #d9d9d9;
+  box-shadow: -1px 1px #d9d9d9;
+  width: fit-content;
+  height: 32px;
+}
