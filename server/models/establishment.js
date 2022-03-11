@@ -1488,7 +1488,7 @@ module.exports = function (sequelize, DataTypes) {
     isParent = false,
     limit = 0,
     pageNumber = 1,
-    sortBy,
+    sortBy = 'staffNameAsc',
   ) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
@@ -1630,7 +1630,17 @@ module.exports = function (sequelize, DataTypes) {
       limit,
       offset,
     };
-    const order = sortBy ? [[{ model: sequelize.models.worker, as: 'workers' }, ...sortBy.split(' ')]] : {};
+    const order = [
+      {
+        staffNameAsc: ['workers', 'NameOrIdValue', 'ASC'],
+        staffNameDesc: ['workers', 'NameOrIdValue', 'DESC'],
+        jobRoleAsc: ['workers', 'mainJob', 'title', 'ASC'],
+        jobRoleDesc: ['workers', 'mainJob', 'title', 'DESC'],
+        trainingExpiringSoon: [sequelize.literal('"workers.expiringTrainingCount"'), 'DESC'],
+        trainingExpired: [sequelize.literal('"workers.expiredTrainingCount"'), 'DESC'],
+        trainingMissing: [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
+      }[sortBy],
+    ];
 
     return this.findAll({
       subQuery: false,
@@ -1662,7 +1672,7 @@ module.exports = function (sequelize, DataTypes) {
           ],
         },
       ],
-      ...order,
+      order,
       ...(limit ? workerPagination : {}),
     });
   };

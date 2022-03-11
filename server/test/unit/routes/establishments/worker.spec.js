@@ -219,17 +219,16 @@ describe('worker route', () => {
       expect(typeof res._getData().workers[0].expiredTrainingCount).to.equal('number');
       expect(typeof res._getData().workers[0].expiringTrainingCount).to.equal('number');
       expect(typeof res._getData().workers[0].missingMandatoryTrainingCount).to.equal('number');
-
-      expect(workersAndTrainingStub.args[0]).to.deep.equal([123, false, false, undefined, undefined]);
     });
 
-    it('should call workersAndTraining with pagination parameters', async () => {
+    it('should call workersAndTraining with pagination and sort parameters if passed', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/api/establishment/123/worker',
         query: {
           pageNumber: 1,
           itemsPerPage: 200,
+          sortBy: 'someSort',
         },
       });
 
@@ -244,7 +243,7 @@ describe('worker route', () => {
       await workerRoute.viewAllWorkers(req, res);
 
       expect(res.statusCode).to.deep.equal(200);
-      expect(workersAndTrainingStub.args[0]).to.deep.equal([123, false, false, 200, 1]);
+      expect(workersAndTrainingStub.args[0]).to.deep.equal([123, false, false, 200, 1, 'someSort']);
     });
   });
 
