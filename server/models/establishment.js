@@ -1516,24 +1516,6 @@ module.exports = function (sequelize, DataTypes) {
         'qualificationCount',
       ],
       [
-        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
-        'trainingCount',
-      ],
-      [
-        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
-        'qualificationCount',
-      ],
-      [
-        sequelize.literal(
-          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
-        ),
-        'expiredTrainingCount',
-      ],
-      [
-        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
-        'qualificationCount',
-      ],
-      [
         sequelize.literal(
           `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
         ),
@@ -1575,7 +1557,7 @@ module.exports = function (sequelize, DataTypes) {
             `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" IN
               (
                 SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                WHERE cqc."MandatoryTraining"."EstablishmentFK" = "workers"."EstablishmentFK"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
                 AND "JobFK" = "workers"."MainJobFKValue"
               )
             )`,
@@ -1587,7 +1569,7 @@ module.exports = function (sequelize, DataTypes) {
             `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID"  AND "CategoryFK"  IN
               (
                 SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                WHERE cqc."MandatoryTraining"."EstablishmentFK" = "workers"."EstablishmentFK"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
                 AND "JobFK" = "workers"."MainJobFKValue"
               )
             )`,
@@ -1599,7 +1581,7 @@ module.exports = function (sequelize, DataTypes) {
             `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" IN
               (
                 SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                WHERE cqc."MandatoryTraining"."EstablishmentFK" = "workers"."EstablishmentFK"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
                 AND "JobFK" = "workers"."MainJobFKValue"
               )
             )`,
