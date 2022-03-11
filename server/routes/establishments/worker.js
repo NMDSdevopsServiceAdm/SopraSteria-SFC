@@ -237,8 +237,8 @@ const getTotalWorkers = async (req, res) => {
 const viewAllWorkers = async (req, res) => {
   const establishmentId = req.establishmentId;
   const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
-  const itemsPerPage = req.query.itemsPerPage;
-  const pageNumber = req.query.pageNumber;
+  const itemsPerPage = Number(req.query.itemsPerPage);
+  const pageNumber = Number(req.query.pageNumber);
   const sortBy = req.query.sortBy;
 
   try {
