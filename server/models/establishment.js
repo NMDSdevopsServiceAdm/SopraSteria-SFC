@@ -1488,28 +1488,12 @@ module.exports = function (sequelize, DataTypes) {
     isParent = false,
     limit = 0,
     pageNumber = 1,
+    sortBy,
   ) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
     const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
     const offset = (pageNumber - 1) * (limit + 1);
-
-    const workerJoinOnId =
-      limit > 0
-        ? 'INNER JOIN cqc."Worker" w ON "WorkerFK" = w."ID" WHERE "WorkerFK" = w."ID"'
-        : 'WHERE "WorkerFK" = "workers"."ID"';
-
-    const mandatoryTrainingJoinFK =
-      limit > 0
-        ? `
-          INNER JOIN cqc."Worker" w ON cqc."MandatoryTraining"."EstablishmentFK" = w."EstablishmentFK"
-          WHERE cqc."MandatoryTraining"."EstablishmentFK" = w."EstablishmentFK"
-          AND "JobFK" = w."MainJobFKValue"
-        `
-        : `
-          WHERE cqc."MandatoryTraining"."EstablishmentFK" = "workers"."EstablishmentFK"
-          AND "JobFK" = "workers"."MainJobFKValue"
-        `;
 
     let attributes = [
       'id',
@@ -1523,26 +1507,41 @@ module.exports = function (sequelize, DataTypes) {
       'updatedBy',
       'lastWdfEligibility',
       'wdfEligible',
-      [sequelize.literal(`(SELECT COUNT(0) FROM cqc."WorkerTraining" ${workerJoinOnId})`), 'trainingCount'],
-      [sequelize.literal(`(SELECT COUNT(0) FROM cqc."WorkerQualifications" ${workerJoinOnId})`), 'qualificationCount'],
-      [sequelize.literal(`(SELECT COUNT(0) FROM cqc."WorkerTraining" ${workerJoinOnId})`), 'trainingCount'],
-      [sequelize.literal(`(SELECT COUNT(0) FROM cqc."WorkerQualifications" ${workerJoinOnId})`), 'qualificationCount'],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
+        'trainingCount',
+      ],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
+        'qualificationCount',
+      ],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
+        'trainingCount',
+      ],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
+        'qualificationCount',
+      ],
       [
         sequelize.literal(
-          `(SELECT COUNT(0) FROM cqc."WorkerTraining" ${workerJoinOnId} AND "Expires" < '${currentDate}')`,
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
         ),
         'expiredTrainingCount',
       ],
-      [sequelize.literal(`(SELECT COUNT(0) FROM cqc."WorkerQualifications" ${workerJoinOnId})`), 'qualificationCount'],
+      [
+        sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
+        'qualificationCount',
+      ],
       [
         sequelize.literal(
-          `(SELECT COUNT(0) FROM cqc."WorkerTraining" ${workerJoinOnId} AND "Expires" < '${currentDate}')`,
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
         ),
         'expiredTrainingCount',
       ],
       [
         sequelize.literal(
-          `(SELECT COUNT(0) FROM cqc."WorkerTraining" ${workerJoinOnId} AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
         ),
         'expiringTrainingCount',
       ],
@@ -1553,12 +1552,13 @@ module.exports = function (sequelize, DataTypes) {
               SELECT
                   COUNT(0)
                 FROM cqc."MandatoryTraining"
-                ${mandatoryTrainingJoinFK}
+                WHERE cqc."MandatoryTraining"."EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
                 AND "TrainingCategoryFK" NOT IN (
                   SELECT
                     DISTINCT "CategoryFK"
                   FROM cqc."WorkerTraining"
-                  ${workerJoinOnId}
+                  WHERE "WorkerFK" = "workers"."ID"
                 )
             )
             `,
@@ -1575,7 +1575,8 @@ module.exports = function (sequelize, DataTypes) {
             `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}' AND "CategoryFK" IN
               (
                 SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                ${mandatoryTrainingJoinFK}
+                WHERE cqc."MandatoryTraining"."EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
               )
             )`,
           ),
@@ -1586,7 +1587,8 @@ module.exports = function (sequelize, DataTypes) {
             `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID"  AND "CategoryFK"  IN
               (
                 SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                ${mandatoryTrainingJoinFK}
+                WHERE cqc."MandatoryTraining"."EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
               )
             )`,
           ),
@@ -1597,7 +1599,8 @@ module.exports = function (sequelize, DataTypes) {
             `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' AND "CategoryFK" IN
               (
                 SELECT DISTINCT "TrainingCategoryFK" FROM cqc."MandatoryTraining"
-                ${mandatoryTrainingJoinFK}
+                WHERE cqc."MandatoryTraining"."EstablishmentFK" = "workers"."EstablishmentFK"
+                AND "JobFK" = "workers"."MainJobFKValue"
               )
             )`,
           ),
@@ -1627,8 +1630,10 @@ module.exports = function (sequelize, DataTypes) {
       limit,
       offset,
     };
+    const order = sortBy ? [[{ model: sequelize.models.worker, as: 'workers' }, ...sortBy.split(' ')]] : {};
 
     return this.findAll({
+      subQuery: false,
       attributes: ['id', 'NameValue'],
       where: {
         [Op.or]: [
@@ -1647,7 +1652,6 @@ module.exports = function (sequelize, DataTypes) {
             archived: false,
           },
           required: false,
-          ...(limit ? workerPagination : {}),
           include: [
             {
               model: sequelize.models.job,
@@ -1658,6 +1662,8 @@ module.exports = function (sequelize, DataTypes) {
           ],
         },
       ],
+      ...order,
+      ...(limit ? workerPagination : {}),
     });
   };
 

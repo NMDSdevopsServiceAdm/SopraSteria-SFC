@@ -239,6 +239,7 @@ const viewAllWorkers = async (req, res) => {
   const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
   const itemsPerPage = req.query.itemsPerPage;
   const pageNumber = req.query.pageNumber;
+  const sortBy = req.query.sortBy;
 
   try {
     const establishmentWorkersAndTraining = await models.establishment.workersAndTraining(
@@ -247,6 +248,7 @@ const viewAllWorkers = async (req, res) => {
       false,
       itemsPerPage,
       pageNumber,
+      sortBy,
     );
     const allWorkers = establishmentWorkersAndTraining[0].workers;
 
