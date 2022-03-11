@@ -1534,7 +1534,7 @@ module.exports = function (sequelize, DataTypes) {
               SELECT
                   COUNT(0)
                 FROM cqc."MandatoryTraining"
-                WHERE cqc."MandatoryTraining"."EstablishmentFK" = "workers"."EstablishmentFK"
+                WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
                 AND "JobFK" = "workers"."MainJobFKValue"
                 AND "TrainingCategoryFK" NOT IN (
                   SELECT
