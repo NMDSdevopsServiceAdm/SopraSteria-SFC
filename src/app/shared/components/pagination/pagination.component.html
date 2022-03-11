@@ -1,5 +1,5 @@
 <div *ngIf="pages.length > 1" class="govuk-button-group">
-  <ng-container *ngIf="pages.length <= 10; else greaterThanTen">
+  <ng-container *ngIf="pages.length <= 9; else greaterThanTen">
     <ng-container *ngIf="currentPageNo != 0">
       <a class="govuk-link" id="previous-link" href="#" (click)="goToPage($event, currentPageNo - 1)">
         <svg
@@ -76,7 +76,7 @@
           <ng-container *ngIf="showElipsisCheck(i); else showLink">
             <ng-container *ngIf="i === 0 || i === pages.length - 1; then showLink; else showElipsis"></ng-container>
             <ng-template #showElipsis>
-              <p id="paginationElipsis">...</p>
+              <p id="paginationElipsis" [attr.data-testid]="'elipsis-' + i">...</p>
             </ng-template>
           </ng-container>
         </ng-template>

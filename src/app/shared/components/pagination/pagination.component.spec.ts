@@ -52,6 +52,16 @@ describe('PaginationComponent', () => {
       expect(queryByText('6')).toBeFalsy();
     });
 
+    it('should not display any elipsis when only there are less than 10 pages', async () => {
+      const { fixture, queryByTestId } = await setup(15, 135);
+
+      fixture.componentInstance.currentPageNo = 4;
+      fixture.detectChanges();
+
+      expect(queryByTestId('elipsis-1')).toBeNull();
+      expect(queryByTestId('elipsis-7')).toBeNull();
+    });
+
     it('should not display anything when only one page worth of items', async () => {
       const { queryByText } = await setup(15, 12);
 
@@ -183,26 +193,87 @@ describe('PaginationComponent', () => {
       expect(queryByText('11')).toBeTruthy();
     });
 
-    // it('should display first page, current page number with page numbers 2 above and below and final page when on a page with an index of more than 2 from first page', async () => {
-    //   const { fixture, queryByText } = await setup(15, 148);
+    it('should display page numbers 11 - 9 and first page number when on last page', async () => {
+      const { queryByText, fixture } = await setup(15, 152);
 
-    //   fixture.componentInstance.currentPageNo = 4;
-    //   fixture.detectChanges();
+      fixture.componentInstance.currentPageNo = 10;
+      fixture.detectChanges();
 
-    //   expect(queryByText('1')).toBeTruthy();
+      expect(queryByText('1')).toBeTruthy();
 
-    //   expect(queryByText('2')).toBeFalsy();
+      expect(queryByText('2')).toBeFalsy();
+      expect(queryByText('3')).toBeFalsy();
+      expect(queryByText('4')).toBeFalsy();
+      expect(queryByText('5')).toBeFalsy();
+      expect(queryByText('6')).toBeFalsy();
+      expect(queryByText('7')).toBeFalsy();
+      expect(queryByText('8')).toBeFalsy();
 
-    //   expect(queryByText('3')).toBeTruthy();
-    //   expect(queryByText('4')).toBeTruthy();
-    //   expect(queryByText('5')).toBeTruthy();
-    //   expect(queryByText('6')).toBeTruthy();
-    //   expect(queryByText('7')).toBeTruthy();
+      expect(queryByText('9')).toBeTruthy();
+      expect(queryByText('10')).toBeTruthy();
+      expect(queryByText('11')).toBeTruthy();
+    });
 
-    //   expect(queryByText('8')).toBeFalsy();
-    //   expect(queryByText('9')).toBeFalsy();
+    it('should display first, last, and pages 3-7 when on page 5', async () => {
+      const { queryByText, fixture } = await setup(15, 149);
 
-    //   expect(queryByText('10')).toBeTruthy();
-    // });
+      fixture.componentInstance.currentPageNo = 4;
+      fixture.detectChanges();
+
+      expect(queryByText('1')).toBeTruthy();
+
+      expect(queryByText('2')).toBeFalsy();
+
+      expect(queryByText('3')).toBeTruthy();
+      expect(queryByText('4')).toBeTruthy();
+      expect(queryByText('5')).toBeTruthy();
+      expect(queryByText('6')).toBeTruthy();
+      expect(queryByText('7')).toBeTruthy();
+
+      expect(queryByText('8')).toBeFalsy();
+      expect(queryByText('9')).toBeFalsy();
+
+      expect(queryByText('10')).toBeTruthy();
+    });
+  });
+  describe('Displaying elipsis when there are more than 10 pages', async () => {
+    it('Should display an elipsis after pages 1-3 when on first page', async () => {
+      const { queryByText, queryByTestId } = await setup(15, 149);
+
+      expect(queryByText('1')).toBeTruthy();
+      expect(queryByText('2')).toBeTruthy();
+      expect(queryByText('3')).toBeTruthy();
+
+      expect(queryByTestId('elipsis-3')).toBeTruthy();
+    });
+
+    it('Should display an elipsis before pages 8-10 when on last page', async () => {
+      const { fixture, queryByText, queryByTestId } = await setup(15, 149);
+
+      fixture.componentInstance.currentPageNo = 9;
+      fixture.detectChanges();
+
+      expect(queryByTestId('elipsis-6')).toBeTruthy();
+      expect(queryByText('8')).toBeTruthy();
+      expect(queryByText('9')).toBeTruthy();
+      expect(queryByText('10')).toBeTruthy();
+    });
+
+    it('Should display first, first elpisis, pages 4-8 when on page 6', async () => {
+      const { fixture, queryByText, queryByTestId } = await setup(15, 149);
+
+      fixture.componentInstance.currentPageNo = 5;
+      fixture.detectChanges();
+
+      expect(queryByText('1')).toBeTruthy();
+      expect(queryByTestId('elipsis-2')).toBeTruthy();
+      expect(queryByText('4')).toBeTruthy();
+      expect(queryByText('5')).toBeTruthy();
+      expect(queryByText('6')).toBeTruthy();
+      expect(queryByText('7')).toBeTruthy();
+      expect(queryByText('8')).toBeTruthy();
+      expect(queryByTestId('elipsis-8')).toBeTruthy();
+      expect(queryByText('10')).toBeTruthy();
+    });
   });
 });
