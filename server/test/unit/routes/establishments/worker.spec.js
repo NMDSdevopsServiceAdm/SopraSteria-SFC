@@ -169,7 +169,8 @@ describe('worker route', () => {
     let workersAndTrainingStub;
     beforeEach(() => {
       workersAndTrainingStub = sinon.stub(models.establishment, 'workersAndTraining').returns({
-        rows: [{ workers: [worker], workerCount: 1 }],
+        rows: [{ workers: [worker] }],
+        count: 1,
       });
     });
 
@@ -217,6 +218,7 @@ describe('worker route', () => {
       expect(typeof res._getData().workers[0].expiredTrainingCount).to.equal('number');
       expect(typeof res._getData().workers[0].expiringTrainingCount).to.equal('number');
       expect(typeof res._getData().workers[0].missingMandatoryTrainingCount).to.equal('number');
+      expect(res._getData().workerCount).to.equal(1);
     });
 
     it('should call workersAndTraining with pagination and sort parameters if passed', async () => {

@@ -1609,23 +1609,31 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     const workerPagination = {
+      subQuery: false,
       limit,
       offset,
     };
-    const order = [
-      {
-        staffNameAsc: ['workers', 'NameOrIdValue', 'ASC'],
-        staffNameDesc: ['workers', 'NameOrIdValue', 'DESC'],
-        jobRoleAsc: ['workers', 'mainJob', 'title', 'ASC'],
-        jobRoleDesc: ['workers', 'mainJob', 'title', 'DESC'],
-        trainingExpiringSoon: [sequelize.literal('"workers.expiringTrainingCount"'), 'DESC'],
-        trainingExpired: [sequelize.literal('"workers.expiredTrainingCount"'), 'DESC'],
-        trainingMissing: [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
-      }[sortBy],
-    ];
+
+    const order = {
+      staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
+      staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
+      jobRoleAsc: [['workers', 'mainJob', 'title', 'ASC']],
+      jobRoleDesc: [['workers', 'mainJob', 'title', 'DESC']],
+      trainingExpiringSoon: [
+        [sequelize.literal('"workers.expiringTrainingCount"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+      trainingExpired: [
+        [sequelize.literal('"workers.expiredTrainingCount"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+      trainingMissing: [
+        [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+    }[sortBy] || ['workers', 'NameOrIdValue', 'ASC'];
 
     return this.findAndCountAll({
-      subQuery: false,
       attributes: ['id', 'NameValue'],
       where: {
         [Op.or]: [
@@ -1656,6 +1664,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
       order,
       ...(limit ? workerPagination : {}),
+      logging: console.log,
     });
   };
 
