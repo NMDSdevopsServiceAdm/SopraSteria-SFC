@@ -255,7 +255,7 @@ jobs:
   feature_flag:
     description: Checks for redundant feature flags
     docker:
-      - image: cimg/python:2.7
+      - image: circleci/python:2.7
     steps:
       - checkout
       - attach_workspace:
