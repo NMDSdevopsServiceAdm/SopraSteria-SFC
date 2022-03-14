@@ -245,7 +245,7 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          command: npm install -g @lhci/cli@latest
+          command: sudo npm install -g @lhci/cli@latest
       - run:
           command: lhci autorun
   feature_flag:
