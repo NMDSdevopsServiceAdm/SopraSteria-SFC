@@ -215,7 +215,7 @@ describe('PaginationComponent', () => {
     });
 
     it('should display first, last, and pages 3-7 when on page 5', async () => {
-      const { queryByText, fixture } = await setup(15, 149);
+      const { queryByText, fixture } = await setup(15, 153);
 
       fixture.componentInstance.currentPageNo = 4;
       fixture.detectChanges();
@@ -233,12 +233,13 @@ describe('PaginationComponent', () => {
       expect(queryByText('8')).toBeFalsy();
       expect(queryByText('9')).toBeFalsy();
 
-      expect(queryByText('10')).toBeTruthy();
+      expect(queryByText('11')).toBeTruthy();
     });
   });
+
   describe('Displaying elipsis when there are more than 10 pages', async () => {
     it('Should display an elipsis after pages 1-3 when on first page', async () => {
-      const { queryByText, queryByTestId } = await setup(15, 149);
+      const { queryByText, queryByTestId } = await setup(15, 152);
 
       expect(queryByText('1')).toBeTruthy();
       expect(queryByText('2')).toBeTruthy();
@@ -247,20 +248,20 @@ describe('PaginationComponent', () => {
       expect(queryByTestId('elipsis-3')).toBeTruthy();
     });
 
-    it('Should display an elipsis before pages 8-10 when on last page', async () => {
-      const { fixture, queryByText, queryByTestId } = await setup(15, 149);
+    it('Should display an elipsis before pages 9-11 when on last page', async () => {
+      const { fixture, queryByText, queryByTestId } = await setup(15, 152);
 
-      fixture.componentInstance.currentPageNo = 9;
+      fixture.componentInstance.currentPageNo = 10;
       fixture.detectChanges();
 
-      expect(queryByTestId('elipsis-6')).toBeTruthy();
-      expect(queryByText('8')).toBeTruthy();
+      expect(queryByTestId('elipsis-7')).toBeTruthy();
       expect(queryByText('9')).toBeTruthy();
       expect(queryByText('10')).toBeTruthy();
+      expect(queryByText('11')).toBeTruthy();
     });
 
-    it('Should display first, first elpisis, pages 4-8 when on page 6', async () => {
-      const { fixture, queryByText, queryByTestId } = await setup(15, 149);
+    it('Should display first page, first elpisis, pages 4-8 when on page 6', async () => {
+      const { fixture, queryByText, queryByTestId } = await setup(15, 152);
 
       fixture.componentInstance.currentPageNo = 5;
       fixture.detectChanges();
@@ -273,7 +274,7 @@ describe('PaginationComponent', () => {
       expect(queryByText('7')).toBeTruthy();
       expect(queryByText('8')).toBeTruthy();
       expect(queryByTestId('elipsis-8')).toBeTruthy();
-      expect(queryByText('10')).toBeTruthy();
+      expect(queryByText('11')).toBeTruthy();
     });
   });
 });
