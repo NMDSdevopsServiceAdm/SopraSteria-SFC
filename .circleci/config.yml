@@ -247,7 +247,8 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            - node-deps-v2-{{ checksum "package-lock.json" }}
+            - node-deps-v2-{{ checksum "package-lock.json" }}-{{ .Environment.CACHE_VERSION }}
+            - node-deps-v2-{{ .Environment.CACHE_VERSION }}
       - run:
           name: lhci autorun
           command: |
