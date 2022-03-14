@@ -201,8 +201,6 @@ jobs:
           keys:
             - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
-          command: sudo apt-get install -yq libxss1
-      - run:
           command: npm run test-headless
           environment:
             JUNIT_REPORT_PATH: ./junit/
@@ -244,14 +242,11 @@ jobs:
     docker:
       - image: cimg/node:12.19.0-browsers
     steps:
-      - checkout
       - attach_workspace:
           at: .
-      - restore_cache:
-          keys:
-            - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
-          command: $(npm bin)/lhci autorun
+          command: npm install -g @lhci/cli@0.9.0
+          command: lhci autorun
   feature_flag:
     description: Checks for redundant feature flags
     docker:
