@@ -44,50 +44,74 @@ describe('permissions', () => {
   });
 
   describe('getPermissions()', () => {
-    describe('Admin', () => {
-      beforeEach(() => {
-        req.role = 'Admin';
+    describe('Admin roles', () => {
+      const defaultAdminPermissions = [
+        'canViewEstablishment',
+        'canViewWdfReport',
+        'canViewUser',
+        'canViewListOfUsers',
+        'canDownloadWdfReport',
+        'canAddUser',
+        'canBulkUpload',
+        'canChangePermissionsForSubsidiary',
+        'canDeleteUser',
+        'canEditUser',
+        'canViewListOfWorkers',
+        'canViewWorker',
+        'canAddWorker',
+        'canEditWorker',
+        'canDeleteWorker',
+        'canTransferWorker',
+        'canEditEstablishment',
+        'canRunLocalAuthorityReport',
+        'canLinkToParent',
+        'canBecomeAParent',
+        'canChangeDataOwner',
+        'canDeleteEstablishment',
+        'canDeleteAllEstablishments',
+        'canRunLocalAuthorityAdminReport',
+        'canViewWdfSummaryReport',
+        'canSearchUsers',
+        'canSearchEstablishment',
+        'canViewLastBulkUpload',
+      ];
+
+      describe('Admin', () => {
+        beforeEach(() => {
+          req.role = 'Admin';
+        });
+
+        it('should return admin permissions when req.role is admin', async () => {
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.deep.equal(defaultAdminPermissions);
+        });
+
+        it('should not return canViewNinoDob when req.role is admin', async () => {
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canViewNinoDob');
+        });
       });
 
-      it('should return admin permissions when req.role is admin', async () => {
-        const returnedPermissions = await getPermissions(req);
+      describe('AdminManager', () => {
+        beforeEach(() => {
+          req.role = 'AdminManager';
+        });
 
-        expect(returnedPermissions).to.deep.equal([
-          'canViewEstablishment',
-          'canViewWdfReport',
-          'canViewUser',
-          'canViewListOfUsers',
-          'canDownloadWdfReport',
-          'canAddUser',
-          'canBulkUpload',
-          'canChangePermissionsForSubsidiary',
-          'canDeleteUser',
-          'canEditUser',
-          'canViewListOfWorkers',
-          'canViewWorker',
-          'canAddWorker',
-          'canEditWorker',
-          'canDeleteWorker',
-          'canTransferWorker',
-          'canEditEstablishment',
-          'canRunLocalAuthorityReport',
-          'canLinkToParent',
-          'canBecomeAParent',
-          'canChangeDataOwner',
-          'canDeleteEstablishment',
-          'canDeleteAllEstablishments',
-          'canRunLocalAuthorityAdminReport',
-          'canViewWdfSummaryReport',
-          'canSearchUsers',
-          'canSearchEstablishment',
-          'canViewLastBulkUpload',
-        ]);
-      });
+        it('should include all default admin permissions when req.role is AdminManager', async () => {
+          const returnedPermissions = await getPermissions(req);
 
-      it('should not return canViewNinoDob when req.role is admin', async () => {
-        const returnedPermissions = await getPermissions(req);
+          defaultAdminPermissions.forEach((permission) => {
+            expect(returnedPermissions).to.include(permission);
+          });
+        });
 
-        expect(returnedPermissions).not.to.include('canViewNinoDob');
+        it('should return canViewNinoDob when req.role is AdminManager', async () => {
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canViewNinoDob');
+        });
       });
     });
 

@@ -33,7 +33,7 @@ describe('BulkUploadPageComponent', () => {
   const dataChange = MockDataChangeService.dataChangeFactory();
   const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
 
-  async function setup(role = 'Admin') {
+  async function setup(role = 'AdminManager') {
     const { fixture, getByTestId, queryByTestId } = await render(BulkUploadPageComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -44,7 +44,7 @@ describe('BulkUploadPageComponent', () => {
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory([], true),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -119,56 +119,88 @@ describe('BulkUploadPageComponent', () => {
     expect(p.innerText).not.toContain('Last bulk upload');
   });
 
-  it('should show the sanitise data checkbox if the logged in user is an admin', async () => {
-    const { getByTestId } = await setup();
-    expect(getByTestId('showDataCheckbox')).toBeTruthy();
-  });
+  describe('Sanitise data checkbox', () => {
+    it('should show the sanitise data checkbox if the logged in user has an admin role and has canViewNinoDob permission', async () => {
+      const { component, fixture, queryByTestId, permissionsService } = await setup();
 
-  it('should not show the sanitise data checkbox if the logged in user is not an admin', async () => {
-    const { queryByTestId } = await setup('Edit');
-    expect(queryByTestId('showDataCheckbox')).toBeFalsy();
-  });
+      spyOn(permissionsService, 'can').and.returnValue(true);
 
-  it('should set sanitise variable to true, when someone without canViewNinoDob permissions loads the page', async () => {
-    const { component, fixture, permissionsService } = await setup();
-    spyOn(permissionsService, 'can').and.returnValue(false);
+      component.ngOnInit();
+      fixture.detectChanges();
 
-    component.ngOnInit();
-    fixture.detectChanges();
+      expect(queryByTestId('showDataCheckbox')).toBeTruthy();
+    });
 
-    expect(component.sanitise).toBeTruthy();
-  });
+    it('should not show the sanitise data checkbox if the logged in user is an admin and does not have canViewNinoDob permission', async () => {
+      const { component, fixture, queryByTestId, permissionsService } = await setup('Admin');
 
-  it('should set sanitise variable to false, when someone with canViewNinoDob permissions loads the page', async () => {
-    const { component, fixture, permissionsService } = await setup('Edit');
-    spyOn(permissionsService, 'can').and.returnValue(true);
+      spyOn(permissionsService, 'can').and.returnValue(false);
 
-    component.ngOnInit();
-    fixture.detectChanges();
+      component.ngOnInit();
+      fixture.detectChanges();
 
-    expect(component.sanitise).toBeFalsy();
-  });
+      expect(queryByTestId('showDataCheckbox')).toBeFalsy();
+    });
 
-  it('should change the value of sanitise to false when checkbox is checked', async () => {
-    const { component, fixture, getByTestId } = await setup();
-    const checkbox = getByTestId('showDataCheckbox');
+    it('should not show the sanitise data checkbox if the logged in user is not an admin', async () => {
+      const { queryByTestId } = await setup('Edit');
 
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
+      expect(queryByTestId('showDataCheckbox')).toBeFalsy();
+    });
 
-    expect(component.sanitise).toBeFalsy();
-  });
+    it('should set sanitise variable to true, when someone without canViewNinoDob permissions loads the page', async () => {
+      const { component, fixture, permissionsService } = await setup();
+      spyOn(permissionsService, 'can').and.returnValue(false);
 
-  it('should change the value of sanitise to true when checkbox is unchecked', async () => {
-    const { component, fixture, getByTestId } = await setup();
-    const checkbox = getByTestId('showDataCheckbox');
+      component.ngOnInit();
+      fixture.detectChanges();
 
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
+      expect(component.sanitise).toBeTruthy();
+    });
 
-    fireEvent.click(checkbox);
-    fixture.detectChanges();
+    it('should set sanitise variable to false, when someone with canViewNinoDob permissions loads the page', async () => {
+      const { component, fixture, permissionsService } = await setup('Edit');
+      spyOn(permissionsService, 'can').and.returnValue(true);
 
-    expect(component.sanitise).toBeTruthy();
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      expect(component.sanitise).toBeFalsy();
+    });
+
+    it('should change the value of sanitise to false when checkbox is checked', async () => {
+      const { component, fixture, getByTestId, permissionsService } = await setup();
+
+      spyOn(permissionsService, 'can').and.returnValue(true);
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const checkbox = getByTestId('showDataCheckbox');
+
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      expect(component.sanitise).toBeFalsy();
+    });
+
+    it('should change the value of sanitise to true when checkbox is unchecked', async () => {
+      const { component, fixture, getByTestId, permissionsService } = await setup();
+
+      spyOn(permissionsService, 'can').and.returnValue(true);
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const checkbox = getByTestId('showDataCheckbox');
+
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      fireEvent.click(checkbox);
+      fixture.detectChanges();
+
+      expect(component.sanitise).toBeTruthy();
+    });
   });
 });

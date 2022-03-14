@@ -3,22 +3,36 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, screen } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
+import { OtherQualificationsComponent } from '../other-qualifications/other-qualifications.component';
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level.component';
 
 describe('OtherQualificationsLevelComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
+  const worker = workerBuilder() as Worker;
 
   async function setup() {
     const { fixture } = await render(OtherQualificationsLevelComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule.withRoutes([
+          {
+            path: `workplace/${workplace.uid}/staff-record/${worker.uid}/other-qualifications`,
+            component: OtherQualificationsComponent,
+          },
+        ]),
+        HttpClientTestingModule,
+        WorkersModule,
+      ],
       providers: [
         BackService,
         {
@@ -36,7 +50,7 @@ describe('OtherQualificationsLevelComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: MockWorkerServiceWithUpdateWorker,
+          useClass: MockWorkerService,
         },
       ],
     });

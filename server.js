@@ -182,6 +182,8 @@ app.use(
     },
     expectCt: {
       maxAge: 86400,
+      enforce: true,
+      reportUri: config.get('sentry.report_uri'),
     },
     dnsPrefetchControl: {
       allow: true,
@@ -285,46 +287,19 @@ app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
 });
 
 app.get('*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'dist/index.html'));
+  return res.sendFile(path.join(__dirname, 'dist/index.html'));
+});
+
+app.all('*', function (req, res) {
+  res.status(404);
+  return res.send({ message: 'Not Found' });
 });
 
 app.use(Sentry.Handlers.errorHandler());
-// Optional fallthrough error handler
-app.use(function onError(err, req, res) {
-  // The error id is attached to `res.sentry` to be returned
-  // and optionally displayed to the user for support.
-  res.statusCode = 500;
-  res.end(res.sentry + '\n');
-});
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function (err, req, res) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err,
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function (err, req, res) {
+// catches errors and returns a sentry ID
+app.use(function onError(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {},
-  });
+  return res.send({ errorId: res.sentry + '\n', message: err.message || undefined });
 });
 
 const startApp = () => {

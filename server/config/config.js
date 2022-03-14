@@ -451,6 +451,13 @@ const config = convict({
       sensitive: true,
       env: 'SENTRY_DSN',
     },
+    report_uri: {
+      doc: 'Sentry Report URI',
+      format: String,
+      default: 'https://o409195.ingest.sentry.io/api/5972061/security/?sentry_key=b5e1291ec8934cf7b6b426bc45f1dbbd',
+      sensitive: true,
+      env: 'SENTRY_REPORT_URI',
+    },
     sample_rate: {
       doc: 'Sample Rate as a percentage of events to be sent',
       format: function (val) {
