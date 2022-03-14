@@ -1631,7 +1631,7 @@ module.exports = function (sequelize, DataTypes) {
         [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
         ['workers', 'NameOrIdValue', 'ASC'],
       ],
-    }[sortBy] || ['workers', 'NameOrIdValue', 'ASC'];
+    }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
 
     return this.findAndCountAll({
       attributes: ['id', 'NameValue'],
@@ -1664,7 +1664,6 @@ module.exports = function (sequelize, DataTypes) {
       ],
       order,
       ...(limit ? workerPagination : {}),
-      logging: console.log,
     });
   };
 
