@@ -578,13 +578,12 @@ workflows:
           appname: sfcbenchmarks
           env_prefix: SFC_BENCHMARKS
           requires:
-            - test_frontend
-            - test_backend
-            - performance
+            - prod_deploy
           filters:
             branches:
-              only:
-                - feat/benchmarks
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
           endpoint: https://api.cloud.service.gov.uk
           org: dhsc-skills-for-care-nmds-sc-2
           space: sandbox
@@ -714,8 +713,10 @@ workflows:
             - blue_green_benchmarks
           filters:
             branches:
+              ignore: /.*/
+            tags:
               only:
-                - feat/benchmarks
+                - /^v[0-9]+(\.[0-9]+)*$/
           env: development
       - sentry_release:
           requires:
