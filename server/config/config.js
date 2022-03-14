@@ -564,7 +564,7 @@ const config = convict({
     uri: {
       doc: 'Redis uri for rate limit',
       env: 'REDIS_URI',
-      default: 'redis://localhost:6379',
+      default: '',
     },
   },
 });

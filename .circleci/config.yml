@@ -240,7 +240,7 @@ jobs:
           flags: backend
   performance:
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     steps:
       - checkout
       - attach_workspace:
