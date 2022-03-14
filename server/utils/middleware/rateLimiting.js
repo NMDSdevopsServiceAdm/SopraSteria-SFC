@@ -24,5 +24,5 @@ const dbLimiter = new RateLimit({
   prefix: 'db:',
 });
 
-module.exports.authLimiter = process.env.NODE_ENV !== 'example' && authLimiter;
-module.exports.dbLimiter = process.env.NODE_ENV !== 'example' && dbLimiter;
+module.exports.authLimiter = process.env.NODE_ENV !== 'example' ? authLimiter : () => {};
+module.exports.dbLimiter = process.env.NODE_ENV !== 'example' ? dbLimiter : () => {};
