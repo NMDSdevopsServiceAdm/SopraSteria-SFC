@@ -33,11 +33,19 @@ export class PaginationComponent implements OnInit {
     return Array.from(Array(noOfPages).keys());
   }
 
-  public withinTwoOfCurrentPage(index: number): boolean {
+  public showPageLink(index: number): boolean {
+    return this.isWithinTwoOfCurrentPage(index) || this.isFirstOrLastPage(index);
+  }
+
+  private isWithinTwoOfCurrentPage(index: number): boolean {
     return Math.abs(index - this.currentPageNo) <= 2;
   }
 
+  private isFirstOrLastPage(index: number): boolean {
+    return index === 0 || index === this.pages.length - 1;
+  }
+
   public showElipsisCheck(index: number): boolean {
-    return index === this.currentPageNo + 3 || index === this.currentPageNo - 3;
+    return Math.abs(index - this.currentPageNo) === 3 && index !== 0 && index !== this.pages.length - 1;
   }
 }
