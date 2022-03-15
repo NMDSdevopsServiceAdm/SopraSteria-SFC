@@ -1486,10 +1486,14 @@ module.exports = function (sequelize, DataTypes) {
     establishmentId,
     includeMandatoryTrainingBreakdown = false,
     isParent = false,
+    limit = 0,
+    pageNumber = 1,
+    sortBy = 'staffNameAsc',
   ) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
     const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+    const offset = (pageNumber - 1) * (limit + 1);
 
     let attributes = [
       'id',
@@ -1604,7 +1608,32 @@ module.exports = function (sequelize, DataTypes) {
       ];
     }
 
-    return this.findAll({
+    const workerPagination = {
+      subQuery: false,
+      limit,
+      offset,
+    };
+
+    const order = {
+      staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
+      staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
+      jobRoleAsc: [['workers', 'mainJob', 'title', 'ASC']],
+      jobRoleDesc: [['workers', 'mainJob', 'title', 'DESC']],
+      trainingExpiringSoon: [
+        [sequelize.literal('"workers.expiringTrainingCount"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+      trainingExpired: [
+        [sequelize.literal('"workers.expiredTrainingCount"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+      trainingMissing: [
+        [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+    }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
+
+    return this.findAndCountAll({
       attributes: ['id', 'NameValue'],
       where: {
         [Op.or]: [
@@ -1633,6 +1662,8 @@ module.exports = function (sequelize, DataTypes) {
           ],
         },
       ],
+      order,
+      ...(limit ? workerPagination : {}),
     });
   };
 
