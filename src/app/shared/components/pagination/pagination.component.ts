@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-pagination',
@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class PaginationComponent implements OnInit {
   public pages: Array<number>;
   public currentPageNo: number;
+  public isBigWindow: boolean;
 
   @Input() noOfItemsOnPage: number;
   @Input() totalNoOfItems: number;
@@ -16,6 +17,7 @@ export class PaginationComponent implements OnInit {
   ngOnInit(): void {
     this.pages = this.createPageIndexArray();
     this.setPage(0);
+    this.setIsBigWindow();
   }
 
   public goToPage(e: Event, pageNo: number): void {
@@ -47,5 +49,10 @@ export class PaginationComponent implements OnInit {
 
   public showElipsisCheck(index: number): boolean {
     return Math.abs(index - this.currentPageNo) === 3 && index !== 0 && index !== this.pages.length - 1;
+  }
+
+  @HostListener('window:resize')
+  private setIsBigWindow(): void {
+    this.isBigWindow = window.innerWidth > 1000;
   }
 }

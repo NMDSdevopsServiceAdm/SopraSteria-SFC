@@ -7,7 +7,7 @@ import { render } from '@testing-library/angular';
 import { PaginationComponent } from './pagination.component';
 
 describe('PaginationComponent', () => {
-  async function setup(noOfItemsOnPage = 15, totalNoOfItems = 43) {
+  async function setup(noOfItemsOnPage = 15, totalNoOfItems = 43, isBigWindow = true) {
     const component = await render(PaginationComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -17,6 +17,9 @@ describe('PaginationComponent', () => {
         totalNoOfItems,
       },
     });
+
+    component.fixture.componentInstance.isBigWindow = isBigWindow;
+    component.fixture.detectChanges();
 
     return component;
   }
@@ -52,7 +55,7 @@ describe('PaginationComponent', () => {
       expect(queryByText('6')).toBeFalsy();
     });
 
-    it('should not display any elipsis when only there are less than 10 pages', async () => {
+    it('should not display any elipsis when there are less than 10 pages', async () => {
       const { fixture, queryByTestId } = await setup(15, 135);
 
       fixture.componentInstance.currentPageNo = 4;
@@ -237,7 +240,7 @@ describe('PaginationComponent', () => {
     });
   });
 
-  describe('Displaying elipsis when there are more than 10 pages', async () => {
+  describe('Displaying ellipses when there are more than 10 pages', async () => {
     it('Should display an elipsis after pages 1-3 when on first page', async () => {
       const { queryByText, queryByTestId } = await setup(15, 152);
 
@@ -275,6 +278,51 @@ describe('PaginationComponent', () => {
       expect(queryByText('8')).toBeTruthy();
       expect(queryByTestId('elipsis-8')).toBeTruthy();
       expect(queryByText('11')).toBeTruthy();
+    });
+  });
+
+  describe('Displaying ellipses when small screen', async () => {
+    it('Should just display next button when on a small screen and on first page', async () => {
+      const { queryByText } = await setup(15, 152, false);
+
+      expect(queryByText('1')).toBeFalsy();
+      expect(queryByText('2')).toBeFalsy();
+      expect(queryByText('3')).toBeFalsy();
+
+      expect(queryByText('Next')).toBeTruthy();
+      expect(queryByText('Previous')).toBeFalsy();
+    });
+
+    it('Should just display previous button when on a small screen and on final page', async () => {
+      const { queryByText, fixture } = await setup(15, 152, false);
+
+      fixture.componentInstance.currentPageNo = 10;
+      fixture.detectChanges();
+
+      expect(queryByText('9')).toBeFalsy();
+      expect(queryByText('10')).toBeFalsy();
+      expect(queryByText('11')).toBeFalsy();
+
+      expect(queryByText('Next')).toBeFalsy();
+      expect(queryByText('Previous')).toBeTruthy();
+    });
+
+    it('Should just display next and previous buttons when on a small screen and on a page which is not first or last', async () => {
+      const { queryByTestId, queryByText, fixture } = await setup(15, 152, false);
+
+      fixture.componentInstance.currentPageNo = 5;
+      fixture.detectChanges();
+
+      expect(queryByTestId('elipsis-2')).toBeFalsy();
+      expect(queryByText('4')).toBeFalsy();
+      expect(queryByText('5')).toBeFalsy();
+      expect(queryByText('6')).toBeFalsy();
+      expect(queryByText('7')).toBeFalsy();
+      expect(queryByText('8')).toBeFalsy();
+      expect(queryByTestId('elipsis-8')).toBeFalsy();
+
+      expect(queryByText('Next')).toBeTruthy();
+      expect(queryByText('Previous')).toBeTruthy();
     });
   });
 });
