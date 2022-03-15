@@ -13,7 +13,7 @@ const rateLimiterConfig = {
 };
 
 const authLimiter =
-  process.env.NODE_ENVE !== 'example'
+  process.env.NODE_ENV !== 'example'
     ? new RateLimit({
         ...rateLimiterConfig,
         max: 100,
@@ -22,7 +22,7 @@ const authLimiter =
     : {};
 
 const dbLimiter =
-  process.env.NODE_ENVE !== 'example'
+  process.env.NODE_ENV !== 'example'
     ? new RateLimit({
         ...rateLimiterConfig,
         max: 200,
