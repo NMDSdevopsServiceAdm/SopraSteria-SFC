@@ -13,7 +13,8 @@ const rateLimiterConfig = {
 };
 
 const authLimiter =
-  process.env.NODE_ENV !== 'example'
+  // process.env.NODE_ENV !== 'example'
+  config.get('redis') !== 'redis://localhost:6379'
     ? new RateLimit({
         ...rateLimiterConfig,
         max: 100,
@@ -22,7 +23,8 @@ const authLimiter =
     : {};
 
 const dbLimiter =
-  process.env.NODE_ENV !== 'example'
+  // process.env.NODE_ENV !== 'example'
+  config.get('redis') !== 'redis://localhost:6379'
     ? new RateLimit({
         ...rateLimiterConfig,
         max: 200,
