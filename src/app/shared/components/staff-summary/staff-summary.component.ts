@@ -79,4 +79,8 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
       }
     }
   }
+
+  public updateDisplayedWorkers(pageOfWorkers: Array<Worker>): void {
+    console.log('test');
+  }
 }
