@@ -19,7 +19,7 @@ const authLimiter =
         max: 100,
         prefix: 'auth:',
       })
-    : {};
+    : () => {};
 
 const dbLimiter =
   process.env.NODE_ENV !== 'example'
@@ -28,7 +28,7 @@ const dbLimiter =
         max: 200,
         prefix: 'db:',
       })
-    : {};
+    : () => {};
 
 module.exports.authLimiter = authLimiter;
 module.exports.dbLimiter = dbLimiter;
