@@ -6,6 +6,9 @@ const store = new RedisStore({
   redisURL: config.get('redis.uri'),
 });
 
+console.log('****************');
+console.log(process.env.NODE_ENV);
+console.log(config.get('redis.uri'));
 const rateLimiterConfig = {
   store,
   delayMs: 0, // disable delaying - full speed until the max limit is reached
