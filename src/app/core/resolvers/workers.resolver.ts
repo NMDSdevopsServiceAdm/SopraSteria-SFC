@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { WorkersResponse } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -15,7 +16,7 @@ export class WorkersResolver implements Resolve<any> {
     private permissionsService: PermissionsService,
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<Worker[] | null> {
+  resolve(route: ActivatedRouteSnapshot): Observable<WorkersResponse | null> {
     const workplaceUid = route.paramMap.get('establishmentuid')
       ? route.paramMap.get('establishmentuid')
       : this.establishmentService.establishmentId;

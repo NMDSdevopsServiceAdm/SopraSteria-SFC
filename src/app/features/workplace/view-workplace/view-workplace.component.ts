@@ -11,7 +11,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -76,10 +78,9 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     if (this.canViewListOfWorkers) {
       this.subscriptions.add(
         this.workerService.getAllWorkers(this.workplace.uid).subscribe(
-          (workers) => {
+          ({ workers, workerCount }) => {
             this.workers = workers;
-            this.workerCount = workers.length;
-            this.workerService.setWorkers(workers);
+            this.workerCount = workerCount;
             this.workerService.setWorkers(workers);
             this.trainingAlert = this.getTrainingAlertFlag(workers);
           },

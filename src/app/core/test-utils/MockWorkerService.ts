@@ -3,11 +3,10 @@ import { Injectable } from '@angular/core';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { MultipleTrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
-import { Worker, WorkerEditResponse } from '@core/model/worker.model';
+import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
+import { build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
-
-const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 
 export const workerBuilder = build('Worker', {
   fields: {
@@ -155,6 +154,8 @@ export const AllWorkers = [
   },
 ] as Worker[];
 
+export const getAllWorkersResponse = { workers: AllWorkers, workerCount: AllWorkers.length };
+
 export const qualificationsByGroup = {
   count: 3,
   lastUpdated: new Date('2020-01-02'),
@@ -262,8 +263,8 @@ export class MockWorkerService extends WorkerService {
     },
   ] as Worker[]);
 
-  getAllWorkers(establishmentUid: string): Observable<Worker[]> {
-    return of(AllWorkers);
+  getAllWorkers(establishmentUid: string): Observable<WorkersResponse> {
+    return of(getAllWorkersResponse);
   }
 
   createMultipleTrainingRecords(): Observable<MultipleTrainingResponse> {
