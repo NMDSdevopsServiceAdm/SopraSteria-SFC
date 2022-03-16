@@ -60,5 +60,5 @@
 <app-pagination
   [noOfItemsOnPage]="15"
   [totalNoOfItems]="workers.length"
-  (emitCurrentPage)="updateDisplayedWorkers($event)"
+  (emitCurrentPage)="getPageOfWorkers($event)"
 ></app-pagination>

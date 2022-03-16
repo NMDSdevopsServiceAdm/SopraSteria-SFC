@@ -1,15 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { WorkerService } from '@core/services/worker.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
-import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models.js';
+import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models';
+import { PaginationComponent } from '../pagination/pagination.component';
 import { StaffSummaryComponent } from './staff-summary.component';
 
 describe('StaffSummaryComponent', () => {
@@ -19,13 +23,14 @@ describe('StaffSummaryComponent', () => {
 
     const component = await render(StaffSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
+      declarations: [PaginationComponent],
       providers: [
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(),
           deps: [HttpClient, Router, UserService],
         },
+        WorkerService,
       ],
       componentProperties: {
         workplace: establishment,
@@ -34,9 +39,16 @@ describe('StaffSummaryComponent', () => {
       },
     });
 
+    const injector = getTestBed();
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
+      of({ workers: [workerBuilder(), workerBuilder(), workerBuilder()], workerCount: 3 }),
+    );
+
     return {
       component,
       workers,
+      getAllWorkersSpy,
     };
   }
 
@@ -84,5 +96,19 @@ describe('StaffSummaryComponent', () => {
     expect(workers[0].wdfEligible).toEqual(false);
     expect(workers[1].wdfEligible).toEqual(false);
     expect(workers[2].wdfEligible).toEqual(true);
+  });
+
+  describe('Calling getAllWorkers when using pagination', () => {
+    it('should call getAllWorkers on load with pageIndex 0 and noOfItemsOnPage 15', async () => {
+      const { component, getAllWorkersSpy } = await setup();
+
+      await component.fixture.whenStable();
+
+      const establishmentUid = component.fixture.componentInstance.workplace.uid;
+      const paginationEmission = { pageIndex: 0, noOfItemsOnPage: 15 };
+
+      expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
+      expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);
+    });
   });
 });

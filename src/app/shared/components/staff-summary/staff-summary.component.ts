@@ -1,9 +1,12 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/model/establishment.model';
+import { PaginationEmission } from '@core/model/pagination.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 import orderBy from 'lodash/orderBy';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-staff-summary',
@@ -18,7 +21,7 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
   public sortStaffOptions;
   public workersOrderBy: Array<Worker>;
 
-  constructor(private permissionsService: PermissionsService) {}
+  constructor(private permissionsService: PermissionsService, private workerService: WorkerService) {}
 
   public lastUpdated(timestamp: string): string {
     const lastUpdated: dayjs.Dayjs = dayjs(timestamp);
@@ -80,7 +83,12 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
     }
   }
 
-  public updateDisplayedWorkers(pageOfWorkers: Array<Worker>): void {
-    console.log(pageOfWorkers);
+  public getPageOfWorkers(paginationEmission: PaginationEmission): void {
+    this.workerService
+      .getAllWorkers(this.workplace.uid, paginationEmission)
+      .pipe(take(1))
+      .subscribe((res) => {
+        this.workers = res.workers;
+      });
   }
 }
