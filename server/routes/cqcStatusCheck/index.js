@@ -64,13 +64,12 @@ function convertMainServiceToCQC(mainService) {
     },
     { asc: 'Community based services for people with a learning disability', cqc: ['Supported living'] },
     { asc: 'Community based services for people with mental health needs', cqc: ['Residential homes'] },
-    { asc: 'Community healthcare services', cqc: ['Homecare agencies'] },
+    { asc: 'Community healthcare services', cqc: ['Homecare agencies', 'Community services - Healthcare'] },
     { asc: 'Domiciliary care services', cqc: ['Homecare agencies'] },
     { asc: 'Extra care housing services', cqc: ['Supported housing'] },
     { asc: 'Hospice services', cqc: ['Hospice'] },
     {
-      asc:
-        'Hospital services for people with mental health needs, learning disabilities and/or problems with substance misuse',
+      asc: 'Hospital services for people with mental health needs, learning disabilities and/or problems with substance misuse',
       cqc: ['Hospitals - Mental health/capacity'],
     },
     { asc: 'Long term conditions services', cqc: ['Nursing homes', 'Homecare agencies'] },
