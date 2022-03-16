@@ -1,4 +1,5 @@
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { PaginationEmission } from '@core/model/pagination.model';
 
 @Component({
   selector: 'app-pagination',
@@ -7,12 +8,12 @@ import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@a
 })
 export class PaginationComponent implements OnInit {
   public pages: Array<number>;
-  public currentPageNo: number;
+  public currentPageIndex: number;
   public isBigWindow: boolean;
 
   @Input() noOfItemsOnPage: number;
   @Input() totalNoOfItems: number;
-  @Output() emitCurrentPage = new EventEmitter<{ pageNo: number; noOfItemsOnPage: number }>(true);
+  @Output() emitCurrentPage = new EventEmitter<PaginationEmission>(true);
 
   ngOnInit(): void {
     this.pages = this.createPageIndexArray();
@@ -25,9 +26,9 @@ export class PaginationComponent implements OnInit {
     this.setPage(pageNo);
   }
 
-  private setPage(pageNo: number): void {
-    this.currentPageNo = pageNo;
-    this.emitCurrentPage.emit({ pageNo, noOfItemsOnPage: this.noOfItemsOnPage });
+  private setPage(pageIndex: number): void {
+    this.currentPageIndex = pageIndex;
+    this.emitCurrentPage.emit({ pageIndex, noOfItemsOnPage: this.noOfItemsOnPage });
   }
 
   private createPageIndexArray(): Array<number> {
@@ -40,7 +41,7 @@ export class PaginationComponent implements OnInit {
   }
 
   private isWithinTwoOfCurrentPage(index: number): boolean {
-    return Math.abs(index - this.currentPageNo) <= 2;
+    return Math.abs(index - this.currentPageIndex) <= 2;
   }
 
   private isFirstOrLastPage(index: number): boolean {
@@ -48,7 +49,7 @@ export class PaginationComponent implements OnInit {
   }
 
   public showElipsisCheck(index: number): boolean {
-    return Math.abs(index - this.currentPageNo) === 3 && index !== 0 && index !== this.pages.length - 1;
+    return Math.abs(index - this.currentPageIndex) === 3 && index !== 0 && index !== this.pages.length - 1;
   }
 
   @HostListener('window:resize')

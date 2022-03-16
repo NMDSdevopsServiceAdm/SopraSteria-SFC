@@ -1,6 +1,6 @@
 <div *ngIf="pages.length > 1" class="govuk-button-group">
-  <ng-container *ngIf="currentPageNo != 0">
-    <a class="govuk-link" id="previous-link" href="#" (click)="goToPage($event, currentPageNo - 1)">
+  <ng-container *ngIf="currentPageIndex != 0">
+    <a class="govuk-link" id="previous-link" href="#" (click)="goToPage($event, currentPageIndex - 1)">
       <svg
         class="govuk-link__start-icon"
         xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +19,7 @@
 
   <ng-container *ngIf="pages.length <= 10 && isBigWindow; else showEllipses">
     <ng-container *ngFor="let page of pages; let i = index">
-      <ng-container *ngIf="currentPageNo == i; else showLink">
+      <ng-container *ngIf="currentPageIndex == i; else showLink">
         <p class="govuk-!-margin-right-3" [attr.data-testid]="'pageNoText-' + i">
           <b>{{ i + 1 }}</b>
         </p>
@@ -35,7 +35,7 @@
   <ng-template #showEllipses>
     <ng-container *ngIf="isBigWindow">
       <ng-container *ngFor="let page of pages; let i = index">
-        <ng-container *ngIf="currentPageNo == i; else showLinkOrElipsis">
+        <ng-container *ngIf="currentPageIndex == i; else showLinkOrElipsis">
           <p class="govuk-!-margin-right-3" [attr.data-testid]="'pageNoText-' + i">
             <b>{{ i + 1 }}</b>
           </p>
@@ -59,8 +59,8 @@
     </ng-container>
   </ng-template>
 
-  <ng-container *ngIf="currentPageNo != pages.length - 1">
-    <a class="govuk-link" id="next-link" href="#" (click)="goToPage($event, currentPageNo + 1)"
+  <ng-container *ngIf="currentPageIndex != pages.length - 1">
+    <a class="govuk-link" id="next-link" href="#" (click)="goToPage($event, currentPageIndex + 1)"
       >Next
       <svg
         class="govuk-link__start-icon"

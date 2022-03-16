@@ -58,7 +58,7 @@ describe('PaginationComponent', () => {
     it('should not display any elipsis when there are less than 10 pages', async () => {
       const { fixture, queryByTestId } = await setup(15, 135);
 
-      fixture.componentInstance.currentPageNo = 4;
+      fixture.componentInstance.currentPageIndex = 4;
       fixture.detectChanges();
 
       expect(queryByTestId('elipsis-1')).toBeNull();
@@ -76,7 +76,7 @@ describe('PaginationComponent', () => {
     it('should not display Next when on final page', async () => {
       const { fixture, queryByText } = await setup();
 
-      fixture.componentInstance.currentPageNo = 2;
+      fixture.componentInstance.currentPageIndex = 2;
       fixture.detectChanges();
 
       expect(queryByText('Next')).toBeFalsy();
@@ -108,7 +108,7 @@ describe('PaginationComponent', () => {
     it('should display 1 as text and 2 as link when Previous clicked from second page', async () => {
       const { fixture, queryByText, queryByTestId } = await setup();
 
-      fixture.componentInstance.currentPageNo = 1;
+      fixture.componentInstance.currentPageIndex = 1;
       fixture.detectChanges();
 
       const previousPageButton = queryByText('Previous');
@@ -140,7 +140,7 @@ describe('PaginationComponent', () => {
   });
 
   describe('Emitting event when clicking to page', () => {
-    it('should emit pageNo 1 and noOfItemsOnPage when Next button clicked from first page', async () => {
+    it('should emit pageIndex 1 and noOfItemsOnPage when Next button clicked from first page', async () => {
       const { fixture, queryByText } = await setup();
 
       const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
@@ -148,24 +148,24 @@ describe('PaginationComponent', () => {
       const nextPageButton = queryByText('Next');
       nextPageButton.click();
 
-      expect(emitSpy).toHaveBeenCalledWith({ pageNo: 1, noOfItemsOnPage: 15 });
+      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 1, noOfItemsOnPage: 15 });
     });
 
-    it('should emit pageNo 0 and noOfItemsOnPage when going to page 1 by clicking Previous button', async () => {
+    it('should emit pageIndex 0 and noOfItemsOnPage when going to page 1 by clicking Previous button', async () => {
       const { fixture, queryByText } = await setup();
 
       const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
 
-      fixture.componentInstance.currentPageNo = 1;
+      fixture.componentInstance.currentPageIndex = 1;
       fixture.detectChanges();
 
       const previousPageButton = queryByText('Previous');
       previousPageButton.click();
 
-      expect(emitSpy).toHaveBeenCalledWith({ pageNo: 0, noOfItemsOnPage: 15 });
+      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 0, noOfItemsOnPage: 15 });
     });
 
-    it('should emit pageNo 2 and noOfItemsOnPage when 3 clicked', async () => {
+    it('should emit pageIndex 2 and noOfItemsOnPage when 3 clicked', async () => {
       const { fixture, queryByText } = await setup();
 
       const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
@@ -173,7 +173,7 @@ describe('PaginationComponent', () => {
       const nextPageButton = queryByText('3');
       nextPageButton.click();
 
-      expect(emitSpy).toHaveBeenCalledWith({ pageNo: 2, noOfItemsOnPage: 15 });
+      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 2, noOfItemsOnPage: 15 });
     });
   });
 
@@ -199,7 +199,7 @@ describe('PaginationComponent', () => {
     it('should display page numbers 11 - 9 and first page number when on last page', async () => {
       const { queryByText, fixture } = await setup(15, 152);
 
-      fixture.componentInstance.currentPageNo = 10;
+      fixture.componentInstance.currentPageIndex = 10;
       fixture.detectChanges();
 
       expect(queryByText('1')).toBeTruthy();
@@ -220,7 +220,7 @@ describe('PaginationComponent', () => {
     it('should display first, last, and pages 3-7 when on page 5', async () => {
       const { queryByText, fixture } = await setup(15, 153);
 
-      fixture.componentInstance.currentPageNo = 4;
+      fixture.componentInstance.currentPageIndex = 4;
       fixture.detectChanges();
 
       expect(queryByText('1')).toBeTruthy();
@@ -254,7 +254,7 @@ describe('PaginationComponent', () => {
     it('Should display an elipsis before pages 9-11 when on last page', async () => {
       const { fixture, queryByText, queryByTestId } = await setup(15, 152);
 
-      fixture.componentInstance.currentPageNo = 10;
+      fixture.componentInstance.currentPageIndex = 10;
       fixture.detectChanges();
 
       expect(queryByTestId('elipsis-7')).toBeTruthy();
@@ -266,7 +266,7 @@ describe('PaginationComponent', () => {
     it('Should display first page, first elpisis, pages 4-8 when on page 6', async () => {
       const { fixture, queryByText, queryByTestId } = await setup(15, 152);
 
-      fixture.componentInstance.currentPageNo = 5;
+      fixture.componentInstance.currentPageIndex = 5;
       fixture.detectChanges();
 
       expect(queryByText('1')).toBeTruthy();
@@ -281,7 +281,7 @@ describe('PaginationComponent', () => {
     });
   });
 
-  describe('Displaying ellipses when small screen', async () => {
+  describe('Only displaying Next and Previous small screen', async () => {
     it('Should just display next button when on a small screen and on first page', async () => {
       const { queryByText } = await setup(15, 152, false);
 
@@ -296,7 +296,7 @@ describe('PaginationComponent', () => {
     it('Should just display previous button when on a small screen and on final page', async () => {
       const { queryByText, fixture } = await setup(15, 152, false);
 
-      fixture.componentInstance.currentPageNo = 10;
+      fixture.componentInstance.currentPageIndex = 10;
       fixture.detectChanges();
 
       expect(queryByText('9')).toBeFalsy();
@@ -310,7 +310,7 @@ describe('PaginationComponent', () => {
     it('Should just display next and previous buttons when on a small screen and on a page which is not first or last', async () => {
       const { queryByTestId, queryByText, fixture } = await setup(15, 152, false);
 
-      fixture.componentInstance.currentPageNo = 5;
+      fixture.componentInstance.currentPageIndex = 5;
       fixture.detectChanges();
 
       expect(queryByTestId('elipsis-2')).toBeFalsy();
