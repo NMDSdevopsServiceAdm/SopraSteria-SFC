@@ -219,15 +219,5 @@
       "prettier --write"
     ],
     "*.{css,md}": "prettier --write"
-  },
-  "bin": "index.js",
-  "pkg": {
-    "scripts": [
-      "node_modules/tedious/lib/tedious.js",
-      "models/*.js"
-    ],
-    "assets": [
-      "config/log.json"
-    ]
   }
 }
