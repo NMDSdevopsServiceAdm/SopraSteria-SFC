@@ -32,7 +32,7 @@ module.exports.apiWorkerBuilder = build('Worker', {
     DateOfBirthValue: fake((f) => f.helpers.replaceSymbolWithNumber('####-##-##')),
     GenderValue: oneOf('Female', 'Male', 'Other', "Don't know"),
     ethnicity: {
-      id: fake((f) => f.random.number({ min: 1, max: 19 })),
+      id: fake((f) => f.datatype.number({ min: 1, max: 19 })),
     },
     NationalityValue: oneOf('British', "Don't know", 'Other'),
     BritishCitizenshipValue: oneOf('Yes', 'No', "Don't know"),
@@ -43,7 +43,7 @@ module.exports.apiWorkerBuilder = build('Worker', {
     RecruitedFromValue: oneOf('Yes', 'No'),
     MainJobStartDateValue: fake((f) => f.helpers.replaceSymbolWithNumber('####-##-##')),
     recruitedFrom: {
-      id: fake((f) => f.random.number({ min: 1, max: 10 })),
+      id: fake((f) => f.datatype.number({ min: 1, max: 10 })),
     },
     SocialCareStartDateValue: oneOf('Yes', 'No'),
     SocialCareStartDateYear: fake((f) => f.helpers.replaceSymbolWithNumber('####')),
@@ -52,21 +52,21 @@ module.exports.apiWorkerBuilder = build('Worker', {
     ZeroHoursContractValue: oneOf('Yes', 'No', "Don't know"),
     DaysSickValue: oneOf('Yes', 'No'),
     AnnualHourlyPayValue: oneOf('Hourly', 'Anually'),
-    AnnualHourlyPayRate: fake((f) => f.random.number({ min: 1, max: 100000 })),
+    AnnualHourlyPayRate: fake((f) => f.datatype.number({ min: 1, max: 100000 })),
     mainJob: {
-      id: fake((f) => f.random.number({ min: 1, max: 28 })),
-      other: fake((f) => f.random.boolean()),
+      id: fake((f) => f.datatype.number({ min: 1, max: 28 })),
+      other: fake((f) => f.datatype.boolean()),
     },
     MainJobFkOther: fake((f) => f.lorem.words(3)),
     WeeklyHoursContractedValue: oneOf('Yes', 'No'),
-    WeeklyHoursContractedHours: fake((f) => f.random.number({ min: 0, max: 40 })),
+    WeeklyHoursContractedHours: fake((f) => f.datatype.number({ min: 0, max: 40 })),
     WeeklyHoursAverageValue: oneOf('Yes', 'No'),
-    WeeklyHoursAverageHours: fake((f) => f.random.number({ min: 0, max: 40 })),
+    WeeklyHoursAverageHours: fake((f) => f.datatype.number({ min: 0, max: 40 })),
     OtherJobsValue: oneOf('Yes', 'No'),
     otherJobs: [
       {
-        id: fake((f) => f.random.number({ min: 1, max: 28 })),
-        other: fake((f) => f.random.boolean()),
+        id: fake((f) => f.datatype.number({ min: 1, max: 28 })),
+        other: fake((f) => f.datatype.boolean()),
         workerJobs: {
           other: fake((f) => f.lorem.words(3)),
         },
@@ -82,29 +82,29 @@ module.exports.apiWorkerBuilder = build('Worker', {
     NurseSpecialismsValue: oneOf('Yes', 'No', "Don't know"),
     nurseSpecialisms: [
       {
-        id: fake((f) => f.random.number({ min: 1, max: 7 })),
+        id: fake((f) => f.datatype.number({ min: 1, max: 7 })),
       },
     ],
     ApprovedMentalHealthWorkerValue: oneOf('Yes', 'No', "Don't know"),
     QualificationInSocialCareValue: oneOf('Yes', 'No', "Don't know"),
     socialCareQualification: [
       {
-        id: fake((f) => f.random.number({ min: 1, max: 7 })),
+        id: fake((f) => f.datatype.number({ min: 1, max: 7 })),
       },
     ],
     OtherQualificationsValue: oneOf('Yes', 'No', "Don't know"),
     highestQualification: [
       {
-        id: fake((f) => f.random.number({ min: 1, max: 7 })),
+        id: fake((f) => f.datatype.number({ min: 1, max: 7 })),
       },
     ],
     qualifications: [
       {
-        id: fake((f) => f.random.number({ min: 1, max: 97 })),
+        id: fake((f) => f.datatype.number({ min: 1, max: 97 })),
         year: fake((f) => f.helpers.replaceSymbolWithNumber('####')),
         notes: fake((f) => f.lorem.sentence()),
         qualification: {
-          id: fake((f) => f.random.number({ min: 1, max: 97 })),
+          id: fake((f) => f.datatype.number({ min: 1, max: 97 })),
         },
       },
     ],
