@@ -56,7 +56,9 @@ const staffData = async (data, downloadType) => {
         const dataArr = data.split(',');
 
         const workerIdentifier = dataArr[idIndex];
-        const worker = await models.worker.findOne({ where: { LocalIdentifierValue: workerIdentifier } });
+
+        const worker =
+          workerIdentifier && (await models.worker.findOne({ where: { LocalIdentifierValue: workerIdentifier } }));
 
         const updatedDataArr =
           downloadType === 'Staff'
