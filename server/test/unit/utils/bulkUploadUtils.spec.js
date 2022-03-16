@@ -170,7 +170,7 @@ describe('bulkUploadUtils', () => {
     });
   });
 
-  describe('staffData', () => {
+  describe.only('staffData', () => {
     beforeEach(() => {
       sinon
         .stub(models.worker, 'findOne')
@@ -259,6 +259,20 @@ describe('bulkUploadUtils', () => {
 
       const expectedResult = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,,AB1 2CD,,`;
+
+      const result = await staffData(data, downloadType);
+
+      expect(result).to.deep.equal(expectedResult);
+    });
+
+    it('should return the data correctly formatted when the unique identifier is undefined', async () => {
+      const downloadType = 'Staff';
+
+      const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
+        human,,UPDATE,,AB1 2CD,,`;
+
+      const expectedResult = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
+        human,,UPDATE,,AB1 2CD,,`;
 
       const result = await staffData(data, downloadType);
 
