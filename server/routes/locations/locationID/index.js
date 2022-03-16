@@ -3,6 +3,7 @@ const router = express.Router();
 const Authorization = require('../../../utils/security/isAuthenticated');
 const models = require('../../../models/index');
 const { createLocationDetailsObject, sendLocationsResponse } = require('../../../services/locations/locations');
+const { isAdminRole } = require('../../../utils/adminUtils');
 
 const adminGetCurrentEstablishment = async (req, locationID) => {
   const establishment = await models.establishment.findByPk(req.establishment.id, {
@@ -42,7 +43,7 @@ const getLocations = async (req, res, matching, locationID) => {
   }
 
   // If the user is an Admin and the Location was not found, we want them to be able to use the location ID that they searched for.
-  if (locationData.length === 0 && req.role === 'Admin') {
+  if (locationData.length === 0 && isAdminRole(req.role)) {
     const data = await adminGetCurrentEstablishment(req, locationID);
 
     locationData.push(createLocationDetailsObject(data));

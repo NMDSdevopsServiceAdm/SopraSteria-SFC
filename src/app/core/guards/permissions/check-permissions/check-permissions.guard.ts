@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
 import { PermissionType } from '@core/model/permissions.model';
-import { Roles } from '@core/model/roles.enum';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+
+import { isAdminRole } from '../../../../../../server/utils/adminUtils';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,7 @@ export class CheckPermissionsGuard implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.userService.loggedInUser && this.userService.loggedInUser.role === Roles.Admin) {
+    if (this.userService.loggedInUser && isAdminRole(this.userService.loggedInUser.role)) {
       return true;
     }
 

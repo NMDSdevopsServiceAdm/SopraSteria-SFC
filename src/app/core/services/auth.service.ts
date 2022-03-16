@@ -9,6 +9,7 @@ import isNull from 'lodash/isNull';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
 
+import { isAdminRole } from '../../../../server/utils/adminUtils';
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
 import { UserService } from './user.service';
@@ -47,7 +48,7 @@ export class AuthService {
   }
 
   public get isAdmin(): boolean {
-    return this.isAuthenticated() && this.userInfo().role === 'Admin';
+    return this.isAuthenticated() && isAdminRole(this.userInfo().role);
   }
 
   public get isOnAdminScreen$(): Observable<boolean> {

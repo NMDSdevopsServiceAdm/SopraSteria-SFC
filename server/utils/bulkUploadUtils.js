@@ -27,11 +27,18 @@ const hideNinoAndDob = (dataArr, niNumberIndex, dobIndex) => {
   return dataArr;
 };
 
-const showNinoAndDob = (dataArr, worker, niNumberIndex, dobIndex) => {
-  dataArr[niNumberIndex].toLowerCase() === 'admin'
-    ? (dataArr[niNumberIndex] = worker.NationalInsuranceNumberValue)
-    : dataArr[niNumberIndex];
-  dataArr[dobIndex].toLowerCase() === 'admin' ? (dataArr[dobIndex] = worker.DateOfBirthValue) : dataArr[dobIndex];
+const showNinoAndDob = (dataArr, niNumberIndex, dobIndex, worker) => {
+  if (dataArr[niNumberIndex].toLowerCase() === 'admin') {
+    worker ? (dataArr[niNumberIndex] = worker.NationalInsuranceNumberValue) : (dataArr[niNumberIndex] = '');
+  } else {
+    dataArr[niNumberIndex];
+  }
+
+  if (dataArr[dobIndex].toLowerCase() === 'admin') {
+    worker ? (dataArr[dobIndex] = worker.DateOfBirthValue) : (dataArr[dobIndex] = '');
+  } else {
+    dataArr[dobIndex];
+  }
 
   return dataArr;
 };
@@ -47,12 +54,15 @@ const staffData = async (data, downloadType) => {
     dataRows.map(async (data, index) => {
       if (index !== 0) {
         const dataArr = data.split(',');
+
         const workerIdentifier = dataArr[idIndex];
-        const worker = await models.worker.findOne({ where: { NameOrIdValue: workerIdentifier } });
+
+        const worker =
+          workerIdentifier && (await models.worker.findOne({ where: { LocalIdentifierValue: workerIdentifier } }));
 
         const updatedDataArr =
           downloadType === 'Staff'
-            ? showNinoAndDob(dataArr, worker, niNumberIndex, dobIndex)
+            ? showNinoAndDob(dataArr, niNumberIndex, dobIndex, worker)
             : hideNinoAndDob(dataArr, niNumberIndex, dobIndex);
 
         return '\r\n' + updatedDataArr.join(',');

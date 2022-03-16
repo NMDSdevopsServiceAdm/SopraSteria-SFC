@@ -15,6 +15,8 @@ import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
+import { isAdminRole } from '../../../../../server/utils/adminUtils';
+
 @Component({
   selector: 'app-user-account-view',
   templateUrl: './user-account-view.component.html',
@@ -139,7 +141,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
 
     this.canResendActivationLink = hasCanEditUserPermission && isPending;
     this.canEditUser = hasCanEditUserPermission && (!this.user.isPrimary || this.moreThanOneActiveEditUser());
-    this.canNavigate = Roles.Admin === this.loggedInUser.role;
+    this.canNavigate = isAdminRole(this.loggedInUser.role);
   }
 
   public moreThanOneActiveEditUser(): boolean {

@@ -10,6 +10,7 @@ export interface LocationAddress {
   mainServiceOther?: string;
   postalCode: string;
   townCity: string;
+  numberOfStaff?: string;
 }
 
 export interface LocationSearchResponse {

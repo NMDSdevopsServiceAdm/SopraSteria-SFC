@@ -147,7 +147,10 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected generateUpdateProps(): any {}
   protected updateEstablishment(props): void {}
   protected onSuccess(): void {}
-  protected removeSharingPermissionsBanner(completeFunction): void {}
+  protected removeSharingPermissionsBanner(completeFunction: () => unknown): void {
+    // callback is invoked if func not declared in child to ensure navigation
+    completeFunction();
+  }
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });

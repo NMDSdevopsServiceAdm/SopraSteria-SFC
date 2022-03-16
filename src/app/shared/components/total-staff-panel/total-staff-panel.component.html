@@ -1,5 +1,5 @@
 <dl class="govuk-list--definition">
-  <dt data-testid="totalStaffText">Total number of staff</dt>
+  <dt data-testid="totalStaffText">Total number of staff {{ !totalStaff ? 'is missing' : '' }}</dt>
   <dd data-testid="totalStaffNumber">
     {{ totalStaff }}
     <a
@@ -8,7 +8,7 @@
       class="govuk-util__float-right govuk-!-font-size-19 govuk-!-font-weight-regular"
       (click)="setReturn()"
     >
-      Change <span class="govuk-visually-hidden"> total number of staff</span>
+      {{ totalStaff ? 'Change' : 'Add' }} <span class="govuk-visually-hidden"> total number of staff</span>
     </a>
   </dd>
   <dt data-testid="staffAddedText">
@@ -22,7 +22,7 @@
   <dd data-testid="staffAddedNumber">
     {{ totalWorkers }}
   </dd>
-  <ng-container *ngIf="totalStaff !== totalWorkers">
+  <ng-container *ngIf="totalStaff && totalStaff !== totalWorkers">
     <dt data-testid="changeText">
       Staff
       <ng-container [ngPlural]="totalStaff - totalWorkers">
