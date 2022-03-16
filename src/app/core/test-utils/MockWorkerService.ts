@@ -5,7 +5,7 @@ import { MultipleTrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
-import { build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot';
+import { build, fake, oneOf, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
 
 export const workerBuilder = build('Worker', {
@@ -40,7 +40,7 @@ export const workerBuilder = build('Worker', {
       qualificationId: 1,
     },
     nurseSpecialism: null,
-    wdfEligible: false,
+    wdfEligible: perBuild(() => false),
     trainingCount: 0,
     expiredTrainingCount: 0,
     expiringTrainingCount: 0,
@@ -48,7 +48,7 @@ export const workerBuilder = build('Worker', {
     qualificationCount: 0,
     fluJab: null,
     longTermAbsence: null,
-    completed: false,
+    completed: perBuild(() => false),
   },
 });
 

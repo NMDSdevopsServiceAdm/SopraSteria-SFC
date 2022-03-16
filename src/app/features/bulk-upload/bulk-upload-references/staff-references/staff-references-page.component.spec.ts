@@ -3,6 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -13,22 +14,22 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { StaffReferencesComponent } from './staff-references-page.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('StaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
     const component = await render(StaffReferencesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService},
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
@@ -108,7 +109,7 @@ describe('StaffReferencesComponent', () => {
 
   it('should hide missing worker error after filling empty field and resubmitting', async () => {
     const worker = workerBuilder();
-    const references = ([worker] as unknown) as Worker[];
+    const references = [worker] as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = `Enter a unique reference for ${worker.nameOrId}`;
@@ -216,7 +217,7 @@ describe('StaffReferencesComponent', () => {
 
   it('should remove duplicate error messages after submitting with same input and then changing one field', async () => {
     const workers = [workerBuilder(), workerBuilder()];
-    const references = workers;
+    const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = 'This reference matches another, it needs to be unique';
