@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import {
@@ -14,13 +15,13 @@ import {
   workerWithOneExpiringTraining,
   workerWithUpToDateTraining,
 } from '@core/test-utils/MockWorkerService';
+import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
 
 const sinon = require('sinon');
-const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
 const establishmentBuilder = build('Establishment', {
   fields: {
@@ -53,7 +54,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
-        workers,
+        workers: workers as Worker[],
       },
     });
 

@@ -19,6 +19,7 @@ export interface UserDetails {
   securityQuestion?: string;
   securityQuestionAnswer?: string;
   status?: UserStatus;
+  password?: string;
   uid?: string;
   updated?: string;
   updatedBy?: string;

@@ -4,6 +4,8 @@ const router = express.Router();
 
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
+
+const { isAdminRole } = require('../../utils/adminUtils');
 const passwordCheck = require('../../utils/security/passwordValidation').isPasswordValid;
 const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
@@ -388,7 +390,7 @@ const changePassword = async (req, res) => {
 };
 
 const meetsMaxUserLimit = async (establishmentId, req) => {
-  if (req.role === 'Admin') return false;
+  if (isAdminRole(req.role)) return false;
 
   let limits = { Edit: User.User.MAX_EDIT_SINGLE_USERS, Read: User.User.MAX_READ_SINGLE_USERS };
 
@@ -1034,7 +1036,7 @@ const swapEstablishment = async (req, res) => {
     establishment.uid,
     establishment.isParent,
     req.username,
-    'Admin',
+    req.role,
     thisUser.user.uid,
   );
   var date = new Date().getTime();
@@ -1050,7 +1052,7 @@ const swapEstablishment = async (req, res) => {
     thisUser.user.FullNameValue,
     false,
     thisUser.lastLogin,
-    'Admin',
+    req.role,
     establishment,
     req.username,
     new Date(date).toISOString(),

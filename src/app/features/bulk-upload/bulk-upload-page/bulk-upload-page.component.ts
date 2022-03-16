@@ -8,6 +8,7 @@ import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-uplo
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 
+import { isAdminRole } from '../../../../../server/utils/adminUtils';
 import { AdminSkipService } from '../admin-skip.service';
 
 @Component({
@@ -36,8 +37,8 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     this.bulkUploadService.setReturnTo(null);
 
     this.canViewNinoDob = this.permissionsService.can(this.establishment.uid, 'canViewNinoDob');
-    this.isAdmin = this.route.snapshot.data.loggedInUser.role === 'Admin';
-    this.sanitise = !this.canViewNinoDob;
+    this.isAdmin = isAdminRole(this.route.snapshot.data.loggedInUser.role);
+    this.sanitise = !this.canViewNinoDob || this.isAdmin;
   }
 
   public toggleSanitise(sanitiseData: boolean): void {

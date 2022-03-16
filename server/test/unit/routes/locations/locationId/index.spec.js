@@ -35,7 +35,7 @@ describe('locations route', () => {
     it('should return locations without matching existing establishments', async () => {
       sinon.stub(models.establishment, 'findByLocationID').returns([establishment]);
 
-      sinon.stub(models.location, 'findByLocationID').callsFake(async (args) => {
+      sinon.stub(models.location, 'findByLocationID').callsFake(async () => {
         return location;
       });
 
@@ -68,12 +68,13 @@ describe('locations route', () => {
         location.dataValues.locationId,
       );
     });
+
     it('should not return locations with matching existing establishments', async () => {
-      sinon.stub(models.establishment, 'findByLocationID').callsFake(async (args) => {
+      sinon.stub(models.establishment, 'findByLocationID').callsFake(async () => {
         return establishment;
       });
 
-      sinon.stub(models.location, 'findByLocationID').callsFake(async (args) => {
+      sinon.stub(models.location, 'findByLocationID').callsFake(async () => {
         return location;
       });
 
@@ -96,16 +97,16 @@ describe('locations route', () => {
       );
     });
 
-    describe('when the user is an admin and the location does not exist in the database', () => {
-      it('should return the current establishments location', async () => {
-        const establishment = establishmentBuilder();
-        const locationId = 456;
+    describe('When the user is an admin', () => {
+      let expectedLocationData, establishment, locationId, req, res;
 
-        sinon.stub(models.establishment, 'findByLocationID').returns([]);
+      beforeEach(() => {
+        establishment = establishmentBuilder();
+        locationId = 456;
         sinon.stub(models.location, 'findByLocationID').returns(null);
         sinon.stub(models.establishment, 'findByPk').returns(establishment);
 
-        const req = httpMocks.createRequest({
+        req = httpMocks.createRequest({
           method: 'GET',
           url: `/api/locations/lid/matching/${locationId}`,
           params: {
@@ -118,14 +119,9 @@ describe('locations route', () => {
           id: establishment.id,
         };
 
-        const res = httpMocks.createResponse();
+        res = httpMocks.createResponse();
 
-        await locationsRoute.getLocations(req, res, true, locationId);
-
-        const { success, message, locationdata } = res._getJSONData();
-
-        expect(success).to.deep.equal(1), expect(message).to.deep.equal('Location Found');
-        expect(locationdata).to.deep.equal([
+        expectedLocationData = [
           {
             locationId: 456,
             locationName: establishment.NameValue,
@@ -137,38 +133,59 @@ describe('locations route', () => {
             mainService: establishment.mainService.name,
             isRegulated: establishment.isRegulated,
           },
-        ]);
+        ];
       });
 
-      it('should not return a location if an establishment already exists with the location id', async () => {
-        const establishment = establishmentBuilder();
-        const locationId = 456;
+      describe('Admin role', () => {
+        it('should return the current establishments location when location does not exist in the database', async () => {
+          sinon.stub(models.establishment, 'findByLocationID').returns([]);
 
-        sinon.stub(models.establishment, 'findByLocationID').returns([establishment]);
-        sinon.stub(models.location, 'findByLocationID').returns(null);
-        sinon.stub(models.establishment, 'findByPk').returns(establishment);
+          await locationsRoute.getLocations(req, res, true, locationId);
 
-        const req = httpMocks.createRequest({
-          method: 'GET',
-          url: `/api/locations/lid/matching/${locationId}`,
-          params: {
-            locationId,
-          },
+          const { success, message, locationdata } = res._getJSONData();
+
+          expect(success).to.deep.equal(1), expect(message).to.deep.equal('Location Found');
+          expect(locationdata).to.deep.equal(expectedLocationData);
         });
 
-        req.role = 'Admin';
-        req.establishment = {
-          id: establishment.id,
-        };
+        it('should not return a location if an establishment already exists with the location id', async () => {
+          sinon.stub(models.establishment, 'findByLocationID').returns([establishment]);
 
-        const res = httpMocks.createResponse();
+          await locationsRoute.getLocations(req, res, true, locationId);
 
-        await locationsRoute.getLocations(req, res, true, locationId);
+          const { success, message, locationdata } = res._getJSONData();
 
-        const { success, message, locationdata } = res._getJSONData();
+          expect(success).to.deep.equal(0), expect(message).to.deep.equal('No location found');
+          expect(locationdata).to.deep.equal(undefined);
+        });
+      });
 
-        expect(success).to.deep.equal(0), expect(message).to.deep.equal('No location found');
-        expect(locationdata).to.deep.equal(undefined);
+      describe('AdminManager role', () => {
+        beforeEach(() => {
+          req.role = 'AdminManager';
+        });
+
+        it('should return the current establishments location when location does not exist in the database', async () => {
+          sinon.stub(models.establishment, 'findByLocationID').returns([]);
+
+          await locationsRoute.getLocations(req, res, true, locationId);
+
+          const { success, message, locationdata } = res._getJSONData();
+
+          expect(success).to.deep.equal(1), expect(message).to.deep.equal('Location Found');
+          expect(locationdata).to.deep.equal(expectedLocationData);
+        });
+
+        it('should not return a location if an establishment already exists with the location id', async () => {
+          sinon.stub(models.establishment, 'findByLocationID').returns([establishment]);
+
+          await locationsRoute.getLocations(req, res, true, locationId);
+
+          const { success, message, locationdata } = res._getJSONData();
+
+          expect(success).to.deep.equal(0), expect(message).to.deep.equal('No location found');
+          expect(locationdata).to.deep.equal(undefined);
+        });
       });
     });
 
