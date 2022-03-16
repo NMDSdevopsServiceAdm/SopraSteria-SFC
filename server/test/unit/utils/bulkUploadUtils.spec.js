@@ -170,7 +170,7 @@ describe('bulkUploadUtils', () => {
     });
   });
 
-  describe.only('staffData', () => {
+  describe('staffData', () => {
     beforeEach(() => {
       sinon
         .stub(models.worker, 'findOne')
