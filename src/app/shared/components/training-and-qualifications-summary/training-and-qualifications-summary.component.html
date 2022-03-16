@@ -19,8 +19,8 @@
         class="govuk-select govuk-!-width-full"
         id="sortByTrainingStaff"
         name="sortByTrainingStaff"
-        [value]="sortByDefault"
-        (change)="orderWorkers($event.target.value)"
+        [value]="sortByValue"
+        (change)="handleSortUpdate($event.target.value)"
       >
         <option
           *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
@@ -41,7 +41,7 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of workers">
+    <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of paginatedWorkers">
       <td class="govuk-table__cell govuk-!-font-weight-regular">
         <ng-container *ngIf="canViewWorker; else nameOrId">
           <a href="#" (click)="getWorkerTrainingAndQualificationsPath($event, worker)">
@@ -94,3 +94,8 @@
     </tr>
   </tbody>
 </table>
+<app-pagination
+  [noOfItemsOnPage]="itemsPerPage"
+  [totalNoOfItems]="workerCount"
+  (emitCurrentPage)="handlePageUpdate($event)"
+></app-pagination>
