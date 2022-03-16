@@ -1,7 +1,4 @@
 'use strict';
-const express = require('express');
-const router = express.Router();
-
 const EventEmitter = require('events');
 const AppConfig = require('../config/appConfig');
 const appConfig = require('../config/config');
@@ -10,7 +7,6 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const db = {};
-const disbursements = require('./disbursements');
 class DBEmitter extends EventEmitter {
   constructor() {
     super();
@@ -96,5 +92,3 @@ if (AppConfig.ready) {
 }
 
 module.exports = db;
-router.use('/disbursements', disbursements);
-module.exports = router;

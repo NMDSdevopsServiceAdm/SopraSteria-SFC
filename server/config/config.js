@@ -1,6 +1,7 @@
 const convict = require('convict');
 const fs = require('fs');
 const yaml = require('js-yaml');
+const cfenv = require('cfenv');
 
 // AWS Secrets Manager override
 const AWSSecrets = require('../aws/secrets');
@@ -129,38 +130,45 @@ const config = convict({
       doc: 'Database host name/IP',
       format: String,
       default: 'localhost',
-      env: 'SQL_SERVER_DATABASE_HOST',
+      env: 'DISBURSEMENT_DB_HOST',
     },
     database: {
       doc: 'Database name',
       format: String,
       default: 'Disbursement',
-      env: 'SQL_SERVER_DATABASE_DISBURSEMENT_DB',
+      env: 'DISBURSEMENT_DB',
     },
     username: {
       doc: 'Database username',
       format: String,
       default: 'Unknown',
-      env: 'SQL_SERVER_DATABASE_USER_NAME',
+      env: 'DISBURSEMENT_DB_USER_NAME',
     },
     password: {
       doc: 'Database username',
       format: '*',
       default: 'Unknown',
-      env: 'SQL_SERVER_DATABASE_PASS',
+      env: 'DISBURSEMENT_DB_PASS',
     },
     port: {
       doc: 'Database port',
       format: 'port',
       default: 1433,
+      env: 'DISBURSEMENT_DB_PORT',
     },
   },
+
   redis: {
     url: {
       doc: 'The URI to redirect users to the Redis',
       format: 'url',
-      default: 'https://unknown.com',
-      env: 'REDIS_URI',
+      default: '6379',
+    },
+    serviceName: {
+      doc: 'Name of VCAP Service for Redis',
+      format: String,
+      default: 'Unknown',
+      env: 'REDIS_SERVICE_NAME',
     },
   },
 
@@ -616,21 +624,17 @@ config.load(envConfigfile);
 // Perform validation
 config.validate({ allowed: 'strict' });
 
+const appEnv = cfenv.getAppEnv();
+
+if (!appEnv.isLocal) {
+  config.set('redis.url', appEnv.getServiceCreds(config.get('redis.serviceName')).uri);
+}
 // now, if defined, load secrets from AWS Secret Manager
 if (config.get('aws.secrets.use')) {
   AWSSecrets.initialiseSecrets(config.get('aws.region'), config.get('aws.secrets.wallet')).then(() => {
     // DB rebind
     config.set('db.host', AWSSecrets.dbHost());
     config.set('db.password', AWSSecrets.dbPass());
-
-    //SQL DB
-
-    config.set('sqldb.host', AWSSecrets.dbSQLHost());
-    config.set('sqldb.password', AWSSecrets.dbSQLPass());
-    config.set('sqldb.database', AWSSecrets.SQLdb());
-    config.set('sqldb.username', AWSSecrets.dbUserName());
-    config.set('redis.url', AWSSecrets.redisUri());
-    config.set('sqldb.port');
 
     // external APIs
     config.set('slack.url', AWSSecrets.slackUrl());
