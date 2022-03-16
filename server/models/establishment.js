@@ -1905,7 +1905,6 @@ module.exports = function (sequelize, DataTypes) {
         where: {
           id: establishmentId,
         },
-        logging: true,
       },
     );
   };

@@ -1,15 +1,32 @@
 const Sequelize = require('sequelize');
 const redis = require('redis');
+const moment = require('moment');
+const appConfig = require('../../config/config');
 
-const rc = redis.createClient(6379, 'host');
+const sqldb = {};
+const config = {};
+
+const rc = redis.createClient(config.url);
 
 rc.on('connect', () => console.log('Connected to Redis!'));
 rc.on('error', (err) => console.log('Redis Client Error', err));
 rc.connect();
 
-const sequelize = new Sequelize('database', 'username', 'password!', {
-  host: 'host',
+config.host = appConfig.get('sqldb.host');
+config.port = appConfig.get('sqldb.port');
+config.database = appConfig.get('sqldb.database');
+config.username = appConfig.get('sqldb.username');
+config.password = appConfig.get('sqldb.password');
+config.url = appConfig.get('redis.url');
+
+const sequelize = new Sequelize(config.database, config.username, config.password, {
+  host: config.host,
   dialect: 'mssql',
+  dialectOptions: {
+    options: {
+      encrypt: true,
+    },
+  },
 });
 
 sequelize
@@ -118,11 +135,16 @@ const Qualification = sequelize.define(
 );
 
 const findAllQuals = async () => {
-  if (await rc.exists('quals')) {
-    return JSON.parse(await rc.get('quals'));
+  const todayDate = moment().format('DD-MM-YYYY');
+  const cacheKey = `dailyCash_${todayDate}`;
+
+  if (await rc.exists(cacheKey)) {
+    return JSON.parse(await rc.get(cacheKey));
   } else {
     const quals = await Qualification.findAll();
-    await rc.set('quals', JSON.stringify(quals));
+
+    await rc.set(cacheKey, JSON.stringify(quals));
+    rc.expire(cacheKey, 86400);
     return quals;
   }
 };
@@ -131,6 +153,7 @@ const findAllQuals = async () => {
   await findAllQuals();
 })();
 
-module.exports = {
-  sequelize,
-};
+sqldb.sequelize = sequelize;
+sqldb.Sequelize = Sequelize;
+
+module.exports = sqldb;

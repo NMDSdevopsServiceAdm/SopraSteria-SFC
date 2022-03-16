@@ -123,6 +123,47 @@ const config = convict({
       },
     },
   },
+
+  sqldb: {
+    host: {
+      doc: 'Database host name/IP',
+      format: String,
+      default: 'localhost',
+      env: 'SQL_SERVER_DATABASE_HOST',
+    },
+    database: {
+      doc: 'Database name',
+      format: String,
+      default: 'Disbursement',
+      env: 'SQL_SERVER_DATABASE_DISBURSEMENT_DB',
+    },
+    username: {
+      doc: 'Database username',
+      format: String,
+      default: 'Unknown',
+      env: 'SQL_SERVER_DATABASE_USER_NAME',
+    },
+    password: {
+      doc: 'Database username',
+      format: '*',
+      default: 'Unknown',
+      env: 'SQL_SERVER_DATABASE_PASS',
+    },
+    port: {
+      doc: 'Database port',
+      format: 'port',
+      default: 1433,
+    },
+  },
+  redis: {
+    url: {
+      doc: 'The URI to redirect users to the Redis',
+      format: 'url',
+      default: 'https://unknown.com',
+      env: 'REDIS_URI',
+    },
+  },
+
   notify: {
     key: {
       doc: 'The gov.uk notify key',
@@ -581,6 +622,15 @@ if (config.get('aws.secrets.use')) {
     // DB rebind
     config.set('db.host', AWSSecrets.dbHost());
     config.set('db.password', AWSSecrets.dbPass());
+
+    //SQL DB
+
+    config.set('sqldb.host', AWSSecrets.dbSQLHost());
+    config.set('sqldb.password', AWSSecrets.dbSQLPass());
+    config.set('sqldb.database', AWSSecrets.SQLdb());
+    config.set('sqldb.username', AWSSecrets.dbUserName());
+    config.set('redis.url', AWSSecrets.redisUri());
+    config.set('sqldb.port');
 
     // external APIs
     config.set('slack.url', AWSSecrets.slackUrl());

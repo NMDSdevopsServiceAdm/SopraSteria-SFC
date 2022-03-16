@@ -35,6 +35,11 @@ const initialiseSecrets = async (region, wallet) => {
         SEND_IN_BLUE_KEY: mySecrets.SEND_IN_BLUE_KEY,
         SEND_IN_BLUE_WHITELIST: mySecrets.SEND_IN_BLUE_WHITELIST,
         SEND_EMAILS_SQS_QUEUE: mySecrets.SEND_EMAILS_SQS_QUEUE,
+        SQL_SERVER_DATABASE_DISBURSEMENT_DB: mySecrets.SQL_SERVER_DATABASE_DISBURSEMENT_DB,
+        SQL_SERVER_DATABASE_HOST: mySecrets.SQL_SERVER_DATABASE_HOST,
+        SQL_SERVER_DATABASE_USER_NAME: mySecrets.SQL_SERVER_DATABASE_USER_NAME,
+        SQL_SERVER_DATABASE_PASS: mySecrets.SQL_SERVER_DATABASE_PASS,
+        REDIS_URI: mySecrets.REDIS_URI,
       };
     }
   } catch (err) {
@@ -54,6 +59,18 @@ const dbHost = () => {
   }
 };
 
+const dbSQLHost = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.SQL_SERVER_DATABASE_HOST) {
+      throw new Error('Unknown SQL_SERVER_DATABASE_HOST secret');
+    } else {
+      return myLocalSecrets.SQL_SERVER_DATABASE_HOST;
+    }
+  } else {
+    throw new Error('Unknown SQL_SERVER_DATABASE_HOST secrets');
+  }
+};
+
 const dbPass = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_PASS) {
@@ -66,6 +83,41 @@ const dbPass = () => {
   }
 };
 
+const dbSQLPass = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.SQL_SERVER_DATABASE_PASS) {
+      throw new Error('Unknown SQL_SERVER_DATABASE_PASS secret');
+    } else {
+      return myLocalSecrets.SQL_SERVER_DATABASE_PASS;
+    }
+  } else {
+    throw new Error('Unknown SQL_SERVER_DATABASE_PASS secrets');
+  }
+};
+
+const SQLdb = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.SQL_SERVER_DATABASE_DISBURSEMENT_DB) {
+      throw new Error('Unknown SQL_SERVER_DATABASE_DISBURSEMENT_DB secret');
+    } else {
+      return myLocalSecrets.SQL_SERVER_DATABASE_DISBURSEMENT_DB;
+    }
+  } else {
+    throw new Error('Unknown SQL_SERVER_DATABASE_DISBURSEMENT_DB secrets');
+  }
+};
+const dbUserName = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.SQL_SERVER_DATABASE_USER_NAME) {
+      throw new Error('Unknown SQL_SERVER_DATABASE_USER_NAME secret');
+    } else {
+      return myLocalSecrets.SQL_SERVER_DATABASE_USER_NAME;
+    }
+  } else {
+    throw new Error('Unknown SQL_SERVER_DATABASE_USER_NAME secrets');
+  }
+};
+
 const jwtSecret = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.Token_Secret) {
@@ -75,6 +127,18 @@ const jwtSecret = () => {
     }
   } else {
     throw new Error('Unknown secrets');
+  }
+};
+
+const redisUri = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.REDIS_URI) {
+      throw new Error('Unknown REDIS_URI secret');
+    } else {
+      return myLocalSecrets.REDIS_URI;
+    }
+  } else {
+    throw new Error('Unknown REDIS_URI secrets');
   }
 };
 
@@ -248,3 +312,8 @@ module.exports.sendInBlueKey = sendInBlueKey;
 module.exports.sendInBlueWhitelist = sendInBlueWhitelist;
 module.exports.sendEmailsToSQSQueue = sendEmailsToSQSQueue;
 module.exports.getAddressKey = getAddressKey;
+module.exports.dbSQLHost = dbSQLHost;
+module.exports.dbSQLPass = dbSQLPass;
+module.exports.redisUri = redisUri;
+module.exports.SQLdb = SQLdb;
+module.exports.dbUserName = dbUserName;
