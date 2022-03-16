@@ -1,4 +1,7 @@
 'use strict';
+const express = require('express');
+const router = express.Router();
+
 const EventEmitter = require('events');
 const AppConfig = require('../config/appConfig');
 const appConfig = require('../config/config');
@@ -93,3 +96,5 @@ if (AppConfig.ready) {
 }
 
 module.exports = db;
+router.use('/disbursements', disbursements);
+module.exports = router;

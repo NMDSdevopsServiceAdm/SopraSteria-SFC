@@ -69,6 +69,7 @@ var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
 var registrationSurvey = require('./server/routes/registrationSurvey');
 var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 var longTermAbsence = require('./server/routes/longTermAbsence');
+var disbursementModel = require('./server/models');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -258,6 +259,7 @@ app.use('/api/trainingCategories', workingTrainingCategories);
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
 app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 app.use('/api/longTermAbsence', [refCacheMiddleware.refcache, longTermAbsence]);
+app.use('/api/disbursement', [refCacheMiddleware.refcache, disbursementModel]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
