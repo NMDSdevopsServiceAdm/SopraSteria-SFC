@@ -12,7 +12,7 @@ import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { CheckPermissionsGuard } from './check-permissions.guard';
 
 describe('CheckPermissionsGuard', () => {
-  function setup(admin = false) {
+  function setup(role = Roles.Edit) {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
@@ -40,7 +40,7 @@ describe('CheckPermissionsGuard', () => {
         {
           provide: UserService,
           useValue: {
-            loggedInUser: { role: admin ? Roles.Admin : Roles.Edit },
+            loggedInUser: { role },
           },
         },
       ],
@@ -62,8 +62,19 @@ describe('CheckPermissionsGuard', () => {
     expect(guard).toBeTruthy();
   });
 
-  it('should return true if the logged in user is an admin', () => {
-    const { guard, route, permissionsService } = setup(true);
+  it('should return true if the logged in user has Admin role', () => {
+    const { guard, route, permissionsService } = setup(Roles.Admin);
+
+    const handlePermissionsCheckSpy = spyOn(permissionsService, 'handlePermissionsCheck');
+
+    const res = guard.canActivate(route, null);
+
+    expect(res).toBeTruthy();
+    expect(handlePermissionsCheckSpy).not.toHaveBeenCalled();
+  });
+
+  it('should return true if the logged in user has AdminManager role', () => {
+    const { guard, route, permissionsService } = setup(Roles.AdminManager);
 
     const handlePermissionsCheckSpy = spyOn(permissionsService, 'handlePermissionsCheck');
 

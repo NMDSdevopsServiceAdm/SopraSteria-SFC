@@ -190,7 +190,7 @@ module.exports = function (sequelize, DataTypes) {
       UserRoleValue: {
         type: DataTypes.ENUM,
         allowNull: false,
-        values: ['None', 'Read', 'Edit', 'Admin'],
+        values: ['None', 'Read', 'Edit', 'Admin', 'AdminManager'],
         default: 'Edit',
         field: '"UserRoleValue"',
       },

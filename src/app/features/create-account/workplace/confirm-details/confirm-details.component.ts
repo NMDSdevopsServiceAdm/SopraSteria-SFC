@@ -118,28 +118,31 @@ export class ConfirmDetailsComponent implements OnInit {
     }
   }
 
-  private generatePayload(): Array<RegistrationPayload> {
-    const payload: any = this.locationAddress;
-    payload.locationId = this.service.isCQC ? this.locationAddress.locationId : null;
-    payload.mainService = this.service.name;
-    payload.mainServiceOther = this.service.otherName ? this.service.otherName : null;
-    payload.isRegulated = this.isCqcRegulated;
-    payload.user = this.userDetails;
-    payload.user.username = this.loginCredentials.username;
-    payload.user.password = this.loginCredentials.password;
-    payload.user.securityQuestion = this.securityDetails.securityQuestion;
-    payload.user.securityQuestionAnswer = this.securityDetails.securityQuestionAnswer;
-    payload.totalStaff = this.totalStaff;
-
-    return [payload];
+  private generatePayload(): RegistrationPayload {
+    return {
+      establishment: {
+        ...this.locationAddress,
+        locationId: this.service.isCQC ? this.locationAddress.locationId : null,
+        mainService: this.service.name,
+        mainServiceOther: this.service.otherName ? this.service.otherName : null,
+        isRegulated: this.isCqcRegulated,
+        numberOfStaff: this.totalStaff,
+      },
+      user: {
+        ...this.userDetails,
+        username: this.loginCredentials.username,
+        password: this.loginCredentials.password,
+        securityQuestion: this.securityDetails.securityQuestion,
+        securityQuestionAnswer: this.securityDetails.securityQuestionAnswer,
+      },
+    };
   }
 
   public save(): void {
-    this.generatePayload();
     this.subscriptions.add(
       this.registrationService.postRegistration(this.generatePayload()).subscribe(
         (registration) =>
-          registration.userstatus === 'PENDING'
+          registration.userStatus === 'PENDING'
             ? this.router.navigate(['/registration/thank-you'])
             : this.router.navigate(['/registration/complete']),
         (error: HttpErrorResponse) => this.onError(error),

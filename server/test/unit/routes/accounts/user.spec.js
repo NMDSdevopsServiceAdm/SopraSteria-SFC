@@ -31,10 +31,20 @@ describe('user.js', () => {
   afterEach(() => sinon.restore());
 
   describe('meetsMaxUserLimit()', () => {
-    it('should return false if user is an admin', async () => {
+    it('should return false if user has Admin role', async () => {
       req = {
         ...req,
         role: 'Admin',
+      };
+      const meetLimit = await meetsMaxUserLimit(123, req);
+
+      expect(meetLimit).to.be.false;
+    });
+
+    it('should return false if user has AdminManager role', async () => {
+      req = {
+        ...req,
+        role: 'AdminManager',
       };
       const meetLimit = await meetsMaxUserLimit(123, req);
 

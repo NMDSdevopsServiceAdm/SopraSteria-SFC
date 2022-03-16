@@ -43,7 +43,20 @@ describe('TotalStaffPanelComponent', () => {
     const totalStaffText = within(document.body).queryByTestId('totalStaffText');
 
     expect(totalStaffNumber.innerHTML).toContain('23');
+    expect(totalStaffNumber.innerHTML).toContain('Change');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
+  });
+
+  it('should show different text, when total staff is undefined', () => {
+    component.totalStaff = undefined;
+    fixture.detectChanges();
+
+    const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffText = within(document.body).queryByTestId('totalStaffText');
+
+    expect(totalStaffNumber.innerHTML).toContain('Add');
+    expect(totalStaffText.innerHTML).toContain('Total number of staff is missing');
   });
 
   it('should show staff added', () => {
@@ -82,6 +95,27 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('24');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
+    expect(staffAddedNumber.innerHTML).toContain('24');
+    expect(staffAddedText.textContent).toContain('Staff records added');
+    expect(changeNumber.length).toEqual(0);
+    expect(changeText.length).toEqual(0);
+  });
+
+  it('should show total staff and staff added but not changes if total staff is undefined', () => {
+    component.totalStaff = undefined;
+    component.totalWorkers = 24;
+    fixture.detectChanges();
+
+    const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffText = within(document.body).queryByTestId('totalStaffText');
+    const staffAddedNumber = within(document.body).queryByTestId('staffAddedNumber');
+    const staffAddedText = within(document.body).queryByTestId('staffAddedText');
+    const changeNumber = within(document.body).queryAllByTestId('changeNumber');
+    const changeText = within(document.body).queryAllByTestId('changeText');
+
+    expect(totalStaffNumber.innerHTML).toContain('Add');
+    expect(totalStaffText.innerHTML).toContain('Total number of staff is missing');
     expect(staffAddedNumber.innerHTML).toContain('24');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.length).toEqual(0);
@@ -102,6 +136,7 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('24');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('25');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.innerHTML).toContain('1');
@@ -122,6 +157,7 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('24');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('300');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.innerHTML).toContain('276');
@@ -142,6 +178,7 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('25');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('24');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.innerHTML).toContain('1');
@@ -162,6 +199,7 @@ describe('TotalStaffPanelComponent', () => {
 
     expect(totalStaffNumber.innerHTML).toContain('200');
     expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('25');
     expect(staffAddedText.textContent).toContain('Staff records added');
     expect(changeNumber.innerHTML).toContain('175');

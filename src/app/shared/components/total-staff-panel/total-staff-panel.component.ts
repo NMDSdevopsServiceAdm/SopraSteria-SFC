@@ -18,11 +18,11 @@ export class TotalStaffPanelComponent implements OnInit {
 
   constructor(private permissionsService: PermissionsService, private workerService: WorkerService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
   }
 
-  setReturn() {
+  setReturn(): void {
     this.workerService.setTotalStaffReturn(this.returnToDash);
   }
 }
