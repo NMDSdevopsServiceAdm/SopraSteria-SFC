@@ -58,6 +58,7 @@
     "bcrypt-nodejs": "0.0.3",
     "canvg": "^3.0.7",
     "celebrate": "^13.0.4",
+    "cfenv": "^1.2.4",
     "cheerio": "1.0.0-rc.3",
     "compression": "^1.7.4",
     "configcat-js": "^5.5.0",
@@ -218,5 +219,15 @@
       "prettier --write"
     ],
     "*.{css,md}": "prettier --write"
+  },
+  "bin": "index.js",
+  "pkg": {
+    "scripts": [
+      "node_modules/tedious/lib/tedious.js",
+      "models/*.js"
+    ],
+    "assets": [
+      "config/log.json"
+    ]
   }
 }
