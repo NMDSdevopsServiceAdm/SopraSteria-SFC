@@ -161,8 +161,8 @@ const config = convict({
   redis: {
     url: {
       doc: 'The URI to redirect users to the Redis',
-      format: 'url',
-      default: '6379',
+      format: String,
+      default: 'redis://localhost:6379',
     },
     serviceName: {
       doc: 'Name of VCAP Service for Redis',

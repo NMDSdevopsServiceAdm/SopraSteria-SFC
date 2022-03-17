@@ -98,7 +98,7 @@
     "pg-hstore": "^2.3.4",
     "pug": "^3.0.1",
     "rate-limit-redis": "^2.1.0",
-    "redis": "^3.1.2",
+    "redis": "^4.0.4",
     "request": "^2.88.2",
     "rxjs": "^6.6.7",
     "rxjs-compat": "^6.6.7",
