@@ -23,7 +23,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public sortTrainingAndQualsOptions: Record<string, string>;
   public sortByValue: string;
   public itemsPerPage = 15;
-  public pageNumberIndex = 0;
+  public pageIndex = 0;
   public paginatedWorkers: Array<Worker>;
 
   constructor(
@@ -43,11 +43,10 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
 
   private setSortValue(value: string): void {
     this.sortByValue = value;
-    this.refetchWorkers();
   }
 
-  private setPageNumberIndex(pageNumberIndex: number): void {
-    this.pageNumberIndex = pageNumberIndex;
+  private setPageIndex(pageIndex: number): void {
+    this.pageIndex = pageIndex;
     this.refetchWorkers();
   }
 
@@ -62,7 +61,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.workerService
       .getAllWorkers(this.workplace.uid, {
         sortBy: sortByParamMap[this.sortByValue],
-        pageNumber: this.pageNumberIndex,
+        pageIndex: this.pageIndex,
         itemsPerPage: this.itemsPerPage,
       })
       .pipe(take(1))
@@ -75,14 +74,14 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public handleSortUpdate(dropdownValue: string): void {
     if (dropdownValue !== this.sortByValue) {
       this.setSortValue(dropdownValue);
-      this.setPageNumberIndex(0);
+      this.setPageIndex(0);
     }
   }
 
-  public handlePageUpdate(eventData: { pageNo: number; noOfItemsOnPage: number }): void {
-    const { pageNo } = eventData;
-    if (pageNo !== this.pageNumberIndex) {
-      this.setPageNumberIndex(pageNo);
+  public handlePageUpdate(eventData: { pageIndex: number; noOfItemsOnPage: number }): void {
+    const { pageIndex } = eventData;
+    if (pageIndex !== this.pageIndex) {
+      this.setPageIndex(pageIndex);
     }
   }
 

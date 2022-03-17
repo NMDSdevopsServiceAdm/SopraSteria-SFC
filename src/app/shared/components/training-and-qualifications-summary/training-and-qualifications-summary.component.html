@@ -97,5 +97,6 @@
 <app-pagination
   [noOfItemsOnPage]="itemsPerPage"
   [totalNoOfItems]="workerCount"
+  [pageIndex]="pageIndex"
   (emitCurrentPage)="handlePageUpdate($event)"
 ></app-pagination>

@@ -96,19 +96,6 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should list by expired as default', async () => {
-    // TODO: fix pending test
-    pending();
-    const { component, workerServiceSpy } = await setup();
-
-    expect(workerServiceSpy).not.toHaveBeenCalled();
-    expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, {
-      sortBy: '',
-      pageNumber: 0,
-      itemsPerPage: 15,
-    });
-  });
-
   it('should handle sort by expiring soon', async () => {
     const { component, getByLabelText, sortBySpy, workerServiceSpy } = await setup();
 
@@ -120,7 +107,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(sortBySpy).toHaveBeenCalledOnceWith('1_expires_soon');
     expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, {
       sortBy: 'trainingExpiringSoon',
-      pageNumber: 0,
+      pageIndex: 0,
       itemsPerPage: 15,
     });
   });
@@ -136,9 +123,23 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(sortBySpy).toHaveBeenCalledOnceWith('2_missing');
     expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, {
       sortBy: 'trainingMissing',
-      pageNumber: 0,
+      pageIndex: 0,
       itemsPerPage: 15,
     });
+  });
+
+  it('resets the pageIndex if sort by is changed', async () => {
+    const { fixture, component, getByLabelText } = await setup();
+
+    component.pageIndex = 1;
+    fixture.detectChanges();
+
+    expect(component.pageIndex).toBe(1);
+
+    const select = getByLabelText('Sort by', { exact: false });
+    fireEvent.change(select, { target: { value: '2_missing' } });
+
+    expect(component.pageIndex).toBe(0);
   });
 
   it('should display the "OK" message if training is up to date', async () => {
