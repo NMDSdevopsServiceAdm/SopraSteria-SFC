@@ -1,4 +1,4 @@
-<div *ngIf="pages.length > 1" class="govuk-button-group">
+<div *ngIf="pages?.length > 1" class="govuk-button-group">
   <ng-container *ngIf="currentPageIndex != 0">
     <a class="govuk-link" id="previous-link" href="#" (click)="goToPage($event, currentPageIndex - 1)">
       <svg

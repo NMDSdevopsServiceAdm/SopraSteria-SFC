@@ -281,7 +281,7 @@ describe('PaginationComponent', () => {
     });
   });
 
-  describe('Only displaying Next and Previous small screen', async () => {
+  describe('Only displaying Next and Previous when small screen', async () => {
     it('Should just display next button when on a small screen and on first page', async () => {
       const { queryByText } = await setup(15, 152, false);
 

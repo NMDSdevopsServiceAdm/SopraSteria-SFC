@@ -8,16 +8,22 @@ import { PaginationEmission } from '@core/model/pagination.model';
 })
 export class PaginationComponent implements OnInit {
   public pages: Array<number>;
-  public currentPageIndex: number;
   public isBigWindow: boolean;
 
   @Input() noOfItemsOnPage: number;
   @Input() totalNoOfItems: number;
   @Output() emitCurrentPage = new EventEmitter<PaginationEmission>(true);
 
+  private _currentPageIndex = 0;
+  @Input() get currentPageIndex(): number {
+    return this._currentPageIndex;
+  }
+  set currentPageIndex(pageIndex: number) {
+    this.setPage(pageIndex);
+  }
+
   ngOnInit(): void {
     this.pages = this.createPageIndexArray();
-    this.setPage(0);
     this.setIsBigWindow();
   }
 
@@ -27,7 +33,8 @@ export class PaginationComponent implements OnInit {
   }
 
   private setPage(pageIndex: number): void {
-    this.currentPageIndex = pageIndex;
+    this._currentPageIndex = pageIndex;
+
     this.emitCurrentPage.emit({ pageIndex, noOfItemsOnPage: this.noOfItemsOnPage });
   }
 
