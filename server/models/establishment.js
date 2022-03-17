@@ -1487,13 +1487,13 @@ module.exports = function (sequelize, DataTypes) {
     includeMandatoryTrainingBreakdown = false,
     isParent = false,
     limit = 0,
-    pageNumber = 1,
+    pageIndex = 0,
     sortBy = 'staffNameAsc',
   ) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
     const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
-    const offset = (pageNumber - 1) * (limit + 1);
+    const offset = pageIndex * limit;
 
     let attributes = [
       'id',
