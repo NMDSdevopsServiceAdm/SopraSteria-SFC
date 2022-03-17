@@ -175,6 +175,16 @@ describe('PaginationComponent', () => {
 
       expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 2, itemsPerPage: 15 });
     });
+
+    it('should emit pageIndex 0 and itemsPerPage when currentPageNumber set to zero (when pagination is reset due to changes outside component, e.g. changing sortBy)', async () => {
+      const { fixture } = await setup();
+
+      const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
+
+      fixture.componentInstance.currentPageIndex = 0;
+
+      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 0, itemsPerPage: 15 });
+    });
   });
 
   describe('Displaying numbers when there are more than 10 pages', () => {
@@ -241,7 +251,7 @@ describe('PaginationComponent', () => {
   });
 
   describe('Displaying ellipses when there are more than 10 pages', async () => {
-    it('Should display an elipsis after pages 1-3 when on first page', async () => {
+    it('should display an elipsis after pages 1-3 when on first page', async () => {
       const { queryByText, queryByTestId } = await setup(15, 152);
 
       expect(queryByText('1')).toBeTruthy();
@@ -251,7 +261,7 @@ describe('PaginationComponent', () => {
       expect(queryByTestId('elipsis-3')).toBeTruthy();
     });
 
-    it('Should display an elipsis before pages 9-11 when on last page', async () => {
+    it('should display an ellipsis before pages 9-11 when on last page', async () => {
       const { fixture, queryByText, queryByTestId } = await setup(15, 152);
 
       fixture.componentInstance.currentPageIndex = 10;
@@ -263,7 +273,7 @@ describe('PaginationComponent', () => {
       expect(queryByText('11')).toBeTruthy();
     });
 
-    it('Should display first page, first elpisis, pages 4-8 when on page 6', async () => {
+    it('should display first page, pages 4-8 and ellipses either side when on page 6', async () => {
       const { fixture, queryByText, queryByTestId } = await setup(15, 152);
 
       fixture.componentInstance.currentPageIndex = 5;
@@ -282,7 +292,7 @@ describe('PaginationComponent', () => {
   });
 
   describe('Only displaying Next and Previous when small screen', async () => {
-    it('Should just display next button when on a small screen and on first page', async () => {
+    it('should just display Next button when on a small screen and on first page', async () => {
       const { queryByText } = await setup(15, 152, false);
 
       expect(queryByText('1')).toBeFalsy();
@@ -293,7 +303,7 @@ describe('PaginationComponent', () => {
       expect(queryByText('Previous')).toBeFalsy();
     });
 
-    it('Should just display previous button when on a small screen and on final page', async () => {
+    it('should just display Previous button when on a small screen and on final page', async () => {
       const { queryByText, fixture } = await setup(15, 152, false);
 
       fixture.componentInstance.currentPageIndex = 10;
@@ -307,7 +317,7 @@ describe('PaginationComponent', () => {
       expect(queryByText('Previous')).toBeTruthy();
     });
 
-    it('Should just display next and previous buttons when on a small screen and on a page which is not first or last', async () => {
+    it('should just display Next and Previous buttons when on a small screen and on a page which is not first or last', async () => {
       const { queryByTestId, queryByText, fixture } = await setup(15, 152, false);
 
       fixture.componentInstance.currentPageIndex = 5;
