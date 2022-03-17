@@ -88,6 +88,7 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { SearchInputComponent } from './components/search-input/search-input.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -175,6 +176,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageComponent,
     RemoveParentConfirmationComponent,
     PaginationComponent,
+    SearchInputComponent,
   ],
   exports: [
     AlertComponent,

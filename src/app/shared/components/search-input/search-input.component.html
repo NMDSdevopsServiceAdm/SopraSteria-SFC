@@ -1,0 +1,15 @@
+<div class="govuk-form-group">
+  <label for="name" class="govuk-label">Search</label>
+  <input
+    class="govuk-input govuk-input--width-10"
+    id="name"
+    name="name"
+    type="text"
+    (input)="handleOnInput($event)"
+    [value]="searchTerm"
+  />
+  <button class="govuk-button" type="button" (click)="handleOnSubmit($event)">search</button>
+  <button *ngIf="searched" class="govuk-button govuk-button--link" type="button" (click)="handleResetSearch()">
+    Clear search results
+  </button>
+</div>
