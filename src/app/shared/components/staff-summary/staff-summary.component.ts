@@ -23,6 +23,8 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
   public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
   public workerCount: number;
+  private sortByValue = 'staffNameAsc';
+  public itemsPerPage = 15;
 
   constructor(private permissionsService: PermissionsService, private workerService: WorkerService) {}
 
@@ -56,42 +58,33 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
     this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']); //sorting by default on first column
   }
 
-  public sortByColumn(selectedColumn: any) {
-    switch (selectedColumn) {
-      case '0_asc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
-        break;
-      }
-      case '0_dsc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['desc']);
-        break;
-      }
-      case '1_asc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.jobRole.toLowerCase()], ['asc']);
-        break;
-      }
-      case '1_dsc': {
-        this.workers = orderBy(this.workers, [(worker) => worker.jobRole.toLowerCase()], ['desc']);
-        break;
-      }
-      case '2_meeting': {
-        this.workers = orderBy(this.workers, [(worker) => worker.wdfEligible], ['desc']);
-        break;
-      }
-      case '2_not_meeting': {
-        this.workers = orderBy(this.workers, [(worker) => worker.wdfEligible], ['asc']);
-        break;
-      }
-      default: {
-        this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']);
-        break;
-      }
-    }
+  public sortBy(sortType: string): void {
+    const sortByParamMap = {
+      '0_asc': 'staffNameAsc',
+      '0_dsc': 'staffNameDesc',
+      '1_asc': 'jobRoleAsc',
+      '1_dsc': 'jobRoleDesc',
+      '2_meeting': 'wdfMeeting',
+      '2_not_meeting': 'wdfNotMeeting',
+    };
+
+    this.sortByValue = sortByParamMap[sortType];
+    this.currentPageIndex = 0;
+    this.getPageOfWorkers();
   }
 
-  public getPageOfWorkers(paginationEmission: PaginationEmission): void {
+  public handlePageUpdate(paginationEmission: PaginationEmission): void {
+    this.currentPageIndex = paginationEmission.pageIndex;
+    this.getPageOfWorkers();
+  }
+
+  public getPageOfWorkers(): void {
     this.workerService
-      .getAllWorkers(this.workplace.uid, paginationEmission)
+      .getAllWorkers(this.workplace.uid, {
+        pageIndex: this.currentPageIndex,
+        itemsPerPage: this.itemsPerPage,
+        sortBy: this.sortByValue,
+      })
       .pipe(take(1))
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;

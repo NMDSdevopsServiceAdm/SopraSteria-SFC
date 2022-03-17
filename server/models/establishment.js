@@ -1619,6 +1619,8 @@ module.exports = function (sequelize, DataTypes) {
       staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
       jobRoleAsc: [['workers', 'mainJob', 'title', 'ASC']],
       jobRoleDesc: [['workers', 'mainJob', 'title', 'DESC']],
+      wdfMeeting: [['workers', 'wdfEligible', 'DESC']],
+      wdfNotMeeting: [['workers', 'wdfEligible', 'ASC']],
       trainingExpiringSoon: [
         [sequelize.literal('"workers.expiringTrainingCount"'), 'DESC'],
         ['workers', 'NameOrIdValue', 'ASC'],

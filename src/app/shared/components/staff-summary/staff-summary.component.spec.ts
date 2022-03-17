@@ -9,7 +9,7 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models';
@@ -72,30 +72,30 @@ describe('StaffSummaryComponent', () => {
     expect(component.getAllByText('Add more details').length).toBe(3);
   });
 
-  it('should put staff meeting WDF at top of table when sorting by WDF requirements (meeting)', async () => {
-    const { component } = await setup();
-    component.fixture.componentInstance.workers[2].wdfEligible = true;
+  describe('Calling getAllWorkers when sorting', () => {
+    const sortByOptions = [
+      ['0_asc', 'staffNameAsc', 'Staff name (A to Z)'],
+      ['0_dsc', 'staffNameDesc', 'Staff name (Z to A)'],
+      ['1_asc', 'jobRoleAsc', 'Job role (A to Z)'],
+      ['1_dsc', 'jobRoleDesc', 'Job role (Z to A)'],
+      ['2_meeting', 'wdfMeeting', 'WDF requirements (meeting)'],
+      ['2_not_meeting', 'wdfNotMeeting', 'WDF requirements (not meeting)'],
+    ];
 
-    component.fixture.componentInstance.sortByColumn('2_meeting');
-    const workers = component.fixture.componentInstance.workers;
-    component.fixture.detectChanges();
+    for (const i in sortByOptions) {
+      it(`should call getAllWorkers with sortBy set to ${sortByOptions[i][1]} when sorting by ${sortByOptions[i][2]}`, async () => {
+        const { component, getAllWorkersSpy } = await setup(true);
 
-    expect(workers[0].wdfEligible).toEqual(true);
-    expect(workers[1].wdfEligible).toEqual(false);
-    expect(workers[2].wdfEligible).toEqual(false);
-  });
+        const select = component.getByLabelText('Sort by', { exact: false });
+        fireEvent.change(select, { target: { value: sortByOptions[i][0] } });
 
-  it('should put staff meeting WDF at bottom of table when sorting by WDF requirements (not meeting)', async () => {
-    const { component } = await setup();
-    component.fixture.componentInstance.workers[1].wdfEligible = true;
+        const establishmentUid = component.fixture.componentInstance.workplace.uid;
+        const paginationEmission = { pageIndex: 0, itemsPerPage: 15, sortBy: sortByOptions[i][1] };
 
-    component.fixture.componentInstance.sortByColumn('2_not_meeting');
-    const workers = component.fixture.componentInstance.workers;
-    component.fixture.detectChanges();
-
-    expect(workers[0].wdfEligible).toEqual(false);
-    expect(workers[1].wdfEligible).toEqual(false);
-    expect(workers[2].wdfEligible).toEqual(true);
+        expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
+        expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);
+      });
+    }
   });
 
   describe('Calling getAllWorkers when using pagination', () => {
@@ -105,7 +105,7 @@ describe('StaffSummaryComponent', () => {
       await component.fixture.whenStable();
 
       const establishmentUid = component.fixture.componentInstance.workplace.uid;
-      const paginationEmission = { pageIndex: 0, itemsPerPage: 15 };
+      const paginationEmission = { pageIndex: 0, itemsPerPage: 15, sortBy: 'staffNameAsc' };
 
       expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
       expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);

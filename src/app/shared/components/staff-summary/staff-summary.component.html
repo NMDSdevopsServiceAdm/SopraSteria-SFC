@@ -1,6 +1,6 @@
 <div class="govuk-form-group">
   <label class="govuk-label" for="sortByStaff"> Sort by </label>
-  <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortByColumn($event.target.value)">
+  <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortBy($event.target.value)">
     <option *ngFor="let sortStaffOption of sortStaffOptions | keyvalue" value="{{ sortStaffOption.key }}">
       {{ sortStaffOption.value }}
     </option>
@@ -58,8 +58,8 @@
   </tbody>
 </table>
 <app-pagination
-  [itemsPerPage]="15"
+  [itemsPerPage]="itemsPerPage"
   [totalNoOfItems]="workerCount"
-  (emitCurrentPage)="getPageOfWorkers($event)"
-  [currentPageIndex]="currentPageIndex"
+  (emitCurrentPage)="handlePageUpdate($event)"
+  [(currentPageIndex)]="currentPageIndex"
 ></app-pagination>
