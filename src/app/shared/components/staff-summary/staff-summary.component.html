@@ -19,7 +19,7 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr class="govuk-table__row" *ngFor="let worker of workers">
+    <tr class="govuk-table__row" *ngFor="let worker of paginatedWorkers">
       <td class="govuk-table__cell govuk-!-font-weight-regular">
         <ng-container *ngIf="canViewWorker; else nameOrId">
           <a [routerLink]="getWorkerRecordPath(worker)">
@@ -58,7 +58,8 @@
   </tbody>
 </table>
 <app-pagination
-  [noOfItemsOnPage]="15"
-  [totalNoOfItems]="workers.length"
+  [itemsPerPage]="15"
+  [totalNoOfItems]="workerCount"
   (emitCurrentPage)="getPageOfWorkers($event)"
+  [currentPageIndex]="currentPageIndex"
 ></app-pagination>

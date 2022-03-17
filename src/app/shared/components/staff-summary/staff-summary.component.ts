@@ -20,6 +20,9 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
   public canEditWorker: boolean;
   public sortStaffOptions;
   public workersOrderBy: Array<Worker>;
+  public currentPageIndex = 0;
+  public paginatedWorkers: Array<Worker>;
+  public workerCount: number;
 
   constructor(private permissionsService: PermissionsService, private workerService: WorkerService) {}
 
@@ -35,6 +38,9 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.workerCount = this.workers.length;
+    this.paginatedWorkers = this.workers;
+
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
@@ -87,8 +93,9 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
     this.workerService
       .getAllWorkers(this.workplace.uid, paginationEmission)
       .pipe(take(1))
-      .subscribe((res) => {
-        this.workers = res.workers;
+      .subscribe(({ workers, workerCount }) => {
+        this.paginatedWorkers = workers;
+        this.workerCount = workerCount;
       });
   }
 }

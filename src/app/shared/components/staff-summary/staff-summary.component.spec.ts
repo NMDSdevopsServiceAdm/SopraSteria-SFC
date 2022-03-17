@@ -42,7 +42,7 @@ describe('StaffSummaryComponent', () => {
     const injector = getTestBed();
     const workerService = injector.inject(WorkerService) as WorkerService;
     const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
-      of({ workers: [workerBuilder(), workerBuilder(), workerBuilder()], workerCount: 3 }),
+      of({ workers: [...workers, ...workers, ...workers, ...workers, ...workers, ...workers], workerCount: 18 }),
     );
 
     return {
@@ -99,13 +99,13 @@ describe('StaffSummaryComponent', () => {
   });
 
   describe('Calling getAllWorkers when using pagination', () => {
-    it('should call getAllWorkers on load with pageIndex 0 and noOfItemsOnPage 15', async () => {
+    it('should call getAllWorkers on load with establishment uid, pageIndex 0 and itemsPerPage 15', async () => {
       const { component, getAllWorkersSpy } = await setup();
 
       await component.fixture.whenStable();
 
       const establishmentUid = component.fixture.componentInstance.workplace.uid;
-      const paginationEmission = { pageIndex: 0, noOfItemsOnPage: 15 };
+      const paginationEmission = { pageIndex: 0, itemsPerPage: 15 };
 
       expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
       expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);
