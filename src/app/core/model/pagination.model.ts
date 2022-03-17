@@ -1,4 +1,4 @@
 export interface PaginationEmission {
   pageIndex: number;
-  noOfItemsOnPage: number;
+  itemsPerPage: number;
 }

@@ -10,7 +10,7 @@ export class PaginationComponent implements OnInit {
   public pages: Array<number>;
   public isBigWindow: boolean;
 
-  @Input() noOfItemsOnPage: number;
+  @Input() itemsPerPage: number;
   @Input() totalNoOfItems: number;
   @Output() emitCurrentPage = new EventEmitter<PaginationEmission>(true);
 
@@ -35,11 +35,11 @@ export class PaginationComponent implements OnInit {
   private setPage(pageIndex: number): void {
     this._currentPageIndex = pageIndex;
 
-    this.emitCurrentPage.emit({ pageIndex, noOfItemsOnPage: this.noOfItemsOnPage });
+    this.emitCurrentPage.emit({ pageIndex, itemsPerPage: this.itemsPerPage });
   }
 
   private createPageIndexArray(): Array<number> {
-    const noOfPages = Math.ceil(this.totalNoOfItems / this.noOfItemsOnPage);
+    const noOfPages = Math.ceil(this.totalNoOfItems / this.itemsPerPage);
     return Array.from(Array(noOfPages).keys());
   }
 

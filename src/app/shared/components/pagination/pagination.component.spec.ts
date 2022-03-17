@@ -7,13 +7,13 @@ import { render } from '@testing-library/angular';
 import { PaginationComponent } from './pagination.component';
 
 describe('PaginationComponent', () => {
-  async function setup(noOfItemsOnPage = 15, totalNoOfItems = 43, isBigWindow = true) {
+  async function setup(itemsPerPage = 15, totalNoOfItems = 43, isBigWindow = true) {
     const component = await render(PaginationComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [],
       componentProperties: {
-        noOfItemsOnPage,
+        itemsPerPage,
         totalNoOfItems,
       },
     });
@@ -140,7 +140,7 @@ describe('PaginationComponent', () => {
   });
 
   describe('Emitting event when clicking to page', () => {
-    it('should emit pageIndex 1 and noOfItemsOnPage when Next button clicked from first page', async () => {
+    it('should emit pageIndex 1 and itemsPerPage when Next button clicked from first page', async () => {
       const { fixture, queryByText } = await setup();
 
       const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
@@ -148,10 +148,10 @@ describe('PaginationComponent', () => {
       const nextPageButton = queryByText('Next');
       nextPageButton.click();
 
-      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 1, noOfItemsOnPage: 15 });
+      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 1, itemsPerPage: 15 });
     });
 
-    it('should emit pageIndex 0 and noOfItemsOnPage when going to page 1 by clicking Previous button', async () => {
+    it('should emit pageIndex 0 and itemsPerPage when going to page 1 by clicking Previous button', async () => {
       const { fixture, queryByText } = await setup();
 
       const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
@@ -162,10 +162,10 @@ describe('PaginationComponent', () => {
       const previousPageButton = queryByText('Previous');
       previousPageButton.click();
 
-      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 0, noOfItemsOnPage: 15 });
+      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 0, itemsPerPage: 15 });
     });
 
-    it('should emit pageIndex 2 and noOfItemsOnPage when 3 clicked', async () => {
+    it('should emit pageIndex 2 and itemsPerPage when 3 clicked', async () => {
       const { fixture, queryByText } = await setup();
 
       const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
@@ -173,7 +173,7 @@ describe('PaginationComponent', () => {
       const nextPageButton = queryByText('3');
       nextPageButton.click();
 
-      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 2, noOfItemsOnPage: 15 });
+      expect(emitSpy).toHaveBeenCalledWith({ pageIndex: 2, itemsPerPage: 15 });
     });
   });
 
