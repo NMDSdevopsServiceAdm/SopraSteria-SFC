@@ -167,6 +167,7 @@ describe('worker route', () => {
 
     const worker = workerBuilder();
     let workersAndTrainingStub;
+
     beforeEach(() => {
       workersAndTrainingStub = sinon.stub(models.establishment, 'workersAndTraining').returns({
         rows: [{ workers: [worker] }],
@@ -243,7 +244,38 @@ describe('worker route', () => {
       await workerRoute.viewAllWorkers(req, res);
 
       expect(res.statusCode).to.deep.equal(200);
-      expect(workersAndTrainingStub.args[0]).to.deep.equal([123, false, false, 200, 1, 'someSort']);
+      expect(workersAndTrainingStub.args[0]).to.deep.equal([123, false, false, 200, 1, 'someSort', undefined]);
+    });
+
+    it('should accept a searchTerm from the request for the where clause', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/establishment/123/worker',
+        query: {
+          searchTerm: 'worker123',
+        },
+      });
+
+      req.username = 'anyone';
+      req.userUid = '1234';
+      req.establishmentId = 123;
+      req.establishment = {
+        id: 123,
+      };
+
+      const res = httpMocks.createResponse();
+      await workerRoute.viewAllWorkers(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(workersAndTrainingStub.args[0]).to.deep.equal([
+        123,
+        false,
+        false,
+        undefined,
+        undefined,
+        undefined,
+        'worker123',
+      ]);
     });
   });
 

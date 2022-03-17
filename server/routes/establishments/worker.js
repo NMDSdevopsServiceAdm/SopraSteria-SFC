@@ -240,6 +240,7 @@ const viewAllWorkers = async (req, res) => {
   const itemsPerPage = req.query.itemsPerPage;
   const pageNumber = req.query.pageNumber;
   const sortBy = req.query.sortBy;
+  const searchTerm = req.query.searchTerm;
 
   try {
     const establishmentWorkersAndTraining = await models.establishment.workersAndTraining(
@@ -249,6 +250,7 @@ const viewAllWorkers = async (req, res) => {
       itemsPerPage ? +itemsPerPage : undefined,
       pageNumber ? +pageNumber : undefined,
       sortBy,
+      searchTerm,
     );
     const foundWorkers = establishmentWorkersAndTraining.rows[0].workers;
     const workerCount = establishmentWorkersAndTraining.count;

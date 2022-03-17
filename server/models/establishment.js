@@ -1489,6 +1489,7 @@ module.exports = function (sequelize, DataTypes) {
     limit = 0,
     pageNumber = 1,
     sortBy = 'staffNameAsc',
+    searchTerm = '',
   ) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
@@ -1650,6 +1651,7 @@ module.exports = function (sequelize, DataTypes) {
           attributes,
           where: {
             archived: false,
+            ...(searchTerm ? { [Op.substring]: searchTerm } : {}),
           },
           required: false,
           include: [
