@@ -1653,7 +1653,7 @@ module.exports = function (sequelize, DataTypes) {
           attributes,
           where: {
             archived: false,
-            ...(searchTerm ? { NameOrIdValue: { [Op.substring]: searchTerm } } : {}),
+            ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
           },
           required: false,
           include: [
