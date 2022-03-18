@@ -73,7 +73,7 @@ describe('DashboardComponent', () => {
               data: {
                 users: oneUser ? ([EditUser()] as UserDetails[]) : ([EditUser(), EditUser()] as UserDetails[]),
                 articleList: null,
-                workers: [],
+                workers: { workers: [], workerCount: 0 },
                 totalStaffRecords,
               },
             },

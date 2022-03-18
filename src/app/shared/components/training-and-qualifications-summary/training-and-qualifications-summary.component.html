@@ -95,8 +95,8 @@
   </tbody>
 </table>
 <app-pagination
-  [noOfItemsOnPage]="itemsPerPage"
+  [itemsPerPage]="itemsPerPage"
   [totalNoOfItems]="workerCount"
-  [pageIndex]="pageIndex"
+  [currentPageIndex]="currentPageIndex"
   (emitCurrentPage)="handlePageUpdate($event)"
 ></app-pagination>

@@ -23,7 +23,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public sortTrainingAndQualsOptions: Record<string, string>;
   public sortByValue: string;
   public itemsPerPage = 15;
-  public pageIndex = 0;
+  public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
 
   constructor(
@@ -46,7 +46,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   }
 
   private setPageIndex(pageIndex: number): void {
-    this.pageIndex = pageIndex;
+    this.currentPageIndex = pageIndex;
     this.refetchWorkers();
   }
 
@@ -61,7 +61,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.workerService
       .getAllWorkers(this.workplace.uid, {
         sortBy: sortByParamMap[this.sortByValue],
-        pageIndex: this.pageIndex,
+        pageIndex: this.currentPageIndex,
         itemsPerPage: this.itemsPerPage,
       })
       .pipe(take(1))
@@ -78,9 +78,8 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     }
   }
 
-  public handlePageUpdate(eventData: { pageIndex: number; noOfItemsOnPage: number }): void {
-    const { pageIndex } = eventData;
-    if (pageIndex !== this.pageIndex) {
+  public handlePageUpdate(pageIndex: number): void {
+    if (pageIndex !== this.currentPageIndex) {
       this.setPageIndex(pageIndex);
     }
   }

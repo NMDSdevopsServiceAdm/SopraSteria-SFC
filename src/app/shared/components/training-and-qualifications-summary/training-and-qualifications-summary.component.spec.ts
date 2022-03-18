@@ -19,12 +19,10 @@ import {
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
+import sinon from 'sinon';
 
 import { PaginationComponent } from '../pagination/pagination.component';
-
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
-
-import sinon from 'sinon';
 
 const establishmentBuilder = build('Establishment', {
   fields: {
@@ -65,6 +63,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
         componentProperties: {
           workplace: establishmentBuilder() as Establishment,
           workers: workers as Worker[],
+          workerCount: workers.length,
         },
       },
     );
@@ -131,15 +130,15 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   it('resets the pageIndex if sort by is changed', async () => {
     const { fixture, component, getByLabelText } = await setup();
 
-    component.pageIndex = 1;
+    component.currentPageIndex = 1;
     fixture.detectChanges();
 
-    expect(component.pageIndex).toBe(1);
+    expect(component.currentPageIndex).toBe(1);
 
     const select = getByLabelText('Sort by', { exact: false });
     fireEvent.change(select, { target: { value: '2_missing' } });
 
-    expect(component.pageIndex).toBe(0);
+    expect(component.currentPageIndex).toBe(0);
   });
 
   it('should display the "OK" message if training is up to date', async () => {

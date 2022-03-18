@@ -33,7 +33,12 @@
     [returnToDash]="true"
   ></app-total-staff-panel>
 
-  <app-staff-summary *ngIf="workers" [workplace]="workplace" [workers]="workers"></app-staff-summary>
+  <app-staff-summary
+    *ngIf="workers"
+    [workplace]="workplace"
+    [workers]="workers"
+    [workerCount]="workerCount"
+  ></app-staff-summary>
 </ng-container>
 
 <ng-template #noStaffRecords>
