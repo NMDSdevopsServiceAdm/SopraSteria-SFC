@@ -14,14 +14,15 @@ import { take } from 'rxjs/operators';
 export class StaffSummaryComponent implements OnInit, OnChanges {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
+  @Input() workerCount: number;
   @Input() wdfView = false;
+
   public canViewWorker: boolean;
   public canEditWorker: boolean;
   public sortStaffOptions;
   public workersOrderBy: Array<Worker>;
   public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
-  public workerCount: number;
   private sortByValue = 'staffNameAsc';
   public itemsPerPage = 15;
 
@@ -38,8 +39,7 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
     return this.wdfView ? [...path, ...['wdf-summary']] : path;
   }
 
-  ngOnInit() {
-    this.workerCount = this.workers.length;
+  ngOnInit(): void {
     this.paginatedWorkers = this.workers;
 
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
@@ -47,7 +47,7 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     //Adding jobRole attrubute to solve sorting by using only
     //this property instead of itrating over the nested mainJob object
     this.workers = this.workers.map((worker) => {

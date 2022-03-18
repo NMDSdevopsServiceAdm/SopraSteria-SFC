@@ -36,6 +36,7 @@ describe('StaffSummaryComponent', () => {
         workplace: establishment,
         workers: workers,
         wdfView: isWdf,
+        workerCount: workers.length,
       },
     });
 
