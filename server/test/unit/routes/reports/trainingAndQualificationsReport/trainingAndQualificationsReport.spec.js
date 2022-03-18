@@ -10,14 +10,17 @@ describe('generateTrainingAndQualificationsReport', () => {
   beforeEach(() => {
     sinon.stub(models.establishment, 'findByUid').returns({ id: 1234 });
 
-    sinon.stub(models.establishment, 'workersAndTraining').returns([
-      {
-        id: 1234,
-        name: 'Test',
-        workers: [],
-        get: () => {},
-      },
-    ]);
+    sinon.stub(models.establishment, 'workersAndTraining').returns({
+      count: 1,
+      rows: [
+        {
+          id: 1234,
+          name: 'Test',
+          workers: [],
+          get: () => {},
+        },
+      ],
+    });
     sinon.stub(models.establishment, 'getEstablishmentTrainingRecords').callsFake(() => {
       return [];
     });
