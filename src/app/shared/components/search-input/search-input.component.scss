@@ -1,0 +1,15 @@
+button > img {
+  filter: brightness(0) invert(1);
+}
+
+.govuk-input--search div > .govuk-util__light-bg {
+  padding: 10px;
+}
+
+.govuk-input--search .govuk-input:focus {
+  z-index: 2;
+}
+
+.govuk-input--search .govuk-button {
+  padding: 5px;
+}

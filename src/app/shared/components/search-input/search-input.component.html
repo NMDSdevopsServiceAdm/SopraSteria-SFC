@@ -1,15 +1,34 @@
-<div class="govuk-form-group">
+<div class="govuk-form-group govuk-input--search">
   <label for="name" class="govuk-label">Search</label>
-  <input
-    class="govuk-input govuk-input--width-10"
-    id="name"
-    name="name"
-    type="text"
-    (input)="handleOnInput($event)"
-    [value]="searchTerm"
-  />
-  <button class="govuk-button" type="button" (click)="handleOnSubmit($event)">search</button>
-  <button *ngIf="searched" class="govuk-button govuk-button--link" type="button" (click)="handleResetSearch()">
-    Clear search results
-  </button>
+  <div class="govuk__flex govuk__align-items-center">
+    <div>
+      <div class="govuk__flex govuk__align-items-center govuk-util__light-bg">
+        <input
+          class="govuk-input govuk-input--width-10"
+          id="name"
+          name="name"
+          type="text"
+          (input)="handleOnInput($event)"
+          [value]="searchTerm"
+        />
+
+        <button
+          class="govuk-button govuk-button--tertiary govuk-!-margin-bottom-0"
+          name="search"
+          type="button"
+          (click)="handleOnSubmit($event)"
+        >
+          <img src="/assets/images/bin.svg" alt="" />
+        </button>
+      </div>
+    </div>
+    <button
+      *ngIf="searched"
+      class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+      type="button"
+      (click)="handleResetSearch()"
+    >
+      Clear search results
+    </button>
+  </div>
 </div>
