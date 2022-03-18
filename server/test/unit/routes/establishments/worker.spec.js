@@ -226,7 +226,7 @@ describe('worker route', () => {
         method: 'GET',
         url: '/api/establishment/123/worker',
         query: {
-          pageNumber: 1,
+          pageIndex: 1,
           itemsPerPage: 200,
           sortBy: 'someSort',
         },

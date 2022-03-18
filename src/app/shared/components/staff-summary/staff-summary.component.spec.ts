@@ -82,15 +82,15 @@ describe('StaffSummaryComponent', () => {
       ['2_not_meeting', 'wdfNotMeeting', 'WDF requirements (not meeting)'],
     ];
 
-    for (const i in sortByOptions) {
-      it(`should call getAllWorkers with sortBy set to ${sortByOptions[i][1]} when sorting by ${sortByOptions[i][2]}`, async () => {
+    for (const option of sortByOptions) {
+      it(`should call getAllWorkers with sortBy set to ${option[1]} when sorting by ${option[2]}`, async () => {
         const { component, getAllWorkersSpy } = await setup(true);
 
         const select = component.getByLabelText('Sort by', { exact: false });
-        fireEvent.change(select, { target: { value: sortByOptions[i][0] } });
+        fireEvent.change(select, { target: { value: option[0] } });
 
         const establishmentUid = component.fixture.componentInstance.workplace.uid;
-        const paginationEmission = { pageIndex: 0, itemsPerPage: 15, sortBy: sortByOptions[i][1] };
+        const paginationEmission = { pageIndex: 0, itemsPerPage: 15, sortBy: option[1] };
 
         expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
         expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);
