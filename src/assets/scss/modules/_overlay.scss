@@ -1,9 +1,9 @@
-@import '~@angular/cdk/index.scss';
+@import '~@angular/cdk/_overlay.scss';
 
 $cdk-overlay-dark-backdrop-background: rgba(0, 0, 0, 0.5);
 $backdrop-animation-duration: 0ms !default;
 
-@include overlay();
+@include cdk-overlay();
 
 .cdk-overlay-pane {
   background: govuk-colour('white');

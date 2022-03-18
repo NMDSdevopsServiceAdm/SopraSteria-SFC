@@ -5,7 +5,6 @@ import { ActivatedRoute } from '@angular/router';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
-import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 

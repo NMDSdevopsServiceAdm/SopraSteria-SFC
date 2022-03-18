@@ -16,7 +16,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { FileUtil } from '@core/utils/file-util';
 import { UploadWarningDialogComponent } from '@features/bulk-upload/upload-warning-dialog/upload-warning-dialog.component';
-import saveAs from 'file-saver';
 import filter from 'lodash/filter';
 import findIndex from 'lodash/findIndex';
 import { combineLatest, Subscription } from 'rxjs';

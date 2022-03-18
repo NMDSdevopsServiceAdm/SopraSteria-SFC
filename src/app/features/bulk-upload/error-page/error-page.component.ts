@@ -6,7 +6,6 @@ import { ErrorReport, NumberOfErrorsAndWarnings } from '@core/model/bulk-upload.
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 
 @Component({

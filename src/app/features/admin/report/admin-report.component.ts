@@ -2,7 +2,6 @@ import { DatePipe } from '@angular/common';
 import { HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ReportService } from '@core/services/report.service';
-import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 
 @Component({
