@@ -130,15 +130,15 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   it('resets the pageIndex if sort by is changed', async () => {
     const { fixture, component, getByLabelText } = await setup();
 
-    component.pageIndex = 1;
+    component.currentPageIndex = 1;
     fixture.detectChanges();
 
-    expect(component.pageIndex).toBe(1);
+    expect(component.currentPageIndex).toBe(1);
 
     const select = getByLabelText('Sort by', { exact: false });
     fireEvent.change(select, { target: { value: '2_missing' } });
 
-    expect(component.pageIndex).toBe(0);
+    expect(component.currentPageIndex).toBe(0);
   });
 
   it('should display the "OK" message if training is up to date', async () => {
