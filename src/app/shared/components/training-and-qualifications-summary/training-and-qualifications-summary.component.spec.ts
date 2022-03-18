@@ -1,14 +1,15 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WorkerService } from '@core/services/worker.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import {
   longTermAbsentWorker,
+  MockWorkerService,
   workerWithExpiredTraining,
   workerWithExpiringTraining,
   workerWithMissingTraining,
@@ -19,9 +20,11 @@ import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
 
+import { PaginationComponent } from '../pagination/pagination.component';
+
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
 
-const sinon = require('sinon');
+import sinon from 'sinon';
 
 const establishmentBuilder = build('Establishment', {
   fields: {
@@ -38,37 +41,53 @@ const workers = [
   workerWithMissingTraining, // Darlyn
   workerWithUpToDateTraining, // Ellie
   longTermAbsentWorker, // John
-];
+] as Worker[];
 
 describe('TrainingAndQualificationsSummaryComponent', () => {
   const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-    can: sinon.stub().returns(true),
+    can: sinon.stub<['uid', 'canViewUser'], boolean>().returns(true),
   });
 
   async function setup() {
-    const { fixture, getAllByText, getByText } = await render(TrainingAndQualificationsSummaryComponent, {
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      providers: [
-        { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-      ],
-      componentProperties: {
-        workplace: establishmentBuilder() as Establishment,
-        workers: workers as Worker[],
+    const { fixture, getAllByText, getByText, getByLabelText } = await render(
+      TrainingAndQualificationsSummaryComponent,
+      {
+        imports: [HttpClientTestingModule, RouterTestingModule],
+        declarations: [PaginationComponent],
+        providers: [
+          { provide: PermissionsService, useValue: mockPermissionsService },
+          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+          {
+            provide: WorkerService,
+            useClass: MockWorkerService,
+          },
+        ],
+        componentProperties: {
+          workplace: establishmentBuilder() as Establishment,
+          workers: workers as Worker[],
+        },
       },
-    });
+    );
 
     const component = fixture.componentInstance;
 
     const router = TestBed.inject(Router) as Router;
     const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const workerService = TestBed.inject(WorkerService) as WorkerService;
+    const workerServiceSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
+
+    const sortBySpy = spyOn(component, 'handleSortUpdate').and.callThrough();
+
     return {
       component,
       fixture,
+      getByLabelText,
       getAllByText,
       getByText,
       spy,
+      workerServiceSpy,
+      sortBySpy,
     };
   }
 
@@ -77,63 +96,57 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should list by expired as default', async () => {
-    const { fixture } = await setup();
+  it('should handle sort by expiring soon', async () => {
+    const { component, getByLabelText, sortBySpy, workerServiceSpy } = await setup();
 
-    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+    expect(workerServiceSpy).not.toHaveBeenCalled();
 
-    expect(rows.length).toBe(6);
-    expect(rows[0].innerHTML).toContain('3 expired');
-    expect(rows[0].innerHTML).toContain('Ben');
-    expect(rows[1].innerHTML).toContain('Alice');
-    expect(rows[2].innerHTML).toContain('Carl');
-    expect(rows[3].innerHTML).toContain('Darlyn');
-    expect(rows[4].innerHTML).toContain('Ellie');
-    expect(rows[5].innerHTML).toContain('John');
+    const select = getByLabelText('Sort by', { exact: false });
+    fireEvent.change(select, { target: { value: '1_expires_soon' } });
+
+    expect(sortBySpy).toHaveBeenCalledOnceWith('1_expires_soon');
+    expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, {
+      sortBy: 'trainingExpiringSoon',
+      pageIndex: 0,
+      itemsPerPage: 15,
+    });
   });
 
-  it('should sort by expiring soon', async () => {
-    const { fixture } = await setup();
+  it('should handle sort by missing', async () => {
+    const { component, getByLabelText, sortBySpy, workerServiceSpy } = await setup();
 
-    const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingStaff')).nativeElement;
-    select.value = select.options[1].value; // Expiring Soon
-    select.dispatchEvent(new Event('change'));
-    fixture.detectChanges();
-    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+    expect(workerServiceSpy).not.toHaveBeenCalled();
 
-    expect(rows.length).toBe(6);
-    expect(rows[0].innerHTML).toContain('2 expire soon');
-    expect(rows[0].innerHTML).toContain('Alice');
-    expect(rows[1].innerHTML).toContain('1 expires soon');
-    expect(rows[1].innerHTML).toContain('Carl');
-    expect(rows[2].innerHTML).toContain('Ben');
-    expect(rows[3].innerHTML).toContain('Darlyn');
-    expect(rows[4].innerHTML).toContain('Ellie');
-    expect(rows[5].innerHTML).toContain('John');
+    const select = getByLabelText('Sort by', { exact: false });
+    fireEvent.change(select, { target: { value: '2_missing' } });
+
+    expect(sortBySpy).toHaveBeenCalledOnceWith('2_missing');
+    expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, {
+      sortBy: 'trainingMissing',
+      pageIndex: 0,
+      itemsPerPage: 15,
+    });
   });
 
-  it('should sort by missing', async () => {
-    const { fixture } = await setup();
+  it('resets the pageIndex if sort by is changed', async () => {
+    const { fixture, component, getByLabelText } = await setup();
 
-    const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingStaff')).nativeElement;
-    select.value = select.options[2].value; // Missing
-    select.dispatchEvent(new Event('change'));
+    component.pageIndex = 1;
     fixture.detectChanges();
 
-    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
+    expect(component.pageIndex).toBe(1);
 
-    expect(rows.length).toBe(6);
-    expect(rows[0].innerHTML).toContain('2 missing');
-    expect(rows[0].innerHTML).toContain('Darlyn');
-    expect(rows[1].innerHTML).toContain('Alice');
-    expect(rows[2].innerHTML).toContain('Ben');
-    expect(rows[3].innerHTML).toContain('Carl');
-    expect(rows[4].innerHTML).toContain('Ellie');
-    expect(rows[5].innerHTML).toContain('John');
+    const select = getByLabelText('Sort by', { exact: false });
+    fireEvent.change(select, { target: { value: '2_missing' } });
+
+    expect(component.pageIndex).toBe(0);
   });
 
   it('should display the "OK" message if training is up to date', async () => {
-    const { fixture } = await setup();
+    const { fixture, component } = await setup();
+
+    component.paginatedWorkers = workers;
+    fixture.detectChanges();
 
     const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-worker-table'] tbody tr`);
 
@@ -142,7 +155,10 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   });
 
   it('should display the "Long-term absent" tag if the worker is long term absent', async () => {
-    const { getAllByText } = await setup();
+    const { fixture, component, getAllByText } = await setup();
+
+    component.paginatedWorkers = workers;
+    fixture.detectChanges();
 
     expect(getAllByText('Long-term absent').length).toBe(1);
   });
@@ -150,9 +166,11 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   it('should navigate to the persons training, when clicking on their name', async () => {
     const { getByText, fixture, spy, component } = await setup();
 
+    component.paginatedWorkers = workers;
+    fixture.detectChanges();
+
     const link = getByText('Darlyn');
     fireEvent.click(link);
-    fixture.detectChanges();
 
     const workplaceUid = component.workplace.uid;
     const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');
@@ -169,11 +187,12 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   it('should navigate to the persons wdf training, when the wdfView flag is true', async () => {
     const { getByText, fixture, spy, component } = await setup();
 
+    component.paginatedWorkers = workers;
     component.wdfView = true;
+    fixture.detectChanges();
 
     const link = getByText('Darlyn');
     fireEvent.click(link);
-    fixture.detectChanges();
 
     const workplaceUid = component.workplace.uid;
     const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');

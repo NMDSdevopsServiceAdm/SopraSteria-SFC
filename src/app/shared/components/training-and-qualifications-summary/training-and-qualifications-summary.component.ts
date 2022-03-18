@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsWorker } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import orderBy from 'lodash/orderBy';
+import { WorkerService } from '@core/services/worker.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-training-and-qualifications-summary',
@@ -12,39 +13,75 @@ import orderBy from 'lodash/orderBy';
 export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
+  @Input() workerCount: number;
   @Input() wdfView = false;
-
   @Input() showViewByToggle = false;
 
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
   public canViewWorker: boolean;
-  public sortTrainingAndQualsOptions;
-  public sortByDefault: string;
+  public sortTrainingAndQualsOptions: Record<string, string>;
+  public sortByValue: string;
+  public itemsPerPage = 15;
+  public pageIndex = 0;
+  public paginatedWorkers: Array<Worker>;
 
-  constructor(private permissionsService: PermissionsService, private router: Router) {}
+  constructor(
+    private permissionsService: PermissionsService,
+    private router: Router,
+    private workerService: WorkerService,
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
-    this.sortByDefault = '0_expired';
-    this.orderWorkers(this.sortByDefault);
+    this.sortByValue = '0_expired';
+    this.paginatedWorkers = this.workers;
+    this.workerCount = this.workers.length;
+    this.refetchWorkers();
   }
 
-  public orderWorkers(dropdownValue: string): void {
-    let sortValue: string;
-    if (dropdownValue.includes('missing')) {
-      sortValue = 'missingMandatoryTrainingCount';
-    } else if (dropdownValue.includes('expired')) {
-      sortValue = 'expiredTrainingCount';
-    } else if (dropdownValue.includes('expires_soon')) {
-      sortValue = 'expiringTrainingCount';
-    }
+  private setSortValue(value: string): void {
+    this.sortByValue = value;
+  }
 
-    if (dropdownValue === 'worker') {
-      this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['desc']);
-    } else {
-      this.workers = orderBy(this.workers, [sortValue, (worker) => worker.nameOrId.toLowerCase()], ['desc', 'asc']);
+  private setPageIndex(pageIndex: number): void {
+    this.pageIndex = pageIndex;
+    this.refetchWorkers();
+  }
+
+  private refetchWorkers() {
+    const sortByParamMap = {
+      '0_expired': 'trainingExpired',
+      '1_expires_soon': 'trainingExpiringSoon',
+      '2_missing': 'trainingMissing',
+      '3_worker': 'staffNameAsc',
+    };
+
+    this.workerService
+      .getAllWorkers(this.workplace.uid, {
+        sortBy: sortByParamMap[this.sortByValue],
+        pageIndex: this.pageIndex,
+        itemsPerPage: this.itemsPerPage,
+      })
+      .pipe(take(1))
+      .subscribe(({ workers, workerCount }) => {
+        this.paginatedWorkers = workers;
+        this.workerCount = workerCount;
+      });
+  }
+
+  public handleSortUpdate(dropdownValue: string): void {
+    if (dropdownValue !== this.sortByValue) {
+      this.setSortValue(dropdownValue);
+      this.setPageIndex(0);
+    }
+  }
+
+  public handlePageUpdate(eventData: { pageIndex: number; noOfItemsOnPage: number }): void {
+    const { pageIndex } = eventData;
+    if (pageIndex !== this.pageIndex) {
+      this.setPageIndex(pageIndex);
     }
   }
 
