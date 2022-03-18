@@ -1,6 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/model/establishment.model';
-import { PaginationEmission } from '@core/model/pagination.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -73,8 +72,8 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
     this.getPageOfWorkers();
   }
 
-  public handlePageUpdate(paginationEmission: PaginationEmission): void {
-    this.currentPageIndex = paginationEmission.pageIndex;
+  public handlePageUpdate(pageIndex: number): void {
+    this.currentPageIndex = pageIndex;
     this.getPageOfWorkers();
   }
 

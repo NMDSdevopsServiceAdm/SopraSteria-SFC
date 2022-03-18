@@ -1,5 +1,4 @@
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
-import { PaginationEmission } from '@core/model/pagination.model';
 
 @Component({
   selector: 'app-pagination',
@@ -12,7 +11,7 @@ export class PaginationComponent implements OnInit {
 
   @Input() itemsPerPage: number;
   @Input() totalNoOfItems: number;
-  @Output() emitCurrentPage = new EventEmitter<PaginationEmission>(true);
+  @Output() emitCurrentPage = new EventEmitter<number>(true);
 
   private _currentPageIndex = 0;
   @Input() get currentPageIndex(): number {
@@ -35,7 +34,7 @@ export class PaginationComponent implements OnInit {
   private setPage(pageIndex: number): void {
     this._currentPageIndex = pageIndex;
 
-    this.emitCurrentPage.emit({ pageIndex, itemsPerPage: this.itemsPerPage });
+    this.emitCurrentPage.emit(pageIndex);
   }
 
   private createPageIndexArray(): Array<number> {
