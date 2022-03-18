@@ -3,20 +3,25 @@ import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@a
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
-  styleUrls: ['./pagination.component.scss'],
 })
 export class PaginationComponent implements OnInit {
   public pages: Array<number>;
-  public currentPageNo: number;
   public isBigWindow: boolean;
 
-  @Input() noOfItemsOnPage: number;
+  @Input() itemsPerPage: number;
   @Input() totalNoOfItems: number;
-  @Output() emitCurrentPage = new EventEmitter<{ pageNo: number; noOfItemsOnPage: number }>(true);
+  @Output() emitCurrentPage = new EventEmitter<number>(true);
+
+  private _currentPageIndex = 0;
+  @Input() get currentPageIndex(): number {
+    return this._currentPageIndex;
+  }
+  set currentPageIndex(pageIndex: number) {
+    this.setPage(pageIndex);
+  }
 
   ngOnInit(): void {
     this.pages = this.createPageIndexArray();
-    this.setPage(0);
     this.setIsBigWindow();
   }
 
@@ -25,13 +30,14 @@ export class PaginationComponent implements OnInit {
     this.setPage(pageNo);
   }
 
-  private setPage(pageNo: number): void {
-    this.currentPageNo = pageNo;
-    this.emitCurrentPage.emit({ pageNo, noOfItemsOnPage: this.noOfItemsOnPage });
+  private setPage(pageIndex: number): void {
+    this._currentPageIndex = pageIndex;
+
+    this.emitCurrentPage.emit(pageIndex);
   }
 
   private createPageIndexArray(): Array<number> {
-    const noOfPages = Math.ceil(this.totalNoOfItems / this.noOfItemsOnPage);
+    const noOfPages = Math.ceil(this.totalNoOfItems / this.itemsPerPage);
     return Array.from(Array(noOfPages).keys());
   }
 
@@ -40,7 +46,7 @@ export class PaginationComponent implements OnInit {
   }
 
   private isWithinTwoOfCurrentPage(index: number): boolean {
-    return Math.abs(index - this.currentPageNo) <= 2;
+    return Math.abs(index - this.currentPageIndex) <= 2;
   }
 
   private isFirstOrLastPage(index: number): boolean {
@@ -48,7 +54,7 @@ export class PaginationComponent implements OnInit {
   }
 
   public showElipsisCheck(index: number): boolean {
-    return Math.abs(index - this.currentPageNo) === 3 && index !== 0 && index !== this.pages.length - 1;
+    return Math.abs(index - this.currentPageIndex) === 3 && index !== 0 && index !== this.pages.length - 1;
   }
 
   @HostListener('window:resize')

@@ -1,15 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { WorkerService } from '@core/services/worker.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
-import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models.js';
+import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models';
+import { PaginationComponent } from '../pagination/pagination.component';
 import { StaffSummaryComponent } from './staff-summary.component';
 
 describe('StaffSummaryComponent', () => {
@@ -19,24 +23,33 @@ describe('StaffSummaryComponent', () => {
 
     const component = await render(StaffSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
+      declarations: [PaginationComponent],
       providers: [
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(),
           deps: [HttpClient, Router, UserService],
         },
+        WorkerService,
       ],
       componentProperties: {
         workplace: establishment,
         workers: workers,
         wdfView: isWdf,
+        workerCount: workers.length,
       },
     });
+
+    const injector = getTestBed();
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
+      of({ workers: [...workers, ...workers, ...workers, ...workers, ...workers, ...workers], workerCount: 18 }),
+    );
 
     return {
       component,
       workers,
+      getAllWorkersSpy,
     };
   }
 
@@ -60,29 +73,43 @@ describe('StaffSummaryComponent', () => {
     expect(component.getAllByText('Add more details').length).toBe(3);
   });
 
-  it('should put staff meeting WDF at top of table when sorting by WDF requirements (meeting)', async () => {
-    const { component } = await setup();
-    component.fixture.componentInstance.workers[2].wdfEligible = true;
+  describe('Calling getAllWorkers when sorting', () => {
+    const sortByOptions = [
+      ['0_asc', 'staffNameAsc', 'Staff name (A to Z)'],
+      ['0_dsc', 'staffNameDesc', 'Staff name (Z to A)'],
+      ['1_asc', 'jobRoleAsc', 'Job role (A to Z)'],
+      ['1_dsc', 'jobRoleDesc', 'Job role (Z to A)'],
+      ['2_meeting', 'wdfMeeting', 'WDF requirements (meeting)'],
+      ['2_not_meeting', 'wdfNotMeeting', 'WDF requirements (not meeting)'],
+    ];
 
-    component.fixture.componentInstance.sortByColumn('2_meeting');
-    const workers = component.fixture.componentInstance.workers;
-    component.fixture.detectChanges();
+    for (const option of sortByOptions) {
+      it(`should call getAllWorkers with sortBy set to ${option[1]} when sorting by ${option[2]}`, async () => {
+        const { component, getAllWorkersSpy } = await setup(true);
 
-    expect(workers[0].wdfEligible).toEqual(true);
-    expect(workers[1].wdfEligible).toEqual(false);
-    expect(workers[2].wdfEligible).toEqual(false);
+        const select = component.getByLabelText('Sort by', { exact: false });
+        fireEvent.change(select, { target: { value: option[0] } });
+
+        const establishmentUid = component.fixture.componentInstance.workplace.uid;
+        const paginationEmission = { pageIndex: 0, itemsPerPage: 15, sortBy: option[1] };
+
+        expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
+        expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);
+      });
+    }
   });
 
-  it('should put staff meeting WDF at bottom of table when sorting by WDF requirements (not meeting)', async () => {
-    const { component } = await setup();
-    component.fixture.componentInstance.workers[1].wdfEligible = true;
+  describe('Calling getAllWorkers when using pagination', () => {
+    it('should call getAllWorkers on load with establishment uid, pageIndex 0 and itemsPerPage 15', async () => {
+      const { component, getAllWorkersSpy } = await setup();
 
-    component.fixture.componentInstance.sortByColumn('2_not_meeting');
-    const workers = component.fixture.componentInstance.workers;
-    component.fixture.detectChanges();
+      await component.fixture.whenStable();
 
-    expect(workers[0].wdfEligible).toEqual(false);
-    expect(workers[1].wdfEligible).toEqual(false);
-    expect(workers[2].wdfEligible).toEqual(true);
+      const establishmentUid = component.fixture.componentInstance.workplace.uid;
+      const paginationEmission = { pageIndex: 0, itemsPerPage: 15, sortBy: 'staffNameAsc' };
+
+      expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
+      expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);
+    });
   });
 });

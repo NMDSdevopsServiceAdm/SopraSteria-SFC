@@ -1487,14 +1487,14 @@ module.exports = function (sequelize, DataTypes) {
     includeMandatoryTrainingBreakdown = false,
     isParent = false,
     limit = 0,
-    pageNumber = 1,
+    pageIndex = 0,
     sortBy = 'staffNameAsc',
     searchTerm = '',
   ) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
     const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
-    const offset = (pageNumber - 1) * (limit + 1);
+    const offset = pageIndex * limit;
 
     let attributes = [
       'id',
@@ -1620,6 +1620,8 @@ module.exports = function (sequelize, DataTypes) {
       staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
       jobRoleAsc: [['workers', 'mainJob', 'title', 'ASC']],
       jobRoleDesc: [['workers', 'mainJob', 'title', 'DESC']],
+      wdfMeeting: [['workers', 'wdfEligible', 'DESC']],
+      wdfNotMeeting: [['workers', 'wdfEligible', 'ASC']],
       trainingExpiringSoon: [
         [sequelize.literal('"workers.expiringTrainingCount"'), 'DESC'],
         ['workers', 'NameOrIdValue', 'ASC'],
