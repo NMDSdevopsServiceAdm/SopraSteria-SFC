@@ -24,6 +24,14 @@ describe('SearchInputComponent', () => {
     expect(component.getByRole('button', { name: 'search' })).toBeTruthy();
   });
 
+  it('allows the submit button name to set', async () => {
+    const component = await setup();
+
+    expect(component.getByRole('button', { name: 'search' })).toBeTruthy();
+    component.rerender({ searchButtonName: 'new name of button' });
+    expect(component.getByRole('button', { name: 'new name of button' })).toBeTruthy();
+  });
+
   it('emits the searchTerm on submit', async () => {
     const component = await setup();
 
