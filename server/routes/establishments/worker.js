@@ -248,7 +248,8 @@ const viewAllWorkers = async (req, res) => {
       pageIndex ? +pageIndex : undefined,
       sortBy,
     );
-    const foundWorkers = establishmentWorkersAndTraining.rows[0].workers;
+    const rows = establishmentWorkersAndTraining.rows;
+    const foundWorkers = rows.length && rows[0].workers;
     const workerCount = establishmentWorkersAndTraining.count;
 
     res.status(200).send({

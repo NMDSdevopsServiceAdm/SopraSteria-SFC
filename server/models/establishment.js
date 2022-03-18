@@ -1493,7 +1493,7 @@ module.exports = function (sequelize, DataTypes) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
     const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
-    const offset = pageIndex * (limit + 1);
+    const offset = pageIndex * limit;
 
     let attributes = [
       'id',
