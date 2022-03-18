@@ -55,9 +55,12 @@ describe('SearchInputComponent', () => {
 
     expect(component.findByRole('button', { name: 'Clear search results' })).toBeTruthy();
 
+    const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
     userEvent.click(component.getByRole('button', { name: 'Clear search results' }));
 
     await waitForElementToBeRemoved(() => component.getByRole('button', { name: 'Clear search results' }));
     expect(component.queryByRole('button', { name: 'Clear search results' })).toBeNull();
+
+    expect(emitSpy).toHaveBeenCalledOnceWith('');
   });
 });

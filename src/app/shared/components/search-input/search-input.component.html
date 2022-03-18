@@ -1,25 +1,27 @@
 <div class="govuk-form-group govuk-input--search">
-  <label for="name" class="govuk-label">Search</label>
+  <label for="search" class="govuk-label">Search</label>
   <div class="govuk__flex govuk__align-items-center">
     <div>
       <div class="govuk__flex govuk__align-items-center govuk-util__light-bg">
         <input
-          class="govuk-input govuk-input--width-10"
-          id="name"
-          name="name"
+          class="govuk-input"
+          id="search"
+          name="search"
           type="text"
           (input)="handleOnInput($event)"
           [value]="searchTerm"
         />
-
-        <button
-          class="govuk-button govuk-button--tertiary govuk-!-margin-bottom-0"
-          name="search"
-          type="button"
-          (click)="handleOnSubmit($event)"
-        >
-          <img src="/assets/images/bin.svg" alt="" />
-        </button>
+        <div>
+          <button
+            class="govuk-button govuk-button--tertiary govuk-!-margin-bottom-0"
+            name="search"
+            type="button"
+            (click)="handleOnSubmit($event)"
+          >
+            search
+            <img src="/assets/images/bin.svg" alt="" />
+          </button>
+        </div>
       </div>
     </div>
     <button

@@ -33,5 +33,6 @@ export class SearchInputComponent {
   public handleResetSearch(): void {
     this.setSearched(false);
     this.setSearchTerm('');
+    this.emitInput.emit(this.searchTerm);
   }
 }
