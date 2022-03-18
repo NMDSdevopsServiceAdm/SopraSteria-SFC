@@ -32,3 +32,7 @@ button > img {
 .govuk-input--search .govuk-button:not(.govuk-button--link):focus {
   background-color: #1d70b8;
 }
+
+.govuk-input--search .govuk-button:not(.govuk-button--link):active {
+  top: 0;
+}

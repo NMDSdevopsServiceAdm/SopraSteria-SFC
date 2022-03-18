@@ -1,27 +1,26 @@
-<div class="govuk-form-group govuk-input--search">
+<div class="govuk-form-group govuk-!-width-full govuk-input--search">
   <label for="search" class="govuk-label">Search</label>
-  <div class="govuk__flex govuk__align-items-center">
-    <div>
-      <div class="govuk__flex govuk__align-items-center govuk-util__light-bg">
-        <input
-          class="govuk-input"
-          id="search"
+  <div class="govuk__flex govuk__align-items-center govuk__justify-content-space-between">
+    <div class="govuk__flex govuk-!-width-two-thirds govuk__align-items-center govuk-util__light-bg">
+      <input
+        class="govuk-input"
+        id="search"
+        name="search"
+        type="text"
+        (input)="handleOnInput($event)"
+        [value]="searchTerm"
+        (keyup.enter)="handleOnSubmit($event)"
+      />
+      <div>
+        <button
+          class="govuk-button govuk-button--tertiary govuk-!-margin-bottom-0"
           name="search"
-          type="text"
-          (input)="handleOnInput($event)"
-          [value]="searchTerm"
-        />
-        <div>
-          <button
-            class="govuk-button govuk-button--tertiary govuk-!-margin-bottom-0"
-            name="search"
-            type="button"
-            (click)="handleOnSubmit($event)"
-          >
-            search
-            <img src="/assets/images/bin.svg" alt="" />
-          </button>
-        </div>
+          type="button"
+          (click)="handleOnSubmit($event)"
+        >
+          search
+          <img src="/assets/images/bin.svg" alt="" />
+        </button>
       </div>
     </div>
     <button
