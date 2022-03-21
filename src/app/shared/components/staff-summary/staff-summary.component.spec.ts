@@ -120,7 +120,7 @@ describe('StaffSummaryComponent', () => {
 
       await component.fixture.whenStable();
 
-      const searchInput = component.getByLabelText('Search');
+      const searchInput = component.getByLabelText('Search for staff records');
       expect(searchInput).toBeTruthy();
       userEvent.type(searchInput, 'search term here{enter}');
 
