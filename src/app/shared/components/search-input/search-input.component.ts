@@ -7,6 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class SearchInputComponent {
   @Input() searchButtonName = 'search';
+  @Input() accessibleLabel: string;
   @Output() emitInput = new EventEmitter<string>();
 
   public searched = false;

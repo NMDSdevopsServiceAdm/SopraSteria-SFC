@@ -6,9 +6,12 @@ import userEvent from '@testing-library/user-event';
 import { SearchInputComponent } from './search-input.component';
 
 describe('SearchInputComponent', () => {
-  const setup = () =>
+  const setup = (accessibleLabel?: string) =>
     render(SearchInputComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      componentProperties: {
+        accessibleLabel: accessibleLabel,
+      },
     });
 
   it('should create', async () => {
@@ -30,6 +33,13 @@ describe('SearchInputComponent', () => {
     expect(component.getByRole('button', { name: 'search' })).toBeTruthy();
     component.rerender({ searchButtonName: 'new name of button' });
     expect(component.getByRole('button', { name: 'new name of button' })).toBeTruthy();
+  });
+
+  it('allows an accessibleLabel to be added for screen readers', async () => {
+    const component = await setup('for something');
+
+    expect(component.queryByLabelText('Search')).toBeNull();
+    expect(component.getByLabelText('Search for something')).toBeTruthy();
   });
 
   it('emits the searchTerm on submit', async () => {
