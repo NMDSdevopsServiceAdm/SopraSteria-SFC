@@ -1,7 +1,7 @@
-<div class="govuk-form-group govuk-!-width-full input--search">
+<div class="govuk-!-width-full input--search">
   <label for="search" class="govuk-label">Search</label>
-  <div class="govuk__flex govuk__align-items-center govuk__justify-content-space-between">
-    <div class="govuk__flex govuk-!-width-two-thirds govuk__align-items-center govuk-util__light-bg">
+  <div class="govuk-grid-row govuk-!-margin-0">
+    <div class="govuk-grid-column-two-thirds govuk__flex govuk-util__light-bg govuk-!-padding-2">
       <input
         class="govuk-input"
         id="search"
@@ -23,13 +23,15 @@
         </button>
       </div>
     </div>
-    <button
-      *ngIf="searched"
-      class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
-      type="button"
-      (click)="handleResetSearch()"
-    >
-      Clear search results
-    </button>
+    <div class="govuk-grid-column-one-third govuk-!-padding-top-2 govuk-!-padding-bottom-2">
+      <button
+        *ngIf="searched"
+        class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-util__vertical-align-center"
+        type="button"
+        (click)="handleResetSearch()"
+      >
+        Clear search results
+      </button>
+    </div>
   </div>
 </div>
