@@ -1617,8 +1617,8 @@ module.exports = function (sequelize, DataTypes) {
     const order = {
       staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
       staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
-      jobRoleAsc: [['workers', 'mainJob', 'title', 'ASC']],
-      jobRoleDesc: [['workers', 'mainJob', 'title', 'DESC']],
+      jobRoleAsc: [[sequelize.literal('"workers.mainJob.jobRoleName"'), 'ASC']],
+      jobRoleDesc: [[sequelize.literal('"workers.mainJob.jobRoleName"'), 'DESC']],
       wdfMeeting: [['workers', 'wdfEligible', 'DESC']],
       wdfNotMeeting: [['workers', 'wdfEligible', 'ASC']],
       trainingExpiringSoon: [
@@ -1658,7 +1658,16 @@ module.exports = function (sequelize, DataTypes) {
             {
               model: sequelize.models.job,
               as: 'mainJob',
-              attributes: ['id', 'title'],
+              attributes: [
+                'id',
+                'title',
+                [
+                  sequelize.literal(
+                    '(SELECT CASE WHEN "workers"."MainJobFkOther" IS NOT NULL THEN "workers"."MainJobFkOther" ELSE "JobName" END)',
+                  ),
+                  'jobRoleName',
+                ],
+              ],
               required: false,
             },
           ],
