@@ -123,9 +123,9 @@ export class MockUserService extends UserService {
   public get loggedInUser(): UserDetails {
     return {
       uid: 'mocked-uid',
-      email: '',
-      fullname: '',
-      jobTitle: '',
+      email: 'test@developer.com',
+      fullname: 'John Smith',
+      jobTitle: 'Developer',
       phone: '',
       role: this.isAdmin ? ('Admin' as Roles) : undefined,
     };
