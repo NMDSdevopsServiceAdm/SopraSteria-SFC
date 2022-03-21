@@ -1,43 +1,57 @@
-import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { URLStructure } from '@core/model/url.model';
-import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { WorkerService } from '@core/services/worker.service';
-
-import { QuestionComponent } from '../question/question.component';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-mandatory-details',
   templateUrl: './mandatory-details.component.html',
 })
-export class MandatoryDetailsComponent extends QuestionComponent {
-  public returnHere: URLStructure;
+export class MandatoryDetailsComponent implements OnInit, OnDestroy {
+  public worker: Worker;
+  public workplace: Establishment;
+  public primaryWorkplace: Establishment;
+  public subscriptions: Subscription = new Subscription();
 
   constructor(
-    private alertService: AlertService,
-    protected route: ActivatedRoute,
-    protected workerService: WorkerService,
-    protected router: Router,
-    protected formBuilder: FormBuilder,
-    protected backService: BackService,
-    protected errorSummaryService: ErrorSummaryService,
-  ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    private breadcrumbService: BreadcrumbService,
+    private route: ActivatedRoute,
+    private workerService: WorkerService,
+    private router: Router,
+  ) {}
+
+  ngOnInit(): void {
+    this.workplace = this.route.parent.snapshot.data.establishment;
+    this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
+
+    this.subscriptions.add(
+      this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
+        this.worker = worker;
+      }),
+    );
+
+    this.breadcrumbService.show(JourneyType.MY_WORKPLACE);
   }
 
-  init() {
-    this.returnHere = { url: [this.router.url] };
-    this.next = this.getRoutePath('main-job-start-date');
-    this.previous = this.getRoutePath('staff-details');
-  }
-
-  navigateToDashboard(event: Event) {
+  navigateToDashboard(event: Event): void {
     event.preventDefault();
     const url = this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
-
     this.router.navigate(url, { fragment: 'staff-records' });
+  }
+
+  onSubmit(event: Event): void {
+    event.preventDefault();
+    const urlArr = this.router.url.split('/');
+    const url = urlArr.slice(0, urlArr.length - 1).join('/');
+    this.router.navigate([url, 'main-job-start-date']);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
