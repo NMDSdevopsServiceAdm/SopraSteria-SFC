@@ -1,0 +1,88 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m">Workforce Development Fund</h2>
+    <ng-container *ngIf="!isParent; else parent">
+      <ng-container *ngIf="overallWdfEligibility; else notEligible">
+        <span>
+          <h2 class="govuk-heading-s">
+            <img
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              src="/assets/images/tick-icon.svg"
+              alt=""
+            />Your data has met the WDF {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }} requirements
+          </h2>
+        </span>
+        <p>
+          Your data met the requirements on {{ overallEligibilityDate }} and will continue to meet them until 31 March
+          {{ wdfEndDate | date: 'yyyy' }}.
+        </p>
+        <p><a [routerLink]="['/wdf/data']">Keep your WDF data up to date</a>, it will save you time next year.</p>
+      </ng-container>
+
+      <ng-template #notEligible>
+        <span>
+          <h2 class="govuk-heading-s govuk-!-margin-bottom-6">
+            <img
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              src="/assets/images/cross-icon.svg"
+              alt=""
+            />Your data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }} requirements
+          </h2>
+        </span>
+        <p><a [routerLink]="['/wdf/data']">View your WDF data</a> to see where it does not meet the requirements.</p>
+      </ng-template>
+    </ng-container>
+
+    <ng-template #parent>
+      <ng-container *ngIf="parentOverallWdfEligibility; else parentNotEligible">
+        <span>
+          <h2 class="govuk-heading-s">
+            <img
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              src="/assets/images/tick-icon.svg"
+              alt=""
+            />All of your workplaces have met the WDF {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }} data requirements
+          </h2>
+        </span>
+        <p>
+          Your workplaces' data met the requirements on {{ parentOverallEligibilityDate }} and will continue to meet
+          them until 31 March {{ wdfEndDate | date: 'yyyy' }}.
+        </p>
+        <p>
+          <a [routerLink]="['/wdf/workplaces']">View your workplaces</a> and keep your data up to date to save time next
+          year.
+        </p>
+      </ng-container>
+
+      <ng-template #parentNotEligible>
+        <span>
+          <h2 class="govuk-heading-s govuk-!-margin-bottom-6">
+            <img
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              src="/assets/images/cross-icon.svg"
+              alt=""
+            />Some of your workplaces' data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }} requirements
+          </h2>
+        </span>
+        <p>
+          <a [routerLink]="['/wdf/workplaces']">View your workplaces</a> to see which have data that does not meet the
+          requirements.
+        </p>
+      </ng-template>
+    </ng-template>
+
+    <h2 class="govuk-heading-s">Find out more</h2>
+    <p>
+      <a
+        href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx"
+        target="_blank"
+        >Learn more about the WDF</a
+      >
+      on the Skills for Care website.
+    </p>
+  </div>
+</div>

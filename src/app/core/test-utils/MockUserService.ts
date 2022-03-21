@@ -51,6 +51,7 @@ const workplaceBuilder = build('Workplace', {
     isParent: bool(),
     postCode: 'xxxxx',
     ustatus: null,
+    wdf: { overall: false },
   },
 });
 
