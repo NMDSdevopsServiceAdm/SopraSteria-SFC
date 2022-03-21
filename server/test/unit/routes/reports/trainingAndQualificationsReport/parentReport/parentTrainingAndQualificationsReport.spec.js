@@ -14,14 +14,17 @@ describe('generateParentTrainingAndQualificationsReport', () => {
       return [];
     });
 
-    sinon.stub(models.establishment, 'workersAndTraining').returns([
-      {
-        id: 1234,
-        name: 'Test',
-        workers: [],
-        get: () => {},
-      },
-    ]);
+    sinon.stub(models.establishment, 'workersAndTraining').returns({
+      count: 1,
+      rows: [
+        {
+          id: 1234,
+          name: 'Test',
+          workers: [],
+          get: () => {},
+        },
+      ],
+    });
 
     sinon.stub(models.establishment, 'getWorkersWithCareCertificateStatus').returns([
       {
