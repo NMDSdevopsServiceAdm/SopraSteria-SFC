@@ -8,7 +8,7 @@ import { PaginationComponent } from './pagination.component';
 
 describe('PaginationComponent', () => {
   async function setup(itemsPerPage = 15, totalNoOfItems = 43, isBigWindow = true) {
-    const { fixture, queryByText, queryByTestId } = await render(PaginationComponent, {
+    const { fixture, queryByText, queryByTestId, rerender } = await render(PaginationComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [],
@@ -25,7 +25,7 @@ describe('PaginationComponent', () => {
 
     const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
 
-    return { component, fixture, queryByText, emitSpy, queryByTestId };
+    return { component, fixture, queryByText, emitSpy, queryByTestId, rerender };
   }
 
   it('should render a PaginationComponent', async () => {
@@ -329,6 +329,22 @@ describe('PaginationComponent', () => {
 
       expect(queryByText('Next')).toBeTruthy();
       expect(queryByText('Previous')).toBeTruthy();
+    });
+  });
+
+  describe('re-render of component updates', () => {
+    it('updates the display if the totalNoOfItems is updated', async () => {
+      const { queryByText, rerender } = await setup(5, 10, true);
+
+      expect(queryByText('1')).toBeTruthy();
+      expect(queryByText('2')).toBeTruthy();
+      expect(queryByText('Next')).toBeTruthy();
+
+      rerender({ totalNoOfItems: 4 });
+
+      expect(queryByText('1')).toBeFalsy();
+      expect(queryByText('2')).toBeFalsy();
+      expect(queryByText('Next')).toBeFalsy();
     });
   });
 });
