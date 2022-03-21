@@ -30,7 +30,7 @@
           {{ worker.nameOrId }}
         </ng-template>
       </td>
-      <td class="govuk-table__cell">{{ worker.jobRole }}</td>
+      <td class="govuk-table__cell">{{ worker.mainJob.jobRoleName }}</td>
       <td class="govuk-table__cell">
         <span class="govuk-visually-hidden">last updated</span>
         <span class="govuk__nowrap">{{ lastUpdated(worker.updated) }}</span>

@@ -16,7 +16,7 @@ import { establishmentBuilder, workerBuilder } from '../../../../../server/test/
 import { PaginationComponent } from '../pagination/pagination.component';
 import { StaffSummaryComponent } from './staff-summary.component';
 
-describe('StaffSummaryComponent', () => {
+fdescribe('StaffSummaryComponent', () => {
   async function setup(isWdf = false) {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()];
@@ -58,15 +58,17 @@ describe('StaffSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the correct information for given workers', async () => {
+  fit('should render the correct information for given workers', async () => {
     const { component, workers } = await setup();
 
     component.fixture.componentInstance.canEditWorker = true;
     // update one of the fake workers
     workers[0].nameOrId = 'joe mocked';
-    workers[0].jobRole = 'fake doctor';
+    workers[0].jobRoleName = 'fake doctor';
     workers[0].completed = false;
     component.detectChanges();
+
+    console.log(workers[0]);
 
     expect(component.getByText('joe mocked')).toBeTruthy();
     expect(component.getByText('fake doctor')).toBeTruthy();
