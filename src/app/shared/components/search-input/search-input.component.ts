@@ -27,8 +27,11 @@ export class SearchInputComponent {
 
   public handleOnSubmit(e: Event): void {
     e.preventDefault();
-    this.emitInput.emit(this.searchTerm);
-    this.setSearched(true);
+
+    if (this.searchTerm.trim().length) {
+      this.emitInput.emit(this.searchTerm);
+      this.setSearched(true);
+    }
   }
 
   public handleResetSearch(): void {

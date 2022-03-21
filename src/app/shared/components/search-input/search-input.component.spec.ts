@@ -71,4 +71,14 @@ describe('SearchInputComponent', () => {
 
     expect(emitSpy).toHaveBeenCalledOnceWith('');
   });
+
+  it('does not emit search if searchTerm is an empty string', async () => {
+    const component = await setup();
+
+    const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
+
+    userEvent.click(component.getByRole('button', { name: 'search' }));
+
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
 });

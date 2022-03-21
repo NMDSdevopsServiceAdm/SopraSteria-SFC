@@ -10,7 +10,7 @@ button > img {
   z-index: 2;
 }
 
-.input--search .govuk-button:not(.govuk-button--link) {
+.input--search .button-override--search {
   height: 40px;
   width: 40px;
   box-shadow: none;
@@ -19,7 +19,7 @@ button > img {
   overflow: hidden;
 }
 
-.input--search .govuk-button:not(.govuk-button--link) img {
+.input--search .button-override--search > img {
   display: block;
   position: absolute;
   height: 20px;
