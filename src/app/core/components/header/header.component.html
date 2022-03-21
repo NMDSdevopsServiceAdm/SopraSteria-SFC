@@ -26,9 +26,8 @@
           </li>
         </ng-container>
         <ng-container *ngIf="isLoggedIn()">
-          <li class="govuk-header__navigation-item">{{ fullname }}</li>
           <li class="govuk-header__navigation-item">
-            <a [routerLink]="['/account-management']" class="govuk-header__link">My account</a>
+            <a [routerLink]="['/account-management']" class="govuk-header__link">{{ fullname }}</a>
           </li>
           <li class="govuk-header__navigation-item">
             <a href="#" (click)="signOut($event)" class="govuk-header__link">Logout</a>
