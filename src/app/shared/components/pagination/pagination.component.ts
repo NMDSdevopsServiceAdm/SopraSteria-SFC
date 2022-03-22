@@ -9,7 +9,11 @@ export class PaginationComponent implements OnInit {
   public isBigWindow: boolean;
 
   @Input() itemsPerPage: number;
-  @Input() totalNoOfItems: number;
+  _totalNoOfItems: number;
+  @Input() set totalNoOfItems(value: number) {
+    this._totalNoOfItems = value;
+    this.pages = this.createPageIndexArray();
+  }
   @Output() emitCurrentPage = new EventEmitter<number>(true);
 
   private _currentPageIndex = 0;
@@ -21,7 +25,6 @@ export class PaginationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.pages = this.createPageIndexArray();
     this.setIsBigWindow();
   }
 
@@ -37,7 +40,7 @@ export class PaginationComponent implements OnInit {
   }
 
   private createPageIndexArray(): Array<number> {
-    const noOfPages = Math.ceil(this.totalNoOfItems / this.itemsPerPage);
+    const noOfPages = Math.ceil(this._totalNoOfItems / this.itemsPerPage);
     return Array.from(Array(noOfPages).keys());
   }
 

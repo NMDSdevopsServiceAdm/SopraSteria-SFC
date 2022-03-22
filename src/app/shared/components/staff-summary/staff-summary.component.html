@@ -1,12 +1,20 @@
-<div class="govuk-form-group">
-  <label class="govuk-label" for="sortByStaff"> Sort by </label>
-  <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortBy($event.target.value)">
-    <option *ngFor="let sortStaffOption of sortStaffOptions | keyvalue" value="{{ sortStaffOption.key }}">
-      {{ sortStaffOption.value }}
-    </option>
-  </select>
+<div class="govuk-grid-row govuk-util__vertical-align-center">
+  <div class="govuk-grid-column-three-quarters">
+    <app-search-input accessibleLabel="for staff records" (emitInput)="handleSearch($event)"></app-search-input>
+  </div>
+
+  <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2">
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="sortByStaff"> Sort by </label>
+      <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortBy($event.target.value)">
+        <option *ngFor="let sortStaffOption of sortStaffOptions | keyvalue" value="{{ sortStaffOption.key }}">
+          {{ sortStaffOption.value }}
+        </option>
+      </select>
+    </div>
+  </div>
 </div>
-<table class="govuk-table">
+<table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Staff name</th>
@@ -57,6 +65,10 @@
     </tr>
   </tbody>
 </table>
+<ng-template #noWorkersFound>
+  <p class="govuk-util__bold">There are no matching results.</p>
+  <p>Make sure that your spelling is correct.</p>
+</ng-template>
 <app-pagination
   [itemsPerPage]="itemsPerPage"
   [totalNoOfItems]="workerCount"

@@ -24,6 +24,7 @@ export class StaffSummaryComponent implements OnInit {
   public paginatedWorkers: Array<Worker>;
   private sortByValue = 'staffNameAsc';
   public itemsPerPage = 15;
+  private searchTerm = '';
 
   constructor(private permissionsService: PermissionsService, private workerService: WorkerService) {}
 
@@ -71,11 +72,17 @@ export class StaffSummaryComponent implements OnInit {
         pageIndex: this.currentPageIndex,
         itemsPerPage: this.itemsPerPage,
         sortBy: this.sortByValue,
+        ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
       })
       .pipe(take(1))
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;
         this.workerCount = workerCount;
       });
+  }
+
+  public handleSearch(searchTerm: string): void {
+    this.searchTerm = searchTerm;
+    this.getPageOfWorkers();
   }
 }

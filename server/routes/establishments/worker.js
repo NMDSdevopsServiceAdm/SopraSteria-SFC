@@ -237,7 +237,7 @@ const getTotalWorkers = async (req, res) => {
 const viewAllWorkers = async (req, res) => {
   const establishmentId = req.establishmentId;
   const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
-  const { itemsPerPage, pageIndex, sortBy } = req.query;
+  const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
 
   try {
     const establishmentWorkersAndTraining = await models.establishment.workersAndTraining(
@@ -247,6 +247,7 @@ const viewAllWorkers = async (req, res) => {
       itemsPerPage ? +itemsPerPage : undefined,
       pageIndex ? +pageIndex : undefined,
       sortBy,
+      searchTerm,
     );
     const rows = establishmentWorkersAndTraining.rows;
     const foundWorkers = rows.length && rows[0].workers;
