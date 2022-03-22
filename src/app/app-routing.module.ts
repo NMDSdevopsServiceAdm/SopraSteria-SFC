@@ -161,7 +161,7 @@ const routes: Routes = [
         component: AdminComponent,
       },
       {
-        path: 'wdf',
+        path: 'wdf/data',
         loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
         data: { title: 'Workforce Development Fund Data' },
       },

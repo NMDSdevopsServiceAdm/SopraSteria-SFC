@@ -8,7 +8,7 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
 
 const routes: Routes = [
   {
-    path: 'data',
+    path: '',
     component: WdfDataComponent,
     canActivate: [HasPermissionsGuard],
     data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
