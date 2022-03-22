@@ -2,7 +2,7 @@ applications:
   - name: sfcbenchmarks
     memory: 1G
     disk_quota: 2GB
-    buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.7.45
+    buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git
     services:
       - sfcbenchmarksdb
 stack: cflinuxfs3
