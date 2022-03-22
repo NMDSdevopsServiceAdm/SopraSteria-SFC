@@ -127,5 +127,15 @@ describe('StaffSummaryComponent', () => {
       const expectedEmit = { pageIndex: 0, itemsPerPage: 15, sortBy: 'staffNameAsc', searchTerm: 'search term here' };
       expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
     });
+
+    it('should render the message that no workers were found if workerCount is falsy', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.workerCount = 0;
+      component.fixture.detectChanges();
+
+      expect(component.getByText('There are no matching results.')).toBeTruthy();
+      expect(component.getByText('Make sure that your spelling is correct.')).toBeTruthy();
+    });
   });
 });

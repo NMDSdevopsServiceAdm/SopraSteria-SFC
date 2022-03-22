@@ -14,7 +14,7 @@
     </div>
   </div>
 </div>
-<table class="govuk-table">
+<table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Staff name</th>
@@ -65,6 +65,10 @@
     </tr>
   </tbody>
 </table>
+<ng-template #noWorkersFound>
+  <p class="govuk-util__bold">There are no matching results.</p>
+  <p>Make sure that your spelling is correct.</p>
+</ng-template>
 <app-pagination
   [itemsPerPage]="itemsPerPage"
   [totalNoOfItems]="workerCount"
