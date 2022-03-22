@@ -22,8 +22,10 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public workplaces: Workplace[] = [];
-  public workplacesCount = 0;
+  public workplacesCount = 12;
   public pendingWorkplaces: Workplace[] = [];
+  public itemsPerPage = 12;
+  public currentPageIndex = 0;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -74,6 +76,11 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
         },
       ),
     );
+  }
+
+  public handlePageUpdate(pageIndex: number): void {
+    this.currentPageIndex = pageIndex;
+    this.getEstablishments();
   }
 
   public changeOwnershipAndPermissions($event) {
