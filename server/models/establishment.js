@@ -1655,7 +1655,7 @@ module.exports = function (sequelize, DataTypes) {
             archived: false,
             ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
           },
-          required: false,
+          required: true,
           include: [
             {
               model: sequelize.models.job,

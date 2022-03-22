@@ -277,6 +277,33 @@ describe('worker route', () => {
         'worker123',
       ]);
     });
+
+    it('returns the worker count as zero and an empty workers array if no workers are found', async () => {
+      workersAndTrainingStub.returns({
+        rows: [],
+        count: 0,
+      });
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/establishment/123/worker',
+        query: {
+          searchTerm: 'worker123',
+        },
+      });
+
+      req.username = 'anyone';
+      req.userUid = '1234';
+      req.establishmentId = 123;
+      req.establishment = {
+        id: 123,
+      };
+
+      const res = httpMocks.createResponse();
+      await workerRoute.viewAllWorkers(req, res);
+
+      expect(res._getData().workers).to.deep.equal([]);
+      expect(res._getData().workerCount).to.equal(0);
+    });
   });
 
   describe('getTotalWorkers()', () => {
