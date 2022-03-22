@@ -1,17 +1,16 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
-import orderBy from 'lodash/orderBy';
 import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-staff-summary',
   templateUrl: './staff-summary.component.html',
 })
-export class StaffSummaryComponent implements OnInit, OnChanges {
+export class StaffSummaryComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
   @Input() workerCount: number;
@@ -41,20 +40,9 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.paginatedWorkers = this.workers;
-
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
-  }
-
-  ngOnChanges(): void {
-    //Adding jobRole attrubute to solve sorting by using only
-    //this property instead of itrating over the nested mainJob object
-    this.workers = this.workers.map((worker) => {
-      worker.jobRole = worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title;
-      return worker;
-    });
-    this.workers = orderBy(this.workers, [(worker) => worker.nameOrId.toLowerCase()], ['asc']); //sorting by default on first column
   }
 
   public sortBy(sortType: string): void {

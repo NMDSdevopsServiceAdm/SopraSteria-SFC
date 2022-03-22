@@ -155,6 +155,7 @@ describe('worker route', () => {
         mainJob: {
           id: sequence(),
           title: fake((f) => f.name.jobTitle()),
+          get: () => fake((f) => f.name.jobTitle()),
         },
         CompletedValue: true,
         created: fake((f) => f.date.past(1).toISOString()),

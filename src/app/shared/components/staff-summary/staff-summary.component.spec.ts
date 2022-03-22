@@ -64,7 +64,7 @@ describe('StaffSummaryComponent', () => {
     component.fixture.componentInstance.canEditWorker = true;
     // update one of the fake workers
     workers[0].nameOrId = 'joe mocked';
-    workers[0].jobRole = 'fake doctor';
+    workers[0].mainJob.jobRoleName = 'fake doctor';
     workers[0].completed = false;
     component.detectChanges();
 

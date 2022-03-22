@@ -263,6 +263,7 @@ const viewAllWorkers = async (req, res) => {
               mainJob: {
                 jobId: worker.mainJob.id,
                 title: worker.mainJob.title,
+                jobRoleName: worker.mainJob.get('jobRoleName'),
                 other: worker.MainJobFkOther ? worker.MainJobFkOther : undefined,
               },
               completed: worker.CompletedValue,
