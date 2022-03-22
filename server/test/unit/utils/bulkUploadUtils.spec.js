@@ -121,45 +121,11 @@ describe('bulkUploadUtils', () => {
       expect(hideNinoAndDob(dataArr, niNoIndex, dobIndex)).to.deep.equal(expectedResult);
     });
 
-    it('should return the data with the nino set to admin and dob blank, when the nino is the data but the dob is not', () => {
+    it('should return the data with the nino set to admin and dob blank, when the nino is in the data but the dob is not', () => {
       const dataArr = ['human', 'Nurse Jones', 'UPDATE', 'AB123456B', 'AB1 2CD', ''];
       const expectedResult = ['human', 'Nurse Jones', 'UPDATE', 'Admin', 'AB1 2CD', ''];
 
       expect(hideNinoAndDob(dataArr, niNoIndex, dobIndex)).to.deep.equal(expectedResult);
-    });
-  });
-
-  describe('showNinoAndDob', () => {
-    const niNoIndex = 3;
-    const dobIndex = 5;
-    const worker = { NationalInsuranceNumberValue: 'AB123456B', DateOfBirthValue: '01/02/1990' };
-
-    it('should return the data showing the nino and dob, when they are Admin in the data', () => {
-      const dataArr = ['human', 'Nurse Jones', 'UPDATE', 'Admin', 'AB1 2CD', 'Admin'];
-      const expectedResult = ['human', 'Nurse Jones', 'UPDATE', 'AB123456B', 'AB1 2CD', '01/02/1990'];
-
-      expect(showNinoAndDob(dataArr, worker, niNoIndex, dobIndex)).to.deep.equal(expectedResult);
-    });
-
-    it('should return the data showing the nino and dob, when they are in the data', () => {
-      const dataArr = ['human', 'Nurse Jones', 'UPDATE', 'AB123456B', 'AB1 2CD', '01/02/1990'];
-      const expectedResult = ['human', 'Nurse Jones', 'UPDATE', 'AB123456B', 'AB1 2CD', '01/02/1990'];
-
-      expect(showNinoAndDob(dataArr, worker, niNoIndex, dobIndex)).to.deep.equal(expectedResult);
-    });
-
-    it('should return the data with the nino and dob blank, when they are not in the data', () => {
-      const dataArr = ['human', 'Nurse Jones', 'UPDATE', '', 'AB1 2CD', ''];
-      const expectedResult = ['human', 'Nurse Jones', 'UPDATE', '', 'AB1 2CD', ''];
-
-      expect(showNinoAndDob(dataArr, worker, niNoIndex, dobIndex)).to.deep.equal(expectedResult);
-    });
-
-    it('should return the data with the nino set to admin and dob blank, when the nino is the data but the dob is not', () => {
-      const dataArr = ['human', 'Nurse Jones', 'UPDATE', '', 'AB1 2CD', 'Admin'];
-      const expectedResult = ['human', 'Nurse Jones', 'UPDATE', '', 'AB1 2CD', '01/02/1990'];
-
-      expect(showNinoAndDob(dataArr, worker, niNoIndex, dobIndex)).to.deep.equal(expectedResult);
     });
   });
 
@@ -216,14 +182,14 @@ describe('bulkUploadUtils', () => {
       expect(result).to.deep.equal(expectedResult);
     });
 
-    it('should return the data correctly formatted for a download type of Staff', async () => {
+    it('should return the dob and nino as admin, if the uploaded file has the nino and dob set to admin', async () => {
       const downloadType = 'Staff';
 
       const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
       const expectedResult = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
-        human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
+        human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
       const result = await staffData(data, downloadType);
 

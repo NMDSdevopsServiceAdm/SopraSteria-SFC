@@ -28,6 +28,7 @@ const locationIDs = [
   { locationID: '1-2182629819', mainService: 'Shared lives' },
   { locationID: '1-112944175', mainService: 'Specialist college services' },
   { locationID: '1-1667709562', mainService: 'Supported living services' },
+  { locationID: '1-6114402008', mainService: 'Community healthcare services' },
 ];
 
 describe('server/routes/establishments/cqcStatus', async () => {
