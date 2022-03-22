@@ -49,7 +49,7 @@
     "@sentry/browser": "^6.13.1",
     "@sentry/integrations": "^6.13.1",
     "@sentry/node": "^6.13.1",
-    "@sentry/tracing": "^6.13.1",
+    "@sentry/tracing": "^6.19.1",
     "ajv-errors": "^1.0.1",
     "angulartics2": "^10.0.0",
     "aws-sdk": "^2.833.0",
