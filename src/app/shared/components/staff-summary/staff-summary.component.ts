@@ -25,7 +25,7 @@ export class StaffSummaryComponent implements OnInit, OnChanges {
   public paginatedWorkers: Array<Worker>;
   private sortByValue = 'staffNameAsc';
   public itemsPerPage = 15;
-  public searchTerm = '';
+  private searchTerm = '';
 
   constructor(private permissionsService: PermissionsService, private workerService: WorkerService) {}
 
