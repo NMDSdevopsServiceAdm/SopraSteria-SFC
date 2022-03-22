@@ -3,7 +3,7 @@ const RateLimit = require('express-rate-limit');
 const RedisStore = require('rate-limit-redis');
 
 const store = new RedisStore({
-  redisURL: config.get('redis.uri'),
+  redisURL: config.get('redis.url'),
 });
 
 const rateLimiterConfig = {

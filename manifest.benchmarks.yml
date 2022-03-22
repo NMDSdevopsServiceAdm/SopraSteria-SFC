@@ -5,4 +5,5 @@ applications:
     buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.7.45
     services:
       - sfcbenchmarksdb
+      - sfcbenchmarks-redis
 stack: cflinuxfs3

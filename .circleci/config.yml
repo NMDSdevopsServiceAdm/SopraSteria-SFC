@@ -68,6 +68,10 @@ commands:
                 cf set-env "<<parameters.appname>>-dark" SQREEN_TOKEN "${<<parameters.env_prefix>>_SQREEN_TOKEN}"
             fi
 
+            if [ -n "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}" ]; then
+                cf set-env "<<parameters.appname>>-dark" REDIS_SERVICE_NAME "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}"
+            fi
+
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
