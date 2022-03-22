@@ -1489,6 +1489,7 @@ module.exports = function (sequelize, DataTypes) {
     limit = 0,
     pageIndex = 0,
     sortBy = 'staffNameAsc',
+    searchTerm = '',
   ) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
@@ -1652,8 +1653,9 @@ module.exports = function (sequelize, DataTypes) {
           attributes,
           where: {
             archived: false,
+            ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
           },
-          required: false,
+          required: true,
           include: [
             {
               model: sequelize.models.job,

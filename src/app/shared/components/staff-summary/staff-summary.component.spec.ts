@@ -10,6 +10,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models';
@@ -110,6 +111,31 @@ describe('StaffSummaryComponent', () => {
 
       expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
       expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);
+    });
+  });
+
+  describe('Calling getAllWorkers when using search', () => {
+    it('should call getAllWorkers with correct search term if passed', async () => {
+      const { component, getAllWorkersSpy } = await setup();
+
+      await component.fixture.whenStable();
+
+      const searchInput = component.getByLabelText('Search for staff records');
+      expect(searchInput).toBeTruthy();
+      userEvent.type(searchInput, 'search term here{enter}');
+
+      const expectedEmit = { pageIndex: 0, itemsPerPage: 15, sortBy: 'staffNameAsc', searchTerm: 'search term here' };
+      expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
+    });
+
+    it('should render the message that no workers were found if workerCount is falsy', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.workerCount = 0;
+      component.fixture.detectChanges();
+
+      expect(component.getByText('There are no matching results.')).toBeTruthy();
+      expect(component.getByText('Make sure that your spelling is correct.')).toBeTruthy();
     });
   });
 });

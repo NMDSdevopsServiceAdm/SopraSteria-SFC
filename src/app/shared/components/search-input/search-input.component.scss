@@ -1,0 +1,48 @@
+button > img {
+  filter: brightness(0) invert(1);
+}
+
+.input--search .govuk-input:focus {
+  z-index: 2;
+}
+
+.input--search .button-override--search {
+  height: 40px;
+  width: 40px;
+  box-shadow: none;
+  position: relative;
+  text-indent: -5000px;
+  overflow: hidden;
+}
+
+.input--search .button-override--search > img {
+  display: block;
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  top: 7.5px;
+  left: 7.5px;
+  pointer-events: none;
+}
+
+.input--search .button-override--search {
+  background-color: #1d70b8;
+  margin-left: -2px;
+}
+
+.input--search .button-override--search:hover {
+  background-color: #207dce;
+}
+
+.input--search .button-override--search:focus {
+  background-color: #1d70b8;
+  z-index: 2;
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+  box-shadow: inset 0 0 0 2px #000;
+  border: 2px solid #0b0c0c;
+}
+
+.input--search .button-override--search:active {
+  top: 0;
+}
