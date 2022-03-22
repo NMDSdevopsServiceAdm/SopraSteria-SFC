@@ -6,7 +6,7 @@ const isCI = require('is-ci');
 const store = isCI
   ? undefined
   : new RedisStore({
-      redisURL: config.get('redis.uri'),
+      redisURL: config.get('redis.url'),
     });
 
 const rateLimiterConfig = {

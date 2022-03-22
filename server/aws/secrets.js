@@ -35,7 +35,6 @@ const initialiseSecrets = async (region, wallet) => {
         SEND_IN_BLUE_KEY: mySecrets.SEND_IN_BLUE_KEY,
         SEND_IN_BLUE_WHITELIST: mySecrets.SEND_IN_BLUE_WHITELIST,
         SEND_EMAILS_SQS_QUEUE: mySecrets.SEND_EMAILS_SQS_QUEUE,
-        REDIS_URI: mySecrets.REDIS_URI,
       };
     }
   } catch (err) {
@@ -232,18 +231,6 @@ const dbAppRootCertificate = () => {
   }
 };
 
-const redisUri = () => {
-  if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.REDIS_URI) {
-      throw new Error('Unknown REDIS_URI secret');
-    } else {
-      return myLocalSecrets.REDIS_URI;
-    }
-  } else {
-    throw new Error('Unknown secrets');
-  }
-};
-
 module.exports.initialiseSecrets = initialiseSecrets;
 module.exports.dbHost = dbHost;
 module.exports.dbPass = dbPass;
@@ -261,4 +248,3 @@ module.exports.sendInBlueKey = sendInBlueKey;
 module.exports.sendInBlueWhitelist = sendInBlueWhitelist;
 module.exports.sendEmailsToSQSQueue = sendEmailsToSQSQueue;
 module.exports.getAddressKey = getAddressKey;
-module.exports.redisUri = redisUri;

@@ -1,6 +1,7 @@
 const convict = require('convict');
 const fs = require('fs');
 const yaml = require('js-yaml');
+const cfenv = require('cfenv');
 
 // AWS Secrets Manager override
 const AWSSecrets = require('../aws/secrets');
@@ -568,10 +569,16 @@ const config = convict({
     },
   },
   redis: {
-    uri: {
-      doc: 'Redis uri for rate limit',
-      env: 'REDIS_URI',
+    url: {
+      doc: 'The URI to redirect users to the Redis',
+      format: String,
       default: 'redis://localhost:6379',
+    },
+    serviceName: {
+      doc: 'Name of VCAP Service for Redis',
+      format: String,
+      default: 'Unknown',
+      env: 'REDIS_SERVICE_NAME',
     },
   },
 });
@@ -588,6 +595,12 @@ config.load(envConfigfile);
 
 // Perform validation
 config.validate({ allowed: 'strict' });
+
+const appEnv = cfenv.getAppEnv();
+
+if (!appEnv.isLocal) {
+  config.set('redis.url', appEnv.getServiceCreds(config.get('redis.serviceName')).uri);
+}
 
 // now, if defined, load secrets from AWS Secret Manager
 if (config.get('aws.secrets.use')) {
@@ -614,9 +627,6 @@ if (config.get('aws.secrets.use')) {
 
     // token secret
     config.set('jwt.secret', AWSSecrets.jwtSecret());
-
-    // redis
-    config.set('redis.uri', AWSSecrets.redisUri());
 
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);
