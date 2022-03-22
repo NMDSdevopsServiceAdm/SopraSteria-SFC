@@ -62,6 +62,7 @@ const jobBuilder = build('Job', {
   fields: {
     id: sequence(),
     title: fake((f) => f.lorem.sentence()),
+    jobRoleName: fake((f) => f.lorem.sentence()),
   },
 });
 
