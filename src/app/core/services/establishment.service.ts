@@ -318,4 +318,8 @@ export class EstablishmentService {
   public removeParentStatus(data: object): Observable<any> {
     return this.http.post<any>(`/api/admin/remove-parent-status`, data);
   }
+
+  public getChildWorkplaces(establishmentId: string): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/childWorkplaces`);
+  }
 }

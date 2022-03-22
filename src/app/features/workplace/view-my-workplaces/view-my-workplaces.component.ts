@@ -78,9 +78,15 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     );
   }
 
+  private getChildWorkplaces(): void {
+    this.establishmentService.getChildWorkplaces(this.primaryWorkplace.uid).subscribe((workplaces: any) => {
+      console.log(workplaces);
+    });
+  }
+
   public handlePageUpdate(pageIndex: number): void {
     this.currentPageIndex = pageIndex;
-    this.getEstablishments();
+    this.getChildWorkplaces();
   }
 
   public changeOwnershipAndPermissions($event) {
