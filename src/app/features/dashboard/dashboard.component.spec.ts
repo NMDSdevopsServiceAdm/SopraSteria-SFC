@@ -52,7 +52,12 @@ describe('DashboardComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canViewListOfWorkers', 'canViewListOfUsers', 'canAddUser']),
+          useFactory: MockPermissionsService.factory([
+            'canViewListOfWorkers',
+            'canViewEstablishment',
+            'canViewListOfUsers',
+            'canAddUser',
+          ]),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -118,38 +123,22 @@ describe('DashboardComponent', () => {
     });
 
     it('should display the Workplace tab', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.canViewEstablishment = true;
-      fixture.detectChanges();
-
+      const { getByTestId } = await setup();
       expect(getByTestId('tab_workplace')).toBeTruthy();
     });
 
     it('should display the Staff Record tab', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.canViewListOfWorkers = true;
-      fixture.detectChanges();
-
+      const { getByTestId } = await setup();
       expect(getByTestId('tab_staff-records')).toBeTruthy();
     });
 
     it('should display the Training and Qualifications tab', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.canViewListOfWorkers = true;
-      fixture.detectChanges();
-
+      const { getByTestId } = await setup();
       expect(getByTestId('tab_training-and-qualifications')).toBeTruthy();
     });
 
     it('should display the WDF tab', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.canViewEstablishment = true;
-      fixture.detectChanges();
-
+      const { getByTestId } = await setup();
       expect(getByTestId('tab_wdf')).toBeTruthy();
     });
 
@@ -179,7 +168,6 @@ describe('DashboardComponent', () => {
         ...component.workplace,
       };
       establishment.isRegulated = false;
-      component.canViewListOfUsers = true;
       component.workplace = establishment;
       fixture.detectChanges();
 
@@ -189,7 +177,6 @@ describe('DashboardComponent', () => {
     it('should display a flag on the workplace tab when the sharing permissions banner flag is true', async () => {
       const { component, fixture, getByTestId } = await setup();
 
-      component.canViewEstablishment = true;
       component.showSharingPermissionsBanner = true;
       fixture.detectChanges();
 
