@@ -46,6 +46,22 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('My account link', () => {
+    it('should show my name when logged in', async () => {
+      const { component } = await setup(false, 0, true);
+
+      expect(component.getByText('John')).toBeTruthy();
+    });
+
+    it('should show my name when logged in', async () => {
+      const { component } = await setup(false, 0, true);
+
+      const nameLink = component.getByText('John');
+
+      expect(nameLink.getAttribute('href')).toEqual('/account-management');
+    });
+  });
+
   describe('Back to admin link', () => {
     it('should display a Back to admin link if user is an admin and is logged in', async () => {
       const { component } = await setup(true, 0, true);
