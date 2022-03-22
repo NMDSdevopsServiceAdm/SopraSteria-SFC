@@ -1,6 +1,0 @@
-applications:
-  - name: sfcdev
-    memory: 1G
-    disk_quota: 2GB
-    buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.7.45
-stack: cflinuxfs3
