@@ -19,9 +19,11 @@ import {
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import sinon from 'sinon';
 
 import { PaginationComponent } from '../pagination/pagination.component';
+import { SearchInputComponent } from '../search-input/search-input.component';
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
 
 const establishmentBuilder = build('Establishment', {
@@ -51,7 +53,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       TrainingAndQualificationsSummaryComponent,
       {
         imports: [HttpClientTestingModule, RouterTestingModule],
-        declarations: [PaginationComponent],
+        declarations: [PaginationComponent, SearchInputComponent],
         providers: [
           { provide: PermissionsService, useValue: mockPermissionsService },
           { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -204,5 +206,34 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       'training',
       'wdf-summary',
     ]);
+  });
+
+  describe('calls getAllWorkers on workerService when using search', () => {
+    it('should call getAllWorkers with correct search term if passed', async () => {
+      const { getByLabelText, workerServiceSpy } = await setup();
+
+      const searchInput = getByLabelText('Search staff training records');
+      expect(searchInput).toBeTruthy();
+
+      userEvent.type(searchInput, 'search term here{enter}');
+
+      const expectedEmit = {
+        pageIndex: 0,
+        itemsPerPage: 15,
+        sortBy: 'trainingExpired',
+        searchTerm: 'search term here',
+      };
+      expect(workerServiceSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
+    });
+
+    it('should render the message that no workers were found if workerCount is falsy', async () => {
+      const { fixture, getByText } = await setup();
+
+      fixture.componentInstance.workerCount = 0;
+      fixture.detectChanges();
+
+      expect(getByText('There are no matching results.')).toBeTruthy();
+      expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
+    });
   });
 });
