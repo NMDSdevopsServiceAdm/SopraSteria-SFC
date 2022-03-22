@@ -1,13 +1,13 @@
 <div class="govuk-!-width-full input--search">
-  <label for="search" class="govuk-label"
+  <label [for]="ref" class="govuk-label"
     >Search<span *ngIf="accessibleLabel" class="govuk-visually-hidden"> {{ accessibleLabel }}</span></label
   >
   <div class="govuk-grid-row govuk-!-margin-0">
     <div class="govuk-grid-column-two-thirds govuk__flex govuk-util__light-bg govuk-!-padding-2">
       <input
         class="govuk-input"
-        id="search"
-        name="search"
+        [id]="ref"
+        [name]="ref"
         type="text"
         (input)="handleOnInput($event)"
         [value]="searchTerm"
