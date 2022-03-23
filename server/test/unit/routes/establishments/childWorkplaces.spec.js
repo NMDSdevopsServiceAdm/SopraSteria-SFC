@@ -21,10 +21,8 @@ describe('server/routes/establishments/childWorkplaces', () => {
       res = httpMocks.createResponse();
     });
 
-    it('should return 200 when valid req passed in', async () => {
-      await getChildWorkplaces(req, res);
-
-      expect(res.statusCode).to.deep.equal(200);
+    afterEach(() => {
+      sinon.restore();
     });
 
     it('should return 500 when an error is thrown', async () => {
@@ -33,6 +31,30 @@ describe('server/routes/establishments/childWorkplaces', () => {
       await getChildWorkplaces(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
+    });
+
+    it('should return 200 status and child workplace data from db call when valid req', async () => {
+      const modelData = [
+        {
+          dataOwner: 'Workplace',
+          dataOwnershipRequested: null,
+          dataPermissions: null,
+          mainService: 'Carers support',
+          name: '12345',
+          uid: 'ca720581-5319-4ae8-b941-a5a4071ab828',
+          updated: '2022-01-31T16:40:27.780Z',
+          ustatus: null,
+        },
+      ];
+
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(modelData);
+
+      await getChildWorkplaces(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(200);
+      expect(response.childWorkplaces).to.deep.equal(modelData);
     });
   });
 });

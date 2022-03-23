@@ -1970,8 +1970,26 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getChildWorkplaces = async function () {
-    return 'made it to establshment model get child';
+  Establishment.getChildWorkplaces = async function (establishmentUid) {
+    return await this.findAll({
+      attributes: ['uid', 'updated', 'NameValue', 'dataOwner', 'dataPermissions', 'dataOwnershipRequested', 'ustatus'],
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name'],
+        },
+      ],
+      where: {
+        ParentUID: establishmentUid,
+        ustatus: {
+          [Op.or]: {
+            [Op.ne]: 'REJECTED',
+            [Op.is]: null,
+          },
+        },
+      },
+    });
   };
 
   return Establishment;

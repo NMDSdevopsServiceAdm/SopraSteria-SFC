@@ -5,7 +5,7 @@ const models = require('../../models');
 const getChildWorkplaces = async (req, res) => {
   try {
     const childWorkplaces = await models.establishment.getChildWorkplaces(req.params.id);
-    return res.status(200).json(childWorkplaces);
+    return res.status(200).json({ childWorkplaces });
   } catch (error) {
     console.error(error);
     return res.status(500).send();
