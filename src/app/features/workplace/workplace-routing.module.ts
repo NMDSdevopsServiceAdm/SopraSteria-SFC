@@ -41,6 +41,7 @@ import { SuccessComponent } from './success/success.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
+import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
@@ -71,6 +72,13 @@ const routes: Routes = [
         resolve: {
           users: AllUsersForEstablishmentResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
+        },
+      },
+      {
+        path: 'users',
+        component: UsersComponent,
+        data: {
+          title: 'Workplace Users',
         },
       },
       {

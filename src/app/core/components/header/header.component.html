@@ -29,8 +29,8 @@
           <li class="govuk-header__navigation-item">
             <a [routerLink]="['/account-management']" class="govuk-header__link">{{ fullname }}</a>
           </li>
-          <li class="govuk-header__navigation-item">
-            <a [routerLink]="['/users']" class="govuk-header__link">Users</a>
+          <li *ngIf="!isOnAdminScreen" class="govuk-header__navigation-item">
+            <a [routerLink]="userUrl" class="govuk-header__link">Users</a>
           </li>
           <li class="govuk-header__navigation-item">
             <a href="#" (click)="signOut($event)" class="govuk-header__link">Logout</a>
@@ -38,7 +38,7 @@
         </ng-container>
       </ul>
       <ul class="govuk-header__navigation" id="navigation2" aria-label="Top Level Navigation">
-        <ng-container *ngIf="isAdminUser() && isLoggedIn() && !isOnAdminScreen()">
+        <ng-container *ngIf="isAdminUser && isLoggedIn() && !isOnAdminScreen">
           <li class="govuk-header__navigation-item">
             <a [routerLink]="['/sfcadmin']" class="govuk-link">Back to admin</a>
           </li>
