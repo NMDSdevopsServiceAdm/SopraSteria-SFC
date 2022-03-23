@@ -13,7 +13,7 @@ import { render } from '@testing-library/angular';
 
 import { HeaderComponent } from './header.component';
 
-describe('HeaderComponent', () => {
+fdescribe('HeaderComponent', () => {
   async function setup(isAdmin = false, subsidiaries = 0, isLoggedIn: boolean = false) {
     const component = await render(HeaderComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
@@ -53,12 +53,26 @@ describe('HeaderComponent', () => {
       expect(component.getByText('John')).toBeTruthy();
     });
 
-    it('should show my name when logged in', async () => {
+    it('should render my name link with the correct href', async () => {
       const { component } = await setup(false, 0, true);
 
       const nameLink = component.getByText('John');
 
       expect(nameLink.getAttribute('href')).toEqual('/account-management');
+    });
+
+    it('should show a users link when logged in', async () => {
+      const { component } = await setup(false, 0, true);
+
+      expect(component.getByText('Users')).toBeTruthy();
+    });
+
+    it('should render users link with the correct href', async () => {
+      const { component } = await setup(false, 0, true);
+
+      const usersLink = component.getByText('Users');
+
+      expect(usersLink.getAttribute('href')).toEqual('/users');
     });
   });
 

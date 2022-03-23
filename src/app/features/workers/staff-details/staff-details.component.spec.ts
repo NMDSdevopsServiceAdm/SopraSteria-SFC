@@ -6,7 +6,6 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
-import { Establishment } from '@core/model/establishment.model';
 import { WorkerEditResponse } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -21,19 +20,18 @@ import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { StaffDetailsComponent } from './staff-details.component';
 
-import { build, fake, sequence } from '@jackfranklin/test-data-bot';
-
 describe('StaffDetailsComponent', () => {
   const establishmentBuilder = build('Establishment', {
     fields: {
       id: sequence(),
-      uid: fake((f) => f.random.uuid()),
+      uid: fake((f) => f.datatype.uuid()),
       nameOrId: fake((f) => f.lorem.sentence()),
     },
   });

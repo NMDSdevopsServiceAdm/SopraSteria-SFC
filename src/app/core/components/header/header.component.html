@@ -30,6 +30,9 @@
             <a [routerLink]="['/account-management']" class="govuk-header__link">{{ fullname }}</a>
           </li>
           <li class="govuk-header__navigation-item">
+            <a [routerLink]="['/users']" class="govuk-header__link">Users</a>
+          </li>
+          <li class="govuk-header__navigation-item">
             <a href="#" (click)="signOut($event)" class="govuk-header__link">Logout</a>
           </li>
         </ng-container>

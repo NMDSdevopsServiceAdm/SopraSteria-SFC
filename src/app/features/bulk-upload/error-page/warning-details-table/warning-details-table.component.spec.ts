@@ -6,7 +6,7 @@ import { WarningDetailsTableComponent } from './warning-details-table.component'
 
 const itemBuilder = build('Item', {
   fields: {
-    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
+    lineNumber: fake((f) => f.datatype.number({ min: 2, max: 10 })),
     source: '',
     name: fake((f) => f.name.findName()),
   },
@@ -14,7 +14,7 @@ const itemBuilder = build('Item', {
 
 const workerItemBuilder = build('WorkerItem', {
   fields: {
-    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
+    lineNumber: fake((f) => f.datatype.number({ min: 2, max: 10 })),
     source: '',
     name: fake((f) => f.name.findName()),
     worker: fake((f) => f.lorem.sentence()),
@@ -24,7 +24,7 @@ const workerItemBuilder = build('WorkerItem', {
 const errorReportWarningBuilder = build('ErrorReportWarning', {
   fields: {
     warning: fake((f) => f.lorem.sentence()),
-    warnCode: fake((f) => f.random.number({ min: 1000, max: 9999 })),
+    warnCode: fake((f) => f.datatype.number({ min: 1000, max: 9999 })),
     items: [],
   },
 });
