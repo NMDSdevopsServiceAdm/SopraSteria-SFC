@@ -1989,6 +1989,10 @@ module.exports = function (sequelize, DataTypes) {
           },
         },
       },
+      order: [
+        [sequelize.literal('"Status" = \'PENDING\''), 'ASC'],
+        ['updated', 'DESC'],
+      ],
     });
   };
 
