@@ -6,24 +6,28 @@ export interface GetWorkplacesResponse {
   };
 }
 
+export interface GetChildWorkplacesResponse {
+  childWorkplaces: Workplace[];
+}
+
 export interface Workplace {
   dataOwner: WorkplaceDataOwner;
   dataPermissions: DataPermissions;
   dataOwnerPermissions: string;
-  isParent: boolean;
-  localIdentifier: string;
+  isParent?: boolean;
+  localIdentifier?: string;
   mainService: string;
   name: string;
-  parentUid: string;
+  parentUid?: string;
   uid: string;
   updated: string;
   ownershipChangeRequestId?: any;
-  parentName: string;
+  parentName?: string;
   ustatus?: string;
   linkToParentRequested?: string;
-  postCode: string;
+  postCode?: string;
   nameAndPostCode?: string;
-  id?:number;
+  id?: number;
 }
 
 export enum WorkplaceDataOwner {

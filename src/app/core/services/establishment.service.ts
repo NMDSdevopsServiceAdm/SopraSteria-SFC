@@ -12,6 +12,7 @@ import {
   setPermission,
   UpdateJobsRequest,
 } from '@core/model/establishment.model';
+import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -319,7 +320,7 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/remove-parent-status`, data);
   }
 
-  public getChildWorkplaces(establishmentId: string): Observable<any> {
+  public getChildWorkplaces(establishmentId: string): Observable<GetChildWorkplacesResponse> {
     return this.http.get<any>(`/api/establishment/${establishmentId}/childWorkplaces`);
   }
 }

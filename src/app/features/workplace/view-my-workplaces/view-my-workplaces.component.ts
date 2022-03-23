@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
+import { GetChildWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -35,11 +35,11 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private userService: UserService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
-    this.getEstablishments();
+    this.getChildWorkplaces();
     this.setupServerErrorsMap();
   }
 
@@ -52,36 +52,20 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private getEstablishments(): void {
-    this.subscriptions.add(
-      this.userService.getEstablishments().subscribe(
-        (workplaces: GetWorkplacesResponse) => {
-          if (workplaces.subsidaries) {
-            this.workplaces = workplaces.subsidaries.establishments;
-            this.workplaces = this.workplaces.filter((item) => item.ustatus === null);
-            this.pendingWorkplaces = workplaces.subsidaries.establishments.filter(
-              (item) => item.ustatus === 'PENDING' || item.ustatus === 'IN PROGRESS',
-            );
-            this.pendingWorkplaces.sort((a: any, b: any) => {
-              const dateA = new Date(a.updated).getTime();
-              const dateB = new Date(b.updated).getTime();
-              return dateB > dateA ? 1 : -1;
-            });
-            this.workplacesCount = this.workplaces.length;
-          }
-        },
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          this.errorSummaryService.scrollToErrorSummary();
-        },
-      ),
-    );
-  }
-
   private getChildWorkplaces(): void {
-    this.establishmentService.getChildWorkplaces(this.primaryWorkplace.uid).subscribe((workplaces: any) => {
-      console.log(workplaces);
-    });
+    this.establishmentService.getChildWorkplaces(this.primaryWorkplace.uid).subscribe(
+      (data: GetChildWorkplacesResponse) => {
+        this.workplaces = data.childWorkplaces.filter((item) => item.ustatus === null);
+        this.pendingWorkplaces = data.childWorkplaces.filter(
+          (item) => item.ustatus === 'PENDING' || item.ustatus === 'IN PROGRESS',
+        );
+        this.workplacesCount = this.workplaces.length;
+      },
+      (error: HttpErrorResponse) => {
+        this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        this.errorSummaryService.scrollToErrorSummary();
+      },
+    );
   }
 
   public handlePageUpdate(pageIndex: number): void {
@@ -89,12 +73,12 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.getChildWorkplaces();
   }
 
-  public changeOwnershipAndPermissions($event) {
+  public changeOwnershipAndPermissions($event): void {
     if ($event) {
-      this.getEstablishments();
+      this.getChildWorkplaces();
     }
   }
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }
