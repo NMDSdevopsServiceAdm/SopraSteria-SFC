@@ -8,7 +8,7 @@ module.exports.apiTrainingBuilder = build('Training', {
     title: fake((f) => f.lorem.words()),
     accredited: oneOf('Yes', 'No', "Don't know"),
     category: {
-      id: fake((f) => f.random.number({ min: 1, max: 40 })),
+      id: fake((f) => f.datatype.number({ min: 1, max: 40 })),
     },
   },
 });

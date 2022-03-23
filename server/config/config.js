@@ -1,6 +1,7 @@
 const convict = require('convict');
 const fs = require('fs');
 const yaml = require('js-yaml');
+const cfenv = require('cfenv');
 
 // AWS Secrets Manager override
 const AWSSecrets = require('../aws/secrets');
@@ -123,6 +124,54 @@ const config = convict({
       },
     },
   },
+
+  sqldb: {
+    host: {
+      doc: 'Database host name/IP',
+      format: String,
+      default: 'localhost',
+      env: 'DISBURSEMENT_DB_HOST',
+    },
+    database: {
+      doc: 'Database name',
+      format: String,
+      default: 'Disbursement',
+      env: 'DISBURSEMENT_DB',
+    },
+    username: {
+      doc: 'Database username',
+      format: String,
+      default: 'Unknown',
+      env: 'DISBURSEMENT_DB_USER_NAME',
+    },
+    password: {
+      doc: 'Database username',
+      format: '*',
+      default: 'Unknown',
+      env: 'DISBURSEMENT_DB_PASS',
+    },
+    port: {
+      doc: 'Database port',
+      format: 'port',
+      default: 1433,
+      env: 'DISBURSEMENT_DB_PORT',
+    },
+  },
+
+  redis: {
+    url: {
+      doc: 'The URI to redirect users to the Redis',
+      format: String,
+      default: 'redis://localhost:6379',
+    },
+    serviceName: {
+      doc: 'Name of VCAP Service for Redis',
+      format: String,
+      default: 'Unknown',
+      env: 'REDIS_SERVICE_NAME',
+    },
+  },
+
   notify: {
     key: {
       doc: 'The gov.uk notify key',
@@ -567,6 +616,19 @@ const config = convict({
       },
     },
   },
+  redis: {
+    url: {
+      doc: 'The URI to redirect users to the Redis',
+      format: String,
+      default: 'redis://localhost:6379',
+    },
+    serviceName: {
+      doc: 'Name of VCAP Service for Redis',
+      format: String,
+      default: 'Unknown',
+      env: 'REDIS_SERVICE_NAME',
+    },
+  },
 });
 
 // Load environment dependent configuration
@@ -581,6 +643,12 @@ config.load(envConfigfile);
 
 // Perform validation
 config.validate({ allowed: 'strict' });
+
+const appEnv = cfenv.getAppEnv();
+
+if (!appEnv.isLocal) {
+  config.set('redis.url', appEnv.getServiceCreds(config.get('redis.serviceName')).uri);
+}
 
 // now, if defined, load secrets from AWS Secret Manager
 if (config.get('aws.secrets.use')) {

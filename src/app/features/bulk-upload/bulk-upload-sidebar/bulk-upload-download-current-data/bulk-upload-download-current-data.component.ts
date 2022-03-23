@@ -3,6 +3,7 @@ import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { FileUtil } from '@core/utils/file-util';
+import saveAs from 'file-saver';
 import { take } from 'rxjs/operators';
 
 @Component({

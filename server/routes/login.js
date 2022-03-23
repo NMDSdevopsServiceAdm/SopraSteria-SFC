@@ -20,6 +20,8 @@ const { adminRoles } = require('../utils/adminUtils');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
+const { authLimiter } = require('../utils/middleware/rateLimiting');
+
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
   hash.update(`${password}${salt}`, 'ucs2'); // .NET C# Unicode encoding defaults to UTF-16 // lgtm [js/insufficient-password-hash]
@@ -33,6 +35,7 @@ const tribalHashCompare = (password, salt, expectedHash) => {
   }
 };
 
+router.use('/', authLimiter);
 router.post('/', async (req, res) => {
   const givenUsername = req.body.username.toLowerCase();
   const givenPassword = req.body.password;
@@ -447,7 +450,7 @@ router.post('/', async (req, res) => {
 
 // renews a given bearer token; this token must exist and must be valid
 //  it must be a Logged In "Bearer" token
-router.use('/refresh', isAuthorised);
+router.use('/refresh', isAuthorised, authLimiter);
 router.get('/refresh', async function (req, res) {
   // this assumes no re-authentication; this assumes no checking of origin; this assumes no validation against last logged in or timeout against last login
 

@@ -22,7 +22,6 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { AdminSkipService } from '../admin-skip.service';
 import { BulkUploadDownloadCurrentDataComponent } from '../bulk-upload-sidebar/bulk-upload-download-current-data/bulk-upload-download-current-data.component';
-import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { BulkUploadSanitiseDataCheckboxComponent } from '../bulk-upload-sidebar/bulk-upload-sanitise-data-checkbox/bulk-upload-sanitise-data-checkbox.component';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { DragAndDropFilesListComponent } from '../drag-and-drop-files-list/drag-and-drop-files-list.component';
@@ -76,7 +75,6 @@ describe('BulkUploadPageComponent', () => {
       declarations: [
         HomeTabComponent,
         DragAndDropFilesUploadComponent,
-        BulkUploadRelatedContentComponent,
         BulkUploadDownloadCurrentDataComponent,
         CodesAndGuidanceComponent,
         DragAndDropFilesListComponent,

@@ -48,12 +48,6 @@
         </h3>
         <p>Access all your special offers and discounts across Skills for Care's product range.</p>
       </div>
-      <div *ngIf="canViewReports">
-        <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
-          <a [routerLink]="['/wdf']"> Check your WDF data </a>
-        </h3>
-        <p class="govuk-!-margin-top-4">Check if your data meets Workforce Development Fund (WDF) requirements.</p>
-      </div>
       <div *ngIf="canBulkUpload">
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
           <a [routerLink]="['/bulk-upload']" (click)="setReturn()"> Bulk upload your data </a>

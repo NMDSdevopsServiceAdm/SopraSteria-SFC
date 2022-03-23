@@ -7,7 +7,6 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const db = {};
-
 class DBEmitter extends EventEmitter {
   constructor() {
     super();
@@ -85,7 +84,7 @@ if (AppConfig.ready) {
     sequelize.connectionManager.config.password = appConfig.get('db.password');
 
     sequelize.connectionManager.pool.destroyAllNow();
-    
+
     // now the database is ready
     db.status.ready = true;
     db.status.emit(db.status.READY_EVENT);

@@ -1,15 +1,17 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { EligibilityIconComponent } from '@shared/components/eligibility-icon/eligibility-icon.component';
 import { InsetTextComponent } from '@shared/components/inset-text/inset-text.component';
 import { BasicRecordComponent } from '@shared/components/staff-record-summary/basic-record/basic-record.component';
+import { SummaryRecordChangeComponent } from '@shared/components/summary-record-change/summary-record-change.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -38,15 +40,17 @@ describe('MandatoryDetailsComponent', () => {
   beforeEach(async () => {
     setup = await render(MandatoryDetailsComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [InsetTextComponent, BasicRecordComponent, SummaryRecordValueComponent, EligibilityIconComponent],
+      declarations: [
+        InsetTextComponent,
+        BasicRecordComponent,
+        SummaryRecordValueComponent,
+        EligibilityIconComponent,
+        SummaryRecordChangeComponent,
+      ],
       providers: [
         {
           provide: WindowRef,
           useValue: WindowRef,
-        },
-        {
-          provide: FormBuilder,
-          useValue: FormBuilder,
         },
         {
           provide: WorkerService,
@@ -56,6 +60,7 @@ describe('MandatoryDetailsComponent', () => {
           provide: PermissionsService,
           useValue: mockPermissionsService,
         },
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -83,6 +88,7 @@ describe('MandatoryDetailsComponent', () => {
 
     expect(component).toBeTruthy();
   });
+
   it('should show Worker information in summary list', async () => {
     const { getByTestId, fixture } = await setup;
 
@@ -95,6 +101,7 @@ describe('MandatoryDetailsComponent', () => {
     expect(container.getAllByText(expectedWorker.mainJob.title));
     expect(container.getAllByText(expectedWorker.contract));
   });
+
   it('should show have the title mandatory details on summary', async () => {
     const { getByTestId, fixture } = await setup;
 
@@ -104,6 +111,18 @@ describe('MandatoryDetailsComponent', () => {
 
     expect(container.getAllByText('Mandatory details'));
   });
+
+  it('should take you to the staff-details page when change link is clicked', async () => {
+    const { fixture, getByText } = await setup;
+
+    const worker = fixture.componentInstance.worker;
+    const changeLink = getByText('Change');
+
+    expect(changeLink.getAttribute('href')).toBe(
+      `/workplace/${establishment.uid}/staff-record/${worker.uid}/staff-details`,
+    );
+  });
+
   it('should submit and move to next page when add details button clicked', async () => {
     const { getByTestId, fixture } = await setup;
 
@@ -114,6 +133,7 @@ describe('MandatoryDetailsComponent', () => {
     detailsButton.click();
     expect(submission).toHaveBeenCalled();
   });
+
   it('should take you to to dashboard', async () => {
     const { getByTestId, fixture } = await setup;
 

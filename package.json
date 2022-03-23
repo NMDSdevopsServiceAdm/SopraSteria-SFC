@@ -34,7 +34,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.2.11",
-    "@angular/cdk": "^10.2.7",
+    "@angular/cdk": "^12.2.11",
     "@angular/cli": "~12.2.11",
     "@angular/common": "~12.2.11",
     "@angular/compiler": "~12.2.11",
@@ -50,7 +50,6 @@
     "@sentry/integrations": "^6.13.1",
     "@sentry/node": "^6.13.1",
     "@sentry/tracing": "^6.13.1",
-    "ajv": "^6.12.6",
     "ajv-errors": "^1.0.1",
     "angulartics2": "^10.0.0",
     "aws-sdk": "^2.833.0",
@@ -58,6 +57,7 @@
     "bcrypt-nodejs": "0.0.3",
     "canvg": "^3.0.7",
     "celebrate": "^13.0.4",
+    "cfenv": "^1.2.4",
     "cheerio": "1.0.0-rc.3",
     "compression": "^1.7.4",
     "configcat-js": "^5.5.0",
@@ -71,6 +71,7 @@
     "exceljs": "^4.2.0",
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.2",
+    "express-rate-limit": "^5.5.1",
     "express-sanitizer": "^1.0.6",
     "file-saver": "^2.0.5",
     "govuk-frontend": "^3.10.2",
@@ -96,7 +97,8 @@
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.4",
     "pug": "^3.0.1",
-    "rate-limiter-flexible": "^1.3.2",
+    "rate-limit-redis": "^2.1.0",
+    "redis": "^4.0.4",
     "request": "^2.88.2",
     "rxjs": "^6.6.7",
     "rxjs-compat": "^6.6.7",
@@ -107,6 +109,7 @@
     "sib-api-v3-sdk": "^8.2.1",
     "slugify": "^1.4.6",
     "sqreen": "^1.64.2",
+    "tedious": "^14.3.0",
     "text-encoding-utf-8": "^1.0.2",
     "toobusy-js": "^0.5.1",
     "tslib": "^2.0.0",
@@ -144,6 +147,8 @@
     "@types/sinon": "^10.0.5",
     "@typescript-eslint/eslint-plugin": "4.0.0",
     "@typescript-eslint/parser": "3.10.1",
+    "ajv": "^6.12.6",
+    "ajv-formats": "^2.1.0",
     "aws-sdk-mock": "^5.2.1",
     "chai": "^4.3.0",
     "codelyzer": "^6.0.2",
@@ -216,5 +221,15 @@
       "prettier --write"
     ],
     "*.{css,md}": "prettier --write"
+  },
+  "bin": "index.js",
+  "pkg": {
+    "scripts": [
+      "node_modules/tedious/lib/tedious.js",
+      "models/*.js"
+    ],
+    "assets": [
+      "config/log.json"
+    ]
   }
 }
