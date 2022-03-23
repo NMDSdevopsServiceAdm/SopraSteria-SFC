@@ -191,21 +191,21 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     return `bulk-upload-validation-${transformedFileName}`;
   }
 
-  public downloadFile(event: Event, key: string): void {
+  public downloadFile(event: Event, file: ValidatedFile): void {
     event.preventDefault();
 
     let type: BulkUploadFileType = null;
 
-    if (key.includes('staff')) {
+    if (file.fileType.includes('Worker')) {
       type = this.sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker;
-    } else if (key.includes('workplace')) {
+    } else if (file.fileType.includes('Establishment')) {
       type = BulkUploadFileType.Establishment;
-    } else if (key.includes('training')) {
+    } else if (file.fileType.includes('Training')) {
       type = BulkUploadFileType.Training;
     }
 
     this.bulkUploadService
-      .getUploadedFileFromS3(this.establishmentService.primaryWorkplace.uid, key, type)
+      .getUploadedFileFromS3(this.establishmentService.primaryWorkplace.uid, file.key, type)
       .pipe(take(1))
       .subscribe((response) => {
         const filename = FileUtil.getFileName(response);
