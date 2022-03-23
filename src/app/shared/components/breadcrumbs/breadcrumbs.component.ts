@@ -13,7 +13,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
 
   constructor(private breadcrumbService: BreadcrumbService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.subscriptions.add(
       this.breadcrumbService.routes$.subscribe((routes) => {
         this.breadcrumbs = routes ? this.getBreadcrumbs(routes) : null;
@@ -21,12 +21,12 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
   private getBreadcrumbs(routes: JourneyRoute[]) {
-    const currentPath = routes[routes.length - 1];
+    const routesWithReferrers = routes.filter((route) => route.referrer);
 
     routes = [
       {
@@ -36,17 +36,18 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
       ...routes,
     ];
 
-    if (currentPath.referrer) {
+    routesWithReferrers.forEach((referrerRoute) => {
       routes = routes.map((route) => {
-        if (route.path === currentPath.referrer.path) {
+        if (route.path === referrerRoute.referrer.path) {
           return {
             ...route,
-            fragment: currentPath.referrer.fragment,
+            fragment: referrerRoute.referrer.fragment,
           };
         }
         return route;
       });
-    }
+    });
+
     return routes;
   }
 }

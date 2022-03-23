@@ -50,7 +50,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canBulkUpload: boolean;
   public canEditEstablishment: boolean;
   public canViewWorkplaces: boolean;
-  public canViewReports: boolean;
   public isParent: boolean;
   public updateStaffRecords: boolean;
   public user: UserDetails;
@@ -333,9 +332,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.workplace.parentUid != null &&
       this.workplace.dataOwner === 'Workplace' &&
       this.user.role != 'Read';
-    this.canViewReports =
-      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
-      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
 
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;

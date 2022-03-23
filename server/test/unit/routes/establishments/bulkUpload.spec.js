@@ -27,7 +27,7 @@ const buildEstablishmentCSV = require('../../../../test/factories/establishment/
 const errorsBuilder = build('Error', {
   fields: {
     name: fake((f) => f.company.companyName()),
-    lineNumber: fake((f) => f.random.number()),
+    lineNumber: fake((f) => f.datatype.number()),
     worker: fake((f) => f.name.lastName()),
   },
 });

@@ -7,7 +7,7 @@ const models = require('../models');
 
 const generateJWT = require('../utils/security/generateJWT');
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
-// const rateLimiting = require('../utils/middleware/rateLimiting').rateLimiting;
+const { authLimiter } = require('../utils/middleware/rateLimiting');
 // const pCodeCheck = require('../utils/postcodeSanitizer');
 
 // Check if service exists
@@ -46,7 +46,7 @@ router.get('/username', (req, res) => {
   });
 });
 
-//router.use('/username/:username', rateLimiting);
+router.use('/username/:username', authLimiter);
 router.get('/username/:username', async (req, res) => {
   const requestedUsername = req.params.username.toLowerCase();
   try {

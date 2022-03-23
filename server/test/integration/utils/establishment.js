@@ -17,11 +17,11 @@ module.exports.apiEstablishmentBuilder = build('Establishment', {
     isRegulated: false,
     otherServices: [],
     mainService: {
-      reportingID: fake((f) => f.random.number({ min: 1, max: 75 })),
+      reportingID: fake((f) => f.datatype.number({ min: 1, max: 75 })),
     },
     capacity: [],
     serviceUsers: [],
-    NumberOfStaffValue: fake((f) => f.random.number({ min: 10, max: 300 })),
+    NumberOfStaffValue: fake((f) => f.datatype.number({ min: 10, max: 300 })),
     jobs: [],
     reasonsForLeaving: '',
   },

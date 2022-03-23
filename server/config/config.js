@@ -616,6 +616,19 @@ const config = convict({
       },
     },
   },
+  redis: {
+    url: {
+      doc: 'The URI to redirect users to the Redis',
+      format: String,
+      default: 'redis://localhost:6379',
+    },
+    serviceName: {
+      doc: 'Name of VCAP Service for Redis',
+      format: String,
+      default: 'Unknown',
+      env: 'REDIS_SERVICE_NAME',
+    },
+  },
 });
 
 // Load environment dependent configuration
@@ -636,6 +649,7 @@ const appEnv = cfenv.getAppEnv();
 if (!appEnv.isLocal) {
   config.set('redis.url', appEnv.getServiceCreds(config.get('redis.serviceName')).uri);
 }
+
 // now, if defined, load secrets from AWS Secret Manager
 if (config.get('aws.secrets.use')) {
   AWSSecrets.initialiseSecrets(config.get('aws.region'), config.get('aws.secrets.wallet')).then(() => {

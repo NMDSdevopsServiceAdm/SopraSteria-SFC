@@ -2,7 +2,7 @@ const { build, fake } = require('@jackfranklin/test-data-bot');
 
 module.exports = build('EstablishmentCSV', {
   fields: {
-    LOCALESTID: fake((f) => f.random.uuid()),
+    LOCALESTID: fake((f) => f.datatype.uuid()),
     STATUS: 'NEW',
     ESTNAME: fake((f) => f.company.companyName()),
     ADDRESS1: fake((f) => f.address.streetAddress()),
