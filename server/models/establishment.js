@@ -1970,5 +1970,9 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.getChildWorkplaces = async function () {
+    return 'made it to establshment model get child';
+  };
+
   return Establishment;
 };

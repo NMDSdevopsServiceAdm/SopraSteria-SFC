@@ -1,5 +1,7 @@
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
+const sinon = require('sinon');
+const models = require('../../../../models');
 
 const { getChildWorkplaces } = require('../../../../routes/establishments/childWorkplaces');
 
@@ -23,6 +25,14 @@ describe('server/routes/establishments/childWorkplaces', () => {
       await getChildWorkplaces(req, res);
 
       expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return 500 when an error is thrown', async () => {
+      sinon.stub(models.establishment, 'getChildWorkplaces').throws();
+
+      await getChildWorkplaces(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 });
