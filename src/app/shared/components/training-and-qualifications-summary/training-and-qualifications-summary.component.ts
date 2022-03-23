@@ -93,6 +93,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   }
 
   public handleSearch(searchTerm: string): void {
+    this.setPageIndex(0);
     this.searchTerm = searchTerm;
     this.refetchWorkers();
   }

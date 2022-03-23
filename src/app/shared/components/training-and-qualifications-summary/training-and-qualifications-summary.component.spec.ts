@@ -79,6 +79,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     const workerServiceSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
 
     const sortBySpy = spyOn(component, 'handleSortUpdate').and.callThrough();
+    const searchSpy = spyOn(component, 'handleSearch').and.callThrough();
 
     return {
       component,
@@ -89,6 +90,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       spy,
       workerServiceSpy,
       sortBySpy,
+      searchSpy,
     };
   }
 
@@ -210,7 +212,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
 
   describe('calls getAllWorkers on workerService when using search', () => {
     it('should call getAllWorkers with correct search term if passed', async () => {
-      const { getByLabelText, workerServiceSpy } = await setup();
+      const { getByLabelText, workerServiceSpy, searchSpy } = await setup();
 
       const searchInput = getByLabelText('Search staff training records');
       expect(searchInput).toBeTruthy();
@@ -224,6 +226,17 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
         searchTerm: 'search term here',
       };
       expect(workerServiceSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
+      expect(searchSpy).toHaveBeenCalledOnceWith('search term here');
+    });
+
+    it('should reset the pageIndex before calling getAllWorkers when handling search', async () => {
+      const { fixture, getByLabelText, workerServiceSpy } = await setup();
+
+      fixture.componentInstance.currentPageIndex = 1;
+      fixture.detectChanges();
+
+      userEvent.type(getByLabelText('Search staff training records'), 'search term here{enter}');
+      expect(workerServiceSpy.calls.mostRecent().args[1]).toEqual(jasmine.objectContaining({ pageIndex: 0 }));
     });
 
     it('should render the message that no workers were found if workerCount is falsy', async () => {
