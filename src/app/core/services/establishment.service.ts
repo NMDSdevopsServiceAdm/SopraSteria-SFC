@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
   allMandatoryTrainingCategories,
@@ -320,7 +321,9 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/remove-parent-status`, data);
   }
 
-  public getChildWorkplaces(establishmentId: string): Observable<GetChildWorkplacesResponse> {
-    return this.http.get<any>(`/api/establishment/${establishmentId}/childWorkplaces`);
+  public getChildWorkplaces(establishmentId: string, queryParams?: Params): Observable<GetChildWorkplacesResponse> {
+    return this.http
+      .get<any>(`/api/establishment/${establishmentId}/childWorkplaces`, { params: queryParams || {} })
+      .pipe(map((data) => data));
   }
 }

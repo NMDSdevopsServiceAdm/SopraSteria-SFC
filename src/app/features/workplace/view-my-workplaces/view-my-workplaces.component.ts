@@ -8,8 +8,8 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-view-my-workplaces',
@@ -24,7 +24,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public workplaces: Workplace[] = [];
   public workplacesCount = 12;
   public pendingWorkplaces: Workplace[] = [];
-  public itemsPerPage = 12;
+  public itemsPerPage = 3;
   public currentPageIndex = 0;
 
   constructor(
@@ -32,7 +32,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private userService: UserService,
   ) {}
 
   ngOnInit(): void {
@@ -53,19 +52,25 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   }
 
   private getChildWorkplaces(): void {
-    this.establishmentService.getChildWorkplaces(this.primaryWorkplace.uid).subscribe(
-      (data: GetChildWorkplacesResponse) => {
-        this.workplaces = data.childWorkplaces.filter((item) => item.ustatus === null);
-        this.pendingWorkplaces = data.childWorkplaces.filter(
-          (item) => item.ustatus === 'PENDING' || item.ustatus === 'IN PROGRESS',
-        );
-        this.workplacesCount = this.workplaces.length;
-      },
-      (error: HttpErrorResponse) => {
-        this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        this.errorSummaryService.scrollToErrorSummary();
-      },
-    );
+    this.establishmentService
+      .getChildWorkplaces(this.primaryWorkplace.uid, {
+        pageIndex: this.currentPageIndex,
+        itemsPerPage: this.itemsPerPage,
+      })
+      .pipe(take(1))
+      .subscribe(
+        (data: GetChildWorkplacesResponse) => {
+          this.workplaces = data.childWorkplaces.filter((item) => item.ustatus === null);
+          this.pendingWorkplaces = data.childWorkplaces.filter(
+            (item) => item.ustatus === 'PENDING' || item.ustatus === 'IN PROGRESS',
+          );
+          this.workplacesCount = this.workplaces.length;
+        },
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.errorSummaryService.scrollToErrorSummary();
+        },
+      );
   }
 
   public handlePageUpdate(pageIndex: number): void {
