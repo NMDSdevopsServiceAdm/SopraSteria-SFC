@@ -4,10 +4,17 @@ const models = require('../../models');
 
 const getChildWorkplaces = async (req, res) => {
   try {
-    const childWorkplaces = await models.establishment.getChildWorkplaces(req.params.id);
-    const formattedChildWorkplaces = formatChildWorkplaces(childWorkplaces);
+    const { itemsPerPage, pageIndex } = req.query;
 
-    return res.status(200).json({ childWorkplaces: formattedChildWorkplaces });
+    const childWorkplaces = await models.establishment.getChildWorkplaces(
+      req.params.id,
+      itemsPerPage ? +itemsPerPage : undefined,
+      pageIndex ? +pageIndex : undefined,
+    );
+
+    const formattedChildWorkplaces = formatChildWorkplaces(childWorkplaces.rows);
+
+    return res.status(200).json({ childWorkplaces: formattedChildWorkplaces, count: childWorkplaces.count });
   } catch (error) {
     console.error(error);
     return res.status(500).send();

@@ -1970,8 +1970,10 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getChildWorkplaces = async function (establishmentUid) {
-    return await this.findAll({
+  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 0, pageIndex = 0) {
+    const offset = pageIndex * limit;
+
+    return await this.findAndCountAll({
       attributes: ['uid', 'updated', 'NameValue', 'dataOwner', 'dataPermissions', 'dataOwnershipRequested', 'ustatus'],
       include: [
         {
@@ -1993,6 +1995,8 @@ module.exports = function (sequelize, DataTypes) {
         [sequelize.literal('"Status" = \'PENDING\''), 'ASC'],
         ['updated', 'DESC'],
       ],
+      limit,
+      offset,
     });
   };
 
