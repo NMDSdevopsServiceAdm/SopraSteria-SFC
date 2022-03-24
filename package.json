@@ -175,7 +175,7 @@
     "opener": "^1.5.2",
     "prettier": "2.5.1",
     "protractor": "^7.0.0",
-    "puppeteer": "^10.4.0",
+    "puppeteer": "^13.5.1",
     "require-dir": "^1.2.0",
     "rimraf": "^3.0.2",
     "sandboxed-module": "^2.0.4",
@@ -188,8 +188,8 @@
     "webpack-bundle-analyzer": "^4.4.2"
   },
   "engines": {
-    "node": "12.21.0",
-    "npm": "7.6.3"
+    "node": "16",
+    "npm": "8"
   },
   "nyc": {
     "branches": 22,
