@@ -28,7 +28,7 @@
       <tr [id]="getFileId(file)" class="govuk-table__row">
         <td class="govuk-table__cell govuk-table__cell--file-name">
           <p class="govuk-!-margin-bottom-0">
-            <a href="/bulk-upload/download/{{ encodeUrl(file.filename) }}" (click)="downloadFile($event, file.key)">
+            <a href="/bulk-upload/download/{{ encodeUrl(file.filename) }}" (click)="downloadFile($event, file)">
               {{ file.filename }}
             </a>
           </p>
