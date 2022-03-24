@@ -131,6 +131,7 @@ export class MockEstablishmentService extends EstablishmentService {
     return of({
       childWorkplaces: [subsid1, subsid2, subsid3],
       count: 3,
+      activeWorkplaceCount: 2,
     } as GetChildWorkplacesResponse);
   }
 }

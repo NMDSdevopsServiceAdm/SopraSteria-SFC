@@ -9,6 +9,7 @@ export interface GetWorkplacesResponse {
 export interface GetChildWorkplacesResponse {
   childWorkplaces: Workplace[];
   count: number;
+  activeWorkplaceCount: number;
 }
 
 export interface Workplace {

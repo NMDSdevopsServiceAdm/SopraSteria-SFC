@@ -22,7 +22,8 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public workplaces: Workplace[] = [];
-  public workplacesCount = 12;
+  public workplacesCount: number;
+  public activeWorkplaceCount: number;
   public pendingWorkplaces: Workplace[] = [];
   public itemsPerPage = 3;
   public currentPageIndex = 0;
@@ -65,6 +66,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
             (item) => item.ustatus === 'PENDING' || item.ustatus === 'IN PROGRESS',
           );
           this.workplacesCount = data.count;
+          this.activeWorkplaceCount = data.activeWorkplaceCount;
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
