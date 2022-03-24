@@ -223,6 +223,31 @@ describe('DragAndDropFilesListComponent', () => {
       );
     });
 
+    it("should call getUploadedFileFromS3 with the Staff file type when the staff link is clicked and sanitise is false and file name doesn't contain staff", async () => {
+      const { component, fixture, bulkUploadServiceSpy, getByText, establishmentService } = await setup();
+
+      const workerFile = {
+        ...WorkerFile,
+        key: '1/bulkUpload/S.csv',
+        filename: 'S.csv',
+      };
+      const dummyFiles = [workerFile, TrainingFile, EstablishmentFile];
+
+      component.sanitise = false;
+      component.uploadedFiles = dummyFiles as ValidatedFile[];
+      fixture.detectChanges();
+
+      const link = getByText(workerFile.filename);
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(bulkUploadServiceSpy).toHaveBeenCalledWith(
+        establishmentService.primaryWorkplace.uid,
+        workerFile.key,
+        BulkUploadFileType.Worker,
+      );
+    });
+
     it('should call getUploadedFileFromS3 with the Establishment file type when the staff link is clicked and sanitise is false', async () => {
       const { component, fixture, bulkUploadServiceSpy, getByText, establishmentService } = await setup();
 
