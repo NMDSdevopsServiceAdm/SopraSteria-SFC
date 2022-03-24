@@ -8,6 +8,7 @@ export interface GetWorkplacesResponse {
 
 export interface GetChildWorkplacesResponse {
   childWorkplaces: Workplace[];
+  count: number;
 }
 
 export interface Workplace {

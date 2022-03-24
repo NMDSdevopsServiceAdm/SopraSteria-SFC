@@ -96,8 +96,8 @@ describe('ViewMyWorkplacesComponent', () => {
     expect(queryByText('Your application for Third Subsid is being reviewed by Skills for Care.')).toBeTruthy();
   });
 
-  it('should display all workplaces number which is number of active accounts (1)', async () => {
+  it('should display all workplaces number returned from getChildWorkplaces (3)', async () => {
     const { queryByText } = await setup();
-    expect(queryByText('All workplaces (1)')).toBeTruthy();
+    expect(queryByText('All workplaces (3)')).toBeTruthy();
   });
 });

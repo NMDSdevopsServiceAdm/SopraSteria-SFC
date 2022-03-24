@@ -130,6 +130,7 @@ export class MockEstablishmentService extends EstablishmentService {
   public getChildWorkplaces(establishmentUid: string): Observable<GetChildWorkplacesResponse> {
     return of({
       childWorkplaces: [subsid1, subsid2, subsid3],
+      count: 3,
     } as GetChildWorkplacesResponse);
   }
 }

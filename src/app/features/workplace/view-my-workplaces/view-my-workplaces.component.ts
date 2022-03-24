@@ -64,7 +64,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
           this.pendingWorkplaces = data.childWorkplaces.filter(
             (item) => item.ustatus === 'PENDING' || item.ustatus === 'IN PROGRESS',
           );
-          this.workplacesCount = this.workplaces.length;
+          this.workplacesCount = data.count;
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
