@@ -5,7 +5,7 @@ const models = require('../../../../models');
 
 const { getChildWorkplaces, formatChildWorkplaces } = require('../../../../routes/establishments/childWorkplaces');
 
-describe('server/routes/establishments/childWorkplaces', () => {
+describe.only('server/routes/establishments/childWorkplaces', () => {
   let modelData;
   beforeEach(() => {
     modelData = {
@@ -22,6 +22,7 @@ describe('server/routes/establishments/childWorkplaces', () => {
         },
       ],
       count: 1,
+      pendingCount: 0,
     };
   });
   describe('getChildWorkplaces', () => {
@@ -74,6 +75,19 @@ describe('server/routes/establishments/childWorkplaces', () => {
           ustatus: null,
         },
       ]);
+    });
+
+    it('should return activeWorkplaceCount which equals count minus pendingCount from db call', async () => {
+      modelData.count = 5;
+      modelData.pendingCount = 3;
+
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(modelData);
+
+      await getChildWorkplaces(req, res);
+
+      const response = res._getJSONData();
+
+      expect(response.activeWorkplaceCount).to.equal(2);
     });
 
     it('should return count from db call', async () => {

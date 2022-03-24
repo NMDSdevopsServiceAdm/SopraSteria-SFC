@@ -12,9 +12,15 @@ const getChildWorkplaces = async (req, res) => {
       pageIndex ? +pageIndex : undefined,
     );
 
+    const activeWorkplaceCount = childWorkplaces.count - childWorkplaces.pendingCount;
+
     const formattedChildWorkplaces = formatChildWorkplaces(childWorkplaces.rows);
 
-    return res.status(200).json({ childWorkplaces: formattedChildWorkplaces, count: childWorkplaces.count });
+    return res.status(200).json({
+      childWorkplaces: formattedChildWorkplaces,
+      count: childWorkplaces.count,
+      activeWorkplaceCount,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).send();

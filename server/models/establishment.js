@@ -1973,7 +1973,7 @@ module.exports = function (sequelize, DataTypes) {
   Establishment.getChildWorkplaces = async function (establishmentUid, limit = 0, pageIndex = 0) {
     const offset = pageIndex * limit;
 
-    return await this.findAndCountAll({
+    const data = await this.findAndCountAll({
       attributes: ['uid', 'updated', 'NameValue', 'dataOwner', 'dataPermissions', 'dataOwnershipRequested', 'ustatus'],
       include: [
         {
@@ -1998,6 +1998,17 @@ module.exports = function (sequelize, DataTypes) {
       limit,
       offset,
     });
+
+    const pendingCount = await Establishment.count({
+      where: {
+        ParentUID: establishmentUid,
+        ustatus: {
+          [Op.or]: [['PENDING', 'IN PROGRESS']],
+        },
+      },
+    });
+
+    return { ...data, pendingCount };
   };
 
   return Establishment;
