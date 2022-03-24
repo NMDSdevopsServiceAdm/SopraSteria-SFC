@@ -1992,7 +1992,7 @@ module.exports = function (sequelize, DataTypes) {
         },
       },
       order: [
-        [sequelize.literal('"Status" = \'PENDING\''), 'ASC'],
+        [sequelize.literal('"Status" = \'PENDING\' OR "Status" = \'IN PROGRESS\''), 'ASC'],
         ['updated', 'DESC'],
       ],
       limit,
