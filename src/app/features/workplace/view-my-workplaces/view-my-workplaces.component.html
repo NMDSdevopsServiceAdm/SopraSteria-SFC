@@ -19,21 +19,19 @@
 </div>
 
 <ul class="govuk-list">
-  <ng-container *ngIf="pendingWorkplaces.length">
+  <ng-container *ngFor="let workplace of workplaces">
     <li
       class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue"
-      *ngFor="let workplaces of pendingWorkplaces"
+      *ngIf="workplace.ustatus === 'PENDING' || workplace.ustatus === 'IN PROGRESS'"
     >
       <div>
         <span class="govuk-!-padding-left-3"
-          >Your application for {{ workplaces.name }} is being reviewed by Skills for Care.</span
+          >Your application for {{ workplace.name }} is being reviewed by Skills for Care.</span
         >
         <span class="govuk-util__float-right govuk-!-padding-right-3">Pending</span>
       </div>
     </li>
-  </ng-container>
-  <ng-container *ngIf="workplaces.length">
-    <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let workplace of workplaces">
+    <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngIf="workplace.ustatus === null">
       <app-workplace-info-panel
         [workplace]="workplace"
         (changeOwnershipAndPermissionsEvent)="changeOwnershipAndPermissions($event)"
@@ -42,7 +40,8 @@
     </li>
   </ng-container>
 </ul>
-<p *ngIf="pendingWorkplaces.length === 0 && workplaces.length === 0">There are no workplaces.</p>
+
+<p *ngIf="workplaces.length === 0">There are no workplaces.</p>
 <app-pagination
   [itemsPerPage]="itemsPerPage"
   [totalNoOfItems]="workplacesCount"

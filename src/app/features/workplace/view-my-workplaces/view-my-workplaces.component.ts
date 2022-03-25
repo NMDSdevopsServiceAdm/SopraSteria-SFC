@@ -24,7 +24,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public workplaces: Workplace[] = [];
   public workplacesCount: number;
   public activeWorkplaceCount: number;
-  public pendingWorkplaces: Workplace[] = [];
   public itemsPerPage = 3;
   public currentPageIndex = 0;
 
@@ -61,10 +60,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(
         (data: GetChildWorkplacesResponse) => {
-          this.workplaces = data.childWorkplaces.filter((item) => item.ustatus === null);
-          this.pendingWorkplaces = data.childWorkplaces.filter(
-            (item) => item.ustatus === 'PENDING' || item.ustatus === 'IN PROGRESS',
-          );
+          this.workplaces = data.childWorkplaces;
           this.workplacesCount = data.count;
           this.activeWorkplaceCount = data.activeWorkplaceCount;
         },
@@ -80,7 +76,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.getChildWorkplaces();
   }
 
-  public changeOwnershipAndPermissions($event): void {
+  public changeOwnershipAndPermissions($event: Event): void {
     if ($event) {
       this.getChildWorkplaces();
     }
