@@ -236,7 +236,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       fixture.detectChanges();
 
       userEvent.type(getByLabelText('Search staff training records'), 'search term here{enter}');
-      expect(workerServiceSpy.calls.mostRecent().args[1]).toEqual(jasmine.objectContaining({ pageIndex: 0 }));
+      expect(workerServiceSpy.calls.mostRecent().args[1].pageIndex).toEqual(0);
     });
 
     it('should render the message that no workers were found if workerCount is falsy', async () => {
