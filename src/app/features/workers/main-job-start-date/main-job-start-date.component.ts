@@ -52,7 +52,8 @@ export class MainJobStartDateComponent extends QuestionComponent {
     this.next = this.getRoutePath('other-job-roles');
     this.previous = this.getReturnPath();
 
-    if (history.state?.navigatedFrom) this.return = null;
+    const { navigatedFrom = null } = history.state;
+    if (['staff-records', 'mandatory-details'].includes(navigatedFrom)) this.return = null;
   }
 
   public setupFormErrorsMap(): void {
