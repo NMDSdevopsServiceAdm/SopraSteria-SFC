@@ -73,6 +73,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
   public handlePageUpdate(pageIndex: number): void {
     this.currentPageIndex = pageIndex;
+
     this.getChildWorkplaces();
   }
 

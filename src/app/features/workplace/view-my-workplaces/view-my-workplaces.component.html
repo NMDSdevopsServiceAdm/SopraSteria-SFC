@@ -45,6 +45,6 @@
 <app-pagination
   [itemsPerPage]="itemsPerPage"
   [totalNoOfItems]="workplacesCount"
-  (emitCurrentPage)="handlePageUpdate($event)"
+  (currentPageIndexChange)="handlePageUpdate($event)"
   [currentPageIndex]="currentPageIndex"
 ></app-pagination>
