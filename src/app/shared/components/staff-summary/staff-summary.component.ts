@@ -83,6 +83,7 @@ export class StaffSummaryComponent implements OnInit {
   }
 
   public handleSearch(searchTerm: string): void {
+    this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
     this.getPageOfWorkers();
   }
