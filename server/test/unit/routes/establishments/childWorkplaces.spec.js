@@ -5,7 +5,7 @@ const models = require('../../../../models');
 
 const { getChildWorkplaces, formatChildWorkplaces } = require('../../../../routes/establishments/childWorkplaces');
 
-describe.only('server/routes/establishments/childWorkplaces', () => {
+describe('server/routes/establishments/childWorkplaces', () => {
   let modelData;
   beforeEach(() => {
     modelData = {
