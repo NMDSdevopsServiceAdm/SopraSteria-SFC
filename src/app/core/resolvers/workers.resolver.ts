@@ -21,9 +21,11 @@ export class WorkersResolver implements Resolve<any> {
       ? route.paramMap.get('establishmentuid')
       : this.establishmentService.establishmentId;
 
+    const paginationParams = route.data.workerPagination ? { pageIndex: 0, itemsPerPage: 15 } : {};
+
     if (!this.permissionsService.can(workplaceUid, 'canViewListOfWorkers')) return of(null);
 
-    return this.workerService.getAllWorkers(workplaceUid, { pageIndex: 0, itemsPerPage: 15 }).pipe(
+    return this.workerService.getAllWorkers(workplaceUid, paginationParams).pipe(
       catchError(() => {
         this.router.navigate(['/problem-with-the-service']);
         return of(null);
