@@ -63,6 +63,7 @@ export class StaffSummaryComponent implements OnInit {
 
   public handlePageUpdate(pageIndex: number): void {
     this.currentPageIndex = pageIndex;
+
     this.getPageOfWorkers();
   }
 

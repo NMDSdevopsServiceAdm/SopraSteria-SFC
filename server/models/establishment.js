@@ -1970,5 +1970,46 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 0, pageIndex = 0) {
+    const offset = pageIndex * limit;
+
+    const data = await this.findAndCountAll({
+      attributes: ['uid', 'updated', 'NameValue', 'dataOwner', 'dataPermissions', 'dataOwnershipRequested', 'ustatus'],
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name'],
+        },
+      ],
+      where: {
+        ParentUID: establishmentUid,
+        ustatus: {
+          [Op.or]: {
+            [Op.ne]: 'REJECTED',
+            [Op.is]: null,
+          },
+        },
+      },
+      order: [
+        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
+        ['updated', 'DESC'],
+      ],
+      limit,
+      offset,
+    });
+
+    const pendingCount = await Establishment.count({
+      where: {
+        ParentUID: establishmentUid,
+        ustatus: {
+          [Op.or]: [['PENDING', 'IN PROGRESS']],
+        },
+      },
+    });
+
+    return { ...data, pendingCount };
+  };
+
   return Establishment;
 };

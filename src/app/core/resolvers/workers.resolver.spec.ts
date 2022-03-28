@@ -63,17 +63,20 @@ describe('WorkersResolver', () => {
     const { resolver, route, workerService } = setup();
 
     const idFromEstablishmentService = '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
+    const queryParams = { pageIndex: 0, itemsPerPage: 15 };
+
     resolver.resolve(route.snapshot);
 
-    expect(workerService.getAllWorkers).toHaveBeenCalledWith(idFromEstablishmentService);
+    expect(workerService.getAllWorkers).toHaveBeenCalledWith(idFromEstablishmentService, queryParams);
   });
 
   it('should call getAllWorkers with id from params when it exists', () => {
     const { resolver, route, workerService } = setup('paramUid');
 
+    const queryParams = { pageIndex: 0, itemsPerPage: 15 };
     resolver.resolve(route.snapshot);
 
-    expect(workerService.getAllWorkers).toHaveBeenCalledWith('paramUid');
+    expect(workerService.getAllWorkers).toHaveBeenCalledWith('paramUid', queryParams);
   });
 
   it('should not call getAllWorkers when workplace does not have canViewListOfWorkers permission', () => {

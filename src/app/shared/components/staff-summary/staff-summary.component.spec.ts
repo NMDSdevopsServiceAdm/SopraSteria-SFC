@@ -100,20 +100,6 @@ describe('StaffSummaryComponent', () => {
     }
   });
 
-  describe('Calling getAllWorkers when using pagination', () => {
-    it('should call getAllWorkers on load with establishment uid, pageIndex 0 and itemsPerPage 15', async () => {
-      const { component, getAllWorkersSpy } = await setup();
-
-      await component.fixture.whenStable();
-
-      const establishmentUid = component.fixture.componentInstance.workplace.uid;
-      const paginationEmission = { pageIndex: 0, itemsPerPage: 15, sortBy: 'staffNameAsc' };
-
-      expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
-      expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);
-    });
-  });
-
   describe('Calling getAllWorkers when using search', () => {
     it('should call getAllWorkers with correct search term if passed', async () => {
       const { component, getAllWorkersSpy } = await setup();

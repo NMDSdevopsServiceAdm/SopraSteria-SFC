@@ -23,7 +23,7 @@ describe('PaginationComponent', () => {
     component.isBigWindow = isBigWindow;
     fixture.detectChanges();
 
-    const emitSpy = spyOn(fixture.componentInstance.emitCurrentPage, 'emit');
+    const emitSpy = spyOn(fixture.componentInstance.currentPageIndexChange, 'emit');
 
     return { component, fixture, queryByText, emitSpy, queryByTestId, rerender };
   }
@@ -93,31 +93,11 @@ describe('PaginationComponent', () => {
     });
   });
 
-  describe('Displaying changes when clicking to page', () => {
-    it('should display 1 as link and 2 as text when Next clicked from first page', async () => {
-      const { fixture, queryByText, queryByTestId } = await setup();
+  describe('Displaying page numbers as links/text', () => {
+    it('should display 1 as text and 2 as link when on first page', async () => {
+      const { component, fixture, queryByTestId } = await setup();
 
-      const nextPageButton = queryByText('Next');
-      nextPageButton.click();
-
-      fixture.detectChanges();
-
-      expect(queryByTestId('pageNoLink-0')).toBeTruthy();
-      expect(queryByTestId('pageNoText-0')).toBeFalsy();
-
-      expect(queryByTestId('pageNoText-1')).toBeTruthy();
-      expect(queryByTestId('pageNoLink-1')).toBeFalsy();
-    });
-
-    it('should display 1 as text and 2 as link when Previous clicked from second page', async () => {
-      const { component, fixture, queryByText, queryByTestId } = await setup();
-
-      component.currentPageIndex = 1;
-      fixture.detectChanges();
-
-      const previousPageButton = queryByText('Previous');
-      previousPageButton.click();
-
+      component.currentPageIndex = 0;
       fixture.detectChanges();
 
       expect(queryByTestId('pageNoLink-0')).toBeFalsy();
@@ -127,12 +107,23 @@ describe('PaginationComponent', () => {
       expect(queryByTestId('pageNoLink-1')).toBeTruthy();
     });
 
-    it('should display 1 as link and 3 as text when 3 clicked from first page', async () => {
-      const { fixture, queryByText, queryByTestId } = await setup();
+    it('should display 1 as link and 2 as text when on second page', async () => {
+      const { fixture, component, queryByTestId } = await setup();
 
-      const nextPageButton = queryByText('3');
-      nextPageButton.click();
+      component.currentPageIndex = 1;
+      fixture.detectChanges();
 
+      expect(queryByTestId('pageNoLink-0')).toBeTruthy();
+      expect(queryByTestId('pageNoText-0')).toBeFalsy();
+
+      expect(queryByTestId('pageNoText-1')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-1')).toBeFalsy();
+    });
+
+    it('should display 1 and 2 as links and 3 as text when on third page', async () => {
+      const { fixture, component, queryByTestId } = await setup();
+
+      component.currentPageIndex = 2;
       fixture.detectChanges();
 
       expect(queryByTestId('pageNoLink-0')).toBeTruthy();
@@ -172,14 +163,6 @@ describe('PaginationComponent', () => {
       nextPageButton.click();
 
       expect(emitSpy).toHaveBeenCalledWith(2);
-    });
-
-    it('should emit 0 when currentPageNumber set to zero (when pagination is reset due to changes outside component, e.g. changing sortBy)', async () => {
-      const { component, emitSpy } = await setup();
-
-      component.currentPageIndex = 0;
-
-      expect(emitSpy).toHaveBeenCalledWith(0);
     });
   });
 

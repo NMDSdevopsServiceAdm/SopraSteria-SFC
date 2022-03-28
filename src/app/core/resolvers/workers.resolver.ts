@@ -23,7 +23,7 @@ export class WorkersResolver implements Resolve<any> {
 
     if (!this.permissionsService.can(workplaceUid, 'canViewListOfWorkers')) return of(null);
 
-    return this.workerService.getAllWorkers(workplaceUid).pipe(
+    return this.workerService.getAllWorkers(workplaceUid, { pageIndex: 0, itemsPerPage: 15 }).pipe(
       catchError(() => {
         this.router.navigate(['/problem-with-the-service']);
         return of(null);
