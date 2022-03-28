@@ -80,6 +80,9 @@ const routes: Routes = [
         data: {
           title: 'Workplace Users',
         },
+        resolve: {
+          users: AllUsersForEstablishmentResolver,
+        },
       },
       {
         path: 'start',

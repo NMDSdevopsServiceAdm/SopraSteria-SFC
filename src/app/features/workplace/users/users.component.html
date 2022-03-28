@@ -1,3 +1,79 @@
-<div>
-  <h1>Users</h1>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <legend class="fobuk-fieldset__legend govuk-fieldset__legend--l">
+      <span class="govuk-caption-l" data-testid="workplace-name"
+        >{{ workplace.name }} (Workplace ID: {{ workplace.nmdsId }})</span
+      >
+      <h1 class="govuk-fieldset__heading">Users ({{ users.length }})</h1>
+    </legend>
+    <div *ngIf="showSecondUserBanner">
+      <app-inset-text [color]="'todo'">
+        <h3 class="govuk-heading-s">You should add a second user</h3>
+        <p>
+          Adding a second user will give Skills for Care another person to contact at your workplace should you be
+          unavailable.
+        </p>
+      </app-inset-text>
+    </div>
+  </div>
+  <div class="govuk-grid-column-full govuk-util__align-right">
+    <a
+      *ngIf="canAddUser"
+      role="button"
+      draggable="false"
+      class="govuk-button"
+      [routerLink]="['/workplace', workplace.uid, 'user', 'create']"
+    >
+      Add a user
+    </a>
+  </div>
 </div>
+<ng-container *ngIf="users.length > 0; else noUsers">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Full name</th>
+            <th class="govuk-table__header" scope="col">Username</th>
+            <th class="govuk-table__header" scope="col">Last updated</th>
+            <th class="govuk-table__header" scope="col">Permissions</th>
+            <th class="govuk-table__header" scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <ng-container *ngFor="let user of users">
+            <tr class="govuk-table__row" [class.govuk-error-table__row--highlight]="isPending(user)">
+              <td class="govuk-table__cell" [ngClass]="{ 'govuk-!-padding-left-3': isPending(user) }">
+                <ng-container *ngIf="canViewUser; else noLink">
+                  <a [routerLink]="['/workplace', workplace.uid, 'user', user.uid]" data-testid="username-link">{{
+                    user.fullname
+                  }}</a>
+                </ng-container>
+                <ng-template #noLink>
+                  {{ user.fullname }}
+                </ng-template>
+              </td>
+              <td class="govuk-table__cell">
+                {{ isPending(user) ? '-' : user.username }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ user.updated | date: 'd MMM y' }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ getUserType(user) }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ user.status }}
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #noUsers>
+  <p>There are no user accounts.</p>
+</ng-template>
