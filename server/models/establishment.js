@@ -1970,7 +1970,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 0, pageIndex = 0) {
+  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 0, pageIndex = 0, searchTerm = '') {
     const offset = pageIndex * limit;
 
     const data = await this.findAndCountAll({
@@ -1990,6 +1990,7 @@ module.exports = function (sequelize, DataTypes) {
             [Op.is]: null,
           },
         },
+        ...(searchTerm ? { NameValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
       },
       order: [
         [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],

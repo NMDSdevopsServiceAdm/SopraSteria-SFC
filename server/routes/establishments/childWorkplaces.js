@@ -4,12 +4,13 @@ const models = require('../../models');
 
 const getChildWorkplaces = async (req, res) => {
   try {
-    const { itemsPerPage, pageIndex } = req.query;
+    const { itemsPerPage, pageIndex, searchTerm } = req.query;
 
     const childWorkplaces = await models.establishment.getChildWorkplaces(
       req.params.id,
       itemsPerPage ? +itemsPerPage : undefined,
       pageIndex ? +pageIndex : undefined,
+      searchTerm,
     );
 
     const activeWorkplaceCount = childWorkplaces.count - childWorkplaces.pendingCount;
