@@ -6,6 +6,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./search-input.component.scss'],
 })
 export class SearchInputComponent {
+  @Input() ref = 'search';
   @Input() searchButtonName = 'search';
   @Input() accessibleLabel: string;
   @Output() emitInput = new EventEmitter<string>();

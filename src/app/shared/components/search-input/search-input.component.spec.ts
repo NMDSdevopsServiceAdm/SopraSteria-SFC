@@ -6,11 +6,12 @@ import userEvent from '@testing-library/user-event';
 import { SearchInputComponent } from './search-input.component';
 
 describe('SearchInputComponent', () => {
-  const setup = (accessibleLabel?: string) =>
+  const setup = (accessibleLabel?: string, ref?: string) =>
     render(SearchInputComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule],
       componentProperties: {
-        accessibleLabel: accessibleLabel,
+        accessibleLabel,
+        ref,
       },
     });
 
@@ -90,5 +91,13 @@ describe('SearchInputComponent', () => {
     userEvent.click(component.getByRole('button', { name: 'search' }));
 
     expect(emitSpy).not.toHaveBeenCalled();
+  });
+
+  it('allows a reference to avoid classing of rendered components', async () => {
+    const component = await setup(null, 'my-input-id');
+
+    const searchInput = component.getByLabelText('Search');
+    expect(searchInput).toBeTruthy();
+    expect(searchInput.id).toBe('my-input-id');
   });
 });

@@ -1,5 +1,5 @@
 <div class="govuk-form-group govuk-!-margin-bottom-6">
-  <div class="govuk__flex govuk__justify-content-space-between govuk-grid-row">
+  <div class="govuk-grid-row govuk-util__vertical-align-center govuk-!-margin-bottom-4 govuk-!-margin-top-4">
     <div class="govuk-grid-column-one-half govuk__flex govuk__align-items-flex-end" *ngIf="showViewByToggle">
       <span class="govuk-list govuk-list--inline govuk-!-margin-bottom-1 govuk-!-margin-right-6"
         >View by staff name</span
@@ -12,8 +12,12 @@
         View by training category
       </a>
     </div>
-    <div class="govuk-grid-column-one-quarter"></div>
-    <div class="govuk-list govuk-list--inline govuk-!-margin-bottom-0 govuk-grid-column-one-quarter">
+  </div>
+  <div class="govuk-grid-row govuk-util__vertical-align-center">
+    <div class="govuk-grid-column-three-quarters">
+      <app-search-input accessibleLabel="staff training records" (emitInput)="handleSearch($event)"></app-search-input>
+    </div>
+    <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2">
       <label class="govuk-label" for="sortByTrainingStaff"> Sort by </label>
       <select
         class="govuk-select govuk-!-width-full"
@@ -32,7 +36,7 @@
     </div>
   </div>
 </div>
-<table class="govuk-table" data-testid="training-worker-table">
+<table *ngIf="workerCount; else noWorkersFound" class="govuk-table" data-testid="training-worker-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Staff name</th>
@@ -94,6 +98,10 @@
     </tr>
   </tbody>
 </table>
+<ng-template #noWorkersFound>
+  <p class="govuk-util__bold">There are no matching results.</p>
+  <p>Make sure that your spelling is correct.</p>
+</ng-template>
 <app-pagination
   [itemsPerPage]="itemsPerPage"
   [totalNoOfItems]="workerCount"

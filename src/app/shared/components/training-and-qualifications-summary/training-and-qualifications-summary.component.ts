@@ -25,6 +25,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public itemsPerPage = 15;
   public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
+  private searchTerm = '';
 
   constructor(
     private permissionsService: PermissionsService,
@@ -63,6 +64,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
         sortBy: sortByParamMap[this.sortByValue],
         pageIndex: this.currentPageIndex,
         itemsPerPage: this.itemsPerPage,
+        ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
       })
       .pipe(take(1))
       .subscribe(({ workers, workerCount }) => {
@@ -88,5 +90,11 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     event.preventDefault();
     const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
+  }
+
+  public handleSearch(searchTerm: string): void {
+    this.setPageIndex(0);
+    this.searchTerm = searchTerm;
+    this.refetchWorkers();
   }
 }

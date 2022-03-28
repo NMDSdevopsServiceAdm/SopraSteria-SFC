@@ -114,6 +114,16 @@ describe('StaffSummaryComponent', () => {
       expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
     });
 
+    it('should reset the pageIndex before calling getAllWorkers when handling search', async () => {
+      const { component, getAllWorkersSpy } = await setup();
+
+      component.fixture.componentInstance.currentPageIndex = 1;
+      component.fixture.detectChanges();
+
+      userEvent.type(component.getByLabelText('Search for staff records'), 'search term here{enter}');
+      expect(getAllWorkersSpy.calls.mostRecent().args[1].pageIndex).toEqual(0);
+    });
+
     it('should render the message that no workers were found if workerCount is falsy', async () => {
       const { component } = await setup();
 

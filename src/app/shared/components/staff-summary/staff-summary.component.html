@@ -1,6 +1,10 @@
 <div class="govuk-grid-row govuk-util__vertical-align-center">
   <div class="govuk-grid-column-three-quarters">
-    <app-search-input accessibleLabel="for staff records" (emitInput)="handleSearch($event)"></app-search-input>
+    <app-search-input
+      ref="trainingRecordSearch"
+      accessibleLabel="for staff records"
+      (emitInput)="handleSearch($event)"
+    ></app-search-input>
   </div>
 
   <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2">
