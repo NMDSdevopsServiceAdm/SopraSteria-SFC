@@ -42,7 +42,10 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
 
-    this.setWorkplaceVariables(this.route.snapshot.data.childWorkplaces);
+    const childWorkplaces = this.route.snapshot.data.childWorkplaces;
+    this.activeWorkplaceCount = childWorkplaces.activeWorkplaceCount;
+    this.setWorkplaceVariables(childWorkplaces);
+
     this.setupServerErrorsMap();
   }
 
@@ -89,7 +92,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   private setWorkplaceVariables(data: GetChildWorkplacesResponse): void {
     this.workplaces = data.childWorkplaces;
     this.workplacesCount = data.count;
-    this.activeWorkplaceCount = data.activeWorkplaceCount;
   }
 
   public handleSearch(searchTerm: string): void {

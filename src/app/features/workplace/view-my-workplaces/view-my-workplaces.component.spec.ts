@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -20,6 +21,8 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
+import sinon from 'sinon';
 
 import { WorkplaceInfoPanelComponent } from '../workplace-info-panel/workplace-info-panel.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
@@ -92,6 +95,7 @@ describe('ViewMyWorkplacesComponent', () => {
       queryByText,
       getByLabelText,
       getChildWorkplacesSpy,
+      establishmentService,
     };
   }
 
@@ -158,6 +162,28 @@ describe('ViewMyWorkplacesComponent', () => {
 
       expect(getByText('There are no matching results.')).toBeTruthy();
       expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
+    });
+
+    it('should not update All workplaces count when search results returned but should set workplacesCount used for pagination', async () => {
+      const { component, fixture, getByLabelText, establishmentService, getByText } = await setup();
+
+      sinon.stub(establishmentService, 'getChildWorkplaces').returns(
+        of({
+          childWorkplaces: [subsid1, subsid2, subsid3],
+          count: 1,
+          activeWorkplaceCount: 0,
+        } as GetChildWorkplacesResponse),
+      );
+
+      const searchInput = getByLabelText('Search child workplace records');
+      expect(searchInput).toBeTruthy();
+
+      userEvent.type(searchInput, 'search term here{enter}');
+
+      fixture.detectChanges();
+
+      expect(getByText('All workplaces (2)'));
+      expect(component.workplacesCount).toEqual(1);
     });
   });
 });
