@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
@@ -19,13 +19,14 @@ import { MockUserService, subsid1, subsid2, subsid3 } from '@core/test-utils/Moc
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { WorkplaceInfoPanelComponent } from '../workplace-info-panel/workplace-info-panel.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
 describe('ViewMyWorkplacesComponent', () => {
   async function setup() {
-    const { fixture, getByText, getByTestId, queryByText } = await render(ViewMyWorkplacesComponent, {
+    const { fixture, getByText, getByTestId, queryByText, getByLabelText } = await render(ViewMyWorkplacesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [WorkplaceInfoPanelComponent],
       providers: [
@@ -76,7 +77,11 @@ describe('ViewMyWorkplacesComponent', () => {
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
+
     const permissionsService = injector.inject(PermissionsService) as PermissionsService;
+    const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
+
+    const getChildWorkplacesSpy = spyOn(establishmentService, 'getChildWorkplaces').and.callThrough();
 
     return {
       component,
@@ -85,6 +90,8 @@ describe('ViewMyWorkplacesComponent', () => {
       getByText,
       getByTestId,
       queryByText,
+      getByLabelText,
+      getChildWorkplacesSpy,
     };
   }
 
@@ -113,5 +120,44 @@ describe('ViewMyWorkplacesComponent', () => {
   it('should display activeWorkplaceCount returned from getChildWorkplaces (2)', async () => {
     const { queryByText } = await setup();
     expect(queryByText('All workplaces (2)')).toBeTruthy();
+  });
+
+  describe('calls getChildWorkplaces on establishmentService when using search', () => {
+    it('should call getChildWorkplaces with correct search term if passed', async () => {
+      const { getByLabelText, getChildWorkplacesSpy } = await setup();
+
+      const searchInput = getByLabelText('Search child workplace records');
+      expect(searchInput).toBeTruthy();
+
+      userEvent.type(searchInput, 'search term here{enter}');
+
+      const expectedEmit = {
+        pageIndex: 0,
+        itemsPerPage: 12,
+        searchTerm: 'search term here',
+      };
+
+      expect(getChildWorkplacesSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
+    });
+
+    it('should reset the pageIndex before calling getChildWorkplaces when handling search', async () => {
+      const { fixture, getByLabelText, getChildWorkplacesSpy } = await setup();
+
+      fixture.componentInstance.currentPageIndex = 1;
+      fixture.detectChanges();
+
+      userEvent.type(getByLabelText('Search child workplace records'), 'search term here{enter}');
+      expect(getChildWorkplacesSpy.calls.mostRecent().args[1].pageIndex).toEqual(0);
+    });
+
+    it('should render the message that no child workplaces were found if workplacesCount is 0', async () => {
+      const { fixture, getByText } = await setup();
+
+      fixture.componentInstance.workplacesCount = 0;
+      fixture.detectChanges();
+
+      expect(getByText('There are no matching results.')).toBeTruthy();
+      expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
+    });
   });
 });
