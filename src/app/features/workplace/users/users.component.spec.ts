@@ -92,11 +92,8 @@ describe('UsersComponent', () => {
     expect(queryByText('Add a user')).toBeFalsy();
   });
 
-  it('should show add user banner if showSecondUserBanner is true', async () => {
-    const { component, fixture, queryByText } = await setup();
-
-    component.showSecondUserBanner = true;
-    fixture.detectChanges();
+  it('should show add user banner if there is 1 user and canAddUser permission is true', async () => {
+    const { queryByText } = await setup();
 
     const addUserText =
       'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
@@ -104,8 +101,22 @@ describe('UsersComponent', () => {
     expect(queryByText(addUserText, { exact: false })).toBeTruthy();
   });
 
-  it('should not show add user banner if showSecondUserBanner is false', async () => {
-    const { queryByText } = await setup();
+  it('should not show add user banner if there is 1 user and canAddUser permission is false', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.canAddUser = false;
+    component.setShowSecondUserBanner();
+    fixture.detectChanges();
+
+    const addUserText =
+      'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
+
+    expect(queryByText(addUserText, { exact: false })).toBeFalsy();
+  });
+
+  it('should not show add user banner if there is more than 1 user', async () => {
+    const { queryByText } = await setup(true);
+
     const addUserText =
       'Adding a second user will give Skills for Care another person to contact at your workplace should you be unavailable.';
 

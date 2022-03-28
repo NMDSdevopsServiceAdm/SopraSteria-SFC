@@ -41,6 +41,11 @@ export class UsersComponent implements OnInit {
       ['status', 'isPrimary', 'role', (user: UserDetails) => (user.fullname ? user.fullname.toLowerCase() : 'a')],
       ['desc', 'desc', 'asc', 'asc'],
     );
+    this.setShowSecondUserBanner();
+  }
+
+  public setShowSecondUserBanner(): void {
+    this.showSecondUserBanner = this.canAddUser && this.route.snapshot.data.users?.length === 1;
   }
 
   public getUserType(user: UserDetails): string {
