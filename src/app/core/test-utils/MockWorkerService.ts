@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { MultipleTrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
@@ -263,7 +264,7 @@ export class MockWorkerService extends WorkerService {
     },
   ] as Worker[]);
 
-  getAllWorkers(establishmentUid: string): Observable<WorkersResponse> {
+  getAllWorkers(establishmentUid: string, queryParams?: Params): Observable<WorkersResponse> {
     return of(getAllWorkersResponse);
   }
 
