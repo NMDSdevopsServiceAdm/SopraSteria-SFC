@@ -1,6 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
-import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -19,8 +17,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public fullname: string;
   public user: UserDetails;
   public showDropdown = false;
-  public workplace: Establishment;
-  public userUrl: URLStructure;
+  public workplaceId: string;
 
   constructor(
     private authService: AuthService,
@@ -55,27 +52,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private onAdminScreen(): void {
     this.subscriptions.add(
       this.authService.isOnAdminScreen$.subscribe((isOnAdminScreen) => {
-        console.log(isOnAdminScreen);
         this.isOnAdminScreen = isOnAdminScreen;
-        // this.getEstablishment();
+        this.getEstablishmentId();
       }),
     );
   }
 
-  private getEstablishment(): void {
-    // this.workplace = this.isOnAdminScreen ? null : this.establishmentService.establishment;
-    console.log('*********** here ********');
-    if (!this.isOnAdminScreen) {
-      console.log('Here');
-      this.workplace = this.establishmentService.establishment;
-      const url = ['/workplace', this.workplace.uid, 'users'];
-      this.userUrl = { url };
-    } else {
-      console.log('There');
-      this.workplace = null;
-      const url = ['/'];
-      this.userUrl = { url };
-    }
+  private getEstablishmentId(): void {
+    this.workplaceId = this.establishmentService.establishmentId;
   }
 
   public toggleMenu(): void {

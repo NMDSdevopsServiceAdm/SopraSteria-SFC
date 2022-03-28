@@ -30,7 +30,7 @@
             <a [routerLink]="['/account-management']" class="govuk-header__link">{{ fullname }}</a>
           </li>
           <li *ngIf="!isOnAdminScreen" class="govuk-header__navigation-item">
-            <a [routerLink]="userUrl" class="govuk-header__link">Users</a>
+            <a [routerLink]="['/workplace', workplaceId, 'users']" class="govuk-header__link">Users</a>
           </li>
           <li class="govuk-header__navigation-item">
             <a href="#" (click)="signOut($event)" class="govuk-header__link">Logout</a>
