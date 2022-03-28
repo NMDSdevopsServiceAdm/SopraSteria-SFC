@@ -36,11 +36,11 @@ describe('ChildWorkplacesResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it('should call getChildWorkplaces with id from establishmentService', () => {
+  it('should call getChildWorkplaces with id from establishmentService and initial pagination params', () => {
     const { resolver, establishmentService } = setup();
 
     const primaryWorkplaceUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
-    const queryParams = { pageIndex: 0, itemsPerPage: 15 };
+    const queryParams = { pageIndex: 0, itemsPerPage: 12 };
 
     resolver.resolve();
 

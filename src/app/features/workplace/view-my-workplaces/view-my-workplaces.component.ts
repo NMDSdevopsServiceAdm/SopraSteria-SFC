@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -24,7 +25,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public workplaces: Workplace[] = [];
   public workplacesCount: number;
   public activeWorkplaceCount: number;
-  public itemsPerPage = 3;
+  public itemsPerPage = 12;
   public currentPageIndex = 0;
 
   constructor(
@@ -32,13 +33,15 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
-    this.getChildWorkplaces();
+
+    this.setWorkplaceVariables(this.route.snapshot.data.childWorkplaces);
     this.setupServerErrorsMap();
   }
 
@@ -60,9 +63,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(
         (data: GetChildWorkplacesResponse) => {
-          this.workplaces = data.childWorkplaces;
-          this.workplacesCount = data.count;
-          this.activeWorkplaceCount = data.activeWorkplaceCount;
+          this.setWorkplaceVariables(data);
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
@@ -82,6 +83,13 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
       this.getChildWorkplaces();
     }
   }
+
+  private setWorkplaceVariables(data: GetChildWorkplacesResponse): void {
+    this.workplaces = data.childWorkplaces;
+    this.workplacesCount = data.count;
+    this.activeWorkplaceCount = data.activeWorkplaceCount;
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
