@@ -14,7 +14,7 @@ import { render } from '@testing-library/angular';
 
 import { HeaderComponent } from './header.component';
 
-fdescribe('HeaderComponent', () => {
+describe('HeaderComponent', () => {
   async function setup(isAdmin = false, subsidiaries = 0, isLoggedIn: boolean = false) {
     const component = await render(HeaderComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
@@ -75,16 +75,18 @@ fdescribe('HeaderComponent', () => {
     it('should render users link with the correct href when on a workplace', async () => {
       const { component } = await setup(false, 0, true);
 
+      const workplaceId = component.fixture.componentInstance.workplaceId;
       const usersLink = component.getByText('Users');
 
-      expect(usersLink.getAttribute('href')).toEqual('/users');
+      expect(usersLink.getAttribute('href')).toEqual(`/workplace/${workplaceId}/users`);
     });
 
     it('should not show a users link when logged in and on the admin pages', async () => {
       const { component } = await setup(true, 0, true);
 
-      component.fixture.componentInstance.workplace = null;
+      component.fixture.componentInstance.isOnAdminScreen = true;
       component.fixture.detectChanges();
+
       expect(component.queryByText('Users')).toBeFalsy();
     });
   });
