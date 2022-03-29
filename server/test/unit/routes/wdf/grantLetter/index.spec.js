@@ -4,9 +4,9 @@ const axios = require('axios');
 // const httpMocks = require('node-mocks-http');
 const config = require('../../../../../config/config');
 
-const { generateToken, createAgreement } = require('../../../../../../server/routes/wdf/grantLetter/echoSign');
+const { createAgreement } = require('../../../../../../server/routes/wdf/grantLetter/echoSign');
 
-describe.only('GrantLetter', () => {
+describe('GrantLetter', () => {
   const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
   let axiosStub;
 
@@ -19,44 +19,6 @@ describe.only('GrantLetter', () => {
   });
 
   describe('Adobe Signs Utils', () => {
-    describe('generateToken', () => {
-      it('returns the generated token from adobe sign', async () => {
-        axiosStub.resolves({
-          access_token: 'access_token',
-          refresh_token: 'refresh_token',
-          api_access_point: 'https://api.eu2.adobesign.com/',
-          web_access_point: 'https://secure.eu2.adobesign.com/',
-          token_type: 'Bearer',
-          expires_in: 3600,
-        });
-
-        const token = await generateToken();
-
-        expect(axiosStub).to.have.been.calledOnceWith(`${adobeSignBaseUrl}/oauth/v2/token`);
-        expect(token).to.equal('access_token');
-      });
-
-      it('returns a token error message if Adobe Sign fails to return a token', async () => {
-        axiosStub.resolves({
-          message: 'something wrong',
-        });
-
-        const output = await generateToken();
-
-        expect(axiosStub).to.have.been.calledOnceWith(`${adobeSignBaseUrl}/oauth/v2/token`);
-        expect(output.message).to.equal('token not returned');
-      });
-
-      it('returns error returned if Adobe Sign API call fails', async () => {
-        axiosStub.rejects(Error('some error returned'));
-
-        const output = await generateToken();
-
-        expect(axiosStub).to.have.been.calledOnceWith(`${adobeSignBaseUrl}/oauth/v2/token`);
-        expect(output.message).to.equal('some error returned');
-      });
-    });
-
     describe('createAgreement', () => {
       const data = {
         name: 'name',
@@ -112,7 +74,7 @@ describe.only('GrantLetter', () => {
         },
       ];
       it('calls the adobe agreements endpoint with passed data and returns an ID for the agreement - Direct Access', async () => {
-        axiosStub.resolves({ id: 'an-id-goes-here' });
+        axiosStub.resolves({ data: { id: 'an-id-goes-here' } });
         const isNationalOrg = false;
 
         const output = await createAgreement(data, isNationalOrg);
@@ -122,7 +84,7 @@ describe.only('GrantLetter', () => {
       });
 
       it('calls the adobe agreements endpoint with passed data and returns an ID for the agreement - National Organisation', async () => {
-        axiosStub.resolves({ id: 'an-id-goes-here' });
+        axiosStub.resolves({ data: { id: 'an-id-goes-here' } });
         expectedReturn[1].fileInfos[0].libraryDocumentId = config.get('adobeSign.nationalOrgDoc');
         const isNationalOrg = true;
 
