@@ -135,7 +135,7 @@ const routes: Routes = [
           workers: WorkersResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
         },
-        data: { title: 'Dashboard' },
+        data: { title: 'Dashboard', workerPagination: true },
       },
       {
         path: 'first-login-wizard',

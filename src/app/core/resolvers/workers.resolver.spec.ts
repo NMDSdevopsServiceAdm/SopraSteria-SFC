@@ -15,7 +15,7 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WorkersResolver } from './workers.resolver';
 
 describe('WorkersResolver', () => {
-  function setup(idInParams = null, permissions = ['canViewListOfWorkers']) {
+  function setup(idInParams = null, permissions = ['canViewListOfWorkers'], workerPagination = true) {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       providers: [
@@ -35,7 +35,9 @@ describe('WorkersResolver', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: convertToParamMap({ establishmentuid: idInParams }) } },
+          useValue: {
+            snapshot: { paramMap: convertToParamMap({ establishmentuid: idInParams }), data: { workerPagination } },
+          },
         },
       ],
     });
@@ -59,7 +61,7 @@ describe('WorkersResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it('should call getAllWorkers with id from establishmentService when no uid in params', () => {
+  it('should call getAllWorkers with id from establishmentService and workerPagination params when no uid in params and workerPagination true', () => {
     const { resolver, route, workerService } = setup();
 
     const idFromEstablishmentService = '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
@@ -70,13 +72,31 @@ describe('WorkersResolver', () => {
     expect(workerService.getAllWorkers).toHaveBeenCalledWith(idFromEstablishmentService, queryParams);
   });
 
-  it('should call getAllWorkers with id from params when it exists', () => {
+  it('should call getAllWorkers with id from establishmentService and empty object when workerPagination is false and no uid in params', () => {
+    const { resolver, route, workerService } = setup(null, ['canViewListOfWorkers'], false);
+
+    const idFromEstablishmentService = '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
+
+    resolver.resolve(route.snapshot);
+
+    expect(workerService.getAllWorkers).toHaveBeenCalledWith(idFromEstablishmentService, {});
+  });
+
+  it('should call getAllWorkers with id from params and workerPagination params when when id exists and workerPagination true', () => {
     const { resolver, route, workerService } = setup('paramUid');
 
     const queryParams = { pageIndex: 0, itemsPerPage: 15 };
     resolver.resolve(route.snapshot);
 
     expect(workerService.getAllWorkers).toHaveBeenCalledWith('paramUid', queryParams);
+  });
+
+  it('should call getAllWorkers with id from params and empty object when when id exists and workerPagination false', () => {
+    const { resolver, route, workerService } = setup('paramUid', ['canViewListOfWorkers'], false);
+
+    resolver.resolve(route.snapshot);
+
+    expect(workerService.getAllWorkers).toHaveBeenCalledWith('paramUid', {});
   });
 
   it('should not call getAllWorkers when workplace does not have canViewListOfWorkers permission', () => {
