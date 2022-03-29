@@ -23,6 +23,7 @@ import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-pa
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -50,6 +51,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canBulkUpload: boolean;
   public canEditEstablishment: boolean;
   public canViewWorkplaces: boolean;
+  public canViewReports: boolean;
   public isParent: boolean;
   public updateStaffRecords: boolean;
   public user: UserDetails;
@@ -69,6 +71,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRunLocalAuthorityReport: boolean;
   public workplaceUid: string;
   public now: Date = new Date();
+  public wdfNewDesignFlag: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -81,6 +84,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     private router: Router,
     private establishmentService: EstablishmentService,
     private reportsService: ReportService,
+    private featureFlagsService: FeatureFlagsService,
     @Inject(WindowToken) private window: Window,
   ) {}
 
@@ -124,6 +128,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         event: 'firstLogin',
       });
     }
+    this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
   }
 
   public downloadLocalAuthorityReport(event: Event) {
@@ -332,6 +337,9 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.workplace.parentUid != null &&
       this.workplace.dataOwner === 'Workplace' &&
       this.user.role != 'Read';
+    this.canViewReports =
+      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
+      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
 
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
