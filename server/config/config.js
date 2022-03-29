@@ -616,11 +616,6 @@ const config = convict({
     },
   },
   adobeSign: {
-    authBaseUrl: {
-      doc: 'The base URL for login into Adobe Sign',
-      format: String,
-      default: 'https://secure.eu2.adobesign.com',
-    },
     apiBaseUrl: {
       doc: 'The base URL for adobe sign API calls',
       format: String,
