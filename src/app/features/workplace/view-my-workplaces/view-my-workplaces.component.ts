@@ -27,6 +27,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public activeWorkplaceCount: number;
   public itemsPerPage = 12;
   public currentPageIndex = 0;
+  private searchTerm = '';
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -41,7 +42,10 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
 
-    this.setWorkplaceVariables(this.route.snapshot.data.childWorkplaces);
+    const childWorkplaces = this.route.snapshot.data.childWorkplaces;
+    this.activeWorkplaceCount = childWorkplaces.activeWorkplaceCount;
+    this.setWorkplaceVariables(childWorkplaces);
+
     this.setupServerErrorsMap();
   }
 
@@ -59,6 +63,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
       .getChildWorkplaces(this.primaryWorkplace.uid, {
         pageIndex: this.currentPageIndex,
         itemsPerPage: this.itemsPerPage,
+        ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
       })
       .pipe(take(1))
       .subscribe(
@@ -87,7 +92,11 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   private setWorkplaceVariables(data: GetChildWorkplacesResponse): void {
     this.workplaces = data.childWorkplaces;
     this.workplacesCount = data.count;
-    this.activeWorkplaceCount = data.activeWorkplaceCount;
+  }
+
+  public handleSearch(searchTerm: string): void {
+    this.searchTerm = searchTerm;
+    this.handlePageUpdate(0);
   }
 
   ngOnDestroy(): void {

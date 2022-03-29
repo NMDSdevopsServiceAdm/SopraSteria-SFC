@@ -25,6 +25,7 @@ describe('server/routes/establishments/childWorkplaces', () => {
       pendingCount: 0,
     };
   });
+
   describe('getChildWorkplaces', () => {
     const establishmentId = 'a131313dasd123325453bac';
     let req;
@@ -111,6 +112,16 @@ describe('server/routes/establishments/childWorkplaces', () => {
       expect(modelStub.args[0][0]).to.equal(req.params.id);
       expect(modelStub.args[0][1]).to.equal(req.query.itemsPerPage);
       expect(modelStub.args[0][2]).to.equal(req.query.pageIndex);
+    });
+
+    it('should call getChildWorkplaces on establishment model with searchTerm when searchTerm in req', async () => {
+      const modelStub = sinon.stub(models.establishment, 'getChildWorkplaces').returns(modelData);
+
+      req.query.searchTerm = 'testing';
+
+      await getChildWorkplaces(req, res);
+
+      expect(modelStub.args[0][3]).to.equal(req.query.searchTerm);
     });
   });
 

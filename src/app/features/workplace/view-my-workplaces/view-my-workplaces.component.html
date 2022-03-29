@@ -1,6 +1,6 @@
 <app-error-summary *ngIf="serverError" [serverError]="serverError"></app-error-summary>
 
-<div class="govuk-grid-row govuk-!-margin-bottom-8">
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
   <div class="govuk-grid-column-full govuk__flex govuk__justify-content-space-between govuk__align-items-flex-end">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
       <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
@@ -18,28 +18,40 @@
   </div>
 </div>
 
-<ul class="govuk-list">
-  <ng-container *ngFor="let workplace of workplaces">
-    <li
-      class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue"
-      *ngIf="workplace.ustatus === 'PENDING' || workplace.ustatus === 'IN PROGRESS'"
-    >
-      <div>
-        <span class="govuk-!-padding-left-3"
-          >Your application for {{ workplace.name }} is being reviewed by Skills for Care.</span
-        >
-        <span class="govuk-util__float-right govuk-!-padding-right-3">Pending</span>
-      </div>
-    </li>
-    <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngIf="workplace.ustatus === null">
-      <app-workplace-info-panel
-        [workplace]="workplace"
-        (changeOwnershipAndPermissionsEvent)="changeOwnershipAndPermissions($event)"
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
+  <div class="govuk-grid-column-three-quarters">
+    <app-search-input accessibleLabel="child workplace records" (emitInput)="handleSearch($event)"></app-search-input>
+  </div>
+</div>
+
+<div *ngIf="workplacesCount; else noWorkplacesFound">
+  <ul class="govuk-list">
+    <ng-container *ngFor="let workplace of workplaces">
+      <li
+        class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue"
+        *ngIf="workplace.ustatus === 'PENDING' || workplace.ustatus === 'IN PROGRESS'"
       >
-      </app-workplace-info-panel>
-    </li>
-  </ng-container>
-</ul>
+        <div>
+          <span class="govuk-!-padding-left-3"
+            >Your application for {{ workplace.name }} is being reviewed by Skills for Care.</span
+          >
+          <span class="govuk-util__float-right govuk-!-padding-right-3">Pending</span>
+        </div>
+      </li>
+      <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngIf="workplace.ustatus === null">
+        <app-workplace-info-panel
+          [workplace]="workplace"
+          (changeOwnershipAndPermissionsEvent)="changeOwnershipAndPermissions($event)"
+        >
+        </app-workplace-info-panel>
+      </li>
+    </ng-container>
+  </ul>
+</div>
+<ng-template #noWorkplacesFound>
+  <p class="govuk-util__bold">There are no matching results.</p>
+  <p>Make sure that your spelling is correct.</p>
+</ng-template>
 
 <p *ngIf="workplaces.length === 0">There are no workplaces.</p>
 <app-pagination

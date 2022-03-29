@@ -45,6 +45,7 @@ import { ProgressComponent } from './components/progress/progress.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
+import { SearchInputComponent } from './components/search-input/search-input.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
@@ -88,7 +89,6 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { SearchInputComponent } from './components/search-input/search-input.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -258,6 +258,7 @@ import { SearchInputComponent } from './components/search-input/search-input.com
     PageComponent,
     RemoveParentConfirmationComponent,
     PaginationComponent,
+    SearchInputComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
