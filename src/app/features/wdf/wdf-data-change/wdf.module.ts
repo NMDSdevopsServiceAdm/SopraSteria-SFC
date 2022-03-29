@@ -6,6 +6,7 @@ import { SharedModule } from '@shared/shared.module';
 
 import { WdfDataStatusMessageComponent } from './wdf-data-status-message/wdf-data-status-message.component';
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
+import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfParentStatusMessageComponent } from './wdf-parent-status-message/wdf-parent-status-message.component';
 import { WdfRequirementsStateComponent } from './wdf-requirements-state/wdf-requirements-state.component';
 import { WdfRoutingModule } from './wdf-routing.module';
@@ -29,6 +30,7 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
     WdfWorkplacesSummaryComponent,
     WdfWorkplacesSummaryTableComponent,
     WdfParentStatusMessageComponent,
+    WdfOverviewComponent,
   ],
 })
 export class WdfModule {}
