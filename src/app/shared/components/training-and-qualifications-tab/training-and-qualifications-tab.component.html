@@ -43,6 +43,7 @@
     *ngIf="workers && viewTrainingByCategory === false"
     [workplace]="workplace"
     [workers]="workers"
+    [workerCount]="workerCount"
     [showViewByToggle]="trainingCategories?.length > 0"
     (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
   ></app-training-and-qualifications-summary>

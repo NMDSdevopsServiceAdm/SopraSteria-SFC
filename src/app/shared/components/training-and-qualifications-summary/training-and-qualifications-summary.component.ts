@@ -38,8 +38,6 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
     this.sortByValue = '0_expired';
     this.paginatedWorkers = this.workers;
-    this.workerCount = this.workers.length;
-    this.refetchWorkers();
   }
 
   private setSortValue(value: string): void {
@@ -93,8 +91,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   }
 
   public handleSearch(searchTerm: string): void {
-    this.setPageIndex(0);
     this.searchTerm = searchTerm;
-    this.refetchWorkers();
+    this.setPageIndex(0);
   }
 }
