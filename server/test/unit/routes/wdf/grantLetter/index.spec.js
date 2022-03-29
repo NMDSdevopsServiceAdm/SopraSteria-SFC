@@ -8,17 +8,19 @@ const { createAgreement, queryAgreementStatus } = require('../../../../../../ser
 
 describe('GrantLetter', () => {
   const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
-  let axiosStub;
+  let axiosPostStub;
+  let axiosGetStub;
 
   beforeEach(() => {
-    axiosStub = sinon.stub(axios, 'post');
+    axiosPostStub = sinon.stub(axios, 'post');
+    axiosGetStub = sinon.stub(axios, 'get');
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  describe('Adobe Signs Utils', () => {
+  describe('Adobe Sign Utils', () => {
     describe('createAgreement', () => {
       const data = {
         name: 'name',
@@ -69,66 +71,72 @@ describe('GrantLetter', () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
+            Authorization: `Bearer ${config.get('adobeSign.apiKey')}`,
           },
         },
       ];
       it('calls the adobe agreements endpoint with passed data and returns an ID for the agreement - Direct Access', async () => {
-        axiosStub.resolves({ data: { id: 'an-id-goes-here' } });
+        axiosPostStub.resolves({ data: { id: 'an-id-goes-here' } });
         const isNationalOrg = false;
 
         const response = await createAgreement(data, isNationalOrg);
 
         expect(response).to.eql({ id: 'an-id-goes-here' });
-        expect(axiosStub).to.be.calledOnceWithExactly(...expectedReturn);
+        expect(axiosPostStub).to.be.calledOnceWithExactly(...expectedReturn);
       });
 
       it('calls the adobe agreements endpoint with passed data and returns an ID for the agreement - National Organisation', async () => {
-        axiosStub.resolves({ data: { id: 'an-id-goes-here' } });
+        axiosPostStub.resolves({ data: { id: 'an-id-goes-here' } });
         expectedReturn[1].fileInfos[0].libraryDocumentId = config.get('adobeSign.nationalOrgDoc');
         const isNationalOrg = true;
 
         const response = await createAgreement(data, isNationalOrg);
 
         expect(response).to.eql({ id: 'an-id-goes-here' });
-        expect(axiosStub).to.be.calledOnceWithExactly(...expectedReturn);
+        expect(axiosPostStub).to.be.calledOnceWithExactly(...expectedReturn);
       });
 
       it('returns an error if Adobe Sign rejects request', async () => {
-        axiosStub.rejects(Error('something went wrong'));
+        axiosPostStub.rejects(Error('something went wrong'));
 
-        const response = await createAgreement(data);
-        expect(response).to.be.an('Error');
-        expect(response.message).to.equal('something went wrong');
+        try {
+          await createAgreement(data);
+        } catch (err) {
+          expect(err).to.be.an('Error');
+          expect(err.message).to.equal('something went wrong');
+        }
       });
     });
 
     describe('queryAgreementStatus', () => {
       it('returns the current status of a given agreement', async () => {
-        axiosStub.resolves({ data: { status: 'SIGNED' } });
+        axiosGetStub.resolves({ data: { status: 'SIGNED' } });
 
         const response = await queryAgreementStatus('agreement-id');
 
-        expect(axiosStub).to.be.calledOnceWithExactly(`${adobeSignBaseUrl}/api/rest/v6/agreements/agreement-id`, {
+        expect(axiosGetStub).to.be.calledOnceWithExactly(`${adobeSignBaseUrl}/api/rest/v6/agreements/agreement-id`, {
           headers: {
-            Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
+            Authorization: `Bearer ${config.get('adobeSign.apiKey')}`,
           },
         });
         expect(response).to.include({ status: 'SIGNED' });
       });
 
       it('returns the error from Abode Sign API if there was an issue querying agreement', async () => {
-        axiosStub.rejects(Error('something went wrong'));
+        axiosGetStub.rejects(Error('something went wrong'));
 
-        const response = await queryAgreementStatus('agreement-id');
+        try {
+          await queryAgreementStatus('agreement-id');
+        } catch (err) {
+          expect(err).to.be.an('Error');
+          expect(err.message).to.equal('something went wrong');
+        }
 
-        expect(axiosStub).to.be.calledOnceWithExactly(`${adobeSignBaseUrl}/api/rest/v6/agreements/agreement-id`, {
+        expect(axiosGetStub).to.be.calledOnceWithExactly(`${adobeSignBaseUrl}/api/rest/v6/agreements/agreement-id`, {
           headers: {
-            Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
+            Authorization: `Bearer ${config.get('adobeSign.apiKey')}`,
           },
         });
-        expect(response).to.be.an('Error');
-        expect(response.message).to.equal('something went wrong');
       });
     });
   });

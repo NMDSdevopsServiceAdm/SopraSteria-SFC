@@ -2,6 +2,7 @@ const config = require('../../../../config/config');
 const axios = require('axios');
 
 const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
+const adobeApiKey = config.get('adobeSign.apiKey');
 
 module.exports.createAgreement = async (claimData, isNationalOrg) => {
   const { name, email, address, town, county, postcode, contractNumber, organisation, partnershipName } = claimData;
@@ -70,20 +71,24 @@ module.exports.createAgreement = async (claimData, isNationalOrg) => {
   return axios
     .post(`${adobeSignBaseUrl}/api/rest/v6/agreements`, body, {
       headers: {
-        Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
+        Authorization: `Bearer ${adobeApiKey}`,
       },
     })
     .then(({ data }) => data)
-    .catch((err) => err);
+    .catch((err) => {
+      throw err;
+    });
 };
 
 module.exports.queryAgreementStatus = async (agreementId) => {
   return axios
     .get(`${adobeSignBaseUrl}/api/rest/v6/agreements/${agreementId}`, {
       headers: {
-        Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
+        Authorization: `Bearer ${adobeApiKey}`,
       },
     })
     .then(({ data }) => data)
-    .catch((err) => err);
+    .catch((err) => {
+      throw err;
+    });
 };
