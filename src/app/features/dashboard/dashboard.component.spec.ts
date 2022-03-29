@@ -169,6 +169,7 @@ describe('DashboardComponent', () => {
       };
       establishment.isRegulated = false;
       component.workplace = establishment;
+      component.wdfNewDesignFlag = false;
       fixture.detectChanges();
 
       expect(getByText('Users')).toBeTruthy();

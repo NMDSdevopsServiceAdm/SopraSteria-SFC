@@ -63,9 +63,9 @@ export const mockConfigCatClient = {
         return resolve(false);
       });
     }
-    if (flagName === 'userTab') {
+    if (flagName === 'wdfNewDesign') {
       return new Promise((resolve) => {
-        return resolve(true);
+        return resolve(false);
       });
     }
 
