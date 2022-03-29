@@ -158,20 +158,6 @@ const config = convict({
     },
   },
 
-  redis: {
-    url: {
-      doc: 'The URI to redirect users to the Redis',
-      format: String,
-      default: 'redis://localhost:6379',
-    },
-    serviceName: {
-      doc: 'Name of VCAP Service for Redis',
-      format: String,
-      default: 'Unknown',
-      env: 'REDIS_SERVICE_NAME',
-    },
-  },
-
   notify: {
     key: {
       doc: 'The gov.uk notify key',
@@ -627,6 +613,41 @@ const config = convict({
       format: String,
       default: 'Unknown',
       env: 'REDIS_SERVICE_NAME',
+    },
+  },
+  adobeSign: {
+    authBaseUrl: {
+      doc: 'The base URL for login into Adobe Sign',
+      format: String,
+      default: 'https://secure.eu2.adobesign.com',
+    },
+    apiBaseUrl: {
+      doc: 'The base URL for adobe sign API calls',
+      format: String,
+      default: 'https://api.eu2.adobesign.com:443',
+    },
+    directAccessDoc: {
+      doc: 'ID of direct access template',
+      format: String,
+      default:
+        {
+          production: 'prodDocIdHere',
+        }[this.env] || 'CBJCHBCAABAAWaloyEh2SuKJ7y-NFqAe7CwlouyqBFjj',
+    },
+    nationalOrgDoc: {
+      doc: 'ID of national organisation template',
+      format: String,
+      default:
+        {
+          production: 'prodDocIdHere',
+        }[this.env] || 'CBJCHBCAABAAHk5Czg1lz5LNbIlbRgvEnc7twleqy98A',
+    },
+    apiKey: {
+      doc: 'Adobe Sign API Key',
+      format: String,
+      default: '',
+      sensitive: true,
+      env: 'ADOBE_SIGN_KEY',
     },
   },
 });
