@@ -69,54 +69,67 @@ describe.only('GrantLetter', () => {
         organisation: 'org',
         partnershipName: 'partnership',
       };
-      it('calls the adobe agreements endpoint with passed data and returns an ID for the agreement', async () => {
+      const expectedReturn = [
+        `${adobeSignBaseUrl}/api/rest/v6/agreements`,
+        {
+          fileInfos: [
+            {
+              libraryDocumentId: config.get('adobeSign.directAccessDoc'),
+            },
+          ],
+          participantSetsInfo: [
+            {
+              role: 'SIGNER',
+              order: 1,
+              memberInfos: [
+                {
+                  email: 'email',
+                  name: 'name',
+                },
+              ],
+            },
+          ],
+          signatureType: 'ESIGN',
+          state: 'IN_PROCESS',
+          status: 'OUT_FOR_SIGNATURE',
+          name: 'name',
+          mergeFieldInfo: [
+            { defaultValue: 'name', fieldName: 'forename' },
+            { defaultValue: 'name', fieldName: 'full_name' },
+            { defaultValue: 'org', fieldName: 'organisation' },
+            { defaultValue: 'partnership', fieldName: 'partnership_name' },
+            { defaultValue: 'address', fieldName: 'address' },
+            { defaultValue: 'town', fieldName: 'town' },
+            { defaultValue: 'county', fieldName: 'county' },
+            { defaultValue: 'postcode', fieldName: 'postcode' },
+            { defaultValue: 'contractNumber', fieldName: 'contract_number' },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
+          },
+        },
+      ];
+      it('calls the adobe agreements endpoint with passed data and returns an ID for the agreement - Direct Access', async () => {
         axiosStub.resolves({ id: 'an-id-goes-here' });
+        const isNationalOrg = false;
 
-        const output = await createAgreement(data);
+        const output = await createAgreement(data, isNationalOrg);
 
         expect(output).to.eql({ id: 'an-id-goes-here' });
-        expect(axiosStub).to.be.calledOnceWithExactly(
-          `${adobeSignBaseUrl}/api/rest/v6/agreements`,
-          {
-            fileInfos: [
-              {
-                libraryDocumentId: 'CBJCHBCAABAAWaloyEh2SuKJ7y-NFqAe7CwlouyqBFjj',
-              },
-            ],
-            participantSetsInfo: [
-              {
-                role: 'SIGNER',
-                order: 1,
-                memberInfos: [
-                  {
-                    email: 'email',
-                    name: 'name',
-                  },
-                ],
-              },
-            ],
-            signatureType: 'ESIGN',
-            state: 'IN_PROCESS',
-            status: 'OUT_FOR_SIGNATURE',
-            name: 'name',
-            mergeFieldInfo: [
-              { defaultValue: 'name', fieldName: 'forename' },
-              { defaultValue: 'name', fieldName: 'full_name' },
-              { defaultValue: 'org', fieldName: 'organisation' },
-              { defaultValue: 'partnership', fieldName: 'partnership_name' },
-              { defaultValue: 'address', fieldName: 'address' },
-              { defaultValue: 'town', fieldName: 'town' },
-              { defaultValue: 'county', fieldName: 'county' },
-              { defaultValue: 'postcode', fieldName: 'postcode' },
-              { defaultValue: 'contractNumber', fieldName: 'contract_number' },
-            ],
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
-            },
-          },
-        );
+        expect(axiosStub).to.be.calledOnceWithExactly(...expectedReturn);
+      });
+
+      it('calls the adobe agreements endpoint with passed data and returns an ID for the agreement - National Organisation', async () => {
+        axiosStub.resolves({ id: 'an-id-goes-here' });
+        expectedReturn[1].fileInfos[0].libraryDocumentId = config.get('adobeSign.nationalOrgDoc');
+        const isNationalOrg = true;
+
+        const output = await createAgreement(data, isNationalOrg);
+
+        expect(output).to.eql({ id: 'an-id-goes-here' });
+        expect(axiosStub).to.be.calledOnceWithExactly(...expectedReturn);
       });
 
       it('returns an error if Adobe Sign rejects request', async () => {

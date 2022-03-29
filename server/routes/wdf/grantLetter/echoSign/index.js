@@ -22,12 +22,12 @@ module.exports.generateToken = async () => {
     });
 };
 
-module.exports.createAgreement = async (claimData) => {
+module.exports.createAgreement = async (claimData, isNationalOrg) => {
   const { name, email, address, town, county, postcode, contractNumber, organisation, partnershipName } = claimData;
   const body = {
     fileInfos: [
       {
-        libraryDocumentId: '',
+        libraryDocumentId: config.get(`${isNationalOrg ? 'adobeSign.nationalOrgDoc' : 'adobeSign.directAccessDoc'}`),
       },
     ],
     participantSetsInfo: [
