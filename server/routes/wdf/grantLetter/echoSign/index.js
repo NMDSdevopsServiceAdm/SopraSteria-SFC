@@ -76,3 +76,14 @@ module.exports.createAgreement = async (claimData, isNationalOrg) => {
     .then(({ data }) => data)
     .catch((err) => err);
 };
+
+module.exports.queryAgreementStatus = async (agreementId) => {
+  return axios
+    .get(`${adobeSignBaseUrl}/api/rest/v6/agreements/${agreementId}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
+      },
+    })
+    .then(({ data }) => data)
+    .catch((err) => err);
+};

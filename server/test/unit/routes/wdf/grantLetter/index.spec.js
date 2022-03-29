@@ -4,7 +4,7 @@ const axios = require('axios');
 // const httpMocks = require('node-mocks-http');
 const config = require('../../../../../config/config');
 
-const { createAgreement } = require('../../../../../../server/routes/wdf/grantLetter/echoSign');
+const { createAgreement, queryAgreementStatus } = require('../../../../../../server/routes/wdf/grantLetter/echoSign');
 
 describe('GrantLetter', () => {
   const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
@@ -77,9 +77,9 @@ describe('GrantLetter', () => {
         axiosStub.resolves({ data: { id: 'an-id-goes-here' } });
         const isNationalOrg = false;
 
-        const output = await createAgreement(data, isNationalOrg);
+        const response = await createAgreement(data, isNationalOrg);
 
-        expect(output).to.eql({ id: 'an-id-goes-here' });
+        expect(response).to.eql({ id: 'an-id-goes-here' });
         expect(axiosStub).to.be.calledOnceWithExactly(...expectedReturn);
       });
 
@@ -88,18 +88,47 @@ describe('GrantLetter', () => {
         expectedReturn[1].fileInfos[0].libraryDocumentId = config.get('adobeSign.nationalOrgDoc');
         const isNationalOrg = true;
 
-        const output = await createAgreement(data, isNationalOrg);
+        const response = await createAgreement(data, isNationalOrg);
 
-        expect(output).to.eql({ id: 'an-id-goes-here' });
+        expect(response).to.eql({ id: 'an-id-goes-here' });
         expect(axiosStub).to.be.calledOnceWithExactly(...expectedReturn);
       });
 
       it('returns an error if Adobe Sign rejects request', async () => {
         axiosStub.rejects(Error('something went wrong'));
 
-        const output = await createAgreement(data);
-        expect(output).to.be.an('Error');
-        expect(output.message).to.equal('something went wrong');
+        const response = await createAgreement(data);
+        expect(response).to.be.an('Error');
+        expect(response.message).to.equal('something went wrong');
+      });
+    });
+
+    describe('queryAgreementStatus', () => {
+      it('returns the current status of a given agreement', async () => {
+        axiosStub.resolves({ data: { status: 'SIGNED' } });
+
+        const response = await queryAgreementStatus('agreement-id');
+
+        expect(axiosStub).to.be.calledOnceWithExactly(`${adobeSignBaseUrl}/api/rest/v6/agreements/agreement-id`, {
+          headers: {
+            Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
+          },
+        });
+        expect(response).to.include({ status: 'SIGNED' });
+      });
+
+      it('returns the error from Abode Sign API if there was an issue querying agreement', async () => {
+        axiosStub.rejects(Error('something went wrong'));
+
+        const response = await queryAgreementStatus('agreement-id');
+
+        expect(axiosStub).to.be.calledOnceWithExactly(`${adobeSignBaseUrl}/api/rest/v6/agreements/agreement-id`, {
+          headers: {
+            Authorization: `Bearer ${process.env.ADOBE_SIGN_KEY}`,
+          },
+        });
+        expect(response).to.be.an('Error');
+        expect(response.message).to.equal('something went wrong');
       });
     });
   });
