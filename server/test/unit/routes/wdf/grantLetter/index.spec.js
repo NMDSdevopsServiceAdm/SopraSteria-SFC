@@ -4,7 +4,10 @@ const axios = require('axios');
 // const httpMocks = require('node-mocks-http');
 const config = require('../../../../../config/config');
 
-const { createAgreement, queryAgreementStatus } = require('../../../../../../server/routes/wdf/grantLetter/echoSign');
+const {
+  createAgreement,
+  queryAgreementStatus,
+} = require('../../../../../../server/routes/wdf/developmentFundGrants/adobeSign');
 
 describe('GrantLetter', () => {
   const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
