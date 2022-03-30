@@ -1,9 +1,11 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { EMAIL_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { GrantLetterService } from '@core/services/wdf-claims/wdf-grant-letter.service';
@@ -24,7 +26,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails> = [];
   public flow: string;
-  public revealTitle = "What's a grant letter?";
+  public revealTitle = `What's a grant letter?`;
   public establishmentId: string;
   public showNameAndEmail = false;
   public submittedWithAddtionalFields = false;
@@ -36,6 +38,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     public router: Router,
     public grantLetterService: GrantLetterService,
     public establishmentService: EstablishmentService,
+    private breadcrumbService: BreadcrumbService,
   ) {
     this.form = this.formBuilder.group({
       grantLetter: [
@@ -52,7 +55,9 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     this.setupFormErrorsMap();
     this.establishmentId = this.establishmentService.primaryWorkplace.uid;
     this.flow = 'wdf-claims';
+    this.breadcrumbService.show(JourneyType.WDF_CLAIMS);
   }
+
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }

@@ -28,6 +28,7 @@ import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
 import { publicJourney } from '@core/breadcrumb/journey.public';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
+import { wdfClaimsJourney } from '@core/breadcrumb/journey.wdf-claims';
 import { allWorkplacesJourney, myWorkplaceJourney } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -220,6 +221,10 @@ export class BreadcrumbService {
       }
       case JourneyType.WDF_PARENT: {
         routes = wdfParentJourney;
+        break;
+      }
+      case JourneyType.WDF_CLAIMS: {
+        routes = wdfClaimsJourney;
         break;
       }
       case JourneyType.BENCHMARKS_SUBSIDIARIES_PAY: {
