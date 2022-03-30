@@ -4,8 +4,8 @@ const axios = require('axios');
 const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
 const adobeApiKey = config.get('adobeSign.apiKey');
 
-module.exports.createAgreement = async (claimData, isNationalOrg) => {
-  const { name, email, address, town, county, postcode, contractNumber, organisation, partnershipName } = claimData;
+module.exports.createAgreement = async (claimData) => {
+  const { name, email, address, town, county, postcode, organisation, isNationalOrg } = claimData;
   const body = {
     fileInfos: [
       {
@@ -18,8 +18,8 @@ module.exports.createAgreement = async (claimData, isNationalOrg) => {
         order: 1,
         memberInfos: [
           {
-            email: email,
-            name: name,
+            email,
+            name,
           },
         ],
       },
@@ -27,7 +27,7 @@ module.exports.createAgreement = async (claimData, isNationalOrg) => {
     signatureType: 'ESIGN',
     state: 'IN_PROCESS',
     status: 'OUT_FOR_SIGNATURE',
-    name,
+    name: 'Workplace Development Fund Grant Letter', // title of the agreement
     mergeFieldInfo: [
       {
         defaultValue: name.split(' ')[0],
@@ -40,10 +40,6 @@ module.exports.createAgreement = async (claimData, isNationalOrg) => {
       {
         defaultValue: organisation,
         fieldName: 'organisation',
-      },
-      {
-        defaultValue: partnershipName,
-        fieldName: 'partnership_name',
       },
       {
         defaultValue: address,
@@ -62,7 +58,7 @@ module.exports.createAgreement = async (claimData, isNationalOrg) => {
         fieldName: 'postcode',
       },
       {
-        defaultValue: contractNumber,
+        defaultValue: 'contractNumber',
         fieldName: 'contract_number',
       },
     ],

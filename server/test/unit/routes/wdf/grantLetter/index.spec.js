@@ -34,7 +34,7 @@ describe('GrantLetter', () => {
         postcode: 'postcode',
         contractNumber: 'contractNumber',
         organisation: 'org',
-        partnershipName: 'partnership',
+        isNationalOrg: true,
       };
       const expectedReturn = [
         `${adobeSignBaseUrl}/api/rest/v6/agreements`,
@@ -59,12 +59,11 @@ describe('GrantLetter', () => {
           signatureType: 'ESIGN',
           state: 'IN_PROCESS',
           status: 'OUT_FOR_SIGNATURE',
-          name: 'name',
+          name: 'Workplace Development Fund Grant Letter',
           mergeFieldInfo: [
             { defaultValue: 'name', fieldName: 'forename' },
             { defaultValue: 'name', fieldName: 'full_name' },
             { defaultValue: 'org', fieldName: 'organisation' },
-            { defaultValue: 'partnership', fieldName: 'partnership_name' },
             { defaultValue: 'address', fieldName: 'address' },
             { defaultValue: 'town', fieldName: 'town' },
             { defaultValue: 'county', fieldName: 'county' },
@@ -79,10 +78,10 @@ describe('GrantLetter', () => {
         },
       ];
       it('calls the adobe agreements endpoint with passed data and returns an ID for the agreement - Direct Access', async () => {
+        const dataCopy = { ...data, isNationalOrg: false };
         axiosPostStub.resolves({ data: { id: 'an-id-goes-here' } });
-        const isNationalOrg = false;
 
-        const response = await createAgreement(data, isNationalOrg);
+        const response = await createAgreement(dataCopy);
 
         expect(response).to.eql({ id: 'an-id-goes-here' });
         expect(axiosPostStub).to.be.calledOnceWithExactly(...expectedReturn);
