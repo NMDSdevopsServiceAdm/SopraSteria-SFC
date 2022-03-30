@@ -1,29 +1,68 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const axios = require('axios');
-// const httpMocks = require('node-mocks-http');
+const httpMocks = require('node-mocks-http');
 const config = require('../../../../../config/config');
+const models = require('../../../../../models');
 
 const {
   createAgreement,
   queryAgreementStatus,
 } = require('../../../../../../server/routes/wdf/developmentFundGrants/adobeSign');
+const {
+  generateDevelopmentFundGrantLetter,
+} = require('../../../../../../server/routes/wdf/developmentFundGrants/generateDevelopmentFundGrantLetter');
 
 describe('GrantLetter', () => {
   const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
-  let axiosPostStub;
-  let axiosGetStub;
 
-  beforeEach(() => {
-    axiosPostStub = sinon.stub(axios, 'post');
-    axiosGetStub = sinon.stub(axios, 'get');
-  });
+  describe('generateDevelopmentFundGrant', () => {
+    let axiosStub;
+    sinon.stub(models.establishment, 'getWDFClaimData').returns({
+      address1: 'address',
+      town: 'town',
+      county: 'county',
+      postcode: 'postcode',
+      NameValue: 'org',
+      IsNationalOrg: true,
+    });
 
-  afterEach(() => {
-    sinon.restore();
+    beforeEach(() => {
+      axiosStub = sinon.stub(axios, 'post');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns a 201 with an agreementId if agreement is successfully created', async () => {
+      axiosStub.resolves({ data: { id: 'someid' } });
+      const req = httpMocks.createRequest({ body: { name: 'some name', email: 'some email', establishmentId: 1234 } });
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+      await generateDevelopmentFundGrantLetter(req, res, next);
+
+      // TODO check the createAgreement is called appropriately
+
+      // TODO check db saving data
+
+      expect(res.statusCode).to.equal(201);
+      expect(res._getJSONData()).to.eql({ id: 'someid' });
+    });
   });
 
   describe('Adobe Sign Utils', () => {
+    let axiosPostStub;
+    let axiosGetStub;
+
+    beforeEach(() => {
+      axiosPostStub = sinon.stub(axios, 'post');
+      axiosGetStub = sinon.stub(axios, 'get');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
     describe('createAgreement', () => {
       const data = {
         name: 'name',
@@ -36,7 +75,7 @@ describe('GrantLetter', () => {
         organisation: 'org',
         isNationalOrg: true,
       };
-      const expectedReturn = [
+      const expectedAxiosCall = [
         `${adobeSignBaseUrl}/api/rest/v6/agreements`,
         {
           fileInfos: [
@@ -61,7 +100,6 @@ describe('GrantLetter', () => {
           status: 'OUT_FOR_SIGNATURE',
           name: 'Workplace Development Fund Grant Letter',
           mergeFieldInfo: [
-            { defaultValue: 'name', fieldName: 'forename' },
             { defaultValue: 'name', fieldName: 'full_name' },
             { defaultValue: 'org', fieldName: 'organisation' },
             { defaultValue: 'address', fieldName: 'address' },
@@ -84,18 +122,17 @@ describe('GrantLetter', () => {
         const response = await createAgreement(dataCopy);
 
         expect(response).to.eql({ id: 'an-id-goes-here' });
-        expect(axiosPostStub).to.be.calledOnceWithExactly(...expectedReturn);
+        expect(axiosPostStub).to.be.calledOnceWithExactly(...expectedAxiosCall);
       });
 
       it('calls the adobe agreements endpoint with passed data and returns an ID for the agreement - National Organisation', async () => {
         axiosPostStub.resolves({ data: { id: 'an-id-goes-here' } });
-        expectedReturn[1].fileInfos[0].libraryDocumentId = config.get('adobeSign.nationalOrgDoc');
-        const isNationalOrg = true;
+        expectedAxiosCall[1].fileInfos[0].libraryDocumentId = config.get('adobeSign.nationalOrgDoc');
 
-        const response = await createAgreement(data, isNationalOrg);
+        const response = await createAgreement(data);
 
         expect(response).to.eql({ id: 'an-id-goes-here' });
-        expect(axiosPostStub).to.be.calledOnceWithExactly(...expectedReturn);
+        expect(axiosPostStub).to.be.calledOnceWithExactly(...expectedAxiosCall);
       });
 
       it('returns an error if Adobe Sign rejects request', async () => {
