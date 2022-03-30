@@ -1931,5 +1931,14 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.getWDFClaimData = async function (establishmentId) {
+    return await this.findOne({
+      attributes: ['NameValue', 'address1', 'town', 'county', 'postcode', 'IsNationalOrg'],
+      where: {
+        id: establishmentId,
+      },
+    });
+  };
+
   return Establishment;
 };
