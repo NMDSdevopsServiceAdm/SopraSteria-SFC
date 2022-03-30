@@ -30,10 +30,6 @@ module.exports.createAgreement = async (claimData) => {
     name: 'Workplace Development Fund Grant Letter', // title of the agreement
     mergeFieldInfo: [
       {
-        defaultValue: name.split(' ')[0],
-        fieldName: 'forename',
-      },
-      {
         defaultValue: name,
         fieldName: 'full_name',
       },
