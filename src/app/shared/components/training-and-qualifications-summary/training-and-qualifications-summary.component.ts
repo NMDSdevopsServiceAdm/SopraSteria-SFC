@@ -49,7 +49,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.refetchWorkers();
   }
 
-  private refetchWorkers() {
+  private refetchWorkers(): void {
     const sortByParamMap = {
       '0_expired': 'trainingExpired',
       '1_expires_soon': 'trainingExpiringSoon',

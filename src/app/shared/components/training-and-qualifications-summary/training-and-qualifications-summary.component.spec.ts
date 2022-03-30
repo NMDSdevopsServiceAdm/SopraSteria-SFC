@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { Worker } from '@core/model/worker.model';
+import { Worker, WorkersResponse } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -20,6 +20,7 @@ import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
 import sinon from 'sinon';
 
 import { PaginationComponent } from '../pagination/pagination.component';
@@ -91,6 +92,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       workerServiceSpy,
       sortBySpy,
       searchSpy,
+      workerService,
     };
   }
 
@@ -239,10 +241,21 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       expect(workerServiceSpy.calls.mostRecent().args[1].pageIndex).toEqual(0);
     });
 
-    it('should render the message that no workers were found if workerCount is falsy', async () => {
-      const { fixture, getByText } = await setup();
+    it('should render the no results returned message when 0 workers returned from getAllWorkers after search', async () => {
+      const { fixture, getByLabelText, workerService, getByText } = await setup();
 
-      fixture.componentInstance.workerCount = 0;
+      sinon.stub(workerService, 'getAllWorkers').returns(
+        of({
+          workers: [],
+          workerCount: 0,
+        } as WorkersResponse),
+      );
+
+      const searchInput = getByLabelText('Search staff training records');
+      expect(searchInput).toBeTruthy();
+
+      userEvent.type(searchInput, 'search term here{enter}');
+
       fixture.detectChanges();
 
       expect(getByText('There are no matching results.')).toBeTruthy();

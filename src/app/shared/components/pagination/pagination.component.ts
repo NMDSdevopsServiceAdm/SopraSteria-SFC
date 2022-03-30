@@ -54,6 +54,6 @@ export class PaginationComponent implements OnInit {
 
   @HostListener('window:resize')
   private setIsBigWindow(): void {
-    this.isBigWindow = window.innerWidth > 1000;
+    this.isBigWindow = window.innerWidth > 768;
   }
 }

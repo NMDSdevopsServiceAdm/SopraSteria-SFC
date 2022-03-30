@@ -23,7 +23,8 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public workplaces: Workplace[] = [];
-  public workplacesCount: number;
+  public workplaceCount: number;
+  public totalWorkplaceCount: number;
   public activeWorkplaceCount: number;
   public itemsPerPage = 12;
   public currentPageIndex = 0;
@@ -43,6 +44,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
 
     const childWorkplaces = this.route.snapshot.data.childWorkplaces;
+    this.totalWorkplaceCount = childWorkplaces.count;
     this.activeWorkplaceCount = childWorkplaces.activeWorkplaceCount;
     this.setWorkplaceVariables(childWorkplaces);
 
@@ -91,7 +93,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
   private setWorkplaceVariables(data: GetChildWorkplacesResponse): void {
     this.workplaces = data.childWorkplaces;
-    this.workplacesCount = data.count;
+    this.workplaceCount = data.count;
   }
 
   public handleSearch(searchTerm: string): void {

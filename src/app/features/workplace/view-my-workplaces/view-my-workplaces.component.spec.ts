@@ -28,7 +28,7 @@ import { WorkplaceInfoPanelComponent } from '../workplace-info-panel/workplace-i
 import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
 describe('ViewMyWorkplacesComponent', () => {
-  async function setup() {
+  async function setup(hasChildWorkplaces = true) {
     const { fixture, getByText, getByTestId, queryByText, getByLabelText } = await render(ViewMyWorkplacesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [WorkplaceInfoPanelComponent],
@@ -66,11 +66,17 @@ describe('ViewMyWorkplacesComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                childWorkplaces: {
-                  childWorkplaces: [subsid1, subsid2, subsid3],
-                  count: 3,
-                  activeWorkplaceCount: 2,
-                },
+                childWorkplaces: hasChildWorkplaces
+                  ? {
+                      childWorkplaces: [subsid1, subsid2, subsid3],
+                      count: 3,
+                      activeWorkplaceCount: 2,
+                    }
+                  : {
+                      childWorkplaces: [],
+                      count: 0,
+                      activeWorkplaceCount: 0,
+                    },
               },
             },
           },
@@ -126,6 +132,11 @@ describe('ViewMyWorkplacesComponent', () => {
     expect(queryByText('All workplaces (2)')).toBeTruthy();
   });
 
+  it('should display no workplaces message when workplace has no child workplaces', async () => {
+    const { queryByText } = await setup(false);
+    expect(queryByText('There are no workplaces.')).toBeTruthy();
+  });
+
   describe('calls getChildWorkplaces on establishmentService when using search', () => {
     it('should call getChildWorkplaces with correct search term if passed', async () => {
       const { getByLabelText, getChildWorkplacesSpy } = await setup();
@@ -154,17 +165,29 @@ describe('ViewMyWorkplacesComponent', () => {
       expect(getChildWorkplacesSpy.calls.mostRecent().args[1].pageIndex).toEqual(0);
     });
 
-    it('should render the message that no child workplaces were found if workplacesCount is 0', async () => {
-      const { fixture, getByText } = await setup();
+    it('should render the no results returned message when 0 workplaces returned from getChildWorkplaces after search', async () => {
+      const { fixture, getByLabelText, establishmentService, getByText } = await setup();
 
-      fixture.componentInstance.workplacesCount = 0;
+      sinon.stub(establishmentService, 'getChildWorkplaces').returns(
+        of({
+          childWorkplaces: [],
+          count: 0,
+          activeWorkplaceCount: 0,
+        } as GetChildWorkplacesResponse),
+      );
+
+      const searchInput = getByLabelText('Search child workplace records');
+      expect(searchInput).toBeTruthy();
+
+      userEvent.type(searchInput, 'search term here{enter}');
+
       fixture.detectChanges();
 
       expect(getByText('There are no matching results.')).toBeTruthy();
       expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
     });
 
-    it('should not update All workplaces count when search results returned but should set workplacesCount used for pagination', async () => {
+    it('should not update All workplaces count when search results returned but should set workplaceCount used for pagination', async () => {
       const { component, fixture, getByLabelText, establishmentService, getByText } = await setup();
 
       sinon.stub(establishmentService, 'getChildWorkplaces').returns(
@@ -183,7 +206,7 @@ describe('ViewMyWorkplacesComponent', () => {
       fixture.detectChanges();
 
       expect(getByText('All workplaces (2)'));
-      expect(component.workplacesCount).toEqual(1);
+      expect(component.workplaceCount).toEqual(1);
     });
   });
 });

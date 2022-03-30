@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../models');
+const Authorization = require('../../utils/security/isAuthenticated');
 
 const getChildWorkplaces = async (req, res) => {
   try {
@@ -43,7 +44,7 @@ const formatChildWorkplaces = (childWorkplaces) => {
   });
 };
 
-router.route('/').get(getChildWorkplaces);
+router.route('/').get(Authorization.isAuthorised, getChildWorkplaces);
 
 module.exports = router;
 module.exports.getChildWorkplaces = getChildWorkplaces;

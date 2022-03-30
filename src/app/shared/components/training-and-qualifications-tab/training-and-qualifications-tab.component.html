@@ -14,7 +14,7 @@
 </div>
 
 <app-training-link-panel [workplace]="workplace" [workers]="workers"></app-training-link-panel>
-<ng-container *ngIf="workers; else noStaffRecords">
+<ng-container *ngIf="workers && workers.length; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">
       <app-inset-text color="warning">You have not added any training or qualification records yet.</app-inset-text>
@@ -40,7 +40,7 @@
   ></app-training-and-qualifications-categories>
 
   <app-training-and-qualifications-summary
-    *ngIf="workers && viewTrainingByCategory === false"
+    *ngIf="viewTrainingByCategory === false"
     [workplace]="workplace"
     [workers]="workers"
     [workerCount]="workerCount"
