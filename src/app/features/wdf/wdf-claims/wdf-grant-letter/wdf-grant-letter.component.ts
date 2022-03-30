@@ -17,17 +17,14 @@ import { Subscription } from 'rxjs';
 })
 export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public options = ['Myself', 'Somebody else'];
+  public options = ['Myself', 'Somebody else in the organisation'];
 
   public workplace: Establishment;
-  public workplaceUid: string;
-  public primaryWorkplaceUid: string;
   public form: FormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails> = [];
   public flow: string;
   public revealTitle = `What's a grant letter?`;
-  public establishmentId: string;
   public showNameAndEmail = false;
   public submittedWithAddtionalFields = false;
 
@@ -53,16 +50,18 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
 
   ngOnInit(): void {
     this.setupFormErrorsMap();
-    this.establishmentId = this.establishmentService.primaryWorkplace.uid;
+    console.log(this.establishmentService.primaryWorkplace);
+    this.workplace = this.establishmentService.primaryWorkplace;
     this.flow = 'wdf-claims';
     this.breadcrumbService.show(JourneyType.WDF_CLAIMS);
+    console.log(this.workplace);
   }
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  public onChange(answer: string) {
+  public onChange(answer: string): void {
     if (answer === 'Somebody else') {
       this.showNameAndEmail = true;
       this.addControl();
@@ -87,7 +86,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
       this.subscriptions.add(
-        this.grantLetterService.sendEmailGrantLetter(this.establishmentId, this.form.value).subscribe(),
+        this.grantLetterService.sendEmailGrantLetter(this.workplace.uid, this.form.value).subscribe(),
       );
       this.navigateToNextPage();
     } else {

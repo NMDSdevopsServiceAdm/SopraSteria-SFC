@@ -5,18 +5,21 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">Manage WDF claims</h1>
+          <span class="govuk-caption-l">{{ workplace.name }} (Workplace ID: {{ workplace.nmdsId }})</span>
+          <h1 class="govuk-fieldset__heading">Make and Manage WDF claims</h1>
         </legend>
-        <p data-testid="info" class="govuk-!-margin-bottom-8">
-          Before you can manage Workforce Development Fund (WDF) claims, <br />you need to email a copy of the grant
-          letter to be signed.
+        <p data-testid="info" class="govuk-!-margin-bottom-6">
+          The grant letter needs to be signed before you can make and manage Workforce Development Fund (WDF) claims.
         </p>
         <app-details [title]="revealTitle">
-          <p data-testid="reveal">Coming soon...........</p>
+          <p data-testid="reveal">
+            A grant letter is a legally binding agreement between Skills for Care and you workplace. It sets out the
+            terms and conditions for claiming from the WDF.
+          </p>
         </app-details>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--s govuk-!-margin-bottom-6">
-            <h5 class="govuk-fieldset__heading">Who do you want to email the grant letter to?</h5>
+            <h5 class="govuk-fieldset__heading">Who do you want to send the grant letter to?</h5>
           </legend>
           <span *ngIf="submitted" id="grantLetter-error" class="govuk-error-message">
             <span *ngIf="this.form.get('grantLetter').errors" id="grantLetter-error">{{
