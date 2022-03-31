@@ -9,5 +9,18 @@
       Staff records will need to include a name that matches the one shown on their learning award certificate, not an
       ID number<ng-container *ngIf="dobRequired">, and a date of birth</ng-container>.
     </p>
+
+    <p *ngIf="['learningProgramme', 'digitalModule'].includes(claimType); else claimWithMultipleRequirements">
+      You'll need to know the amount of money you want to claim for each learner.
+    </p>
+    <ng-template #claimWithMultipleRequirements>
+      <p>For each learner, you'll need to know:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>their Unique Learner Number</li>
+        <li *ngIf="claimType == 'qualification'">their Candidate Registration Number</li>
+        <li>the amount of money you want to claim</li>
+        <li *ngIf="claimType == 'qualification'">whether the qualification is part of an apprenticeship</li>
+      </ul>
+    </ng-template>
   </div>
 </div>

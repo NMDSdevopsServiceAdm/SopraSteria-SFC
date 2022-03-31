@@ -58,4 +58,38 @@ describe('AddLearnersStartPageComponent', () => {
       expect(getByText(messageWithoutDOB)).toBeTruthy();
     });
   });
+
+  describe('Claim requirements message', () => {
+    const claimAmountMessage = "You'll need to know the amount of money you want to claim for each learner.";
+
+    it('should show amount message when claimType is learningProgramme', async () => {
+      const { getByText } = await setup('learningProgramme');
+
+      expect(getByText(claimAmountMessage)).toBeTruthy();
+    });
+
+    it('should show amount message when claimType is digitalModule', async () => {
+      const { getByText } = await setup('digitalModule');
+
+      expect(getByText(claimAmountMessage)).toBeTruthy();
+    });
+
+    it('should include learner number and amount in message when claimType is apprenticeship', async () => {
+      const { getByText } = await setup('apprenticeship');
+
+      expect(getByText("For each learner, you'll need to know:")).toBeTruthy();
+      expect(getByText('their Unique Learner Number')).toBeTruthy();
+      expect(getByText('the amount of money you want to claim')).toBeTruthy();
+    });
+
+    it('should not include DOB when claimType is qualification', async () => {
+      const { getByText } = await setup('qualification');
+
+      expect(getByText("For each learner, you'll need to know:")).toBeTruthy();
+      expect(getByText('their Unique Learner Number')).toBeTruthy();
+      expect(getByText('their Candidate Registration Number')).toBeTruthy();
+      expect(getByText('the amount of money you want to claim')).toBeTruthy();
+      expect(getByText('whether the qualification is part of an apprenticeship')).toBeTruthy();
+    });
+  });
 });
