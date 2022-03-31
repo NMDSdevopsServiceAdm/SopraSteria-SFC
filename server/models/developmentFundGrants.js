@@ -21,10 +21,14 @@ module.exports = function (sequelize, DataTypes) {
         unique: true,
       },
       SignStatus: {
-        type: DataTypes.STRING(36),
+        type: DataTypes.STRING(40),
         allowNull: false,
       },
-      Receiver: {
+      ReceiverEmail: {
+        type: DataTypes.STRING(320),
+        allowNull: false,
+      },
+      ReceiverName: {
         type: DataTypes.STRING(100),
         allowNull: false,
       },

@@ -22,11 +22,15 @@ module.exports = {
           unique: true,
         },
         SignStatus: {
-          type: Sequelize.STRING(36),
+          type: Sequelize.STRING(40),
           allowNull: false,
         },
-        Receiver: {
+        ReceiverName: {
           type: Sequelize.STRING(100),
+          allowNull: false,
+        },
+        ReceiverEmail: {
+          type: Sequelize.STRING(320),
           allowNull: false,
         },
         DateSent: {
