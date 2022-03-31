@@ -1,7 +1,9 @@
 const router = require('express').Router();
 const { queryAgreementStatus } = require('./adobeSign');
 
-router.post('/agreements', require('./generateDevelopmentFundGrantLetter'));
+const GenerateDevelopmentFundGrantLetter = require('./generateDevelopmentFundGrantLetter');
+
+router.use('/agreements', GenerateDevelopmentFundGrantLetter);
 
 router.get('/agreements/:agreementId', async (req, res, next) => {
   const { agreementId } = req.params;

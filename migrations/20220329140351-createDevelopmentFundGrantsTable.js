@@ -22,8 +22,10 @@ module.exports = {
           unique: true,
         },
         SignStatus: {
-          type: Sequelize.STRING(40),
+          type: Sequelize.ENUM,
           allowNull: false,
+          default: 'SENT',
+          values: ['SENT', 'COMPLETED', 'CANCELLED'],
         },
         ReceiverName: {
           type: Sequelize.STRING(100),

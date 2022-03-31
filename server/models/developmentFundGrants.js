@@ -21,8 +21,10 @@ module.exports = function (sequelize, DataTypes) {
         unique: true,
       },
       SignStatus: {
-        type: DataTypes.STRING(40),
+        type: DataTypes.ENUM,
         allowNull: false,
+        default: 'SENT',
+        values: ['SENT', 'COMPLETED', 'CANCELLED'],
       },
       ReceiverEmail: {
         type: DataTypes.STRING(320),
@@ -47,6 +49,7 @@ module.exports = function (sequelize, DataTypes) {
       tableName: 'DevelopmentFundGrants',
       createdAt: false,
       updatedAt: false,
+      schema: 'cqc',
     },
   );
 
