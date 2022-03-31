@@ -6,12 +6,12 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">{{ workplace.name }} (Workplace ID: {{ workplace.nmdsId }})</span>
-          <h1 class="govuk-fieldset__heading">Make and Manage WDF claims</h1>
+          <h1 class="govuk-fieldset__heading">Make and manage WDF claims</h1>
         </legend>
         <p data-testid="info" class="govuk-!-margin-bottom-6">
           The grant letter needs to be signed before you can make and manage Workforce Development Fund (WDF) claims.
         </p>
-        <app-details [title]="revealTitle">
+        <app-details [title]="'What\'s a grant letter?'">
           <p data-testid="reveal">
             A grant letter is a legally binding agreement between Skills for Care and you workplace. It sets out the
             terms and conditions for claiming from the WDF.
@@ -114,7 +114,7 @@
             <div
               *ngIf="showNameAndEmailMyself"
               class="govuk-radios__conditional"
-              data-testid="grantLetterRadio-conditional"
+              data-testid="grantLetterRadio-conditional-0"
             >
               <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
                 <label class="govuk-label" for="fullName"> Full name </label>
@@ -174,7 +174,7 @@
             <div
               *ngIf="showNameAndEmailSomebody"
               class="govuk-radios__conditional"
-              data-testid="grantLetterRadio-conditional"
+              data-testid="grantLetterRadio-conditional-1"
             >
               <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
                 <label class="govuk-label" for="fullName"> Full name </label>

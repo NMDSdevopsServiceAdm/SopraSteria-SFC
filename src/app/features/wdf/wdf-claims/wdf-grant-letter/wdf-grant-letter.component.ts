@@ -22,13 +22,10 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
   public workplace: Establishment;
   public form: FormGroup;
   public submitted = false;
-  public formErrorsMap: Array<ErrorDetails> = [];
-  public flow: string;
-  public revealTitle = `What's a grant letter?`;
+  public formErrorsMap: ErrorDetails[] = [];
   public showNameAndEmailMyself = false;
   public showNameAndEmailSomebody = false;
   public showNameAndEmail = false;
-  public submittedWithAddtionalFields = false;
   public loggedInUser: User;
   private subscriptions: Subscription = new Subscription();
 
@@ -46,7 +43,6 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     this.setupFormErrorsMap();
     this.loggedInUser = this.route.snapshot.data.loggedInUser;
     this.workplace = this.route.snapshot.data.primaryWorkplace;
-    this.flow = 'wdf-claims';
     this.breadcrumbService.show(JourneyType.WDF_CLAIMS);
   }
 
@@ -66,7 +62,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
-  public onChange(answer: string): void {
+  onChange(answer: string): void {
     let fullName, email;
     if (answer === this.options[0]) {
       this.showNameAndEmailMyself = true;
@@ -168,7 +164,13 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   public navigateToNextPage(): void {
-    this.router.navigate([this.flow, 'grant-letter', 'grant-letter-sent']);
+    this.router.navigate(['wdf-claims', 'grant-letter', 'grant-letter-sent'], {
+      state: {
+        name: this.form.value.fullName,
+        email: this.form.value.emailAddress,
+        myself: this.form.value.grantLetter,
+      },
+    });
   }
 
   ngOnDestroy(): void {
