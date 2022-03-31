@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../../models');
-const DevelopmentFundGrants = require('../../../models/developmentFundGrants');
 const { createAgreement, queryAgreementStatus } = require('./adobeSign');
 
 const generateDevelopmentFundGrantLetter = async (req, res, next) => {
@@ -27,14 +26,14 @@ const generateDevelopmentFundGrantLetter = async (req, res, next) => {
       OUT_FOR_SIGNATURE: 'SENT',
       OUT_FOR_DELIVERY: 'SENT',
     };
-    // save to DB - success then continue, else cancel
-    await models.DevelopmentFundGrants.create({
-      AgreementID: agreementId,
-      EstablishmentID: establishmentId,
-      ReceiverEmail: email,
-      ReceiverName: name,
-      SignStatus: statusMap[data.status],
-      DateSent: data.createdDate,
+    // save to DB
+    await models.DevelopmentFundGrants.saveWDFData({
+      agreementId,
+      establishmentId,
+      email,
+      name,
+      signStatus: statusMap[data.status],
+      createdDate: data.createdDate,
     });
 
     return res.status(201).json({ agreementId });

@@ -53,5 +53,16 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
+  DevelopmentFundGrants.saveWDFData = function (data) {
+    return this.create({
+      AgreementID: data.agreementId,
+      EstablishmentID: data.establishmentId,
+      ReceiverEmail: data.email,
+      ReceiverName: data.name,
+      SignStatus: data.signStatus,
+      DateSent: data.createdDate,
+    });
+  };
+
   return DevelopmentFundGrants;
 };
