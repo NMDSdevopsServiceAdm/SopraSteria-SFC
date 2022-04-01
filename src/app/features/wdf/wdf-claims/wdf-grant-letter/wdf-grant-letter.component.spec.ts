@@ -354,7 +354,7 @@ describe('WdfGrantLetterComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter', 'grant-letter-sent'], {
+      expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter', 'check-details'], {
         state: { name: 'Somebody', email: 'somebody@email.com', myself: 'Myself' },
       });
     });
@@ -374,7 +374,7 @@ describe('WdfGrantLetterComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter', 'grant-letter-sent'], {
+      expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter', 'check-details'], {
         state: { name: 'Different Somebody', email: 'ds@email.com', myself: 'Somebody else in the organisation' },
       });
     });

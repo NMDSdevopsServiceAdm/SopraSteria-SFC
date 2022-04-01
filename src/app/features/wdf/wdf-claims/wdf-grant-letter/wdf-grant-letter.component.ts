@@ -86,9 +86,9 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
-      this.subscriptions.add(
-        this.grantLetterService.sendEmailGrantLetter(this.workplace.uid, this.form.value).subscribe(),
-      );
+      // this.subscriptions.add(
+      //   this.grantLetterService.sendEmailGrantLetter(this.workplace.uid, this.form.value).subscribe(),
+      // );
       this.navigateToNextPage();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
@@ -164,7 +164,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   public navigateToNextPage(): void {
-    this.router.navigate(['wdf-claims', 'grant-letter', 'grant-letter-sent'], {
+    this.router.navigate(['wdf-claims', 'grant-letter', 'check-details'], {
       state: {
         name: this.form.value.fullName,
         email: this.form.value.emailAddress,
