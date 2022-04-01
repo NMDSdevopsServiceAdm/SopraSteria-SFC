@@ -12,57 +12,76 @@ const {
 const {
   generateDevelopmentFundGrantLetter,
 } = require('../../../../../../server/routes/wdf/developmentFundGrants/generateDevelopmentFundGrantLetter');
-const developmentFundGrants = require('../../../../../models/developmentFundGrants');
 
 describe('GrantLetter', () => {
   const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
 
-  describe.only('generateDevelopmentFundGrant', () => {
-    let axiosStub;
-    sinon.stub(models.establishment, 'getWDFClaimData').returns({
-      address1: 'address',
-      town: 'town',
-      county: 'county',
-      postcode: 'postcode',
-      NameValue: 'org',
-      IsNationalOrg: true,
-    });
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  describe('generateDevelopmentFundGrant', () => {
+    let axiosPostStub;
+    let axiosGetStub;
+    let saveWDFDataStub;
 
     beforeEach(() => {
-      axiosStub = sinon.stub(axios, 'post');
-    });
-
-    afterEach(() => {
-      sinon.restore();
+      axiosPostStub = sinon.stub(axios, 'post');
+      axiosGetStub = sinon.stub(axios, 'get');
+      saveWDFDataStub = sinon.stub(models.DevelopmentFundGrants, 'saveWDFData');
+      sinon.stub(models.establishment, 'getWDFClaimData').returns({
+        address1: 'address',
+        town: 'town',
+        county: 'county',
+        postcode: 'postcode',
+        NameValue: 'org',
+        IsNationalOrg: true,
+      });
     });
 
     it('returns a 201 with an agreementId if agreement is successfully created', async () => {
-      axiosStub.resolves({ data: { id: 'someid' } });
-      const req = httpMocks.createRequest({ body: { name: 'some name', email: 'some email', establishmentId: 1234 } });
+      axiosPostStub.resolves({ data: { id: 'someid' } });
+      axiosGetStub.resolves({
+        data: { status: 'OUT_FOR_SIGNATURE', createdDate: '2022-03-31T15:43:32Z' },
+      });
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/wdf/developmentfund/agreements',
+        body: { name: 'some name', email: 'some email', establishmentId: 1234 },
+      });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
 
       await generateDevelopmentFundGrantLetter(req, res, next);
 
       expect(res.statusCode).to.equal(201);
-      expect(res._getJSONData()).to.eql({ id: 'someid' });
+      expect(res._getJSONData()).to.eql({ agreementId: 'someid' });
     });
 
-    it('save the agreement data to the relevant table', async () => {
-      axiosStub.resolves({ data: { id: 'id-to-save-in-the-db', status: 'OUT_FOR_DELIVERY' } });
-      const dbStub = sinon.stub(models.DevelopmentFundGrants, 'create');
-      // ['OUT_FOR_SIGNATURE' or 'OUT_FOR_DELIVERY' or 'OUT_FOR_ACCEPTANCE' or 'OUT_FOR_FORM_FILLING' or 'OUT_FOR_APPROVAL' or 'AUTHORING' or 'CANCELLED' or 'SIGNED' or 'APPROVED' or 'DELIVERED' or 'ACCEPTED' or 'FORM_FILLED' or 'EXPIRED' or 'ARCHIVED' or 'PREFILL' or 'WIDGET_WAITING_FOR_VERIFICATION' or 'DRAFT' or 'DOCUMENTS_NOT_YET_PROCESSED' or 'WAITING_FOR_FAXIN' or 'WAITING_FOR_VERIFICATION' or 'WAITING_FOR_NOTARIZATION']
-      const req = httpMocks.createRequest({ body: { name: 'some name', email: 'some email', establishmentId: 1234 } });
+    it('saves the agreement data to the relevant table via the saveWDFData method', async () => {
+      axiosPostStub.resolves({ data: { id: 'id-to-save-in-the-db' } });
+      axiosGetStub.resolves({
+        data: { status: 'OUT_FOR_SIGNATURE', createdDate: '2022-03-31T15:43:32Z' },
+      });
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/wdf/developmentfund/agreements',
+        body: { name: 'some name', email: 'some email', establishmentId: 1234 },
+      });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
 
-      console.log(dbStub.callCount);
-      expect(dbStub).to.be.calledWith({
-        AgreementID: 'id-to-save-in-the-db',
-        EstablishmentID: 1234,
-        ReceiverEmail: 'some email',
-        ReceiverName: 'some name',
-        SignStatus: 'SENT',
+      await generateDevelopmentFundGrantLetter(req, res, next);
+
+      expect(saveWDFDataStub).to.be.calledWith({
+        agreementId: 'id-to-save-in-the-db',
+        establishmentId: 1234,
+        email: 'some email',
+        name: 'some name',
+        signStatus: 'OUT_FOR_SIGNATURE',
+        createdDate: '2022-03-31T15:43:32Z',
       });
     });
   });
@@ -76,9 +95,6 @@ describe('GrantLetter', () => {
       axiosGetStub = sinon.stub(axios, 'get');
     });
 
-    afterEach(() => {
-      sinon.restore();
-    });
     describe('createAgreement', () => {
       const data = {
         name: 'name',
