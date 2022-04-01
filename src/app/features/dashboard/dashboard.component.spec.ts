@@ -138,7 +138,11 @@ describe('DashboardComponent', () => {
     });
 
     it('should display the WDF tab', async () => {
-      const { getByTestId } = await setup();
+      const { component, fixture, getByTestId } = await setup();
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
       expect(getByTestId('tab_wdf')).toBeTruthy();
     });
 
