@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../../models');
-const { createAgreement, queryAgreementStatus } = require('./adobeSign');
+const { createAgreement, queryAgreementStatus } = require('../../../utils/adobeSign');
 
 const generateDevelopmentFundGrantLetter = async (req, res, next) => {
   try {
@@ -38,17 +38,12 @@ const generateDevelopmentFundGrantLetter = async (req, res, next) => {
   }
 };
 
-const getDevelopmentFundGrant = async (req, res) => {
+const getDevelopmentFundGrantStatus = async (req, res) => {
   try {
     // check sent date/time and signStatus
     const data = await queryAgreementStatus(agreementId);
 
     console.log();
-
-    await this.create({
-      establishmentId: req.body.establishmentId,
-      Status: data.status,
-    });
 
     return res.status(200).json({});
   } catch (err) {
@@ -57,9 +52,9 @@ const getDevelopmentFundGrant = async (req, res) => {
   }
 };
 
-router.route('/:establishmentId').get(getDevelopmentFundGrant);
+router.route('/:establishmentId').get(getDevelopmentFundGrantStatus);
 router.route('/').post(generateDevelopmentFundGrantLetter);
 
 module.exports = router;
 module.exports.generateDevelopmentFundGrantLetter = generateDevelopmentFundGrantLetter;
-module.exports.getDevelopmentFundGrant = getDevelopmentFundGrant;
+module.exports.getDevelopmentFundGrantStatus = getDevelopmentFundGrantStatus;

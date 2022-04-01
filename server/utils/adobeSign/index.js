@@ -1,4 +1,4 @@
-const config = require('../../../../config/config');
+const config = require('../../config/config');
 const axios = require('axios');
 
 const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
@@ -73,20 +73,17 @@ module.exports.createAgreement = async (claimData) => {
 };
 
 module.exports.queryAgreementStatus = async (agreementId) => {
-  const data = await axios.get(`${adobeSignBaseUrl}/api/rest/v6/agreements/${agreementId}`, {
-    headers: {
-      Authorization: `Bearer ${adobeApiKey}`,
-    },
-  });
-  return data.status
-    .then(({ data }) => data)
-
+  return await axios
+    .get(`${adobeSignBaseUrl}/api/rest/v6/agreements/${agreementId}`, {
+      headers: {
+        Authorization: `Bearer ${adobeApiKey}`,
+      },
+    })
+    .then(({ data }) => {
+      console.log(data, '<<<< adobe log');
+      return data;
+    })
     .catch((err) => {
       throw err;
     });
-};
-
-const statusMap = {
-  OUT_FOR_SIGNATURE: 'SENT',
-  OUT_FOR_DELIVERY: 'SENT',
 };
