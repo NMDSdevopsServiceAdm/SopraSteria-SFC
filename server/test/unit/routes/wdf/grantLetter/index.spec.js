@@ -16,25 +16,27 @@ const {
 describe('GrantLetter', () => {
   const adobeSignBaseUrl = config.get('adobeSign.apiBaseUrl');
 
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('generateDevelopmentFundGrant', () => {
     let axiosPostStub;
     let axiosGetStub;
-    sinon.stub(models.establishment, 'getWDFClaimData').returns({
-      address1: 'address',
-      town: 'town',
-      county: 'county',
-      postcode: 'postcode',
-      NameValue: 'org',
-      IsNationalOrg: true,
-    });
+    let saveWDFDataStub;
 
     beforeEach(() => {
       axiosPostStub = sinon.stub(axios, 'post');
       axiosGetStub = sinon.stub(axios, 'get');
-    });
-
-    afterEach(() => {
-      sinon.restore();
+      saveWDFDataStub = sinon.stub(models.DevelopmentFundGrants, 'saveWDFData');
+      sinon.stub(models.establishment, 'getWDFClaimData').returns({
+        address1: 'address',
+        town: 'town',
+        county: 'county',
+        postcode: 'postcode',
+        NameValue: 'org',
+        IsNationalOrg: true,
+      });
     });
 
     it('returns a 201 with an agreementId if agreement is successfully created', async () => {
@@ -42,7 +44,6 @@ describe('GrantLetter', () => {
       axiosGetStub.resolves({
         data: { status: 'OUT_FOR_SIGNATURE', createdDate: '2022-03-31T15:43:32Z' },
       });
-      sinon.stub(models.DevelopmentFundGrants, 'saveWDFData');
 
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -63,8 +64,6 @@ describe('GrantLetter', () => {
       axiosGetStub.resolves({
         data: { status: 'OUT_FOR_SIGNATURE', createdDate: '2022-03-31T15:43:32Z' },
       });
-      const saveWDFDataStub = sinon.stub(models.DevelopmentFundGrants, 'saveWDFData').callThrough();
-      const dbStub = sinon.stub(models.DevelopmentFundGrants, 'create');
 
       const req = httpMocks.createRequest({
         method: 'POST',
@@ -84,15 +83,6 @@ describe('GrantLetter', () => {
         signStatus: 'SENT',
         createdDate: '2022-03-31T15:43:32Z',
       });
-
-      expect(dbStub).to.be.calledWith({
-        AgreementID: 'id-to-save-in-the-db',
-        EstablishmentID: 1234,
-        ReceiverEmail: 'some email',
-        ReceiverName: 'some name',
-        SignStatus: 'SENT',
-        DateSent: '2022-03-31T15:43:32Z',
-      });
     });
   });
 
@@ -105,9 +95,6 @@ describe('GrantLetter', () => {
       axiosGetStub = sinon.stub(axios, 'get');
     });
 
-    afterEach(() => {
-      sinon.restore();
-    });
     describe('createAgreement', () => {
       const data = {
         name: 'name',
