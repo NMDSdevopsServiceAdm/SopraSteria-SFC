@@ -21,12 +21,7 @@ const generateDevelopmentFundGrantLetter = async (req, res, next) => {
       postcode,
       isNationalOrg: IsNationalOrg,
     });
-    // check sent date/time and signStatus
-    const data = await queryAgreementStatus(agreementId);
-    const statusMap = {
-      OUT_FOR_SIGNATURE: 'SENT',
-      OUT_FOR_DELIVERY: 'SENT',
-    };
+
     // save to DB - success then continue, else cancel
     await models.DevelopmentFundGrants.create({
       AgreementID: agreementId,
@@ -43,7 +38,28 @@ const generateDevelopmentFundGrantLetter = async (req, res, next) => {
   }
 };
 
+const getDevelopmentFundGrant = async (req, res) => {
+  try {
+    // check sent date/time and signStatus
+    const data = await queryAgreementStatus(agreementId);
+
+    console.log();
+
+    await this.create({
+      establishmentId: req.body.establishmentId,
+      Status: data.status,
+    });
+
+    return res.status(200).json({});
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send();
+  }
+};
+
+router.route('/:establishmentId').get(getDevelopmentFundGrant);
 router.route('/').post(generateDevelopmentFundGrantLetter);
 
 module.exports = router;
 module.exports.generateDevelopmentFundGrantLetter = generateDevelopmentFundGrantLetter;
+module.exports.getDevelopmentFundGrant = getDevelopmentFundGrant;

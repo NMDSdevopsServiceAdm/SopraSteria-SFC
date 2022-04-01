@@ -73,14 +73,20 @@ module.exports.createAgreement = async (claimData) => {
 };
 
 module.exports.queryAgreementStatus = async (agreementId) => {
-  return axios
-    .get(`${adobeSignBaseUrl}/api/rest/v6/agreements/${agreementId}`, {
-      headers: {
-        Authorization: `Bearer ${adobeApiKey}`,
-      },
-    })
+  const data = await axios.get(`${adobeSignBaseUrl}/api/rest/v6/agreements/${agreementId}`, {
+    headers: {
+      Authorization: `Bearer ${adobeApiKey}`,
+    },
+  });
+  return data.status
     .then(({ data }) => data)
+
     .catch((err) => {
       throw err;
     });
+};
+
+const statusMap = {
+  OUT_FOR_SIGNATURE: 'SENT',
+  OUT_FOR_DELIVERY: 'SENT',
 };
