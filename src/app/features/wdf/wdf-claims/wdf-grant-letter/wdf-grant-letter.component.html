@@ -27,7 +27,7 @@
             }}</span>
           </span>
           <div class="govuk-radios govuk-radios--conditional govuk-!-margin-bottom-8">
-            <!-- <ng-container *ngFor="let answer of options; let i = index">
+            <ng-container *ngFor="let answer of options; let i = index">
               <div class="govuk-radios__item">
                 <input
                   aria-controls="grantLetter-conditional-{{ i }}"
@@ -45,15 +45,14 @@
               </div>
 
               <div
-                *ngIf="answer === options[1]"
+                *ngIf="answer === options[0] ? showNameAndEmailMyself : showNameAndEmailSomebody"
                 class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="!showNameAndEmail"
-                data-testid="grantLetterRadio-conditional"
+                [attr.data-testid]="'grantLetterRadio-conditional-' + i"
               >
                 <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
                   <label class="govuk-label" for="fullName"> Full name </label>
                   <span
-                    *ngIf="submitted && submittedWithAddtionalFields && this.form.get('fullName').errors"
+                    *ngIf="submitted && this.form.get('fullName').errors"
                     id="fullName-error"
                     class="govuk-error-message"
                   >
@@ -62,9 +61,7 @@
                   </span>
                   <input
                     class="govuk-input govuk-input--width-20"
-                    [class.govuk-input--error]="
-                      submitted && submittedWithAddtionalFields && form.get('fullName').invalid
-                    "
+                    [class.govuk-input--error]="submitted && form.get('fullName').invalid"
                     id="fullName"
                     formControlName="fullName"
                     name="fullName"
@@ -74,7 +71,7 @@
                 <div class="govuk-form-group" *ngIf="this.form.get('emailAddress')">
                   <label class="govuk-label" for="emailAddress"> Email address </label>
                   <span
-                    *ngIf="submitted && submittedWithAddtionalFields && form.get('emailAddress').invalid"
+                    *ngIf="submitted && form.get('emailAddress').invalid"
                     id="emailAddress-error"
                     class="govuk-error-message"
                   >
@@ -83,9 +80,7 @@
                   </span>
                   <input
                     class="govuk-input govuk-input--width-20"
-                    [class.govuk-input--error]="
-                      submitted && submittedWithAddtionalFields && form.get('emailAddress').invalid
-                    "
+                    [class.govuk-input--error]="submitted && form.get('emailAddress').invalid"
                     id="emailAddress"
                     formControlName="emailAddress"
                     name="emailAddress"
@@ -93,130 +88,7 @@
                   />
                 </div>
               </div>
-            </ng-container> -->
-
-            <div class="govuk-radios__item">
-              <input
-                aria-controls="grantLetter-conditional-0"
-                class="govuk-radios__input"
-                [formControlName]="'grantLetter'"
-                id="grantLetter-0"
-                name="grantLetter"
-                type="radio"
-                [value]="options[0]"
-                (click)="onChange(options[0])"
-              />
-              <label class="govuk-label govuk-radios__label" for="grantLetter-0">
-                {{ options[0] }}
-              </label>
-            </div>
-
-            <div
-              *ngIf="showNameAndEmailMyself"
-              class="govuk-radios__conditional"
-              data-testid="grantLetterRadio-conditional-0"
-            >
-              <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
-                <label class="govuk-label" for="fullName"> Full name </label>
-                <span
-                  *ngIf="submitted && this.form.get('fullName').errors"
-                  id="fullName-error"
-                  class="govuk-error-message"
-                >
-                  <span class="govuk-visually-hidden">Error:</span>
-                  {{ getErrorMessage('fullName') }}
-                </span>
-                <input
-                  class="govuk-input govuk-input--width-20"
-                  [class.govuk-input--error]="submitted && form.get('fullName').invalid"
-                  id="fullName"
-                  formControlName="fullName"
-                  name="fullName"
-                  type="text"
-                />
-              </div>
-              <div class="govuk-form-group" *ngIf="this.form.get('emailAddress')">
-                <label class="govuk-label" for="emailAddress"> Email address </label>
-                <span
-                  *ngIf="submitted && form.get('emailAddress').invalid"
-                  id="emailAddress-error"
-                  class="govuk-error-message"
-                >
-                  <span class="govuk-visually-hidden">Error:</span>
-                  {{ getErrorMessage('emailAddress') }}
-                </span>
-                <input
-                  class="govuk-input govuk-input--width-20"
-                  [class.govuk-input--error]="submitted && form.get('emailAddress').invalid"
-                  id="emailAddress"
-                  formControlName="emailAddress"
-                  name="emailAddress"
-                  type="text"
-                />
-              </div>
-            </div>
-            <div class="govuk-radios__item">
-              <input
-                aria-controls="grantLetter-conditional-1"
-                class="govuk-radios__input"
-                [formControlName]="'grantLetter'"
-                id="grantLetter-1"
-                name="grantLetter"
-                type="radio"
-                [value]="options[1]"
-                (click)="onChange(options[1])"
-              />
-              <label class="govuk-label govuk-radios__label" for="grantLetter-1">
-                {{ options[1] }}
-              </label>
-            </div>
-
-            <div
-              *ngIf="showNameAndEmailSomebody"
-              class="govuk-radios__conditional"
-              data-testid="grantLetterRadio-conditional-1"
-            >
-              <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
-                <label class="govuk-label" for="fullName"> Full name </label>
-                <span
-                  *ngIf="submitted && this.form.get('fullName').errors"
-                  id="fullName-error"
-                  class="govuk-error-message"
-                >
-                  <span class="govuk-visually-hidden">Error:</span>
-                  {{ getErrorMessage('fullName') }}
-                </span>
-                <input
-                  class="govuk-input govuk-input--width-20"
-                  [class.govuk-input--error]="submitted && form.get('fullName').invalid"
-                  id="fullName"
-                  formControlName="fullName"
-                  name="fullName"
-                  type="text"
-                />
-              </div>
-              <div class="govuk-form-group" *ngIf="this.form.get('emailAddress')">
-                <label class="govuk-label" for="emailAddress"> Email address </label>
-                <span
-                  *ngIf="submitted && form.get('emailAddress').invalid"
-                  id="emailAddress-error"
-                  class="govuk-error-message"
-                >
-                  <span class="govuk-visually-hidden">Error:</span>
-                  {{ getErrorMessage('emailAddress') }}
-                </span>
-                <input
-                  class="govuk-input govuk-input--width-20"
-                  [class.govuk-input--error]="
-                    submitted && submittedWithAddtionalFields && form.get('emailAddress').invalid
-                  "
-                  id="emailAddress"
-                  formControlName="emailAddress"
-                  name="emailAddress"
-                  type="text"
-                />
-              </div>
-            </div>
+            </ng-container>
           </div>
         </div>
       </fieldset>
