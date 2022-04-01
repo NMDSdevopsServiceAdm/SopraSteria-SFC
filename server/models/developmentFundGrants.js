@@ -59,11 +59,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         default: sequelize.NOW,
       },
-      DateCompleted: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        default: null,
-      },
     },
     {
       tableName: 'DevelopmentFundGrants',

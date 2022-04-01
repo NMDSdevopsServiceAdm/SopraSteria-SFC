@@ -60,11 +60,6 @@ module.exports = {
           allowNull: false,
           default: Sequelize.NOW,
         },
-        DateCompleted: {
-          type: Sequelize.DATE,
-          allowNull: true,
-          default: null,
-        },
       },
       {
         schema: 'cqc',
@@ -72,10 +67,12 @@ module.exports = {
     );
   },
 
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable({
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable({
       tableName: 'DevelopmentFundGrants',
       schema: 'cqc',
     });
+
+    return queryInterface.sequelize.query('DROP TYPE IF EXISTS cqc."enum_DevelopmentFundGrants_SignStatus";');
   },
 };
