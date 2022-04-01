@@ -44,7 +44,11 @@ describe('GrantLetter', () => {
       });
       sinon.stub(models.DevelopmentFundGrants, 'saveWDFData');
 
-      const req = httpMocks.createRequest({ body: { name: 'some name', email: 'some email', establishmentId: 1234 } });
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/wdf/developmentfund/agreements',
+        body: { name: 'some name', email: 'some email', establishmentId: 1234 },
+      });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
 
@@ -62,7 +66,11 @@ describe('GrantLetter', () => {
       const saveWDFDataStub = sinon.stub(models.DevelopmentFundGrants, 'saveWDFData').callThrough();
       const dbStub = sinon.stub(models.DevelopmentFundGrants, 'create');
 
-      const req = httpMocks.createRequest({ body: { name: 'some name', email: 'some email', establishmentId: 1234 } });
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/wdf/developmentfund/agreements',
+        body: { name: 'some name', email: 'some email', establishmentId: 1234 },
+      });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
 
