@@ -22,17 +22,13 @@ const generateDevelopmentFundGrantLetter = async (req, res, next) => {
     });
     // check sent date/time and signStatus
     const data = await queryAgreementStatus(agreementId);
-    const statusMap = {
-      OUT_FOR_SIGNATURE: 'SENT',
-      OUT_FOR_DELIVERY: 'SENT',
-    };
     // save to DB
     await models.DevelopmentFundGrants.saveWDFData({
       agreementId,
       establishmentId,
       email,
       name,
-      signStatus: statusMap[data.status],
+      signStatus: data.status,
       createdDate: data.createdDate,
     });
 

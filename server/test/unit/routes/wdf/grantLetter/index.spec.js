@@ -80,7 +80,7 @@ describe('GrantLetter', () => {
         establishmentId: 1234,
         email: 'some email',
         name: 'some name',
-        signStatus: 'SENT',
+        signStatus: 'OUT_FOR_SIGNATURE',
         createdDate: '2022-03-31T15:43:32Z',
       });
     });
