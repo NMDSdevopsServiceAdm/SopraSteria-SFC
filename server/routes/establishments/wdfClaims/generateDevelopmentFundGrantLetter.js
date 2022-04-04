@@ -20,8 +20,6 @@ const generateDevelopmentFundGrantLetter = async (req, res, next) => {
       postcode,
       isNationalOrg: IsNationalOrg,
     });
-    // check sent date/time and signStatus
-    const data = await queryAgreementStatus(agreementId);
     // save to DB
     await models.DevelopmentFundGrants.saveWDFData({
       agreementId,
@@ -38,21 +36,30 @@ const generateDevelopmentFundGrantLetter = async (req, res, next) => {
   }
 };
 
-const getDevelopmentFundGrantStatus = async (req, res) => {
+const getDevelopmentFundGrantStatus = async (req, res, next) => {
   try {
-    // check sent date/time and signStatus
-    const data = await queryAgreementStatus(agreementId);
+    // get signStatus
+    const getWDFClaimStatus = await models.DevelopmentFundGrants.getWDFClaimStatus(req.body.establishmentId);
+    const data = await queryAgreementStatus(getWDFClaimStatus.AgreementID);
 
-    console.log();
+    const signedStatus = getWDFClaimStatus.signStatus;
+    const echoSignStatus = data.status;
+    const returnStatus = signedStatus == 'SIGNED' ? signedStatus : echoSignStatus;
 
-    return res.status(200).json({});
+    if (signedStatus != 'SIGNED') {
+      // update status to DB
+      if (signedStatus != echoSignStatus) {
+        await models.DevelopmentFundGrants.updateStatus(req.body.establishmentId, echoSignStatus);
+      }
+    }
+    return res.status(200).json({ Status: returnStatus });
   } catch (err) {
     console.error(err);
-    return res.status(500).send();
+    return next(Error('unable to get the status'));
   }
 };
 
-router.route('/:establishmentId').get(getDevelopmentFundGrantStatus);
+router.route('/').get(getDevelopmentFundGrantStatus);
 router.route('/').post(generateDevelopmentFundGrantLetter);
 
 module.exports = router;

@@ -84,5 +84,27 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  DevelopmentFundGrants.getWDFClaimStatus = async function (establishmentId) {
+    return await this.findOne({
+      attributes: ['AgreementID', 'SignStatus'],
+      where: {
+        EstablishmentID: establishmentId,
+      },
+    });
+  };
+
+  DevelopmentFundGrants.updateStatus = async function (establishmentId, status) {
+    return await this.update(
+      {
+        SignStatus: status,
+      },
+      {
+        where: {
+          EstablishmentID: establishmentId,
+        },
+      },
+    );
+  };
+
   return DevelopmentFundGrants;
 };
