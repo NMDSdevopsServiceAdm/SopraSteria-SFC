@@ -86,7 +86,6 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
-    console.log(this.form.value);
     if (this.form.valid) {
       // this.subscriptions.add(
       //   this.grantLetterService.sendEmailGrantLetter(this.workplace.uid, this.form.value).subscribe(),
