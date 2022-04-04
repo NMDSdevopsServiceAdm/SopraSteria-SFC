@@ -55,7 +55,7 @@ module.exports = {
           type: Sequelize.STRING(100),
           allowNull: false,
         },
-        DateSent: {
+        DateCreated: {
           type: Sequelize.DATE,
           allowNull: false,
           default: Sequelize.NOW,

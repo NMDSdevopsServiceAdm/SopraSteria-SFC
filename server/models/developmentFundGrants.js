@@ -54,7 +54,7 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
-      DateSent: {
+      DateCreated: {
         type: DataTypes.DATE,
         allowNull: false,
         default: sequelize.NOW,
@@ -75,7 +75,7 @@ module.exports = function (sequelize, DataTypes) {
       ReceiverEmail: data.email,
       ReceiverName: data.name,
       SignStatus: data.signStatus,
-      DateSent: data.createdDate,
+      DateCreated: data.createdDate,
     });
   };
 
