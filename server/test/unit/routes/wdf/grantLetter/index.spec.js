@@ -4,7 +4,6 @@ const axios = require('axios');
 const httpMocks = require('node-mocks-http');
 const models = require('../../../../../models');
 
-const { createAgreement, queryAgreementStatus } = require('../../../../../utils/adobeSign/index');
 const {
   generateDevelopmentFundGrantLetter,
 } = require('../../../../../../server/routes/establishments/wdfClaims/generateDevelopmentFundGrantLetter');
@@ -33,7 +32,7 @@ describe('GrantLetter', () => {
       });
     });
 
-    it('returns a 200 with an agreementId if agreement is successfully created', async () => {
+    it('returns a 201 with an agreementId if agreement is successfully created', async () => {
       axiosPostStub.resolves({ data: { id: 'someid' } });
       axiosGetStub.resolves({
         data: { status: 'OUT_FOR_SIGNATURE', createdDate: '2022-03-31T15:43:32Z' },
@@ -49,7 +48,7 @@ describe('GrantLetter', () => {
 
       await generateDevelopmentFundGrantLetter(req, res, next);
 
-      expect(res.statusCode).to.equal(200);
+      expect(res.statusCode).to.equal(201);
       expect(res._getJSONData()).to.eql({ agreementId: 'someid' });
     });
 

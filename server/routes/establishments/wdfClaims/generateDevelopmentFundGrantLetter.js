@@ -20,6 +20,8 @@ const generateDevelopmentFundGrantLetter = async (req, res, next) => {
       postcode,
       isNationalOrg: IsNationalOrg,
     });
+    // check sent date/time and signStatus
+    const data = await queryAgreementStatus(agreementId);
     // save to DB
     await models.DevelopmentFundGrants.saveWDFData({
       agreementId,
