@@ -1,16 +1,13 @@
 const router = require('express').Router();
 const { hasPermission } = require('../../../utils/security/hasPermission');
+const {
+  generateDevelopmentFundGrantLetter,
+  getDevelopmentFundGrantStatus,
+} = require('./generateDevelopmentFundGrantLetter');
 
-const updateBUDataChanges = async (res) => {
-  try {
-    res.status(200).send();
-  } catch (error) {
-    console.log(error);
-    res.status(500).send();
-  }
-};
-
-router.route('/').post(hasPermission('canManageWdfClaims'), updateBUDataChanges);
+router.route('/').post(generateDevelopmentFundGrantLetter);
+router.route('/').get(getDevelopmentFundGrantStatus);
 
 module.exports = router;
-module.exports.updateBUDataChanges = updateBUDataChanges;
+module.exports.generateDevelopmentFundGrantLetter = generateDevelopmentFundGrantLetter;
+module.exports.getDevelopmentFundGrantStatus = getDevelopmentFundGrantStatus;
