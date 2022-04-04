@@ -22,6 +22,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
   public workplace: Establishment;
   public form: FormGroup;
   public submitted = false;
+  public submittedWithFields = false;
   public formErrorsMap: ErrorDetails[] = [];
   public showNameAndEmailMyself = false;
   public showNameAndEmailSomebody = false;
@@ -79,11 +80,15 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     }
     this.removeControl();
     this.addControl(fullName, email);
-    this.newFormErrorsMap();
+
+    // this.newFormErrorsMap();
+    // this.formErrorsMap.length === 1 && this.newFormErrorsMap();
   }
 
   public onSubmit(): void {
+    this.submittedWithFields = this.form.controls.fullName && this.form.controls.emailAddress ? true : false;
     this.submitted = true;
+    this.submittedWithFields && this.setupFormErrorsMap();
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
       this.subscriptions.add(
@@ -103,6 +108,30 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
           {
             name: 'required',
             message: 'Select who you want to email the grant letter to',
+          },
+        ],
+      },
+      {
+        item: 'fullName',
+        type: [
+          {
+            name: 'required',
+            message: this.submittedWithFields ? 'Enter a full name' : '',
+          },
+        ],
+      },
+      {
+        item: 'emailAddress',
+        type: [
+          {
+            name: 'required',
+            message: this.submittedWithFields ? 'Enter an email address' : '',
+          },
+          {
+            name: 'pattern',
+            message: this.submittedWithFields
+              ? 'Enter the email address in the correct format, like name@example.com'
+              : '',
           },
         ],
       },

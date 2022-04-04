@@ -52,7 +52,7 @@
                 <div class="govuk-form-group" *ngIf="this.form.get('fullName')">
                   <label class="govuk-label" for="fullName"> Full name </label>
                   <span
-                    *ngIf="submitted && this.form.get('fullName').errors"
+                    *ngIf="submitted && submittedWithFields && this.form.get('fullName').errors"
                     id="fullName-error"
                     class="govuk-error-message"
                   >
@@ -61,7 +61,7 @@
                   </span>
                   <input
                     class="govuk-input govuk-input--width-20"
-                    [class.govuk-input--error]="submitted && form.get('fullName').invalid"
+                    [class.govuk-input--error]="submitted && submittedWithFields && form.get('fullName').invalid"
                     id="fullName"
                     formControlName="fullName"
                     name="fullName"
@@ -71,7 +71,7 @@
                 <div class="govuk-form-group" *ngIf="this.form.get('emailAddress')">
                   <label class="govuk-label" for="emailAddress"> Email address </label>
                   <span
-                    *ngIf="submitted && form.get('emailAddress').invalid"
+                    *ngIf="submitted && submittedWithFields && form.get('emailAddress').invalid"
                     id="emailAddress-error"
                     class="govuk-error-message"
                   >
@@ -80,7 +80,7 @@
                   </span>
                   <input
                     class="govuk-input govuk-input--width-20"
-                    [class.govuk-input--error]="submitted && form.get('emailAddress').invalid"
+                    [class.govuk-input--error]="submitted && submittedWithFields && form.get('emailAddress').invalid"
                     id="emailAddress"
                     formControlName="emailAddress"
                     name="emailAddress"
