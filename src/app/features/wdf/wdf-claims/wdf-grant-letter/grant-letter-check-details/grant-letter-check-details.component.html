@@ -1,1 +1,28 @@
-<div>Grant Letter Check Details</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-l">Check these details before you send the grant letter</h2>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <dl
+      class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summarylist-border-bottom"
+    >
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Full name</dt>
+        <dd class="govuk-summary-list__value">{{ name }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Email address</dt>
+        <dd class="govuk-summary-list__value">{{ email }}</dd>
+      </div>
+    </dl>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-button-group">
+      <button class="govuk-button" type="button" (click)="onSubmit()">Confirm and send</button>
+    </div>
+  </div>
+</div>
