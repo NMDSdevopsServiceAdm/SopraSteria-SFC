@@ -130,7 +130,7 @@ describe('StaffSummaryComponent', () => {
       component.fixture.componentInstance.workerCount = 0;
       component.fixture.detectChanges();
 
-      expect(component.getByText('There are no matching results.')).toBeTruthy();
+      expect(component.getByText('There are no matching results')).toBeTruthy();
       expect(component.getByText('Make sure that your spelling is correct.')).toBeTruthy();
     });
   });

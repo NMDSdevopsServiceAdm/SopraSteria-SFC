@@ -258,7 +258,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
 
       fixture.detectChanges();
 
-      expect(getByText('There are no matching results.')).toBeTruthy();
+      expect(getByText('There are no matching results')).toBeTruthy();
       expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
     });
   });
