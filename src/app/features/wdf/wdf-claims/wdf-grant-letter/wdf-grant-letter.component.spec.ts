@@ -171,6 +171,27 @@ describe('WdfGrantLetterComponent', () => {
       expect(getAllByText(errorMessage).length).toBe(2);
     });
 
+    it('should show error message when user click submit with out selecting radio buttons but not the input errors when radio is then selected', async () => {
+      const { component, fixture, getAllByText, getByText, queryByText, getByLabelText } = await setup();
+
+      const errorMessage = 'Select who you want to email the grant letter to';
+      const emailErrorMessage = 'Enter an email address';
+      const fullnameErrorMessage = 'Enter a full name';
+
+      const button = getByText('Send email');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      const somebodyRadio = getByLabelText('Somebody else in the organisation');
+      fireEvent.click(somebodyRadio);
+      fixture.detectChanges();
+
+      expect(component.form.invalid).toBeTruthy();
+      expect(getAllByText(errorMessage).length).toBe(2);
+      expect(queryByText(emailErrorMessage)).toBeFalsy();
+      expect(queryByText(fullnameErrorMessage)).toBeFalsy();
+    });
+
     it('should show 2 error messages when user click submit when the myself radio button is selected, but both inputs are empty', async () => {
       const { component, fixture, getAllByText, getByLabelText, getByText } = await setup();
 
