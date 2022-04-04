@@ -8,7 +8,7 @@ import { MakeAClaimProgressBarComponent } from './make-a-claim-progress-bar.comp
 
 describe('MakeAClaimProgressBarComponent', () => {
   const setup = async (stepIndex = 0) => {
-    const { fixture, getByText, getByTestId } = await render(MakeAClaimProgressBarComponent, {
+    const { fixture, getByText, queryByTestId } = await render(MakeAClaimProgressBarComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
       componentProperties: {
         stepIndex,
@@ -17,7 +17,7 @@ describe('MakeAClaimProgressBarComponent', () => {
 
     const component = fixture.componentInstance;
 
-    return { component, getByText, getByTestId };
+    return { component, getByText, queryByTestId };
   };
 
   it('should render a MakeAClaimProgressBarComponent', async () => {
@@ -36,75 +36,119 @@ describe('MakeAClaimProgressBarComponent', () => {
 
   describe('First step in progress', () => {
     it('should show currentStep icon next to first step name', async () => {
-      const { getByTestId } = await setup();
+      const { queryByTestId } = await setup();
 
-      expect(getByTestId('currentStep-0')).toBeTruthy();
+      expect(queryByTestId('currentStep-0')).toBeTruthy();
     });
 
     it('should show notCompleted icon next to second, third and fourth steps', async () => {
-      const { getByTestId } = await setup();
+      const { queryByTestId } = await setup();
 
-      expect(getByTestId('notCompleted-1')).toBeTruthy();
-      expect(getByTestId('notCompleted-2')).toBeTruthy();
-      expect(getByTestId('notCompleted-3')).toBeTruthy();
+      expect(queryByTestId('notCompleted-1')).toBeTruthy();
+      expect(queryByTestId('notCompleted-2')).toBeTruthy();
+      expect(queryByTestId('notCompleted-3')).toBeTruthy();
+    });
+
+    it('should show grey lines after each step icon, nothing after fourth', async () => {
+      const { queryByTestId } = await setup();
+
+      expect(queryByTestId('greyLine-0')).toBeTruthy();
+      expect(queryByTestId('greyLine-1')).toBeTruthy();
+      expect(queryByTestId('greyLine-2')).toBeTruthy();
+
+      expect(queryByTestId('blackLine-3')).toBeFalsy();
+      expect(queryByTestId('greyLine-3')).toBeFalsy();
     });
   });
 
   describe('Second step in progress', () => {
     it('should show completed icon next to first step name', async () => {
-      const { getByTestId } = await setup(1);
+      const { queryByTestId } = await setup(1);
 
-      expect(getByTestId('completed-0')).toBeTruthy();
+      expect(queryByTestId('completed-0')).toBeTruthy();
     });
 
     it('should show currentStep icon next to second step name', async () => {
-      const { getByTestId } = await setup(1);
+      const { queryByTestId } = await setup(1);
 
-      expect(getByTestId('currentStep-1')).toBeTruthy();
+      expect(queryByTestId('currentStep-1')).toBeTruthy();
     });
 
     it('should show notCompleted icon next to second, third and fourth steps', async () => {
-      const { getByTestId } = await setup(1);
+      const { queryByTestId } = await setup(1);
 
-      expect(getByTestId('notCompleted-2')).toBeTruthy();
-      expect(getByTestId('notCompleted-3')).toBeTruthy();
+      expect(queryByTestId('notCompleted-2')).toBeTruthy();
+      expect(queryByTestId('notCompleted-3')).toBeTruthy();
+    });
+
+    it('should show black line after first icon and grey lines after rest, nothing after fourth', async () => {
+      const { queryByTestId } = await setup(1);
+
+      expect(queryByTestId('blackLine-0')).toBeTruthy();
+      expect(queryByTestId('greyLine-1')).toBeTruthy();
+      expect(queryByTestId('greyLine-2')).toBeTruthy();
+
+      expect(queryByTestId('blackLine-3')).toBeFalsy();
+      expect(queryByTestId('greyLine-3')).toBeFalsy();
     });
   });
 
   describe('Third step in progress', () => {
     it('should show completed icon next to first and second step names', async () => {
-      const { getByTestId } = await setup(2);
+      const { queryByTestId } = await setup(2);
 
-      expect(getByTestId('completed-0')).toBeTruthy();
-      expect(getByTestId('completed-1')).toBeTruthy();
+      expect(queryByTestId('completed-0')).toBeTruthy();
+      expect(queryByTestId('completed-1')).toBeTruthy();
     });
 
     it('should show currentStep icon next to third step name', async () => {
-      const { getByTestId } = await setup(2);
+      const { queryByTestId } = await setup(2);
 
-      expect(getByTestId('currentStep-2')).toBeTruthy();
+      expect(queryByTestId('currentStep-2')).toBeTruthy();
     });
 
     it('should show notCompleted icon next to fourth step name', async () => {
-      const { getByTestId } = await setup(2);
+      const { queryByTestId } = await setup(2);
 
-      expect(getByTestId('notCompleted-3')).toBeTruthy();
+      expect(queryByTestId('notCompleted-3')).toBeTruthy();
+    });
+
+    it('should show black line after first two icons, grey line after third, nothing after fourth', async () => {
+      const { queryByTestId } = await setup(2);
+
+      expect(queryByTestId('blackLine-0')).toBeTruthy();
+      expect(queryByTestId('blackLine-1')).toBeTruthy();
+      expect(queryByTestId('greyLine-2')).toBeTruthy();
+
+      expect(queryByTestId('blackLine-3')).toBeFalsy();
+      expect(queryByTestId('greyLine-3')).toBeFalsy();
     });
   });
 
   describe('Fourth step in progress', () => {
     it('should show completed icon next to first and second step names', async () => {
-      const { getByTestId } = await setup(3);
+      const { queryByTestId } = await setup(3);
 
-      expect(getByTestId('completed-0')).toBeTruthy();
-      expect(getByTestId('completed-1')).toBeTruthy();
-      expect(getByTestId('completed-2')).toBeTruthy();
+      expect(queryByTestId('completed-0')).toBeTruthy();
+      expect(queryByTestId('completed-1')).toBeTruthy();
+      expect(queryByTestId('completed-2')).toBeTruthy();
     });
 
     it('should show currentStep icon next to third step name', async () => {
-      const { getByTestId } = await setup(3);
+      const { queryByTestId } = await setup(3);
 
-      expect(getByTestId('currentStep-3')).toBeTruthy();
+      expect(queryByTestId('currentStep-3')).toBeTruthy();
+    });
+
+    it('should show black lines after all icons and nothing after fourth', async () => {
+      const { queryByTestId } = await setup(3);
+
+      expect(queryByTestId('blackLine-0')).toBeTruthy();
+      expect(queryByTestId('blackLine-1')).toBeTruthy();
+      expect(queryByTestId('blackLine-2')).toBeTruthy();
+
+      expect(queryByTestId('blackLine-3')).toBeFalsy();
+      expect(queryByTestId('greyLine-3')).toBeFalsy();
     });
   });
 });

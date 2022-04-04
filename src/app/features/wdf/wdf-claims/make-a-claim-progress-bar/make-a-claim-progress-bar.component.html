@@ -1,7 +1,7 @@
 <h3 class="govuk-!-margin-bottom-0">Make a claim</h3>
 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
 <ng-container *ngFor="let step of steps; index as i">
-  <p>
+  <p class="govuk-!-display-block govuk-!-margin-bottom-0">
     <img
       *ngIf="i < stepIndex"
       [attr.data-testid]="'completed-' + i"
@@ -25,4 +25,18 @@
     />
     {{ step }}
   </p>
+  <img
+    *ngIf="i < stepIndex"
+    [attr.data-testid]="'blackLine-' + i"
+    class="govuk-!-display-block govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-!-margin-left-2"
+    src="/assets/images/progress-bar/black-line.svg"
+    alt=""
+  />
+  <img
+    *ngIf="i >= stepIndex && i != steps.length - 1"
+    [attr.data-testid]="'greyLine-' + i"
+    class="govuk-!-display-block govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-!-margin-left-2"
+    src="/assets/images/progress-bar/grey-line.svg"
+    alt=""
+  />
 </ng-container>
