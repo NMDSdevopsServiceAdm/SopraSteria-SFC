@@ -10,11 +10,18 @@
     >
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Full name</dt>
-        <dd class="govuk-summary-list__value">{{ name }}</dd>
+        <dd class="govuk-summary-list__value" data-testid="name">{{ name }}</dd>
+        <dd class="govuk-summary-list__actions">
+          <a
+            [routerLink]="['/wdf-claims', 'grant-letter']"
+            [state]="{ name: this.name, email: this.email, myself: this.radioSelected }"
+            >Change</a
+          >
+        </dd>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Email address</dt>
-        <dd class="govuk-summary-list__value">{{ email }}</dd>
+        <dd class="govuk-summary-list__value" data-testid="email">{{ email }}</dd>
       </div>
     </dl>
   </div>

@@ -12,11 +12,12 @@ import { Subscription } from 'rxjs';
 export class GrantLetterCheckDetailsComponent implements OnInit, OnDestroy {
   public name: string;
   public email: string;
+  public radioSelected: string;
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private backService: BackService,
+    public backService: BackService,
     private grantLetterService: GrantLetterService,
     private route: ActivatedRoute,
     private router: Router,
@@ -24,12 +25,14 @@ export class GrantLetterCheckDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.setBackLink();
+
     this.name = history.state?.name;
     this.email = history.state?.email;
+    this.radioSelected = history.state?.myself;
     this.workplace = this.route.snapshot.data.primaryWorkplace;
   }
 
-  private setBackLink(): void {
+  public setBackLink(): void {
     this.backService.setBackLink({ url: ['wdf-claims', 'grant-letter'] });
   }
 

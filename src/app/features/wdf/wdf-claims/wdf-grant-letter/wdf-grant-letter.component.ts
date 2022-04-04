@@ -44,6 +44,9 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     this.setupFormErrorsMap();
     this.loggedInUser = this.route.snapshot.data.loggedInUser;
     this.workplace = this.route.snapshot.data.primaryWorkplace;
+    if (history.state.myself && history.state.name && history.state.email) {
+      this.populateForm();
+    }
     this.breadcrumbService.show(JourneyType.WDF_CLAIMS);
   }
 
@@ -61,6 +64,22 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
         },
       ],
     });
+  }
+
+  populateForm(): void {
+    const { myself, name, email } = history.state;
+    this.form.controls['grantLetter'].setValue(myself);
+
+    if (myself === 'Myself') {
+      this.showNameAndEmailMyself = true;
+      this.showNameAndEmailSomebody = false;
+    } else {
+      this.showNameAndEmailMyself = false;
+      this.showNameAndEmailSomebody = true;
+    }
+
+    this.addControl(name, email);
+    this.newFormErrorsMap();
   }
 
   onChange(answer: string): void {
