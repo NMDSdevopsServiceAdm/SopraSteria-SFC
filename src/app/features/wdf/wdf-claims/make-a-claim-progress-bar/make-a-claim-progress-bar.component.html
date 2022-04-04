@@ -2,9 +2,27 @@
 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
 <ng-container *ngFor="let step of steps; index as i">
   <p>
-    <span *ngIf="i < stepIndex" [attr.data-testid]="'completed-' + i">Completed </span>
-    <span *ngIf="i == stepIndex" [attr.data-testid]="'currentStep-' + i">Current </span>
-    <span *ngIf="i > stepIndex" [attr.data-testid]="'notCompleted-' + i">Not done </span>
+    <img
+      *ngIf="i < stepIndex"
+      [attr.data-testid]="'completed-' + i"
+      class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+      src="/assets/images/progress-bar/done.svg"
+      alt=""
+    />
+    <img
+      *ngIf="i == stepIndex"
+      [attr.data-testid]="'currentStep-' + i"
+      class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+      src="/assets/images/progress-bar/doing.svg"
+      alt=""
+    />
+    <img
+      *ngIf="i > stepIndex"
+      [attr.data-testid]="'notCompleted-' + i"
+      class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+      src="/assets/images/progress-bar/to-do.svg"
+      alt=""
+    />
     {{ step }}
   </p>
 </ng-container>
