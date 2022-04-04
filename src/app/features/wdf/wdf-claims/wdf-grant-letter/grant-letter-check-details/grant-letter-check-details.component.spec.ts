@@ -17,7 +17,7 @@ describe('GrantLetterCheckDetailsComponent', () => {
       {
         name: 'Somebody',
         email: 'somebody@email.com',
-        myself: 'myself',
+        radioSelection: 'myself',
       },
       '',
     );

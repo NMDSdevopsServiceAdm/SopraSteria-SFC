@@ -28,7 +28,7 @@ export class GrantLetterCheckDetailsComponent implements OnInit, OnDestroy {
 
     this.name = history.state?.name;
     this.email = history.state?.email;
-    this.radioSelected = history.state?.myself;
+    this.radioSelected = history.state?.radioSelection;
     this.workplace = this.route.snapshot.data.primaryWorkplace;
   }
 

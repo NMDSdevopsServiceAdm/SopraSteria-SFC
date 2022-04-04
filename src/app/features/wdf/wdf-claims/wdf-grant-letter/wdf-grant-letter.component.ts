@@ -45,7 +45,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     this.setupFormErrorsMap();
     this.loggedInUser = this.route.snapshot.data.loggedInUser;
     this.workplace = this.route.snapshot.data.primaryWorkplace;
-    if (history.state.myself && history.state.name && history.state.email) {
+    if (history.state?.radioSelection && history.state?.name && history.state?.email) {
       this.populateForm();
     }
     this.breadcrumbService.show(JourneyType.WDF_CLAIMS);
@@ -68,10 +68,10 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   populateForm(): void {
-    const { myself, name, email } = history.state;
-    this.form.controls['grantLetter'].setValue(myself);
+    const { radioSelection, name, email } = history.state;
+    this.form.controls['grantLetter'].setValue(radioSelection);
 
-    if (myself === 'Myself') {
+    if (radioSelection === 'Myself') {
       this.showNameAndEmailMyself = true;
       this.showNameAndEmailSomebody = false;
     } else {
@@ -80,7 +80,6 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     this.addControl(name, email);
-    this.newFormErrorsMap();
   }
 
   onChange(answer: string): void {
@@ -100,9 +99,6 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     }
     this.removeControl();
     this.addControl(fullName, email);
-
-    // this.newFormErrorsMap();
-    // this.formErrorsMap.length === 1 && this.newFormErrorsMap();
   }
 
   public onSubmit(): void {
@@ -111,9 +107,6 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     this.submittedWithFields && this.setupFormErrorsMap();
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.valid) {
-      // this.subscriptions.add(
-      //   this.grantLetterService.sendEmailGrantLetter(this.workplace.uid, this.form.value).subscribe(),
-      // );
       this.grantLetterService.wdfClaimInProgress$.next(true);
       this.navigateToNextPage();
     } else {
@@ -159,33 +152,6 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
     ];
   }
 
-  private newFormErrorsMap(): void {
-    this.formErrorsMap.push(
-      {
-        item: 'fullName',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter a full name',
-          },
-        ],
-      },
-      {
-        item: 'emailAddress',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter an email address',
-          },
-          {
-            name: 'pattern',
-            message: 'Enter the email address in the correct format, like name@example.com',
-          },
-        ],
-      },
-    );
-  }
-
   private addControl(fullName?: string, email?: string): void {
     this.form.addControl(
       'fullName',
@@ -218,7 +184,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
       state: {
         name: this.form.value.fullName,
         email: this.form.value.emailAddress,
-        myself: this.form.value.grantLetter,
+        radioSelection: this.form.value.grantLetter,
       },
     });
   }
