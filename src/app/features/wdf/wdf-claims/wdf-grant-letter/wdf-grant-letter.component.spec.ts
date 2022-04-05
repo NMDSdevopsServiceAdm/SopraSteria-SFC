@@ -13,7 +13,18 @@ import { fireEvent, render } from '@testing-library/angular';
 import { WdfGrantLetterComponent } from './wdf-grant-letter.component';
 
 describe('WdfGrantLetterComponent', () => {
-  const setup = async () => {
+  const setup = async (grantLetterState = false, selectedRadio = 'Myself') => {
+    grantLetterState
+      ? history.pushState(
+          {
+            name: 'Person',
+            email: 'person@email.com',
+            radioSelection: selectedRadio,
+          },
+          '',
+        )
+      : history.replaceState({}, '');
+
     const {
       fixture,
       getByText,
@@ -154,6 +165,26 @@ describe('WdfGrantLetterComponent', () => {
       expect(queryByTestId('grantLetterRadio-conditional-0')).toBeFalsy();
       expect(component.form.value.fullName).toBeNull();
       expect(component.form.value.emailAddress).toBeNull();
+    });
+
+    it('should display myself radio button selected with inputs filled out if state and myself radio is passed in', async () => {
+      const { component, getByTestId, queryByTestId } = await setup(true);
+
+      expect(getByTestId('grantLetterRadio-conditional-0')).toBeTruthy();
+      expect(queryByTestId('grantLetterRadio-conditional-1')).toBeFalsy();
+      expect(component.form.value.grantLetter).toEqual('Myself');
+      expect(component.form.value.fullName).toEqual('Person');
+      expect(component.form.value.emailAddress).toEqual('person@email.com');
+    });
+
+    it('should display somebody else radio button selected with inputs filled out if state and somebody else radio is passed in', async () => {
+      const { component, getByTestId, queryByTestId } = await setup(true, 'Somebody else in the organisation');
+
+      expect(getByTestId('grantLetterRadio-conditional-1')).toBeTruthy();
+      expect(queryByTestId('grantLetterRadio-conditional-0')).toBeFalsy();
+      expect(component.form.value.grantLetter).toEqual('Somebody else in the organisation');
+      expect(component.form.value.fullName).toEqual('Person');
+      expect(component.form.value.emailAddress).toEqual('person@email.com');
     });
   });
 
@@ -375,8 +406,8 @@ describe('WdfGrantLetterComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter', 'grant-letter-sent'], {
-        state: { name: 'Somebody', email: 'somebody@email.com', myself: 'Myself' },
+      expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter', 'check-details'], {
+        state: { name: 'Somebody', email: 'somebody@email.com', radioSelection: 'Myself' },
       });
     });
 
@@ -395,8 +426,12 @@ describe('WdfGrantLetterComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter', 'grant-letter-sent'], {
-        state: { name: 'Different Somebody', email: 'ds@email.com', myself: 'Somebody else in the organisation' },
+      expect(spy).toHaveBeenCalledWith(['wdf-claims', 'grant-letter', 'check-details'], {
+        state: {
+          name: 'Different Somebody',
+          email: 'ds@email.com',
+          radioSelection: 'Somebody else in the organisation',
+        },
       });
     });
   });
