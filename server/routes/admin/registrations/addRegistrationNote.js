@@ -13,7 +13,7 @@ const addRegistrationNote = async (req, res) => {
       });
     }
 
-    const establishment = await models.establishment.findByPk(establishmentId);
+    const establishment = await models.establishment.unscoped().findByPk(establishmentId);
     if (!establishment) {
       return res.status(400).json({
         message: 'Establishment not found',
