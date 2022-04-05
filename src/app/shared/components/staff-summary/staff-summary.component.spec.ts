@@ -100,9 +100,18 @@ describe('StaffSummaryComponent', () => {
     }
   });
 
-  describe('Calling getAllWorkers when using search', () => {
-    it('should call getAllWorkers with correct search term if passed', async () => {
+  fdescribe('Calling getAllWorkers when using search', () => {
+    it('it does not render the search bar when pagination threshold is not met', async () => {
+      const { component } = await setup();
+
+      const searchInput = component.queryByLabelText('Search staff training records');
+      expect(searchInput).toBeNull();
+    });
+    it('should call getAllWorkers with correct search term if passed and workerCount is greater than itemsPerPage', async () => {
       const { component, getAllWorkersSpy } = await setup();
+
+      // show search
+      component.fixture.componentInstance.workerCount = 16;
 
       await component.fixture.whenStable();
 
@@ -117,6 +126,7 @@ describe('StaffSummaryComponent', () => {
     it('should reset the pageIndex before calling getAllWorkers when handling search', async () => {
       const { component, getAllWorkersSpy } = await setup();
 
+      component.fixture.componentInstance.workerCount = 16;
       component.fixture.componentInstance.currentPageIndex = 1;
       component.fixture.detectChanges();
 
