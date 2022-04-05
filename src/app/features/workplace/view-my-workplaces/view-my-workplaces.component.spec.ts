@@ -29,60 +29,63 @@ import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
 describe('ViewMyWorkplacesComponent', () => {
   async function setup(hasChildWorkplaces = true) {
-    const { fixture, getByText, getByTestId, queryByText, getByLabelText } = await render(ViewMyWorkplacesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [WorkplaceInfoPanelComponent],
-      providers: [
-        AlertService,
-        WindowRef,
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canAddEstablishment']),
-          deps: [HttpClient, Router, UserService],
-        },
-        {
-          provide: AuthService,
-          useClass: MockAuthService,
-        },
-        {
-          provide: UserService,
-          useClass: MockUserService,
-          deps: [HttpClient],
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {
-                childWorkplaces: hasChildWorkplaces
-                  ? {
-                      childWorkplaces: [subsid1, subsid2, subsid3],
-                      count: 3,
-                      activeWorkplaceCount: 2,
-                    }
-                  : {
-                      childWorkplaces: [],
-                      count: 0,
-                      activeWorkplaceCount: 0,
-                    },
+    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText } = await render(
+      ViewMyWorkplacesComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        declarations: [WorkplaceInfoPanelComponent],
+        providers: [
+          AlertService,
+          WindowRef,
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(['canAddEstablishment']),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: AuthService,
+            useClass: MockAuthService,
+          },
+          {
+            provide: UserService,
+            useClass: MockUserService,
+            deps: [HttpClient],
+          },
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
+            provide: BreadcrumbService,
+            useClass: MockBreadcrumbService,
+          },
+          {
+            provide: FeatureFlagsService,
+            useClass: MockFeatureFlagsService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                data: {
+                  childWorkplaces: hasChildWorkplaces
+                    ? {
+                        childWorkplaces: [subsid1, subsid2, subsid3],
+                        count: 3,
+                        activeWorkplaceCount: 2,
+                      }
+                    : {
+                        childWorkplaces: [],
+                        count: 0,
+                        activeWorkplaceCount: 0,
+                      },
+                },
               },
             },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -100,6 +103,7 @@ describe('ViewMyWorkplacesComponent', () => {
       getByTestId,
       queryByText,
       getByLabelText,
+      queryByLabelText,
       getChildWorkplacesSpy,
       establishmentService,
     };
@@ -138,8 +142,19 @@ describe('ViewMyWorkplacesComponent', () => {
   });
 
   describe('calls getChildWorkplaces on establishmentService when using search', () => {
+    it('it does not render the search bar when pagination threshold is not met', async () => {
+      const { queryByLabelText } = await setup();
+
+      const searchInput = queryByLabelText('Search staff training records');
+      expect(searchInput).toBeNull();
+    });
+
     it('should call getChildWorkplaces with correct search term if passed', async () => {
-      const { getByLabelText, getChildWorkplacesSpy } = await setup();
+      const { component, fixture, getByLabelText, getChildWorkplacesSpy } = await setup();
+
+      // show search
+      component.totalWorkplaceCount = 13;
+      fixture.detectChanges();
 
       const searchInput = getByLabelText('Search child workplace records');
       expect(searchInput).toBeTruthy();
@@ -156,7 +171,10 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should reset the pageIndex before calling getChildWorkplaces when handling search', async () => {
-      const { fixture, getByLabelText, getChildWorkplacesSpy } = await setup();
+      const { fixture, component, getByLabelText, getChildWorkplacesSpy } = await setup();
+
+      component.totalWorkplaceCount = 13;
+      fixture.detectChanges();
 
       fixture.componentInstance.currentPageIndex = 1;
       fixture.detectChanges();
@@ -166,7 +184,10 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should render the no results returned message when 0 workplaces returned from getChildWorkplaces after search', async () => {
-      const { fixture, getByLabelText, establishmentService, getByText } = await setup();
+      const { fixture, component, getByLabelText, establishmentService, getByText } = await setup();
+
+      component.totalWorkplaceCount = 13;
+      fixture.detectChanges();
 
       sinon.stub(establishmentService, 'getChildWorkplaces').returns(
         of({
@@ -189,6 +210,9 @@ describe('ViewMyWorkplacesComponent', () => {
 
     it('should not update All workplaces count when search results returned but should set workplaceCount used for pagination', async () => {
       const { component, fixture, getByLabelText, establishmentService, getByText } = await setup();
+
+      component.totalWorkplaceCount = 13;
+      fixture.detectChanges();
 
       sinon.stub(establishmentService, 'getChildWorkplaces').returns(
         of({

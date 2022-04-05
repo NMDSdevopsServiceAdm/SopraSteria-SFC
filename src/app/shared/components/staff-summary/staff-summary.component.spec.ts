@@ -100,7 +100,7 @@ describe('StaffSummaryComponent', () => {
     }
   });
 
-  fdescribe('Calling getAllWorkers when using search', () => {
+  describe('Calling getAllWorkers when using search', () => {
     it('it does not render the search bar when pagination threshold is not met', async () => {
       const { component } = await setup();
 

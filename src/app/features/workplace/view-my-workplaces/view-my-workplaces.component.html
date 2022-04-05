@@ -19,7 +19,7 @@
 </div>
 
 <div *ngIf="totalWorkplaceCount; else noWorkplaces">
-  <div class="govuk-grid-row govuk-!-margin-bottom-5">
+  <div *ngIf="totalWorkplaceCount > itemsPerPage" class="govuk-grid-row govuk-!-margin-bottom-5">
     <div class="govuk-grid-column-three-quarters">
       <app-search-input accessibleLabel="child workplace records" (emitInput)="handleSearch($event)"></app-search-input>
     </div>
