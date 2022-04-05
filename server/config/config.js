@@ -124,54 +124,6 @@ const config = convict({
       },
     },
   },
-
-  sqldb: {
-    host: {
-      doc: 'Database host name/IP',
-      format: String,
-      default: 'localhost',
-      env: 'DISBURSEMENT_DB_HOST',
-    },
-    database: {
-      doc: 'Database name',
-      format: String,
-      default: 'Disbursement',
-      env: 'DISBURSEMENT_DB',
-    },
-    username: {
-      doc: 'Database username',
-      format: String,
-      default: 'Unknown',
-      env: 'DISBURSEMENT_DB_USER_NAME',
-    },
-    password: {
-      doc: 'Database username',
-      format: '*',
-      default: 'Unknown',
-      env: 'DISBURSEMENT_DB_PASS',
-    },
-    port: {
-      doc: 'Database port',
-      format: 'port',
-      default: 1433,
-      env: 'DISBURSEMENT_DB_PORT',
-    },
-  },
-
-  redis: {
-    url: {
-      doc: 'The URI to redirect users to the Redis',
-      format: String,
-      default: 'redis://localhost:6379',
-    },
-    serviceName: {
-      doc: 'Name of VCAP Service for Redis',
-      format: String,
-      default: 'Unknown',
-      env: 'REDIS_SERVICE_NAME',
-    },
-  },
-
   notify: {
     key: {
       doc: 'The gov.uk notify key',
