@@ -21,7 +21,7 @@
       <option value="singleAccountsOnly">Single accounts only</option>
       <option value="multipleAccounts">Multiple accounts</option>
     </select>
-    <label class="govuk-label" for="selectedTemplateId"> Template</label>
+    <label class="govuk-label" for="selectedTemplateId">Template</label>
     <select
       [(ngModel)]="selectedTemplateId"
       class="govuk-select govuk-!-width-full"
@@ -42,7 +42,7 @@
   <div class="govuk-grid-column-two-thirds">
     <button
       class="govuk-button"
-      [disabled]="emailGroup === '' || selectedTemplateId === ''"
+      [disabled]="emailGroup === '' || selectedTemplateId === '' || totalEmails === 0"
       (click)="confirmSendEmails($event, totalEmails)"
       type="submit"
     >

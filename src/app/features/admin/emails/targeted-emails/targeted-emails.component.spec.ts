@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
@@ -14,7 +15,14 @@ import { TargetedEmailsComponent } from './targeted-emails.component';
 describe('EmailsComponent', () => {
   async function setup() {
     return render(TargetedEmailsComponent, {
-      imports: [SharedModule, HttpClientTestingModule, RouterTestingModule, SearchModule],
+      imports: [
+        SharedModule,
+        HttpClientTestingModule,
+        RouterTestingModule,
+        SearchModule,
+        FormsModule,
+        ReactiveFormsModule,
+      ],
       providers: [
         {
           provide: WindowRef,
@@ -27,7 +35,16 @@ describe('EmailsComponent', () => {
               data: {
                 emailCampaignHistory: [],
                 emailTemplates: {
-                  templates: [],
+                  templates: [
+                    {
+                      id: 1,
+                      name: 'Template 1',
+                    },
+                    {
+                      id: 2,
+                      name: 'Template 2',
+                    },
+                  ],
                 },
               },
             },
@@ -98,19 +115,6 @@ describe('EmailsComponent', () => {
 
     it('should display the template names as options', async () => {
       const component = await setup();
-      const templates = [
-        {
-          id: 1,
-          name: 'Template 1',
-        },
-        {
-          id: 2,
-          name: 'Template 2',
-        },
-      ];
-
-      component.fixture.componentInstance.templates = templates;
-      component.fixture.detectChanges();
 
       const templateDropdown = component.getByTestId('selectedTemplateId');
 
@@ -215,6 +219,21 @@ describe('EmailsComponent', () => {
         fixture.detectChanges();
 
         expect(queryByTestId('dragAndDrop')).toBeTruthy();
+      });
+
+      it('should leave the Send emails button as disabled when Multiple accounts and template selected but no file uploaded', async () => {
+        const { fixture, getByLabelText } = await setup();
+
+        const groupSelect = getByLabelText('Email group', { exact: false });
+        fireEvent.change(groupSelect, { target: { value: 'multipleAccounts' } });
+        fixture.detectChanges();
+
+        const templateSelect = getByLabelText('Template', { exact: false });
+        fireEvent.change(templateSelect, { target: { value: '1' } });
+        fixture.detectChanges();
+
+        const sendEmailsButton = fixture.nativeElement.querySelectorAll('button');
+        expect(sendEmailsButton[0].disabled).toBeTruthy();
       });
     });
   });
