@@ -16,7 +16,7 @@ const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
 
 const workerBuilder = build('Worker', {
   fields: {
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     mainJob: {
       id: 1,
     },

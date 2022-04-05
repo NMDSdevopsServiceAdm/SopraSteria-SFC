@@ -1,0 +1,13 @@
+li {
+  margin-left: 15px;
+
+  &.active {
+    a {
+      font-weight: bold;
+    }
+  }
+
+  &::after {
+    content: none !important;
+  }
+}

@@ -12,7 +12,7 @@ const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 export const workerBuilder = build('Worker', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     nameOrId: fake((f) => f.name.findName()),
     mainJob: {
       id: sequence(),
@@ -25,7 +25,7 @@ export const workerBuilder = build('Worker', {
     weeklyHoursAverage: null,
     weeklyHoursContracted: {
       value: 'Yes',
-      hours: fake((f) => f.random.number()),
+      hours: fake((f) => f.datatype.number()),
     },
     annualHourlyPay: {
       value: 'Hourly',

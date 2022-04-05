@@ -28,7 +28,7 @@ describe('TotalStaffQuestionComponent', () => {
   const establishmentBuilder = build('Establishment', {
     fields: {
       id: sequence(),
-      uid: fake((f) => f.random.uuid()),
+      uid: fake((f) => f.datatype.uuid()),
       nameOrId: fake((f) => f.lorem.sentence()),
     },
   });

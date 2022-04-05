@@ -11,10 +11,12 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { TestRootComponent } from '@core/test-utils/TestRootComponent';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, RenderResult } from '@testing-library/angular';
 
@@ -37,6 +39,10 @@ async function renderHeaderComponent(isAdmin: boolean) {
         provide: UserService,
         useFactory: MockUserService.factory(0, isAdmin),
         deps: [HttpClient],
+      },
+      {
+        provide: FeatureFlagsService,
+        useClass: MockFeatureFlagsService,
       },
       {
         provide: AuthService,
@@ -69,7 +75,7 @@ let component: RenderResult<TestRootComponent>;
 describe('HeaderComponent', () => {
   function setup(showSurvey, callApi = true) {
     const { getByText } = component;
-    fireEvent.click(getByText('Logout'));
+    fireEvent.click(getByText('Sign out'));
 
     if (callApi) {
       const req = TestBed.inject(HttpTestingController).expectOne('/api/logout');

@@ -16,7 +16,7 @@ const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot
 const establishmentBuilder = build('Establishment', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     name: fake((f) => f.lorem.sentence()),
   },
 });
@@ -24,7 +24,7 @@ const establishmentBuilder = build('Establishment', {
 const workerBuilder = build('Worker', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     NameOrIdValue: fake((f) => f.name.findName()),
     mainJob: perBuild(() => {
       return {
@@ -38,7 +38,7 @@ const workerBuilder = build('Worker', {
 const trainingBuilder = build('Training', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     expires: fake((f) => f.date.future(1).toISOString()),
     worker: perBuild(() => {
       return workerBuilder();
