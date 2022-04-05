@@ -27,7 +27,7 @@
           </a>
         </td>
         <td class="govuk-table__cell">
-          {{ registration.created | date: 'dd MMM yyyy hh:mm a' }}
+          {{ registration.created | date: 'dd MMM yyyy HH:mm' }}
         </td>
         <td class="govuk-table__cell">
           <strong class="govuk-tag" [ngClass]="setStatusClass(registration.status)">

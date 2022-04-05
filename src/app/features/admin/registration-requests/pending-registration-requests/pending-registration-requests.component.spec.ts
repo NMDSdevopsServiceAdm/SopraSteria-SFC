@@ -73,12 +73,12 @@ describe('PendingRegistrationRequestsComponent', () => {
     const workplace1Postcode = component.queryByText('PO5 3CO');
     const workplace1ParentId = component.queryByText('J234567');
     const workplace1Status = component.queryByText('PENDING');
-    const workplace1Created = component.queryByText('01 Jan 2021 12:00 AM');
+    const workplace1Created = component.queryByText('01 Jan 2021 00:00');
 
     const workplace2Name = component.queryByText('Workplace 2');
     const workplace2Postcode = component.queryByText('AS4 8DS');
     const workplace2Status = component.queryByText('IN PROGRESS');
-    const workplace2Created = component.queryByText('01 Feb 2021 12:00 AM');
+    const workplace2Created = component.queryByText('01 Feb 2021 00:00');
 
     expect(workplace1Name).toBeTruthy();
     expect(workplace1Postcode).toBeTruthy();
