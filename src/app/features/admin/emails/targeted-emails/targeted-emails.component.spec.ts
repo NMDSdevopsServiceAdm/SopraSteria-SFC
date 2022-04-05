@@ -43,17 +43,7 @@ describe('EmailsComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should display the total number of emails to be sent', async () => {
-      const component = await setup();
-
-      component.fixture.componentInstance.totalEmails = 1500;
-      component.fixture.detectChanges();
-
-      const totalEmail = component.getByTestId('totalEmails');
-      expect(totalEmail.innerHTML).toContain('1,500');
-    });
-
-    it('should display the total number of emails to be sent', async () => {
+    it('should display the total number of emails to be sent message', async () => {
       const component = await setup();
 
       const numberOfUsersToEmail = component.getByTestId('numberOfUsersToEmail');

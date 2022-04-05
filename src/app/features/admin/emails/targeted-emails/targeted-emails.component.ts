@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EmailType, TotalEmailsResponse } from '@core/model/emails.model';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
@@ -14,7 +14,7 @@ import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-co
   templateUrl: './targeted-emails.component.html',
   styleUrls: ['./targeted-emails.component.scss'],
 })
-export class TargetedEmailsComponent {
+export class TargetedEmailsComponent implements OnDestroy {
   public totalEmails = 0;
   public emailGroup = '';
   public selectedTemplateId = '';
@@ -28,9 +28,7 @@ export class TargetedEmailsComponent {
     private emailCampaignService: EmailCampaignService,
     private decimalPipe: DecimalPipe,
   ) {}
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
+
   public updateTotalEmails(groupType: string): void {
     if (groupType) {
       this.subscriptions.add(
@@ -68,5 +66,9 @@ export class TargetedEmailsComponent {
         this.totalEmails = 0;
       }),
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
