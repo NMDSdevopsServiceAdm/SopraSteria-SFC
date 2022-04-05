@@ -1,5 +1,5 @@
 <div class="govuk-grid-row govuk-util__vertical-align-center">
-  <div class="govuk-grid-column-three-quarters">
+  <div *ngIf="totalWorkerCount > itemsPerPage" class="govuk-grid-column-three-quarters">
     <app-search-input
       ref="trainingRecordSearch"
       accessibleLabel="for staff records"
@@ -7,7 +7,9 @@
     ></app-search-input>
   </div>
 
-  <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2">
+  <div
+    class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
+  >
     <div class="govuk-form-group">
       <label class="govuk-label" for="sortByStaff"> Sort by </label>
       <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortBy($event.target.value)">
