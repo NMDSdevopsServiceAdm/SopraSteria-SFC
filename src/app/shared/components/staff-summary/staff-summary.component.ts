@@ -16,6 +16,7 @@ export class StaffSummaryComponent implements OnInit {
   @Input() workerCount: number;
   @Input() wdfView = false;
 
+  public totalWorkerCount: number;
   public canViewWorker: boolean;
   public canEditWorker: boolean;
   public sortStaffOptions;
@@ -40,6 +41,7 @@ export class StaffSummaryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.totalWorkerCount = this.workerCount;
     this.paginatedWorkers = this.workers;
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');

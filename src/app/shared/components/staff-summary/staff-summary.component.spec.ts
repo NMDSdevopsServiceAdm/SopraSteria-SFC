@@ -110,10 +110,10 @@ describe('StaffSummaryComponent', () => {
     it('should call getAllWorkers with correct search term if passed and workerCount is greater than itemsPerPage', async () => {
       const { component, getAllWorkersSpy } = await setup();
 
-      // show search
-      component.fixture.componentInstance.workerCount = 16;
-
       await component.fixture.whenStable();
+      // show search
+      component.fixture.componentInstance.totalWorkerCount = 16;
+      component.fixture.detectChanges();
 
       const searchInput = component.getByLabelText('Search for staff records');
       expect(searchInput).toBeTruthy();
@@ -126,7 +126,7 @@ describe('StaffSummaryComponent', () => {
     it('should reset the pageIndex before calling getAllWorkers when handling search', async () => {
       const { component, getAllWorkersSpy } = await setup();
 
-      component.fixture.componentInstance.workerCount = 16;
+      component.fixture.componentInstance.totalWorkerCount = 16;
       component.fixture.componentInstance.currentPageIndex = 1;
       component.fixture.detectChanges();
 
@@ -137,6 +137,7 @@ describe('StaffSummaryComponent', () => {
     it('should render the message that no workers were found if workerCount is falsy', async () => {
       const { component } = await setup();
 
+      component.fixture.componentInstance.totalWorkerCount = 16;
       component.fixture.componentInstance.workerCount = 0;
       component.fixture.detectChanges();
 
