@@ -23,8 +23,8 @@ describe('GrantLetterSentComponent', () => {
 
   describe('Top of page paragraph', async () => {
     it('should display header for grant letter sent', async () => {
-      const { queryByText } = await setup();
-      expect(queryByText('Grant letter has been sent')).toBeTruthy();
+      const { getByText } = await setup();
+      expect(getByText('The grant letter has been sent')).toBeTruthy();
     });
 
     it('should display paragraph for grant letter sent page', async () => {
@@ -33,10 +33,11 @@ describe('GrantLetterSentComponent', () => {
       expect(paragraph).toBeTruthy();
     });
   });
-  it('should navigate to dashboard when Continue is clicked', async () => {
+
+  it('should navigate to dashboard when  Return to home is clicked', async () => {
     const { getByText } = await setup();
 
-    const returnToDashboard = getByText('Continue', { exact: false });
+    const returnToDashboard = getByText('Return to home', { exact: false });
 
     expect(returnToDashboard.getAttribute('href')).toBe('/dashboard');
   });
