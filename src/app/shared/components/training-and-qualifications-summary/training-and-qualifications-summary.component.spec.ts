@@ -50,7 +50,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   });
 
   async function setup() {
-    const { fixture, getAllByText, getByText, getByLabelText } = await render(
+    const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText } = await render(
       TrainingAndQualificationsSummaryComponent,
       {
         imports: [HttpClientTestingModule, RouterTestingModule],
@@ -85,6 +85,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     return {
       component,
       fixture,
+      queryByLabelText,
       getByLabelText,
       getAllByText,
       getByText,
@@ -213,8 +214,18 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   });
 
   describe('calls getAllWorkers on workerService when using search', () => {
+    it('it does not render the search bar when pagination threshold is not met', async () => {
+      const { queryByLabelText } = await setup();
+
+      const searchInput = queryByLabelText('Search staff training records');
+      expect(searchInput).toBeNull();
+    });
+
     it('should call getAllWorkers with correct search term if passed', async () => {
-      const { getByLabelText, workerServiceSpy, searchSpy } = await setup();
+      const { fixture, getByLabelText, workerServiceSpy, searchSpy } = await setup();
+      // show search bar
+      fixture.componentInstance.workerCount = 16;
+      fixture.detectChanges();
 
       const searchInput = getByLabelText('Search staff training records');
       expect(searchInput).toBeTruthy();
@@ -234,6 +245,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     it('should reset the pageIndex before calling getAllWorkers when handling search', async () => {
       const { fixture, getByLabelText, workerServiceSpy } = await setup();
 
+      fixture.componentInstance.workerCount = 16;
       fixture.componentInstance.currentPageIndex = 1;
       fixture.detectChanges();
 
@@ -243,6 +255,9 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
 
     it('should render the no results returned message when 0 workers returned from getAllWorkers after search', async () => {
       const { fixture, getByLabelText, workerService, getByText } = await setup();
+
+      fixture.componentInstance.workerCount = 16;
+      fixture.detectChanges();
 
       sinon.stub(workerService, 'getAllWorkers').returns(
         of({
@@ -255,8 +270,6 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       expect(searchInput).toBeTruthy();
 
       userEvent.type(searchInput, 'search term here{enter}');
-
-      fixture.detectChanges();
 
       expect(getByText('There are no matching results')).toBeTruthy();
       expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();

@@ -1,6 +1,19 @@
 <div class="govuk-form-group govuk-!-margin-bottom-6">
-  <div class="govuk-grid-row govuk-util__vertical-align-center govuk-!-margin-bottom-4 govuk-!-margin-top-4">
-    <div class="govuk-grid-column-one-half govuk__flex govuk__align-items-flex-end" *ngIf="showViewByToggle">
+  <div
+    [ngClass]="
+      workerCount > itemsPerPage
+        ? 'govuk-grid-row'
+        : 'govuk__flex-stack govuk__align-items-flex-end govuk__justify-content-end'
+    "
+  >
+    <div
+      *ngIf="showViewByToggle"
+      [ngClass]="
+        workerCount > itemsPerPage
+          ? 'govuk-grid-column-full govuk-!-margin-bottom-4 govuk-!-margin-top-4'
+          : 'govuk-grid-column-three-quarters govuk-!-padding-0 govuk-!-padding-bottom-3'
+      "
+    >
       <span class="govuk-list govuk-list--inline govuk-!-margin-bottom-1 govuk-!-margin-right-6"
         >View by staff name</span
       >
@@ -12,12 +25,13 @@
         View by training category
       </a>
     </div>
-  </div>
-  <div class="govuk-grid-row govuk-util__vertical-align-center">
-    <div class="govuk-grid-column-three-quarters">
+
+    <div *ngIf="workerCount > itemsPerPage" class="govuk-grid-column-three-quarters">
       <app-search-input accessibleLabel="staff training records" (emitInput)="handleSearch($event)"></app-search-input>
     </div>
-    <div class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2">
+    <div
+      class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
+    >
       <label class="govuk-label" for="sortByTrainingStaff"> Sort by </label>
       <select
         class="govuk-select govuk-!-width-full"
