@@ -224,7 +224,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     it('should call getAllWorkers with correct search term if passed', async () => {
       const { fixture, getByLabelText, workerServiceSpy, searchSpy } = await setup();
       // show search bar
-      fixture.componentInstance.workerCount = 16;
+      fixture.componentInstance.showSearchBar = true;
       fixture.detectChanges();
 
       const searchInput = getByLabelText('Search staff training records');
@@ -245,7 +245,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     it('should reset the pageIndex before calling getAllWorkers when handling search', async () => {
       const { fixture, getByLabelText, workerServiceSpy } = await setup();
 
-      fixture.componentInstance.workerCount = 16;
+      fixture.componentInstance.showSearchBar = true;
       fixture.componentInstance.currentPageIndex = 1;
       fixture.detectChanges();
 
@@ -256,7 +256,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     it('should render the no results returned message when 0 workers returned from getAllWorkers after search', async () => {
       const { fixture, getByLabelText, workerService, getByText } = await setup();
 
-      fixture.componentInstance.workerCount = 16;
+      fixture.componentInstance.showSearchBar = true;
       fixture.detectChanges();
 
       sinon.stub(workerService, 'getAllWorkers').returns(

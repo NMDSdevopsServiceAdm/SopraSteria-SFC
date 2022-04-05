@@ -26,6 +26,8 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
   private searchTerm = '';
+  private totalWorkerCount: number;
+  public showSearchBar: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -38,6 +40,8 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
     this.sortByValue = '0_expired';
     this.paginatedWorkers = this.workers;
+    this.totalWorkerCount = this.workerCount;
+    this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
   }
 
   private setSortValue(value: string): void {
