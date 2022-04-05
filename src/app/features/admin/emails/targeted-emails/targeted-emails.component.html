@@ -3,9 +3,7 @@
     <p class="asc-summary-box govuk-!-margin-bottom-12" data-testid="numberOfUsersToEmail">
       <span>Number of users to email:</span>
       <br />
-      <strong class="govuk-!-font-size-36" data-testid="totalEmails">
-        {{ totalEmails | number }}
-      </strong>
+      <strong class="govuk-!-font-size-36" data-testid="totalEmails">{{ totalEmails | number }}</strong>
     </p>
   </div>
   <div class="govuk-grid-column-one-third">
@@ -21,6 +19,7 @@
       <option value="primaryUsers">Primary users</option>
       <option value="parentOnly">Parent only</option>
       <option value="singleAccountsOnly">Single accounts only</option>
+      <option value="multipleAccounts">Multiple accounts</option>
     </select>
     <label class="govuk-label" for="selectedTemplateId"> Template</label>
     <select
@@ -32,6 +31,11 @@
       <option value="">Select a template</option>
       <option *ngFor="let template of templates" [value]="template.id">{{ template.name }}</option>
     </select>
+  </div>
+</div>
+<div *ngIf="showDragAndDrop" data-testid="dragAndDrop" class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p>Drag and drop</p>
   </div>
 </div>
 <div class="govuk-grid-row">

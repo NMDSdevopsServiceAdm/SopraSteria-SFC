@@ -175,5 +175,47 @@ describe('EmailsComponent', () => {
         expect(component.fixture.componentInstance.selectedTemplateId).toEqual('');
       });
     });
+
+    describe('Multiple accounts', () => {
+      it('should not make call to getTargetedTotalEmails when Multiple accounts selected', async () => {
+        const { getByLabelText } = await setup();
+
+        const emailCampaignService = TestBed.inject(EmailCampaignService);
+        const getTargetedTotalEmailsSpy = spyOn(emailCampaignService, 'getTargetedTotalEmails').and.callFake(() =>
+          of({ totalEmails: 1500 }),
+        );
+
+        const select = getByLabelText('Email group', { exact: false });
+        fireEvent.change(select, { target: { value: 'multipleAccounts' } });
+
+        expect(getTargetedTotalEmailsSpy).not.toHaveBeenCalled();
+      });
+
+      it('should set number of users to email to 0 when Multiple accounts selected', async () => {
+        const { fixture, getByTestId, getByLabelText } = await setup();
+
+        fixture.componentInstance.totalEmails = 1500;
+        fixture.detectChanges();
+
+        const totalEmails = getByTestId('totalEmails');
+        expect(totalEmails.innerHTML).toEqual('1,500');
+
+        const select = getByLabelText('Email group', { exact: false });
+        fireEvent.change(select, { target: { value: 'multipleAccounts' } });
+        fixture.detectChanges();
+
+        expect(totalEmails.innerHTML).toEqual('0');
+      });
+
+      it('should display drag and drop when Multiple accounts selected', async () => {
+        const { fixture, getByLabelText, queryByTestId } = await setup();
+
+        const select = getByLabelText('Email group', { exact: false });
+        fireEvent.change(select, { target: { value: 'multipleAccounts' } });
+        fixture.detectChanges();
+
+        expect(queryByTestId('dragAndDrop')).toBeTruthy();
+      });
+    });
   });
 });

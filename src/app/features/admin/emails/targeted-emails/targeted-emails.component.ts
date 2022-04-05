@@ -21,6 +21,8 @@ export class TargetedEmailsComponent implements OnDestroy {
   public templates = this.route.snapshot.data.emailTemplates.templates;
   private subscriptions: Subscription = new Subscription();
   public emailType = EmailType;
+  public showDragAndDrop = false;
+
   constructor(
     public alertService: AlertService,
     public dialogService: DialogService,
@@ -30,7 +32,10 @@ export class TargetedEmailsComponent implements OnDestroy {
   ) {}
 
   public updateTotalEmails(groupType: string): void {
-    if (groupType) {
+    if (groupType === 'multipleAccounts') {
+      this.showDragAndDrop = true;
+      this.totalEmails = 0;
+    } else if (groupType) {
       this.subscriptions.add(
         this.emailCampaignService
           .getTargetedTotalEmails(groupType)
@@ -40,6 +45,7 @@ export class TargetedEmailsComponent implements OnDestroy {
       this.totalEmails = 0;
     }
   }
+
   public confirmSendEmails(event: Event, emailCount: number): void {
     event.preventDefault();
     this.subscriptions.add(
