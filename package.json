@@ -98,7 +98,6 @@
     "pg-hstore": "^2.3.4",
     "pug": "^3.0.1",
     "rate-limit-redis": "^2.1.0",
-    "redis": "^4.0.4",
     "request": "^2.88.2",
     "rxjs": "^6.6.7",
     "rxjs-compat": "^6.6.7",
@@ -109,7 +108,6 @@
     "sib-api-v3-sdk": "^8.2.1",
     "slugify": "^1.4.6",
     "sqreen": "^1.64.2",
-    "tedious": "^14.3.0",
     "text-encoding-utf-8": "^1.0.2",
     "toobusy-js": "^0.5.1",
     "tslib": "^2.0.0",
@@ -136,7 +134,7 @@
     "@lhci/cli": "^0.7.0",
     "@ngx-builders/analyze": "^2.3.0",
     "@testing-library/angular": "^10.10.0",
-    "@testing-library/dom": "^7.31.0",
+    "@testing-library/dom": "^8.13.0",
     "@testing-library/user-event": "^12.7.3",
     "@types/faker": "^5.5.9",
     "@types/file-saver": "^2.0.3",
@@ -221,15 +219,5 @@
       "prettier --write"
     ],
     "*.{css,md}": "prettier --write"
-  },
-  "bin": "index.js",
-  "pkg": {
-    "scripts": [
-      "node_modules/tedious/lib/tedious.js",
-      "models/*.js"
-    ],
-    "assets": [
-      "config/log.json"
-    ]
   }
 }
