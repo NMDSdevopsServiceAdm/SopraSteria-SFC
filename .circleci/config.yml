@@ -68,18 +68,6 @@ commands:
                 cf set-env "<<parameters.appname>>-dark" SQREEN_TOKEN "${<<parameters.env_prefix>>_SQREEN_TOKEN}"
             fi
 
-            if [ -n "${<<parameters.env_prefix>>_DISBURSEMENT_DB_HOST}" ]; then
-                cf set-env "<<parameters.appname>>-dark" DISBURSEMENT_DB_HOST "${<<parameters.env_prefix>>_DISBURSEMENT_DB_HOST}"
-            fi
-
-            if [ -n "${<<parameters.env_prefix>>_DISBURSEMENT_DB_USER_NAME}" ]; then
-                cf set-env "<<parameters.appname>>-dark" DISBURSEMENT_DB_USER_NAME "${<<parameters.env_prefix>>_DISBURSEMENT_DB_USER_NAME}"
-            fi
-
-            if [ -n "${<<parameters.env_prefix>>_DISBURSEMENT_DB_PASS}" ]; then
-                cf set-env "<<parameters.appname>>-dark" DISBURSEMENT_DB_PASS "${<<parameters.env_prefix>>_DISBURSEMENT_DB_PASS}"
-            fi
-
             if [ -n "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}" ]; then
                 cf set-env "<<parameters.appname>>-dark" REDIS_SERVICE_NAME "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}"
             fi
