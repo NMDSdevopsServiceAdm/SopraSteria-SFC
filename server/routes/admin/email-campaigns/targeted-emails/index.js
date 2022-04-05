@@ -8,11 +8,12 @@ const router = express.Router();
 
 const getGroup = async (type) => {
   const groups = {
-    primaryUsers: await models.user.allPrimaryUsers(),
-    parentOnly: await models.user.allPrimaryUsers({ isParent: true }),
-    singleAccountsOnly: await models.user.allPrimaryUsers({ isParent: false, dataOwner: 'Workplace' }),
+    primaryUsers: {},
+    parentOnly: { isParent: true },
+    singleAccountsOnly: { isParent: false, dataOwner: 'Workplace' },
   };
-  return groups[type];
+
+  return await models.user.allPrimaryUsers(groups[type]);
 };
 
 const getHistory = (req, emailCampaign, templateId, users) =>
