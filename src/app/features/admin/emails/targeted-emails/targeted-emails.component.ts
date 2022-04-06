@@ -74,6 +74,10 @@ export class TargetedEmailsComponent implements OnDestroy {
     );
   }
 
+  public uploadFile(event): void {
+    console.log(event);
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

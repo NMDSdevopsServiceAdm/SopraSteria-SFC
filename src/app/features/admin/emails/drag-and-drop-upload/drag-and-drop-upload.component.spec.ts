@@ -23,13 +23,14 @@ describe('DragAndDropUploadComponent', () => {
     const fixture = component.fixture;
     const compInst = component.fixture.componentInstance;
     const fileInput = fixture.debugElement.query(By.css('#drag-and-drop input'));
+    const validFile = new File(['some file content'], 'establishments.csv');
 
     const triggerFileInput = () => {
       fileInput.triggerEventHandler('change', {
         target: {
           files: {
             item: () => {
-              return new File(['some file content'], 'establishments.csv');
+              return validFile;
             },
             length: 1,
           },
@@ -64,7 +65,7 @@ describe('DragAndDropUploadComponent', () => {
 
     const http = TestBed.inject(HttpTestingController);
 
-    return { fixture, component, compInst, triggerFileInput, triggerInvalidFileInput, http };
+    return { fixture, component, compInst, triggerFileInput, triggerInvalidFileInput, http, validFile };
   };
 
   it('should dispatch event to handler on component', async () => {
@@ -99,5 +100,16 @@ describe('DragAndDropUploadComponent', () => {
     triggerFileInput();
     fixture.detectChanges();
     expect(component.queryByText(nonCsvErrorMessage)).toBeFalsy();
+  });
+
+  describe('file upload', () => {
+    it('should emit a file upload event when a file is dropped onto the target', async () => {
+      const { triggerFileInput, compInst, validFile } = await setup();
+
+      const fileUploadEmitSpy = spyOn(compInst.fileUploadEvent, 'emit');
+      triggerFileInput();
+
+      expect(fileUploadEmitSpy).toHaveBeenCalledWith(validFile);
+    });
   });
 });
