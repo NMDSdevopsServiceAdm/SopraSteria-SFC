@@ -111,5 +111,14 @@ describe('DragAndDropUploadComponent', () => {
 
       expect(fileUploadEmitSpy).toHaveBeenCalledWith(validFile);
     });
+
+    it('should not emit a file upload event when invalid file is dropped onto the target', async () => {
+      const { triggerInvalidFileInput, compInst } = await setup();
+
+      const fileUploadEmitSpy = spyOn(compInst.fileUploadEvent, 'emit');
+      triggerInvalidFileInput();
+
+      expect(fileUploadEmitSpy).not.toHaveBeenCalled();
+    });
   });
 });

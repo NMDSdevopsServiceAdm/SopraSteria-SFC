@@ -24,7 +24,12 @@ export class DragAndDropUploadComponent implements OnInit {
   }
 
   public onSelect(event: { rejectedFiles: []; addedFiles: [] }): void {
-    this.showInvalidFileError = event.rejectedFiles.length > 0;
+    if (event.rejectedFiles.length > 0) {
+      this.showInvalidFileError = true;
+      return;
+    }
+
+    this.showInvalidFileError = false;
     this.fileUploadEvent.emit(...event.addedFiles);
   }
 }
