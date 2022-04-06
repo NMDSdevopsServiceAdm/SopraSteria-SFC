@@ -7,7 +7,7 @@ const findParentWorkplaces = require('../../services/email-campaigns/inactive-wo
 const workplaceWorksheetBuilder = require('./workplaces');
 const parentWorksheetBuilder = require('./parents');
 const subsidiaryWorksheetBuilder = require('./subsidiaries');
-const archivedInactiveWorkplaces = require('./archived-inactive-workplace');
+const archivedInactiveWorkplacesBuilder = require('./archived-inactive-workplace');
 
 const generate = async () => {
   const workbook = new excelJS.Workbook();
@@ -31,14 +31,16 @@ const generate = async () => {
 
   // Build subsidiary worksheet
   const subsidiaryWorksheet = subsidiaryWorksheetBuilder.addWorksheet(workbook);
-
-  // Inactive workplaces
-  const archivedInactiveWorkplacesTab = archivedInactiveWorkplaces.addWorksheet(workbook);
-
   parentWorkplaces.map((workplace) => {
     const subsidiaryRows = subsidiaryWorksheetBuilder.buildRows(workplace, workplace.subsidiaries);
     subsidiaryWorksheet.addRows(subsidiaryRows);
   });
+
+  // Inactive workplaces
+
+  const archivedInactiveWorkplacesSheet = archivedInactiveWorkplacesBuilder.addWorksheet(workbook);
+  const archivedInactiveWorkplacesSheetRows = archivedInactiveWorkplacesBuilder.buildRows();
+  archivedInactiveWorkplacesSheet.addRows(archivedInactiveWorkplacesSheetRows);
 
   workbook.eachSheet((sheet) => {
     excelUtils.fitColumnsToSize(sheet);
