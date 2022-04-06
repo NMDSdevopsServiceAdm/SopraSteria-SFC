@@ -1,25 +1,20 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { FormBuilder } from '@angular/forms';
 import { BrowserModule, By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
-import { BulkUploadModule } from '../bulk-upload.module';
-import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.component';
+import { DragAndDropUploadComponent } from './drag-and-drop-upload.component';
 
-describe('DragAndDropFilesUploadComponent', () => {
+describe('DragAndDropUploadComponent', () => {
   const getDragAndDropFilesUploadComponent = async () => {
-    return await render(DragAndDropFilesUploadComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, BulkUploadModule],
-      providers: [
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
-        { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
-      ],
-      declarations: [DragAndDropFilesUploadComponent],
+    return await render(DragAndDropUploadComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, NgxDropzoneModule],
+      providers: [FormBuilder],
+      declarations: [DragAndDropUploadComponent],
     });
   };
 
@@ -34,7 +29,7 @@ describe('DragAndDropFilesUploadComponent', () => {
         target: {
           files: {
             item: () => {
-              return new File(['some file content'], 'worker.csv');
+              return new File(['some file content'], 'establishments.csv');
             },
             length: 1,
           },
@@ -72,15 +67,13 @@ describe('DragAndDropFilesUploadComponent', () => {
     return { fixture, component, compInst, triggerFileInput, triggerInvalidFileInput, http };
   };
 
-  describe('ngx dropzone', () => {
-    it('should dispatch event to handler on component', async () => {
-      const { compInst, triggerFileInput } = await setup();
-      spyOn(compInst, 'onSelect');
+  it('should dispatch event to handler on component', async () => {
+    const { compInst, triggerFileInput } = await setup();
+    spyOn(compInst, 'onSelect');
 
-      triggerFileInput();
+    triggerFileInput();
 
-      expect(compInst.onSelect).toHaveBeenCalled();
-    });
+    expect(compInst.onSelect).toHaveBeenCalled();
   });
 
   it('should display error if wrong type uploaded', async () => {
@@ -106,17 +99,5 @@ describe('DragAndDropFilesUploadComponent', () => {
     triggerFileInput();
     fixture.detectChanges();
     expect(component.queryByText(nonCsvErrorMessage)).toBeFalsy();
-  });
-
-  describe('file upload', () => {
-    it('should post the files to be uploaded', async () => {
-      const { triggerFileInput, http } = await setup();
-
-      triggerFileInput();
-
-      const establishmentId = TestBed.inject(EstablishmentService).primaryWorkplace.uid;
-      const requests = http.match(`/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
-      expect(requests.length).toEqual(1);
-    });
   });
 });
