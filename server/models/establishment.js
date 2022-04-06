@@ -1160,6 +1160,7 @@ module.exports = function (sequelize, DataTypes) {
         'updated',
         'Status',
         'EstablishmentUID',
+        'IsRegulated',
       ],
       where: params,
       order: [['created', 'DESC']],
