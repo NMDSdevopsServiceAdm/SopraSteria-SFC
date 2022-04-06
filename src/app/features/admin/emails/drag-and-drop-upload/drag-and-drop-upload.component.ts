@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class DragAndDropUploadComponent implements OnInit {
   public form: FormGroup;
   public submitted = false;
-  public showInvalidFileError = false;
+  public invalidFileErrorMessage: string | null = null;
   @Output() fileUploadEvent: EventEmitter<File> = new EventEmitter();
 
   constructor(private formBuilder: FormBuilder) {}
@@ -23,13 +23,15 @@ export class DragAndDropUploadComponent implements OnInit {
     });
   }
 
-  public onSelect(event: { rejectedFiles: []; addedFiles: [] }): void {
+  public onSelect(event: { rejectedFiles: File[]; addedFiles: File[] }): void {
+    const totalFilesLength = [...event.addedFiles, ...event.rejectedFiles].length;
     if (event.rejectedFiles.length > 0) {
-      this.showInvalidFileError = true;
+      this.invalidFileErrorMessage =
+        totalFilesLength > 1 ? 'You can only upload single files.' : 'You can only upload CSV files.';
       return;
     }
 
-    this.showInvalidFileError = false;
+    this.invalidFileErrorMessage = null;
     this.fileUploadEvent.emit(...event.addedFiles);
   }
 }

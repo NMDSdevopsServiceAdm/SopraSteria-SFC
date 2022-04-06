@@ -65,7 +65,16 @@ describe('DragAndDropUploadComponent', () => {
 
     const http = TestBed.inject(HttpTestingController);
 
-    return { fixture, component, compInst, triggerFileInput, triggerInvalidFileInput, http, validFile };
+    return {
+      fixture,
+      component,
+      compInst,
+      triggerFileInput,
+      triggerInvalidFileInput,
+      http,
+      validFile,
+      fileInput,
+    };
   };
 
   it('should dispatch event to handler on component', async () => {
@@ -119,6 +128,17 @@ describe('DragAndDropUploadComponent', () => {
       triggerInvalidFileInput();
 
       expect(fileUploadEmitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should display an error message and not emit the event if the user attempts to upload multiple files', async () => {
+      const { fixture, compInst, component, validFile } = await setup();
+
+      const fileUploadEmitSpy = spyOn(compInst.fileUploadEvent, 'emit');
+      compInst.onSelect({ rejectedFiles: [validFile], addedFiles: [validFile] });
+      fixture.detectChanges();
+
+      expect(fileUploadEmitSpy).not.toHaveBeenCalled();
+      expect(component.queryByText('You can only upload single files.')).toBeTruthy();
     });
   });
 });

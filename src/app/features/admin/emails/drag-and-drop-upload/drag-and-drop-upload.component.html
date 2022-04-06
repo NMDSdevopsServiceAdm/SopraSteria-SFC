@@ -1,6 +1,6 @@
 <app-validation-error-message
-  *ngIf="showInvalidFileError"
-  [errorMessage]="'You can only upload CSV files.'"
+  *ngIf="invalidFileErrorMessage"
+  [errorMessage]="invalidFileErrorMessage"
 ></app-validation-error-message>
 <form #formEl novalidate [formGroup]="form" id="server-error">
   <div
