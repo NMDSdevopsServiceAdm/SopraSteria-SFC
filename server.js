@@ -36,6 +36,7 @@ var AppConfig = require('./server/config/appConfig');
 // caching middleware - ref and transactional
 var cacheMiddleware = require('./server/utils/middleware/noCache');
 var refCacheMiddleware = require('./server/utils/middleware/refCache');
+const { authLimiter, dbLimiter } = require('./server/utils/middleware/rateLimiting');
 
 // security libraries
 var helmet = require('helmet');
@@ -206,6 +207,7 @@ app.use(
       },
     },
   }),
+  dbLimiter,
 );
 
 // encodes all URL parameters
@@ -282,10 +284,12 @@ app.use('/api/wdf', [cacheMiddleware.nocache, WDFRoute]);
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 
+app.use('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', authLimiter);
 app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
   res.sendFile(path.join(__dirname, 'loaderio-63e80cd3c669177f22e9ec997ea2594d.txt'));
 });
 
+app.use('*', authLimiter);
 app.get('*', function (req, res) {
   return res.sendFile(path.join(__dirname, 'dist/index.html'));
 });

@@ -5,6 +5,8 @@ enum Path {
   WORKPLACE = '/workplace/:workplaceUid',
   ALL_WORKPLACES = '/workplace/view-all-workplaces',
   STAFF_RECORD = '/workplace/:workplaceUid/staff-record/:workerUid',
+  MANDATORY_DETAILS = '/workplace/:workplaceUid/staff-record/:workerUid/mandatory-details',
+  USERS = '/workplace/:workplaceUid/users',
   USER_ACCOUNT = '/workplace/:workplaceUid/user/:workerUid',
   USER_PERMISSIONS = '/workplace/:workerUid/user/:workerUid/permissions',
   CREATE_ACCOUNT = '/workplace/:workplaceUid/user/create',
@@ -22,12 +24,24 @@ export const myWorkplaceJourney: JourneyRoute = {
       },
     },
     {
+      title: 'Staff record',
+      path: Path.MANDATORY_DETAILS,
+      referrer: {
+        path: Path.DASHBOARD,
+        fragment: 'staff-records',
+      },
+    },
+    {
       title: 'Training and qualifications',
       path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
       referrer: {
         path: Path.DASHBOARD,
         fragment: 'training-and-qualifications',
       },
+    },
+    {
+      title: 'Users',
+      path: Path.USERS,
     },
     {
       title: 'Add a user',

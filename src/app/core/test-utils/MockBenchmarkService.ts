@@ -57,26 +57,26 @@ const benchmarksResponseBuilder = build('BenchmarksResponse', {
 const allRankingsResponseBuilder = build('AllRankingsResponse', {
   fields: {
     pay: {
-      currentRank: fake((f) => f.random.number({ min: 1, max: 100 })),
-      maxRank: fake((f) => f.random.number({ min: 2, max: 100 })),
+      currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+      maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
       hasValue: true,
       stateMessage: '',
     },
     turnover: {
-      currentRank: fake((f) => f.random.number({ min: 1, max: 100 })),
-      maxRank: fake((f) => f.random.number({ min: 2, max: 100 })),
+      currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+      maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
       hasValue: true,
       stateMessage: '',
     },
     sickness: {
-      currentRank: fake((f) => f.random.number({ min: 1, max: 100 })),
-      maxRank: fake((f) => f.random.number({ min: 2, max: 100 })),
+      currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+      maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
       hasValue: true,
       stateMessage: '',
     },
     qualifications: {
-      currentRank: fake((f) => f.random.number({ min: 1, max: 100 })),
-      maxRank: fake((f) => f.random.number({ min: 2, max: 100 })),
+      currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+      maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
       hasValue: true,
       stateMessage: '',
     },

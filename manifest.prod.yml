@@ -7,4 +7,5 @@ applications:
     services:
       - sfcuatdb01
       - scale-sfcprod
+      - sfcprod-redis
 stack: cflinuxfs3

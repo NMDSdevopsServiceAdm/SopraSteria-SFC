@@ -10,8 +10,12 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
 const routes: Routes = [
   {
     path: '',
+    // remove following 2 lines when wdf new design feature is live
     component: WdfOverviewComponent,
     data: { title: 'Workforce Development Fund' },
+    // uncomment following 2 lines when wdf new design feature is live
+    // redirectTo: 'data',
+    // pathMatch: 'full',
   },
   {
     path: 'data',

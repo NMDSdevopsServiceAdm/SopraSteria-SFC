@@ -48,7 +48,7 @@
         </h3>
         <p>Access all your special offers and discounts across Skills for Care's product range.</p>
       </div>
-      <div *ngIf="canViewReports">
+      <div *ngIf="canViewReports && !wdfNewDesignFlag">
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
           <a [routerLink]="['/wdf']"> Check your WDF data </a>
         </h3>

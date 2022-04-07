@@ -2,8 +2,8 @@ const { build, fake } = require('@jackfranklin/test-data-bot');
 
 const rawDataBuilder = build('rawData', {
   fields: {
-    uid: fake((f) => f.random.uuid()),
-    id: fake((f) => f.random.number()),
+    uid: fake((f) => f.datatype.uuid()),
+    id: fake((f) => f.datatype.number()),
     NameValue: fake((f) => f.lorem.sentence()),
     nmdsId: '',
     isRegulated: false,
@@ -18,7 +18,7 @@ const rawDataBuilder = build('rawData', {
     EmployerTypeOther: null,
     workers: [],
     mainService: { name: 'Day care and day services' },
-    LastUpdated:{dataOwner: "Workplace",lastUpdated:"2019-10-18T11:29:58.477Z"}
+    LastUpdated: { dataOwner: 'Workplace', lastUpdated: '2019-10-18T11:29:58.477Z' },
   },
 });
 module.exports.rawDataBuilder = rawDataBuilder;

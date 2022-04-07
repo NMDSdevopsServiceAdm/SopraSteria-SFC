@@ -8,7 +8,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockUserService } from '@core/test-utils/MockUserService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
 
 import { HeaderComponent } from './header.component';
@@ -29,6 +32,14 @@ describe('HeaderComponent', () => {
           useFactory: MockAuthService.factory(isLoggedIn, isAdmin),
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
       ],
     });
 
@@ -44,6 +55,51 @@ describe('HeaderComponent', () => {
   it('should render a HeaderComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('My account link', () => {
+    it('should show my name when logged in', async () => {
+      const { component } = await setup(false, 0, true);
+
+      expect(component.getByText('John')).toBeTruthy();
+    });
+
+    it('should render my name link with the correct href', async () => {
+      const { component } = await setup(false, 0, true);
+      const nameLink = component.getByText('John');
+
+      expect(nameLink.getAttribute('href')).toEqual('/account-management');
+    });
+
+    it('should show a users link when logged in and on a workplace', async () => {
+      const { component } = await setup(false, 0, true);
+
+      component.fixture.componentInstance.ngOnInit();
+      component.fixture.detectChanges();
+
+      expect(component.getByText('Users')).toBeTruthy();
+    });
+
+    it('should render users link with the correct href when on a workplace', async () => {
+      const { component } = await setup(false, 0, true);
+
+      component.fixture.componentInstance.ngOnInit();
+      component.fixture.detectChanges();
+
+      const workplaceId = component.fixture.componentInstance.workplaceId;
+      const usersLink = component.getByText('Users');
+
+      expect(usersLink.getAttribute('href')).toEqual(`/workplace/${workplaceId}/users`);
+    });
+
+    it('should not show a users link when logged in and on the admin pages', async () => {
+      const { component } = await setup(true, 0, true);
+
+      component.fixture.componentInstance.isOnAdminScreen = true;
+      component.fixture.detectChanges();
+
+      expect(component.queryByText('Users')).toBeFalsy();
+    });
   });
 
   describe('Back to admin link', () => {

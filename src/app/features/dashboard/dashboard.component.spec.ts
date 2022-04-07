@@ -18,6 +18,7 @@ import { EditUser, MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
+import { TabComponent } from '@shared/components/tabs/tab.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -35,14 +36,14 @@ describe('DashboardComponent', () => {
   async function setup(oneUser = false, totalStaffRecords = 2, showBanner = false) {
     showBanner ? history.pushState({ showBanner: true }, '') : history.pushState({ showBanner: false }, '');
 
-    const component = await render(DashboardComponent, {
+    const { fixture, getByText, getByTestId, queryByTestId } = await render(DashboardComponent, {
       imports: [
         SharedModule,
         RouterModule,
         RouterTestingModule.withRoutes([{ path: 'search-establishments', component: DashboardComponent }]),
         HttpClientTestingModule,
       ],
-      declarations: [HomeTabComponent],
+      declarations: [HomeTabComponent, TabComponent],
       providers: [
         AlertService,
         {
@@ -51,7 +52,12 @@ describe('DashboardComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canViewListOfWorkers', 'canViewListOfUsers', 'canAddUser']),
+          useFactory: MockPermissionsService.factory([
+            'canViewListOfWorkers',
+            'canViewEstablishment',
+            'canViewListOfUsers',
+            'canAddUser',
+          ]),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -92,8 +98,13 @@ describe('DashboardComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
+    const component = fixture.componentInstance;
     return {
       component,
+      fixture,
+      getByText,
+      getByTestId,
+      queryByTestId,
       establishmentService,
       router,
       alertSpy,
@@ -106,94 +117,122 @@ describe('DashboardComponent', () => {
   });
 
   describe('Tabs', () => {
+    it('should display the Home tab', async () => {
+      const { getByTestId } = await setup();
+      expect(getByTestId('tab_home')).toBeTruthy();
+    });
+
+    it('should display the Workplace tab', async () => {
+      const { getByTestId } = await setup();
+      expect(getByTestId('tab_workplace')).toBeTruthy();
+    });
+
+    it('should display the Staff Record tab', async () => {
+      const { getByTestId } = await setup();
+      expect(getByTestId('tab_staff-records')).toBeTruthy();
+    });
+
+    it('should display the Training and Qualifications tab', async () => {
+      const { getByTestId } = await setup();
+      expect(getByTestId('tab_training-and-qualifications')).toBeTruthy();
+    });
+
+    it('should display the WDF tab', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      expect(getByTestId('tab_wdf')).toBeTruthy();
+    });
+
     it('should display the Benchmarks tab when canViewBenchmarks is true', async () => {
-      const { component } = await setup();
+      const { component, fixture, getByTestId } = await setup();
 
-      component.fixture.componentInstance.canViewBenchmarks = true;
-      component.fixture.detectChanges();
+      component.canViewBenchmarks = true;
+      fixture.detectChanges();
 
-      expect(component.getByTestId('tab_benchmarks')).toBeTruthy();
+      expect(getByTestId('tab_benchmarks')).toBeTruthy();
     });
 
     it('should not display the Benchmarks tab when canViewBenchmarks is false', async () => {
-      const { component } = await setup();
+      const { component, fixture, queryByTestId } = await setup();
 
-      component.fixture.componentInstance.canViewBenchmarks = false;
+      component.canViewBenchmarks = false;
 
-      component.fixture.detectChanges();
+      fixture.detectChanges();
 
-      expect(component.queryByTestId('tab_benchmarks')).toBeNull();
+      expect(queryByTestId('tab_benchmarks')).toBeNull();
     });
 
     it('should display the Users tab', async () => {
-      const { component } = await setup();
+      const { component, fixture, getByText } = await setup();
 
       const establishment = {
-        ...component.fixture.componentInstance.workplace,
+        ...component.workplace,
       };
       establishment.isRegulated = false;
-      component.fixture.componentInstance.canViewListOfUsers = true;
-      component.fixture.componentInstance.workplace = establishment;
-      component.fixture.detectChanges();
+      component.workplace = establishment;
+      component.wdfNewDesignFlag = false;
+      fixture.detectChanges();
 
-      expect(component.getByText('Users')).toBeTruthy();
+      expect(getByText('Users')).toBeTruthy();
     });
 
     it('should display a flag on the workplace tab when the sharing permissions banner flag is true', async () => {
-      const { component } = await setup();
+      const { component, fixture, getByTestId } = await setup();
 
-      component.fixture.componentInstance.canViewEstablishment = true;
-      component.fixture.componentInstance.showSharingPermissionsBanner = true;
-      component.fixture.detectChanges();
+      component.showSharingPermissionsBanner = true;
+      fixture.detectChanges();
 
-      expect(component.getByTestId('red-flag')).toBeTruthy();
+      expect(getByTestId('red-flag')).toBeTruthy();
     });
 
     describe('Users tab warning', () => {
       it('should not display an orange flag on the Users tab when more than one user', async () => {
-        const { component } = await setup(false);
+        const { queryByTestId } = await setup(false);
 
-        expect(component.queryByTestId('orange-flag')).toBeFalsy();
+        expect(queryByTestId('orange-flag')).toBeFalsy();
       });
 
       it('should display an orange flag on the Users tab when only one user', async () => {
-        const { component } = await setup(true);
+        const { queryByTestId } = await setup(true);
 
-        expect(component.queryByTestId('orange-flag')).toBeTruthy();
+        expect(queryByTestId('orange-flag')).toBeTruthy();
       });
     });
 
     describe('Staff records tab warning', () => {
       it('should not display an orange flag on the Staff records tab when not 0 staff records', async () => {
         const totalStaffRecords = 3;
-        const { component } = await setup(false, totalStaffRecords);
+        const { queryByTestId } = await setup(false, totalStaffRecords);
 
-        expect(component.queryByTestId('orange-flag')).toBeFalsy();
+        expect(queryByTestId('orange-flag')).toBeFalsy();
       });
 
       it('should display an orange flag on the Staff records tab when no staff', async () => {
         const totalStaffRecords = 0;
-        const { component } = await setup(false, totalStaffRecords);
+        const { queryByTestId } = await setup(false, totalStaffRecords);
 
-        expect(component.queryByTestId('orange-flag')).toBeTruthy();
+        expect(queryByTestId('orange-flag')).toBeTruthy();
       });
     });
 
     describe('showStaffRecordBanner', () => {
       it('should not show a banner if the show banner flag is false', async () => {
-        const { component, alertSpy } = await setup();
+        const { component, fixture, alertSpy } = await setup();
 
-        component.fixture.componentInstance.ngOnInit();
-        component.fixture.detectChanges();
+        component.ngOnInit();
+        fixture.detectChanges();
 
         expect(alertSpy).not.toHaveBeenCalled();
       });
 
       it('should show a banner when a staff record has been confirmed', async () => {
-        const { component, alertSpy } = await setup(false, 2, true);
+        const { component, fixture, alertSpy } = await setup(false, 2, true);
 
-        component.fixture.componentInstance.ngOnInit();
-        component.fixture.detectChanges();
+        component.ngOnInit();
+        fixture.detectChanges();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',

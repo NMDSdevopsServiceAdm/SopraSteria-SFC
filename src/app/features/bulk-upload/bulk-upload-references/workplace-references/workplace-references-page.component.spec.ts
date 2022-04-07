@@ -13,20 +13,20 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockBulkUploadService } from '@core/test-utils/MockBulkUploadService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { bool, build, fake, sequence } from '@jackfranklin/test-data-bot';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WorkplaceReferencesComponent } from './workplace-references-page.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 const establishmentBuilder = build('Workplace', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     name: fake((f) => f.lorem.sentence()),
     dataOwner: 'Workplace',
     dataPermissions: '',
@@ -40,8 +40,7 @@ describe('WorkplaceReferencesComponent', () => {
     const component = await render(WorkplaceReferencesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
-        { provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService},
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,

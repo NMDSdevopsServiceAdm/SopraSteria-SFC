@@ -3,12 +3,11 @@ const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
 const sinon = require('sinon');
 
 const Worker = require('../../../../models/classes/worker').Worker;
-const WdfCalculator = require('../../../../models/classes/wdfCalculator')
+const WdfCalculator = require('../../../../models/classes/wdfCalculator');
 
 const worker = new Worker();
 
 describe('Worker Class', () => {
-
   afterEach(() => {
     sinon.restore();
   });
@@ -191,7 +190,7 @@ describe('Worker Class', () => {
       const agencyBuilder = build({
         fields: {
           contract: oneOf('Agency', 'Pool/Bank'),
-          daysSick: { value: 'Yes', days: fake((f) => f.random.number({ min: 1, max: 10 })) },
+          daysSick: { value: 'Yes', days: fake((f) => f.datatype.number({ min: 1, max: 10 })) },
         },
       });
       const agency = agencyBuilder();
@@ -246,7 +245,7 @@ describe('Worker Class', () => {
     });
 
     describe('Resetting yearArrived', () => {
-      it('should remove year of entry when country of birth is set to Don\'t know', async () => {
+      it("should remove year of entry when country of birth is set to Don't know", async () => {
         const countryOfBirth = {
           countryOfBirth: { value: `Don't know` },
         };
@@ -272,7 +271,7 @@ describe('Worker Class', () => {
 
       it('should not change the year of entry when country of birth is set to Other', async () => {
         const countryOfBirth = {
-          countryOfBirth: { value: 'Other', other: { country: 'Uganda' }}
+          countryOfBirth: { value: 'Other', other: { country: 'Uganda' } },
         };
 
         const countryOfBirthWorker = await worker.load(countryOfBirth);
@@ -288,7 +287,7 @@ describe('Worker Class', () => {
   describe('setWdfProperties()', async () => {
     it('should set wdfEligible inside the document if true', async () => {
       sinon.stub(worker, 'isWdfEligible').callsFake(() => {
-        return { isEligible: true }
+        return { isEligible: true };
       });
       const document = {};
 
@@ -298,7 +297,7 @@ describe('Worker Class', () => {
 
     it('should set wdfEligible inside the document if false', async () => {
       sinon.stub(worker, 'isWdfEligible').callsFake(() => {
-        return { isEligible: false }
+        return { isEligible: false };
       });
       const document = {};
 
@@ -308,7 +307,7 @@ describe('Worker Class', () => {
 
     it('should set lastWdfEligibility inside the document if currently eligible and last eligiblity date is before effective date', async () => {
       sinon.stub(worker, 'isWdfEligible').callsFake(() => {
-        return { isEligible: true }
+        return { isEligible: true };
       });
 
       worker._lastWdfEligibility = new Date('2021-03-01');
@@ -326,7 +325,7 @@ describe('Worker Class', () => {
 
     it('should set lastWdfEligibility inside the document if currently eligible and last eligiblity date is null', async () => {
       sinon.stub(worker, 'isWdfEligible').callsFake(() => {
-        return { isEligible: true }
+        return { isEligible: true };
       });
 
       worker._lastWdfEligibility = null;

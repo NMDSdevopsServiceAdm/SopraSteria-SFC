@@ -35,7 +35,15 @@
         <app-benchmarks-tab class="asc-benchmarks-tab" [workplace]="workplace"></app-benchmarks-tab>
       </app-tab>
 
-      <app-tab *ngIf="workplace && canViewListOfUsers" [title]="'Users'" [alert]="showSecondUserBanner">
+      <app-tab *ngIf="workplace && canViewEstablishment && wdfNewDesignFlag" [title]="'WDF'">
+        <app-wdf-tab [workplace]="workplace"></app-wdf-tab>
+      </app-tab>
+
+      <app-tab
+        *ngIf="workplace && canViewListOfUsers && !wdfNewDesignFlag"
+        [title]="'Users'"
+        [alert]="showSecondUserBanner"
+      >
         <app-user-accounts-summary
           [workplace]="workplace"
           [showSecondUserBanner]="showSecondUserBanner"

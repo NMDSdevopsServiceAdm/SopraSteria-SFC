@@ -23,7 +23,10 @@ export interface Workplace {
   linkToParentRequested?: string;
   postCode: string;
   nameAndPostCode?: string;
-  id?:number;
+  id?: number;
+  wdf?: {
+    overall: boolean;
+  };
 }
 
 export enum WorkplaceDataOwner {

@@ -10,6 +10,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import dayjs from 'dayjs';
+import saveAs from 'file-saver';
 import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 

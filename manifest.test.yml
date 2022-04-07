@@ -6,5 +6,4 @@ applications:
     services:
       - sfcstaging-db
       - sfcstaging-redis
-
 stack: cflinuxfs3

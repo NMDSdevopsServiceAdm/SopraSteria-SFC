@@ -16,7 +16,7 @@
       </button>
     </div>
     <nav>
-      <ul class="govuk-header__navigation" id="navigation" aria-label="Top Level Navigation">
+      <ul class="govuk-header__navigation govuk-list--spaced" id="navigation" aria-label="Top Level Navigation">
         <ng-container *ngIf="!isLoggedIn()">
           <li class="govuk-header__navigation-item">
             <a [routerLink]="['/registration', 'create-account']" class="govuk-header__link">Create an account</a>
@@ -26,17 +26,33 @@
           </li>
         </ng-container>
         <ng-container *ngIf="isLoggedIn()">
-          <li class="govuk-header__navigation-item">{{ fullname }}</li>
-          <li class="govuk-header__navigation-item">
-            <a [routerLink]="['/account-management']" class="govuk-header__link">My account</a>
+          <li class="govuk-header__navigation-item" routerLinkActive="active">
+            <a
+              [routerLink]="['/account-management']"
+              class="govuk-header__link"
+              routerLinkActive="govuk-link--no-underline"
+              >{{ fullname }}</a
+            >
+          </li>
+          <li
+            *ngIf="!isOnAdminScreen && wdfNewDesignFlag"
+            class="govuk-header__navigation-item"
+            routerLinkActive="active"
+          >
+            <a
+              [routerLink]="['/workplace', workplaceId, 'users']"
+              class="govuk-header__link"
+              routerLinkActive="govuk-link--no-underline"
+              >Users</a
+            >
           </li>
           <li class="govuk-header__navigation-item">
-            <a href="#" (click)="signOut($event)" class="govuk-header__link">Logout</a>
+            <a href="#" (click)="signOut($event)" class="govuk-header__link">Sign out</a>
           </li>
         </ng-container>
       </ul>
       <ul class="govuk-header__navigation" id="navigation2" aria-label="Top Level Navigation">
-        <ng-container *ngIf="isAdminUser() && isLoggedIn() && !isOnAdminScreen()">
+        <ng-container *ngIf="isAdminUser && isLoggedIn() && !isOnAdminScreen">
           <li class="govuk-header__navigation-item">
             <a [routerLink]="['/sfcadmin']" class="govuk-link">Back to admin</a>
           </li>

@@ -693,6 +693,12 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'DataChangesLastUpdated',
       },
+      isNationalOrg: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'IsNationalOrg',
+      },
     },
     {
       defaultScope: {

@@ -63,6 +63,11 @@ export const mockConfigCatClient = {
         return resolve(false);
       });
     }
+    if (flagName === 'wdfNewDesign') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
 
     return new Promise((resolve) => {
       return resolve(defaultSetting);
