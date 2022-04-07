@@ -19,31 +19,35 @@
       <ul class="govuk-header__navigation govuk-list--spaced" id="navigation" aria-label="Top Level Navigation">
         <ng-container *ngIf="!isLoggedIn()">
           <li class="govuk-header__navigation-item">
-            <a [routerLink]="['/registration', 'create-account']" class="govuk-header__link govuk-link--no-underline"
-              >Create an account</a
-            >
+            <a [routerLink]="['/registration', 'create-account']" class="govuk-header__link">Create an account</a>
           </li>
           <li class="govuk-header__navigation-item">
-            <a [routerLink]="['/login']" class="govuk-header__link govuk-link--no-underline">Sign in</a>
+            <a [routerLink]="['/login']" class="govuk-header__link">Sign in</a>
           </li>
         </ng-container>
         <ng-container *ngIf="isLoggedIn()">
           <li class="govuk-header__navigation-item" routerLinkActive="active">
-            <a [routerLink]="['/account-management']" class="govuk-header__link govuk-link--no-underline">{{
-              fullname
-            }}</a>
+            <a
+              [routerLink]="['/account-management']"
+              class="govuk-header__link"
+              routerLinkActive="govuk-link--no-underline"
+              >{{ fullname }}</a
+            >
           </li>
           <li
             *ngIf="!isOnAdminScreen && wdfNewDesignFlag"
-            class="govuk-header__navigation-item govuk-link--no-underline"
+            class="govuk-header__navigation-item"
             routerLinkActive="active"
           >
-            <a [routerLink]="['/workplace', workplaceId, 'users']" class="govuk-header__link govuk-link--no-underline"
+            <a
+              [routerLink]="['/workplace', workplaceId, 'users']"
+              class="govuk-header__link"
+              routerLinkActive="govuk-link--no-underline"
               >Users</a
             >
           </li>
           <li class="govuk-header__navigation-item">
-            <a href="#" (click)="signOut($event)" class="govuk-header__link govuk-link--no-underline">Sign out</a>
+            <a href="#" (click)="signOut($event)" class="govuk-header__link">Sign out</a>
           </li>
         </ng-container>
       </ul>
