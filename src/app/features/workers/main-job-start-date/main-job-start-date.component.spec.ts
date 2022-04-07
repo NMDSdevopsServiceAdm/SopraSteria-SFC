@@ -100,7 +100,14 @@ describe('MainJobStartDateComponent', () => {
   });
 
   it('renders "Save and continue" if clicking through from staff-records section of dashhboard', async () => {
-    const { getByText } = await setup('dashboard');
+    const { getByText } = await setup('staff-records');
+
+    expect(getByText('Save and continue')).toBeTruthy();
+    expect(getByText('View this staff record')).toBeTruthy();
+  });
+
+  it('renders "Save and continue" if clicking through from mandatory-details section page', async () => {
+    const { getByText } = await setup('mandatory-details');
 
     expect(getByText('Save and continue')).toBeTruthy();
     expect(getByText('View this staff record')).toBeTruthy();
@@ -130,7 +137,7 @@ describe('MainJobStartDateComponent', () => {
   });
 
   it('allows the user to complete the fields and update the form data - (continue flow)', async () => {
-    const { getByRole, getByLabelText, fixture, submitSpy, workerServiceSpy } = await setup('dashboard');
+    const { getByRole, getByLabelText, fixture, submitSpy, workerServiceSpy } = await setup('staff-records');
 
     const formData = fixture.componentInstance.form.value;
     expect(formData).toEqual({ mainJobStartDate: { day: null, month: null, year: null } });
@@ -152,8 +159,8 @@ describe('MainJobStartDateComponent', () => {
     );
   });
 
-  it('allows the user to the staff record summary', async () => {
-    const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup('dashboardd');
+  it('allows the user to view the staff record summary', async () => {
+    const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup('staff-records');
 
     userEvent.click(getByText('View this staff record'));
     expect(submitSpy).toHaveBeenCalledWith({ action: 'summary', save: false });

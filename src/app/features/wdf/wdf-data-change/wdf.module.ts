@@ -20,7 +20,6 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WdfRoutingModule],
   declarations: [
-    WdfOverviewComponent,
     WdfDataComponent,
     WdfStaffSummaryComponent,
     WdfStaffRecordComponent,
@@ -31,6 +30,7 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
     WdfWorkplacesSummaryComponent,
     WdfWorkplacesSummaryTableComponent,
     WdfParentStatusMessageComponent,
+    WdfOverviewComponent,
   ],
 })
 export class WdfModule {}

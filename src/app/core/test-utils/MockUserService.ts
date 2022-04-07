@@ -43,7 +43,7 @@ export { primaryEditUser, nonPrimaryEditUser, readUser };
 const workplaceBuilder = build('Workplace', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     name: fake((f) => f.lorem.sentence()),
     dataOwner: 'Workplace',
     dataPermissions: '',
@@ -51,6 +51,7 @@ const workplaceBuilder = build('Workplace', {
     isParent: bool(),
     postCode: 'xxxxx',
     ustatus: null,
+    wdf: { overall: false },
   },
 });
 
@@ -125,9 +126,9 @@ export class MockUserService extends UserService {
   public get loggedInUser(): UserDetails {
     return {
       uid: 'mocked-uid',
-      email: '',
-      fullname: '',
-      jobTitle: '',
+      email: 'test@developer.com',
+      fullname: 'John Smith',
+      jobTitle: 'Developer',
       phone: '',
       role: this.isAdmin ? ('Admin' as Roles) : undefined,
     };

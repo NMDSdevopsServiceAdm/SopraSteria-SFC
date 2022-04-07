@@ -68,6 +68,10 @@ commands:
                 cf set-env "<<parameters.appname>>-dark" SQREEN_TOKEN "${<<parameters.env_prefix>>_SQREEN_TOKEN}"
             fi
 
+            if [ -n "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}" ]; then
+                cf set-env "<<parameters.appname>>-dark" REDIS_SERVICE_NAME "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}"
+            fi
+
             # Push as "dark" instance (URL in manifest)
             cf start "<<parameters.appname>>-dark"
             # Ensure dark route is exclusive to dark app
@@ -153,7 +157,7 @@ commands:
             npx serverless deploy --stage <<parameters.appname>>
 
 orbs:
-  node: circleci/node@3.0.0
+  node: circleci/node@5.0.0
   slack: circleci/slack@4.4.4
   codecov: codecov/codecov@1.0.2
 
@@ -162,7 +166,7 @@ jobs:
     resource_class: large
     working_directory: ~/project
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     environment: NODE_OPTIONS=--max_old_space_size=8192
     steps:
       - checkout
@@ -194,14 +198,12 @@ jobs:
   test_frontend:
     resource_class: large
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
           keys:
             - node-deps-v2-{{ checksum "package-lock.json" }}
-      - run:
-          command: sudo apt-get install -yq libxss1
       - run:
           command: npm run test-headless
           environment:
@@ -219,7 +221,7 @@ jobs:
           flags: frontend
   test_backend:
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     steps:
       - checkout
       - restore_cache:
@@ -276,7 +278,7 @@ jobs:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
     docker:
-      - image: circleci/node:lts
+      - image: cimg/node:lts
     parameters:
       appname:
         description: App Name
@@ -407,7 +409,7 @@ jobs:
   attach_autoscale_policy:
     description: Attach an auto scaling policy
     docker:
-      - image: circleci/node:lts
+      - image: cimg/node:lts
     parameters:
       appname:
         description: App Name
@@ -450,7 +452,7 @@ jobs:
           steps: << parameters.validate_steps >>
   sentry_release:
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:12.19.0-browsers
     environment:
       SENTRY_ORG: skills-for-care
       SENTRY_PROJECT: skills-for-care
@@ -476,7 +478,7 @@ jobs:
   serverless_deployment:
     description: Deploying all lambdas
     docker:
-      - image: circleci/node:lts
+      - image: cimg/node:lts
     parameters:
       appname:
         description: App Name

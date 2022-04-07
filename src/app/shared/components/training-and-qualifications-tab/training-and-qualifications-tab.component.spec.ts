@@ -18,7 +18,7 @@ import { TrainingAndQualificationsTabComponent } from './training-and-qualificat
 const establishmentBuilder = build('Establishment', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     name: fake((f) => f.lorem.sentence()),
   },
 });

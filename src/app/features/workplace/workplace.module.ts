@@ -40,6 +40,7 @@ import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.com
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
 import { UserAccountEditDetailsComponent } from './user-account-edit-details/user-account-edit-details.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
+import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
@@ -87,6 +88,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     SelectPrimaryUserComponent,
     SelectPrimaryUserDeleteComponent,
     ChangeExpiresSoonAlertsComponent,
+    UsersComponent,
   ],
   providers: [
     DialogService,

@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 
 const itemBuilder = build('Item', {
   fields: {
-    lineNumber: fake((f) => f.random.number({ min: 2, max: 10 })),
+    lineNumber: fake((f) => f.datatype.number({ min: 2, max: 10 })),
     source: '',
     name: 'SKILLS FOR CARE',
   },
@@ -14,7 +14,7 @@ const itemBuilder = build('Item', {
 
 const bulkUploadErrorResponseBuilder = build('ErrorReportError', {
   fields: {
-    errCode: fake((f) => f.random.number({ min: 1000, max: 9999 })),
+    errCode: fake((f) => f.datatype.number({ min: 1000, max: 9999 })),
     errType: 'ERROR',
     error: fake((f) => f.lorem.sentence()),
     origin: 'Establishment',
@@ -30,14 +30,14 @@ const bulkUploadErrorResponseBuilder = build('ErrorReportError', {
 
 const bulkUploadWarningResponseBuilder = build('ErrorReportWarning', {
   fields: {
-    warnCode: fake((f) => f.random.number({ min: 1000, max: 9999 })),
+    warnCode: fake((f) => f.datatype.number({ min: 1000, max: 9999 })),
     warnType: 'ERROR',
     warning: fake((f) => f.lorem.sentence()),
     origin: 'Establishment',
     items: [],
   },
   postBuild: (errorReportWarning) => {
-    errorReportWarning.items = Array(fake((f) => f.random.number({ min: 2, max: 10 })))
+    errorReportWarning.items = Array(fake((f) => f.datatype.number({ min: 2, max: 10 })))
       .fill(undefined)
       .map((_) => itemBuilder());
     return errorReportWarning;

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -32,6 +33,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
   private showBanner = false;
+  public wdfNewDesignFlag: boolean;
 
   constructor(
     private authService: AuthService,
@@ -41,10 +43,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private route: ActivatedRoute,
     private alertService: AlertService,
-    private router: Router,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.showBanner = history.state?.showBanner;
     this.authService.isOnAdminScreen = false;
     this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
@@ -71,6 +73,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.showBanner && this.showStaffRecordBanner();
     this.setUserServiceReturnUrl();
+    this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
   }
 
   private getPermissions(): void {

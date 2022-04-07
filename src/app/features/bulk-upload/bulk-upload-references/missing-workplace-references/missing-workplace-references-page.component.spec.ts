@@ -26,7 +26,7 @@ import { MissingWorkplaceReferencesComponent } from './missing-workplace-referen
 const establishmentBuilder = build('Workplace', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     name: fake((f) => f.lorem.sentence()),
     dataOwner: 'Workplace',
     dataPermissions: '',

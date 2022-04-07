@@ -30,6 +30,9 @@ export interface Workplace {
   postCode?: string;
   nameAndPostCode?: string;
   id?: number;
+  wdf?: {
+    overall: boolean;
+  };
 }
 
 export enum WorkplaceDataOwner {

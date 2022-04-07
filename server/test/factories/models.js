@@ -3,7 +3,7 @@ const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot
 const establishmentBuilder = build('Establishment', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     NameValue: fake((f) => f.lorem.sentence()),
     address1: fake((f) => f.address.streetAddress()),
     address2: fake((f) => f.address.secondaryAddress()),
@@ -69,7 +69,7 @@ const jobBuilder = build('Job', {
 const trainingBuilder = build('Training', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     title: fake((f) => f.lorem.sentence()),
     expires: fake((f) => f.date.future(1).toISOString()),
     categoryFk: perBuild(() => {
@@ -96,7 +96,7 @@ const mandatoryTrainingBuilder = build('MandatoryTraining', {
 const workerBuilder = build('Worker', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     NameOrIdValue: fake((f) => f.name.findName()),
     nameOrId: fake((f) => f.name.findName()),
     jobRole: fake((f) => f.name.jobTitle()),
@@ -118,7 +118,7 @@ const workerBuilder = build('Worker', {
 const workerBuilderWithWdf = build('WorkerWdf', {
   fields: {
     id: sequence(),
-    uid: fake((f) => f.random.uuid()),
+    uid: fake((f) => f.datatype.uuid()),
     NameOrIdValue: fake((f) => f.name.findName()),
     nameOrId: fake((f) => f.name.findName()),
     jobRole: fake((f) => f.name.jobTitle()),

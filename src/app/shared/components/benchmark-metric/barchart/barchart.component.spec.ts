@@ -10,10 +10,10 @@ import { BarchartComponent } from './barchart.component';
 
 const benchmarksBuilder = build<Tile>('Benchmarks', {
   fields: {
-    workplaceValue: { value: fake((f) => f.random.number({ min: 86, max: 90 })), hasValue: true },
-    comparisonGroup: { value: fake((f) => f.random.number({ min: 91, max: 95 })), hasValue: true },
-    goodCqc: { value: fake((f) => f.random.number({ min: 96, max: 100 })), hasValue: true },
-    lowTurnover: { value: fake((f) => f.random.number({ min: 80, max: 85 })), hasValue: true },
+    workplaceValue: { value: fake((f) => f.datatype.number({ min: 86, max: 90 })), hasValue: true },
+    comparisonGroup: { value: fake((f) => f.datatype.number({ min: 91, max: 95 })), hasValue: true },
+    goodCqc: { value: fake((f) => f.datatype.number({ min: 96, max: 100 })), hasValue: true },
+    lowTurnover: { value: fake((f) => f.datatype.number({ min: 80, max: 85 })), hasValue: true },
   },
 });
 
