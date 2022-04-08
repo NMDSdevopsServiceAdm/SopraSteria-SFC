@@ -1,4 +1,9 @@
+const fs = require('fs');
 const express = require('express');
+const multer = require('multer');
+const upload = multer({ dest: 'fileUploads/' });
+const { parse } = require('csv-parse/sync');
+const { Op } = require('sequelize');
 const { celebrate, Joi, errors, Segments } = require('celebrate');
 const sendInBlue = require('../../../../utils/email/sendInBlueEmail');
 const sendEmail = require('../../../../services/email-campaigns/targeted-emails/sendEmail');
@@ -90,6 +95,28 @@ const createTargetedEmailsCampaign = async (req, res) => {
   }
 };
 
+const getTotalValidRecipients = async (req, res, next) => {
+  let validCount = 0;
+  try {
+    // read and parse CSV data
+    const fileData = fs.readFileSync(req.file.path, 'utf8');
+    const establishmentIdList = parse(fileData).map((row) => row[0]);
+
+    validCount = await models.establishment.count({
+      where: {
+        EstablishmentID: { [Op.or]: establishmentIdList },
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+
+  return res.status(200).json({ validCount });
+};
+
+router.route('/validateTargetedRecipients').post(upload.single('targetedRecipientsFile'), getTotalValidRecipients);
+
 router.route('/total').get(
   celebrate({
     [Segments.QUERY]: {
@@ -117,4 +144,5 @@ module.exports = router;
 module.exports.getTargetedTotalEmails = getTargetedTotalEmails;
 module.exports.getTargetedEmailTemplates = getTargetedEmailTemplates;
 module.exports.createTargetedEmailsCampaign = createTargetedEmailsCampaign;
+module.exports.getTotalValidRecipients = getTotalValidRecipients;
 module.exports.templateOptions = templateOptions;

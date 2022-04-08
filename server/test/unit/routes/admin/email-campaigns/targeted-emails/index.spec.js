@@ -1,3 +1,4 @@
+const fs = require('fs');
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
@@ -67,7 +68,10 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     });
 
     it('should return a 200 and the total number of single workplace only users', async () => {
-      sinon.stub(models.user, 'allPrimaryUsers').withArgs({ isParent: false, dataOwner: 'Workplace' }).returns([user, user, user, user]);
+      sinon
+        .stub(models.user, 'allPrimaryUsers')
+        .withArgs({ isParent: false, dataOwner: 'Workplace' })
+        .returns([user, user, user, user]);
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -240,6 +244,70 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       sinon.assert.calledWith(sendEmailMock, mockUsers[0]);
       expect(response).to.deep.equal({ success: true });
       expect(res.statusCode).to.deep.equal(200);
+    });
+  });
+
+  describe('getTotalValidRecipients', () => {
+    let dbStub;
+    let fsStub;
+
+    beforeEach(() => {
+      dbStub = sinon.stub(models.establishment, 'count');
+      fsStub = sinon.stub(fs, 'readFileSync');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('returns 200 if validation of recipients is OK', async () => {
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/admin/email-campaigns/targeted-emails/validateTargetedRecipients',
+        role: 'Admin',
+        file: { path: 'some-random-path' },
+      });
+      const res = httpMocks.createResponse();
+
+      fsStub.returns('');
+      dbStub.returns(0);
+
+      await targetedEmailsRoutes.getTotalValidRecipients(req, res, sinon.fake());
+
+      expect(res.statusCode).to.equal(200);
+    });
+
+    it('returns a count of the valid establishments', async () => {
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/admin/email-campaigns/targeted-emails/validateTargetedRecipients',
+        role: 'Admin',
+        file: { path: 'some-random-path' },
+      });
+      const res = httpMocks.createResponse();
+
+      fsStub.returns('id1');
+      dbStub.returns(1);
+
+      await targetedEmailsRoutes.getTotalValidRecipients(req, res, sinon.fake());
+
+      expect(res._getJSONData()).to.deep.equal({ validCount: 1 });
+    });
+
+    it('should return a 500 on error', async () => {
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/admin/email-campaigns/targeted-emails/validateTargetedRecipients',
+        role: 'Admin',
+        file: { path: 'some-random-path' },
+      });
+      const res = httpMocks.createResponse();
+
+      fsStub.returns('id1');
+      dbStub.throws();
+
+      await targetedEmailsRoutes.getTotalValidRecipients(req, res, sinon.fake());
+
+      expect(res.statusCode).to.equal(500);
     });
   });
 });
