@@ -30,11 +30,10 @@ const getInactiveWorkplacesForArchive = async () => {
   	FROM
   		cqc."EstablishmentLastActivity" e
   	WHERE
-      "IsParent" = FALSE
-      AND "DataOwner" = 'Workplace'
 
-  		AND "LastLogin" >= :twentyFourLastMonths
-      AND "LastUpdated" >= :twentyFourLastMonths
+       "DataOwner" = 'Workplace'
+  		AND "LastLogin" <= :twentyFourLastMonths
+      AND "LastUpdated" <= :twentyFourLastMonths
       `,
     {
       type: models.sequelize.QueryTypes.SELECT,
