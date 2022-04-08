@@ -1,8 +1,8 @@
 const buildRow = (workplace) => {
   return {
-    workplaceASCID: workplace.ASCID,
+    workplaceAscId: workplace.ascId,
     workplaceName: workplace.name,
-    address: workplace.Address,
+    address: workplace.address,
   };
 };
 
@@ -13,7 +13,7 @@ const buildRows = (workplaces) => {
 const addWorksheet = (workbook) => {
   const worksheet = workbook.addWorksheet('Inactive workplaces to be deleted');
   worksheet.columns = [
-    { header: 'Workplace Id', key: 'workplaceASCID' },
+    { header: 'Workplace Id', key: 'workplaceAscId' },
     { header: 'Workplace name', key: 'workplaceName' },
     { header: 'Workplace Address', key: 'address' },
   ];
