@@ -7,8 +7,8 @@ const transformInactiveWorkplacesForArchive = (inactiveWorkplace) => {
   const name = inactiveWorkplace.NameValue;
   const ascId = inactiveWorkplace.EstablishmentID;
   const Address1 = inactiveWorkplace.Address1;
-  const Town = inactiveWorkplace.Town ?? '';
-  const County = inactiveWorkplace.County ?? '';
+  const Town = inactiveWorkplace.Town;
+  const County = inactiveWorkplace.County;
   const PostCode = inactiveWorkplace.PostCode;
   const address = Address1 + '  ' + Town + '  ' + County + '  ' + PostCode;
   return {
