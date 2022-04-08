@@ -38,7 +38,11 @@
       </app-tab>
 
       <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
-        <app-staff-records-tab [workplace]="workplace" [workers]="workers"></app-staff-records-tab>
+        <app-staff-records-tab
+          [workplace]="workplace"
+          [workers]="workers"
+          [workerCount]="workerCount"
+        ></app-staff-records-tab>
       </app-tab>
       <app-tab
         *ngIf="workplace && canViewListOfWorkers"
@@ -49,6 +53,7 @@
         <app-training-and-qualifications-tab
           [workplace]="workplace"
           [workers]="workers"
+          [workerCount]="workerCount"
         ></app-training-and-qualifications-tab>
       </app-tab>
       <app-tab *ngIf="canViewBenchmarks" [title]="'Benchmarks'">

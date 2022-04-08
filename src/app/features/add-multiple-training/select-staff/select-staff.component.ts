@@ -36,7 +36,7 @@ export class SelectStaffComponent implements OnInit {
   ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
-    this.workers = this.route.snapshot.data.workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
+    this.workers = this.route.snapshot.data.workers.workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
     this.setupForm();
     this.setupFormErrorsMap();
     this.setReturnLink();

@@ -1,6 +1,17 @@
 <div class="govuk-form-group govuk-!-margin-bottom-6">
-  <div class="govuk__flex govuk__justify-content-space-between govuk-grid-row">
-    <div class="govuk-grid-column-one-half govuk__flex govuk__align-items-flex-end" *ngIf="showViewByToggle">
+  <div
+    [ngClass]="
+      showSearchBar ? 'govuk-grid-row' : 'govuk__flex-stack govuk__align-items-flex-end govuk__justify-content-end'
+    "
+  >
+    <div
+      *ngIf="showViewByToggle"
+      [ngClass]="
+        showSearchBar
+          ? 'govuk-grid-column-full govuk-!-margin-bottom-4 govuk-!-margin-top-4'
+          : 'govuk-grid-column-three-quarters govuk-!-padding-0 govuk-!-padding-bottom-3'
+      "
+    >
       <span class="govuk-list govuk-list--inline govuk-!-margin-bottom-1 govuk-!-margin-right-6"
         >View by staff name</span
       >
@@ -12,15 +23,21 @@
         View by training category
       </a>
     </div>
-    <div class="govuk-grid-column-one-quarter"></div>
-    <div class="govuk-list govuk-list--inline govuk-!-margin-bottom-0 govuk-grid-column-one-quarter">
+
+    <div *ngIf="showSearchBar" class="govuk-grid-column-three-quarters">
+      <app-search-input accessibleLabel="staff training records" (emitInput)="handleSearch($event)"></app-search-input>
+    </div>
+    <div
+      class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
+      [ngClass]="showSearchBar ? '' : 'govuk-!-padding-0'"
+    >
       <label class="govuk-label" for="sortByTrainingStaff"> Sort by </label>
       <select
         class="govuk-select govuk-!-width-full"
         id="sortByTrainingStaff"
         name="sortByTrainingStaff"
-        [value]="sortByDefault"
-        (change)="orderWorkers($event.target.value)"
+        [value]="sortByValue"
+        (change)="handleSortUpdate($event.target.value)"
       >
         <option
           *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
@@ -32,7 +49,7 @@
     </div>
   </div>
 </div>
-<table class="govuk-table" data-testid="training-worker-table">
+<table *ngIf="workerCount; else noWorkersFoundInSearch" class="govuk-table" data-testid="training-worker-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Staff name</th>
@@ -41,7 +58,7 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of workers">
+    <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of paginatedWorkers">
       <td class="govuk-table__cell govuk-!-font-weight-regular">
         <ng-container *ngIf="canViewWorker; else nameOrId">
           <a href="#" (click)="getWorkerTrainingAndQualificationsPath($event, worker)">
@@ -94,3 +111,13 @@
     </tr>
   </tbody>
 </table>
+<ng-template #noWorkersFoundInSearch>
+  <p class="govuk-util__bold">There are no matching results</p>
+  <p>Make sure that your spelling is correct.</p>
+</ng-template>
+<app-pagination
+  [itemsPerPage]="itemsPerPage"
+  [totalNoOfItems]="workerCount"
+  [currentPageIndex]="currentPageIndex"
+  (currentPageIndexChange)="handlePageUpdate($event)"
+></app-pagination>

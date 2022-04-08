@@ -1,0 +1,63 @@
+<div *ngIf="pages?.length > 1" class="govuk-button-group">
+  <a
+    *ngIf="currentPageIndex != 0"
+    class="asc-chevron-before asc-no-underline govuk-button--link govuk-!-margin-right-3"
+    href="#"
+    (click)="goToPage($event, currentPageIndex - 1)"
+    >Previous</a
+  >
+
+  <ng-container *ngIf="pages.length <= 10 && isBigWindow; else showEllipses">
+    <ng-container *ngFor="let page of pages; let i = index">
+      <ng-container *ngIf="currentPageIndex == i; else showLink">
+        <p class="govuk-!-margin-right-3" [attr.data-testid]="'pageNoText-' + i">
+          <b>{{ i + 1 }}</b>
+        </p>
+      </ng-container>
+      <ng-template #showLink>
+        <a
+          class="govuk-link asc-no-underline"
+          [attr.data-testid]="'pageNoLink-' + i"
+          href="#"
+          (click)="goToPage($event, i)"
+          >{{ i + 1 }}</a
+        >
+      </ng-template>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #showEllipses>
+    <ng-container *ngIf="isBigWindow">
+      <ng-container *ngFor="let page of pages; let i = index">
+        <ng-container *ngIf="currentPageIndex == i; else showLinkOrElipsis">
+          <p class="govuk-!-margin-right-3" [attr.data-testid]="'pageNoText-' + i">
+            <b>{{ i + 1 }}</b>
+          </p>
+        </ng-container>
+        <ng-template #showLinkOrElipsis>
+          <ng-container *ngIf="showElipsisCheck(i); else showLink">
+            <p class="govuk-!-margin-right-3" [attr.data-testid]="'elipsis-' + i">...</p>
+          </ng-container>
+          <ng-template #showLink>
+            <a
+              *ngIf="showPageLink(i)"
+              class="govuk-link asc-no-underline"
+              [attr.data-testid]="'pageNoLink-' + i"
+              href="#"
+              (click)="goToPage($event, i)"
+              >{{ i + 1 }}</a
+            >
+          </ng-template>
+        </ng-template>
+      </ng-container>
+    </ng-container>
+  </ng-template>
+
+  <a
+    *ngIf="currentPageIndex != pages.length - 1"
+    class="asc-chevron-after asc-no-underline govuk-button--link"
+    href="#"
+    (click)="goToPage($event, currentPageIndex + 1)"
+    >Next</a
+  >
+</div>
