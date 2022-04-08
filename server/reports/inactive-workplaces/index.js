@@ -35,9 +35,8 @@ const generateInactiveWorkplacesReport = async (workbook) => {
   const inactiveWorkplacesForArchive = await findInactiveWorkplacesForArchive.findInactiveWorkplacesForArchive();
 
   const archivedInactiveWorkplacesWorksheet = archivedInactiveWorkplacesBuilder.addWorksheet(workbook);
-  const archivedInactiveWorkplacesWorksheetRows =
-    archivedInactiveWorkplacesBuilder.buildRows(inactiveWorkplacesForArchive);
-  archivedInactiveWorkplacesWorksheet.addRows(archivedInactiveWorkplacesWorksheetRows);
+  const inactiveWorkplacesTobeDeletedRows = archivedInactiveWorkplacesBuilder.buildRows(inactiveWorkplacesForArchive);
+  archivedInactiveWorkplacesWorksheet.addRows(inactiveWorkplacesTobeDeletedRows);
 
   workbook.eachSheet((sheet) => {
     excelUtils.fitColumnsToSize(sheet);

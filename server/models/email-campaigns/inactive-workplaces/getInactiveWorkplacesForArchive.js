@@ -10,7 +10,7 @@ const getInactiveWorkplacesForArchive = async () => {
   const lastMonth = moment().subtract(1, 'months').endOf('month');
   const twentyFourLastMonths = lastMonth.clone().subtract(24, 'months').format('YYYY-MM-DD');
 
-  const result = await models.sequelize.query(
+  return await models.sequelize.query(
     `
   SELECT
   "EstablishmentID",
@@ -43,8 +43,6 @@ const getInactiveWorkplacesForArchive = async () => {
       },
     },
   );
-
-  return result;
 };
 
 module.exports = {
