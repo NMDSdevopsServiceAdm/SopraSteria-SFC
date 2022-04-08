@@ -22,7 +22,10 @@ const getInactiveWorkplacesForArchive = async () => {
   "LastUpdated",
   "Address1",
   "Address2",
-  "Address3"
+  "Address3",
+  "Town",
+  "County",
+  "PostCode"
 
   	FROM
   		cqc."EstablishmentLastActivity" e

@@ -15,6 +15,9 @@ module.exports = {
           e."Address1",
           e."Address2",
           e."Address3",
+          e."Town",
+          e."County",
+          e."PostCode",
           (
             SELECT u."FullNameValue"
               FROM cqc."User" u
