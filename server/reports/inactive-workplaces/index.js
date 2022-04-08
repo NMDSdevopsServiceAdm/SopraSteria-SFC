@@ -1,4 +1,3 @@
-const excelJS = require('exceljs');
 const excelUtils = require('../../utils/excelUtils');
 
 const findInactiveWorkplaces = require('../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
@@ -10,12 +9,7 @@ const parentWorksheetBuilder = require('./parents');
 const subsidiaryWorksheetBuilder = require('./subsidiaries');
 const archivedInactiveWorkplacesBuilder = require('./archivedInactiveWorkplace');
 
-const generate = async () => {
-  const workbook = new excelJS.Workbook();
-
-  workbook.creator = 'Skills-For-Care';
-  workbook.properties.date1904 = true;
-
+const generateInactiveWorkplacesReport = async (workbook) => {
   // Build inactive worksheet
   const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
 
@@ -53,5 +47,5 @@ const generate = async () => {
 };
 
 module.exports = {
-  generate,
+  generateInactiveWorkplacesReport,
 };
