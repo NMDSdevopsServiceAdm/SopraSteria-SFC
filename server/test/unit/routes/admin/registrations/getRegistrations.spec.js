@@ -74,6 +74,7 @@ describe('getRegistrations', async () => {
       establishmentUid: 'establishment1Uid',
       created: '01/01/2021',
       updated: '01/02/2021',
+      IsRegulated: true,
     });
 
     const dummyEstablishment2 = getDummyEstablishment({
@@ -85,6 +86,7 @@ describe('getRegistrations', async () => {
       establishmentUid: 'establishment2Uid',
       created: '02/01/2021',
       updated: '02/02/2021',
+      IsRegulated: false,
     });
 
     sinon
@@ -135,6 +137,7 @@ describe('getRegistrations', async () => {
       expect(registration.created).to.equal(expectedResponseArray[index].created);
       expect(registration.updated).to.equal(expectedResponseArray[index].updated);
       expect(registration.parentEstablishmentId).to.equal(expectedResponseArray[index].parentEstablishmentId);
+      expect(registration.IsRegulated).to.equal(expectedResponseArray[index].IsRegulated);
     });
   });
 
