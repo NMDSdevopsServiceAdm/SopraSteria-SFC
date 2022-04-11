@@ -36,7 +36,14 @@ const addWorksheet = (workbook) => {
   return worksheet;
 };
 
+const generateParentWorkplaceTab = async (workbook, parentWorkplaces) => {
+  const parentWorksheet = addWorksheet(workbook);
+  const parentRows = buildRows(parentWorkplaces);
+  parentWorksheet.addRows(parentRows);
+};
+
 module.exports = {
+  generateParentWorkplaceTab,
   addWorksheet,
   buildRows,
 };
