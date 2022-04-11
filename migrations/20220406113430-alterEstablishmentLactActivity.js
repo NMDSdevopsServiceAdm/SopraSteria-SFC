@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface) => {
     await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivity"');
 
     await queryInterface.sequelize.query(`
@@ -13,8 +13,6 @@ module.exports = {
           e."NmdsID",
           e."DataOwner",
           e."Address1",
-          e."Address2",
-          e."Address3",
           e."Town",
           e."County",
           e."PostCode",
@@ -71,7 +69,7 @@ module.exports = {
     );
   },
 
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.sequelize.query('DROP MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
   },
 };

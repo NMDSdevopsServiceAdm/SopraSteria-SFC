@@ -18,27 +18,10 @@ describe('reports/inactive-workplaces/parents.js', () => {
       lastLogin: '2015-03-01',
       lastUpdated: '2015-03-01',
       Address1: '1 paddington Avenue',
-      Address2: '',
-      Address3: '',
       Town: 'Westminster',
       County: 'London',
       PostCode: 'W2 1HB',
     };
-
-    //   "EstablishmentID",
-    // "NameValue",
-    // TRIM("NmdsID") AS "NmdsID",
-    // "DataOwner",
-    // "PrimaryUserName",
-    // "PrimaryUserEmail",
-    // "LastLogin",
-    // "LastUpdated",
-    // "Address1",
-    // "Address2",
-    // "Address3",
-    // "Town",
-    // "County",
-    // "PostCode"
 
     const transformedWorkplace = transformInactiveWorkplacesForDeletion(workplace);
     const rows = deleteInactiveWorkplaceWorksheetBuilder.buildRows([transformedWorkplace]);
