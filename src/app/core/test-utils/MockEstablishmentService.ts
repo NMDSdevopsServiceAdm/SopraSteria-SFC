@@ -1,10 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
+import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Observable, of } from 'rxjs';
+
+import { subsid1, subsid2, subsid3 } from './MockUserService';
 
 @Injectable()
 export class MockEstablishmentService extends EstablishmentService {
@@ -122,5 +125,13 @@ export class MockEstablishmentService extends EstablishmentService {
 
   public setExpiresSoonAlertDates(establishmentUid, data): Observable<string> {
     return of('');
+  }
+
+  public getChildWorkplaces(establishmentUid: string): Observable<GetChildWorkplacesResponse> {
+    return of({
+      childWorkplaces: [subsid1, subsid2, subsid3],
+      count: 3,
+      activeWorkplaceCount: 2,
+    } as GetChildWorkplacesResponse);
   }
 }

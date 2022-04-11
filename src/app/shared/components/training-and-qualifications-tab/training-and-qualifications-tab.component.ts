@@ -15,6 +15,7 @@ import { take } from 'rxjs/operators';
 export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChanges, OnInit {
   @Input() workplace: Establishment;
   @Input() workers: Worker[];
+  @Input() workerCount: number;
 
   private subscriptions: Subscription = new Subscription();
 

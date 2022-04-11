@@ -62,5 +62,6 @@ module.exports.convertBasicRegistrationResponse = (registration) => {
     parentUid: registration.get('ParentUID'),
     parentId: registration.get('ParentID'),
     parentEstablishmentId: registration.parentEstablishmentId,
+    isRegulated: registration.get('IsRegulated'),
   };
 };

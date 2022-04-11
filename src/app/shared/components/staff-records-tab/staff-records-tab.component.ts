@@ -11,6 +11,7 @@ import { WorkerService } from '@core/services/worker.service';
 export class StaffRecordsTabComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workers: Worker[];
+  @Input() workerCount: number;
 
   public createStaffResponse = null;
   public errors;

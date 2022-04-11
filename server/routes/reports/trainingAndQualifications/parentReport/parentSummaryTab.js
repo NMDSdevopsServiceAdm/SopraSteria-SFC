@@ -18,7 +18,7 @@ const models = require('../../../../models');
 const generateSummaryTab = async (workbook, establishmentId) => {
   const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishmentId, true, true);
 
-  const establishmentRecordTotals = rawEstablishmentTrainingBreakdowns.map((establishment) => {
+  const establishmentRecordTotals = rawEstablishmentTrainingBreakdowns.rows.map((establishment) => {
     const trainingBreakdowns = convertWorkerTrainingBreakdowns(establishment.workers);
     return {
       establishmentName: establishment.get('NameValue'),

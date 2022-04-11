@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {
-  AddMultipleTrainingInProgressGuard,
-} from '@core/guards/add-multiple-training-in-progress/add-multiple-training-in-progress.guard';
+import { AddMultipleTrainingInProgressGuard } from '@core/guards/add-multiple-training-in-progress/add-multiple-training-in-progress.guard';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 
 import { SelectStaffComponent } from './select-staff/select-staff.component';
@@ -12,7 +10,7 @@ const routes: Routes = [
   {
     path: 'select-staff',
     component: SelectStaffComponent,
-    data: { title: 'Select staff' },
+    data: { title: 'Select staff', workerPagination: false },
     resolve: {
       workers: WorkersResolver,
     },

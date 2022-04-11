@@ -75,11 +75,10 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
 
     if (this.canViewListOfWorkers) {
       this.subscriptions.add(
-        this.workerService.getAllWorkers(this.workplace.uid).subscribe(
-          (workers) => {
+        this.workerService.getAllWorkers(this.workplace.uid, { pageIndex: 0, itemsPerPage: 15 }).subscribe(
+          ({ workers, workerCount }) => {
             this.workers = workers;
-            this.workerCount = workers.length;
-            this.workerService.setWorkers(workers);
+            this.workerCount = workerCount;
             this.workerService.setWorkers(workers);
             this.trainingAlert = this.getTrainingAlertFlag(workers);
           },
