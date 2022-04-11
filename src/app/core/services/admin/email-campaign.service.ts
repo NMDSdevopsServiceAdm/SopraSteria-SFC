@@ -1,6 +1,6 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TemplatesResponse, TotalEmailsResponse, ValidateRecipientsResponse } from '@core/model/emails.model';
+import { TemplatesResponse, TotalEmailsResponse } from '@core/model/emails.model';
 import { Observable } from 'rxjs';
 
 @Injectable()
