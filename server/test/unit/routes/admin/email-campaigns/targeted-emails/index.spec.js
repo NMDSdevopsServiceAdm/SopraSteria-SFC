@@ -247,12 +247,12 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     });
   });
 
-  describe('getTotalValidRecipients', () => {
+  describe('uploadAndValidMultipleAccounts', () => {
     let dbStub;
     let fsStub;
 
     beforeEach(() => {
-      dbStub = sinon.stub(models.establishment, 'count');
+      dbStub = sinon.stub(models.user, 'allPrimaryUsers');
       fsStub = sinon.stub(fs, 'readFileSync');
     });
 
@@ -269,9 +269,9 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       const res = httpMocks.createResponse();
 
       fsStub.returns('');
-      dbStub.returns(0);
+      dbStub.returns([]);
 
-      await targetedEmailsRoutes.getTotalValidRecipients(req, res, sinon.fake());
+      await targetedEmailsRoutes.uploadAndValidMultipleAccounts(req, res, sinon.fake());
 
       expect(res.statusCode).to.equal(200);
     });
@@ -286,11 +286,11 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       const res = httpMocks.createResponse();
 
       fsStub.returns('id1');
-      dbStub.returns(1);
+      dbStub.returns(['user']);
 
-      await targetedEmailsRoutes.getTotalValidRecipients(req, res, sinon.fake());
+      await targetedEmailsRoutes.uploadAndValidMultipleAccounts(req, res, sinon.fake());
 
-      expect(res._getJSONData()).to.deep.equal({ validCount: 1 });
+      expect(res._getData()).to.deep.equal({ totalEmails: 1 });
     });
 
     it('should return a 500 on error', async () => {
@@ -305,7 +305,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       fsStub.returns('id1');
       dbStub.throws();
 
-      await targetedEmailsRoutes.getTotalValidRecipients(req, res, sinon.fake());
+      await targetedEmailsRoutes.uploadAndValidMultipleAccounts(req, res, sinon.fake());
 
       expect(res.statusCode).to.equal(500);
     });

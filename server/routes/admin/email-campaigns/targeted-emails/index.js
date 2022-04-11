@@ -11,11 +11,16 @@ const models = require('../../../../models/');
 
 const router = express.Router();
 
-const getGroup = async (type) => {
+const getGroup = async (type, establishmentIdList) => {
   const groups = {
     primaryUsers: {},
     parentOnly: { isParent: true },
     singleAccountsOnly: { isParent: false, dataOwner: 'Workplace' },
+    multipleAccounts: {
+      EstablishmentID: {
+        [Op.in]: establishmentIdList,
+      },
+    },
   };
 
   return await models.user.allPrimaryUsers(groups[type]);
@@ -44,7 +49,7 @@ const templateOptions = {
 
 const getTargetedTotalEmails = async (req, res) => {
   try {
-    const users = await getGroup(req.query.groupType);
+    const users = await getGroup(req.query.groupType, req.query.establishmentIdList);
     return res.status(200).send({ totalEmails: users.length });
   } catch (error) {
     console.error(error);
@@ -95,27 +100,22 @@ const createTargetedEmailsCampaign = async (req, res) => {
   }
 };
 
-const getTotalValidRecipients = async (req, res, next) => {
-  let validCount = 0;
+const uploadAndValidMultipleAccounts = async (req, res) => {
   try {
     // read and parse CSV data
     const fileData = fs.readFileSync(req.file.path, 'utf8');
-    const establishmentIdList = parse(fileData).map((row) => row[0]);
+    req.query.establishmentIdList = parse(fileData).map((row) => row[0]);
 
-    validCount = await models.establishment.count({
-      where: {
-        EstablishmentID: { [Op.or]: establishmentIdList },
-      },
-    });
+    return await getTargetedTotalEmails(req, res);
   } catch (error) {
     console.error(error);
     return res.status(500).send();
   }
-
-  return res.status(200).json({ validCount });
 };
 
-router.route('/validateTargetedRecipients').post(upload.single('targetedRecipientsFile'), getTotalValidRecipients);
+router
+  .route('/validateTargetedRecipients')
+  .post(upload.single('targetedRecipientsFile'), uploadAndValidMultipleAccounts);
 
 router.route('/total').get(
   celebrate({
@@ -144,5 +144,5 @@ module.exports = router;
 module.exports.getTargetedTotalEmails = getTargetedTotalEmails;
 module.exports.getTargetedEmailTemplates = getTargetedEmailTemplates;
 module.exports.createTargetedEmailsCampaign = createTargetedEmailsCampaign;
-module.exports.getTotalValidRecipients = getTotalValidRecipients;
+module.exports.uploadAndValidMultipleAccounts = uploadAndValidMultipleAccounts;
 module.exports.templateOptions = templateOptions;
