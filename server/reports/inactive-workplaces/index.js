@@ -2,12 +2,11 @@ const excelUtils = require('../../utils/excelUtils');
 
 const findInactiveWorkplaces = require('../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
 const findParentWorkplaces = require('../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
-const findInactiveWorkplacesForArchive = require('../../services/email-campaigns/inactive-workplaces/findInactiveWorkplacesForArchive');
 
 const workplaceWorksheetBuilder = require('./workplaces');
 const parentWorksheetBuilder = require('./parents');
 const subsidiaryWorksheetBuilder = require('./subsidiaries');
-const archivedInactiveWorkplacesBuilder = require('./archivedInactiveWorkplace');
+const { generateInactiveWorkplacesForDeletionTab } = require('./deleteInactiveWorkplace');
 
 const generateInactiveWorkplacesReport = async (workbook) => {
   // Build inactive worksheet
@@ -32,11 +31,7 @@ const generateInactiveWorkplacesReport = async (workbook) => {
   });
 
   // workplaces to be deleted
-  const inactiveWorkplacesForArchive = await findInactiveWorkplacesForArchive.findInactiveWorkplacesForArchive();
-
-  const archivedInactiveWorkplacesWorksheet = archivedInactiveWorkplacesBuilder.addWorksheet(workbook);
-  const inactiveWorkplacesTobeDeletedRows = archivedInactiveWorkplacesBuilder.buildRows(inactiveWorkplacesForArchive);
-  archivedInactiveWorkplacesWorksheet.addRows(inactiveWorkplacesTobeDeletedRows);
+  await generateInactiveWorkplacesForDeletionTab(workbook);
 
   workbook.eachSheet((sheet) => {
     excelUtils.fitColumnsToSize(sheet);

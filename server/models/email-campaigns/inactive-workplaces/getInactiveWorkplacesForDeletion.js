@@ -2,11 +2,11 @@ const moment = require('moment');
 
 const models = require('../../index');
 
-const refreshInactiveWorkplacesForArchive = async () => {
+const refreshInactiveWorkplacesForDeletion = async () => {
   return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
 };
 
-const getInactiveWorkplacesForArchive = async () => {
+const getInactiveWorkplacesForDeletion = async () => {
   const lastMonth = moment().subtract(1, 'months').endOf('month');
   const twentyFourLastMonths = lastMonth.clone().subtract(24, 'months').format('YYYY-MM-DD');
 
@@ -46,6 +46,6 @@ const getInactiveWorkplacesForArchive = async () => {
 };
 
 module.exports = {
-  getInactiveWorkplacesForArchive,
-  refreshInactiveWorkplacesForArchive,
+  getInactiveWorkplacesForDeletion,
+  refreshInactiveWorkplacesForDeletion,
 };

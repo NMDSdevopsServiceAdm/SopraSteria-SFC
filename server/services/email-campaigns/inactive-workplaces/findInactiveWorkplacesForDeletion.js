@@ -1,9 +1,9 @@
 const {
-  getInactiveWorkplacesForArchive,
-  refreshInactiveWorkplacesForArchive,
-} = require('../../../models/email-campaigns/inactive-workplaces/getInactiveWorkplacesForArchive');
+  getInactiveWorkplacesForDeletion,
+  refreshInactiveWorkplacesForDeletion,
+} = require('../../../models/email-campaigns/inactive-workplaces/getInactiveWorkplacesForDeletion');
 
-const transformInactiveWorkplacesForArchive = (inactiveWorkplace) => {
+const transformInactiveWorkplacesForDeletion = (inactiveWorkplace) => {
   const name = inactiveWorkplace.NameValue;
   const ascId = inactiveWorkplace.EstablishmentID;
   const Address1 = inactiveWorkplace.Address1;
@@ -30,12 +30,12 @@ const transformInactiveWorkplacesForArchive = (inactiveWorkplace) => {
 //   );
 // };
 
-const findInactiveWorkplacesForArchive = async () => {
-  await refreshInactiveWorkplacesForArchive();
-  return (await getInactiveWorkplacesForArchive()).map(transformInactiveWorkplacesForArchive);
+const findInactiveWorkplacesForDeletion = async () => {
+  await refreshInactiveWorkplacesForDeletion();
+  return (await getInactiveWorkplacesForDeletion()).map(transformInactiveWorkplacesForDeletion);
 };
 
 module.exports = {
-  transformInactiveWorkplacesForArchive,
-  findInactiveWorkplacesForArchive,
+  transformInactiveWorkplacesForDeletion,
+  findInactiveWorkplacesForDeletion,
 };
