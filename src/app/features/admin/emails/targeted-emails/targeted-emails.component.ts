@@ -22,6 +22,7 @@ export class TargetedEmailsComponent implements OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public emailType = EmailType;
   public showDragAndDrop = false;
+  private fileToUpload: File;
 
   constructor(
     public alertService: AlertService,
@@ -32,8 +33,10 @@ export class TargetedEmailsComponent implements OnDestroy {
   ) {}
 
   public updateTotalEmails(groupType: string): void {
-    if (groupType === 'multipleAccounts') {
-      this.showDragAndDrop = true;
+    const isMultipleAccounts = groupType === 'multipleAccounts';
+    this.showDragAndDrop = isMultipleAccounts;
+
+    if (isMultipleAccounts) {
       this.totalEmails = 0;
     } else if (groupType) {
       this.subscriptions.add(
@@ -74,8 +77,11 @@ export class TargetedEmailsComponent implements OnDestroy {
     );
   }
 
-  public uploadFile(event): void {
-    console.log(event);
+  public validateFile(file: File): void {
+    this.fileToUpload = file;
+    this.emailCampaignService
+      .getTargetedTotalValidEmails(this.fileToUpload)
+      .subscribe((totalEmails: TotalEmailsResponse) => (this.totalEmails = totalEmails.totalEmails));
   }
 
   ngOnDestroy(): void {

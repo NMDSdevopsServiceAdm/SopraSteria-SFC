@@ -1,6 +1,6 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TemplatesResponse, TotalEmailsResponse } from '@core/model/emails.model';
+import { TemplatesResponse, TotalEmailsResponse, ValidateRecipientsResponse } from '@core/model/emails.model';
 import { Observable } from 'rxjs';
 
 @Injectable()
@@ -37,6 +37,20 @@ export class EmailCampaignService {
 
   getTargetedTemplates(): Observable<TemplatesResponse> {
     return this.http.get<TemplatesResponse>('/api/admin/email-campaigns/targeted-emails/templates');
+  }
+
+  getTargetedTotalValidEmails(fileToUpload: File): Observable<TotalEmailsResponse> {
+    const file: FormData = new FormData();
+    file.append('targetedRecipientsFile', fileToUpload, fileToUpload.name);
+
+    return this.http.post<TotalEmailsResponse>(
+      '/api/admin/email-campaigns/targeted-emails/validateTargetedRecipients',
+      file,
+      {
+        headers: { InterceptorSkipHeader: 'true' },
+        params: { groupType: 'multipleAccounts' },
+      },
+    );
   }
 
   createTargetedEmailsCampaign(groupType: string, templateId: string): Observable<any> {

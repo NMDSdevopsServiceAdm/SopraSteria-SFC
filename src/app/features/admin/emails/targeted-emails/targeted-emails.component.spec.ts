@@ -7,14 +7,18 @@ import { EmailCampaignService } from '@core/services/admin/email-campaign.servic
 import { WindowRef } from '@core/services/window.ref';
 import { SearchModule } from '@features/search/search.module';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { fireEvent, getByText, render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
+import { DragAndDropUploadComponent } from '../drag-and-drop-upload/drag-and-drop-upload.component';
 import { TargetedEmailsComponent } from './targeted-emails.component';
 
 describe('EmailsComponent', () => {
   async function setup() {
     return render(TargetedEmailsComponent, {
+      declarations: [DragAndDropUploadComponent],
       imports: [
         SharedModule,
         HttpClientTestingModule,
@@ -22,6 +26,7 @@ describe('EmailsComponent', () => {
         SearchModule,
         FormsModule,
         ReactiveFormsModule,
+        NgxDropzoneModule,
       ],
       providers: [
         {
@@ -222,7 +227,7 @@ describe('EmailsComponent', () => {
       });
 
       it('should leave the Send emails button as disabled when Multiple accounts and template selected but no file uploaded', async () => {
-        const { fixture, getByLabelText } = await setup();
+        const { fixture, getByLabelText, getByRole } = await setup();
 
         const groupSelect = getByLabelText('Email group', { exact: false });
         fireEvent.change(groupSelect, { target: { value: 'multipleAccounts' } });
@@ -232,8 +237,28 @@ describe('EmailsComponent', () => {
         fireEvent.change(templateSelect, { target: { value: '1' } });
         fixture.detectChanges();
 
-        const sendEmailsButton = fixture.nativeElement.querySelectorAll('button');
-        expect(sendEmailsButton[0].disabled).toBeTruthy();
+        const sendEmailsButton = getByRole('button', { name: /targeted emails/ });
+        expect((sendEmailsButton as HTMLButtonElement).disabled).toBeTruthy();
+      });
+
+      it('should request the count of valid emails from the server when file is selected', async () => {
+        const { fixture, getByLabelText, getAllByLabelText } = await setup();
+
+        const emailCampaignService = TestBed.inject(EmailCampaignService);
+        const getTargetedTotalValidEmailsSpy = spyOn(emailCampaignService, 'getTargetedTotalValidEmails').and.callFake(
+          () => of({ totalEmails: 3 }),
+        );
+
+        const groupSelect = getByLabelText('Email group', { exact: false });
+        fireEvent.change(groupSelect, { target: { value: 'multipleAccounts' } });
+        fixture.detectChanges();
+
+        const fileInput = getAllByLabelText('upload files here');
+        const file = new File(['some file content'], 'establishments.csv', { type: 'text/csv' });
+
+        userEvent.upload(fileInput[1], file);
+        expect(fixture.componentInstance.totalEmails).toEqual(3);
+        expect(getTargetedTotalValidEmailsSpy).toHaveBeenCalledOnceWith(file);
       });
     });
   });
