@@ -5,7 +5,7 @@ const findParentWorkplaces = require('../../services/email-campaigns/inactive-wo
 
 const workplaceWorksheetBuilder = require('./workplaces');
 const parentWorksheetBuilder = require('./parents');
-const subsidiaryWorksheetBuilder = require('./subsidiaries');
+const { generateSubsidaryTab } = require('./subsidiaries');
 const { generateInactiveWorkplacesForDeletionTab } = require('./deleteInactiveWorkplace');
 
 const generateInactiveWorkplacesReport = async (workbook) => {
@@ -24,13 +24,8 @@ const generateInactiveWorkplacesReport = async (workbook) => {
   parentWorksheet.addRows(parentRows);
 
   // Build subsidiary worksheet
-  const subsidiaryWorksheet = subsidiaryWorksheetBuilder.addWorksheet(workbook);
-  parentWorkplaces.map((workplace) => {
-    const subsidiaryRows = subsidiaryWorksheetBuilder.buildRows(workplace, workplace.subsidiaries);
-    subsidiaryWorksheet.addRows(subsidiaryRows);
-  });
 
-  // workplaces to be deleted
+  await generateSubsidaryTab(workbook);
   await generateInactiveWorkplacesForDeletionTab(workbook);
 
   workbook.eachSheet((sheet) => {

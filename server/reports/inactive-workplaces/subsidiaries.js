@@ -1,3 +1,5 @@
+const { findParentWorkplaces } = require('../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
+
 const buildRow = (parent, subsidiary) => {
   return {
     parentWorkplaceId: parent.nmdsId,
@@ -32,7 +34,18 @@ const addWorksheet = (workbook) => {
   return subsidiaryWorksheet;
 };
 
+const generateSubsidaryTab = async (workbook) => {
+  const parentWorkplaces = await findParentWorkplaces();
+
+  const subsidiaryWorksheet = addWorksheet(workbook);
+  parentWorkplaces.map((workplace) => {
+    const subsidiaryRows = buildRows(workplace, workplace.subsidiaries);
+    subsidiaryWorksheet.addRows(subsidiaryRows);
+  });
+};
+
 module.exports = {
+  generateSubsidaryTab,
   addWorksheet,
   buildRows,
 };
