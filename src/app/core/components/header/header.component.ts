@@ -15,7 +15,6 @@ import { Subscription } from 'rxjs';
 export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public isOnAdminScreen: boolean;
-  public isAdminUser: boolean;
   public fullname: string;
   public user: UserDetails;
   public showDropdown = false;
@@ -33,7 +32,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.getUser();
     this.onAdminScreen();
-    this.isAdminUser = this.authService.isAdmin;
+
     this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
   }
 
@@ -54,10 +53,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return this.authService.isAuthenticated();
   }
 
+  public isAdminUser(): boolean {
+    return this.authService.isAdmin;
+  }
+
   private onAdminScreen(): void {
     this.subscriptions.add(
       this.authService.isOnAdminScreen$.subscribe((isOnAdminScreen) => {
         this.isOnAdminScreen = isOnAdminScreen;
+
         this.getEstablishmentId();
       }),
     );
@@ -74,7 +78,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public signOut(event: Event): void {
     event.preventDefault();
     this.idleService.clear();
-    if (this.isAdminUser) {
+    if (this.isAdminUser()) {
       this.authService.logout();
     } else {
       this.authService.logoutByUser();
