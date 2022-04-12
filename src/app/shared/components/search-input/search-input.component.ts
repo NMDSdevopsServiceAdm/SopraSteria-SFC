@@ -10,8 +10,7 @@ export class SearchInputComponent {
   @Input() searchButtonName = 'search';
   @Input() accessibleLabel: string;
   @Input() set prevSearch(value: string) {
-    if (value.trim().length) {
-      console.log(value, '???');
+    if (value.trim() !== this.searchTerm.trim()) {
       this.setSearchTerm(value);
       this.setSearched(true);
       this.emitInput.emit(this.searchTerm);
