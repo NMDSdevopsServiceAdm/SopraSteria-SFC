@@ -1,4 +1,4 @@
-const findInactiveWorkplacesForDeletion = require('../../services/email-campaigns/inactive-workplaces/findInactiveWorkplacesForDeletion');
+const setInactiveWorkplacesForDeletion = require('../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
 
 const buildRow = (workplace) => {
   return {
@@ -27,7 +27,7 @@ const addWorksheet = (workbook) => {
 };
 
 const generateInactiveWorkplacesForDeletionTab = async (workbook) => {
-  const inactiveWorkplacesForDeletion = await findInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
+  const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
 
   const archivedInactiveWorkplacesWorksheet = addWorksheet(workbook);
   const inactiveWorkplacesTobeDeletedRows = buildRows(inactiveWorkplacesForDeletion);

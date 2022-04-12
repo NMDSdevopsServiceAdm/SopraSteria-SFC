@@ -3,7 +3,7 @@ const moment = require('moment');
 const sinon = require('sinon');
 
 const models = require('../../../../../models');
-const findParentWorkplaces = require('../../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
+const setParentWorkplaces = require('../../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWorkplaces', () => {
   afterEach(() => {
@@ -69,7 +69,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
         PrimaryUserEmail: 'test@example.com',
       },
     ]);
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
     expect(parentWorkplaces).to.deep.equal(dummyParentWorkplaces);
   });
@@ -150,7 +150,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
       },
     ]);
 
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
     expect(parentWorkplaces).to.deep.equal(dummyParentWorkplaces);
   });
@@ -183,7 +183,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
       },
     ]);
 
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
     expect(parentWorkplaces).to.deep.equal([]);
   });
@@ -216,7 +216,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
       },
     ]);
 
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
     expect(parentWorkplaces).to.deep.equal([
       {
@@ -255,7 +255,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
       },
     ]);
 
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
     expect(parentWorkplaces).to.deep.equal([
       {
         id: 1,
@@ -305,7 +305,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/findParentWork
       },
     ]);
 
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
     expect(parentWorkplaces).to.deep.equal(dummyParentWorkplaces);
   });
 });

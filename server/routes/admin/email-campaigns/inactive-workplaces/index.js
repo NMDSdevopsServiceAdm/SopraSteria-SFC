@@ -3,14 +3,14 @@ const router = express.Router();
 const moment = require('moment');
 
 const models = require('../../../../models');
-const findInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
-const findParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
+const setInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplaces');
+const setParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 
 const getInactiveWorkplaces = async (_req, res) => {
   try {
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const inactiveWorkplaces = await setInactiveWorkplaces.findInactiveWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
     return res.json({
       inactiveWorkplaces: inactiveWorkplaces.length + parentWorkplaces.length,
@@ -32,8 +32,8 @@ const createCampaign = async (req, res) => {
       type: type,
     });
 
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const inactiveWorkplaces = await setInactiveWorkplaces.findInactiveWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
     const totalInactiveWorkplaces = inactiveWorkplaces.concat(parentWorkplaces);
     const history = totalInactiveWorkplaces.map((workplace) => {

@@ -4,7 +4,7 @@ const deleteInactiveWorkplaceWorksheetBuilder = require('../../../../reports/ina
 
 const {
   transformInactiveWorkplacesForDeletion,
-} = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplacesForDeletion');
+} = require('../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
 
 describe('reports/inactive-workplaces/parents.js', () => {
   it('should add inactive Workplaces which are to be deleted to the worksheet', () => {

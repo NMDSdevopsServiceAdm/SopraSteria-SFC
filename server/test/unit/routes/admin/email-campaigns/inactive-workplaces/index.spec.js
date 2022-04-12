@@ -4,8 +4,8 @@ const sinon = require('sinon');
 const moment = require('moment');
 
 const models = require('../../../../../../models');
-const findInactiveWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
-const findParentWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
+const setInactiveWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplaces');
+const setParentWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
 const sendEmail = require('../../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const inactiveWorkplaceRoutes = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces');
 
@@ -91,8 +91,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
   describe('getInactiveWorkplaces', () => {
     it('should get the number of inactive workplaces', async () => {
-      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
-      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+      sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -109,8 +109,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     });
 
     it('should return an error if inactive workplaces throws an exception', async () => {
-      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').rejects();
-      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').rejects();
+      sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').rejects();
+      sinon.stub(setParentWorkplaces, 'findParentWorkplaces').rejects();
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -131,8 +131,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
   describe('createCampaign', async () => {
     it('should create a campaign', async () => {
-      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
-      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+      sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
 
       const sendEmailMock = sinon.stub(sendEmail, 'sendEmail').returns();
       const userMock = sinon.stub(models.user, 'findByUUID').returns({
