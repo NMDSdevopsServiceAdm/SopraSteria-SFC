@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -12,13 +12,14 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
+import sinon from 'sinon';
 
 import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { StaffSummaryComponent } from './staff-summary.component';
 
 describe('StaffSummaryComponent', () => {
-  async function setup(isWdf = false) {
+  async function setup(isWdf = false, qsParamGetMock = sinon.fake()) {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()];
 
@@ -32,6 +33,16 @@ describe('StaffSummaryComponent', () => {
           deps: [HttpClient, Router, UserService],
         },
         WorkerService,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: qsParamGetMock,
+              },
+            },
+          },
+        },
       ],
       componentProperties: {
         workplace: establishment,
@@ -43,11 +54,13 @@ describe('StaffSummaryComponent', () => {
 
     const injector = getTestBed();
     const workerService = injector.inject(WorkerService) as WorkerService;
+    const router = injector.inject(Router);
     const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
       of({ workers: [...workers, ...workers, ...workers, ...workers, ...workers, ...workers], workerCount: 18 }),
     );
 
     return {
+      router,
       component,
       workers,
       getAllWorkersSpy,
@@ -143,6 +156,39 @@ describe('StaffSummaryComponent', () => {
 
       expect(component.getByText('There are no matching results')).toBeTruthy();
       expect(component.getByText('Make sure that your spelling is correct.')).toBeTruthy();
+    });
+  });
+
+  describe('Query search params update correctly', () => {
+    it('adds the search and tab as "staff-records" query params to the url on search', async () => {
+      const { router, component } = await setup();
+
+      await component.fixture.whenStable();
+      component.fixture.componentInstance.totalWorkerCount = 16;
+      component.fixture.detectChanges();
+
+      const routerSpy = spyOn(router, 'navigate');
+
+      userEvent.type(component.getByLabelText('Search for staff records'), 'search term here{enter}');
+      expect(routerSpy).toHaveBeenCalledWith([], {
+        fragment: 'staff-records',
+        queryParams: { search: 'search term here', tab: 'staff' },
+        queryParamsHandling: 'merge',
+      });
+    });
+
+    it('sets the searchTerm for staff record input if query params are found on render', async () => {
+      const qsParamGetMock = sinon.stub();
+      qsParamGetMock.onCall(0).returns('mysupersearch');
+      qsParamGetMock.onCall(1).returns('staff');
+
+      const { component } = await setup(false, qsParamGetMock);
+
+      await component.fixture.whenStable();
+      component.fixture.componentInstance.totalWorkerCount = 16;
+      component.fixture.detectChanges();
+
+      expect((component.getByLabelText('Search for staff records') as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
 });
