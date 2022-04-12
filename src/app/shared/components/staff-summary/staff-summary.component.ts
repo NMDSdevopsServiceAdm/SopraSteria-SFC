@@ -57,7 +57,7 @@ export class StaffSummaryComponent implements OnInit {
     this.setSearchIfPrevious();
   }
 
-  private setSearchIfPrevious() {
+  private setSearchIfPrevious(): void {
     const search = this.route.snapshot.queryParamMap.get('search');
     const tab = this.route.snapshot.queryParamMap.get('tab');
 
