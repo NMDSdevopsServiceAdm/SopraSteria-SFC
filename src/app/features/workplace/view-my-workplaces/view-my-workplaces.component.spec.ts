@@ -238,7 +238,7 @@ describe('ViewMyWorkplacesComponent', () => {
       expect(component.workplaceCount).toEqual(1);
     });
 
-    it('adds the query string params to the url on search', async () => {
+    it('adds the query params to the url on search', async () => {
       const { router, fixture, component, getByLabelText } = await setup();
 
       const routerSpy = spyOn(router, 'navigate');
@@ -250,6 +250,16 @@ describe('ViewMyWorkplacesComponent', () => {
         queryParams: { search: 'search term here' },
         queryParamsHandling: 'merge',
       });
+    });
+
+    it('adds the sets the searchTerm if query params are found on render', async () => {
+      const qsParamGetMock = sinon.mock().returns('mysupersearch');
+      const { fixture, component, getByLabelText } = await setup(true, qsParamGetMock);
+
+      component.totalWorkplaceCount = 13;
+      fixture.autoDetectChanges();
+
+      expect((getByLabelText('Search child workplace records') as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
 });
