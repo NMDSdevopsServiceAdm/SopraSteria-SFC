@@ -43,7 +43,10 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.paginatedWorkers = this.workers;
     this.totalWorkerCount = this.workerCount;
     this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
-    // remember search results on back button
+    this.setSearchIfPrevious();
+  }
+
+  private setSearchIfPrevious() {
     const search = this.route.snapshot.queryParamMap.get('search');
     const tab = this.route.snapshot.queryParamMap.get('tab');
 

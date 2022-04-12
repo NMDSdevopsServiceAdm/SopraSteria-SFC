@@ -50,7 +50,10 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.setWorkplaceVariables(childWorkplaces);
 
     this.setupServerErrorsMap();
+    this.setSearchIfPrevious();
+  }
 
+  private setSearchIfPrevious() {
     const search = this.route.snapshot.queryParamMap.get('search');
 
     if (search) {

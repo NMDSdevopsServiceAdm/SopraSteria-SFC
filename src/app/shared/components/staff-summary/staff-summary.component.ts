@@ -54,7 +54,10 @@ export class StaffSummaryComponent implements OnInit {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
-    // remember search results on back button
+    this.setSearchIfPrevious();
+  }
+
+  private setSearchIfPrevious() {
     const search = this.route.snapshot.queryParamMap.get('search');
     const tab = this.route.snapshot.queryParamMap.get('tab');
 
