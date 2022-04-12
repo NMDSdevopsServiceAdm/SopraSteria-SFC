@@ -11,10 +11,6 @@ describe('reports/inactive-workplaces/parents.js', () => {
     const workplace = {
       EstablishmentID: 1,
       NameValue: 'workplace name test',
-      ascId: 'A1234567',
-      dataOwner: 'Workplace',
-      PrimaryUserName: 'primaryUserName',
-      PrimaryUserEmail: 'primaryusername@test.com',
       lastLogin: '2015-03-01',
       lastUpdated: '2015-03-01',
       Address1: '1 paddington Avenue',
