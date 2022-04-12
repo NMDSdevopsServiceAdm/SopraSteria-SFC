@@ -252,7 +252,7 @@ describe('ViewMyWorkplacesComponent', () => {
       });
     });
 
-    it('adds the sets the searchTerm if query params are found on render', async () => {
+    it('sets the searchTerm if query params are found on render', async () => {
       const qsParamGetMock = sinon.mock().returns('mysupersearch');
       const { fixture, component, getByLabelText } = await setup(true, qsParamGetMock);
 

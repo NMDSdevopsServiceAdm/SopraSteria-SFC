@@ -98,17 +98,22 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
 
   public getWorkerTrainingAndQualificationsPath(event: Event, worker: Worker): void {
     event.preventDefault();
+    this.addQueryParams();
     const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
   }
 
-  public handleSearch(searchTerm: string): void {
+  private addQueryParams(): void {
     this.router.navigate([], {
       fragment: 'training-and-qualifications',
       queryParams: { search: this.searchTerm, tab: 'training' },
       queryParamsHandling: 'merge',
     });
+  }
+
+  public handleSearch(searchTerm: string): void {
     this.searchTerm = searchTerm;
+    this.addQueryParams();
     this.setPageIndex(0);
   }
 }

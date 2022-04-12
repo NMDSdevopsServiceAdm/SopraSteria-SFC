@@ -43,6 +43,7 @@ export class StaffSummaryComponent implements OnInit {
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
     event.preventDefault();
+    this.addQueryParams();
     const path = ['/workplace', this.workplace.uid, 'staff-record', worker.uid];
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
   }
@@ -98,14 +99,18 @@ export class StaffSummaryComponent implements OnInit {
       });
   }
 
-  public handleSearch(searchTerm: string): void {
+  private addQueryParams(): void {
     this.router.navigate([], {
       fragment: 'staff-records',
-      queryParams: { search: searchTerm, tab: 'staff' },
+      queryParams: { search: this.searchTerm, tab: 'staff' },
       queryParamsHandling: 'merge',
     });
+  }
+
+  public handleSearch(searchTerm: string): void {
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
+    this.addQueryParams();
     this.getPageOfWorkers();
   }
 }
