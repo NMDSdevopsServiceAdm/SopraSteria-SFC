@@ -7,7 +7,7 @@ import { EmailCampaignService } from '@core/services/admin/email-campaign.servic
 import { WindowRef } from '@core/services/window.ref';
 import { SearchModule } from '@features/search/search.module';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByText, render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 import { NgxDropzoneModule } from 'ngx-dropzone';

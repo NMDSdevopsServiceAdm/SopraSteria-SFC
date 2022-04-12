@@ -49,7 +49,7 @@ const templateOptions = {
 
 const getTargetedTotalEmails = async (req, res) => {
   try {
-    const users = await getGroup(req.query.groupType, req.query.establishmentIdList);
+    const users = await getGroup(req.query.groupType, req.establishmentIdList);
     return res.status(200).send({ totalEmails: users.length });
   } catch (error) {
     console.error(error);
@@ -77,7 +77,7 @@ const getTargetedEmailTemplates = async (req, res) => {
 const createTargetedEmailsCampaign = async (req, res) => {
   try {
     const user = await models.user.findByUUID(req.userUid);
-    const users = await getGroup(req.body.groupType);
+    const users = await getGroup(req.body.groupType, req.establishmentIdList);
     const templateId = parseInt(req.body.templateId);
 
     const type = models.EmailCampaign.types().TARGETED_EMAILS;
@@ -100,15 +100,29 @@ const createTargetedEmailsCampaign = async (req, res) => {
   }
 };
 
+const parseEstablishmentCsv = (filePath, encoding) => {
+  const fileData = fs.readFileSync(filePath, encoding);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  return parse(fileData).map((row) => row[0]);
+};
+
 const uploadAndValidMultipleAccounts = async (req, res) => {
   try {
-    // read and parse CSV data
-    const fileData = fs.readFileSync(req.file.path, 'utf8');
-    req.query.establishmentIdList = parse(fileData).map((row) => row[0]);
-
+    req.establishmentIdList = parseEstablishmentCsv(req.file.path, 'utf8');
     return await getTargetedTotalEmails(req, res);
   } catch (error) {
     console.error(error);
+    return res.status(500).send();
+  }
+};
+
+// TODO: test and incorporate into endpoint
+const sendMultipleAccountsEmail = async (req, res) => {
+  try {
+    req.establishmentIdList = parseEstablishmentCsv(req.file.path, 'utf8');
+    return createTargetedEmailsCampaign(req, res);
+  } catch (error) {
+    console.log(error);
     return res.status(500).send();
   }
 };
@@ -134,7 +148,7 @@ router.route('/').post(
   celebrate({
     [Segments.BODY]: {
       templateId: Joi.string().required(),
-      groupType: Joi.string().valid('primaryUsers', 'parentOnly', 'singleAccountsOnly'),
+      groupType: Joi.string().valid('primaryUsers', 'parentOnly', 'singleAccountsOnly', 'multipleAccounts'),
     },
   }),
   createTargetedEmailsCampaign,

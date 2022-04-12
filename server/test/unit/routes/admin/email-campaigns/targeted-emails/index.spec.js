@@ -249,11 +249,12 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
 
   describe('uploadAndValidMultipleAccounts', () => {
     let dbStub;
-    let fsStub;
+    let fsReadFileSyncStub;
 
     beforeEach(() => {
       dbStub = sinon.stub(models.user, 'allPrimaryUsers');
-      fsStub = sinon.stub(fs, 'readFileSync');
+      fsReadFileSyncStub = sinon.stub(fs, 'readFileSync');
+      sinon.stub(fs, 'unlinkSync').returns(null);
     });
 
     afterEach(() => {
@@ -268,7 +269,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       });
       const res = httpMocks.createResponse();
 
-      fsStub.returns('');
+      fsReadFileSyncStub.returns('');
       dbStub.returns([]);
 
       await targetedEmailsRoutes.uploadAndValidMultipleAccounts(req, res, sinon.fake());
@@ -285,7 +286,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       });
       const res = httpMocks.createResponse();
 
-      fsStub.returns('id1');
+      fsReadFileSyncStub.returns('id1');
       dbStub.returns(['user']);
 
       await targetedEmailsRoutes.uploadAndValidMultipleAccounts(req, res, sinon.fake());
@@ -302,7 +303,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       });
       const res = httpMocks.createResponse();
 
-      fsStub.returns('id1');
+      fsReadFileSyncStub.returns('id1');
       dbStub.throws();
 
       await targetedEmailsRoutes.uploadAndValidMultipleAccounts(req, res, sinon.fake());
