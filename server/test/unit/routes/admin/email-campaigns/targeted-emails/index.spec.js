@@ -247,7 +247,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     });
   });
 
-  describe('uploadAndValidMultipleAccounts', () => {
+  describe('uploadAndValidateMultipleAccounts', () => {
     let dbStub;
     let fsReadFileSyncStub;
 
@@ -263,7 +263,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     it('returns 200 if validation of recipients is OK', async () => {
       const req = httpMocks.createRequest({
         method: 'POST',
-        url: '/api/admin/email-campaigns/targeted-emails/validateTargetedRecipients',
+        url: '/api/admin/email-campaigns/targeted-emails/total',
         role: 'Admin',
         file: { path: 'some-random-path' },
       });
@@ -272,7 +272,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       fsReadFileSyncStub.returns('');
       dbStub.returns([]);
 
-      await targetedEmailsRoutes.uploadAndValidMultipleAccounts(req, res, sinon.fake());
+      await targetedEmailsRoutes.uploadAndValidateMultipleAccounts(req, res, sinon.fake());
 
       expect(res.statusCode).to.equal(200);
     });
@@ -280,7 +280,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     it('returns a count of the valid establishments', async () => {
       const req = httpMocks.createRequest({
         method: 'POST',
-        url: '/api/admin/email-campaigns/targeted-emails/validateTargetedRecipients',
+        url: '/api/admin/email-campaigns/targeted-emails/total',
         role: 'Admin',
         file: { path: 'some-random-path' },
       });
@@ -289,7 +289,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       fsReadFileSyncStub.returns('id1');
       dbStub.returns(['user']);
 
-      await targetedEmailsRoutes.uploadAndValidMultipleAccounts(req, res, sinon.fake());
+      await targetedEmailsRoutes.uploadAndValidateMultipleAccounts(req, res, sinon.fake());
 
       expect(res._getData()).to.deep.equal({ totalEmails: 1 });
     });
@@ -297,7 +297,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     it('should return a 500 on error', async () => {
       const req = httpMocks.createRequest({
         method: 'POST',
-        url: '/api/admin/email-campaigns/targeted-emails/validateTargetedRecipients',
+        url: '/api/admin/email-campaigns/targeted-emails/total',
         role: 'Admin',
         file: { path: 'some-random-path' },
       });
@@ -306,7 +306,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       fsReadFileSyncStub.returns('id1');
       dbStub.throws();
 
-      await targetedEmailsRoutes.uploadAndValidMultipleAccounts(req, res, sinon.fake());
+      await targetedEmailsRoutes.uploadAndValidateMultipleAccounts(req, res, sinon.fake());
 
       expect(res.statusCode).to.equal(500);
     });

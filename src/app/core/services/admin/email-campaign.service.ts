@@ -43,14 +43,10 @@ export class EmailCampaignService {
     const file: FormData = new FormData();
     file.append('targetedRecipientsFile', fileToUpload, fileToUpload.name);
 
-    return this.http.post<TotalEmailsResponse>(
-      '/api/admin/email-campaigns/targeted-emails/validateTargetedRecipients',
-      file,
-      {
-        headers: { InterceptorSkipHeader: 'true' },
-        params: { groupType: 'multipleAccounts' },
-      },
-    );
+    return this.http.post<TotalEmailsResponse>('/api/admin/email-campaigns/targeted-emails/total', file, {
+      headers: { InterceptorSkipHeader: 'true' },
+      params: { groupType: 'multipleAccounts' },
+    });
   }
 
   createTargetedEmailsCampaign(groupType: string, templateId: string): Observable<any> {

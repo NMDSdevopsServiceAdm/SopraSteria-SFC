@@ -91,9 +91,7 @@ describe('EmailCampaignService', () => {
     service.getTargetedTotalValidEmails(new File([], '')).subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(
-      '/api/admin/email-campaigns/targeted-emails/validateTargetedRecipients?groupType=multipleAccounts',
-    );
+    const req = http.expectOne('/api/admin/email-campaigns/targeted-emails/total?groupType=multipleAccounts');
 
     expect(req.request.method).toBe('POST');
   });

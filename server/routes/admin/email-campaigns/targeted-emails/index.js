@@ -11,14 +11,14 @@ const models = require('../../../../models/');
 
 const router = express.Router();
 
-const getGroup = async (type, establishmentIdList) => {
+const getGroup = async (type, establishmentNmdsIdList) => {
   const groups = {
     primaryUsers: {},
     parentOnly: { isParent: true },
     singleAccountsOnly: { isParent: false, dataOwner: 'Workplace' },
     multipleAccounts: {
-      EstablishmentID: {
-        [Op.in]: establishmentIdList,
+      NmdsID: {
+        [Op.in]: establishmentNmdsIdList,
       },
     },
   };
@@ -49,7 +49,7 @@ const templateOptions = {
 
 const getTargetedTotalEmails = async (req, res) => {
   try {
-    const users = await getGroup(req.query.groupType, req.establishmentIdList);
+    const users = await getGroup(req.query.groupType, req.establishmentNmdsIdList);
     return res.status(200).send({ totalEmails: users.length });
   } catch (error) {
     console.error(error);
@@ -77,7 +77,7 @@ const getTargetedEmailTemplates = async (req, res) => {
 const createTargetedEmailsCampaign = async (req, res) => {
   try {
     const user = await models.user.findByUUID(req.userUid);
-    const users = await getGroup(req.body.groupType, req.establishmentIdList);
+    const users = await getGroup(req.body.groupType);
     const templateId = parseInt(req.body.templateId);
 
     const type = models.EmailCampaign.types().TARGETED_EMAILS;
@@ -106,9 +106,9 @@ const parseEstablishmentCsv = (filePath, encoding) => {
   return parse(fileData).map((row) => row[0]);
 };
 
-const uploadAndValidMultipleAccounts = async (req, res) => {
+const uploadAndValidateMultipleAccounts = async (req, res) => {
   try {
-    req.establishmentIdList = parseEstablishmentCsv(req.file.path, 'utf8');
+    req.establishmentNmdsIdList = parseEstablishmentCsv(req.file.path, 'utf8');
     return await getTargetedTotalEmails(req, res);
   } catch (error) {
     console.error(error);
@@ -116,29 +116,25 @@ const uploadAndValidMultipleAccounts = async (req, res) => {
   }
 };
 
-// TODO: test and incorporate into endpoint
-const sendMultipleAccountsEmail = async (req, res) => {
-  try {
-    req.establishmentIdList = parseEstablishmentCsv(req.file.path, 'utf8');
-    return createTargetedEmailsCampaign(req, res);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send();
-  }
-};
-
 router
-  .route('/validateTargetedRecipients')
-  .post(upload.single('targetedRecipientsFile'), uploadAndValidMultipleAccounts);
-
-router.route('/total').get(
-  celebrate({
-    [Segments.QUERY]: {
-      groupType: Joi.string().valid('primaryUsers', 'parentOnly', 'singleAccountsOnly'),
-    },
-  }),
-  getTargetedTotalEmails,
-);
+  .route('/total')
+  .get(
+    celebrate({
+      [Segments.QUERY]: {
+        groupType: Joi.string().valid('primaryUsers', 'parentOnly', 'singleAccountsOnly'),
+      },
+    }),
+    getTargetedTotalEmails,
+  )
+  .post(
+    celebrate({
+      [Segments.QUERY]: {
+        groupType: Joi.string().valid('multipleAccounts'),
+      },
+    }),
+    upload.single('targetedRecipientsFile'),
+    uploadAndValidateMultipleAccounts,
+  );
 
 router.use('/total', errors());
 router.route('/templates').get(getTargetedEmailTemplates);
@@ -158,5 +154,5 @@ module.exports = router;
 module.exports.getTargetedTotalEmails = getTargetedTotalEmails;
 module.exports.getTargetedEmailTemplates = getTargetedEmailTemplates;
 module.exports.createTargetedEmailsCampaign = createTargetedEmailsCampaign;
-module.exports.uploadAndValidMultipleAccounts = uploadAndValidMultipleAccounts;
+module.exports.uploadAndValidateMultipleAccounts = uploadAndValidateMultipleAccounts;
 module.exports.templateOptions = templateOptions;
