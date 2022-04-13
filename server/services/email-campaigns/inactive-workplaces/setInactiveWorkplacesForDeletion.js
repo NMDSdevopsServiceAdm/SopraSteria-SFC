@@ -15,15 +15,9 @@ const transformInactiveWorkplacesForDeletion = (inactiveWorkplace) => {
 };
 
 const formattedAddress = (inactiveWorkplace) => {
-  return (
-    inactiveWorkplace.Address1 +
-    '  ' +
-    inactiveWorkplace.Town +
-    '  ' +
-    inactiveWorkplace.County +
-    '  ' +
-    inactiveWorkplace.PostCode
-  );
+  return [inactiveWorkplace.Address1, inactiveWorkplace.Town, inactiveWorkplace.County, inactiveWorkplace.PostCode]
+    .filter((field) => !!field)
+    .join(' ');
 };
 
 const findInactiveWorkplacesForDeletion = async () => {
