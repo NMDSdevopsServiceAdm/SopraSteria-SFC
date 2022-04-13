@@ -121,7 +121,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
     return workplaceAddress.filter((x) => x).join('\r\n');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }
