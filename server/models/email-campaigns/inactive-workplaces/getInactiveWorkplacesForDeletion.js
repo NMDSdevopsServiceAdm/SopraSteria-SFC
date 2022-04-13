@@ -13,22 +13,32 @@ const getInactiveWorkplacesForDeletion = async () => {
   return await models.sequelize.query(
     `
   SELECT
-  "EstablishmentID",
-  "NameValue",
-  "LastLogin",
-  "LastUpdated",
-  "Address1",
-  "Town",
-  "County",
-  "PostCode"
-
-  	FROM
-  		cqc."EstablishmentLastActivity" e
-  	WHERE
-
-       "DataOwner" = 'Workplace'
-  		AND "LastLogin" <= :twentyFourLastMonths
-      AND "LastUpdated" <= :twentyFourLastMonths
+    "EstablishmentID",
+    "NameValue",
+    "IsParent",
+    "LastLogin",
+    "LastUpdated",
+    "Address1",
+    "Town",
+    "County",
+    "PostCode"
+  FROM
+  	cqc."EstablishmentLastActivity" e
+  WHERE
+  	e."LastLogin" <= :twentyFourLastMonths
+	  AND e."LastUpdated" <= :twentyFourLastMonths
+  	AND ("IsParent" = false OR
+	NOT EXISTS(
+		SELECT
+		  "EstablishmentID"
+	  FROM
+		  cqc."EstablishmentLastActivity" s
+	  WHERE
+		  e."EstablishmentID" = s."ParentID"
+		  AND s."LastLogin" > :twentyFourLastMonths
+		  AND s."LastUpdated" > :twentyFourLastMonths
+	  )
+  )
       `,
     {
       type: models.sequelize.QueryTypes.SELECT,

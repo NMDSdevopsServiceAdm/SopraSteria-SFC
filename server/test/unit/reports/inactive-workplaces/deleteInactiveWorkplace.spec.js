@@ -26,7 +26,7 @@ describe('reports/inactive-workplaces/parents.js', () => {
       {
         workplaceAscId: 1,
         workplaceName: 'workplace name test',
-        address: '1 paddington Avenue  Westminster  London  W2 1HB',
+        address: '1 paddington Avenue Westminster London W2 1HB',
       },
     ]);
   });
