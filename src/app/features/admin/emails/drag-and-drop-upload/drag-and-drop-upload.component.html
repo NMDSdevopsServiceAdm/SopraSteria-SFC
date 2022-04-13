@@ -1,3 +1,4 @@
+<h2>Select your file</h2>
 <app-validation-error-message
   *ngIf="invalidFileErrorMessage"
   [errorMessage]="invalidFileErrorMessage"
@@ -7,7 +8,7 @@
     class="govuk-form-group govuk-!-margin-bottom-0 govuk-!-margin-top-2"
     [class.govuk-form-group--error]="form.invalid && submitted"
   >
-    <label class="govuk-label govuk-visually-hidden" for="drag-and-drop">Drag and drop files</label>
+    <label class="govuk-label govuk-visually-hidden" for="drag-and-drop">Drag and drop your file here or </label>
     <span *ngIf="form.invalid && submitted" id="fileUpload-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('fileUpload') }}
     </span>
@@ -22,12 +23,12 @@
       #drop
       aria-label="upload files here"
     >
-      <span class="govuk-body">Drag and drop your CSV files here or </span>
+      <span class="govuk-body">Drag and drop your file here or </span>
       <button
         class="govuk-button govuk-button--secondary govuk-!-margin-bottom-4 govuk-!-margin-left-2"
         (click)="drop.showFileSelector()"
       >
-        Select files
+        Select file
       </button>
     </ngx-dropzone>
   </div>
