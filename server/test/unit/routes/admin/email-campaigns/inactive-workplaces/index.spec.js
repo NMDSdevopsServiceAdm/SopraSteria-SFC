@@ -6,6 +6,7 @@ const moment = require('moment');
 const models = require('../../../../../../models');
 const setInactiveWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplaces');
 const setParentWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
+const setInactiveWorkplacesForDeletion = require('../../../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
 const sendEmail = require('../../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const inactiveWorkplaceRoutes = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces');
 
@@ -89,10 +90,26 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     },
   ];
 
+  const dummyInactiveWorkplacesForDeletion = [
+    {
+      name: 'Warren Care CQC 12',
+      ascId: 1689,
+      address: 'Line 1 My Town My County TN37 6HR',
+    },
+    {
+      name: 'Human Support Group Limited - Sale',
+      ascId: 2283,
+      address: '59 Cross Street Sale Cheshire M33 7HF',
+    },
+  ];
+
   describe('getInactiveWorkplaces', () => {
-    it('should get the number of inactive workplaces', async () => {
+    it('should get the inactive workplaces tabs', async () => {
       sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
       sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+      sinon
+        .stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion')
+        .returns(dummyInactiveWorkplacesForDeletion);
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -111,6 +128,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     it('should return an error if inactive workplaces throws an exception', async () => {
       sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').rejects();
       sinon.stub(setParentWorkplaces, 'findParentWorkplaces').rejects();
+      sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').rejects();
 
       const req = httpMocks.createRequest({
         method: 'GET',
