@@ -76,6 +76,7 @@ describe('HeaderComponent', () => {
   function setup(showSurvey, callApi = true) {
     const { getByText } = component;
     fireEvent.click(getByText('Sign out'));
+
     if (callApi) {
       const req = TestBed.inject(HttpTestingController).expectOne('/api/logout');
       req.flush({
