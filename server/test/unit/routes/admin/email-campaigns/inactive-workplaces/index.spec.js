@@ -104,7 +104,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   ];
 
   describe('getInactiveWorkplaces', () => {
-    it('should get the inactive workplaces tabs', async () => {
+    it('should get the inactive workplaces', async () => {
       sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
       sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
       sinon
@@ -144,6 +144,42 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
       expect(res.statusCode).to.equal(500);
       expect(response).to.deep.equal({});
+    });
+  });
+
+  describe('formattedAddress', () => {
+    it('should return the full address in correct format when they exist', () => {
+      const data = {
+        Address1: '55 KNIGHTS AVENUE',
+        Town: 'BEDFORD',
+        County: 'LEEDS',
+        PostCode: 'MK41 6DG',
+      };
+      const address = setInactiveWorkplacesForDeletion.formattedAddress(data);
+
+      expect(address).to.equal('55 KNIGHTS AVENUE BEDFORD LEEDS MK41 6DG');
+    });
+
+    it('should not return undefinde  when the address have undefined value', () => {
+      const data = {
+        Address1: '55 KNIGHTS AVENUE',
+        Town: undefined,
+        County: undefined,
+        PostCode: 'MK41 6DG',
+      };
+      const address = setInactiveWorkplacesForDeletion.formattedAddress(data);
+      expect(address).to.equal('55 KNIGHTS AVENUE MK41 6DG');
+    });
+
+    it('should not return null when the address have null value', () => {
+      const data = {
+        Address1: '55 KNIGHTS AVENUE',
+        Town: null,
+        County: null,
+        PostCode: 'MK41 6DG',
+      };
+      const address = setInactiveWorkplacesForDeletion.formattedAddress(data);
+      expect(address).to.equal('55 KNIGHTS AVENUE MK41 6DG');
     });
   });
 

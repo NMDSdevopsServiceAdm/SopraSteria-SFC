@@ -28,4 +28,5 @@ const findInactiveWorkplacesForDeletion = async () => {
 module.exports = {
   transformInactiveWorkplacesForDeletion,
   findInactiveWorkplacesForDeletion,
+  formattedAddress,
 };
