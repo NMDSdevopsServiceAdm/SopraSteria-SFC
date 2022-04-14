@@ -132,3 +132,4 @@ router.route('/').post(
 module.exports = router;
 module.exports.getTargetedTotalEmails = getTargetedTotalEmails;
 module.exports.createTargetedEmailsCampaign = createTargetedEmailsCampaign;
+module.exports.getGroupOfUsers = getGroupOfUsers;

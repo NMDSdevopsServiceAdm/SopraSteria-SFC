@@ -6,6 +6,7 @@ const targetedEmailsRoutes = require('../../../../../../routes/admin/email-campa
 const models = require('../../../../../../models');
 const { build, fake, sequence } = require('@jackfranklin/test-data-bot/build');
 const sendEmail = require('../../../../../../services/email-campaigns/targeted-emails/sendEmail');
+const { Op } = require('sequelize');
 
 const user = build('User', {
   fields: {
@@ -199,6 +200,47 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       sinon.assert.calledWith(sendEmailMock, mockUsers[0]);
       expect(response).to.deep.equal({ success: true });
       expect(res.statusCode).to.deep.equal(200);
+    });
+  });
+
+  describe('getGroupOfUsers()', () => {
+    let allPrimaryUsersStub;
+    beforeEach(() => {
+      allPrimaryUsersStub = sinon.stub(models.user, 'allPrimaryUsers');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should call allPrimaryUsers with empty object when primaryUsers type', () => {
+      targetedEmailsRoutes.getGroupOfUsers('primaryUsers');
+
+      sinon.assert.calledWith(allPrimaryUsersStub, {});
+    });
+
+    it('should call allPrimaryUsers with isParent true when parentOnly type', () => {
+      targetedEmailsRoutes.getGroupOfUsers('parentOnly');
+
+      sinon.assert.calledWith(allPrimaryUsersStub, { isParent: true });
+    });
+
+    it('should call allPrimaryUsers with isParent false and dataOwner Workplace when singleAccountsOnly type', () => {
+      targetedEmailsRoutes.getGroupOfUsers('singleAccountsOnly');
+
+      sinon.assert.calledWith(allPrimaryUsersStub, { isParent: false, dataOwner: 'Workplace' });
+    });
+
+    it('should call allPrimaryUsers with NmdsID query with in match on passed in array when multipleAccounts type', () => {
+      const nmdsIds = ['A123456', 'B123456'];
+
+      targetedEmailsRoutes.getGroupOfUsers('multipleAccounts', nmdsIds);
+
+      sinon.assert.calledWith(allPrimaryUsersStub, {
+        NmdsID: {
+          [Op.in]: nmdsIds,
+        },
+      });
     });
   });
 });
