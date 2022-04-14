@@ -26,60 +26,111 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     let req;
     let res;
 
-    beforeEach(() => {
-      req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/api/admin/email-campaigns/targeted-emails/total',
-        role: 'Admin',
-      });
-
-      res = httpMocks.createResponse();
-    });
-
     afterEach(() => {
       sinon.restore();
     });
 
-    it('should return a 200 and the total number of primary users', async () => {
-      sinon.stub(models.user, 'allPrimaryUsers').returns([user, user, user]);
+    describe('When no file and not multiple accounts', () => {
+      beforeEach(() => {
+        req = httpMocks.createRequest({
+          method: 'GET',
+          url: '/api/admin/email-campaigns/targeted-emails/total',
+          role: 'Admin',
+        });
 
-      req.query.groupType = 'primaryUsers';
+        res = httpMocks.createResponse();
+      });
 
-      await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
+      it('should return a 200 and the total number of primary users', async () => {
+        sinon.stub(models.user, 'allPrimaryUsers').returns([user, user, user]);
 
-      const response = res._getData();
+        req.query.groupType = 'primaryUsers';
 
-      expect(res.statusCode).to.deep.equal(200);
-      expect(response.totalEmails).to.deep.equal(3);
+        await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
+
+        const response = res._getData();
+
+        expect(res.statusCode).to.deep.equal(200);
+        expect(response.totalEmails).to.deep.equal(3);
+      });
+
+      it('should return a 200 and the total number of parent users', async () => {
+        sinon.stub(models.user, 'allPrimaryUsers').withArgs({ isParent: true }).returns([user, user]);
+
+        req.query.groupType = 'parentOnly';
+
+        await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
+
+        const response = res._getData();
+
+        expect(res.statusCode).to.deep.equal(200);
+        expect(response.totalEmails).to.deep.equal(2);
+      });
+
+      it('should return a 200 and the total number of single workplace only users', async () => {
+        sinon
+          .stub(models.user, 'allPrimaryUsers')
+          .withArgs({ isParent: false, dataOwner: 'Workplace' })
+          .returns([user, user, user, user]);
+
+        req.query.groupType = 'singleAccountsOnly';
+
+        await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
+
+        const response = res._getData();
+
+        expect(res.statusCode).to.deep.equal(200);
+        expect(response.totalEmails).to.deep.equal(4);
+      });
     });
 
-    it('should return a 200 and the total number of parent users', async () => {
-      sinon.stub(models.user, 'allPrimaryUsers').withArgs({ isParent: true }).returns([user, user]);
+    describe('When multiple accounts and file', () => {
+      let dbStub;
+      let fsReadFileSyncStub;
+      let req;
+      let res;
 
-      req.query.groupType = 'parentOnly';
+      beforeEach(() => {
+        dbStub = sinon.stub(models.user, 'allPrimaryUsers');
+        fsReadFileSyncStub = sinon.stub(fs, 'readFileSync');
+        sinon.stub(fs, 'unlinkSync').returns(null);
 
-      await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
+        req = httpMocks.createRequest({
+          method: 'POST',
+          url: '/api/admin/email-campaigns/targeted-emails/total',
+          role: 'Admin',
+          file: { path: 'some-random-path' },
+        });
 
-      const response = res._getData();
+        res = httpMocks.createResponse();
+      });
 
-      expect(res.statusCode).to.deep.equal(200);
-      expect(response.totalEmails).to.deep.equal(2);
-    });
+      it('returns 200 if validation of recipients is OK', async () => {
+        fsReadFileSyncStub.returns('');
+        dbStub.returns([]);
 
-    it('should return a 200 and the total number of single workplace only users', async () => {
-      sinon
-        .stub(models.user, 'allPrimaryUsers')
-        .withArgs({ isParent: false, dataOwner: 'Workplace' })
-        .returns([user, user, user, user]);
+        await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
 
-      req.query.groupType = 'singleAccountsOnly';
+        expect(res.statusCode).to.equal(200);
+      });
 
-      await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
+      it('returns a count of the valid establishments', async () => {
+        fsReadFileSyncStub.returns('id1');
+        dbStub.returns(['user']);
 
-      const response = res._getData();
+        await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
 
-      expect(res.statusCode).to.deep.equal(200);
-      expect(response.totalEmails).to.deep.equal(4);
+        expect(res._getData()).to.deep.equal({ totalEmails: 1 });
+      });
+
+      it('should return a 500 on error', async () => {
+        fsReadFileSyncStub.returns('id1');
+        dbStub.throws();
+
+        await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
+
+        expect(res.statusCode).to.equal(500);
+      });
     });
   });
 
@@ -227,59 +278,6 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       sinon.assert.calledWith(sendEmailMock, mockUsers[0]);
       expect(response).to.deep.equal({ success: true });
       expect(res.statusCode).to.deep.equal(200);
-    });
-  });
-
-  describe('uploadAndValidateMultipleAccounts', () => {
-    let dbStub;
-    let fsReadFileSyncStub;
-    let req;
-    let res;
-
-    beforeEach(() => {
-      dbStub = sinon.stub(models.user, 'allPrimaryUsers');
-      fsReadFileSyncStub = sinon.stub(fs, 'readFileSync');
-      sinon.stub(fs, 'unlinkSync').returns(null);
-
-      req = httpMocks.createRequest({
-        method: 'POST',
-        url: '/api/admin/email-campaigns/targeted-emails/total',
-        role: 'Admin',
-        file: { path: 'some-random-path' },
-      });
-
-      res = httpMocks.createResponse();
-    });
-
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns 200 if validation of recipients is OK', async () => {
-      fsReadFileSyncStub.returns('');
-      dbStub.returns([]);
-
-      await targetedEmailsRoutes.uploadAndValidateMultipleAccounts(req, res, sinon.fake());
-
-      expect(res.statusCode).to.equal(200);
-    });
-
-    it('returns a count of the valid establishments', async () => {
-      fsReadFileSyncStub.returns('id1');
-      dbStub.returns(['user']);
-
-      await targetedEmailsRoutes.uploadAndValidateMultipleAccounts(req, res, sinon.fake());
-
-      expect(res._getData()).to.deep.equal({ totalEmails: 1 });
-    });
-
-    it('should return a 500 on error', async () => {
-      fsReadFileSyncStub.returns('id1');
-      dbStub.throws();
-
-      await targetedEmailsRoutes.uploadAndValidateMultipleAccounts(req, res, sinon.fake());
-
-      expect(res.statusCode).to.equal(500);
     });
   });
 });

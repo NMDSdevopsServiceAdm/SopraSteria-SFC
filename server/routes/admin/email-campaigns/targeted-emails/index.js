@@ -49,7 +49,8 @@ const templateOptions = {
 
 const getTargetedTotalEmails = async (req, res) => {
   try {
-    const users = await getGroup(req.query.groupType, req.establishmentNmdsIdList);
+    const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
+    const users = await getGroup(req.query.groupType, establishmentNmdsIdList);
     return res.status(200).send({ totalEmails: users.length });
   } catch (error) {
     console.error(error);
@@ -76,8 +77,10 @@ const getTargetedEmailTemplates = async (req, res) => {
 
 const createTargetedEmailsCampaign = async (req, res) => {
   try {
+    req.establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
+
     const user = await models.user.findByUUID(req.userUid);
-    const users = await getGroup(req.body.groupType);
+    const users = await getGroup(req.body.groupType, req.establishmentNmdsIdList);
     const templateId = parseInt(req.body.templateId);
 
     const emailCampaign = await createEmailCampaign(user.id);
@@ -108,20 +111,12 @@ const createEmailCampaign = async (userID) => {
   });
 };
 
-const parseEstablishmentCsv = (filePath, encoding) => {
-  const fileData = fs.readFileSync(filePath, encoding);
-  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-  return parse(fileData).map((row) => row[0]);
-};
+const parseNmdsIdsIfFileExists = (file) => {
+  if (!file) return null;
 
-const uploadAndValidateMultipleAccounts = async (req, res) => {
-  try {
-    req.establishmentNmdsIdList = parseEstablishmentCsv(req.file.path, 'utf8');
-    return await getTargetedTotalEmails(req, res);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send();
-  }
+  const fileData = fs.readFileSync(file.path, 'utf8');
+  if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+  return parse(fileData).map((row) => row[0]);
 };
 
 router
@@ -141,7 +136,7 @@ router
       },
     }),
     upload.single('targetedRecipientsFile'),
-    uploadAndValidateMultipleAccounts,
+    getTargetedTotalEmails,
   );
 
 router.use('/total', errors());
@@ -162,5 +157,4 @@ module.exports = router;
 module.exports.getTargetedTotalEmails = getTargetedTotalEmails;
 module.exports.getTargetedEmailTemplates = getTargetedEmailTemplates;
 module.exports.createTargetedEmailsCampaign = createTargetedEmailsCampaign;
-module.exports.uploadAndValidateMultipleAccounts = uploadAndValidateMultipleAccounts;
 module.exports.templateOptions = templateOptions;
