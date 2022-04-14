@@ -4,6 +4,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -23,6 +24,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private workerService: WorkerService,
     private router: Router,
+    private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
@@ -35,7 +37,8 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
       }),
     );
 
-    this.breadcrumbService.show(JourneyType.MY_WORKPLACE);
+    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+    this.breadcrumbService.show(journey);
   }
 
   navigateToDashboard(event: Event): void {
