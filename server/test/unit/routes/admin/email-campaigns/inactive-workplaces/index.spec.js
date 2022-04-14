@@ -147,42 +147,6 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     });
   });
 
-  describe('formattedAddress', () => {
-    it('should return the full address in correct format when they exist', () => {
-      const data = {
-        Address1: '55 KNIGHTS AVENUE',
-        Town: 'BEDFORD',
-        County: 'LEEDS',
-        PostCode: 'MK41 6DG',
-      };
-      const address = setInactiveWorkplacesForDeletion.formattedAddress(data);
-
-      expect(address).to.equal('55 KNIGHTS AVENUE BEDFORD LEEDS MK41 6DG');
-    });
-
-    it('should not return undefinde  when the address have undefined value', () => {
-      const data = {
-        Address1: '55 KNIGHTS AVENUE',
-        Town: undefined,
-        County: undefined,
-        PostCode: 'MK41 6DG',
-      };
-      const address = setInactiveWorkplacesForDeletion.formattedAddress(data);
-      expect(address).to.equal('55 KNIGHTS AVENUE MK41 6DG');
-    });
-
-    it('should not return null when the address have null value', () => {
-      const data = {
-        Address1: '55 KNIGHTS AVENUE',
-        Town: null,
-        County: null,
-        PostCode: 'MK41 6DG',
-      };
-      const address = setInactiveWorkplacesForDeletion.formattedAddress(data);
-      expect(address).to.equal('55 KNIGHTS AVENUE MK41 6DG');
-    });
-  });
-
   describe('createCampaign', async () => {
     it('should create a campaign', async () => {
       sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
