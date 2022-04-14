@@ -11,8 +11,8 @@ const generateInactiveWorkplacesReport = async (workbook) => {
   const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
   await generateInactiveWorkplacesTab(workbook);
-  await generateParentWorkplaceTab(workbook, parentWorkplaces);
-  await generateSubsidaryWorkplaceTab(workbook, parentWorkplaces);
+  generateParentWorkplaceTab(workbook, parentWorkplaces);
+  generateSubsidaryWorkplaceTab(workbook, parentWorkplaces);
   await generateInactiveWorkplacesForDeletionTab(workbook);
 
   workbook.eachSheet((sheet) => {

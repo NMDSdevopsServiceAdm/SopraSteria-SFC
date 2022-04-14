@@ -32,7 +32,7 @@ const addWorksheet = (workbook) => {
   return subsidiaryWorksheet;
 };
 
-const generateSubsidaryWorkplaceTab = async (workbook, parentWorkplaces) => {
+const generateSubsidaryWorkplaceTab = (workbook, parentWorkplaces) => {
   const subsidiaryWorksheet = addWorksheet(workbook);
   parentWorkplaces.map((workplace) => {
     const subsidiaryRows = buildRows(workplace, workplace.subsidiaries);
