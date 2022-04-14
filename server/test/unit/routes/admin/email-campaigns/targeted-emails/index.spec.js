@@ -23,6 +23,19 @@ const user = build('User', {
 
 describe('server/routes/admin/email-campaigns/targeted-emails', () => {
   describe('getTargetedTotalEmails()', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+      req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/targeted-emails/total',
+        role: 'Admin',
+      });
+
+      res = httpMocks.createResponse();
+    });
+
     afterEach(() => {
       sinon.restore();
     });
@@ -30,15 +43,8 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     it('should return a 200 and the total number of primary users', async () => {
       sinon.stub(models.user, 'allPrimaryUsers').returns([user, user, user]);
 
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/api/admin/email-campaigns/targeted-emails/total',
-      });
-
-      req.role = 'Admin';
       req.query.groupType = 'primaryUsers';
 
-      const res = httpMocks.createResponse();
       await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
 
       const response = res._getData();
@@ -50,15 +56,8 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     it('should return a 200 and the total number of parent users', async () => {
       sinon.stub(models.user, 'allPrimaryUsers').withArgs({ isParent: true }).returns([user, user]);
 
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/api/admin/email-campaigns/targeted-emails/total',
-      });
-
-      req.role = 'Admin';
       req.query.groupType = 'parentOnly';
 
-      const res = httpMocks.createResponse();
       await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
 
       const response = res._getData();
@@ -73,15 +72,8 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
         .withArgs({ isParent: false, dataOwner: 'Workplace' })
         .returns([user, user, user, user]);
 
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/api/admin/email-campaigns/targeted-emails/total',
-      });
-
-      req.role = 'Admin';
       req.query.groupType = 'singleAccountsOnly';
 
-      const res = httpMocks.createResponse();
       await targetedEmailsRoutes.getTargetedTotalEmails(req, res);
 
       const response = res._getData();
@@ -92,6 +84,9 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
   });
 
   describe('getTargetedEmailTemplates()', () => {
+    let req;
+    let res;
+
     beforeEach(() => {
       sinon.stub(sendInBlue, 'getTemplates').returns({
         count: 1,
@@ -112,32 +107,27 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
           },
         ],
       });
+
+      req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/targeted-emails/templates',
+        role: 'Admin',
+      });
+
+      res = httpMocks.createResponse();
     });
+
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return 200', async () => {
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/api/admin/email-campaigns/targeted-emails/templates',
-      });
-
-      req.role = 'Admin';
-
-      const res = httpMocks.createResponse();
       await targetedEmailsRoutes.getTargetedEmailTemplates(req, res);
 
       expect(res.statusCode).to.deep.equal(200);
     });
 
     it('should return the templates from send in blue', async () => {
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/api/admin/email-campaigns/targeted-emails/templates',
-      });
-
-      req.role = 'Admin';
-
       const templates = {
         templates: [
           {
@@ -146,7 +136,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
           },
         ],
       };
-      const res = httpMocks.createResponse();
+
       await targetedEmailsRoutes.getTargetedEmailTemplates(req, res);
 
       const response = res._getData();
@@ -158,17 +148,10 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       sinon.restore();
       sinon.stub(sendInBlue, 'getTemplates').throws();
 
-      const req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/api/admin/email-campaigns/targeted-emails/templates',
-      });
-
-      req.role = 'Admin';
-
       const templates = {
         templates: [],
       };
-      const res = httpMocks.createResponse();
+
       await targetedEmailsRoutes.getTargetedEmailTemplates(req, res);
 
       const response = res._getData();
@@ -184,22 +167,29 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       mockUsers.push(user());
     }
 
+    let req;
+    let res;
+
+    beforeEach(() => {
+      req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/admin/email-campaigns/targeted-emails',
+        role: 'Admin',
+      });
+
+      res = httpMocks.createResponse();
+    });
+
     afterEach(() => {
       sinon.restore();
     });
 
     it('should return a 500 on error', async () => {
       sinon.stub(models.user, 'allPrimaryUsers').throws();
-      const req = httpMocks.createRequest({
-        method: 'POST',
-        url: '/api/admin/email-campaigns/targeted-emails',
-      });
 
-      req.role = 'Admin';
       req.body.groupType = 'primaryUsers';
       req.body.templateId = '1';
 
-      const res = httpMocks.createResponse();
       await targetedEmailsRoutes.createTargetedEmailsCampaign(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
@@ -219,17 +209,10 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
       const createEmailCampaignHistoryMock = sinon.stub(models.EmailCampaignHistory, 'bulkCreate');
       const sendEmailMock = sinon.stub(sendEmail, 'sendEmail').returns();
 
-      const req = httpMocks.createRequest({
-        method: 'POST',
-        url: '/api/admin/email-campaigns/targeted-emails',
-      });
-
-      req.role = 'Admin';
       req.body.groupType = 'primaryUsers';
       req.body.templateId = '1';
       req.userUid = '1402bf74-bf25-46d3-a080-a633f748b441';
 
-      const res = httpMocks.createResponse();
       await targetedEmailsRoutes.createTargetedEmailsCampaign(req, res);
 
       const response = res._getData();
@@ -250,25 +233,29 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
   describe('uploadAndValidateMultipleAccounts', () => {
     let dbStub;
     let fsReadFileSyncStub;
+    let req;
+    let res;
 
     beforeEach(() => {
       dbStub = sinon.stub(models.user, 'allPrimaryUsers');
       fsReadFileSyncStub = sinon.stub(fs, 'readFileSync');
       sinon.stub(fs, 'unlinkSync').returns(null);
-    });
 
-    afterEach(() => {
-      sinon.restore();
-    });
-    it('returns 200 if validation of recipients is OK', async () => {
-      const req = httpMocks.createRequest({
+      req = httpMocks.createRequest({
         method: 'POST',
         url: '/api/admin/email-campaigns/targeted-emails/total',
         role: 'Admin',
         file: { path: 'some-random-path' },
       });
-      const res = httpMocks.createResponse();
 
+      res = httpMocks.createResponse();
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns 200 if validation of recipients is OK', async () => {
       fsReadFileSyncStub.returns('');
       dbStub.returns([]);
 
@@ -278,14 +265,6 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     });
 
     it('returns a count of the valid establishments', async () => {
-      const req = httpMocks.createRequest({
-        method: 'POST',
-        url: '/api/admin/email-campaigns/targeted-emails/total',
-        role: 'Admin',
-        file: { path: 'some-random-path' },
-      });
-      const res = httpMocks.createResponse();
-
       fsReadFileSyncStub.returns('id1');
       dbStub.returns(['user']);
 
@@ -295,14 +274,6 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
     });
 
     it('should return a 500 on error', async () => {
-      const req = httpMocks.createRequest({
-        method: 'POST',
-        url: '/api/admin/email-campaigns/targeted-emails/total',
-        role: 'Admin',
-        file: { path: 'some-random-path' },
-      });
-      const res = httpMocks.createResponse();
-
       fsReadFileSyncStub.returns('id1');
       dbStub.throws();
 
