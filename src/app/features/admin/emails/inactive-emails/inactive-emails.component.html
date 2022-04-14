@@ -54,7 +54,7 @@
           <button
             class="govuk-button govuk-button--warning govuk-!-margin-right-9"
             [disabled]="!inactiveWorkplaces"
-            (click)="confirmSendEmails($event, inactiveWorkplaces)"
+            (click)="confirmDeleteInactiveAccounts($event, inactiveWorkplaces)"
             type="submit"
           >
             Delete Inactive accounts

@@ -9,7 +9,12 @@ import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
+import {
+  ConfirmInactiveWorkplaceDeletionComponent,
+} from '../../../admin/components/confirm-inactive-workplace-deletion/confirm-inactive-workplace-deletion';
+import {
+  SendEmailsConfirmationDialogComponent,
+} from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
   selector: 'app-inactive-emails',
@@ -44,6 +49,16 @@ export class InactiveEmailsComponent {
           if (hasConfirmed) {
             this.sendInactiveEmails();
           }
+        }),
+    );
+  }
+
+  public confirmDeleteInactiveAccounts(event: EventListener, inactiveAccountCount: number): void {
+    this.subscriptions.add(
+      this.dialogService
+        .open(ConfirmInactiveWorkplaceDeletionComponent, { inactiveAccountCount })
+        .afterClosed.subscribe((hasConfirmed) => {
+          console.log('pop up closed');
         }),
     );
   }
