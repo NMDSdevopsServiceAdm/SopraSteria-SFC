@@ -77,10 +77,10 @@ const getTargetedEmailTemplates = async (req, res) => {
 
 const createTargetedEmailsCampaign = async (req, res) => {
   try {
-    req.establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
+    const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
 
     const user = await models.user.findByUUID(req.userUid);
-    const users = await getGroup(req.body.groupType, req.establishmentNmdsIdList);
+    const users = await getGroup(req.body.groupType, establishmentNmdsIdList);
     const templateId = parseInt(req.body.templateId);
 
     const emailCampaign = await createEmailCampaign(user.id);
