@@ -25,7 +25,7 @@ describe('registerAccountWithTransaction', async () => {
           isRegulated: false,
         },
         user: {
-          password: 'validPassword0',
+          password: 'validPassword0!',
           username: 'username',
           email: 'testuser@email.com',
         },
@@ -88,14 +88,14 @@ describe('registerAccountWithTransaction', async () => {
 
       expect(res.statusCode).to.equal(400);
       expect(response.message).to.equal(
-        'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
+        'Password must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special characters like !, £',
       );
     });
 
     it('should return 400 and invalid username message when username is not valid', async () => {
       req.body = {
         user: {
-          password: 'validPassword0',
+          password: 'validPassword0!',
           username: 'userName0123456!?!?!*&^%',
         },
       };

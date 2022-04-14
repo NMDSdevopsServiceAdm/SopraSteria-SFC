@@ -5,7 +5,7 @@ const registrationErrors = {
   invalidUser: 'User data is invalid',
   invalidUsername: 'Invalid Username',
   invalidPassword:
-    'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
+    'Password must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special characters like !, £',
   emptyRequest: 'Parameters missing',
 };
 
