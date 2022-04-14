@@ -80,24 +80,32 @@ const createTargetedEmailsCampaign = async (req, res) => {
     const users = await getGroup(req.body.groupType);
     const templateId = parseInt(req.body.templateId);
 
-    const type = models.EmailCampaign.types().TARGETED_EMAILS;
-    const emailCampaign = await models.EmailCampaign.create({
-      userID: user.id,
-      type: type,
-    });
+    const emailCampaign = await createEmailCampaign(user.id);
 
     const history = getHistory(req, emailCampaign, templateId, users);
     await models.EmailCampaignHistory.bulkCreate(history);
 
-    users.map((user, index) => {
-      return sendEmail.sendEmail(user, templateId, index);
-    });
+    sendEmails(users, templateId);
 
     return res.status(200).send({ success: true });
   } catch (error) {
     console.error(error);
     return res.status(500).send();
   }
+};
+
+const sendEmails = (users, templateId) => {
+  users.map((user, index) => {
+    return sendEmail.sendEmail(user, templateId, index);
+  });
+};
+
+const createEmailCampaign = async (userID) => {
+  const type = models.EmailCampaign.types().TARGETED_EMAILS;
+  return await models.EmailCampaign.create({
+    userID,
+    type,
+  });
 };
 
 const parseEstablishmentCsv = (filePath, encoding) => {

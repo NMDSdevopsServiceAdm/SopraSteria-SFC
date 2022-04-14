@@ -83,7 +83,7 @@ export class TargetedEmailsComponent implements OnDestroy {
     this.nmdsIdsFile = file;
     this.emailCampaignService
       .getTargetedTotalValidEmails(this.nmdsIdsFile)
-      .subscribe((totalEmails: TotalEmailsResponse) => (this.totalEmails = totalEmails.totalEmails));
+      .subscribe((res: TotalEmailsResponse) => (this.totalEmails = res.totalEmails));
   }
 
   ngOnDestroy(): void {
