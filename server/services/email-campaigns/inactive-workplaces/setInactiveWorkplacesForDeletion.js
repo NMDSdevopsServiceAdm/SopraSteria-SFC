@@ -5,11 +5,11 @@ const {
 
 const transformInactiveWorkplacesForDeletion = (inactiveWorkplace) => {
   const name = inactiveWorkplace.NameValue;
-  const ascId = inactiveWorkplace.EstablishmentID;
+  const nmdsId = inactiveWorkplace.NmdsID;
   const address = formattedAddress(inactiveWorkplace);
   return {
     name,
-    ascId,
+    nmdsId,
     address,
   };
 };

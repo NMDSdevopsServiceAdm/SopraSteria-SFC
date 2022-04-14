@@ -11,6 +11,7 @@ describe('reports/inactive-workplaces/parents.js', () => {
     const workplace = {
       EstablishmentID: 1,
       NameValue: 'workplace name test',
+      NmdsID: 'G1101344',
       lastLogin: '2015-03-01',
       lastUpdated: '2015-03-01',
       Address1: '1 paddington Avenue',
@@ -24,7 +25,7 @@ describe('reports/inactive-workplaces/parents.js', () => {
 
     expect(rows).to.deep.equal([
       {
-        workplaceAscId: 1,
+        workplaceNmdsId: 'G1101344',
         workplaceName: 'workplace name test',
         address: '1 paddington Avenue Westminster London W2 1HB',
       },

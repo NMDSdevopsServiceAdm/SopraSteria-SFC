@@ -93,12 +93,12 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   const dummyInactiveWorkplacesForDeletion = [
     {
       name: 'Warren Care CQC 12',
-      ascId: 1689,
+      nmdsId: 'G12013414',
       address: 'Line 1 My Town My County TN37 6HR',
     },
     {
       name: 'Human Support Group Limited - Sale',
-      ascId: 2283,
+      nmdsId: 'G1901114',
       address: '59 Cross Street Sale Cheshire M33 7HF',
     },
   ];

@@ -2,7 +2,7 @@ const setInactiveWorkplacesForDeletion = require('../../services/email-campaigns
 
 const buildRow = (workplace) => {
   return {
-    workplaceAscId: workplace.ascId,
+    workplaceNmdsId: workplace.nmdsId,
     workplaceName: workplace.name,
     address: workplace.address,
   };
@@ -15,7 +15,7 @@ const buildRows = (workplaces) => {
 const addWorksheet = (workbook) => {
   const worksheet = workbook.addWorksheet('Workplaces to be deleted');
   worksheet.columns = [
-    { header: 'Workplace Id', key: 'workplaceAscId' },
+    { header: 'Workplace NmdsId', key: 'workplaceNmdsId' },
     { header: 'Workplace name', key: 'workplaceName' },
     { header: 'Workplace Address', key: 'address' },
   ];

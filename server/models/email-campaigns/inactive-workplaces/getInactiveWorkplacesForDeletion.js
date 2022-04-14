@@ -15,6 +15,7 @@ const getInactiveWorkplacesForDeletion = async () => {
   SELECT
     "EstablishmentID",
     "NameValue",
+    TRIM("NmdsID") AS "NmdsID",
     "IsParent",
     "LastLogin",
     "LastUpdated",
