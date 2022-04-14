@@ -11,6 +11,39 @@ const { getTargetedEmailTemplates } = require('./templates');
 
 const router = express.Router();
 
+const createTargetedEmailsCampaign = async (req, res) => {
+  try {
+    const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
+
+    const user = await models.user.findByUUID(req.userUid);
+    const users = await getGroupOfUsers(req.body.groupType, establishmentNmdsIdList);
+    const templateId = parseInt(req.body.templateId);
+
+    const emailCampaign = await createEmailCampaign(user.id);
+
+    const history = getHistory(req, emailCampaign, templateId, users);
+    await models.EmailCampaignHistory.bulkCreate(history);
+
+    sendEmails(users, templateId);
+
+    return res.status(200).send({ success: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+};
+
+const getTargetedTotalEmails = async (req, res) => {
+  try {
+    const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
+    const users = await getGroupOfUsers(req.query.groupType, establishmentNmdsIdList);
+    return res.status(200).send({ totalEmails: users.length });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+};
+
 const getGroupOfUsers = async (type, establishmentNmdsIdList) => {
   const groups = {
     primaryUsers: {},
@@ -39,39 +72,6 @@ const getHistory = (req, emailCampaign, templateId, users) =>
       sentToEmail: user.get('email'),
     };
   });
-
-const getTargetedTotalEmails = async (req, res) => {
-  try {
-    const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
-    const users = await getGroupOfUsers(req.query.groupType, establishmentNmdsIdList);
-    return res.status(200).send({ totalEmails: users.length });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send();
-  }
-};
-
-const createTargetedEmailsCampaign = async (req, res) => {
-  try {
-    const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
-
-    const user = await models.user.findByUUID(req.userUid);
-    const users = await getGroupOfUsers(req.body.groupType, establishmentNmdsIdList);
-    const templateId = parseInt(req.body.templateId);
-
-    const emailCampaign = await createEmailCampaign(user.id);
-
-    const history = getHistory(req, emailCampaign, templateId, users);
-    await models.EmailCampaignHistory.bulkCreate(history);
-
-    sendEmails(users, templateId);
-
-    return res.status(200).send({ success: true });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send();
-  }
-};
 
 const sendEmails = (users, templateId) => {
   users.map((user, index) => {
