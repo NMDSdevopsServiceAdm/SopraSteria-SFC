@@ -9,13 +9,13 @@ import { SearchModule } from '@features/search/search.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { of } from 'rxjs';
 import { NgxDropzoneModule } from 'ngx-dropzone';
+import { of } from 'rxjs';
 
 import { DragAndDropUploadComponent } from '../drag-and-drop-upload/drag-and-drop-upload.component';
 import { TargetedEmailsComponent } from './targeted-emails.component';
 
-describe('EmailsComponent', () => {
+describe('TargetedEmailsComponent', () => {
   async function setup() {
     return render(TargetedEmailsComponent, {
       declarations: [DragAndDropUploadComponent],
@@ -259,6 +259,44 @@ describe('EmailsComponent', () => {
         userEvent.upload(fileInput[1], file);
         expect(fixture.componentInstance.totalEmails).toEqual(3);
         expect(getTargetedTotalValidEmailsSpy).toHaveBeenCalledOnceWith(file);
+      });
+
+      it('should request the count of valid emails from the server when file is selected', async () => {
+        const { fixture, getByText, getByLabelText, getAllByLabelText } = await setup();
+
+        const emailCampaignService = TestBed.inject(EmailCampaignService);
+        spyOn(emailCampaignService, 'getTargetedTotalValidEmails').and.callFake(() => of({ totalEmails: 3 }));
+        const createTargetedEmailsCampaignSpy = spyOn(
+          emailCampaignService,
+          'createTargetedEmailsCampaign',
+        ).and.returnValue(
+          of({
+            emails: 1,
+            expectedMessage: '1 email has been scheduled to be sent.',
+          }),
+        );
+
+        const groupSelect = getByLabelText('Email group', { exact: false });
+        fireEvent.change(groupSelect, { target: { value: 'multipleAccounts' } });
+        fixture.detectChanges();
+
+        const templateSelect = getByLabelText('Template', { exact: false });
+        fireEvent.change(templateSelect, { target: { value: '1' } });
+        fixture.detectChanges();
+
+        const fileInput = getAllByLabelText('upload files here');
+        const file = new File(['some file content'], 'establishments.csv', { type: 'text/csv' });
+
+        userEvent.upload(fileInput[1], file);
+        fixture.detectChanges();
+
+        fireEvent.click(getByText('Send targeted emails', { exact: false }));
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+        within(dialog).getByText('Send emails').click();
+
+        expect(createTargetedEmailsCampaignSpy).toHaveBeenCalledWith('multipleAccounts', '1', file);
       });
     });
   });

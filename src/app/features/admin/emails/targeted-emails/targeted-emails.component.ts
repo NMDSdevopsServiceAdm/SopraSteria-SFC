@@ -22,7 +22,7 @@ export class TargetedEmailsComponent implements OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public emailType = EmailType;
   public showDragAndDrop = false;
-  private fileToUpload: File;
+  private nmdsIdsFile: File;
 
   constructor(
     public alertService: AlertService,
@@ -63,24 +63,26 @@ export class TargetedEmailsComponent implements OnDestroy {
   }
   private sendTargetedEmails(): void {
     this.subscriptions.add(
-      this.emailCampaignService.createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId).subscribe(() => {
-        this.alertService.addAlert({
-          type: 'success',
-          message: `${this.decimalPipe.transform(this.totalEmails)} ${
-            this.totalEmails > 1 ? 'emails have' : 'email has'
-          } been scheduled to be sent.`,
-        });
-        this.emailGroup = '';
-        this.selectedTemplateId = '';
-        this.totalEmails = 0;
-      }),
+      this.emailCampaignService
+        .createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId, this.nmdsIdsFile)
+        .subscribe(() => {
+          this.alertService.addAlert({
+            type: 'success',
+            message: `${this.decimalPipe.transform(this.totalEmails)} ${
+              this.totalEmails > 1 ? 'emails have' : 'email has'
+            } been scheduled to be sent.`,
+          });
+          this.emailGroup = '';
+          this.selectedTemplateId = '';
+          this.totalEmails = 0;
+        }),
     );
   }
 
   public validateFile(file: File): void {
-    this.fileToUpload = file;
+    this.nmdsIdsFile = file;
     this.emailCampaignService
-      .getTargetedTotalValidEmails(this.fileToUpload)
+      .getTargetedTotalValidEmails(this.nmdsIdsFile)
       .subscribe((totalEmails: TotalEmailsResponse) => (this.totalEmails = totalEmails.totalEmails));
   }
 

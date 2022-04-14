@@ -49,10 +49,11 @@ export class EmailCampaignService {
     });
   }
 
-  createTargetedEmailsCampaign(groupType: string, templateId: string): Observable<any> {
+  createTargetedEmailsCampaign(groupType: string, templateId: string, nmdsIdsFile?: File): Observable<any> {
     return this.http.post<any>('/api/admin/email-campaigns/targeted-emails', {
       groupType,
       templateId,
+      nmdsIdsFile,
     });
   }
 }
