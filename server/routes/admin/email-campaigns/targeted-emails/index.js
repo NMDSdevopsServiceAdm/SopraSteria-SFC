@@ -5,9 +5,9 @@ const upload = multer({ dest: 'fileUploads/' });
 const { parse } = require('csv-parse/sync');
 const { Op } = require('sequelize');
 const { celebrate, Joi, errors, Segments } = require('celebrate');
-const sendInBlue = require('../../../../utils/email/sendInBlueEmail');
 const sendEmail = require('../../../../services/email-campaigns/targeted-emails/sendEmail');
 const models = require('../../../../models/');
+const { getTargetedEmailTemplates } = require('./templates');
 
 const router = express.Router();
 
@@ -40,13 +40,6 @@ const getHistory = (req, emailCampaign, templateId, users) =>
     };
   });
 
-const templateOptions = {
-  templateStatus: true, // Boolean | Filter on the status of the template. Active = true, inactive = false
-  limit: 50, // Number | Number of documents returned per page
-  offset: 0, // Number | Index of the first document in the page
-  sort: 'desc', // String | Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
-};
-
 const getTargetedTotalEmails = async (req, res) => {
   try {
     const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
@@ -55,23 +48,6 @@ const getTargetedTotalEmails = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).send();
-  }
-};
-
-const getTargetedEmailTemplates = async (req, res) => {
-  try {
-    const templates = await sendInBlue.getTemplates(templateOptions);
-    const formattedTemplates = templates.templates.map(({ id, name }) => {
-      return { id, name };
-    });
-
-    return res.status(200).send({
-      templates: formattedTemplates,
-    });
-  } catch (error) {
-    return res.status(200).send({
-      templates: [],
-    });
   }
 };
 
@@ -155,6 +131,4 @@ router.route('/').post(
 
 module.exports = router;
 module.exports.getTargetedTotalEmails = getTargetedTotalEmails;
-module.exports.getTargetedEmailTemplates = getTargetedEmailTemplates;
 module.exports.createTargetedEmailsCampaign = createTargetedEmailsCampaign;
-module.exports.templateOptions = templateOptions;
