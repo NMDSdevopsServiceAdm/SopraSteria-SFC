@@ -87,6 +87,14 @@ export const allWorkplacesJourney: JourneyRoute = {
               },
             },
             {
+              title: 'Staff record',
+              path: Path.MANDATORY_DETAILS,
+              referrer: {
+                path: Path.WORKPLACE,
+                fragment: 'staff-records',
+              },
+            },
+            {
               title: 'Training and qualifications',
               path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
               referrer: {
