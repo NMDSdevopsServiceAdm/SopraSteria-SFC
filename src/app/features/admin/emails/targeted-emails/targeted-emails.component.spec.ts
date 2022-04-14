@@ -261,7 +261,7 @@ describe('TargetedEmailsComponent', () => {
         expect(getTargetedTotalValidEmailsSpy).toHaveBeenCalledOnceWith(file);
       });
 
-      it('should request the count of valid emails from the server when file is selected', async () => {
+      it('should call createTargetedEmailsCampaign with multipleAccounts, template id and file when file uploaded and sending emails confirmed', async () => {
         const { fixture, getByText, getByLabelText, getAllByLabelText } = await setup();
 
         const emailCampaignService = TestBed.inject(EmailCampaignService);
