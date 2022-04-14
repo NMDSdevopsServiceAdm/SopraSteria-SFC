@@ -11,7 +11,7 @@ const { getTargetedEmailTemplates } = require('./templates');
 
 const router = express.Router();
 
-const getGroup = async (type, establishmentNmdsIdList) => {
+const getGroupOfUsers = async (type, establishmentNmdsIdList) => {
   const groups = {
     primaryUsers: {},
     parentOnly: { isParent: true },
@@ -43,7 +43,7 @@ const getHistory = (req, emailCampaign, templateId, users) =>
 const getTargetedTotalEmails = async (req, res) => {
   try {
     const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
-    const users = await getGroup(req.query.groupType, establishmentNmdsIdList);
+    const users = await getGroupOfUsers(req.query.groupType, establishmentNmdsIdList);
     return res.status(200).send({ totalEmails: users.length });
   } catch (error) {
     console.error(error);
@@ -56,7 +56,7 @@ const createTargetedEmailsCampaign = async (req, res) => {
     const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
 
     const user = await models.user.findByUUID(req.userUid);
-    const users = await getGroup(req.body.groupType, establishmentNmdsIdList);
+    const users = await getGroupOfUsers(req.body.groupType, establishmentNmdsIdList);
     const templateId = parseInt(req.body.templateId);
 
     const emailCampaign = await createEmailCampaign(user.id);
