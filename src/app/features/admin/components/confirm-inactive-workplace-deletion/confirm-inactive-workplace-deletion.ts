@@ -8,7 +8,7 @@ import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 })
 export class ConfirmInactiveWorkplaceDeletionComponent extends DialogComponent {
   constructor(
-    @Inject(DIALOG_DATA) public data: { inactiveWorkplaceCount: number },
+    @Inject(DIALOG_DATA) public data: { inactiveWorkplacesforDeletion: number },
     public dialog: Dialog<ConfirmInactiveWorkplaceDeletionComponent>,
   ) {
     super(data, dialog);

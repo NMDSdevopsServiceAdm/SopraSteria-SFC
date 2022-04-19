@@ -55,12 +55,12 @@ export class InactiveEmailsComponent {
     );
   }
 
-  public confirmDeleteInactiveAccounts(event: Event, inactiveAccountCount: number): void {
+  public confirmDeleteInactiveAccounts(event: Event, inactiveWorkplacesforDeletion: number): void {
     event.preventDefault();
 
     this.subscriptions.add(
       this.dialogService
-        .open(ConfirmInactiveWorkplaceDeletionComponent, { inactiveAccountCount })
+        .open(ConfirmInactiveWorkplaceDeletionComponent, { inactiveWorkplacesforDeletion })
         .afterClosed.subscribe((hasConfirmed) => {
           console.log('pop up closed');
         }),

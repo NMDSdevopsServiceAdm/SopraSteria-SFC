@@ -55,8 +55,8 @@
         <div class="govuk-!-margin-top-6">
           <button
             class="govuk-button govuk-button--warning govuk-!-margin-right-9"
-            [disabled]="!inactiveWorkplaces"
-            (click)="confirmDeleteInactiveAccounts($event, inactiveWorkplaces)"
+            [disabled]="!inactiveWorkplacesforDeletion"
+            (click)="confirmDeleteInactiveAccounts($event, inactiveWorkplacesforDeletion)"
             type="submit"
           >
             Delete Inactive accounts
