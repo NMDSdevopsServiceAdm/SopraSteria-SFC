@@ -11,6 +11,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PASSWORD_PATTERN } from '@core/constants/constants';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -64,10 +65,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
       oldPasswordInput: ['', Validators.required],
       passwordGroup: this.fb.group(
         {
-          createPasswordInput: [
-            '',
-            [Validators.required, Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,50}')],
-          ],
+          createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
           confirmPasswordInput: ['', [Validators.required]],
         },
         { validator: CustomValidators.matchInputValues },
@@ -104,7 +102,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
           {
             name: 'pattern',
             message:
-              'New password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
+              'Password must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special characters like !, £',
           },
         ],
       },
