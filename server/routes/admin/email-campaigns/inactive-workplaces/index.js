@@ -4,6 +4,7 @@ const moment = require('moment');
 
 const models = require('../../../../models');
 const setInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplaces');
+const setInactiveWorkplacesForDeletion = require('../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
 const setParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 
@@ -18,6 +19,16 @@ const getInactiveWorkplaces = async (_req, res) => {
   } catch (err) {
     console.error(err);
 
+    return res.status(500).json({});
+  }
+};
+
+const getInactiveWorkplcesForDeletion = async (req, res) => {
+  try {
+    const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
+    return res.json({ inactiveWorkplacesForDeletion: inactiveWorkplacesForDeletion.length });
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({});
   }
 };
@@ -85,6 +96,7 @@ const getHistory = async (_req, res) => {
 };
 
 router.route('/').get(getInactiveWorkplaces);
+router.route('/inactiveWorkplacesForDeletion').get(getInactiveWorkplcesForDeletion);
 router.route('/').post(createCampaign);
 router.route('/history').get(getHistory);
 router.use('/report', require('./report'));
@@ -93,3 +105,4 @@ module.exports = router;
 module.exports.createCampaign = createCampaign;
 module.exports.getHistory = getHistory;
 module.exports.getInactiveWorkplaces = getInactiveWorkplaces;
+module.exports.getInactiveWorkplcesForDeletion = getInactiveWorkplcesForDeletion;

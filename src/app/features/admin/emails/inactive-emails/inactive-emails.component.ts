@@ -23,6 +23,8 @@ import {
 })
 export class InactiveEmailsComponent {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
+  public inactiveWorkplacesforDeletion =
+    this.route.snapshot.data.inactiveWorkplaceForDeletion.inactiveWorkplacesForDeletion;
   public templates = this.route.snapshot.data.emailTemplates.templates;
   public history = this.route.snapshot.data.emailCampaignHistory;
   private subscriptions: Subscription = new Subscription();
@@ -34,7 +36,7 @@ export class InactiveEmailsComponent {
     private emailCampaignService: EmailCampaignService,
     private decimalPipe: DecimalPipe,
   ) {}
-
+  ngOnInit(): void {}
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
@@ -53,7 +55,9 @@ export class InactiveEmailsComponent {
     );
   }
 
-  public confirmDeleteInactiveAccounts(event: EventListener, inactiveAccountCount: number): void {
+  public confirmDeleteInactiveAccounts(event: Event, inactiveAccountCount: number): void {
+    event.preventDefault();
+
     this.subscriptions.add(
       this.dialogService
         .open(ConfirmInactiveWorkplaceDeletionComponent, { inactiveAccountCount })

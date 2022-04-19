@@ -11,6 +11,10 @@ export class EmailCampaignService {
     return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces');
   }
 
+  getInactiveWorkplcesForDeletion(): Observable<any> {
+    return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion');
+  }
+
   createInactiveWorkplacesCampaign(): Observable<any> {
     return this.http.post<any>('/api/admin/email-campaigns/inactive-workplaces', {});
   }

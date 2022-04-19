@@ -27,6 +27,7 @@ describe('InactiveEmailsComponent', () => {
               data: {
                 emailCampaignHistory: [],
                 inactiveWorkplaces: { inactiveWorkplaces: 0 },
+                inactiveWorkplaceForDeletion: { inactiveWorkplacesForDeletion: 0 },
                 emailTemplates: {
                   templates: [],
                 },

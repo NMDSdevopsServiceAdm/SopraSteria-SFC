@@ -3,7 +3,7 @@ import { DialogComponent } from '@core/components/dialog.component';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 
 @Component({
-  selector: 'confirm-inactive-workplace-deletion',
+  selector: 'app-confirm-inactive-workplace-deletion',
   templateUrl: './confirm-inactive-workplace-deletion.html',
 })
 export class ConfirmInactiveWorkplaceDeletionComponent extends DialogComponent {
