@@ -118,10 +118,10 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   }
 
   private convertWorkplaceAddressToString(workplaceAddress: Array<string>): string {
-    return workplaceAddress.filter((x) => x).join('<br>');
+    return workplaceAddress.filter((x) => x).join('\r\n');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }
