@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
 import { LocalIdentifiersRequest, LocalIdentifiersResponse } from '@core/model/establishment.model';
 import {
@@ -94,8 +95,10 @@ export class WorkerService {
     return this.http.get<Worker>(`/api/establishment/${workplaceUid}/worker/${workerId}`, { params });
   }
 
-  public getAllWorkers(establishmentuid: string): Observable<Worker[]> {
-    return this.http.get<WorkersResponse>(`/api/establishment/${establishmentuid}/worker`).pipe(map((w) => w.workers));
+  public getAllWorkers(establishmentuid: string, queryParams?: Params): Observable<WorkersResponse> {
+    return this.http
+      .get<WorkersResponse>(`/api/establishment/${establishmentuid}/worker`, { params: queryParams || {} })
+      .pipe(map((data) => data));
   }
 
   public getTotalStaffRecords(establishmentuid: string): Observable<number> {

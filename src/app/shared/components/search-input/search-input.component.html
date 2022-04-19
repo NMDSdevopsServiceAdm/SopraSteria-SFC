@@ -1,0 +1,39 @@
+<div class="govuk-!-width-full input--search">
+  <label [for]="ref" class="govuk-label"
+    >Search<span *ngIf="accessibleLabel" class="govuk-visually-hidden"> {{ accessibleLabel }}</span></label
+  >
+  <div class="govuk-grid-row govuk-!-margin-0">
+    <div class="govuk-grid-column-two-thirds govuk__flex govuk-util__light-bg govuk-!-padding-2">
+      <input
+        class="govuk-input"
+        [id]="ref"
+        [name]="ref"
+        type="text"
+        (input)="handleOnInput($event)"
+        [value]="searchTerm"
+        (keyup.enter)="handleOnSubmit($event)"
+      />
+      <div>
+        <button
+          class="govuk-button button-override--search govuk-!-margin-bottom-0"
+          name="search"
+          type="button"
+          (click)="handleOnSubmit($event)"
+        >
+          {{ searchButtonName }}
+          <img src="/assets/images/search-icon.svg" alt="" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third govuk-!-padding-top-2 govuk-!-padding-bottom-2">
+      <button
+        *ngIf="searched"
+        class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-util__vertical-align-center"
+        type="button"
+        (click)="handleResetSearch()"
+      >
+        Clear search results
+      </button>
+    </div>
+  </div>
+</div>

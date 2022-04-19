@@ -38,12 +38,14 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
+import { PaginationComponent } from './components/pagination/pagination.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
+import { SearchInputComponent } from './components/search-input/search-input.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
@@ -174,6 +176,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,
+    PaginationComponent,
+    SearchInputComponent,
     WdfTabComponent,
   ],
   exports: [
@@ -255,6 +259,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,
+    PaginationComponent,
+    SearchInputComponent,
     WdfTabComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],

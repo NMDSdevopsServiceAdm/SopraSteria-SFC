@@ -4,6 +4,7 @@ import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edi
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
+import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
@@ -51,6 +52,7 @@ const routes: Routes = [
   {
     path: 'view-all-workplaces',
     component: ViewMyWorkplacesComponent,
+    resolve: { childWorkplaces: ChildWorkplacesResolver },
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
   },

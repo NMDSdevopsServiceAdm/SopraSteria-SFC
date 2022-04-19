@@ -33,7 +33,9 @@ describe('SelectStaffComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                workers: AllWorkers,
+                workers: {
+                  workers: AllWorkers,
+                },
               },
               params: {
                 establishmentuid: '1234-5678',

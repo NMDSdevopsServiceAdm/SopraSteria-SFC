@@ -13,7 +13,9 @@ const models = require('../../../models');
 
 const generateSummaryTab = async (workbook, establishmentId) => {
   const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishmentId, true);
-  const workerTrainingBreakdowns = convertWorkerTrainingBreakdowns(rawEstablishmentTrainingBreakdowns[0].workers);
+  const workerTrainingBreakdowns = rawEstablishmentTrainingBreakdowns.rows.length
+    ? convertWorkerTrainingBreakdowns(rawEstablishmentTrainingBreakdowns.rows[0].workers)
+    : [];
   const trainingRecordTotals = getTrainingTotals(workerTrainingBreakdowns);
 
   const summaryTab = workbook.addWorksheet('Training (summary)', { views: [{ showGridLines: false }] });

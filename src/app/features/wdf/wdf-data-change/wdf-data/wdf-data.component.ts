@@ -87,7 +87,7 @@ export class WdfDataComponent implements OnInit {
         this.workerService
           .getAllWorkers(this.workplaceUid)
           .pipe(take(1))
-          .subscribe((workers) => {
+          .subscribe(({ workers }) => {
             this.workers = sortBy(workers, ['wdfEligible']);
             this.wdfEligibilityStatus.currentStaff = this.getStaffWdfEligibility(workers);
           }),

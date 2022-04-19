@@ -87,7 +87,7 @@ describe('MissingStaffReferencesComponent', () => {
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const event = new NavigationEnd(42, '/', '/');
-    ((injector.inject(Router).events as unknown) as Subject<RouterEvent>).next(event);
+    (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
 
     return {
       component,
@@ -229,7 +229,7 @@ describe('MissingStaffReferencesComponent', () => {
 
   it('should remove duplicate error messages after submitting with same input and then changing one field', async () => {
     const workers = [workerBuilder(), workerBuilder()];
-    const references = workers;
+    const references = workers as Worker[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
     const errorMessage = 'This reference matches another, it needs to be unique';

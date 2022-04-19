@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -167,7 +168,7 @@ describe('WdfDataComponent', () => {
     it('should return true when all workers are WDF eligible', async () => {
       const { component, fixture } = await setup();
 
-      component.workers = [workerBuilder(), workerBuilder(), workerBuilder()];
+      component.workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
       component.workers[0].wdfEligible = true;
       component.workers[1].wdfEligible = true;
       component.workers[2].wdfEligible = true;
@@ -179,7 +180,7 @@ describe('WdfDataComponent', () => {
     it('should return false when any worker is not WDF eligible', async () => {
       const { component, fixture } = await setup();
 
-      component.workers = [workerBuilder(), workerBuilder(), workerBuilder()];
+      component.workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
       component.workers[0].wdfEligible = true;
       component.workers[1].wdfEligible = false;
       component.workers[2].wdfEligible = true;

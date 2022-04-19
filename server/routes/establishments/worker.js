@@ -237,14 +237,25 @@ const getTotalWorkers = async (req, res) => {
 const viewAllWorkers = async (req, res) => {
   const establishmentId = req.establishmentId;
   const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
+  const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
 
   try {
-    const establishmentWorkersAndTraining = await models.establishment.workersAndTraining(establishmentId);
-    const allWorkers = establishmentWorkersAndTraining[0].workers;
+    const establishmentWorkersAndTraining = await models.establishment.workersAndTraining(
+      establishmentId,
+      false,
+      false,
+      itemsPerPage ? +itemsPerPage : undefined,
+      pageIndex ? +pageIndex : undefined,
+      sortBy,
+      searchTerm,
+    );
+    const rows = establishmentWorkersAndTraining.rows;
+    const foundWorkers = rows.length && rows[0].workers;
+    const workerCount = establishmentWorkersAndTraining.count;
 
     res.status(200).send({
-      workers: allWorkers
-        ? allWorkers.map((worker) => {
+      workers: foundWorkers
+        ? foundWorkers.map((worker) => {
             return {
               uid: worker.uid,
               localIdentifier: worker.LocalIdentifierValue ? worker.LocalIdentifierValue : null,
@@ -253,6 +264,7 @@ const viewAllWorkers = async (req, res) => {
               mainJob: {
                 jobId: worker.mainJob.id,
                 title: worker.mainJob.title,
+                jobRoleName: worker.mainJob.get('jobRoleName'),
                 other: worker.MainJobFkOther ? worker.MainJobFkOther : undefined,
               },
               completed: worker.CompletedValue,
@@ -273,6 +285,7 @@ const viewAllWorkers = async (req, res) => {
             };
           })
         : [],
+      workerCount,
     });
   } catch (err) {
     console.error('worker::GET:all - failed', err);

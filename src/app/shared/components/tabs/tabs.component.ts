@@ -1,5 +1,13 @@
 import { Location } from '@angular/common';
-import { AfterContentInit, Component, ContentChildren, ElementRef, OnDestroy, QueryList, ViewChild } from '@angular/core';
+import {
+  AfterContentInit,
+  Component,
+  ContentChildren,
+  ElementRef,
+  OnDestroy,
+  QueryList,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -83,13 +91,15 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
     if (event) {
       event.preventDefault();
     }
-
+    const hasCurrentTab = Boolean(this.currentTab);
     const tab = this.tabs.toArray()[index];
     this.currentTab = index;
 
     this.unselectTabs();
     tab.active = true;
-    this.location.replaceState(`${this.location.path()}#${tab.slug}`);
+
+    const path = hasCurrentTab ? this.location.path().split('?')[0] : this.location.path();
+    this.location.replaceState(`${path}#${tab.slug}`);
 
     if (focus) {
       setTimeout(() => {
