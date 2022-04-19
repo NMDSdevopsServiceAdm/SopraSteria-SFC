@@ -37,7 +37,7 @@
       <div class="govuk-grid-column-one-half">
         <div class="govuk-!-margin-top-6">
           <button
-            class="govuk-button govuk-!-margin-right-9"
+            class="govuk-button"
             [disabled]="!inactiveWorkplaces"
             (click)="confirmSendEmails($event, inactiveWorkplaces)"
             type="submit"
@@ -51,10 +51,11 @@
           </button>
         </div>
       </div>
+
       <div class="govuk-grid-column-one-half">
         <div class="govuk-!-margin-top-6">
           <button
-            class="govuk-button govuk-button--warning govuk-!-margin-right-9"
+            class="govuk-button govuk-button--warning"
             [disabled]="!inactiveWorkplacesforDeletion"
             (click)="confirmDeleteInactiveAccounts($event, inactiveWorkplacesforDeletion)"
             type="submit"
