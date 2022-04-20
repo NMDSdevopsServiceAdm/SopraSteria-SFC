@@ -1,7 +1,7 @@
 const fs = require('fs');
 const express = require('express');
 const multer = require('multer');
-const upload = multer({ dest: 'fileUploads/' });
+const upload = multer({ dest: './' });
 const { parse } = require('csv-parse/sync');
 const { Op } = require('sequelize');
 const { celebrate, Joi, errors, Segments } = require('celebrate');
@@ -101,19 +101,23 @@ const createEmailCampaign = async (userID) => {
   });
 };
 
+const sanitizeFilePath = (path) => path.replace(/\.\//, '');
+
 const parseNmdsIdsIfFileExists = (file) => {
   if (!file) return null;
 
-  const fileData = fs.readFileSync(file.path, 'utf8');
-  if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+  const path = sanitizeFilePath(file.path);
+  const fileData = fs.readFileSync(path, 'utf8');
+  if (fs.existsSync(path)) fs.unlinkSync(file.path);
   return parse(fileData).map((row) => row[0]);
 };
 
 const parseJSONPayloadIfExists = (data) => {
   if (!data) return null;
 
-  const jsonData = JSON.parse(fs.readFileSync(data.path, 'utf8'));
-  if (fs.existsSync(data.path)) fs.unlinkSync(data.path);
+  const path = sanitizeFilePath(data.path);
+  const jsonData = JSON.parse(fs.readFileSync(path, 'utf8'));
+  if (fs.existsSync(path)) fs.unlinkSync(path);
   return jsonData;
 };
 
