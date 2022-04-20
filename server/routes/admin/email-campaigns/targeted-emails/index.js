@@ -11,7 +11,21 @@ const { getTargetedEmailTemplates } = require('./templates');
 
 const router = express.Router();
 
+const handleMultipleAccountsFormData = (req) => {
+  const { jsonPayload, targetedRecipientsFile } = req.files;
+  const jsonData = parseJSONPayloadIfExists(jsonPayload[0]);
+
+  req.body.groupType = jsonData.groupType;
+  req.body.templateId = jsonData.templateId;
+
+  req.file = targetedRecipientsFile[0];
+};
+
 const createTargetedEmailsCampaign = async (req, res) => {
+  if (req.files && req.files.jsonPayload && req.files.targetedRecipientsFile) {
+    handleMultipleAccountsFormData(req);
+  }
+
   try {
     const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
 
@@ -95,6 +109,14 @@ const parseNmdsIdsIfFileExists = (file) => {
   return parse(fileData).map((row) => row[0]);
 };
 
+const parseJSONPayloadIfExists = (data) => {
+  if (!data) return null;
+
+  const jsonData = JSON.parse(fs.readFileSync(data.path, 'utf8'));
+  if (fs.existsSync(data.path)) fs.unlinkSync(data.path);
+  return jsonData;
+};
+
 router
   .route('/total')
   .get(
@@ -121,11 +143,15 @@ router.route('/templates').get(getTargetedEmailTemplates);
 router.use('/', errors());
 router.route('/').post(
   celebrate({
-    [Segments.BODY]: {
-      templateId: Joi.string().required(),
-      groupType: Joi.string().valid('primaryUsers', 'parentOnly', 'singleAccountsOnly', 'multipleAccounts'),
-    },
+    [Segments.BODY]: Joi.object().keys({
+      templateId: Joi.string().when('groupType', { is: Joi.exist(), then: Joi.string().required() }),
+      groupType: Joi.string().valid('primaryUsers', 'parentOnly', 'singleAccountsOnly'),
+    }),
   }),
+  upload.fields([
+    { name: 'targetedRecipientsFile', maxCount: 1 },
+    { name: 'jsonPayload', maxCount: 1 },
+  ]),
   createTargetedEmailsCampaign,
 );
 
