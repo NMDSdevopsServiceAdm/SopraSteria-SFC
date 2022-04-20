@@ -23,8 +23,8 @@ import {
 })
 export class InactiveEmailsComponent {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
-  public inactiveWorkplacesforDeletion =
-    this.route.snapshot.data.inactiveWorkplaceForDeletion.inactiveWorkplacesForDeletion;
+  public numberOfInactiveWorkplacesForDeletion =
+    this.route.snapshot.data.inactiveWorkplaceForDeletion.numberOfInactiveWorkplacesForDeletion;
   public templates = this.route.snapshot.data.emailTemplates.templates;
   public history = this.route.snapshot.data.emailCampaignHistory;
   private subscriptions: Subscription = new Subscription();
@@ -55,12 +55,12 @@ export class InactiveEmailsComponent {
     );
   }
 
-  public confirmDeleteInactiveAccounts(event: Event, inactiveWorkplacesforDeletion: number): void {
+  public confirmDeleteInactiveAccounts(event: Event, numberOfInactiveWorkplacesForDeletion: number): void {
     event.preventDefault();
 
     this.subscriptions.add(
       this.dialogService
-        .open(ConfirmInactiveWorkplaceDeletionComponent, { inactiveWorkplacesforDeletion })
+        .open(ConfirmInactiveWorkplaceDeletionComponent, { numberOfInactiveWorkplacesForDeletion })
         .afterClosed.subscribe((hasConfirmed) => {
           this.inactiveWorkplaceForDeletion();
         }),

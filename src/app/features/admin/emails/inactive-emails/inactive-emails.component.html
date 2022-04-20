@@ -16,7 +16,7 @@
           <span>Number of inactive workplaces to delete:</span>
           <br />
           <strong class="govuk-!-font-size-36" data-testid="inactiveWorkplacesToDelete">
-            {{ inactiveWorkplacesforDeletion | number }}</strong
+            {{ numberOfInactiveWorkplacesForDeletion | number }}</strong
           >
         </p>
       </div>
@@ -56,8 +56,8 @@
         <div class="govuk-!-margin-top-6">
           <button
             class="govuk-button govuk-button--warning"
-            [disabled]="!inactiveWorkplacesforDeletion"
-            (click)="confirmDeleteInactiveAccounts($event, inactiveWorkplacesforDeletion)"
+            [disabled]="!numberOfInactiveWorkplacesForDeletion"
+            (click)="confirmDeleteInactiveAccounts($event, numberOfInactiveWorkplacesForDeletion)"
             type="submit"
           >
             Delete Inactive accounts

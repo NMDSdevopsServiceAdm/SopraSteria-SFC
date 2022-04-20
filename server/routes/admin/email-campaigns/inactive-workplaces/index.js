@@ -26,7 +26,7 @@ const getInactiveWorkplaces = async (_req, res) => {
 const getInactiveWorkplcesForDeletion = async (req, res) => {
   try {
     const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
-    return res.json({ inactiveWorkplacesForDeletion: inactiveWorkplacesForDeletion.length });
+    return res.json({ numberOfInactiveWorkplacesForDeletion: inactiveWorkplacesForDeletion.length });
   } catch (err) {
     console.error(err);
     return res.status(500).json({});
