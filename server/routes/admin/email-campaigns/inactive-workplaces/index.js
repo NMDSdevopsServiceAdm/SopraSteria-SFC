@@ -26,6 +26,7 @@ const getInactiveWorkplaces = async (_req, res) => {
 const getInactiveWorkplcesForDeletion = async (req, res) => {
   try {
     const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
+
     return res.json({ numberOfInactiveWorkplacesForDeletion: inactiveWorkplacesForDeletion.length });
   } catch (err) {
     console.error(err);
@@ -38,7 +39,7 @@ const inactiveWorkplacesIdsForDeletions = async (req, res) => {
     const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
     const establishmentIds = inactiveWorkplacesForDeletion.map((id) => id.establishmentID);
     await models.establishment.archiveInactiveWorkplaces(establishmentIds);
-    return res.json({ establishmentIds });
+    return res.json({ message: 'The inactive workplaces are archived' });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error });

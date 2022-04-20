@@ -62,7 +62,9 @@ export class InactiveEmailsComponent {
       this.dialogService
         .open(ConfirmInactiveWorkplaceDeletionComponent, { numberOfInactiveWorkplacesForDeletion })
         .afterClosed.subscribe((hasConfirmed) => {
-          this.inactiveWorkplaceForDeletion();
+          if (hasConfirmed) {
+            this.inactiveWorkplaceForDeletion();
+          }
         }),
     );
   }
