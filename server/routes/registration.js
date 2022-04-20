@@ -10,6 +10,8 @@ const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 const { authLimiter } = require('../utils/middleware/rateLimiting');
 // const pCodeCheck = require('../utils/postcodeSanitizer');
 
+router.use('/establishmentExistsCheck', require('./registration/establishmentExistsCheck'));
+
 // Check if service exists
 router.get('/service/:name', async (req, res) => {
   const requestedServiceName = req.params.name;

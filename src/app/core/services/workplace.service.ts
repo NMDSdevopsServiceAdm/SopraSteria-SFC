@@ -12,8 +12,8 @@ import { WorkplaceInterfaceService } from './workplace-interface.service';
   providedIn: 'root',
 })
 export class WorkplaceService extends WorkplaceInterfaceService {
-  constructor(private http: HttpClient) {
-    super();
+  constructor(protected http: HttpClient) {
+    super(http);
   }
 
   public addWorkplaceFlow$: BehaviorSubject<string> = new BehaviorSubject(null);

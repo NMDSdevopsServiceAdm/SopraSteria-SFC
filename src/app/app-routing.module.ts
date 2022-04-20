@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
@@ -46,6 +47,11 @@ const routes: Routes = [
     path: 'problem-with-the-service',
     component: ProblemWithTheServiceComponent,
     data: { title: 'Problem with the Service' },
+  },
+  {
+    path: 'cannot-create-account',
+    component: CannotCreateAccountComponent,
+    data: { title: 'Cannot create account' },
   },
   {
     path: '',
