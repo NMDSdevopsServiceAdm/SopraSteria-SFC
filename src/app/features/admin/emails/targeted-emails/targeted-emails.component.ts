@@ -22,7 +22,7 @@ export class TargetedEmailsComponent implements OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public emailType = EmailType;
   public showDragAndDrop = false;
-  private nmdsIdsFile: File;
+  private nmdsIdsFileData: FormData;
 
   constructor(
     public alertService: AlertService,
@@ -64,7 +64,7 @@ export class TargetedEmailsComponent implements OnDestroy {
   private sendTargetedEmails(): void {
     this.subscriptions.add(
       this.emailCampaignService
-        .createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId, this.nmdsIdsFile)
+        .createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId, this.nmdsIdsFileData)
         .subscribe(() => {
           this.alertService.addAlert({
             type: 'success',
@@ -75,14 +75,16 @@ export class TargetedEmailsComponent implements OnDestroy {
           this.emailGroup = '';
           this.selectedTemplateId = '';
           this.totalEmails = 0;
+          this.showDragAndDrop = false;
         }),
     );
   }
 
   public validateFile(file: File): void {
-    this.nmdsIdsFile = file;
+    this.nmdsIdsFileData = new FormData();
+    this.nmdsIdsFileData.append('targetedRecipientsFile', file, file.name);
     this.emailCampaignService
-      .getTargetedTotalValidEmails(this.nmdsIdsFile)
+      .getTargetedTotalValidEmails(this.nmdsIdsFileData)
       .subscribe((res: TotalEmailsResponse) => (this.totalEmails = res.totalEmails));
   }
 

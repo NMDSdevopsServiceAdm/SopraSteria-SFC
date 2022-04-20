@@ -255,10 +255,12 @@ describe('TargetedEmailsComponent', () => {
 
         const fileInput = getAllByLabelText('upload files here');
         const file = new File(['some file content'], 'establishments.csv', { type: 'text/csv' });
+        const fileFormData: FormData = new FormData();
+        fileFormData.append('targetedRecipientsFile', file);
 
         userEvent.upload(fileInput[1], file);
         expect(fixture.componentInstance.totalEmails).toEqual(3);
-        expect(getTargetedTotalValidEmailsSpy).toHaveBeenCalledOnceWith(file);
+        expect(getTargetedTotalValidEmailsSpy).toHaveBeenCalledOnceWith(fileFormData);
       });
 
       it('should call createTargetedEmailsCampaign with multipleAccounts, template id and file when file uploaded and sending emails confirmed', async () => {
@@ -286,6 +288,8 @@ describe('TargetedEmailsComponent', () => {
 
         const fileInput = getAllByLabelText('upload files here');
         const file = new File(['some file content'], 'establishments.csv', { type: 'text/csv' });
+        const fileFormData: FormData = new FormData();
+        fileFormData.append('targetedRecipientsFile', file);
 
         userEvent.upload(fileInput[1], file);
         fixture.detectChanges();
@@ -296,7 +300,7 @@ describe('TargetedEmailsComponent', () => {
         const dialog = await within(document.body).findByRole('dialog');
         within(dialog).getByText('Send emails').click();
 
-        expect(createTargetedEmailsCampaignSpy).toHaveBeenCalledWith('multipleAccounts', '1', file);
+        expect(createTargetedEmailsCampaignSpy).toHaveBeenCalledWith('multipleAccounts', '1', fileFormData);
       });
     });
   });
