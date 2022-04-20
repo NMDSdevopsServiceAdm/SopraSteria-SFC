@@ -6,11 +6,13 @@ const {
 const transformInactiveWorkplacesForDeletion = (inactiveWorkplace) => {
   const name = inactiveWorkplace.NameValue;
   const nmdsId = inactiveWorkplace.NmdsID;
+  const establishmentID = inactiveWorkplace.EstablishmentID;
   const address = formattedAddress(inactiveWorkplace);
   return {
     name,
     nmdsId,
     address,
+    establishmentID,
   };
 };
 

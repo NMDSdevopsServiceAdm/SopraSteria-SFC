@@ -62,9 +62,13 @@ export class InactiveEmailsComponent {
       this.dialogService
         .open(ConfirmInactiveWorkplaceDeletionComponent, { inactiveWorkplacesforDeletion })
         .afterClosed.subscribe((hasConfirmed) => {
-          console.log('pop up closed');
+          this.inactiveWorkplaceForDeletion();
         }),
     );
+  }
+
+  public inactiveWorkplaceForDeletion() {
+    this.subscriptions.add(this.emailCampaignService.inactiveWorkplcesForDeletion().subscribe());
   }
 
   private sendInactiveEmails(): void {
