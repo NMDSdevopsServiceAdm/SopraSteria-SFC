@@ -11,7 +11,7 @@ import { concatMap, map, switchMap } from 'rxjs/operators';
 
 import {
   ConfirmInactiveWorkplaceDeletionComponent,
-} from '../../../admin/components/confirm-inactive-workplace-deletion/confirm-inactive-workplace-deletion';
+} from '../dialogs/confirm-inactive-workplace-deletion/confirm-inactive-workplace-deletion';
 import {
   SendEmailsConfirmationDialogComponent,
 } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
