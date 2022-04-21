@@ -9,12 +9,8 @@ import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 import { concatMap, map, switchMap } from 'rxjs/operators';
 
-import {
-  ConfirmInactiveWorkplaceDeletionComponent,
-} from '../dialogs/confirm-inactive-workplace-deletion/confirm-inactive-workplace-deletion';
-import {
-  SendEmailsConfirmationDialogComponent,
-} from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
+import { ConfirmInactiveWorkplaceDeletionComponent } from '../dialogs/confirm-inactive-workplace-deletion/confirm-inactive-workplace-deletion';
+import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
   selector: 'app-inactive-emails',
@@ -36,7 +32,7 @@ export class InactiveEmailsComponent {
     private emailCampaignService: EmailCampaignService,
     private decimalPipe: DecimalPipe,
   ) {}
-  ngOnInit(): void {}
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
