@@ -94,7 +94,6 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
 
     if (this.form.valid) {
       if (yourWorkplace.value === 'yes') {
-        console.log('Yes***********');
         this.checkIfEstablishmentExists();
       } else {
         this.router.navigate([this.flow, 'find-workplace']);
@@ -106,7 +105,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
 
   private checkIfEstablishmentExists(): void {
     this.subscriptions.add(
-      this.workplaceInterfaceService.establishmentExistsCheck(this.locationData.locationId).subscribe(
+      this.workplaceInterfaceService.checkIfEstablishmentExistsLocationId(this.locationData.locationId).subscribe(
         (establishmentExists) => {
           if (establishmentExists) {
             // this.workplaceInterfaceService.setReturnTo({ url: [this.flow, 'your-workplace'] });
@@ -117,7 +116,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
             this.router.navigate([this.flow, this.getNextRoute()]);
           }
         },
-        (error) => console.log(error),
+        () => this.router.navigate(['/problem-with-the-service']),
       ),
     );
   }

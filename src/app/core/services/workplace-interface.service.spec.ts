@@ -25,12 +25,23 @@ describe('WorkplaceInterfaceService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('establishmentExistsCheck', () => {
-    it('should call the establishmentExistsCheck endpoint', () => {
-      service.establishmentExistsCheck('1-1234567890').subscribe();
+  describe('checkIfEstablishmentExistsLocationId', () => {
+    it('should call the establishmentExistsCheck/locationId endpoint', () => {
+      service.checkIfEstablishmentExistsLocationId('1-1234567890').subscribe();
 
-      const req = http.expectOne('/api/registration/establishmentExistsCheck/1-1234567890');
-      expect(req.request.method).toBe('GET');
+      const req = http.expectOne('/api/registration/establishmentExistsCheck/locationId');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({ locationID: '1-1234567890' });
+    });
+  });
+
+  describe('checkIfEstablishmentExistsPostcodeAndName', () => {
+    it('should call the establishmentExistsCheck/postcodeAndName endpoint', () => {
+      service.checkIfEstablishmentExistsPostcodeAndName({ postcode: 'AB1 2CD', name: 'Care Home 1' }).subscribe();
+
+      const req = http.expectOne('/api/registration/establishmentExistsCheck/postcodeAndName');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({ postcode: 'AB1 2CD', name: 'Care Home 1' });
     });
   });
 });

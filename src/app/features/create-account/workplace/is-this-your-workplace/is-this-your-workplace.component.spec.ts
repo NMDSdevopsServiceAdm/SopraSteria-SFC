@@ -214,9 +214,8 @@ describe('IsThisYourWorkplaceComponent', () => {
 
     const workplaceInterfaceService = TestBed.inject(WorkplaceInterfaceService) as WorkplaceInterfaceService;
     // console.log(workplaceInterfaceService.establishmentExistsCheck);
-    spyOn(workplaceInterfaceService, 'establishmentExistsCheck').and.returnValue(of({ exists: true }));
+    spyOn(workplaceInterfaceService, 'checkIfEstablishmentExistsLocationId').and.returnValue(of({ exists: true }));
 
-    console.log(component.fixture.componentInstance.registrationService.establishmentExistsCheck);
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
     fireEvent.click(yesRadioButton);
 

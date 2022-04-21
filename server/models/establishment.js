@@ -1478,6 +1478,15 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.findByPostcodeAndName = async function (postcode, name) {
+    return await this.findAll({
+      where: {
+        [Op.and]: [{ postcode: postcode }, { NameValue: name }],
+      },
+      attributes: ['postcode', 'NameValue'],
+    });
+  };
+
   Establishment.findEstablishmentsByLocationID = async function (locationIDs) {
     return await this.findAll({
       where: {

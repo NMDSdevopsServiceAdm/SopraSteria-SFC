@@ -37,9 +37,19 @@ export abstract class WorkplaceInterfaceService {
     this.returnTo$.next(returnTo);
   }
 
-  public establishmentExistsCheck(postcodeOrLocationID: string): Observable<EstablishmentExistsResponse> {
-    return this.http.get<EstablishmentExistsResponse>(
-      `/api/registration/establishmentExistsCheck/${postcodeOrLocationID}`,
+  public checkIfEstablishmentExistsLocationId(locationID: string): Observable<EstablishmentExistsResponse> {
+    return this.http.post<EstablishmentExistsResponse>(`/api/registration/establishmentExistsCheck/locationId`, {
+      locationID,
+    });
+  }
+
+  public checkIfEstablishmentExistsPostcodeAndName(postcodeAndName: {
+    postcode: string;
+    name: string;
+  }): Observable<EstablishmentExistsResponse> {
+    return this.http.post<EstablishmentExistsResponse>(
+      `/api/registration/establishmentExistsCheck/postcodeAndName`,
+      postcodeAndName,
     );
   }
 
