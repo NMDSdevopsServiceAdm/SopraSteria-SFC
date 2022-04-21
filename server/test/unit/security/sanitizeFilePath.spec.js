@@ -17,6 +17,10 @@ describe('sanitizeFilePath', () => {
         unsafe: '~/tryingtoberoot',
         safe: 'tryingtoberoot',
       },
+      {
+        unsafe: '....//....//nowinroot',
+        safe: 'nowinroot',
+      },
     ];
 
     filenames.forEach((filename) => {
