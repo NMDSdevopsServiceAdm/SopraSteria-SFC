@@ -7,7 +7,7 @@ import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { concatMap, map, switchMap } from 'rxjs/operators';
 
 import {
   ConfirmInactiveWorkplaceDeletionComponent,
@@ -70,7 +70,14 @@ export class InactiveEmailsComponent {
   }
 
   public inactiveWorkplaceForDeletion() {
-    this.subscriptions.add(this.emailCampaignService.inactiveWorkplcesForDeletion().subscribe());
+    this.subscriptions.add(
+      this.emailCampaignService
+        .inactiveWorkplcesForDeletion()
+        .pipe(concatMap(() => this.emailCampaignService.getInactiveWorkplcesForDeletion()))
+        .subscribe((res) => {
+          this.numberOfInactiveWorkplacesForDeletion = res.numberOfInactiveWorkplacesForDeletion;
+        }),
+    );
   }
 
   private sendInactiveEmails(): void {
