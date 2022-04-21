@@ -5,7 +5,7 @@ const models = require('../../../../models');
 
 const { establishmentExistsCheck } = require('../../../../routes/registration/establishmentExistsCheck');
 
-describe('server/routes/establishments/establishmentExistsCheck', () => {
+describe.only('server/routes/establishments/establishmentExistsCheck', () => {
   let req;
   let res;
 
@@ -17,8 +17,10 @@ describe('server/routes/establishments/establishmentExistsCheck', () => {
     beforeEach(() => {
       const request = {
         method: 'GET',
-        url: '/api/establishment/establishmentExistsCheck',
-        locationId: '1-9999999',
+        url: '/api/establishment/establishmentExistsCheck/1-1234567890',
+        params: {
+          postcodeOrLocationID: '1-1234567890',
+        },
       };
 
       req = httpMocks.createRequest(request);
@@ -27,7 +29,7 @@ describe('server/routes/establishments/establishmentExistsCheck', () => {
 
     it('should return 200 with exists set to true when there is an establishment in the database with the same locationId', async () => {
       sinon.stub(models.establishment, 'findByLocationID').returns({
-        locationId: '1-9999999',
+        locationId: '1-1234567890',
       });
 
       await establishmentExistsCheck(req, res);

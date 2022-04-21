@@ -15,7 +15,7 @@ import { BehaviorSubject, of } from 'rxjs';
 
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
-fdescribe('IsThisYourWorkplaceComponent', () => {
+describe('IsThisYourWorkplaceComponent', () => {
   async function setup(searchMethod = 'locationID', locationId = '1-2123313123') {
     const component = await render(IsThisYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
@@ -204,7 +204,7 @@ fdescribe('IsThisYourWorkplaceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'select-main-service']);
   });
 
-  fit('should navigate to the confirm-details page when selecting yes when returnToConfirmDetails is not null', async () => {
+  it('should navigate to the confirm-details page when selecting yes when returnToConfirmDetails is not null', async () => {
     const { component, spy } = await setup();
 
     component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
@@ -214,7 +214,7 @@ fdescribe('IsThisYourWorkplaceComponent', () => {
 
     const workplaceInterfaceService = TestBed.inject(WorkplaceInterfaceService) as WorkplaceInterfaceService;
     // console.log(workplaceInterfaceService.establishmentExistsCheck);
-    spyOn(workplaceInterfaceService, 'establishmentExistsCheck').and.returnValue(of(true));
+    spyOn(workplaceInterfaceService, 'establishmentExistsCheck').and.returnValue(of({ exists: true }));
 
     console.log(component.fixture.componentInstance.registrationService.establishmentExistsCheck);
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);

@@ -29,9 +29,8 @@ describe('WorkplaceInterfaceService', () => {
     it('should call the establishmentExistsCheck endpoint', () => {
       service.establishmentExistsCheck('1-1234567890').subscribe();
 
-      const req = http.expectOne('/api/registration/establishmentExistsCheck');
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({ locationID: '1-1234567890' });
+      const req = http.expectOne('/api/registration/establishmentExistsCheck/1-1234567890');
+      expect(req.request.method).toBe('GET');
     });
   });
 });

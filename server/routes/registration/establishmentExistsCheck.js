@@ -2,9 +2,10 @@ const router = require('express').Router({ mergerParams: true });
 const models = require('../../models');
 
 const establishmentExistsCheck = async (req, res) => {
-  const { locationID } = req.body;
+  const { postcodeOrLocationID } = req.params;
+
   try {
-    const result = await models.establishment.findByLocationID(locationID);
+    const result = await models.establishment.findByLocationID(postcodeOrLocationID);
 
     res.status(200).json({ exists: !!result });
   } catch (error) {
@@ -15,7 +16,7 @@ const establishmentExistsCheck = async (req, res) => {
   }
 };
 
-router.route('/').post(establishmentExistsCheck);
+router.route('/:postcodeOrLocationID').get(establishmentExistsCheck);
 
 module.exports = router;
 module.exports.establishmentExistsCheck = establishmentExistsCheck;

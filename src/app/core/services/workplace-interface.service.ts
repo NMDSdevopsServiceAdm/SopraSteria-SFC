@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
+import { EstablishmentExistsResponse } from '@core/model/registration.model';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -36,8 +37,10 @@ export abstract class WorkplaceInterfaceService {
     this.returnTo$.next(returnTo);
   }
 
-  public establishmentExistsCheck(locationID: string): Observable<any> {
-    return this.http.post<any>('/api/registration/establishmentExistsCheck', { locationID });
+  public establishmentExistsCheck(postcodeOrLocationID: string): Observable<EstablishmentExistsResponse> {
+    return this.http.get<EstablishmentExistsResponse>(
+      `/api/registration/establishmentExistsCheck/${postcodeOrLocationID}`,
+    );
   }
 
   public resetService(): void {

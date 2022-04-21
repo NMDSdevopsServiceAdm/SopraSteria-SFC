@@ -105,8 +105,6 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
   }
 
   private checkIfEstablishmentExists(): void {
-    console.log('establishmentExistsCheck');
-    console.log(this.locationData.locationId);
     this.subscriptions.add(
       this.workplaceInterfaceService.establishmentExistsCheck(this.locationData.locationId).subscribe(
         (establishmentExists) => {
