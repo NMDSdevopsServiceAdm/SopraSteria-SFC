@@ -1,13 +1,14 @@
 const fs = require('fs');
 const express = require('express');
 const multer = require('multer');
-const upload = multer({ dest: './' });
+const upload = multer({ dest: './uploads/' });
 const { parse } = require('csv-parse/sync');
 const { Op } = require('sequelize');
 const { celebrate, Joi, errors, Segments } = require('celebrate');
 const sendEmail = require('../../../../services/email-campaigns/targeted-emails/sendEmail');
 const models = require('../../../../models/');
 const { getTargetedEmailTemplates } = require('./templates');
+const { sanitizeFilePath } = require('../../../../utils/security/sanitizeFilePath');
 
 const router = express.Router();
 
@@ -101,21 +102,19 @@ const createEmailCampaign = async (userID) => {
   });
 };
 
-const sanitizeFilePath = (path) => path.replace(/\.\//, '');
-
 const parseNmdsIdsIfFileExists = (file) => {
   if (!file) return null;
 
-  const path = sanitizeFilePath(file.path);
+  const path = sanitizeFilePath(file.filename, 'uploads');
   const fileData = fs.readFileSync(path, 'utf8');
-  if (fs.existsSync(path)) fs.unlinkSync(file.path);
+  if (fs.existsSync(path)) fs.unlinkSync(path);
   return parse(fileData).map((row) => row[0]);
 };
 
 const parseJSONPayloadIfExists = (data) => {
   if (!data) return null;
 
-  const path = sanitizeFilePath(data.path);
+  const path = sanitizeFilePath(data.filename, 'uploads');
   const jsonData = JSON.parse(fs.readFileSync(path, 'utf8'));
   if (fs.existsSync(path)) fs.unlinkSync(path);
   return jsonData;

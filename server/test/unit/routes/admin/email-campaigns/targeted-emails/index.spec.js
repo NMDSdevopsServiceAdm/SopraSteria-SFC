@@ -99,7 +99,7 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
           method: 'POST',
           url: '/api/admin/email-campaigns/targeted-emails/total',
           role: 'Admin',
-          file: { path: 'some-random-path' },
+          file: { filename: 'file' },
         });
 
         res = httpMocks.createResponse();
