@@ -94,10 +94,8 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
 
     if (this.form.valid) {
       if (yourWorkplace.value === 'yes') {
-        this.establishmentExistsCheck();
-        // this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
-        // this.setCurrentLocationToSelectedAddress();
-        // this.router.navigate([this.flow, this.getNextRoute()]);
+        console.log('Yes***********');
+        this.checkIfEstablishmentExists();
       } else {
         this.router.navigate([this.flow, 'find-workplace']);
       }
@@ -106,11 +104,14 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
     }
   }
 
-  private establishmentExistsCheck(): void {
+  private checkIfEstablishmentExists(): void {
+    console.log('establishmentExistsCheck');
+    console.log(this.locationData.locationId);
     this.subscriptions.add(
       this.workplaceInterfaceService.establishmentExistsCheck(this.locationData.locationId).subscribe(
         (establishmentExists) => {
           if (establishmentExists) {
+            // this.workplaceInterfaceService.setReturnTo({ url: [this.flow, 'your-workplace'] });
             this.router.navigate(['/cannot-create-account']);
           } else {
             this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
@@ -131,7 +132,6 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
   protected getNextRoute(): void {}
 
   ngOnDestroy(): void {
-    return;
     this.subscriptions.unsubscribe();
   }
 }

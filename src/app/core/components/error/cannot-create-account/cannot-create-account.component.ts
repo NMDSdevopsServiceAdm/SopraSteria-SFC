@@ -9,6 +9,10 @@ export class CannotCreateAccountComponent implements OnInit {
   constructor(public backService: BackService) {}
 
   ngOnInit(): void {
-    this.backService.setBackLink({ url: ['/'] });
+    this.setBackLink();
+  }
+
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: ['./registration', 'your-workplace'] });
   }
 }

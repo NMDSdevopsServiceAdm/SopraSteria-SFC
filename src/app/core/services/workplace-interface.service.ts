@@ -37,7 +37,7 @@ export abstract class WorkplaceInterfaceService {
   }
 
   public establishmentExistsCheck(locationID: string): Observable<any> {
-    return this.http.post('/api/registration/establishmentExistsCheck', { locationID });
+    return this.http.post<any>('/api/registration/establishmentExistsCheck', { locationID });
   }
 
   public resetService(): void {
