@@ -22,7 +22,7 @@ export class TargetedEmailsComponent implements OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public emailType = EmailType;
   public showDragAndDrop = false;
-  private nmdsIdsFileData: FormData;
+  private nmdsIdsFileData: FormData | null = null;
 
   constructor(
     public alertService: AlertService,
@@ -39,6 +39,7 @@ export class TargetedEmailsComponent implements OnDestroy {
     if (isMultipleAccounts) {
       this.totalEmails = 0;
     } else if (groupType) {
+      this.nmdsIdsFileData = null;
       this.subscriptions.add(
         this.emailCampaignService
           .getTargetedTotalEmails(groupType)
@@ -76,6 +77,7 @@ export class TargetedEmailsComponent implements OnDestroy {
           this.selectedTemplateId = '';
           this.totalEmails = 0;
           this.showDragAndDrop = false;
+          this.nmdsIdsFileData = null;
         }),
     );
   }
