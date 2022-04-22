@@ -6,12 +6,11 @@ import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
@@ -21,15 +20,6 @@ describe('IsThisYourWorkplaceComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
         BackService,
-        WorkplaceInterfaceService,
-        // {
-        //   provide: WorkplaceInterfaceService,
-        //   useValue: {
-        //     establishmentExistsCheck: () => {
-        //       return of(true) as Observable<any>;
-        //     },
-        //   },
-        // },
         {
           provide: RegistrationService,
           useValue: {
@@ -58,7 +48,9 @@ describe('IsThisYourWorkplaceComponent', () => {
             },
             manuallyEnteredWorkplace$: new BehaviorSubject(null),
             returnTo$: new BehaviorSubject(null),
-            // establishmentExistsCheck: () => false,
+            checkIfEstablishmentExists: () => {
+              return;
+            },
           },
         },
         {
@@ -172,28 +164,46 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(form.value.yourWorkplace).toBe('yes');
   });
 
-  // fit('should call the establishmentExistsCheck when selecting yes', async () => {
-  //   const { component } = await setup();
+  it('should call the establishmentExistsCheck when selecting yes', async () => {
+    const { component } = await setup();
 
-  //   // const registrationService = TestBed.inject(RegistrationService);
-  //   // const workplaceInterfaceSpy = spyOn(registrationService, 'establishmentExistsCheck').and.callThrough();
+    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
+    const registrationSpy = spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(
+      of({ exists: false }),
+    );
 
-  //   const workplaceInterfaceService = TestBed.inject(WorkplaceInterfaceService);
-  //   const workplaceInterfaceSpy = spyOn(workplaceInterfaceService, 'establishmentExistsCheck').and.callThrough();
+    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    fireEvent.click(yesRadioButton);
 
-  //   const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
-  //   fireEvent.click(yesRadioButton);
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
 
-  //   const continueButton = component.getByText('Continue');
-  //   fireEvent.click(continueButton);
+    component.fixture.detectChanges();
+    expect(registrationSpy).toHaveBeenCalledWith('1-2123313123');
+  });
 
-  //   component.fixture.detectChanges();
-  //   // expect(workplaceInterfaceSpy).toHaveBeenCalled();
-  //   expect(workplaceInterfaceSpy).toHaveBeenCalledWith('1-2123313123');
-  // });
-
-  it('should navigate to the select-main-service url when selecting yes', async () => {
+  it('should navigate to the cannot-create-account url when selecting yes, if the establishment already exists in the service', async () => {
     const { component, spy } = await setup();
+
+    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
+    spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: true }));
+
+    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    fireEvent.click(yesRadioButton);
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['registration', 'cannot-create-account'], {
+      state: { returnTo: 'registration/your-workplace' },
+    });
+  });
+
+  it('should navigate to the select-main-service url when selecting yes and the establishment does not already exist in the service', async () => {
+    const { component, spy } = await setup();
+
+    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
+    spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
     fireEvent.click(yesRadioButton);
@@ -204,17 +214,13 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'select-main-service']);
   });
 
-  it('should navigate to the confirm-details page when selecting yes when returnToConfirmDetails is not null', async () => {
+  it('should navigate to the confirm-details page when selecting yes when returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {
     const { component, spy } = await setup();
 
     component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
 
-    // const registrationService = TestBed.inject(RegistrationService);
-    // spyOn(registrationService, 'establishmentExistsCheck').and.callThrough();
-
-    const workplaceInterfaceService = TestBed.inject(WorkplaceInterfaceService) as WorkplaceInterfaceService;
-    // console.log(workplaceInterfaceService.establishmentExistsCheck);
-    spyOn(workplaceInterfaceService, 'checkIfEstablishmentExistsLocationId').and.returnValue(of({ exists: true }));
+    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
+    spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
     fireEvent.click(yesRadioButton);
@@ -223,6 +229,21 @@ describe('IsThisYourWorkplaceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+  });
+
+  it('should navigate problem-with-the-service url when there is a problem with the checkEstablishmentExistsLocationId call', async () => {
+    const { component, spy } = await setup();
+
+    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
+    spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(throwError('error'));
+
+    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    fireEvent.click(yesRadioButton);
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['/problem-with-the-service']);
   });
 
   it('should navigate back to find-workplace url when selecting no', async () => {

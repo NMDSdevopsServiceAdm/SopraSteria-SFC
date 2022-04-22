@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { SharedModule } from '@shared/shared.module';
@@ -8,10 +8,22 @@ import { render } from '@testing-library/angular';
 import { CannotCreateAccountComponent } from './cannot-create-account.component';
 
 describe('CannotCreateAccountComponent', () => {
-  async function setup() {
+  async function setup(flow = '') {
+    flow ? history.pushState({ returnTo: flow }, '') : history.replaceState({}, '');
+
     const { fixture, getByTestId } = await render(CannotCreateAccountComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [BackService],
+      providers: [
+        BackService,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { flow: 'registration' },
+            },
+          },
+        },
+      ],
     });
 
     const component = fixture.componentInstance;
@@ -40,13 +52,31 @@ describe('CannotCreateAccountComponent', () => {
     });
 
     describe('setBackLink()', () => {
-      it('should set the back link to the your-workplace url', async () => {
+      it('should set the back link to the create-account url when no returnTo state is passed, while in the registration flow', async () => {
         const { component } = await setup();
         const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
         component.setBackLink();
 
-        expect(backLinkSpy).toHaveBeenCalledWith({ url: ['./registration', 'your-workplace'] });
+        expect(backLinkSpy).toHaveBeenCalledWith({ url: ['registration/create-account'] });
+      });
+
+      it('should set the back link to the your-workplace url when returnTo state is set to registration/your-workplace, while in the registration flow', async () => {
+        const { component } = await setup('registration/your-workplace');
+        const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+        component.setBackLink();
+
+        expect(backLinkSpy).toHaveBeenCalledWith({ url: ['registration/your-workplace'] });
+      });
+
+      it('should set the back link to the select-workplace url when returnTo state is set to registration/your-workplace, while in the registration flow', async () => {
+        const { component } = await setup('registration/select-workplace');
+        const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+        component.setBackLink();
+
+        expect(backLinkSpy).toHaveBeenCalledWith({ url: ['registration/select-workplace'] });
       });
     });
   });

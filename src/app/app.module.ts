@@ -4,7 +4,6 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
@@ -97,7 +96,6 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     BenefitAccordionComponent,
     BenefitsTrainingDiscountsComponent,
     BenefitsELearningComponent,
-    CannotCreateAccountComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

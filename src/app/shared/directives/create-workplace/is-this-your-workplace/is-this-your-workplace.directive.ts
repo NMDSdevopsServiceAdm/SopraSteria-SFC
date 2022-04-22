@@ -34,7 +34,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
     public backService: BackService,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected workplaceInterfaceService: WorkplaceInterfaceService,
+    public workplaceInterfaceService: WorkplaceInterfaceService,
     protected formBuilder: FormBuilder,
   ) {}
 
@@ -105,11 +105,12 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
 
   private checkIfEstablishmentExists(): void {
     this.subscriptions.add(
-      this.workplaceInterfaceService.checkIfEstablishmentExistsLocationId(this.locationData.locationId).subscribe(
+      this.workplaceInterfaceService.checkIfEstablishmentExists(this.locationData.locationId).subscribe(
         (establishmentExists) => {
-          if (establishmentExists) {
-            // this.workplaceInterfaceService.setReturnTo({ url: [this.flow, 'your-workplace'] });
-            this.router.navigate(['/cannot-create-account']);
+          if (establishmentExists.exists) {
+            this.router.navigate([this.flow, 'cannot-create-account'], {
+              state: { returnTo: `${this.flow}/your-workplace` },
+            });
           } else {
             this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
             this.setCurrentLocationToSelectedAddress();

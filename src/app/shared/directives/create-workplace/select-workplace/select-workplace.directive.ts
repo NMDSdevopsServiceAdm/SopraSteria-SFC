@@ -124,10 +124,28 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.save();
+      this.checkIfEstablishmentExist();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  private checkIfEstablishmentExist(): void {
+    const { locationId } = this.getSelectedLocation();
+    this.subscriptions.add(
+      this.workplaceInterfaceService.checkIfEstablishmentExists(locationId).subscribe(
+        (establishmentExists) => {
+          if (establishmentExists.exists) {
+            this.router.navigate([this.flow, 'cannot-create-account'], {
+              state: { returnTo: `${this.flow}/select-workplace` },
+            });
+          } else {
+            this.save();
+          }
+        },
+        () => this.router.navigate(['/problem-with-the-service']),
+      ),
+    );
   }
 
   /**
