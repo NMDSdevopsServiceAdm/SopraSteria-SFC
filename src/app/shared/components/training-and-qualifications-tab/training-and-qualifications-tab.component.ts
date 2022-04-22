@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -16,7 +17,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   @Input() workplace: Establishment;
   @Input() workers: Worker[];
   @Input() workerCount: number;
-  @Input() trainingCounts;
+  @Input() trainingCounts: TrainingCounts;
 
   private subscriptions: Subscription = new Subscription();
 

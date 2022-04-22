@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
@@ -30,7 +31,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public canAddUser: boolean;
   public showCQCDetailsBanner = false;
   public workers: Worker[];
-  public trainingCounts = {};
+  public trainingCounts: TrainingCounts;
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
   private showBanner = false;

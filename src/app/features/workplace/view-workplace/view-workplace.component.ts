@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -31,7 +32,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public trainingAlert: number;
   public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
   public workers: Worker[];
-  public trainingCounts = {};
+  public trainingCounts: TrainingCounts;
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
 
