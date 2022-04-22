@@ -23,8 +23,8 @@
       </dd>
     </ng-container>
     <ng-template #nonPassword>
-      <dd class="govuk-summary-list__value">
-        <span innerHtml="{{ item.data }}"></span>
+      <dd class="govuk-summary-list__value asc__preline">
+        {{ item.data }}
       </dd>
     </ng-template>
     <ng-container *ngIf="item.route">

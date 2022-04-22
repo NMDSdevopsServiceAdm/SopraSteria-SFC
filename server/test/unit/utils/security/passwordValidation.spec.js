@@ -41,7 +41,7 @@ describe('isPasswordValid', () => {
   });
 
   it('should return true if password is valid', () => {
-    const result = isPasswordValid('imValidPassword1');
+    const result = isPasswordValid('imValidPassword1!');
 
     expect(result).to.equal(true);
   });

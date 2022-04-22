@@ -11,6 +11,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PASSWORD_PATTERN } from '@core/constants/constants';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { PasswordResetService } from '@core/services/password-reset.service';
@@ -54,10 +55,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
     this.form = this.fb.group({
       passwordGroup: this.fb.group(
         {
-          createPasswordInput: [
-            '',
-            [Validators.required, Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,50}')],
-          ],
+          createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
           confirmPasswordInput: ['', [Validators.required]],
         },
         { validator: CustomValidators.matchInputValues },
@@ -76,7 +74,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'createPasswordInput',
+        item: 'passwordGroup.createPasswordInput',
         type: [
           {
             name: 'required',
@@ -85,12 +83,12 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
           {
             name: 'pattern',
             message:
-              'New password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
+              'Password must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special characters like !, £',
           },
         ],
       },
       {
-        item: 'confirmPasswordInput',
+        item: 'passwordGroup.confirmPasswordInput',
         type: [
           {
             name: 'required',
