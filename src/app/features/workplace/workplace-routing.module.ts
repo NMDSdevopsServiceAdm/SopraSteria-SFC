@@ -9,6 +9,7 @@ import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
@@ -70,9 +71,11 @@ const routes: Routes = [
         data: {
           permissions: ['canViewEstablishment'],
           title: 'View Workplace',
+          workerPagination: true,
         },
         resolve: {
           users: AllUsersForEstablishmentResolver,
+          workers: WorkersResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
         },
       },

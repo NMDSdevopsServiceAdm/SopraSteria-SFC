@@ -16,6 +16,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   @Input() workplace: Establishment;
   @Input() workers: Worker[];
   @Input() workerCount: number;
+  @Input() trainingCounts;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -45,10 +46,11 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     });
     this.getAllTrainingByCategory();
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+    this.trainingTotals();
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if ('workers' in changes) {
+    if ('workers' in changes || 'trainingCounts' in changes) {
       this.trainingTotals();
     }
   }
@@ -65,24 +67,14 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   }
 
   private trainingTotals(): void {
-    this.totalRecords = 0;
-    this.totalExpiredTraining = 0;
-    this.totalExpiringTraining = 0;
-    this.missingMandatoryTraining = 0;
-    this.staffMissingMandatoryTraining = 0;
-    if (this.workers) {
-      this.workers.forEach((worker: Worker) => {
-        const totalTrainingRecord = worker.trainingCount;
-        this.totalRecords += totalTrainingRecord + worker.qualificationCount;
-        this.totalExpiredTraining += worker.expiredTrainingCount;
-        this.totalExpiringTraining += worker.expiringTrainingCount;
-        this.missingMandatoryTraining += worker.missingMandatoryTrainingCount;
-        if (worker.missingMandatoryTrainingCount > 0) this.staffMissingMandatoryTraining += 1;
-      });
-    }
+    this.totalRecords = this.trainingCounts.totalRecords;
+    this.totalExpiredTraining = this.trainingCounts.totalExpiredTraining;
+    this.totalExpiringTraining = this.trainingCounts.totalExpiringTraining;
+    this.missingMandatoryTraining = this.trainingCounts.missingMandatoryTraining;
+    this.staffMissingMandatoryTraining = this.trainingCounts.staffMissingMandatoryTraining;
   }
 
-  public handleViewTrainingByCategory(visible: boolean) {
+  public handleViewTrainingByCategory(visible: boolean): void {
     this.viewTrainingByCategory = visible;
   }
 

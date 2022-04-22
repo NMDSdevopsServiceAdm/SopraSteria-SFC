@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -19,7 +19,9 @@ import { MockNotificationsService } from '@core/test-utils/MockNotificationsServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
+import { TabComponent } from '@shared/components/tabs/tab.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -38,7 +40,7 @@ describe('view-workplace', () => {
         ]),
         HttpClientTestingModule,
       ],
-      declarations: [],
+      declarations: [TabComponent, HomeTabComponent],
       providers: [
         {
           provide: WindowRef,
@@ -72,6 +74,17 @@ describe('view-workplace', () => {
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         { provide: WorkerService, useClass: MockWorkerService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                workers: { workers: [], workerCount: 0, trainingCounts: {} },
+              },
+            },
+            queryParams: of({ view: null }),
+          },
+        },
       ],
     });
 

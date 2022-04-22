@@ -30,6 +30,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public canAddUser: boolean;
   public showCQCDetailsBanner = false;
   public workers: Worker[];
+  public trainingCounts = {};
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
   private showBanner = false;
@@ -67,7 +68,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();
       }
-
       this.setShowSecondUserBanner();
     }
 
@@ -85,10 +85,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private setWorkersAndTrainingAlert(): void {
-    const { workers = [], workerCount = 0 } = this.route.snapshot.data.workers;
+    const { workers = [], workerCount = 0, trainingCounts } = this.route.snapshot.data.workers;
 
     this.workers = workers;
     this.workerCount = workerCount;
+    this.trainingCounts = trainingCounts;
     this.workerService.setWorkers(workers);
     if (workers.length > 0) {
       this.trainingAlert = workers[0].trainingAlert;
