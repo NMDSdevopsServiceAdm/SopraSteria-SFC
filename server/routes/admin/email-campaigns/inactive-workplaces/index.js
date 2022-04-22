@@ -39,10 +39,10 @@ const inactiveWorkplacesIdsForDeletions = async (req, res) => {
     const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
     const establishmentIds = inactiveWorkplacesForDeletion.map((id) => id.establishmentID);
     await models.establishment.archiveInactiveWorkplaces(establishmentIds);
-    return res.json({ message: 'The inactive workplaces are archived' });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error });
+    return res.json({ message: 'The inactive workplaces are archived', establishmentIds: establishmentIds });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({});
   }
 };
 
