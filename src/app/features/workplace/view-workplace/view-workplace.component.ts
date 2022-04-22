@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -31,6 +32,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public trainingAlert: number;
   public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
   public workers: Worker[];
+  public trainingCounts: TrainingCounts;
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
 
@@ -74,19 +76,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
 
     if (this.canViewListOfWorkers) {
-      this.subscriptions.add(
-        this.workerService.getAllWorkers(this.workplace.uid, { pageIndex: 0, itemsPerPage: 15 }).subscribe(
-          ({ workers, workerCount }) => {
-            this.workers = workers;
-            this.workerCount = workerCount;
-            this.workerService.setWorkers(workers);
-            this.trainingAlert = this.getTrainingAlertFlag(workers);
-          },
-          (error) => {
-            console.error(error.error);
-          },
-        ),
-      );
+      this.setWorkersAndTrainingAlert();
     }
 
     this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
@@ -114,6 +104,16 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
           this.deleteWorkplace();
         }
       });
+  }
+
+  private setWorkersAndTrainingAlert(): void {
+    const { workers = [], workerCount = 0, trainingCounts } = this.route.snapshot.data.workers;
+
+    this.workers = workers;
+    this.workerCount = workerCount;
+    this.trainingCounts = trainingCounts;
+    this.workerService.setWorkers(workers);
+    this.trainingAlert = this.getTrainingAlertFlag(workers);
   }
 
   private deleteWorkplace(): void {

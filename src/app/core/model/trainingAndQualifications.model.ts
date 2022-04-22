@@ -5,3 +5,11 @@ export interface TrainingAndQualificationRecords {
   qualifications: QualificationsByGroup;
   training: TrainingRecords;
 }
+
+export interface TrainingCounts {
+  totalRecords?: number;
+  totalExpiredTraining?: number;
+  totalExpiringTraining?: number;
+  missingMandatoryTraining?: number;
+  staffMissingMandatoryTraining?: number;
+}
