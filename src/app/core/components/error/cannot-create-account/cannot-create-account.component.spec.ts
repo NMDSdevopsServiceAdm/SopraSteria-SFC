@@ -97,16 +97,16 @@ describe('CannotCreateAccountComponent', () => {
     });
 
     describe('setBackLink()', () => {
-      it('should set the back link to the create-account url when no returnTo state is passed, while in the registration flow', async () => {
+      it('should set the back link to the workplace/view-all-workplaces url when no returnTo state is passed, while in the add-workplace flow', async () => {
         const { component } = await setup('', 'add-workplace');
         const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
         component.setBackLink();
 
-        expect(backLinkSpy).toHaveBeenCalledWith({ url: ['add-workplace/start'] });
+        expect(backLinkSpy).toHaveBeenCalledWith({ url: ['workplace/view-all-workplaces'] });
       });
 
-      it('should set the back link to the your-workplace url when returnTo state is set to registration/your-workplace, while in the registration flow', async () => {
+      it('should set the back link to the your-workplace url when returnTo state is set to add-workplace/your-workplace, while in the registration flow', async () => {
         const { component } = await setup('add-workplace/your-workplace', 'add-workplace');
         const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
@@ -115,7 +115,7 @@ describe('CannotCreateAccountComponent', () => {
         expect(backLinkSpy).toHaveBeenCalledWith({ url: ['add-workplace/your-workplace'] });
       });
 
-      it('should set the back link to the select-workplace url when returnTo state is set to registration/your-workplace, while in the registration flow', async () => {
+      it('should set the back link to the select-workplace url when returnTo state is set to add-workplace/your-workplace, while in the registration flow', async () => {
         const { component } = await setup('add-workplace/select-workplace', 'add-workplace');
         const backLinkSpy = spyOn(component.backService, 'setBackLink');
 

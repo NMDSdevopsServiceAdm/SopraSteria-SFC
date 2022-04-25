@@ -32,7 +32,7 @@ export class CannotCreateAccountComponent implements OnInit {
       ? this.returnTo
       : this.flow === 'registration'
       ? `${this.flow}/create-account`
-      : `${this.flow}/start`;
+      : `workplace/view-all-workplaces`;
 
     this.backService.setBackLink({ url: [returnUrl] });
   }

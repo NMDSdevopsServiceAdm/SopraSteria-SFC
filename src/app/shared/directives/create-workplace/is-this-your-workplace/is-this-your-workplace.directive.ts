@@ -94,6 +94,8 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
 
     if (this.form.valid) {
       if (yourWorkplace.value === 'yes') {
+        this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
+        this.setCurrentLocationToSelectedAddress();
         this.checkIfEstablishmentExists();
       } else {
         this.router.navigate([this.flow, 'find-workplace']);
@@ -112,8 +114,6 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
               state: { returnTo: `${this.flow}/your-workplace` },
             });
           } else {
-            this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
-            this.setCurrentLocationToSelectedAddress();
             this.router.navigate([this.flow, this.getNextRoute()]);
           }
         },

@@ -55,7 +55,6 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   protected save(): void {
     this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
     this.workplaceInterfaceService.selectedLocationAddress$.next(this.getSelectedLocation());
-    this.router.navigate([this.flow, this.nextRoute]);
   }
 
   protected setBackLink(): void {
@@ -124,6 +123,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
+      this.save();
       this.checkIfEstablishmentExist();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
@@ -140,7 +140,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
               state: { returnTo: `${this.flow}/select-workplace` },
             });
           } else {
-            this.save();
+            this.router.navigate([this.flow, this.nextRoute]);
           }
         },
         () => this.router.navigate(['/problem-with-the-service']),
