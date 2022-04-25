@@ -189,6 +189,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       sinon
         .stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion')
         .returns(dummyInactiveWorkplacesForDeletion);
+      sinon.stub(models.establishment, 'archiveInactiveWorkplaces');
 
       const req = httpMocks.createRequest({
         method: 'GET',
