@@ -22,7 +22,7 @@ export class TargetedEmailsComponent implements OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public emailType = EmailType;
   public showDragAndDrop = false;
-  private fileToUpload: File;
+  private nmdsIdsFileData: FormData | null = null;
 
   constructor(
     public alertService: AlertService,
@@ -39,6 +39,7 @@ export class TargetedEmailsComponent implements OnDestroy {
     if (isMultipleAccounts) {
       this.totalEmails = 0;
     } else if (groupType) {
+      this.nmdsIdsFileData = null;
       this.subscriptions.add(
         this.emailCampaignService
           .getTargetedTotalEmails(groupType)
@@ -63,25 +64,30 @@ export class TargetedEmailsComponent implements OnDestroy {
   }
   private sendTargetedEmails(): void {
     this.subscriptions.add(
-      this.emailCampaignService.createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId).subscribe(() => {
-        this.alertService.addAlert({
-          type: 'success',
-          message: `${this.decimalPipe.transform(this.totalEmails)} ${
-            this.totalEmails > 1 ? 'emails have' : 'email has'
-          } been scheduled to be sent.`,
-        });
-        this.emailGroup = '';
-        this.selectedTemplateId = '';
-        this.totalEmails = 0;
-      }),
+      this.emailCampaignService
+        .createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId, this.nmdsIdsFileData)
+        .subscribe(() => {
+          this.alertService.addAlert({
+            type: 'success',
+            message: `${this.decimalPipe.transform(this.totalEmails)} ${
+              this.totalEmails > 1 ? 'emails have' : 'email has'
+            } been scheduled to be sent.`,
+          });
+          this.emailGroup = '';
+          this.selectedTemplateId = '';
+          this.totalEmails = 0;
+          this.showDragAndDrop = false;
+          this.nmdsIdsFileData = null;
+        }),
     );
   }
 
   public validateFile(file: File): void {
-    this.fileToUpload = file;
+    this.nmdsIdsFileData = new FormData();
+    this.nmdsIdsFileData.append('targetedRecipientsFile', file, file.name);
     this.emailCampaignService
-      .getTargetedTotalValidEmails(this.fileToUpload)
-      .subscribe((totalEmails: TotalEmailsResponse) => (this.totalEmails = totalEmails.totalEmails));
+      .getTargetedTotalValidEmails(this.nmdsIdsFileData)
+      .subscribe((res: TotalEmailsResponse) => (this.totalEmails = res.totalEmails));
   }
 
   ngOnDestroy(): void {

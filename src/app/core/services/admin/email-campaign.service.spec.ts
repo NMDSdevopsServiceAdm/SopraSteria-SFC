@@ -88,7 +88,7 @@ describe('EmailCampaignService', () => {
   });
 
   it('should get a list of total number of emails for multiple accounts', () => {
-    service.getTargetedTotalValidEmails(new File([], '')).subscribe();
+    service.getTargetedTotalValidEmails(new FormData()).subscribe();
 
     const http = TestBed.inject(HttpTestingController);
     const req = http.expectOne('/api/admin/email-campaigns/targeted-emails/total?groupType=multipleAccounts');

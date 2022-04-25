@@ -39,20 +39,26 @@ export class EmailCampaignService {
     return this.http.get<TemplatesResponse>('/api/admin/email-campaigns/targeted-emails/templates');
   }
 
-  getTargetedTotalValidEmails(fileToUpload: File): Observable<TotalEmailsResponse> {
-    const file: FormData = new FormData();
-    file.append('targetedRecipientsFile', fileToUpload, fileToUpload.name);
-
-    return this.http.post<TotalEmailsResponse>('/api/admin/email-campaigns/targeted-emails/total', file, {
+  getTargetedTotalValidEmails(fileFormData: FormData): Observable<TotalEmailsResponse> {
+    return this.http.post<TotalEmailsResponse>('/api/admin/email-campaigns/targeted-emails/total', fileFormData, {
       headers: { InterceptorSkipHeader: 'true' },
       params: { groupType: 'multipleAccounts' },
     });
   }
 
-  createTargetedEmailsCampaign(groupType: string, templateId: string): Observable<any> {
-    return this.http.post<any>('/api/admin/email-campaigns/targeted-emails', {
+  createTargetedEmailsCampaign(groupType: string, templateId: string, nmdsIdsFileData?: FormData): Observable<any> {
+    const payload = {
       groupType,
       templateId,
+    };
+
+    if (nmdsIdsFileData) {
+      const jsonBlob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      nmdsIdsFileData.append('jsonPayload', jsonBlob);
+    }
+
+    return this.http.post<any>('/api/admin/email-campaigns/targeted-emails', nmdsIdsFileData || payload, {
+      headers: nmdsIdsFileData ? { InterceptorSkipHeader: 'true' } : {},
     });
   }
 }
