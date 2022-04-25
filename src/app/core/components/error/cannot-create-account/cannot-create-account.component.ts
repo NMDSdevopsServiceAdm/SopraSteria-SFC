@@ -8,18 +8,32 @@ import { BackService } from '@core/services/back.service';
 })
 export class CannotCreateAccountComponent implements OnInit {
   private returnTo: string;
-  private flow: string;
+  public flow: string;
+  public title: string;
 
   constructor(public backService: BackService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.returnTo = history.state?.returnTo;
     this.flow = this.route.snapshot.data.flow;
+    this.setTitle();
     this.setBackLink();
   }
 
+  private setTitle(): void {
+    this.title =
+      this.flow === 'registration'
+        ? 'We cannot create an account for you at the moment'
+        : 'You cannot add this workplace at the moment';
+  }
+
   public setBackLink(): void {
-    const returnUrl = this.returnTo ? this.returnTo : `${this.flow}/create-account`;
+    const returnUrl = this.returnTo
+      ? this.returnTo
+      : this.flow === 'registration'
+      ? `${this.flow}/create-account`
+      : `${this.flow}/start`;
+
     this.backService.setBackLink({ url: [returnUrl] });
   }
 }

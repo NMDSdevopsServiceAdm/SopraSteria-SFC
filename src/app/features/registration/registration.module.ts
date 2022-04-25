@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { ConfirmAccountDetailsComponent } from '@features/create-account/user/confirm-account-details/confirm-account-details.component';
 import { SecurityQuestionComponent } from '@features/create-account/user/create-security-question/create-security-question.component';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
@@ -54,7 +53,6 @@ import { CreateAccountComponent } from './create-account/create-account.componen
     CouldNotFindWorkplaceAddressComponent,
     ConfirmDetailsComponent,
     AddTotalStaffComponent,
-    CannotCreateAccountComponent,
   ],
 })
 export class RegistrationModule {}

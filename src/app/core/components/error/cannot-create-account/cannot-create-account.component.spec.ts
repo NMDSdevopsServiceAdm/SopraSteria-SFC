@@ -8,8 +8,8 @@ import { render } from '@testing-library/angular';
 import { CannotCreateAccountComponent } from './cannot-create-account.component';
 
 describe('CannotCreateAccountComponent', () => {
-  async function setup(flow = '') {
-    flow ? history.pushState({ returnTo: flow }, '') : history.replaceState({}, '');
+  async function setup(returnTo = '', flow = 'registration') {
+    returnTo ? history.pushState({ returnTo }, '') : history.replaceState({}, '');
 
     const { fixture, getByTestId } = await render(CannotCreateAccountComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -19,7 +19,7 @@ describe('CannotCreateAccountComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { flow: 'registration' },
+              data: { flow },
             },
           },
         },
@@ -38,14 +38,14 @@ describe('CannotCreateAccountComponent', () => {
 
   describe('create account', () => {
     it('should render the correct heading', async () => {
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup('registration');
       const expectedHeading = 'We cannot create an account for you at the moment';
 
       expect(getByTestId('heading').textContent).toEqual(expectedHeading);
     });
 
     it('should render the correct first paragraph', async () => {
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup('registration');
       const createAccountParagraphText = 'create an account';
 
       expect(getByTestId('firstParagraph').textContent).toContain(createAccountParagraphText);
@@ -77,6 +77,51 @@ describe('CannotCreateAccountComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({ url: ['registration/select-workplace'] });
+      });
+    });
+  });
+
+  describe('add workplace', () => {
+    it('should render the correct heading', async () => {
+      const { getByTestId } = await setup('', 'add-workplace');
+      const expectedHeading = 'You cannot add this workplace at the moment';
+
+      expect(getByTestId('heading').textContent).toEqual(expectedHeading);
+    });
+
+    it('should render the correct first paragraph', async () => {
+      const { getByTestId } = await setup('', 'add-workplace');
+      const addWorkplaceParagraphText = 'add a new workplace';
+
+      expect(getByTestId('firstParagraph').textContent).toContain(addWorkplaceParagraphText);
+    });
+
+    describe('setBackLink()', () => {
+      it('should set the back link to the create-account url when no returnTo state is passed, while in the registration flow', async () => {
+        const { component } = await setup('', 'add-workplace');
+        const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+        component.setBackLink();
+
+        expect(backLinkSpy).toHaveBeenCalledWith({ url: ['add-workplace/start'] });
+      });
+
+      it('should set the back link to the your-workplace url when returnTo state is set to registration/your-workplace, while in the registration flow', async () => {
+        const { component } = await setup('add-workplace/your-workplace', 'add-workplace');
+        const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+        component.setBackLink();
+
+        expect(backLinkSpy).toHaveBeenCalledWith({ url: ['add-workplace/your-workplace'] });
+      });
+
+      it('should set the back link to the select-workplace url when returnTo state is set to registration/your-workplace, while in the registration flow', async () => {
+        const { component } = await setup('add-workplace/select-workplace', 'add-workplace');
+        const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+        component.setBackLink();
+
+        expect(backLinkSpy).toHaveBeenCalledWith({ url: ['add-workplace/select-workplace'] });
       });
     });
   });

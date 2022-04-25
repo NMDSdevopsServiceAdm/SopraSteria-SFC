@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
@@ -179,6 +180,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PaginationComponent,
     SearchInputComponent,
     WdfTabComponent,
+    CannotCreateAccountComponent,
   ],
   exports: [
     AlertComponent,
@@ -262,6 +264,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PaginationComponent,
     SearchInputComponent,
     WdfTabComponent,
+    CannotCreateAccountComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
