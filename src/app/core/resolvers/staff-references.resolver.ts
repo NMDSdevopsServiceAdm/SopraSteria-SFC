@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 import { of } from 'rxjs';
-import { catchError, take } from 'rxjs/operators';
+import { catchError, take, map } from 'rxjs/operators';
 
 @Injectable()
 export class StaffReferencesResolver implements Resolve<any> {
@@ -12,11 +12,12 @@ export class StaffReferencesResolver implements Resolve<any> {
     const establishmentUUID = route.paramMap.get('uid');
     if (establishmentUUID) {
       return this.workerService.getAllWorkers(establishmentUUID).pipe(
+        map((response) => response.workers),
         take(1),
         catchError(() => {
           this.router.navigate(['/bulk-upload']);
           return of(null);
-        })
+        }),
       );
     }
   }

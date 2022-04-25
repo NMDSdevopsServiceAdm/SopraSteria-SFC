@@ -32,6 +32,7 @@ import {
   LocalAuthoritiesReturnService,
 } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { SharedModule } from '@shared/shared.module';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 import { AdminMenuComponent } from './admin-menu/admin-menu.component';
 import { AdminComponent } from './admin.component';
@@ -44,6 +45,7 @@ import {
   CqcIndividualMainServiceChangeComponent,
 } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
+import { DragAndDropUploadComponent } from './emails/drag-and-drop-upload/drag-and-drop-upload.component';
 import { EmailsComponent } from './emails/emails.component';
 import { InactiveEmailsComponent } from './emails/inactive-emails/inactive-emails.component';
 import { TargetedEmailsComponent } from './emails/targeted-emails/targeted-emails.component';
@@ -82,6 +84,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     AdminRoutingModule,
     RouterModule,
     FormsModule,
+    NgxDropzoneModule,
   ],
   declarations: [
     AdminMenuComponent,
@@ -110,6 +113,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     InactiveEmailsComponent,
     CQCMainServiceChangeListComponent,
     ParentRequestsListComponent,
+    DragAndDropUploadComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
@@ -130,6 +134,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     EmailCampaignHistoryResolver,
     GetIndividualParentRequestResolver,
     InactiveWorkplacesForDeletionResolver,
+    DragAndDropUploadComponent,
   ],
   bootstrap: [AdminComponent],
 })

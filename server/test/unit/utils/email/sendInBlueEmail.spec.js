@@ -1,6 +1,6 @@
 const SibApiV3Sdk = require('sib-api-v3-sdk');
 const sinon = require('sinon');
-const { templateOptions } = require('../../../../routes/admin/email-campaigns/targeted-emails');
+const { templateOptions } = require('../../../../routes/admin/email-campaigns/targeted-emails/templates');
 const { sendEmail, getTemplates } = require('../../../../utils/email/sendInBlueEmail');
 
 describe('sendInBlueEmail', async () => {

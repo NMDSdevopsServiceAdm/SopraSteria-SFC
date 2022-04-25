@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -27,7 +28,12 @@ export class StaffSummaryComponent implements OnInit {
   public itemsPerPage = 15;
   private searchTerm = '';
 
-  constructor(private permissionsService: PermissionsService, private workerService: WorkerService) {}
+  constructor(
+    private permissionsService: PermissionsService,
+    private workerService: WorkerService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   public lastUpdated(timestamp: string): string {
     const lastUpdated: dayjs.Dayjs = dayjs(timestamp);
@@ -35,9 +41,11 @@ export class StaffSummaryComponent implements OnInit {
     return isToday ? 'Today' : lastUpdated.format('D MMMM YYYY');
   }
 
-  public getWorkerRecordPath(worker: Worker) {
+  public getWorkerRecordPath(event: Event, worker: Worker) {
+    event.preventDefault();
+    this.addQueryParams();
     const path = ['/workplace', this.workplace.uid, 'staff-record', worker.uid];
-    return this.wdfView ? [...path, ...['wdf-summary']] : path;
+    this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
   }
 
   ngOnInit(): void {
@@ -46,6 +54,16 @@ export class StaffSummaryComponent implements OnInit {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
+    this.setSearchIfPrevious();
+  }
+
+  private setSearchIfPrevious(): void {
+    const search = this.route.snapshot.queryParamMap.get('search');
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+
+    if (search && tab === 'staff') {
+      this.searchTerm = search;
+    }
   }
 
   public sortBy(sortType: string): void {
@@ -84,9 +102,18 @@ export class StaffSummaryComponent implements OnInit {
       });
   }
 
+  private addQueryParams(): void {
+    this.router.navigate([], {
+      fragment: 'staff-records',
+      queryParams: { search: this.searchTerm, tab: 'staff' },
+      queryParamsHandling: 'merge',
+    });
+  }
+
   public handleSearch(searchTerm: string): void {
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
+    this.addQueryParams();
     this.getPageOfWorkers();
   }
 }

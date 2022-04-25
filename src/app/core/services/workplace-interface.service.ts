@@ -1,8 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
+import { EstablishmentExistsResponse } from '@core/model/registration.model';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -25,12 +27,18 @@ export abstract class WorkplaceInterfaceService {
   public manuallyEnteredWorkplaceName$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public useDifferentLocationIdOrPostcode$: BehaviorSubject<boolean> = new BehaviorSubject(null);
 
+  constructor(protected http: HttpClient) {}
+
   public isRegulated(): boolean {
     return this.isRegulated$.value;
   }
 
   public setReturnTo(returnTo: URLStructure): void {
     this.returnTo$.next(returnTo);
+  }
+
+  public checkIfEstablishmentExists(locationID: string): Observable<EstablishmentExistsResponse> {
+    return this.http.get<EstablishmentExistsResponse>(`/api/registration/establishmentExistsCheck/${locationID}`);
   }
 
   public resetService(): void {

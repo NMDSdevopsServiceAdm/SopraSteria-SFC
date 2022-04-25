@@ -3,10 +3,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { EligibilityIconComponent } from '@shared/components/eligibility-icon/eligibility-icon.component';
 import { InsetTextComponent } from '@shared/components/inset-text/inset-text.component';
@@ -78,6 +80,10 @@ describe('MandatoryDetailsComponent', () => {
               },
             },
           },
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
         },
       ],
     });

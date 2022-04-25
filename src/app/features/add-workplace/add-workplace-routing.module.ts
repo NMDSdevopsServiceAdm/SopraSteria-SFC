@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { AddWorkplaceInProgressGuard } from '@core/guards/add-workplace-in-progress/add-workplace-in-progress.guard';
 import { AddWorkplaceCompleteComponent } from '@features/add-workplace/add-workplace-complete/add-workplace-complete.component';
 import { ConfirmWorkplaceDetailsComponent } from '@features/add-workplace/confirm-workplace-details/confirm-workplace-details.component';
@@ -120,6 +121,11 @@ const routes: Routes = [
     component: CouldNotFindWorkplaceAddressComponent,
     data: { title: 'Could not find your workplace address' },
     canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'cannot-create-account',
+    component: CannotCreateAccountComponent,
+    data: { title: 'Cannot create account', flow: 'add-workplace' },
   },
 ];
 

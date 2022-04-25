@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker, WorkersResponse } from '@core/model/worker.model';
@@ -49,7 +49,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     can: sinon.stub<['uid', 'canViewUser'], boolean>().returns(true),
   });
 
-  async function setup() {
+  async function setup(qsParamGetMock = sinon.fake()) {
     const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText } = await render(
       TrainingAndQualificationsSummaryComponent,
       {
@@ -61,6 +61,16 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
           {
             provide: WorkerService,
             useClass: MockWorkerService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                queryParamMap: {
+                  get: qsParamGetMock,
+                },
+              },
+            },
           },
         ],
         componentProperties: {
@@ -273,6 +283,35 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
 
       expect(getByText('There are no matching results')).toBeTruthy();
       expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
+    });
+  });
+
+  describe('Query search params update correctly', () => {
+    it('adds the search and tab as "training-and-qualifications" query params to the url on search', async () => {
+      const { spy, fixture, getByLabelText } = await setup();
+
+      fixture.componentInstance.showSearchBar = true;
+      fixture.detectChanges();
+
+      userEvent.type(getByLabelText('Search staff training records'), 'search term here{enter}');
+      expect(spy).toHaveBeenCalledWith([], {
+        fragment: 'training-and-qualifications',
+        queryParams: { search: 'search term here', tab: 'training' },
+        queryParamsHandling: 'merge',
+      });
+    });
+
+    it('sets the searchTerm for staff record input if query params are found on render', async () => {
+      const qsParamGetMock = sinon.stub();
+      qsParamGetMock.onCall(0).returns('mysupersearch');
+      qsParamGetMock.onCall(1).returns('training');
+
+      const { fixture, getByLabelText } = await setup(qsParamGetMock);
+
+      fixture.componentInstance.showSearchBar = true;
+      fixture.detectChanges();
+
+      expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
 });

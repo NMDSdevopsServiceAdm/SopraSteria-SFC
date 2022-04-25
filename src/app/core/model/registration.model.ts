@@ -5,3 +5,7 @@ export interface RegistrationPayload {
   establishment: LocationAddress;
   user: UserDetails;
 }
+
+export interface EstablishmentExistsResponse {
+  exists: boolean;
+}

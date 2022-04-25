@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsWorker } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -33,6 +33,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     private permissionsService: PermissionsService,
     private router: Router,
     private workerService: WorkerService,
+    private route: ActivatedRoute,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -42,6 +43,16 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.paginatedWorkers = this.workers;
     this.totalWorkerCount = this.workerCount;
     this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
+    this.setSearchIfPrevious();
+  }
+
+  private setSearchIfPrevious(): void {
+    const search = this.route.snapshot.queryParamMap.get('search');
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+
+    if (search && tab === 'training') {
+      this.searchTerm = search;
+    }
   }
 
   private setSortValue(value: string): void {
@@ -90,12 +101,22 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
 
   public getWorkerTrainingAndQualificationsPath(event: Event, worker: Worker): void {
     event.preventDefault();
+    this.addQueryParams();
     const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
   }
 
+  private addQueryParams(): void {
+    this.router.navigate([], {
+      fragment: 'training-and-qualifications',
+      queryParams: { search: this.searchTerm, tab: 'training' },
+      queryParamsHandling: 'merge',
+    });
+  }
+
   public handleSearch(searchTerm: string): void {
     this.searchTerm = searchTerm;
+    this.addQueryParams();
     this.setPageIndex(0);
   }
 }

@@ -12,6 +12,7 @@ describe('SearchInputComponent', () => {
       componentProperties: {
         accessibleLabel,
         ref,
+        prevSearch: '',
       },
     });
 
@@ -99,5 +100,15 @@ describe('SearchInputComponent', () => {
     const searchInput = component.getByLabelText('Search');
     expect(searchInput).toBeTruthy();
     expect(searchInput.id).toBe('my-input-id');
+  });
+
+  it('updates the search input and emits if a prevValue is passed in', async () => {
+    const component = await setup(null, null);
+
+    const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
+    component.fixture.componentInstance.prevSearch = 'previous search input';
+    component.fixture.detectChanges();
+
+    expect(emitSpy).toHaveBeenCalledWith('previous search input');
   });
 });

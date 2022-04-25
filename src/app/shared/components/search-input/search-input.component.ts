@@ -9,6 +9,13 @@ export class SearchInputComponent {
   @Input() ref = 'search';
   @Input() searchButtonName = 'search';
   @Input() accessibleLabel: string;
+  @Input() set prevSearch(value: string) {
+    if (value.trim() !== this.searchTerm.trim()) {
+      this.setSearchTerm(value);
+      this.setSearched(true);
+      this.emitInput.emit(this.searchTerm);
+    }
+  }
   @Output() emitInput = new EventEmitter<string>();
 
   public searched = false;
