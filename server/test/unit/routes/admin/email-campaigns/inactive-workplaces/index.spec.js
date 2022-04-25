@@ -92,11 +92,13 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
   const dummyInactiveWorkplacesForDeletion = [
     {
+      establishmentID: 1,
       name: 'Warren Care CQC 12',
       nmdsId: 'G12013414',
       address: 'Line 1 My Town My County TN37 6HR',
     },
     {
+      establishmentID: 2,
       name: 'Human Support Group Limited - Sale',
       nmdsId: 'G1901114',
       address: '59 Cross Street Sale Cheshire M33 7HF',
@@ -107,9 +109,6 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     it('should get the inactive workplaces', async () => {
       sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
       sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
-      sinon
-        .stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion')
-        .returns(dummyInactiveWorkplacesForDeletion);
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -128,7 +127,6 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     it('should return an error if inactive workplaces throws an exception', async () => {
       sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').rejects();
       sinon.stub(setParentWorkplaces, 'findParentWorkplaces').rejects();
-      sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').rejects();
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -139,6 +137,87 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
 
       const res = httpMocks.createResponse();
       await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(500);
+      expect(response).to.deep.equal({});
+    });
+  });
+
+  describe('getInactiveWorkplcesForDeletion', () => {
+    it('should get the number of inactive workplaces', async () => {
+      sinon
+        .stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion')
+        .returns(dummyInactiveWorkplacesForDeletion);
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplcesForDeletion(req, res);
+      const response = res._getJSONData();
+
+      expect(response.numberOfInactiveWorkplacesForDeletion).to.deep.equal(2);
+    });
+
+    it('should return an error if inactive workplaces for deletion throws an exception', async () => {
+      sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').rejects();
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplcesForDeletion(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(500);
+      expect(response).to.deep.equal({});
+    });
+  });
+
+  describe('inactiveWorkplacesIdsForDeletions', () => {
+    it('should get the establishmentIds of the inactive workplaces for deletion', async () => {
+      sinon
+        .stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion')
+        .returns(dummyInactiveWorkplacesForDeletion);
+      sinon.stub(models.establishment, 'archiveInactiveWorkplaces');
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions',
+      });
+
+      req.role = 'Admin';
+      const res = httpMocks.createResponse();
+
+      await inactiveWorkplaceRoutes.inactiveWorkplacesIdsForDeletions(req, res);
+      const response = res._getJSONData();
+
+      expect(response.message).to.deep.equal('The inactive workplaces are archived');
+      expect(response.establishmentIds).to.deep.equal([1, 2]);
+    });
+
+    it('should return an error if inactive workplaces ids for deletion throws an exception', async () => {
+      sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').rejects();
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.inactiveWorkplacesIdsForDeletions(req, res);
 
       const response = res._getJSONData();
 

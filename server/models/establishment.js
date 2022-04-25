@@ -1956,7 +1956,6 @@ module.exports = function (sequelize, DataTypes) {
         where: {
           id: establishmentId,
         },
-        logging: true,
       },
     );
   };
@@ -2017,6 +2016,19 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     return { ...data, pendingCount };
+  };
+
+  Establishment.archiveInactiveWorkplaces = async function (establishmentIds) {
+    return await this.update(
+      {
+        archived: true,
+      },
+      {
+        where: {
+          id: establishmentIds,
+        },
+      },
+    );
   };
 
   return Establishment;
