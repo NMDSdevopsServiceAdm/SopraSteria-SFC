@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
@@ -80,6 +80,7 @@ describe('IsThisYourWorkplaceComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const registrationService = injector.inject(RegistrationService) as RegistrationService;
 
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
@@ -88,6 +89,7 @@ describe('IsThisYourWorkplaceComponent', () => {
       component,
       router,
       spy,
+      registrationService,
     };
   }
 
@@ -165,9 +167,8 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should call the establishmentExistsCheck when selecting yes', async () => {
-    const { component } = await setup();
+    const { component, registrationService } = await setup();
 
-    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
     const registrationSpy = spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(
       of({ exists: false }),
     );
@@ -183,9 +184,8 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should navigate to the cannot-create-account url when selecting yes, if the establishment already exists in the service', async () => {
-    const { component, spy } = await setup();
+    const { component, spy, registrationService } = await setup();
 
-    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
     spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: true }));
 
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
@@ -200,9 +200,8 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should navigate to the select-main-service url when selecting yes and the establishment does not already exist in the service', async () => {
-    const { component, spy } = await setup();
+    const { component, spy, registrationService } = await setup();
 
-    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
     spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
@@ -215,11 +214,10 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should navigate to the confirm-details page when selecting yes when returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {
-    const { component, spy } = await setup();
+    const { component, spy, registrationService } = await setup();
 
     component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
 
-    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
     spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
@@ -231,10 +229,9 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
   });
 
-  it('should navigate problem-with-the-service url when there is a problem with the checkEstablishmentExistsLocationId call', async () => {
-    const { component, spy } = await setup();
+  it('should navigate to the problem-with-the-service url when there is a problem with the checkIfEstablishmentExists call', async () => {
+    const { component, spy, registrationService } = await setup();
 
-    const registrationService = TestBed.inject(RegistrationService) as RegistrationService;
     spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(throwError('error'));
 
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);

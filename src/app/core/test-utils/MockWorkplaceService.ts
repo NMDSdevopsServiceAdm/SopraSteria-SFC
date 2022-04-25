@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
+import { EstablishmentExistsResponse } from '@core/model/registration.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -63,6 +64,10 @@ export class MockWorkplaceService extends WorkplaceService {
 
   public addWorkplace(): any {
     return of('abc123');
+  }
+
+  public checkIfEstablishmentExists(locationId: string): Observable<EstablishmentExistsResponse> {
+    return of({ exists: false });
   }
 }
 
