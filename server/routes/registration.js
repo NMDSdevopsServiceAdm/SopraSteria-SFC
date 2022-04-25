@@ -8,7 +8,6 @@ const models = require('../models');
 const generateJWT = require('../utils/security/generateJWT');
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 const { authLimiter } = require('../utils/middleware/rateLimiting');
-// const pCodeCheck = require('../utils/postcodeSanitizer');
 
 router.use('/establishmentExistsCheck', require('./registration/establishmentExistsCheck'));
 
