@@ -17,7 +17,6 @@ import { tap } from 'rxjs/operators';
 @Component({
   selector: 'app-drag-and-drop-files-upload',
   templateUrl: './drag-and-drop-files-upload.component.html',
-  styleUrls: ['./drag-and-drop-files-upload.component.scss'],
 })
 export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

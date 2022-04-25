@@ -3,9 +3,7 @@
     <p class="asc-summary-box govuk-!-margin-bottom-12" data-testid="numberOfUsersToEmail">
       <span>Number of users to email:</span>
       <br />
-      <strong class="govuk-!-font-size-36" data-testid="totalEmails">
-        {{ totalEmails | number }}
-      </strong>
+      <strong class="govuk-!-font-size-36" data-testid="totalEmails">{{ totalEmails | number }}</strong>
     </p>
   </div>
   <div class="govuk-grid-column-one-third">
@@ -21,8 +19,9 @@
       <option value="primaryUsers">Primary users</option>
       <option value="parentOnly">Parent only</option>
       <option value="singleAccountsOnly">Single accounts only</option>
+      <option value="multipleAccounts">Multiple accounts</option>
     </select>
-    <label class="govuk-label" for="selectedTemplateId"> Template</label>
+    <label class="govuk-label" for="selectedTemplateId">Template</label>
     <select
       [(ngModel)]="selectedTemplateId"
       class="govuk-select govuk-!-width-full"
@@ -34,11 +33,16 @@
     </select>
   </div>
 </div>
-<div class="govuk-grid-row">
+<div *ngIf="showDragAndDrop" data-testid="dragAndDrop" class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <app-drag-and-drop-upload (fileUploadEvent)="validateFile($event)"></app-drag-and-drop-upload>
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-top-9">
   <div class="govuk-grid-column-two-thirds">
     <button
       class="govuk-button"
-      [disabled]="emailGroup === '' || selectedTemplateId === ''"
+      [disabled]="emailGroup === '' || selectedTemplateId === '' || totalEmails === 0"
       (click)="confirmSendEmails($event, totalEmails)"
       type="submit"
     >
