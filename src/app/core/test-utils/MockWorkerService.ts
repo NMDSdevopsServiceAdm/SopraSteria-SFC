@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { MultipleTrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
-import { Worker, WorkerEditResponse } from '@core/model/worker.model';
+import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
+import { build, fake, oneOf, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
-
-const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 
 export const workerBuilder = build('Worker', {
   fields: {
@@ -41,7 +41,7 @@ export const workerBuilder = build('Worker', {
       qualificationId: 1,
     },
     nurseSpecialism: null,
-    wdfEligible: false,
+    wdfEligible: perBuild(() => false),
     trainingCount: 0,
     expiredTrainingCount: 0,
     expiringTrainingCount: 0,
@@ -49,7 +49,7 @@ export const workerBuilder = build('Worker', {
     qualificationCount: 0,
     fluJab: null,
     longTermAbsence: null,
-    completed: false,
+    completed: perBuild(() => false),
   },
 });
 
@@ -154,6 +154,8 @@ export const AllWorkers = [
     },
   },
 ] as Worker[];
+
+export const getAllWorkersResponse = { workers: AllWorkers, workerCount: AllWorkers.length };
 
 export const qualificationsByGroup = {
   count: 3,
@@ -262,8 +264,8 @@ export class MockWorkerService extends WorkerService {
     },
   ] as Worker[]);
 
-  getAllWorkers(establishmentUid: string): Observable<Worker[]> {
-    return of(AllWorkers);
+  getAllWorkers(establishmentUid: string, queryParams?: Params): Observable<WorkersResponse> {
+    return of(getAllWorkersResponse);
   }
 
   createMultipleTrainingRecords(): Observable<MultipleTrainingResponse> {

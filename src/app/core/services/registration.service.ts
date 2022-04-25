@@ -16,8 +16,8 @@ export class RegistrationService extends WorkplaceInterfaceService {
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
   public termsAndConditionsCheckbox$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  constructor(private http: HttpClient) {
-    super();
+  constructor(protected http: HttpClient) {
+    super(http);
   }
 
   public postRegistration(registrationPayload: RegistrationPayload): Observable<any> {

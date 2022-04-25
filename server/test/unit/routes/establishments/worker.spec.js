@@ -24,10 +24,10 @@ describe('worker route', () => {
     sinon.stub(models.worker, 'findOne').callsFake(async (args) => {
       return args.i === 3 ? {} : worker;
     });
-    sinon.stub(models.worker, 'create').callsFake(async (args) => {
+    sinon.stub(models.worker, 'create').callsFake(async () => {
       return worker;
     });
-    sinon.stub(models.worker, 'update').callsFake(async (args) => {
+    sinon.stub(models.worker, 'update').callsFake(async () => {
       const mockWorker = {
         get: () => {
           return worker;
@@ -35,10 +35,10 @@ describe('worker route', () => {
       };
       return [1, [mockWorker]];
     });
-    sinon.stub(models.workerAudit, 'bulkCreate').callsFake(async (args) => {
+    sinon.stub(models.workerAudit, 'bulkCreate').callsFake(async () => {
       return {};
     });
-    sinon.stub(models.establishment, 'findOne').callsFake(async (args) => {
+    sinon.stub(models.establishment, 'findOne').callsFake(async () => {
       return establishment;
     });
   });
@@ -155,6 +155,7 @@ describe('worker route', () => {
         mainJob: {
           id: sequence(),
           title: fake((f) => f.name.jobTitle()),
+          get: () => fake((f) => f.name.jobTitle()),
         },
         CompletedValue: true,
         created: fake((f) => f.date.past(1).toISOString()),
@@ -166,12 +167,13 @@ describe('worker route', () => {
     });
 
     const worker = workerBuilder();
+    let workersAndTrainingStub;
+
     beforeEach(() => {
-      sinon.stub(models.establishment, 'workersAndTraining').returns([
-        {
-          workers: [worker],
-        },
-      ]);
+      workersAndTrainingStub = sinon.stub(models.establishment, 'workersAndTraining').returns({
+        rows: [{ workers: [worker] }],
+        count: 1,
+      });
     });
 
     afterEach(() => {
@@ -182,9 +184,6 @@ describe('worker route', () => {
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/api/establishment/123/worker',
-        params: {
-          establishmentId: 123,
-        },
       });
 
       req.username = 'aylingw';
@@ -192,6 +191,7 @@ describe('worker route', () => {
       req.establishment = {
         id: 123,
       };
+      req.establishmentId = 123;
 
       const res = httpMocks.createResponse();
       await workerRoute.viewAllWorkers(req, res);
@@ -220,6 +220,90 @@ describe('worker route', () => {
       expect(typeof res._getData().workers[0].expiredTrainingCount).to.equal('number');
       expect(typeof res._getData().workers[0].expiringTrainingCount).to.equal('number');
       expect(typeof res._getData().workers[0].missingMandatoryTrainingCount).to.equal('number');
+      expect(res._getData().workerCount).to.equal(1);
+    });
+
+    it('should call workersAndTraining with pagination and sort parameters if passed', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/establishment/123/worker',
+        query: {
+          pageIndex: 1,
+          itemsPerPage: 200,
+          sortBy: 'someSort',
+        },
+      });
+
+      req.username = 'aylingw';
+      req.userUid = '1234';
+      req.establishment = {
+        id: 123,
+      };
+      req.establishmentId = 123;
+
+      const res = httpMocks.createResponse();
+      await workerRoute.viewAllWorkers(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(workersAndTrainingStub.args[0]).to.deep.equal([123, false, false, 200, 1, 'someSort', undefined]);
+    });
+
+    it('should accept a searchTerm from the request for the where clause', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/establishment/123/worker',
+        query: {
+          searchTerm: 'worker123',
+        },
+      });
+
+      req.username = 'anyone';
+      req.userUid = '1234';
+      req.establishmentId = 123;
+      req.establishment = {
+        id: 123,
+      };
+
+      const res = httpMocks.createResponse();
+      await workerRoute.viewAllWorkers(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(workersAndTrainingStub.args[0]).to.deep.equal([
+        123,
+        false,
+        false,
+        undefined,
+        undefined,
+        undefined,
+        'worker123',
+      ]);
+    });
+
+    it('returns the worker count as zero and an empty workers array if no workers are found', async () => {
+      workersAndTrainingStub.returns({
+        rows: [],
+        count: 0,
+      });
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/establishment/123/worker',
+        query: {
+          searchTerm: 'worker123',
+        },
+      });
+
+      req.username = 'anyone';
+      req.userUid = '1234';
+      req.establishmentId = 123;
+      req.establishment = {
+        id: 123,
+      };
+
+      const res = httpMocks.createResponse();
+      await workerRoute.viewAllWorkers(req, res);
+
+      expect(res._getData().workers).to.deep.equal([]);
+      expect(res._getData().workerCount).to.equal(0);
     });
   });
 

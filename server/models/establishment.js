@@ -1160,6 +1160,7 @@ module.exports = function (sequelize, DataTypes) {
         'updated',
         'Status',
         'EstablishmentUID',
+        'IsRegulated',
       ],
       where: params,
       order: [['created', 'DESC']],
@@ -1492,10 +1493,15 @@ module.exports = function (sequelize, DataTypes) {
     establishmentId,
     includeMandatoryTrainingBreakdown = false,
     isParent = false,
+    limit = 0,
+    pageIndex = 0,
+    sortBy = 'staffNameAsc',
+    searchTerm = '',
   ) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
     const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+    const offset = pageIndex * limit;
 
     let attributes = [
       'id',
@@ -1610,7 +1616,34 @@ module.exports = function (sequelize, DataTypes) {
       ];
     }
 
-    return this.findAll({
+    const workerPagination = {
+      subQuery: false,
+      limit,
+      offset,
+    };
+
+    const order = {
+      staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
+      staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
+      jobRoleAsc: [[sequelize.literal('"workers.mainJob.jobRoleName"'), 'ASC']],
+      jobRoleDesc: [[sequelize.literal('"workers.mainJob.jobRoleName"'), 'DESC']],
+      wdfMeeting: [['workers', 'wdfEligible', 'DESC']],
+      wdfNotMeeting: [['workers', 'wdfEligible', 'ASC']],
+      trainingExpiringSoon: [
+        [sequelize.literal('"workers.expiringTrainingCount"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+      trainingExpired: [
+        [sequelize.literal('"workers.expiredTrainingCount"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+      trainingMissing: [
+        [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+    }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
+
+    return this.findAndCountAll({
       attributes: ['id', 'NameValue'],
       where: {
         [Op.or]: [
@@ -1627,18 +1660,30 @@ module.exports = function (sequelize, DataTypes) {
           attributes,
           where: {
             archived: false,
+            ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
           },
-          required: false,
+          required: true,
           include: [
             {
               model: sequelize.models.job,
               as: 'mainJob',
-              attributes: ['id', 'title'],
+              attributes: [
+                'id',
+                'title',
+                [
+                  sequelize.literal(
+                    '(SELECT CASE WHEN "workers"."MainJobFkOther" IS NOT NULL THEN "workers"."MainJobFkOther" ELSE "JobName" END)',
+                  ),
+                  'jobRoleName',
+                ],
+              ],
               required: false,
             },
           ],
         },
       ],
+      order,
+      ...(limit ? workerPagination : {}),
     });
   };
 
@@ -1911,6 +1956,7 @@ module.exports = function (sequelize, DataTypes) {
         where: {
           id: establishmentId,
         },
+        logging: true,
       },
     );
   };
@@ -1929,6 +1975,48 @@ module.exports = function (sequelize, DataTypes) {
       attributes: ['id', 'dataPermissions', 'dataOwner', 'parentId', 'nmdsId', 'isParent'],
       where,
     });
+  };
+
+  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 0, pageIndex = 0, searchTerm = '') {
+    const offset = pageIndex * limit;
+
+    const data = await this.findAndCountAll({
+      attributes: ['uid', 'updated', 'NameValue', 'dataOwner', 'dataPermissions', 'dataOwnershipRequested', 'ustatus'],
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name'],
+        },
+      ],
+      where: {
+        ParentUID: establishmentUid,
+        ustatus: {
+          [Op.or]: {
+            [Op.ne]: 'REJECTED',
+            [Op.is]: null,
+          },
+        },
+        ...(searchTerm ? { NameValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
+      },
+      order: [
+        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
+        ['updated', 'DESC'],
+      ],
+      limit,
+      offset,
+    });
+
+    const pendingCount = await Establishment.count({
+      where: {
+        ParentUID: establishmentUid,
+        ustatus: {
+          [Op.or]: [['PENDING', 'IN PROGRESS']],
+        },
+      },
+    });
+
+    return { ...data, pendingCount };
   };
 
   return Establishment;

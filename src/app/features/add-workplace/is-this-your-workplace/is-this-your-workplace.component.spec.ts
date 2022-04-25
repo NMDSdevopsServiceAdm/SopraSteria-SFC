@@ -11,7 +11,7 @@ import { MockLocationService } from '@core/test-utils/MockLocationService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
@@ -57,6 +57,9 @@ describe('IsThisYourWorkplaceComponent', () => {
             },
             manuallyEnteredWorkplace$: new BehaviorSubject(null),
             returnTo$: new BehaviorSubject(null),
+            checkIfEstablishmentExists: () => {
+              return;
+            },
           },
         },
         {
@@ -86,6 +89,7 @@ describe('IsThisYourWorkplaceComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const workplaceService = injector.inject(WorkplaceService) as WorkplaceService;
 
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
@@ -94,6 +98,7 @@ describe('IsThisYourWorkplaceComponent', () => {
       component,
       router,
       spy,
+      workplaceService,
     };
   }
 
@@ -170,8 +175,25 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(form.value.yourWorkplace).toBe('yes');
   });
 
-  it('should navigate to the select-main-serice url when selecting yes', async () => {
-    const { component, spy } = await setup();
+  it('should call the establishmentExistsCheck when selecting yes', async () => {
+    const { component, workplaceService } = await setup();
+
+    const workplaceSpy = spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
+
+    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    fireEvent.click(yesRadioButton);
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    component.fixture.detectChanges();
+    expect(workplaceSpy).toHaveBeenCalledWith('1-2123313123');
+  });
+
+  it('should navigate to the select-main-serice url when selecting yes and the establishment does not already exist in the service', async () => {
+    const { component, spy, workplaceService } = await setup();
+
+    spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
     fireEvent.click(yesRadioButton);
@@ -182,12 +204,14 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
   });
 
-  it('should navigate to the confirm-workplace-details page when selecting yes if returnToConfirmDetails is not null', async () => {
-    const { component, spy } = await setup();
+  it('should navigate to the confirm-workplace-details page when selecting yes if returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {
+    const { component, spy, workplaceService } = await setup();
 
     component.fixture.componentInstance.returnToConfirmDetails = {
       url: ['add-workplace', 'confirm-workplace-details'],
     };
+
+    spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
     fireEvent.click(yesRadioButton);
@@ -196,6 +220,20 @@ describe('IsThisYourWorkplaceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
+  });
+
+  it('should navigate to the problem-with-the-service url when there is a problem with the checkIfEstablishmentExists call', async () => {
+    const { component, spy, workplaceService } = await setup();
+
+    spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(throwError('error'));
+
+    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    fireEvent.click(yesRadioButton);
+
+    const continueButton = component.getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(spy).toHaveBeenCalledWith(['/problem-with-the-service']);
   });
 
   it('should navigate back to find-workplace url when selecting no', async () => {

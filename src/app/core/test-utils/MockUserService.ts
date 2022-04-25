@@ -100,6 +100,8 @@ const subsid3 = Object.assign({}, subsid2);
 subsid3.ustatus = 'IN PROGRESS';
 subsid3.name = 'Third Subsid';
 
+export { subsid1, subsid2, subsid3 };
+
 @Injectable()
 export class MockUserService extends UserService {
   private subsidiaries = 2;
@@ -145,6 +147,7 @@ export class MockUserService extends UserService {
       },
     } as GetWorkplacesResponse);
   }
+
   public getAllUsersForEstablishment(workplaceUid: string): Observable<Array<UserDetails>> {
     if (workplaceUid === 'overLimit') {
       return of([ReadUser(), ReadUser(), ReadUser(), EditUser(), EditUser(), EditUser()] as UserDetails[]);

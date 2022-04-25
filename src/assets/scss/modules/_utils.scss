@@ -71,6 +71,14 @@
   display: flex;
 }
 
+.govuk__flex-stack {
+  display: flex;
+  flex-direction: column;
+  @media screen and (min-width: 641px) {
+    flex-direction: row;
+  }
+}
+
 .govuk__align-items-unset {
   align-items: unset;
 }
@@ -113,4 +121,8 @@
 .asc-icon-align {
   position: relative;
   top: 4px;
+}
+
+.asc__preline {
+  white-space: pre-line;
 }

@@ -45,6 +45,7 @@ describe('TrainingAndQualificationsTabComponent', () => {
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
+        trainingCounts: {},
       },
     });
 

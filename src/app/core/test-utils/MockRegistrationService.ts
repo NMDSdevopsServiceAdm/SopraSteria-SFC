@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
+import { EstablishmentExistsResponse } from '@core/model/registration.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
 import { RegistrationService } from '@core/services/registration.service';
@@ -56,6 +57,10 @@ export class MockRegistrationService extends RegistrationService {
 
   public getUsernameDuplicate(username: string): Observable<any> {
     return of({ status: username === 'duplicate' ? '1' : '0' });
+  }
+
+  public checkIfEstablishmentExists(locationId: string): Observable<EstablishmentExistsResponse> {
+    return of({ exists: false });
   }
 }
 

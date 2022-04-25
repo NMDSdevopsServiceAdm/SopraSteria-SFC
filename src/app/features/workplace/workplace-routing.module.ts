@@ -4,10 +4,12 @@ import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edi
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
+import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
@@ -51,6 +53,7 @@ const routes: Routes = [
   {
     path: 'view-all-workplaces',
     component: ViewMyWorkplacesComponent,
+    resolve: { childWorkplaces: ChildWorkplacesResolver },
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
   },
@@ -68,9 +71,11 @@ const routes: Routes = [
         data: {
           permissions: ['canViewEstablishment'],
           title: 'View Workplace',
+          workerPagination: true,
         },
         resolve: {
           users: AllUsersForEstablishmentResolver,
+          workers: WorkersResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
         },
       },

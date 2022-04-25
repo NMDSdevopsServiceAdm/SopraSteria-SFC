@@ -139,6 +139,7 @@ export interface WorkerWdfRecord {
 
 export interface WorkersResponse {
   workers: Worker[];
+  workerCount: number;
 }
 
 export interface WorkerEditResponse {

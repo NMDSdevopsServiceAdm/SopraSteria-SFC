@@ -36,6 +36,7 @@ describe('PendingRegistrationRequestsComponent', () => {
                     workplaceUid: 'someuid',
                     status: 'PENDING',
                     created: new Date('01/01/2021'),
+                    isRegulated: true,
                   },
                   {
                     name: 'Workplace 2',
@@ -44,6 +45,7 @@ describe('PendingRegistrationRequestsComponent', () => {
                     workplaceUid: 'anotheruid',
                     status: 'IN PROGRESS',
                     created: new Date('02/01/2021'),
+                    isRegulated: false,
                   },
                 ],
               },
@@ -73,23 +75,27 @@ describe('PendingRegistrationRequestsComponent', () => {
     const workplace1Postcode = component.queryByText('PO5 3CO');
     const workplace1ParentId = component.queryByText('J234567');
     const workplace1Status = component.queryByText('PENDING');
-    const workplace1Created = component.queryByText('01 Jan 2021 12:00 AM');
+    const workplace1Created = component.queryByText('01 Jan 2021 00:00');
+    const workplace1IsRegulated = component.queryByText('Yes');
 
     const workplace2Name = component.queryByText('Workplace 2');
     const workplace2Postcode = component.queryByText('AS4 8DS');
     const workplace2Status = component.queryByText('IN PROGRESS');
-    const workplace2Created = component.queryByText('01 Feb 2021 12:00 AM');
+    const workplace2Created = component.queryByText('01 Feb 2021 00:00');
+    const workplace2IsRegulated = component.queryByText('No');
 
     expect(workplace1Name).toBeTruthy();
     expect(workplace1Postcode).toBeTruthy();
     expect(workplace1ParentId).toBeTruthy();
     expect(workplace1Status).toBeTruthy();
     expect(workplace1Created).toBeTruthy();
+    expect(workplace1IsRegulated).toBeTruthy();
 
     expect(workplace2Name).toBeTruthy();
     expect(workplace2Postcode).toBeTruthy();
     expect(workplace2Status).toBeTruthy();
     expect(workplace2Created).toBeTruthy();
+    expect(workplace2IsRegulated).toBeTruthy();
   });
 
   it('should give status a conditional class for different values', async () => {

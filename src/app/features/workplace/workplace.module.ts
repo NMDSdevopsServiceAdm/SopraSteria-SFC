@@ -2,6 +2,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
@@ -89,6 +90,12 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ChangeExpiresSoonAlertsComponent,
     UsersComponent,
   ],
-  providers: [DialogService, WorkplaceResolver, UserAccountResolver, ExpiresSoonAlertDatesResolver],
+  providers: [
+    DialogService,
+    WorkplaceResolver,
+    UserAccountResolver,
+    ExpiresSoonAlertDatesResolver,
+    ChildWorkplacesResolver,
+  ],
 })
 export class WorkplaceModule {}

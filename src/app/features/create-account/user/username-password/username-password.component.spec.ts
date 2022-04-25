@@ -270,7 +270,7 @@ describe('UsernamePasswordComponent', () => {
     expect(form.invalid).toBeTruthy();
     expect(
       component.getAllByText(
-        'Password must be at least 8 characters long and have uppercase letters, lowercase letters and numbers',
+        'Password must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special characters like !, £',
         { exact: false },
       ).length,
     ).toBe(2);
