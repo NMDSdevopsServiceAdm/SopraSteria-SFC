@@ -1,25 +1,20 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { FormBuilder } from '@angular/forms';
 import { BrowserModule, By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
-import { BulkUploadModule } from '../bulk-upload.module';
-import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.component';
+import { DragAndDropUploadComponent } from './drag-and-drop-upload.component';
 
-describe('DragAndDropFilesUploadComponent', () => {
+describe('DragAndDropUploadComponent', () => {
   const getDragAndDropFilesUploadComponent = async () => {
-    return await render(DragAndDropFilesUploadComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, BulkUploadModule],
-      providers: [
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
-        { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
-      ],
-      declarations: [DragAndDropFilesUploadComponent],
+    return await render(DragAndDropUploadComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, NgxDropzoneModule],
+      providers: [FormBuilder],
+      declarations: [DragAndDropUploadComponent],
     });
   };
 
@@ -28,13 +23,14 @@ describe('DragAndDropFilesUploadComponent', () => {
     const fixture = component.fixture;
     const compInst = component.fixture.componentInstance;
     const fileInput = fixture.debugElement.query(By.css('#drag-and-drop input'));
+    const validFile = new File(['some file content'], 'establishments.csv');
 
     const triggerFileInput = () => {
       fileInput.triggerEventHandler('change', {
         target: {
           files: {
             item: () => {
-              return new File(['some file content'], 'worker.csv');
+              return validFile;
             },
             length: 1,
           },
@@ -69,18 +65,25 @@ describe('DragAndDropFilesUploadComponent', () => {
 
     const http = TestBed.inject(HttpTestingController);
 
-    return { fixture, component, compInst, triggerFileInput, triggerInvalidFileInput, http };
+    return {
+      fixture,
+      component,
+      compInst,
+      triggerFileInput,
+      triggerInvalidFileInput,
+      http,
+      validFile,
+      fileInput,
+    };
   };
 
-  describe('ngx dropzone', () => {
-    it('should dispatch event to handler on component', async () => {
-      const { compInst, triggerFileInput } = await setup();
-      spyOn(compInst, 'onSelect');
+  it('should dispatch event to handler on component', async () => {
+    const { compInst, triggerFileInput } = await setup();
+    spyOn(compInst, 'onSelect');
 
-      triggerFileInput();
+    triggerFileInput();
 
-      expect(compInst.onSelect).toHaveBeenCalled();
-    });
+    expect(compInst.onSelect).toHaveBeenCalled();
   });
 
   it('should display error if wrong type uploaded', async () => {
@@ -109,14 +112,33 @@ describe('DragAndDropFilesUploadComponent', () => {
   });
 
   describe('file upload', () => {
-    it('should post the files to be uploaded', async () => {
-      const { triggerFileInput, http } = await setup();
+    it('should emit a file upload event when a file is dropped onto the target', async () => {
+      const { triggerFileInput, compInst, validFile } = await setup();
 
+      const fileUploadEmitSpy = spyOn(compInst.fileUploadEvent, 'emit');
       triggerFileInput();
 
-      const establishmentId = TestBed.inject(EstablishmentService).primaryWorkplace.uid;
-      const requests = http.match(`/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
-      expect(requests.length).toEqual(1);
+      expect(fileUploadEmitSpy).toHaveBeenCalledWith(validFile);
+    });
+
+    it('should not emit a file upload event when invalid file is dropped onto the target', async () => {
+      const { triggerInvalidFileInput, compInst } = await setup();
+
+      const fileUploadEmitSpy = spyOn(compInst.fileUploadEvent, 'emit');
+      triggerInvalidFileInput();
+
+      expect(fileUploadEmitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should display an error message and not emit the event if the user attempts to upload multiple files', async () => {
+      const { fixture, compInst, component, validFile } = await setup();
+
+      const fileUploadEmitSpy = spyOn(compInst.fileUploadEvent, 'emit');
+      compInst.onSelect({ rejectedFiles: [validFile], addedFiles: [validFile] });
+      fixture.detectChanges();
+
+      expect(fileUploadEmitSpy).not.toHaveBeenCalled();
+      expect(component.queryByText('You can only upload single files.')).toBeTruthy();
     });
   });
 });
