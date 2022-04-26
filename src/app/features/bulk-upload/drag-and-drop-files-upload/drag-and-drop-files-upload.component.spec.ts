@@ -5,7 +5,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { BulkUploadModule } from '../bulk-upload.module';
@@ -14,7 +13,7 @@ import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.co
 describe('DragAndDropFilesUploadComponent', () => {
   const getDragAndDropFilesUploadComponent = async () => {
     return await render(DragAndDropFilesUploadComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, BulkUploadModule],
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadModule],
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
@@ -47,7 +46,6 @@ describe('DragAndDropFilesUploadComponent', () => {
         },
       });
     };
-
     const triggerInvalidFileInput = () => {
       fileInput.triggerEventHandler('change', {
         target: {

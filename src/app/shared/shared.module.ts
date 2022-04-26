@@ -29,7 +29,6 @@ import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-d
 import { CharacterCountComponent } from './components/character-count/character-count.component';
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { DetailsComponent } from './components/details/details.component';
-import { ValidationErrorMessageComponent } from './components/drag-and-drop/validation-error-message/validation-error-message.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
@@ -181,7 +180,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PaginationComponent,
     SearchInputComponent,
     WdfTabComponent,
-    ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
   ],
   exports: [
@@ -266,7 +264,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PaginationComponent,
     SearchInputComponent,
     WdfTabComponent,
-    ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
