@@ -32,7 +32,7 @@ const dbLimiter = isCI
     }
   : new RateLimit({
       ...rateLimiterConfig,
-      max: 200,
+      max: 1000,
       prefix: 'db:',
     });
 
