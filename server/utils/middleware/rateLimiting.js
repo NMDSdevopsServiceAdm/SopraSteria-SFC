@@ -13,7 +13,7 @@ const rateLimiterConfig = {
   store,
   delayMs: 0, // disable delaying - full speed until the max limit is reached
   passIfNotConnected: true,
-  windowMs: 60 * 1000,
+  windowMs: 5000,
 };
 
 const authLimiter = isCI
