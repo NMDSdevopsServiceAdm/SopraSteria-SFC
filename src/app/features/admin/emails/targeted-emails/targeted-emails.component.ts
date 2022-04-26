@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EmailType, TotalEmailsResponse } from '@core/model/emails.model';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
@@ -14,16 +14,13 @@ import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-co
   templateUrl: './targeted-emails.component.html',
   styleUrls: ['./targeted-emails.component.scss'],
 })
-export class TargetedEmailsComponent implements OnDestroy {
+export class TargetedEmailsComponent {
   public totalEmails = 0;
   public emailGroup = '';
   public selectedTemplateId = '';
   public templates = this.route.snapshot.data.emailTemplates.templates;
   private subscriptions: Subscription = new Subscription();
   public emailType = EmailType;
-  public showDragAndDrop = false;
-  private nmdsIdsFileData: FormData | null = null;
-
   constructor(
     public alertService: AlertService,
     public dialogService: DialogService,
@@ -31,15 +28,11 @@ export class TargetedEmailsComponent implements OnDestroy {
     private emailCampaignService: EmailCampaignService,
     private decimalPipe: DecimalPipe,
   ) {}
-
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
   public updateTotalEmails(groupType: string): void {
-    const isMultipleAccounts = groupType === 'multipleAccounts';
-    this.showDragAndDrop = isMultipleAccounts;
-
-    if (isMultipleAccounts) {
-      this.totalEmails = 0;
-    } else if (groupType) {
-      this.nmdsIdsFileData = null;
+    if (groupType) {
       this.subscriptions.add(
         this.emailCampaignService
           .getTargetedTotalEmails(groupType)
@@ -49,7 +42,6 @@ export class TargetedEmailsComponent implements OnDestroy {
       this.totalEmails = 0;
     }
   }
-
   public confirmSendEmails(event: Event, emailCount: number): void {
     event.preventDefault();
     this.subscriptions.add(
@@ -64,33 +56,17 @@ export class TargetedEmailsComponent implements OnDestroy {
   }
   private sendTargetedEmails(): void {
     this.subscriptions.add(
-      this.emailCampaignService
-        .createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId, this.nmdsIdsFileData)
-        .subscribe(() => {
-          this.alertService.addAlert({
-            type: 'success',
-            message: `${this.decimalPipe.transform(this.totalEmails)} ${
-              this.totalEmails > 1 ? 'emails have' : 'email has'
-            } been scheduled to be sent.`,
-          });
-          this.emailGroup = '';
-          this.selectedTemplateId = '';
-          this.totalEmails = 0;
-          this.showDragAndDrop = false;
-          this.nmdsIdsFileData = null;
-        }),
+      this.emailCampaignService.createTargetedEmailsCampaign(this.emailGroup, this.selectedTemplateId).subscribe(() => {
+        this.alertService.addAlert({
+          type: 'success',
+          message: `${this.decimalPipe.transform(this.totalEmails)} ${
+            this.totalEmails > 1 ? 'emails have' : 'email has'
+          } been scheduled to be sent.`,
+        });
+        this.emailGroup = '';
+        this.selectedTemplateId = '';
+        this.totalEmails = 0;
+      }),
     );
-  }
-
-  public validateFile(file: File): void {
-    this.nmdsIdsFileData = new FormData();
-    this.nmdsIdsFileData.append('targetedRecipientsFile', file, file.name);
-    this.emailCampaignService
-      .getTargetedTotalValidEmails(this.nmdsIdsFileData)
-      .subscribe((res: TotalEmailsResponse) => (this.totalEmails = res.totalEmails));
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }

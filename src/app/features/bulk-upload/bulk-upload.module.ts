@@ -48,6 +48,7 @@ import { BulkUploadHelpMainPageComponent } from './help-area/bulk-upload-help-ma
 import { BulkUploadTopTipPageComponent } from './help-area/bulk-upload-top-tip-page/bulk-upload-top-tip-page.component';
 import { ReportDownloadLinkComponent } from './report-download-link/report-download-link.component';
 import { UploadWarningDialogComponent } from './upload-warning-dialog/upload-warning-dialog.component';
+import { ValidationErrorMessageComponent } from './validation-error-message/validation-error-message.component';
 
 @NgModule({
   imports: [
@@ -69,6 +70,7 @@ import { UploadWarningDialogComponent } from './upload-warning-dialog/upload-war
     FileValidateStatusComponent,
     ErrorDetailsTableComponent,
     WarningDetailsTableComponent,
+    ValidationErrorMessageComponent,
     WorkplaceReferencesComponent,
     StaffReferencesComponent,
     MissingWorkplaceReferencesComponent,
