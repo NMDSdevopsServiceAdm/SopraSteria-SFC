@@ -12,7 +12,14 @@ export class HttpInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (API_PATTERN.test(request.url)) {
-      const cloned = request.clone({ headers: request.headers.set('Content-Type', 'application/json') });
+      let cloned;
+
+      if (request.headers.has('InterceptorSkipHeader')) {
+        const headers = request.headers.delete('InterceptorSkipHeader');
+        cloned = request.clone({ headers });
+      } else {
+        cloned = request.clone({ headers: request.headers.set('Content-Type', 'application/json') });
+      }
 
       return next.handle(cloned).pipe(
         debounceTime(500),
