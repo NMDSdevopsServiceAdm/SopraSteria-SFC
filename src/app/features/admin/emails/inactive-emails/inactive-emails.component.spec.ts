@@ -27,6 +27,7 @@ describe('InactiveEmailsComponent', () => {
               data: {
                 emailCampaignHistory: [],
                 inactiveWorkplaces: { inactiveWorkplaces: 0 },
+                inactiveWorkplaceForDeletion: { inactiveWorkplacesForDeletion: 0 },
                 emailTemplates: {
                   templates: [],
                 },
@@ -187,6 +188,49 @@ describe('InactiveEmailsComponent', () => {
         const numInactiveWorkplaces = component.getByTestId('inactiveWorkplaces');
         expect(numInactiveWorkplaces.innerHTML).toContain('0');
       });
+    });
+  });
+
+  describe('Inactive workplaces for deletion', () => {
+    it('should display the total number of Inactive workplaces to be deleted', async () => {
+      const component = await setup();
+
+      const numberOfInactiveWorkplacesForDeletion = component.getByTestId('inactiveWorkplacesToDelete');
+      expect(numberOfInactiveWorkplacesForDeletion.innerHTML).toContain('Number of inactive workplaces to delete:');
+    });
+
+    it('should display the total number of emails to be sent', async () => {
+      const component = await setup();
+
+      component.fixture.componentInstance.numberOfInactiveWorkplacesForDeletion = 125;
+      component.fixture.detectChanges();
+
+      const numberOfInactiveWorkplacesToDelete = component.getByTestId('numberOfInactiveWorkplacesToDelete');
+      expect(numberOfInactiveWorkplacesToDelete.innerHTML).toContain('125');
+    });
+
+    it('should disable the "Delete inactive accounts" button when there are no inactive workplaces', async () => {
+      const component = await setup();
+
+      component.fixture.componentInstance.numberOfInactiveWorkplacesForDeletion = 0;
+      component.fixture.detectChanges();
+
+      const deleteInactiveAccountsButton = component.fixture.nativeElement.querySelectorAll('button')[1];
+      expect(deleteInactiveAccountsButton.disabled).toBeTruthy();
+    });
+
+    it('should call confirmDeleteInactiveAccounts when the "delete inactive accounts" button is clicked', async () => {
+      const component = await setup();
+
+      component.fixture.componentInstance.numberOfInactiveWorkplacesForDeletion = 25;
+      component.fixture.detectChanges();
+
+      fireEvent.click(component.getByText('Delete inactive accounts', { exact: false }));
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const dialogHeader = within(dialog).getByTestId('delete-inactive-accounts-confirmation-header');
+
+      expect(dialogHeader).toBeTruthy();
     });
   });
 });

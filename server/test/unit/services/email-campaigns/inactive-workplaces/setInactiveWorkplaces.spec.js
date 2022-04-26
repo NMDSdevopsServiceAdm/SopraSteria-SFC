@@ -3,7 +3,7 @@ const moment = require('moment');
 const sinon = require('sinon');
 
 const models = require('../../../../../models');
-const findInactiveWorkplaces = require('../../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
+const setInactiveWorkplaces = require('../../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplaces');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   afterEach(() => {
@@ -99,7 +99,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       },
     ]);
 
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+    const inactiveWorkplaces = await setInactiveWorkplaces.findInactiveWorkplaces();
     expect(inactiveWorkplaces).to.deep.equal(dummyInactiveWorkplaces);
   });
 
@@ -140,7 +140,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
         },
       ]);
 
-      const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
+      const inactiveWorkplaces = await setInactiveWorkplaces.findInactiveWorkplaces();
       expect(inactiveWorkplaces.length).to.equal(0);
     });
   });
