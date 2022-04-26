@@ -86,13 +86,4 @@ describe('EmailCampaignService', () => {
     expect(req.request.body.groupType).toEqual('primaryUsers');
     expect(req.request.body.templateId).toEqual('1');
   });
-
-  it('should get a list of total number of emails for multiple accounts', () => {
-    service.getTargetedTotalValidEmails(new FormData()).subscribe();
-
-    const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/email-campaigns/targeted-emails/total?groupType=multipleAccounts');
-
-    expect(req.request.method).toBe('POST');
-  });
 });
