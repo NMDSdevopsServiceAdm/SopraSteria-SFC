@@ -2000,7 +2000,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       order: [
         [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
-        ['updated', 'DESC'],
+        ['NameValue', 'ASC'],
       ],
       limit,
       offset,
