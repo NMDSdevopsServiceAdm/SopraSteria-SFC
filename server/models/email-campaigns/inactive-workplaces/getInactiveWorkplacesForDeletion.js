@@ -19,6 +19,7 @@ const getInactiveWorkplacesForDeletion = async () => {
     "IsParent",
     "LastLogin",
     "LastUpdated",
+    "DataOwner",
     "Address1",
     "Town",
     "County",

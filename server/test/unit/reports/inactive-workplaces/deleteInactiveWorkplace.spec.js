@@ -12,8 +12,9 @@ describe('reports/inactive-workplaces/parents.js', () => {
       EstablishmentID: 1,
       NameValue: 'workplace name test',
       NmdsID: 'G1101344',
-      lastLogin: '2015-03-01',
-      lastUpdated: '2015-03-01',
+      LastLogin: '2019-10-10',
+      LastUpdated: '2019-10-10',
+      DataOwner: 'Workplace',
       Address1: '1 paddington Avenue',
       Town: 'Westminster',
       County: 'London',
@@ -21,12 +22,15 @@ describe('reports/inactive-workplaces/parents.js', () => {
     };
 
     const transformedWorkplace = transformInactiveWorkplacesForDeletion(workplace);
-    const rows = deleteInactiveWorkplaceWorksheetBuilder.buildRows([transformedWorkplace]);
 
+    const rows = deleteInactiveWorkplaceWorksheetBuilder.buildRows([transformedWorkplace]);
     expect(rows).to.deep.equal([
       {
         workplaceNmdsId: 'G1101344',
         workplaceName: 'workplace name test',
+        lastLogin: '2019-10-10',
+        lastUpdated: '2019-10-10',
+        dataOwner: 'Workplace',
         address: '1 paddington Avenue Westminster London W2 1HB',
       },
     ]);
