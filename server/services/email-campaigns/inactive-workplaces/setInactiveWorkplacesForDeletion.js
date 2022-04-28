@@ -7,11 +7,18 @@ const transformInactiveWorkplacesForDeletion = (inactiveWorkplace) => {
   const name = inactiveWorkplace.NameValue;
   const nmdsId = inactiveWorkplace.NmdsID;
   const establishmentID = inactiveWorkplace.EstablishmentID;
+  const lastLogin = inactiveWorkplace.LastLogin;
+  const lastUpdated = inactiveWorkplace.LastUpdated;
+  const dataOwner = inactiveWorkplace.DataOwner;
   const address = formattedAddress(inactiveWorkplace);
+
   return {
     name,
     nmdsId,
     address,
+    lastLogin,
+    lastUpdated,
+    dataOwner,
     establishmentID,
   };
 };
