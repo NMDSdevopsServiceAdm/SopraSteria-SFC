@@ -315,21 +315,16 @@ class TrainingCsvValidator {
     const myCategory = parseInt(this._currentLine.CATEGORY, 10);
 
     if (Number.isNaN(myCategory) || this.BUDI.trainingCategory(this.BUDI.TO_ASC, myCategory) === null) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: TrainingCsvValidator.CATEGORY_ERROR,
-        errType: 'CATEGORY_ERROR',
-        error: 'CATEGORY has not been supplied',
-        source: this._currentLine.CATEGORY,
-        column: 'CATEGORY',
-      });
+      this._addValidationError(
+        'CATEGORY_ERROR',
+        'CATEGORY has not been supplied',
+        this._currentLine.CATEGORY,
+        'CATEGORY',
+      );
       return false;
-    } else {
-      this._category = myCategory;
-      return true;
     }
+    this._category = myCategory;
+    return true;
   }
 
   _validateAccredited() {

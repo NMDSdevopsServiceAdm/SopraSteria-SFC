@@ -7,27 +7,27 @@ const TrainingCsvValidator = require('../../../classes/trainingCSVValidator').Tr
 const mappings = require('../../../../../reference/BUDIMappings').mappings;
 
 describe('trainingCSVValidator', () => {
-  describe('validate()', () => {
-    describe('accredited', () => {
-      let trainingCsv;
+  describe('Validation', () => {
+    let trainingCsv;
 
-      beforeEach(() => {
-        trainingCsv = {
-          LOCALESTID: 'foo',
-          UNIQUEWORKERID: 'bar',
-          CATEGORY: 1,
-          DESCRIPTION: 'training',
-          DATECOMPLETED: '',
-          EXPIRYDATE: '',
-          ACCREDITED: '',
-          NOTES: '',
-        };
-      });
+    beforeEach(() => {
+      trainingCsv = {
+        LOCALESTID: 'foo',
+        UNIQUEWORKERID: 'bar',
+        CATEGORY: 1,
+        DESCRIPTION: 'training',
+        DATECOMPLETED: '',
+        EXPIRYDATE: '',
+        ACCREDITED: '',
+        NOTES: '',
+      };
+    });
 
+    describe('_validateAccredited()', () => {
       it('should pass validation if no ACCREDITED is provided', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
-        await validator.validate();
+        await validator._validateAccredited();
 
         expect(validator._validationErrors).to.deep.equal([]);
       });
@@ -37,10 +37,10 @@ describe('trainingCSVValidator', () => {
 
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
-        await validator.validate();
+        await validator._validateAccredited();
 
         expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator.accredited).to.equal('Yes');
+        expect(validator._accredited).to.equal('Yes');
       });
 
       it('should pass validation and set accredited to No if ACCREDITED is 0', async () => {
@@ -48,10 +48,10 @@ describe('trainingCSVValidator', () => {
 
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
-        await validator.validate();
+        await validator._validateAccredited();
 
         expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator.accredited).to.equal('No');
+        expect(validator._accredited).to.equal('No');
       });
 
       it("should pass validation and set ACCREDITED to Don't know if ACCREDITED is 999", async () => {
@@ -59,10 +59,10 @@ describe('trainingCSVValidator', () => {
 
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
-        await validator.validate();
+        await validator._validateAccredited();
 
         expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator.accredited).to.equal("Don't know");
+        expect(validator._accredited).to.equal("Don't know");
       });
 
       it('should add ACCREDITED_ERROR to validationErrors if invalid ACCREDITED is provided', async () => {
@@ -70,7 +70,7 @@ describe('trainingCSVValidator', () => {
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
-        await validator.validate();
+        await validator._validateAccredited();
 
         expect(validator._validationErrors).to.deep.equal([
           {
@@ -84,6 +84,59 @@ describe('trainingCSVValidator', () => {
             worker: 'bar',
           },
         ]);
+      });
+    });
+
+    describe('_validateCategory()', () => {
+      it('should add CATEGORY_ERROR to validationErrors if string containing letters is provided for Category', async () => {
+        trainingCsv.CATEGORY = 'bob';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateCategory();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1050,
+            errType: 'CATEGORY_ERROR',
+            error: 'CATEGORY has not been supplied',
+            lineNumber: 1,
+            name: 'foo',
+            source: 'bob',
+            column: 'CATEGORY',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add CATEGORY_ERROR to validationErrors if the Category provided is not a valid category number', async () => {
+        trainingCsv.CATEGORY = 41;
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateCategory();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1050,
+            errType: 'CATEGORY_ERROR',
+            error: 'CATEGORY has not been supplied',
+            lineNumber: 1,
+            name: 'foo',
+            source: 41,
+            column: 'CATEGORY',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should pass validation and set CATEGORY if CATEGORY provided is a valid category', async () => {
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+        await validator._validateCategory();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._category).to.equal(1);
       });
     });
   });
