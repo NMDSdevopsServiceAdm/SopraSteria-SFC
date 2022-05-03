@@ -377,26 +377,21 @@ class TrainingCsvValidator {
   }
 
   _validateNotes() {
-    const myNotes = this._currentLine.NOTES;
+    const notes = this._currentLine.NOTES;
     const MAX_LENGTH = 1000;
 
-    if (myNotes && myNotes.length > 0) {
-      if (myNotes.length > MAX_LENGTH) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: TrainingCsvValidator.NOTES_ERROR,
-          errType: 'NOTES_ERROR',
-          error: `NOTES is longer than ${MAX_LENGTH} characters`,
-          source: this._currentLine.NOTES,
-          column: 'NOTES',
-        });
-        return false;
-      } else {
-        this._notes = myNotes;
-        return true;
+    if (notes && notes.length > 0) {
+      if (notes.length > MAX_LENGTH) {
+        this._addValidationError(
+          'NOTES_ERROR',
+          `NOTES is longer than ${MAX_LENGTH} characters`,
+          this._currentLine.NOTES,
+          'NOTES',
+        );
+        return;
       }
+
+      this._notes = notes;
     }
   }
 
