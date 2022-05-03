@@ -312,40 +312,38 @@ class TrainingCsvValidator {
   }
 
   _validateCategory() {
-    const myCategory = parseInt(this._currentLine.CATEGORY, 10);
+    const category = parseInt(this._currentLine.CATEGORY, 10);
 
-    if (Number.isNaN(myCategory) || this.BUDI.trainingCategory(this.BUDI.TO_ASC, myCategory) === null) {
+    if (Number.isNaN(category) || this.BUDI.trainingCategory(this.BUDI.TO_ASC, category) === null) {
       this._addValidationError(
         'CATEGORY_ERROR',
         'CATEGORY has not been supplied',
         this._currentLine.CATEGORY,
         'CATEGORY',
       );
-      return false;
+      return;
     }
-    this._category = myCategory;
-    return true;
+
+    this._category = category;
   }
 
   _validateAccredited() {
     if (this._currentLine.ACCREDITED) {
-      const myAccredited = parseInt(this._currentLine.ACCREDITED, 10);
+      const accredited = parseInt(this._currentLine.ACCREDITED, 10);
       const ALLOWED_VALUES = [0, 1, 999];
 
-      if (Number.isNaN(myAccredited) || !ALLOWED_VALUES.includes(myAccredited)) {
+      if (Number.isNaN(accredited) || !ALLOWED_VALUES.includes(accredited)) {
         this._addValidationError(
           'ACCREDITED_ERROR',
           'ACCREDITED is invalid',
           this._currentLine.ACCREDITED,
           'ACCREDITED',
         );
-        return false;
+        return;
       }
 
-      this._accredited = this._convertAccreditedValue(myAccredited);
+      this._accredited = this._convertAccreditedValue(accredited);
     }
-
-    return true;
   }
 
   _convertAccreditedValue(key) {
