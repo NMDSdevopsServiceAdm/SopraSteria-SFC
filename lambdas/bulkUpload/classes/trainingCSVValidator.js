@@ -342,20 +342,20 @@ class TrainingCsvValidator {
         return false;
       }
 
-      switch (myAccredited) {
-        case 0:
-          this._accredited = 'No';
-          break;
-        case 1:
-          this._accredited = 'Yes';
-          break;
-        case 999:
-          this._accredited = "Don't know";
-          break;
-      }
+      this._accredited = this._convertAccreditedValue(myAccredited);
     }
 
     return true;
+  }
+
+  _convertAccreditedValue(key) {
+    const accreditedValues = {
+      0: 'No',
+      1: 'Yes',
+      999: "Don't know",
+    };
+
+    return accreditedValues[key] || '';
   }
 
   _transformTrainingCategory() {
