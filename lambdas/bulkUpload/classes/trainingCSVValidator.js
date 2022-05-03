@@ -336,35 +336,31 @@ class TrainingCsvValidator {
     if (this._currentLine.ACCREDITED) {
       const myAccredited = parseInt(this._currentLine.ACCREDITED, 10);
       const ALLOWED_VALUES = [0, 1, 999];
+
       if (Number.isNaN(myAccredited) || !ALLOWED_VALUES.includes(myAccredited)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: TrainingCsvValidator.ACCREDITED_ERROR,
-          errType: 'ACCREDITED_ERROR',
-          error: 'ACCREDITED is invalid',
-          source: this._currentLine.ACCREDITED,
-          column: 'ACCREDITED',
-        });
+        this._addValidationError(
+          'ACCREDITED_ERROR',
+          'ACCREDITED is invalid',
+          this._currentLine.ACCREDITED,
+          'ACCREDITED',
+        );
         return false;
-      } else {
-        switch (myAccredited) {
-          case 0:
-            this._accredited = 'No';
-            break;
-          case 1:
-            this._accredited = 'Yes';
-            break;
-          case 999:
-            this._accredited = "Don't know";
-            break;
-        }
-        return true;
       }
-    } else {
-      return true;
+
+      switch (myAccredited) {
+        case 0:
+          this._accredited = 'No';
+          break;
+        case 1:
+          this._accredited = 'Yes';
+          break;
+        case 999:
+          this._accredited = "Don't know";
+          break;
+      }
     }
+
+    return true;
   }
 
   _transformTrainingCategory() {
@@ -411,6 +407,19 @@ class TrainingCsvValidator {
     }
   }
 
+  _addValidationError(errorType, errorMessage, errorSource, columnName) {
+    this._validationErrors.push({
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+      lineNumber: this._lineNumber,
+      errCode: TrainingCsvValidator[errorType],
+      errType: errorType,
+      error: errorMessage,
+      source: errorSource,
+      column: columnName,
+    });
+  }
+
   // returns true on success, false is any attribute of TrainingCsvValidator fails
   validate() {
     let status = true;
@@ -427,11 +436,7 @@ class TrainingCsvValidator {
   }
 
   transform() {
-    let status = true;
-
-    status = !this._transformTrainingCategory() ? false : status;
-
-    return status;
+    this._transformTrainingCategory();
   }
 
   toJSON() {

@@ -7,10 +7,12 @@ const TrainingCsvValidator = require('../../../classes/trainingCSVValidator').Tr
 const mappings = require('../../../../../reference/BUDIMappings').mappings;
 
 describe('trainingCSVValidator', () => {
-  describe('validations', () => {
-    it('should pass validation if no ACCREDITED is provided', async () => {
-      const validator = new TrainingCsvValidator(
-        {
+  describe('validate()', () => {
+    describe('accredited', () => {
+      let trainingCsv;
+
+      beforeEach(() => {
+        trainingCsv = {
           LOCALESTID: 'foo',
           UNIQUEWORKERID: 'bar',
           CATEGORY: 1,
@@ -19,86 +21,70 @@ describe('trainingCSVValidator', () => {
           EXPIRYDATE: '',
           ACCREDITED: '',
           NOTES: '',
-        },
-        2,
-        mappings,
-      );
+        };
+      });
 
-      // Regular validation has to run first for the establishment to populate the internal properties correctly
-      await validator.validate();
+      it('should pass validation if no ACCREDITED is provided', async () => {
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
-      // call the method
-      await validator.transform();
+        await validator.validate();
 
-      // assert a error was returned
-      expect(validator._validationErrors).to.deep.equal([]);
-      expect(validator._validationErrors.length).to.equal(0);
-    });
+        expect(validator._validationErrors).to.deep.equal([]);
+      });
 
-    it('should pass validation if ACCREDITED is provided', async () => {
-      const validator = new TrainingCsvValidator(
-        {
-          LOCALESTID: 'foo',
-          UNIQUEWORKERID: 'bar',
-          CATEGORY: 1,
-          DESCRIPTION: 'training',
-          DATECOMPLETED: '',
-          EXPIRYDATE: '',
-          ACCREDITED: '1',
-          NOTES: '',
-        },
-        2,
-        mappings,
-      );
+      it('should pass validation and set accredited to Yes if ACCREDITED is 1', async () => {
+        trainingCsv.ACCREDITED = '1';
 
-      // Regular validation has to run first for the establishment to populate the internal properties correctly
-      await validator.validate();
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
-      // call the method
-      await validator.transform();
+        await validator.validate();
 
-      // assert a error was returned
-      expect(validator._validationErrors).to.deep.equal([]);
-      expect(validator._validationErrors.length).to.equal(0);
-      expect(validator.accredited).to.equal('Yes');
-    });
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator.accredited).to.equal('Yes');
+      });
 
-    it('should fail validation if invalid ACCREDITED is provided', async () => {
-      const validator = new TrainingCsvValidator(
-        {
-          LOCALESTID: 'foo',
-          UNIQUEWORKERID: 'bar',
-          CATEGORY: 1,
-          DESCRIPTION: 'training',
-          DATECOMPLETED: '',
-          EXPIRYDATE: '',
-          ACCREDITED: '3',
-          NOTES: '',
-        },
-        1,
-        mappings,
-      );
+      it('should pass validation and set accredited to No if ACCREDITED is 0', async () => {
+        trainingCsv.ACCREDITED = '0';
 
-      // Regular validation has to run first for the establishment to populate the internal properties correctly
-      await validator.validate();
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
-      // call the method
-      await validator.transform();
+        await validator.validate();
 
-      // assert a error was returned
-      expect(validator._validationErrors).to.deep.equal([
-        {
-          errCode: 1060,
-          errType: 'ACCREDITED_ERROR',
-          error: 'ACCREDITED is invalid',
-          lineNumber: 1,
-          name: 'foo',
-          source: '3',
-          column: 'ACCREDITED',
-          worker: 'bar',
-        },
-      ]);
-      expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator.accredited).to.equal('No');
+      });
+
+      it("should pass validation and set ACCREDITED to Don't know if ACCREDITED is 999", async () => {
+        trainingCsv.ACCREDITED = '999';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+        await validator.validate();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator.accredited).to.equal("Don't know");
+      });
+
+      it('should add ACCREDITED_ERROR to validationErrors if invalid ACCREDITED is provided', async () => {
+        trainingCsv.ACCREDITED = '3';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator.validate();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1060,
+            errType: 'ACCREDITED_ERROR',
+            error: 'ACCREDITED is invalid',
+            lineNumber: 1,
+            name: 'foo',
+            source: '3',
+            column: 'ACCREDITED',
+            worker: 'bar',
+          },
+        ]);
+      });
     });
   });
 });
