@@ -7,8 +7,9 @@ import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { concatMap, map, switchMap } from 'rxjs/operators';
 
+import { ConfirmInactiveWorkplaceDeletionComponent } from '../dialogs/confirm-inactive-workplace-deletion/confirm-inactive-workplace-deletion';
 import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
@@ -18,6 +19,8 @@ import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-co
 })
 export class InactiveEmailsComponent {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
+  public numberOfInactiveWorkplacesForDeletion =
+    this.route.snapshot.data.inactiveWorkplaceForDeletion.numberOfInactiveWorkplacesForDeletion;
   public templates = this.route.snapshot.data.emailTemplates.templates;
   public history = this.route.snapshot.data.emailCampaignHistory;
   private subscriptions: Subscription = new Subscription();
@@ -44,6 +47,31 @@ export class InactiveEmailsComponent {
           if (hasConfirmed) {
             this.sendInactiveEmails();
           }
+        }),
+    );
+  }
+
+  public confirmDeleteInactiveAccounts(event: Event, numberOfInactiveWorkplacesForDeletion: number): void {
+    event.preventDefault();
+
+    this.subscriptions.add(
+      this.dialogService
+        .open(ConfirmInactiveWorkplaceDeletionComponent, { numberOfInactiveWorkplacesForDeletion })
+        .afterClosed.subscribe((hasConfirmed) => {
+          if (hasConfirmed) {
+            this.inactiveWorkplaceForDeletion();
+          }
+        }),
+    );
+  }
+
+  public inactiveWorkplaceForDeletion() {
+    this.subscriptions.add(
+      this.emailCampaignService
+        .inactiveWorkplcesForDeletion()
+        .pipe(concatMap(() => this.emailCampaignService.getInactiveWorkplcesForDeletion()))
+        .subscribe((res) => {
+          this.numberOfInactiveWorkplacesForDeletion = res.numberOfInactiveWorkplacesForDeletion;
         }),
     );
   }

@@ -3,8 +3,9 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 
 const report = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces/report');
-const findInactiveWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
-const findParentWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
+const setInactiveWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplaces');
+const setParentWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
+const setInactiveWorkplacesForDeletion = require('../../../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () => {
   const dummyInactiveWorkplaces = [
@@ -45,8 +46,9 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
   });
 
   it('should generate a report', async () => {
-    sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
-    sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns([]);
+    sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+    sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns([]);
+    sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').returns([]);
 
     const req = httpMocks.createRequest({
       method: 'GET',

@@ -3,14 +3,15 @@ const router = express.Router();
 const moment = require('moment');
 
 const models = require('../../../../models');
-const findInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
-const findParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
+const setInactiveWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplaces');
+const setInactiveWorkplacesForDeletion = require('../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
+const setParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 
 const getInactiveWorkplaces = async (_req, res) => {
   try {
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const inactiveWorkplaces = await setInactiveWorkplaces.findInactiveWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
     return res.json({
       inactiveWorkplaces: inactiveWorkplaces.length + parentWorkplaces.length,
@@ -18,6 +19,29 @@ const getInactiveWorkplaces = async (_req, res) => {
   } catch (err) {
     console.error(err);
 
+    return res.status(500).json({});
+  }
+};
+
+const getInactiveWorkplcesForDeletion = async (req, res) => {
+  try {
+    const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
+
+    return res.json({ numberOfInactiveWorkplacesForDeletion: inactiveWorkplacesForDeletion.length });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({});
+  }
+};
+
+const inactiveWorkplacesIdsForDeletions = async (req, res) => {
+  try {
+    const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
+    const establishmentIds = inactiveWorkplacesForDeletion.map((id) => id.establishmentID);
+    await models.establishment.archiveInactiveWorkplaces(establishmentIds);
+    return res.json({ message: 'The inactive workplaces are archived', establishmentIds: establishmentIds });
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({});
   }
 };
@@ -32,8 +56,8 @@ const createCampaign = async (req, res) => {
       type: type,
     });
 
-    const inactiveWorkplaces = await findInactiveWorkplaces.findInactiveWorkplaces();
-    const parentWorkplaces = await findParentWorkplaces.findParentWorkplaces();
+    const inactiveWorkplaces = await setInactiveWorkplaces.findInactiveWorkplaces();
+    const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
     const totalInactiveWorkplaces = inactiveWorkplaces.concat(parentWorkplaces);
     const history = totalInactiveWorkplaces.map((workplace) => {
@@ -85,6 +109,8 @@ const getHistory = async (_req, res) => {
 };
 
 router.route('/').get(getInactiveWorkplaces);
+router.route('/inactiveWorkplacesForDeletion').get(getInactiveWorkplcesForDeletion);
+router.route('/inactiveWorkplacesIdsForDeletions').post(inactiveWorkplacesIdsForDeletions);
 router.route('/').post(createCampaign);
 router.route('/history').get(getHistory);
 router.use('/report', require('./report'));
@@ -93,3 +119,5 @@ module.exports = router;
 module.exports.createCampaign = createCampaign;
 module.exports.getHistory = getHistory;
 module.exports.getInactiveWorkplaces = getInactiveWorkplaces;
+module.exports.getInactiveWorkplcesForDeletion = getInactiveWorkplcesForDeletion;
+module.exports.inactiveWorkplacesIdsForDeletions = inactiveWorkplacesIdsForDeletions;

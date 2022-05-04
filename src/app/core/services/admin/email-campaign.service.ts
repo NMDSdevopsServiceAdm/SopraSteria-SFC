@@ -11,6 +11,14 @@ export class EmailCampaignService {
     return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces');
   }
 
+  getInactiveWorkplcesForDeletion(): Observable<any> {
+    return this.http.get<any>('/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion');
+  }
+
+  inactiveWorkplcesForDeletion(): Observable<any> {
+    return this.http.post<any>('/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions', {});
+  }
+
   createInactiveWorkplacesCampaign(): Observable<any> {
     return this.http.post<any>('/api/admin/email-campaigns/inactive-workplaces', {});
   }
@@ -39,10 +47,26 @@ export class EmailCampaignService {
     return this.http.get<TemplatesResponse>('/api/admin/email-campaigns/targeted-emails/templates');
   }
 
-  createTargetedEmailsCampaign(groupType: string, templateId: string): Observable<any> {
-    return this.http.post<any>('/api/admin/email-campaigns/targeted-emails', {
+  getTargetedTotalValidEmails(fileFormData: FormData): Observable<TotalEmailsResponse> {
+    return this.http.post<TotalEmailsResponse>('/api/admin/email-campaigns/targeted-emails/total', fileFormData, {
+      headers: { InterceptorSkipHeader: 'true' },
+      params: { groupType: 'multipleAccounts' },
+    });
+  }
+
+  createTargetedEmailsCampaign(groupType: string, templateId: string, nmdsIdsFileData?: FormData): Observable<any> {
+    const payload = {
       groupType,
       templateId,
+    };
+
+    if (nmdsIdsFileData) {
+      const jsonBlob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+      nmdsIdsFileData.append('jsonPayload', jsonBlob);
+    }
+
+    return this.http.post<any>('/api/admin/email-campaigns/targeted-emails', nmdsIdsFileData || payload, {
+      headers: nmdsIdsFileData ? { InterceptorSkipHeader: 'true' } : {},
     });
   }
 }

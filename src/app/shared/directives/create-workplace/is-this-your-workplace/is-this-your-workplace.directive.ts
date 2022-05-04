@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -9,9 +9,10 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { Subscription } from 'rxjs';
 
 @Directive()
-export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
+export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
@@ -25,6 +26,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
   public searchMethod: string;
   public revealTitle: string;
   public returnToConfirmDetails: URLStructure;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     protected errorSummaryService: ErrorSummaryService,
@@ -32,7 +34,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
     public backService: BackService,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected workplaceInterfaceService: WorkplaceInterfaceService,
+    public workplaceInterfaceService: WorkplaceInterfaceService,
     protected formBuilder: FormBuilder,
   ) {}
 
@@ -94,7 +96,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
       if (yourWorkplace.value === 'yes') {
         this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
         this.setCurrentLocationToSelectedAddress();
-        this.router.navigate([this.flow, this.getNextRoute()]);
+        this.checkIfEstablishmentExists();
       } else {
         this.router.navigate([this.flow, 'find-workplace']);
       }
@@ -103,10 +105,31 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit {
     }
   }
 
+  private checkIfEstablishmentExists(): void {
+    this.subscriptions.add(
+      this.workplaceInterfaceService.checkIfEstablishmentExists(this.locationData.locationId).subscribe(
+        (establishmentExists) => {
+          if (establishmentExists.exists) {
+            this.router.navigate([this.flow, 'cannot-create-account'], {
+              state: { returnTo: `${this.flow}/your-workplace` },
+            });
+          } else {
+            this.router.navigate([this.flow, this.getNextRoute()]);
+          }
+        },
+        () => this.router.navigate(['/problem-with-the-service']),
+      ),
+    );
+  }
+
   private setCurrentLocationToSelectedAddress(): void {
     this.workplaceInterfaceService.selectedLocationAddress$.next(this.locationData);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected getNextRoute(): void {}
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 }

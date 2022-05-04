@@ -1,3 +1,5 @@
+const setInactiveWorkplaces = require('../../services/email-campaigns/inactive-workplaces/setInactiveWorkplaces');
+
 const buildRow = (workplace) => {
   return {
     workplace: workplace.name,
@@ -34,7 +36,15 @@ const addWorksheet = (workbook) => {
   return worksheet;
 };
 
+const generateInactiveWorkplacesTab = async (workbook) => {
+  const inactiveWorkplaces = await setInactiveWorkplaces.findInactiveWorkplaces();
+  const inactiveWorksheet = addWorksheet(workbook);
+  const inactiveWorkplaceRows = buildRows(inactiveWorkplaces);
+  inactiveWorksheet.addRows(inactiveWorkplaceRows);
+};
+
 module.exports = {
+  generateInactiveWorkplacesTab,
   addWorksheet,
   buildRows,
 };

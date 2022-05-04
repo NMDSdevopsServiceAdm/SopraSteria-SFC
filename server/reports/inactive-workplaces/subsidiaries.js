@@ -32,7 +32,16 @@ const addWorksheet = (workbook) => {
   return subsidiaryWorksheet;
 };
 
+const generateSubsidaryWorkplaceTab = (workbook, parentWorkplaces) => {
+  const subsidiaryWorksheet = addWorksheet(workbook);
+  parentWorkplaces.map((workplace) => {
+    const subsidiaryRows = buildRows(workplace, workplace.subsidiaries);
+    subsidiaryWorksheet.addRows(subsidiaryRows);
+  });
+};
+
 module.exports = {
+  generateSubsidaryWorkplaceTab,
   addWorksheet,
   buildRows,
 };

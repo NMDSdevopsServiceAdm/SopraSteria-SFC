@@ -4,8 +4,9 @@ const sinon = require('sinon');
 const moment = require('moment');
 
 const models = require('../../../../../../models');
-const findInactiveWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/findInactiveWorkplaces');
-const findParentWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/findParentWorkplaces');
+const setInactiveWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplaces');
+const setParentWorkplaces = require('../../../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
+const setInactiveWorkplacesForDeletion = require('../../../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
 const sendEmail = require('../../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const inactiveWorkplaceRoutes = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces');
 
@@ -89,10 +90,25 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     },
   ];
 
+  const dummyInactiveWorkplacesForDeletion = [
+    {
+      establishmentID: 1,
+      name: 'Warren Care CQC 12',
+      nmdsId: 'G12013414',
+      address: 'Line 1 My Town My County TN37 6HR',
+    },
+    {
+      establishmentID: 2,
+      name: 'Human Support Group Limited - Sale',
+      nmdsId: 'G1901114',
+      address: '59 Cross Street Sale Cheshire M33 7HF',
+    },
+  ];
+
   describe('getInactiveWorkplaces', () => {
-    it('should get the number of inactive workplaces', async () => {
-      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
-      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+    it('should get the inactive workplaces', async () => {
+      sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -109,8 +125,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     });
 
     it('should return an error if inactive workplaces throws an exception', async () => {
-      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').rejects();
-      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').rejects();
+      sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').rejects();
+      sinon.stub(setParentWorkplaces, 'findParentWorkplaces').rejects();
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -129,10 +145,91 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     });
   });
 
+  describe('getInactiveWorkplcesForDeletion', () => {
+    it('should get the number of inactive workplaces', async () => {
+      sinon
+        .stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion')
+        .returns(dummyInactiveWorkplacesForDeletion);
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplcesForDeletion(req, res);
+      const response = res._getJSONData();
+
+      expect(response.numberOfInactiveWorkplacesForDeletion).to.deep.equal(2);
+    });
+
+    it('should return an error if inactive workplaces for deletion throws an exception', async () => {
+      sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').rejects();
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplcesForDeletion(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(500);
+      expect(response).to.deep.equal({});
+    });
+  });
+
+  describe('inactiveWorkplacesIdsForDeletions', () => {
+    it('should get the establishmentIds of the inactive workplaces for deletion', async () => {
+      sinon
+        .stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion')
+        .returns(dummyInactiveWorkplacesForDeletion);
+      sinon.stub(models.establishment, 'archiveInactiveWorkplaces');
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions',
+      });
+
+      req.role = 'Admin';
+      const res = httpMocks.createResponse();
+
+      await inactiveWorkplaceRoutes.inactiveWorkplacesIdsForDeletions(req, res);
+      const response = res._getJSONData();
+
+      expect(response.message).to.deep.equal('The inactive workplaces are archived');
+      expect(response.establishmentIds).to.deep.equal([1, 2]);
+    });
+
+    it('should return an error if inactive workplaces ids for deletion throws an exception', async () => {
+      sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').rejects();
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.inactiveWorkplacesIdsForDeletions(req, res);
+
+      const response = res._getJSONData();
+
+      expect(res.statusCode).to.equal(500);
+      expect(response).to.deep.equal({});
+    });
+  });
+
   describe('createCampaign', async () => {
     it('should create a campaign', async () => {
-      sinon.stub(findInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
-      sinon.stub(findParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+      sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
 
       const sendEmailMock = sinon.stub(sendEmail, 'sendEmail').returns();
       const userMock = sinon.stub(models.user, 'findByUUID').returns({
