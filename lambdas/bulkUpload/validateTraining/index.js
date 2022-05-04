@@ -12,7 +12,6 @@ const runValidator = async (thisLine, currentLineNumber, mappings) => {
   const lineValidator = new TrainingCsvValidator(thisLine, currentLineNumber, mappings);
 
   lineValidator.validate();
-  lineValidator.transform();
 
   const APITrainingRecord = lineValidator.toAPI();
   const JSONTrainingRecord = lineValidator.toJSON();

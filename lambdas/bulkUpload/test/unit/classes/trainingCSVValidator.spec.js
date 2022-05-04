@@ -130,13 +130,13 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it('should pass validation and set CATEGORY if CATEGORY provided is a valid category', async () => {
+      it('should pass validation and set BUDI CATEGORY to ASC CATEGORY if the BUDI CATEGORY is a valid category', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
         await validator._validateCategory();
 
         expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._category).to.equal(1);
+        expect(validator._category).to.equal(8);
       });
     });
 

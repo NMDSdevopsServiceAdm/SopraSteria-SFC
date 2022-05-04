@@ -323,8 +323,7 @@ class TrainingCsvValidator {
       );
       return;
     }
-
-    this._category = category;
+    this._category = this.BUDI.trainingCategory(this.BUDI.TO_ASC, category);
   }
 
   _validateAccredited() {
@@ -354,26 +353,6 @@ class TrainingCsvValidator {
     };
 
     return accreditedValues[key] || '';
-  }
-
-  _transformTrainingCategory() {
-    if (this._category) {
-      const mappedCategory = this.BUDI.trainingCategory(this.BUDI.TO_ASC, this._category);
-      if (mappedCategory === null) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: TrainingCsvValidator.CATEGORY_ERROR,
-          errType: 'CATEGORY_ERROR',
-          error: 'CATEGORY has not been supplied',
-          source: this._currentLine.CATEGORY,
-          column: 'CATEGORY',
-        });
-      } else {
-        this._category = mappedCategory;
-      }
-    }
   }
 
   _validateNotes() {
@@ -421,10 +400,6 @@ class TrainingCsvValidator {
     status = !this._validateNotes() ? false : status;
 
     return status;
-  }
-
-  transform() {
-    this._transformTrainingCategory();
   }
 
   toJSON() {
