@@ -5,7 +5,7 @@ const config = require('../../../config/config');
 const S3 = require('./s3');
 const { buStates } = require('./states');
 const Bucket = S3.Bucket;
-const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
+const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 const { getFileType } = require('./whichFile');
 const { validateWorkerHeaders } = require('../bulkUpload/validate/headers/worker');
 const { validateTrainingHeaders } = require('../bulkUpload/validate/headers/training');
@@ -188,7 +188,7 @@ const uploadedPut = async (req, res) => {
     await Promise.all(
       myDownloads
         .filter((file) => {
-          return ['Worker', 'Establishment', 'Training'].includes(file.type);
+          return ['Worker', 'WorkplaceCSVValidator', 'Training'].includes(file.type);
         })
         .map(async (file) => {
           file.importedData = await csv().fromString(file.data);

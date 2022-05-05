@@ -3,7 +3,7 @@ const csv = require('csvtojson');
 
 const config = require('../../../config/config');
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
-const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/establishments').Establishment;
+const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 const { validateWorkerHeaders } = require('./validate/headers/worker');
 const { validateTrainingHeaders } = require('./validate/headers/training');
 const { isWorkerFile, isTrainingFile } = require('./whichFile');
@@ -157,7 +157,7 @@ const uploadedPut = async (req, res) => {
       if (EstablishmentCsvValidator.isContent(myfile.data)) {
         myDownloads.establishments = myfile.data;
         establishmentMetadata.filename = myfile.filename;
-        establishmentMetadata.fileType = 'Establishment';
+        establishmentMetadata.fileType = 'WorkplaceCSVValidator';
         establishmentMetadata.userName = myfile.username;
         establishmentMetadata.size = myfile.size;
         establishmentMetadata.key = myfile.key;

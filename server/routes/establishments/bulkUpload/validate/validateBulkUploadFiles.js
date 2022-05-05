@@ -11,7 +11,7 @@ const {
 const { buStates } = require('../states');
 const { processDifferenceReport } = require('./processDifferenceReport');
 
-const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments').Establishment;
+const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 
 const { validateEstablishmentCsv } = require('./validateEstablishmentCsv');
 const { validateDuplicateLocations } = require('./validateDuplicateLocations');
@@ -131,7 +131,7 @@ const validateBulkUploadFiles = async (req, files) => {
     const MAX_ESTABLISHMENTS = 1;
 
     if (establishments.imported.length !== MAX_ESTABLISHMENTS) {
-      csvEstablishmentSchemaErrors.unshift(EstablishmentCsvValidator.justOneEstablishmentError());
+      csvEstablishmentSchemaErrors.unshift(WorkplaceCsvValidator.justOneEstablishmentError());
     }
   }
 
@@ -146,13 +146,13 @@ const validateBulkUploadFiles = async (req, files) => {
 
     if (!onloadedPrimaryEstablishment) {
       csvEstablishmentSchemaErrors.unshift(
-        EstablishmentCsvValidator.missingPrimaryEstablishmentError(primaryEstablishment.name),
+        WorkplaceCsvValidator.missingPrimaryEstablishmentError(primaryEstablishment.name),
       );
     } else {
       // primary establishment does exist in given CSV; check STATUS is not DELETE - cannot delete the primary establishment
       if (onloadedPrimaryEstablishment.status === 'DELETE') {
         csvEstablishmentSchemaErrors.unshift(
-          EstablishmentCsvValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name),
+          WorkplaceCsvValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name),
         );
       }
     }

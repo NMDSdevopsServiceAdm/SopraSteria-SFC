@@ -20,7 +20,7 @@ const {
 
 const { sendCountToSlack } = require('../../../../routes/establishments/bulkUpload/slack');
 
-const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments');
+const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator');
 const { Establishment } = require('../../../../models/classes/establishment');
 const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
 
@@ -99,7 +99,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           },
         }),
       ].map((currentLine, currentLineNumber) => {
-        return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
+        return new EstablishmentCsvValidator.WorkplaceCSVValidator(currentLine, currentLineNumber);
       });
 
       await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
@@ -144,7 +144,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           },
         }),
       ].map((currentLine, currentLineNumber) => {
-        return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber, []);
+        return new EstablishmentCsvValidator.WorkplaceCSVValidator(currentLine, currentLineNumber, []);
       });
 
       await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors);
@@ -188,7 +188,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           },
         }),
       ].map((currentLine, currentLineNumber) => {
-        return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
+        return new EstablishmentCsvValidator.WorkplaceCSVValidator(currentLine, currentLineNumber);
       });
 
       await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, []);
@@ -211,7 +211,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           },
         }),
       ].map((currentLine, currentLineNumber) => {
-        return new EstablishmentCsvValidator.Establishment(currentLine, currentLineNumber);
+        return new EstablishmentCsvValidator.WorkplaceCSVValidator(currentLine, currentLineNumber);
       });
 
       await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, [
@@ -260,8 +260,8 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
         share: { enabled: false },
         capacities: [],
       };
-      sinon.stub(EstablishmentCsvValidator.Establishment.prototype, 'validate').resolves();
-      sinon.stub(EstablishmentCsvValidator.Establishment.prototype, 'transform').resolves({});
+      sinon.stub(EstablishmentCsvValidator.WorkplaceCSVValidator.prototype, 'validate').resolves();
+      sinon.stub(EstablishmentCsvValidator.WorkplaceCSVValidator.prototype, 'transform').resolves({});
       sinon
         .stub(Establishment.prototype, 'initialise')
         .callsFake((address1, address2, address3, town, test, locationId, provId, postcode, isCQCRegulated) => {
@@ -275,7 +275,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           expect(postcode).to.deep.equal(workplace.postcode);
           expect(isCQCRegulated).to.deep.equal(workplace.isCQCRegulated);
         });
-      sinon.stub(EstablishmentCsvValidator.Establishment.prototype, 'toAPI').callsFake(() => {
+      sinon.stub(EstablishmentCsvValidator.WorkplaceCSVValidator.prototype, 'toAPI').callsFake(() => {
         return workplace;
       });
       sinon.stub(Establishment.prototype, 'load').callsFake((args) => {

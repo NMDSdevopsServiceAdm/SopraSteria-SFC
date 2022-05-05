@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
 const buildEstablishmentCSV = require('../../../../factories/establishment/csv');
 const buildWorkerCSV = require('../../../../factories/worker/csv');
-const establishmentCsv = require('../../../../../models/BulkImport/csv/establishments').Establishment;
+const establishmentCsv = require('../../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 const OGEstablishment = require('../../../../../models/classes/establishment').Establishment;
 const WorkerCsvValidator =
   require('../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;

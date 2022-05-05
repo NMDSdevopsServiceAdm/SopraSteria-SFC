@@ -73,7 +73,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
           records: 0,
           errors: 0,
           warnings: 0,
-          fileType: 'Establishment',
+          fileType: 'WorkplaceCSVValidator',
           size: 294,
           key: '2351/latest/2021-01-26-sfc-bulk-upload-establishments.csv',
         },

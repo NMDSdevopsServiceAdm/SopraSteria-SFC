@@ -4,7 +4,7 @@ const clonedeep = require('lodash.clonedeep');
 const moment = require('moment');
 const { sanitisePostcode } = require('../../../utils/postcodeSanitizer');
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
-const OGEstablishment = require('../../../models/classes/establishment').Establishment;
+const OGEstablishment = require('../../classes/establishment').Establishment;
 
 const employedContractStatusIds = [1, 2];
 const cqcRegulatedServiceCodes = [24, 25, 20, 22, 21, 23, 19, 27, 28, 26, 29, 30, 32, 31, 33, 34];
@@ -40,7 +40,7 @@ const _headers_v1 =
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
 
-class Establishment {
+class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
@@ -374,7 +374,7 @@ class Establishment {
     if (myLocalId === null || myLocalId.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.LOCAL_ID_ERROR,
+        errCode: WorkplaceCSVValidator.LOCAL_ID_ERROR,
         errType: 'LOCAL_ID_ERROR',
         error: 'LOCALESTID has not been supplied',
         source: myLocalId,
@@ -384,7 +384,7 @@ class Establishment {
     } else if (myLocalId.length >= MAX_LENGTH) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.LOCAL_ID_ERROR,
+        errCode: WorkplaceCSVValidator.LOCAL_ID_ERROR,
         errType: 'LOCAL_ID_ERROR',
         error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: myLocalId,
@@ -410,7 +410,7 @@ class Establishment {
     if (!this._currentLine.STATUS || this._currentLine.STATUS.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.STATUS_ERROR,
+        errCode: WorkplaceCSVValidator.STATUS_ERROR,
         errType: 'STATUS_ERROR',
         error: 'STATUS is blank',
         source: this._currentLine.STATUS,
@@ -422,7 +422,7 @@ class Establishment {
     if (!statusValues.includes(myStatus)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.STATUS_ERROR,
+        errCode: WorkplaceCSVValidator.STATUS_ERROR,
         errType: 'STATUS_ERROR',
         error: 'The code you have entered for STATUS is incorrect',
         source: this._currentLine.STATUS,
@@ -441,7 +441,7 @@ class Establishment {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
-              errCode: Establishment.STATUS_ERROR,
+              errCode: WorkplaceCSVValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error: 'Workplace has a STATUS of NEW but already exists, please use one of the other statuses',
               source: myStatus,
@@ -455,7 +455,7 @@ class Establishment {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
-              errCode: Establishment.STATUS_ERROR,
+              errCode: WorkplaceCSVValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error: 'Workplace has a STATUS of DELETE but does not exist',
               source: myStatus,
@@ -469,7 +469,7 @@ class Establishment {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
-              errCode: Establishment.STATUS_ERROR,
+              errCode: WorkplaceCSVValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error: 'Workplace has a STATUS of UNCHECKED but does not exist, please change to NEW to add it',
               source: myStatus,
@@ -483,7 +483,7 @@ class Establishment {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
-              errCode: Establishment.STATUS_ERROR,
+              errCode: WorkplaceCSVValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error: 'Workplace has a STATUS of NOCHANGE but does not exist, please change to NEW to add it',
               source: myStatus,
@@ -497,7 +497,7 @@ class Establishment {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
-              errCode: Establishment.STATUS_ERROR,
+              errCode: WorkplaceCSVValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error: 'Workplace has a STATUS of UPDATE but does not exist, please change to NEW to add it',
               source: myStatus,
@@ -521,7 +521,7 @@ class Establishment {
     if (!myName || myName.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: WorkplaceCSVValidator.NAME_ERROR,
         errType: 'NAME_ERROR',
         error: 'ESTNAME has not been supplied',
         source: myName,
@@ -532,7 +532,7 @@ class Establishment {
     } else if (myName.length > MAX_LENGTH) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: WorkplaceCSVValidator.NAME_ERROR,
         errType: 'NAME_ERROR',
         error: `ESTNAME is longer than ${MAX_LENGTH} characters`,
         source: myName,
@@ -573,7 +573,7 @@ class Establishment {
     if (!myAddress1 || myAddress1.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: 'ADDRESS1 is blank',
         column: 'ADDRESS1',
@@ -582,7 +582,7 @@ class Establishment {
     } else if (myAddress1.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `ADDRESS1 is longer than ${MAX_LENGTH} characters`,
         source: myAddress1,
@@ -594,7 +594,7 @@ class Establishment {
     if (myAddress2 && myAddress2.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `ADDRESS2 is longer than ${MAX_LENGTH} characters`,
         source: myAddress2,
@@ -606,7 +606,7 @@ class Establishment {
     if (myAddress3 && myAddress3.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `ADDRESS3 is longer than ${MAX_LENGTH} characters`,
         source: myAddress3,
@@ -618,7 +618,7 @@ class Establishment {
     if (myTown && myTown.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `POSTTOWN is longer than ${MAX_LENGTH} characters`,
         source: myTown,
@@ -631,7 +631,7 @@ class Establishment {
     if (!myPostcode || myPostcode.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: 'POSTCODE has not been supplied',
         source: myPostcode,
@@ -641,7 +641,7 @@ class Establishment {
     } else if (myPostcode.length > POSTCODE_MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `POSTCODE is longer than ${POSTCODE_MAX_LENGTH} characters`,
         source: myPostcode,
@@ -651,7 +651,7 @@ class Establishment {
     } else if (sanitisePostcode(myPostcode) === null) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: 'POSTCODE is incorrectly formatted',
         source: myPostcode,
@@ -661,7 +661,7 @@ class Establishment {
     } else if (this._status === 'NEW' && !postcodeExists.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         errType: 'ADDRESS_ERROR',
         error: 'The POSTCODE for this workplace cannot be found in our database and must be registered manually.',
         source: myPostcode,
@@ -672,7 +672,7 @@ class Establishment {
     } else if (this._status === 'UPDATE' && !postcodeExists.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        warnCode: Establishment.ADDRESS_ERROR,
+        warnCode: WorkplaceCSVValidator.ADDRESS_ERROR,
         warnType: 'ADDRESS_ERROR',
         warning: 'The POSTCODE cannot be found in our database and will be ignored.',
         source: myPostcode,
@@ -707,7 +707,7 @@ class Establishment {
     if (!this._currentLine.ESTTYPE || this._currentLine.ESTTYPE.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+        errCode: WorkplaceCSVValidator.ESTABLISHMENT_TYPE_ERROR,
         errType: 'ESTABLISHMENT_TYPE_ERROR',
         error: 'ESTTYPE has not been supplied',
         source: this._currentLine.ESTTYPE,
@@ -717,7 +717,7 @@ class Establishment {
     } else if (Number.isNaN(myEstablishmentType)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+        errCode: WorkplaceCSVValidator.ESTABLISHMENT_TYPE_ERROR,
         errType: 'ESTABLISHMENT_TYPE_ERROR',
         error: 'The code you have entered for ESTTYPE is incorrect',
         source: this._currentLine.ESTTYPE,
@@ -727,7 +727,7 @@ class Establishment {
     } else if (myEstablishmentType < 1 || myEstablishmentType > 8) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+        errCode: WorkplaceCSVValidator.ESTABLISHMENT_TYPE_ERROR,
         errType: 'ESTABLISHMENT_TYPE_ERROR',
         error: 'The code you have entered for ESTTYPE is incorrect',
         source: this._currentLine.ESTTYPE,
@@ -742,7 +742,7 @@ class Establishment {
     if (myEstablishmentType === 8 && (!myOtherEstablishmentType || myOtherEstablishmentType.length === 0)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        warnCode: Establishment.ESTABLISHMENT_TYPE_WARNING,
+        warnCode: WorkplaceCSVValidator.ESTABLISHMENT_TYPE_WARNING,
         warnType: 'ESTABLISHMENT_TYPE_WARNING',
         warning: 'OTHERTYPE has not been supplied',
         source: myOtherEstablishmentType,
@@ -752,7 +752,7 @@ class Establishment {
     } else if (myEstablishmentType === 8 && myOtherEstablishmentType.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+        errCode: WorkplaceCSVValidator.ESTABLISHMENT_TYPE_ERROR,
         errType: 'ESTABLISHMENT_TYPE_ERROR',
         error: `OTHERTYPE is longer than ${MAX_LENGTH} characters`,
         source: myOtherEstablishmentType,
@@ -764,7 +764,7 @@ class Establishment {
     } else if (myEstablishmentType !== 8 && myOtherEstablishmentType && myOtherEstablishmentType.length > 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        warnCode: Establishment.ESTABLISHMENT_TYPE_WARNING,
+        warnCode: WorkplaceCSVValidator.ESTABLISHMENT_TYPE_WARNING,
         warnType: 'ESTABLISHMENT_TYPE_WARNING',
         warning: 'OTHERTYPE will be ignored as not required',
         source: myOtherEstablishmentType,
@@ -788,7 +788,7 @@ class Establishment {
     if (!ALLOWED_VALUES.includes(this._currentLine.PERMCQC)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_CQC_ERROR,
+        errCode: WorkplaceCSVValidator.SHARE_WITH_CQC_ERROR,
         errType: 'SHARE_WITH_CQC_ERROR',
         error: 'The code you have entered for PERMCQC is incorrect',
         source: this._currentLine.PERMCQC,
@@ -809,7 +809,7 @@ class Establishment {
     if (!ALLOWED_VALUES.includes(this._currentLine.PERMLA)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_LA_ERROR,
+        errCode: WorkplaceCSVValidator.SHARE_WITH_LA_ERROR,
         errType: 'SHARE_WITH_LA_ERROR',
         error: 'The code you have entered for PERMLA is incorrect',
         source: this._currentLine.PERMLA,
@@ -832,7 +832,7 @@ class Establishment {
     if (!this._currentLine.REGTYPE || this._currentLine.REGTYPE.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.REGTYPE_ERROR,
+        errCode: WorkplaceCSVValidator.REGTYPE_ERROR,
         errType: 'REGTYPE_ERROR',
         error: 'REGTYPE has not been supplied',
         source: this._currentLine.REGTYPE,
@@ -843,7 +843,7 @@ class Establishment {
     } else if (Number.isNaN(myRegType) || (myRegType !== 0 && myRegType !== 2)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.REGTYPE_ERROR,
+        errCode: WorkplaceCSVValidator.REGTYPE_ERROR,
         errType: 'REGTYPE_ERROR',
         error: 'The code you have entered for REGTYPE is incorrect',
         source: this._currentLine.REGTYPE,
@@ -858,7 +858,7 @@ class Establishment {
     ) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.REGTYPE_ERROR,
+        errCode: WorkplaceCSVValidator.REGTYPE_ERROR,
         errType: 'REGTYPE_ERROR',
         error:
           'REGTYPE is 2 (CQC) but no CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
@@ -874,7 +874,7 @@ class Establishment {
     ) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.REGTYPE_ERROR,
+        errCode: WorkplaceCSVValidator.REGTYPE_ERROR,
         errType: 'REGTYPE_ERROR',
         error:
           'REGTYPE is 0 (Non-CQC) but CQC regulated services have been specified. Please change either REGTYPE or MAINSERVICE',
@@ -897,7 +897,7 @@ class Establishment {
     if (this._regType === 2 && (!myprovID || myprovID.length === 0)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.PROV_ID_ERROR,
+        errCode: WorkplaceCSVValidator.PROV_ID_ERROR,
         errType: 'PROV_ID_ERROR',
         error: 'PROVNUM has not been supplied',
         source: myprovID,
@@ -908,7 +908,7 @@ class Establishment {
     } else if (this._regType === 2 && !provIDRegex.test(myprovID)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.PROV_ID_ERROR,
+        errCode: WorkplaceCSVValidator.PROV_ID_ERROR,
         errType: 'PROV_ID_ERROR',
         error: 'PROVNUM is incorrectly formatted',
         source: myprovID,
@@ -922,7 +922,7 @@ class Establishment {
     } else if (this._regType === 0 && myprovID && myprovID.length > 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        warnCode: Establishment.PROV_ID_WARNING,
+        warnCode: WorkplaceCSVValidator.PROV_ID_WARNING,
         warnType: 'PROV_ID_WARNING',
         warning: 'PROVNUM will be ignored as not required for this REGTYPE',
         source: myprovID,
@@ -957,7 +957,7 @@ class Establishment {
           if (!myLocationID || myLocationID.length === 0) {
             this._validationErrors.push({
               lineNumber: this._lineNumber,
-              errCode: Establishment.LOCATION_ID_ERROR,
+              errCode: WorkplaceCSVValidator.LOCATION_ID_ERROR,
               errType: 'LOCATION_ID_ERROR',
               error: 'LOCATIONID has not been supplied',
               source: myLocationID,
@@ -968,7 +968,7 @@ class Establishment {
           } else if (!locationIDRegex.test(myLocationID)) {
             this._validationErrors.push({
               lineNumber: this._lineNumber,
-              errCode: Establishment.LOCATION_ID_ERROR,
+              errCode: WorkplaceCSVValidator.LOCATION_ID_ERROR,
               errType: 'LOCATION_ID_ERROR',
               error: 'LOCATIONID is incorrectly formatted',
               source: myLocationID,
@@ -981,7 +981,7 @@ class Establishment {
         if (locationExists.length > 0 && !existingEstablishment) {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
-            errCode: Establishment.LOCATION_ID_ERROR,
+            errCode: WorkplaceCSVValidator.LOCATION_ID_ERROR,
             errType: 'LOCATION_ID_ERROR',
             error: 'LOCATIONID already exists in ASC-WDS please contact Support on 0113 241 0969',
             source: myLocationID,
@@ -996,7 +996,7 @@ class Establishment {
       } else if (this._regType === 0 && myLocationID && myLocationID.length > 0) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
-          warnCode: Establishment.LOCATION_ID_WARNING,
+          warnCode: WorkplaceCSVValidator.LOCATION_ID_WARNING,
           warnType: 'LOCATION_ID_WARNING',
           warning: 'LOCATIONID will be ignored as not required for this REGTYPE',
           source: myLocationID,
@@ -1016,7 +1016,7 @@ class Establishment {
     if (!this._currentLine.MAINSERVICE || this._currentLine.MAINSERVICE.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.MAIN_SERVICE_ERROR,
+        errCode: WorkplaceCSVValidator.MAIN_SERVICE_ERROR,
         errType: 'MAIN_SERVICE_ERROR',
         error: 'MAINSERVICE has not been supplied',
         source: this._currentLine.MAINSERVICE,
@@ -1027,7 +1027,7 @@ class Establishment {
     } else if (Number.isNaN(myMainService)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.MAIN_SERVICE_ERROR,
+        errCode: WorkplaceCSVValidator.MAIN_SERVICE_ERROR,
         errType: 'MAIN_SERVICE_ERROR',
         error: 'MAINSERVICE has not been supplied',
         source: this._currentLine.MAINSERVICE,
@@ -1049,7 +1049,7 @@ class Establishment {
     if (!listOfServices || !listOfServices.includes(this._currentLine.MAINSERVICE)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ALL_SERVICES_ERROR,
+        errCode: WorkplaceCSVValidator.ALL_SERVICES_ERROR,
         errType: 'ALL_SERVICES_ERROR',
         error: 'MAINSERVICE is not included in ALLSERVICES',
         source: this._currentLine.ALLSERVICES,
@@ -1060,7 +1060,7 @@ class Establishment {
     if (listOfServices.includes('0') && listOfServicesWithoutNo.length !== 1) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ALL_SERVICES_ERROR_NONE,
+        errCode: WorkplaceCSVValidator.ALL_SERVICES_ERROR_NONE,
         errType: 'ALL_SERVICES_ERROR_NONE',
         error: 'ALLSERVICES is 0 (none) but contains services other than the MAINSERVICE',
         source: this._currentLine.ALLSERVICES,
@@ -1078,7 +1078,7 @@ class Establishment {
     if (!isValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ALL_SERVICES_ERROR,
+        errCode: WorkplaceCSVValidator.ALL_SERVICES_ERROR,
         errType: 'ALL_SERVICES_ERROR',
         error: 'There is an empty element in ALLSERVICES',
         source: this._currentLine.ALLSERVICES,
@@ -1088,7 +1088,7 @@ class Establishment {
     } else if (listOfServicesWithoutNo.length !== listOfServiceDescriptionsWithoutNo.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ALL_SERVICES_ERROR,
+        errCode: WorkplaceCSVValidator.ALL_SERVICES_ERROR,
         errType: 'ALL_SERVICES_ERROR',
         error:
           'ALLSERVICES/CAPACITY/UTILISATION/SERVICEDESC do not have the same number of items (i.e. numbers and/or semi colons)',
@@ -1109,7 +1109,7 @@ class Establishment {
           if (myServiceOther.length > MAX_LENGTH) {
             localValidationErrors.push({
               lineNumber: this._lineNumber,
-              errCode: Establishment.ALL_SERVICES_ERROR,
+              errCode: WorkplaceCSVValidator.ALL_SERVICES_ERROR,
               errType: 'ALL_SERVICES_ERROR',
               error: `SERVICEDESC(${index + 1}) is longer than ${MAX_LENGTH} characters`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
@@ -1152,7 +1152,7 @@ class Establishment {
       if (!isValid) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          warnCode: Establishment.SERVICE_USERS_WARNING,
+          warnCode: WorkplaceCSVValidator.SERVICE_USERS_WARNING,
           warnType: 'SERVICE_USERS_WARNING',
           warning: 'Entry for code in SERVICEUSERS you have supplied will be ignored as this is invalid',
           source: this._currentLine.SERVICEUSERS,
@@ -1162,7 +1162,7 @@ class Establishment {
       } else if (listOfServiceUsers.length !== listOfServiceUsersDescriptions.length) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.SERVICE_USERS_ERROR,
+          errCode: WorkplaceCSVValidator.SERVICE_USERS_ERROR,
           errType: 'SERVICE_USERS_ERROR',
           error: 'SERVICEUSERS/OTHERUSERDESC do not have the same number of items (i.e. numbers and/or semi colons)',
           source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
@@ -1182,7 +1182,7 @@ class Establishment {
             if (!myServiceUserOther || myServiceUserOther.length === 0) {
               localValidationErrors.push({
                 lineNumber: this._lineNumber,
-                warnCode: Establishment.SERVICE_USERS_WARNING,
+                warnCode: WorkplaceCSVValidator.SERVICE_USERS_WARNING,
                 warnType: 'SERVICE_USERS_WARNING',
                 warning: `OTHERUSERDESC(${index + 1}) has not been supplied`,
                 source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
@@ -1193,7 +1193,7 @@ class Establishment {
             } else if (myServiceUserOther.length > MAX_LENGTH) {
               localValidationErrors.push({
                 lineNumber: this._lineNumber,
-                errCode: Establishment.SERVICE_USERS_ERROR,
+                errCode: WorkplaceCSVValidator.SERVICE_USERS_ERROR,
                 errType: 'SERVICE_USERS_ERROR',
                 error: `Service Users (SERVICEUSERS:${index + 1}) is an 'other' service and (OTHERUSERDESC:${
                   index + 1
@@ -1268,7 +1268,7 @@ class Establishment {
     if (listOfCapacities.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errCode: WorkplaceCSVValidator.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: 'Capacities (CAPACITY) must be a semi-colon delimited list of whole numbers',
         source: this._currentLine.CAPACITY,
@@ -1280,7 +1280,7 @@ class Establishment {
     if (listOfUtilisations.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errCode: WorkplaceCSVValidator.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: 'Utilisations (UTILISATION) must be a semi-colon delimited list of whole numbers',
         source: this._currentLine.UTILISATION,
@@ -1292,7 +1292,7 @@ class Establishment {
     if (listOfCapacities.length !== listOfUtilisations.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errCode: WorkplaceCSVValidator.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: 'Number of Capacities (CAPACITY) and Utilisations (UTILISATION) must be equal',
         source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`,
@@ -1307,7 +1307,7 @@ class Establishment {
     if (this._allServices && listOfCapacities.length !== lengthOfServicesWithoutNo) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errCode: WorkplaceCSVValidator.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
         error:
           'Number of Capacities/Utilisations (CAPACITY/UTILISATION) must equal the number of all services (ALLSERVICES)',
@@ -1330,7 +1330,7 @@ class Establishment {
     if (!areCapacitiesValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errCode: WorkplaceCSVValidator.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: `All capacities (CAPACITY) must be whole numbers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.CAPACITY,
@@ -1349,7 +1349,7 @@ class Establishment {
     if (!areUtilisationsValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errCode: WorkplaceCSVValidator.CAPACITY_UTILISATION_ERROR,
         errType: 'CAPACITY_UTILISATION_ERROR',
         error: `All utilisations (UTILISATION) must be whole numbers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.UTILISATION,
@@ -1391,7 +1391,7 @@ class Establishment {
     if (myTotalPermTemp.length === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
+        errCode: WorkplaceCSVValidator.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
         error: 'TOTALPERMTEMP is missing',
         source: this._currentLine.PERMCQC,
@@ -1402,7 +1402,7 @@ class Establishment {
     } else if (myTotalPermTemp < 0 || myTotalPermTemp > MAX_TOTAL || Number.isNaN(myTotalPermTemp)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
+        errCode: WorkplaceCSVValidator.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
         error: `TOTALPERMTEMP must be a number from 0 to ${MAX_TOTAL} if this is correct call support on 0113 241 0969`,
         source: myTotalPermTemp,
@@ -1413,7 +1413,7 @@ class Establishment {
     } else if (this._mainService && this.mainService !== HEAD_OFFICE_MAIN_SERVICE && myTotalPermTemp === 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
+        errCode: WorkplaceCSVValidator.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
         error: 'Total Permanent and Temporary (TOTALPERMTEMP) cannot be 0 except when MAINSERVICE is head office',
         source: myTotalPermTemp,
@@ -1431,7 +1431,7 @@ class Establishment {
     return {
       origin: 'Establishments',
       lineNumber: this._lineNumber,
-      errCode: Establishment.DUPLICATE_ERROR,
+      errCode: WorkplaceCSVValidator.DUPLICATE_ERROR,
       errType: 'DUPLICATE_ERROR',
       error: 'LOCATIONID is not unique',
       source: this._currentLine.LOCATIONID,
@@ -1467,7 +1467,7 @@ class Establishment {
     if (this._totalPermTemp !== totalStaff) {
       csvEstablishmentSchemaErrors.unshift(
         Object.assign(clonedeep(template), {
-          warnCode: Establishment.TOTAL_PERM_TEMP_WARNING,
+          warnCode: WorkplaceCSVValidator.TOTAL_PERM_TEMP_WARNING,
           warnType: 'TOTAL_PERM_TEMP_WARNING',
           warning: 'TOTALPERMTEMP (Total staff and the number of worker records) does not match',
           column: 'TOTALPERMTEMP',
@@ -1477,7 +1477,7 @@ class Establishment {
       if (starters > totalStaff) {
         csvEstablishmentSchemaErrors.unshift(
           Object.assign(clonedeep(template), {
-            warnCode: Establishment.STARTERS_WARNING,
+            warnCode: WorkplaceCSVValidator.STARTERS_WARNING,
             warnType: 'STARTERS_WARNING',
             warning:
               'STARTERS data you have entered does not fall within the expected range please ensure this is correct',
@@ -1488,7 +1488,7 @@ class Establishment {
       if (leavers >= totalStaff) {
         csvEstablishmentSchemaErrors.unshift(
           Object.assign(clonedeep(template), {
-            warnCode: Establishment.LEAVERS_WARNING,
+            warnCode: WorkplaceCSVValidator.LEAVERS_WARNING,
             warnType: 'LEAVERS_WARNING',
             warning:
               'LEAVERS data you have entered does not fall within the expected range please ensure this is correct',
@@ -1499,7 +1499,7 @@ class Establishment {
       if (vacancies >= totalStaff) {
         csvEstablishmentSchemaErrors.unshift(
           Object.assign(clonedeep(template), {
-            warnCode: Establishment.VACANCIES_WARNING,
+            warnCode: WorkplaceCSVValidator.VACANCIES_WARNING,
             warnType: 'VACANCIES_WARNING',
             warning:
               'VACANCIES data you have entered does not fall within the expected range please ensure this is correct',
@@ -1544,7 +1544,7 @@ class Establishment {
       ) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.ALL_JOBS_ERROR,
+          errCode: WorkplaceCSVValidator.ALL_JOBS_ERROR,
           errType: 'ALL_JOBS_ERROR',
           error: 'ALLJOBROLES cannot be blank as you have STARTERS, LEAVERS, VACANCIES greater than zero',
           source: this._currentLine.ALLJOBROLES,
@@ -1558,7 +1558,7 @@ class Establishment {
       if (!isValid) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.ALL_JOBS_ERROR,
+          errCode: WorkplaceCSVValidator.ALL_JOBS_ERROR,
           errType: 'ALL_JOBS_ERROR',
           error: 'All Job Roles (ALLJOBROLES) must be whole numbers',
           source: this._currentLine.ALLJOBROLES,
@@ -1569,7 +1569,7 @@ class Establishment {
       if (!isCQCRegulated && hasRegisteredManagerVacancy()) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          warnCode: Establishment.ALL_JOBS_WARNING,
+          warnCode: WorkplaceCSVValidator.ALL_JOBS_WARNING,
           warnType: 'ALL_JOBS_WARNING',
           warning: 'Vacancy for Registered Manager should not be included for this service and will be ignored',
           source: this._currentLine.ALLJOBROLES,
@@ -1583,7 +1583,7 @@ class Establishment {
     // if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0 && isCQCRegulated && !hasRegisteredManagerVacancy()) {
     //   localValidationErrors.push({
     //     lineNumber: this._lineNumber,
-    //     errCode: Establishment.ALL_JOBS_ERROR,
+    //     errCode: WorkplaceCSVValidator.ALL_JOBS_ERROR,
     //     errType: 'ALL_JOBS_ERROR',
     //     error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
     //     source: this._currentLine.ALLJOBROLES,
@@ -1604,7 +1604,7 @@ class Establishment {
     const template = {
       origin: 'Establishments',
       lineNumber: this._lineNumber,
-      errCode: Establishment.ALL_JOBS_ERROR,
+      errCode: WorkplaceCSVValidator.ALL_JOBS_ERROR,
       errType: 'ALL_JOBS_ERROR',
       source: this._currentLine.ALLJOBROLES,
       name: this._currentLine.LOCALESTID,
@@ -1672,7 +1672,7 @@ class Establishment {
     if (!((vacancies.length === 1 && vacancies[0] === DONT_KNOW) || vacancies.length === allJobsCount)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.VACANCIES_ERROR,
+        errCode: WorkplaceCSVValidator.VACANCIES_ERROR,
         errType: 'VACANCIES_ERROR',
         error: 'ALLJOBROLES and VACANCIES do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
@@ -1684,7 +1684,7 @@ class Establishment {
     if (!((starters.length === 1 && starters[0] === DONT_KNOW) || starters.length === allJobsCount)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.STARTERS_ERROR,
+        errCode: WorkplaceCSVValidator.STARTERS_ERROR,
         errType: 'STARTERS_ERROR',
         error: 'ALLJOBROLES and STARTERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
@@ -1696,7 +1696,7 @@ class Establishment {
     if (!((leavers.length === 1 && leavers[0] === DONT_KNOW) || leavers.length === allJobsCount)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.LEAVERS_ERROR,
+        errCode: WorkplaceCSVValidator.LEAVERS_ERROR,
         errType: 'LEAVERS_ERROR',
         error: 'ALLJOBROLES and LEAVERS do not have the same number of items (i.e. numbers and/or semi colons).',
         source: `${this._currentLine.LEAVERS} - ${this._currentLine.ALLJOBROLES}`,
@@ -1719,7 +1719,7 @@ class Establishment {
     ) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.VACANCIES_ERROR,
+        errCode: WorkplaceCSVValidator.VACANCIES_ERROR,
         errType: 'VACANCIES_ERROR',
         error: `Vacancies (VACANCIES) values must be whole numbers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.VACANCIES}`,
@@ -1738,7 +1738,7 @@ class Establishment {
     ) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.STARTERS_ERROR,
+        errCode: WorkplaceCSVValidator.STARTERS_ERROR,
         errType: 'STARTERS_ERROR',
         error: `Starters (STARTERS) values must be whole numbers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.STARTERS}`,
@@ -1757,7 +1757,7 @@ class Establishment {
     ) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.LEAVERS_ERROR,
+        errCode: WorkplaceCSVValidator.LEAVERS_ERROR,
         errType: 'LEAVERS_ERROR',
         error: `Leavers (LEAVERS) values must be whole numbers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.LEAVERS}`,
@@ -1867,7 +1867,7 @@ class Establishment {
   _getStartersNoChangeWarning() {
     return {
       lineNumber: this._lineNumber,
-      warnCode: Establishment.STARTERS_WARNING,
+      warnCode: WorkplaceCSVValidator.STARTERS_WARNING,
       warnType: 'STARTERS_WARNING',
       warning: 'STARTERS in the last 12 months has not changed please check this is correct',
       source: this.starters,
@@ -1878,7 +1878,7 @@ class Establishment {
   _getVacanciesNoChangeWarning() {
     return {
       lineNumber: this._lineNumber,
-      warnCode: Establishment.VACANCIES_WARNING,
+      warnCode: WorkplaceCSVValidator.VACANCIES_WARNING,
       warnType: 'VACANCIES_WARNING',
       warning: 'VACANCIES value has not changed please check this is correct',
       source: this.vacancies,
@@ -1889,7 +1889,7 @@ class Establishment {
   _getLeaversNoChangeWarning() {
     return {
       lineNumber: this._lineNumber,
-      warnCode: Establishment.LEAVERS_WARNING,
+      warnCode: WorkplaceCSVValidator.LEAVERS_WARNING,
       warnType: 'LEAVERS_WARNING',
       warning: 'LEAVERS in the last 12 months has not changed please check this is correct',
       source: this.leavers,
@@ -1914,7 +1914,7 @@ class Establishment {
       if (!allReasons.every((thisCount) => !Number.isNaN(parseInt(thisCount, 10)))) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errCode: WorkplaceCSVValidator.REASONS_FOR_LEAVING_ERROR,
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: 'The REASONS you have supplied has an incorrect code',
           source: `${this._currentLine.REASONS}`,
@@ -1926,7 +1926,7 @@ class Establishment {
       if (!allReasonsCounts || allReasonsCounts.length === 0) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errCode: WorkplaceCSVValidator.REASONS_FOR_LEAVING_ERROR,
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: 'REASONS/REASONNOS do not have the same number of items (i.e. numbers and/or semi colons)',
           source: this._currentLine.REASONNOS,
@@ -1944,7 +1944,7 @@ class Establishment {
       ) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errCode: WorkplaceCSVValidator.REASONS_FOR_LEAVING_ERROR,
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: `Reasons for Leaving Counts (REASONNOS) values must be whole numbers and ${MIN_COUNT} or more`,
           source: `${this._currentLine.REASONNOS}`,
@@ -1957,7 +1957,7 @@ class Establishment {
       if (allReasons.length !== allReasonsCounts.length) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errCode: WorkplaceCSVValidator.REASONS_FOR_LEAVING_ERROR,
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: 'REASONS/REASONNOS do not have the same number of items (i.e. numbers and/or semi colons)',
           source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
@@ -1974,7 +1974,7 @@ class Establishment {
       if (parseInt(sumOfReasonsCounts) !== parseInt(sumOfLeavers)) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errCode: WorkplaceCSVValidator.REASONS_FOR_LEAVING_ERROR,
           errType: 'REASONS_FOR_LEAVING_ERROR',
           error: 'The total number of REASONNOS you have entered does not equal the total number of LEAVERS',
           source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
@@ -2022,7 +2022,7 @@ class Establishment {
       } else {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.MAIN_SERVICE_ERROR,
+          errCode: WorkplaceCSVValidator.MAIN_SERVICE_ERROR,
           errType: 'MAIN_SERVICE_ERROR',
           error: 'The code you have entered for MAINSERVICE is incorrect',
           source: this._currentLine.MAINSERVICE,
@@ -2049,7 +2049,7 @@ class Establishment {
         } else {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
-            errCode: Establishment.ALL_SERVICES_ERROR,
+            errCode: WorkplaceCSVValidator.ALL_SERVICES_ERROR,
             errType: 'ALL_SERVICES_ERROR',
             error: `All Services (ALLSERVICES): ${thisService} is unknown`,
             source: this._currentLine.ALLSERVICES,
@@ -2075,7 +2075,7 @@ class Establishment {
         } else {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
-            warnCode: Establishment.SERVICE_USERS_ERROR,
+            warnCode: WorkplaceCSVValidator.SERVICE_USERS_ERROR,
             warnType: 'SERVICE_USERS_ERROR',
             warning: `Entry for code ${thisService} in SERVICEUSERS will be ignored as this is invalid`,
             source: this._currentLine.SERVICEUSERS,
@@ -2095,9 +2095,9 @@ class Establishment {
       if (BUDI.establishmentType(BUDI.TO_ASC, this._establishmentType) === null) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+          errCode: WorkplaceCSVValidator.ESTABLISHMENT_TYPE_ERROR,
           errType: 'ESTABLISHMENT_TYPE_ERROR',
-          error: `Establishment Type (ESTTYPE): ${this._establishmentType} is unknown`,
+          error: `WorkplaceCSVValidator Type (ESTTYPE): ${this._establishmentType} is unknown`,
           source: this._currentLine.ESTTYPE,
           column: 'ESTTYPE',
           name: this._currentLine.LOCALESTID,
@@ -2130,7 +2130,7 @@ class Establishment {
           } else {
             this._validationErrors.push({
               lineNumber: this._lineNumber,
-              errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+              errCode: WorkplaceCSVValidator.CAPACITY_UTILISATION_ERROR,
               errType: 'CAPACITY_UTILISATION_ERROR',
               error: `Capacities (CAPACITY): position ${
                 index + 1
@@ -2169,7 +2169,7 @@ class Establishment {
           } else {
             this._validationErrors.push({
               lineNumber: this._lineNumber,
-              errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+              errCode: WorkplaceCSVValidator.CAPACITY_UTILISATION_ERROR,
               errType: 'CAPACITY_UTILISATION_ERROR',
               error: `UTILISATION for SERVICETYPE ${serviceType} will be ignored as it is not required for this service`,
               source: this._currentLine.UTILISATION,
@@ -2196,7 +2196,7 @@ class Establishment {
         } else {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
-            errCode: Establishment.ALL_JOBS_ERROR,
+            errCode: WorkplaceCSVValidator.ALL_JOBS_ERROR,
             errType: 'ALL_JOBS_ERROR',
             error: 'The code you have entered for ALLJOBROLES is incorrect',
             source: this._currentLine.ALLJOBROLES,
@@ -2288,7 +2288,7 @@ class Establishment {
         } else {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
-            errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+            errCode: WorkplaceCSVValidator.REASONS_FOR_LEAVING_ERROR,
             errType: 'REASONS_FOR_LEAVING_ERROR',
             error: `Reason for Leaving (REASONS): ${thisReason.id} is unknown`,
             source: this._currentLine.REASONS,
@@ -2316,9 +2316,9 @@ class Establishment {
     if (_headers_v1 !== headers) {
       this._validationErrors.push({
         lineNumber: 1,
-        errCode: Establishment.HEADERS_ERROR,
+        errCode: WorkplaceCSVValidator.HEADERS_ERROR,
         errType: 'HEADERS_ERROR',
-        error: `Establishment headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
+        error: `WorkplaceCSVValidator headers (HEADERS) can contain, ${_headers_v1.split(',')}`,
         source: headers,
         column: '',
         name: this._currentLine.LOCALESTID,
@@ -2333,7 +2333,7 @@ class Establishment {
     return {
       origin: 'Establishments',
       lineNumber: this._lineNumber,
-      errCode: Establishment.DUPLICATE_ERROR,
+      errCode: WorkplaceCSVValidator.DUPLICATE_ERROR,
       errType: 'DUPLICATE_ERROR',
       error: 'LOCALESTID is not unique',
       source: this._currentLine.LOCALESTID,
@@ -2347,7 +2347,7 @@ class Establishment {
     return {
       origin: 'Establishments',
       lineNumber: this._lineNumber,
-      errCode: Establishment.NOT_OWNER_ERROR,
+      errCode: WorkplaceCSVValidator.NOT_OWNER_ERROR,
       errType: 'NOT_OWNER_ERROR',
       error: 'Not the owner',
       source: this._currentLine.LOCALESTID,
@@ -2360,7 +2360,7 @@ class Establishment {
     return {
       origin: 'Establishments',
       lineNumber: 1,
-      errCode: Establishment.EXPECT_JUST_ONE_ERROR,
+      errCode: WorkplaceCSVValidator.EXPECT_JUST_ONE_ERROR,
       errType: 'EXPECT_JUST_ONE_ERROR',
       error: 'Expect just one establishment',
       source: '',
@@ -2372,7 +2372,7 @@ class Establishment {
     return {
       origin: 'Establishments',
       lineNumber: 1,
-      errCode: Establishment.MISSING_PRIMARY_ERROR,
+      errCode: WorkplaceCSVValidator.MISSING_PRIMARY_ERROR,
       errType: 'MISSING_PRIMARY_ERROR',
       error: `Missing the primary establishment: ${name}`,
       source: '',
@@ -2385,7 +2385,7 @@ class Establishment {
     return {
       origin: 'Establishments',
       lineNumber: 1,
-      errCode: Establishment.CANNOT_DELETE_PRIMARY_ERROR,
+      errCode: WorkplaceCSVValidator.CANNOT_DELETE_PRIMARY_ERROR,
       errType: 'CANNOT_DELETE_PRIMARY_ERROR',
       error: `STATUS cannot be DELETE for primary establishment: ${name}`,
       source: '',
@@ -2394,7 +2394,7 @@ class Establishment {
     };
   }
 
-  // returns true on success, false is any attribute of Establishment fails
+  // returns true on success, false is any attribute of WorkplaceCSVValidator fails
   async validate() {
     this._validateLocalisedId();
     this._validateEstablishmentName();
@@ -2483,7 +2483,7 @@ class Establishment {
     this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }
 
-  // returns true on success, false is any attribute of Establishment fails
+  // returns true on success, false is any attribute of WorkplaceCSVValidator fails
   transform() {
     // if the status is unchecked or deleted, then don't transform
     if (!STOP_VALIDATING_ON.includes(this._status)) {
@@ -2572,7 +2572,7 @@ class Establishment {
     });
   }
 
-  // returns an API representation of this Establishment
+  // returns an API representation of this WorkplaceCSVValidator
   toAPI() {
     const fixedProperties = {
       address1: this._address1 ? this._address1 : '',
@@ -2837,9 +2837,9 @@ class Establishment {
   }
 
   toCSV(entity) {
-    return Establishment.toCSV(entity);
+    return WorkplaceCSVValidator.toCSV(entity);
   }
 }
 
-module.exports.Establishment = Establishment;
+module.exports.WorkplaceCSVValidator = WorkplaceCSVValidator;
 module.exports.EstablishmentFileHeaders = _headers_v1;
