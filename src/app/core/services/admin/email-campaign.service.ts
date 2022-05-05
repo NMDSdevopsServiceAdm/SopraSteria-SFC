@@ -54,6 +54,14 @@ export class EmailCampaignService {
     });
   }
 
+  getTargetedEmailsReport(fileFormData: FormData): Observable<any> {
+    return this.http.post<any>('/api/admin/email-campaigns/targeted-emails/report', fileFormData, {
+      headers: { InterceptorSkipHeader: 'true' },
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
   createTargetedEmailsCampaign(groupType: string, templateId: string, nmdsIdsFileData?: FormData): Observable<any> {
     const payload = {
       groupType,

@@ -1,10 +1,12 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
+import { HttpResponse } from '@angular/common/http';
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EmailType, TotalEmailsResponse } from '@core/model/emails.model';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
+import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 
 import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
@@ -23,7 +25,6 @@ export class TargetedEmailsComponent implements OnDestroy {
   public emailType = EmailType;
   public showDragAndDrop = false;
   public nmdsIdsFileData: FormData | null = null;
-  public now = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
 
   constructor(
     public alertService: AlertService,
@@ -31,7 +32,6 @@ export class TargetedEmailsComponent implements OnDestroy {
     private route: ActivatedRoute,
     private emailCampaignService: EmailCampaignService,
     private decimalPipe: DecimalPipe,
-    private datePipe: DatePipe,
   ) {}
 
   public updateTotalEmails(groupType: string): void {
@@ -84,12 +84,31 @@ export class TargetedEmailsComponent implements OnDestroy {
     );
   }
 
+  public downloadTargetedEmailsReport(event: Event): void {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.emailCampaignService
+        .getTargetedEmailsReport(this.nmdsIdsFileData)
+        .subscribe((response) => this.saveFile(response)),
+    );
+  }
+
   public validateFile(file: File): void {
     this.nmdsIdsFileData = new FormData();
     this.nmdsIdsFileData.append('targetedRecipientsFile', file, file.name);
     this.emailCampaignService
       .getTargetedTotalValidEmails(this.nmdsIdsFileData)
       .subscribe((res: TotalEmailsResponse) => (this.totalEmails = res.totalEmails));
+  }
+
+  public saveFile(response: HttpResponse<Blob>): void {
+    const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+    const header = response.headers.get('content-disposition');
+    const filenameMatches = header && header.match(filenameRegEx);
+    const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
+    const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+
+    saveAs(blob, filename);
   }
 
   ngOnDestroy(): void {
