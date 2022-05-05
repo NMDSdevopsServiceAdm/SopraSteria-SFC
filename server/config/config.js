@@ -72,20 +72,44 @@ const config = convict({
       default: 'sfcdevdb',
       env: 'DB_NAME',
     },
+    testDatabase: {
+      doc: 'Test database name',
+      format: String,
+      default: 'sfctestdb',
+      env: 'DB_TEST_NAME',
+    },
     username: {
       doc: 'Database username',
       format: String,
       default: 'sfcadmin',
       env: 'DB_USER',
     },
+    testUsername: {
+      doc: 'Test database username',
+      format: String,
+      default: 'postgres',
+      env: 'DB_USER',
+    },
     password: {
-      doc: 'Database username',
+      doc: 'Database password',
       format: '*',
       default: 'unknown', // note - bug in notify - must provide a default value for it to use env var
       env: 'DB_PASS',
     },
+    testPassword: {
+      doc: 'Test database password',
+      format: '*',
+      default: 'postgres', // note - bug in notify - must provide a default value for it to use env var
+      env: 'DB_PASS',
+    },
     port: {
       doc: 'Database port',
+      format: 'port',
+      default: 5432,
+      env: 'DB_PORT',
+    },
+    testPort: {
+      doc: 'Test database port',
       format: 'port',
       default: 5432,
       env: 'DB_PORT',

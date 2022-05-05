@@ -1,0 +1,7 @@
+{
+  "env": {
+    "baseUrl": "http://localhost:8080"
+  },
+  "ignoreTestFiles": "**/examples/**/*",
+  "video": false
+}

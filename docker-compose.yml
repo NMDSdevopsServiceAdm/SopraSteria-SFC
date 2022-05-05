@@ -1,0 +1,9 @@
+version: '3'
+services:
+  sfc-test:
+    image: postgres:13
+    container_name: sfcTest-db
+    environment:
+      POSTGRES_PASSWORD: ${DB_TEST_PASSWORD:-postgres}
+    ports:
+      - ${DB_TEST_PORT:-5431}:5432
