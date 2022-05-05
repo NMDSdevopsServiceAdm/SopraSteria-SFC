@@ -1,4 +1,4 @@
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EmailType, TotalEmailsResponse } from '@core/model/emails.model';
@@ -22,7 +22,8 @@ export class TargetedEmailsComponent implements OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public emailType = EmailType;
   public showDragAndDrop = false;
-  private nmdsIdsFileData: FormData | null = null;
+  public nmdsIdsFileData: FormData | null = null;
+  public now = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
 
   constructor(
     public alertService: AlertService,
@@ -30,6 +31,7 @@ export class TargetedEmailsComponent implements OnDestroy {
     private route: ActivatedRoute,
     private emailCampaignService: EmailCampaignService,
     private decimalPipe: DecimalPipe,
+    private datePipe: DatePipe,
   ) {}
 
   public updateTotalEmails(groupType: string): void {

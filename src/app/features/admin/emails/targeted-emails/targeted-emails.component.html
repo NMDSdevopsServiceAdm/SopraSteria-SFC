@@ -36,6 +36,18 @@
 <div *ngIf="showDragAndDrop" data-testid="dragAndDrop" class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <app-drag-and-drop-upload (fileUploadEvent)="validateFile($event)"></app-drag-and-drop-upload>
+
+    <a
+      *ngIf="nmdsIdsFileData"
+      class="govuk-list govuk-list--inline govuk__flex govuk-!-margin-top-5"
+      role="button"
+      draggable="false"
+      href="/download/{{ now | date: 'yyyy-MM-dd' }}-targeted-emails-report.xls"
+    >
+      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+        Download targeted emails report
+      </span>
+    </a>
   </div>
 </div>
 <div class="govuk-grid-row govuk-!-margin-top-9">
