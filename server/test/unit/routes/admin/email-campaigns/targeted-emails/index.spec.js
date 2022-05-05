@@ -7,6 +7,7 @@ const models = require('../../../../../../models');
 const { build, fake, sequence } = require('@jackfranklin/test-data-bot/build');
 const sendEmail = require('../../../../../../services/email-campaigns/targeted-emails/sendEmail');
 const { Op } = require('sequelize');
+const excelJS = require('exceljs');
 
 const user = build('User', {
   fields: {
@@ -241,6 +242,47 @@ describe('server/routes/admin/email-campaigns/targeted-emails', () => {
           [Op.in]: nmdsIds,
         },
       });
+    });
+  });
+
+  describe('createTargetedEmailsReport()', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+      sinon.stub(models.user, 'allPrimaryUsers').returns([]);
+      sinon.stub(fs, 'readFileSync');
+      sinon.stub(fs, 'unlinkSync').returns(null);
+
+      req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/admin/email-campaigns/targeted-emails/report',
+        role: 'Admin',
+        file: { filename: 'file' },
+      });
+
+      res = httpMocks.createResponse();
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should generate a report', async () => {
+      await targetedEmailsRoutes.createTargetedEmailsReport(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._headers['content-type']).to.equal(
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+    });
+
+    it('should return 500 status when an error is thrown', async () => {
+      sinon.stub(excelJS, 'Workbook').throws();
+
+      await targetedEmailsRoutes.createTargetedEmailsReport(req, res);
+
+      expect(res.statusCode).to.equal(500);
     });
   });
 });
