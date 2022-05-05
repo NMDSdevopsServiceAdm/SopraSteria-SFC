@@ -169,35 +169,21 @@ class TrainingCsvValidator {
   _validateUniqueWorkerId() {
     const myUniqueId = this._currentLine.UNIQUEWORKERID;
     const MAX_LENGTH = 50;
-
-    if (!myUniqueId || myUniqueId.length === 0) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: TrainingCsvValidator.UNIQUE_WORKER_ID_ERROR,
-        errType: 'UNIQUE_WORKER_ID_ERROR',
-        error: 'UNIQUEWORKERID has not been supplied',
-        source: this._currentLine.UNIQUEWORKERID,
-        column: 'UNIQUEWORKERID',
-      });
-      return false;
-    } else if (myUniqueId.length > MAX_LENGTH) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: TrainingCsvValidator.UNIQUE_WORKER_ID_ERROR,
-        errType: 'UNIQUE_WORKER_ID_ERROR',
-        error: `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
-        source: this._currentLine.UNIQUEWORKERID,
-        column: 'UNIQUEWORKERID',
-      });
-      return false;
-    } else {
+    const errMessage = this._getValidateUniqueWorkerIdErrMessage(myUniqueId, MAX_LENGTH);
+    if (!errMessage) {
       this._uniqueWorkerId = myUniqueId;
-      return true;
+      return;
     }
+    this._addValidationError('UNIQUE_WORKER_ID_ERROR', errMessage, this._currentLine.UNIQUEWORKERID, 'UNIQUEWORKERID');
+  }
+
+  _getValidateUniqueWorkerIdErrMessage(myUniqueId, MAX_LENGTH) {
+    if (!myUniqueId || myUniqueId.length === 0) {
+      return 'UNIQUEWORKERID has not been supplied';
+    } else if (myUniqueId.length > MAX_LENGTH) {
+      return `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`;
+    }
+    return;
   }
 
   _validateDateCompleted() {

@@ -16,7 +16,7 @@ describe('trainingCSVValidator', () => {
         UNIQUEWORKERID: 'bar',
         CATEGORY: 1,
         DESCRIPTION: 'training',
-        DATECOMPLETED: '',
+        DATECOMPLETED: '01/01/2022',
         EXPIRYDATE: '',
         ACCREDITED: '',
         NOTES: '',
@@ -263,5 +263,106 @@ describe('trainingCSVValidator', () => {
         expect(validator._localeStId).to.equal('foo');
       });
     });
+
+    describe('_validateUniqueWorkerId()', async () => {
+      it('should pass validation and set _uniqueWorkerId if a valid UNIQUEWORKERID is provided', async () => {
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+        await validator._validateUniqueWorkerId();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._uniqueWorkerId).to.equal('bar');
+      });
+    });
+
+    describe('_getValidateUniqueWorkerIdErrMessage()', () => {
+      it('should add UNIQUE_WORKER_ID_ERROR to validationErrors and set _uniqueWorkerId as null if myUniqueId length === 0', async () => {
+        trainingCsv.UNIQUEWORKERID = '';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateUniqueWorkerId();
+
+        expect(validator._uniqueWorkerId).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1010,
+            errType: 'UNIQUE_WORKER_ID_ERROR',
+            error: 'UNIQUEWORKERID has not been supplied',
+            source: trainingCsv.UNIQUEWORKERID,
+            column: 'UNIQUEWORKERID',
+            lineNumber: 1,
+            name: 'foo',
+            worker: '',
+          },
+        ]);
+      });
+
+      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave _uniqueWorkerId as null if myUniqueId doesn't exist", async () => {
+        trainingCsv.UNIQUEWORKERID = null;
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateUniqueWorkerId();
+
+        expect(validator._uniqueWorkerId).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1010,
+            errType: 'UNIQUE_WORKER_ID_ERROR',
+            error: 'UNIQUEWORKERID has not been supplied',
+            source: trainingCsv.UNIQUEWORKERID,
+            column: 'UNIQUEWORKERID',
+            lineNumber: 1,
+            name: 'foo',
+            worker: null,
+          },
+        ]);
+      });
+
+      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave _uniqueWorkerId as null if myUniqueId's length is greater than MAX_LENGTH", async () => {
+        trainingCsv.UNIQUEWORKERID = 'Lorem ipsum dolor sit amet, consectetuer adipiscing';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateUniqueWorkerId();
+
+        expect(validator._uniqueWorkerId).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1010,
+            errType: 'UNIQUE_WORKER_ID_ERROR',
+            error: 'UNIQUEWORKERID is longer than 50 characters',
+            source: trainingCsv.UNIQUEWORKERID,
+            column: 'UNIQUEWORKERID',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'Lorem ipsum dolor sit amet, consectetuer adipiscing',
+          },
+        ]);
+      });
+    });
+
+    // describe('_validateDateCompleted()', async () => {
+    //   it.only('should pass validation and set _dateCompleted if a valid DATECOMPLETED is provided', async () => {
+    //     const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+    //     await validator._validateDateCompleted();
+
+    //     expect(validator._validationErrors).to.deep.equal([]);
+    //     expect(validator._dateCompleted).to.equal();
+    //   });
+    // });
+
+    // describe('_getValidateDateCompletedErrMessage()', async () => {
+    //   it.only('should pass validation and set _dateCompleted if a valid DATECOMPLETED is provided', async () => {
+    //     const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+    //     await validator._validateDateCompleted();
+
+    //     expect(validator._validationErrors).to.deep.equal([]);
+    //     expect(validator._dateCompleted).to.equal();
+    //   });
+    // });
   });
 });
