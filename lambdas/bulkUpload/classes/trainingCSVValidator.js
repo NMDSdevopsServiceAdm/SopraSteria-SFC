@@ -103,38 +103,67 @@ class TrainingCsvValidator {
     return this._notes;
   }
 
+  validate() {
+    let status = true;
+    status = !this._validateLocaleStId() ? false : status;
+    status = !this._validateUniqueWorkerId() ? false : status;
+    status = !this._validateDateCompleted() ? false : status;
+    status = !this._validateExpiry() ? false : status;
+    status = !this._validateDescription() ? false : status;
+    status = !this._validateCategory() ? false : status;
+    status = !this._validateAccredited() ? false : status;
+    status = !this._validateNotes() ? false : status;
+
+    return status;
+  }
+
+  toJSON() {
+    return {
+      localId: this._localeStId,
+      uniqueWorkerId: this._uniqueWorkerId,
+      completed: this._dateCompleted ? this._dateCompleted.format('DD/MM/YYYY') : undefined,
+      expiry: this._expiry ? this._expiry.format('DD/MM/YYYY') : undefined,
+      description: this._description,
+      category: this._category,
+      accredited: this._accredited,
+      notes: this._notes,
+      lineNumber: this._lineNumber,
+    };
+  }
+
+  toAPI() {
+    const changeProperties = {
+      trainingCategory: {
+        id: this._category,
+      },
+      completed: this._dateCompleted ? this._dateCompleted.format('YYYY-MM-DD') : undefined,
+      expires: this._expiry ? this._expiry.format('YYYY-MM-DD') : undefined,
+      title: this._description ? this._description : undefined,
+      notes: this._notes ? this._notes : undefined,
+      accredited: this._accredited ? this._accredited : undefined,
+    };
+
+    return changeProperties;
+  }
+
   _validateLocaleStId() {
     const myLocaleStId = this._currentLine.LOCALESTID;
     const MAX_LENGTH = 50;
-
-    if (!myLocaleStId || myLocaleStId.length === 0) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: TrainingCsvValidator.LOCALESTID_ERROR,
-        errType: 'LOCALESTID_ERROR',
-        error: 'LOCALESTID has not been supplied',
-        source: this._currentLine.LOCALESTID,
-        column: 'LOCALESTID',
-      });
-      return false;
-    } else if (myLocaleStId.length > MAX_LENGTH) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: TrainingCsvValidator.LOCALESTID_ERROR,
-        errType: 'LOCALESTID_ERROR',
-        error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
-        source: this._currentLine.LOCALESTID,
-        column: 'LOCALESTID',
-      });
-      return false;
-    } else {
+    const errMessage = this._getValidateLocaleStIdErrMessage(myLocaleStId, MAX_LENGTH);
+    if (!errMessage) {
       this._localeStId = myLocaleStId;
-      return true;
+      return;
     }
+    this._addValidationError('LOCALESTID_ERROR', errMessage, this._currentLine.LOCALESTID, 'LOCALESTID');
+  }
+
+  _getValidateLocaleStIdErrMessage(myLocaleStId, MAX_LENGTH) {
+    if (!myLocaleStId || myLocaleStId.length === 0) {
+      return 'LOCALESTID has not been supplied';
+    } else if (myLocaleStId.length > MAX_LENGTH) {
+      return `LOCALESTID is longer than ${MAX_LENGTH} characters`;
+    }
+    return;
   }
 
   _validateUniqueWorkerId() {
@@ -385,50 +414,6 @@ class TrainingCsvValidator {
       source: errorSource,
       column: columnName,
     });
-  }
-
-  // returns true on success, false is any attribute of TrainingCsvValidator fails
-  validate() {
-    let status = true;
-    status = !this._validateLocaleStId() ? false : status;
-    status = !this._validateUniqueWorkerId() ? false : status;
-    status = !this._validateDateCompleted() ? false : status;
-    status = !this._validateExpiry() ? false : status;
-    status = !this._validateDescription() ? false : status;
-    status = !this._validateCategory() ? false : status;
-    status = !this._validateAccredited() ? false : status;
-    status = !this._validateNotes() ? false : status;
-
-    return status;
-  }
-
-  toJSON() {
-    return {
-      localId: this._localeStId,
-      uniqueWorkerId: this._uniqueWorkerId,
-      completed: this._dateCompleted ? this._dateCompleted.format('DD/MM/YYYY') : undefined,
-      expiry: this._expiry ? this._expiry.format('DD/MM/YYYY') : undefined,
-      description: this._description,
-      category: this._category,
-      accredited: this._accredited,
-      notes: this._notes,
-      lineNumber: this._lineNumber,
-    };
-  }
-
-  toAPI() {
-    const changeProperties = {
-      trainingCategory: {
-        id: this._category,
-      },
-      completed: this._dateCompleted ? this._dateCompleted.format('YYYY-MM-DD') : undefined,
-      expires: this._expiry ? this._expiry.format('YYYY-MM-DD') : undefined,
-      title: this._description ? this._description : undefined,
-      notes: this._notes ? this._notes : undefined,
-      accredited: this._accredited ? this._accredited : undefined,
-    };
-
-    return changeProperties;
   }
 
   get validationErrors() {

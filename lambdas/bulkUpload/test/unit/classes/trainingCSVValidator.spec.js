@@ -184,5 +184,84 @@ describe('trainingCSVValidator', () => {
         expect(validator._notes).to.equal(null);
       });
     });
+
+    describe('_getValidateLocaleStIdErrorStatus()', () => {
+      it('should add LOCALESTID_ERROR to validationErrors and set _localStId as null if myLocaleStId length === 0', async () => {
+        trainingCsv.LOCALESTID = '';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateLocaleStId();
+
+        expect(validator._localeStId).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1000,
+            errType: 'LOCALESTID_ERROR',
+            error: 'LOCALESTID has not been supplied',
+            source: trainingCsv.LOCALESTID,
+            column: 'LOCALESTID',
+            lineNumber: 1,
+            name: '',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it("should add LOCALESTID_ERROR to validationErrors and leave _localStId as null if myLocaleStId doesn't exist", async () => {
+        trainingCsv.LOCALESTID = null;
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateLocaleStId();
+
+        expect(validator._localeStId).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1000,
+            errType: 'LOCALESTID_ERROR',
+            error: 'LOCALESTID has not been supplied',
+            source: trainingCsv.LOCALESTID,
+            column: 'LOCALESTID',
+            lineNumber: 1,
+            name: null,
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it("should add LOCALESTID_ERROR to validationErrors and leave _localStId as null if myLocaleStId's length is greater than MAX_LENGTH", async () => {
+        trainingCsv.LOCALESTID = 'Lorem ipsum dolor sit amet, consectetuer adipiscing';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateLocaleStId();
+
+        expect(validator._localeStId).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1000,
+            errType: 'LOCALESTID_ERROR',
+            error: 'LOCALESTID is longer than 50 characters',
+            source: trainingCsv.LOCALESTID,
+            column: 'LOCALESTID',
+            lineNumber: 1,
+            name: 'Lorem ipsum dolor sit amet, consectetuer adipiscing',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
+
+    describe('_validateLocaleStId()', async () => {
+      it('should pass validation and set _uniqueWorkerId if a valid LOCALESTID is provided', async () => {
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+        await validator._validateLocaleStId();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._localeStId).to.equal('foo');
+      });
+    });
   });
 });
