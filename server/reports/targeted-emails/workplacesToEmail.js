@@ -1,13 +1,13 @@
-const generateWorkplacesToEmailTab = (workbook, usersToEmail) => {
+const generateWorkplacesToEmailTab = (workbook, workplacesToEmail) => {
   const workplacesToEmailTab = workbook.addWorksheet('Found Workplaces');
 
-  addContentToWorkplacesToEmailTab(workplacesToEmailTab, usersToEmail);
+  addContentToWorkplacesToEmailTab(workplacesToEmailTab, workplacesToEmail);
 };
 
-const addContentToWorkplacesToEmailTab = (workplacesToEmailTab, usersToEmail) => {
+const addContentToWorkplacesToEmailTab = (workplacesToEmailTab, workplacesToEmail) => {
   addHeaders(workplacesToEmailTab);
-  const rows = buildRows(usersToEmail);
-  workplacesToEmailTab.addRows(rows);
+
+  workplacesToEmailTab.addRows(workplacesToEmail);
 };
 
 const addHeaders = (workplacesToEmailTab) => {
@@ -18,17 +18,6 @@ const addHeaders = (workplacesToEmailTab) => {
 
   const headerRow = workplacesToEmailTab.getRow(1);
   headerRow.font = { bold: true, name: 'Calibri' };
-};
-
-const buildRows = (usersToEmail) => {
-  return usersToEmail.map(buildRow);
-};
-
-const buildRow = (user) => {
-  return {
-    nmdsId: user.establishment.nmdsId,
-    emailAddress: user.get('email'),
-  };
 };
 
 module.exports = {

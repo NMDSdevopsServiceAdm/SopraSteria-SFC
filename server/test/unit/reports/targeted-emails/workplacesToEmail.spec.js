@@ -5,22 +5,14 @@ const { addContentToWorkplacesToEmailTab } = require('../../../../reports/target
 
 describe('addContentToWorkplacesToEmailTab', () => {
   let mockWorkplacesToEmailTab;
-  const mockUsers = [
+  const mockWorkplaces = [
     {
-      get() {
-        return 'mock@email.com';
-      },
-      establishment: {
-        nmdsId: 'A123456',
-      },
+      nmdsId: 'A123456',
+      emailAddress: 'mock@email.com',
     },
     {
-      get() {
-        return 'mock2@email.com';
-      },
-      establishment: {
-        nmdsId: 'A123459',
-      },
+      nmdsId: 'A123459',
+      emailAddress: 'mock2@email.com',
     },
   ];
 
@@ -29,21 +21,21 @@ describe('addContentToWorkplacesToEmailTab', () => {
   });
 
   it('should add tab NMDS ID and Email Address headers to top row', async () => {
-    addContentToWorkplacesToEmailTab(mockWorkplacesToEmailTab, mockUsers);
+    addContentToWorkplacesToEmailTab(mockWorkplacesToEmailTab, mockWorkplaces);
 
     expect(mockWorkplacesToEmailTab.getCell('A1').value).to.equal('NMDS ID');
     expect(mockWorkplacesToEmailTab.getCell('B1').value).to.equal('Email Address');
   });
 
-  it('should add the NMDS ID and Email Address of first user to second row', async () => {
-    addContentToWorkplacesToEmailTab(mockWorkplacesToEmailTab, mockUsers);
+  it('should add the NMDS ID and Email Address of first workplace to second row', async () => {
+    addContentToWorkplacesToEmailTab(mockWorkplacesToEmailTab, mockWorkplaces);
 
     expect(mockWorkplacesToEmailTab.getCell('A2').value).to.equal('A123456');
     expect(mockWorkplacesToEmailTab.getCell('B2').value).to.equal('mock@email.com');
   });
 
-  it('should add the NMDS ID and Email Address of second user to third row', async () => {
-    addContentToWorkplacesToEmailTab(mockWorkplacesToEmailTab, mockUsers);
+  it('should add the NMDS ID and Email Address of second workplace to third row', async () => {
+    addContentToWorkplacesToEmailTab(mockWorkplacesToEmailTab, mockWorkplaces);
 
     expect(mockWorkplacesToEmailTab.getCell('A3').value).to.equal('A123459');
     expect(mockWorkplacesToEmailTab.getCell('B3').value).to.equal('mock2@email.com');
