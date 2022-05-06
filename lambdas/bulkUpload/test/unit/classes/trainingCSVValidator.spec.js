@@ -1,5 +1,6 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
+const moment = require('moment');
 
 const dbmodels = require('../../../../../server/models');
 sinon.stub(dbmodels.status, 'ready').value(false);
@@ -343,26 +344,61 @@ describe('trainingCSVValidator', () => {
       });
     });
 
-    // describe('_validateDateCompleted()', async () => {
-    //   it.only('should pass validation and set _dateCompleted if a valid DATECOMPLETED is provided', async () => {
-    //     const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+    describe('_validateDateCompleted()', async () => {
+      it('should pass validation and set _dateCompleted if a valid DATECOMPLETED is provided', async () => {
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
-    //     await validator._validateDateCompleted();
+        await validator._validateDateCompleted();
 
-    //     expect(validator._validationErrors).to.deep.equal([]);
-    //     expect(validator._dateCompleted).to.equal();
-    //   });
-    // });
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._dateCompleted).to.deep.equal(moment.utc('01/01/2022', 'DD/MM/YYYY'));
+      });
+    });
 
-    // describe('_getValidateDateCompletedErrMessage()', async () => {
-    //   it.only('should pass validation and set _dateCompleted if a valid DATECOMPLETED is provided', async () => {
-    //     const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+    describe('_getValidateDateCompletedErrMessage()', async () => {
+      it('should add DATE_COMPLETED_ERROR to validationErrors and set _dateCompleted as null if DATECOMPLETED is incorrectly formatted', async () => {
+        trainingCsv.DATECOMPLETED = '12323423423';
 
-    //     await validator._validateDateCompleted();
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
-    //     expect(validator._validationErrors).to.deep.equal([]);
-    //     expect(validator._dateCompleted).to.equal();
-    //   });
-    // });
+        await validator._validateDateCompleted();
+
+        expect(validator._dateCompleted).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1020,
+            errType: 'DATE_COMPLETED_ERROR',
+            error: 'DATECOMPLETED is incorrectly formatted',
+            source: trainingCsv.DATECOMPLETED,
+            column: 'DATECOMPLETED',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add DATE_COMPLETED_ERROR to validationErrors and set _dateCompleted as null if DATECOMPLETED is a date set in the future', async () => {
+        trainingCsv.DATECOMPLETED = '01/01/2099';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateDateCompleted();
+
+        expect(validator._dateCompleted).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1020,
+            errType: 'DATE_COMPLETED_ERROR',
+            error: 'DATECOMPLETED is in the future',
+            source: trainingCsv.DATECOMPLETED,
+            column: 'DATECOMPLETED',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
   });
 });

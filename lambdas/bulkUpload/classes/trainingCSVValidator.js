@@ -191,51 +191,24 @@ class TrainingCsvValidator {
     const myDateCompleted = this._currentLine.DATECOMPLETED;
     const dateFormatRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/;
     const actualDate = moment.utc(myDateCompleted, 'DD/MM/YYYY');
+    const errMessage = this._getValidateDateCompletedErrMessage(myDateCompleted, dateFormatRegex, actualDate);
 
-    if (myDateCompleted) {
-      if (!dateFormatRegex.test(myDateCompleted)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: TrainingCsvValidator.DATE_COMPLETED_ERROR,
-          errType: 'DATE_COMPLETED_ERROR',
-          error: 'DATECOMPLETED is incorrectly formatted',
-          source: this._currentLine.DATECOMPLETED,
-          column: 'DATECOMPLETED',
-        });
-        return false;
-      } else if (!actualDate.isValid()) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: TrainingCsvValidator.DATE_COMPLETED_ERROR,
-          errType: 'DATE_COMPLETED_ERROR',
-          error: 'DATECOMPLETED is invalid',
-          source: this._currentLine.DATECOMPLETED,
-          column: 'DATECOMPLETED',
-        });
-        return false;
-      } else if (actualDate.isAfter(moment())) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: TrainingCsvValidator.DATE_COMPLETED_ERROR,
-          errType: 'DATE_COMPLETED_ERROR',
-          error: 'DATECOMPLETED is in the future',
-          source: this._currentLine.DATECOMPLETED,
-          column: 'DATECOMPLETED',
-        });
-        return false;
-      } else {
-        this._dateCompleted = actualDate;
-        return true;
-      }
-    } else {
-      return true;
+    if (!errMessage) {
+      this._dateCompleted = actualDate;
+      return;
     }
+    this._addValidationError('DATE_COMPLETED_ERROR', errMessage, this._currentLine.DATECOMPLETED, 'DATECOMPLETED');
+  }
+
+  _getValidateDateCompletedErrMessage(myDateCompleted, dateFormatRegex, actualDate) {
+    if (!dateFormatRegex.test(myDateCompleted)) {
+      return 'DATECOMPLETED is incorrectly formatted';
+    } else if (!actualDate.isValid()) {
+      return 'DATECOMPLETED is invalid';
+    } else if (actualDate.isAfter(moment())) {
+      return 'DATECOMPLETED is in the future';
+    }
+    return;
   }
 
   _validateExpiry() {
