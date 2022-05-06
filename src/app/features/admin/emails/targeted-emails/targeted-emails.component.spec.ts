@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -5,7 +6,6 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { WindowRef } from '@core/services/window.ref';
-import { SearchModule } from '@features/search/search.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -23,12 +23,13 @@ describe('TargetedEmailsComponent', () => {
         SharedModule,
         HttpClientTestingModule,
         RouterTestingModule,
-        SearchModule,
         FormsModule,
         ReactiveFormsModule,
         NgxDropzoneModule,
       ],
       providers: [
+        EmailCampaignService,
+        DecimalPipe,
         {
           provide: WindowRef,
           useClass: WindowRef,
@@ -82,7 +83,7 @@ describe('TargetedEmailsComponent', () => {
       expect(totalEmail.innerHTML).toContain('1,500');
     });
 
-    it("should display 0 emails to be sent when the group and template haven't been selected", async () => {
+    it(`should display 0 emails to be sent when the group and template haven't been selected`, async () => {
       const component = await setup();
 
       component.fixture.componentInstance.emailGroup = null;
@@ -93,7 +94,7 @@ describe('TargetedEmailsComponent', () => {
       expect(totalEmails.innerHTML).toContain('0');
     });
 
-    it("should disable the Send emails button when the group and template haven't been selected", async () => {
+    it(`should disable the Send emails button when the group and template haven't been selected`, async () => {
       const component = await setup();
 
       component.fixture.componentInstance.emailGroup = '';
