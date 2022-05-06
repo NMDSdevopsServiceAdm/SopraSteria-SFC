@@ -1,8 +1,7 @@
 const excelUtils = require('../../utils/excelUtils');
-const { generateWorkplacesToEmailTab } = require('./workplaces-to-email');
+const { generateWorkplacesToEmailTab } = require('./workplacesToEmail');
 
 const generateTargetedEmailsReport = async (workbook, usersToEmail, establishmentNmdsIdList) => {
-  console.log(usersToEmail);
   generateWorkplacesToEmailTab(workbook, usersToEmail);
   //generateWorkplacesWithoutEmailTab(workbook, establishmentNmdsIdList);
 

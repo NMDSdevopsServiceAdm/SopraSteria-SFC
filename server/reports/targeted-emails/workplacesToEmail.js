@@ -1,20 +1,23 @@
 const generateWorkplacesToEmailTab = (workbook, usersToEmail) => {
-  const workplacesToEmailTab = addWorksheet(workbook);
+  const workplacesToEmailTab = workbook.addWorksheet('Found Workplaces');
+
+  addContentToWorkplacesToEmailTab(workplacesToEmailTab, usersToEmail);
+};
+
+const addContentToWorkplacesToEmailTab = (workplacesToEmailTab, usersToEmail) => {
+  addHeaders(workplacesToEmailTab);
   const rows = buildRows(usersToEmail);
   workplacesToEmailTab.addRows(rows);
 };
 
-const addWorksheet = (workbook) => {
-  const worksheet = workbook.addWorksheet('Found Workplaces');
-  worksheet.columns = [
+const addHeaders = (workplacesToEmailTab) => {
+  workplacesToEmailTab.columns = [
     { header: 'NMDS ID', key: 'nmdsId' },
     { header: 'Email Address', key: 'emailAddress' },
   ];
 
-  const headerRow = worksheet.getRow(1);
+  const headerRow = workplacesToEmailTab.getRow(1);
   headerRow.font = { bold: true, name: 'Calibri' };
-
-  return worksheet;
 };
 
 const buildRows = (usersToEmail) => {
@@ -30,4 +33,5 @@ const buildRow = (user) => {
 
 module.exports = {
   generateWorkplacesToEmailTab,
+  addContentToWorkplacesToEmailTab,
 };
