@@ -157,7 +157,7 @@ const uploadedPut = async (req, res) => {
       if (EstablishmentCsvValidator.isContent(myfile.data)) {
         myDownloads.establishments = myfile.data;
         establishmentMetadata.filename = myfile.filename;
-        establishmentMetadata.fileType = 'WorkplaceCSVValidator';
+        establishmentMetadata.fileType = 'Establishment';
         establishmentMetadata.userName = myfile.username;
         establishmentMetadata.size = myfile.size;
         establishmentMetadata.key = myfile.key;

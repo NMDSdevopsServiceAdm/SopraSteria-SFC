@@ -188,7 +188,7 @@ const uploadedPut = async (req, res) => {
     await Promise.all(
       myDownloads
         .filter((file) => {
-          return ['Worker', 'WorkplaceCSVValidator', 'Training'].includes(file.type);
+          return ['Worker', 'Establishment', 'Training'].includes(file.type);
         })
         .map(async (file) => {
           file.importedData = await csv().fromString(file.data);

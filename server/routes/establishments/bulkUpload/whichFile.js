@@ -14,7 +14,7 @@ const isTrainingFile = (fileAsString) => {
 
 const getFileType = (fileData) => {
   if (EstablishmentCsvValidator.isContent(fileData)) {
-    return 'WorkplaceCSVValidator';
+    return 'Establishment';
   } else if (isWorkerFile(fileData)) {
     return 'Worker';
   } else if (isTrainingFile(fileData)) {

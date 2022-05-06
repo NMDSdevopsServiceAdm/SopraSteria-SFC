@@ -39,7 +39,7 @@ describe('whichFile', () => {
     it('should return the correct file type for establishments', () => {
       const fileType = getFileType('LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES');
 
-      expect(fileType).to.deep.equal('WorkplaceCSVValidator');
+      expect(fileType).to.deep.equal('Establishment');
     });
 
     it('should return the correct file type for workers', () => {

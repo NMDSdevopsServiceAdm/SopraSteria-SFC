@@ -12,10 +12,8 @@ const { buStates } = require('../states');
 const { processDifferenceReport } = require('./processDifferenceReport');
 
 const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
-
-const { validateEstablishmentCsv } = require('./validateEstablishmentCsv');
-const { validateDuplicateLocations } = require('./validateDuplicateLocations');
 const { validateWorkers } = require('./workers/validateWorkers');
+const { validateWorkplace } = require('./workplace/validateWorkplace');
 const { validateTraining } = require('./training/validateTraining');
 const { crossValidate } = require('../../../../models/BulkImport/csv/crossValidate');
 
@@ -30,10 +28,6 @@ const validateBulkUploadFiles = async (req, files) => {
   const establishments = files.Establishment;
   const workers = files.Worker;
   const training = files.Training;
-
-  const csvEstablishmentSchemaErrors = [];
-
-  const myEstablishments = [];
 
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL = 1;
@@ -62,46 +56,13 @@ const validateBulkUploadFiles = async (req, files) => {
 
   // /////////////////////////
   // Parse and process Establishments CSV
-  if (
-    Array.isArray(establishments.imported) &&
-    establishments.imported.length > 0 &&
-    establishments.metadata.fileType === 'Establishment'
-  ) {
-    // validate all establishment rows
-    await Promise.all(
-      establishments.imported.map((thisLine, currentLineNumber) =>
-        validateEstablishmentCsv(
-          thisLine,
-          currentLineNumber + 2,
-          csvEstablishmentSchemaErrors,
-          myEstablishments,
-          myAPIEstablishments,
-          myCurrentEstablishments,
-          keepAlive,
-        ),
-      ),
-    );
 
-    // having parsed all establishments, check for duplicates
-    // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
-    myEstablishments.forEach((thisEstablishment) => {
-      const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, '');
-      if (allEstablishmentsByKey[keyNoWhitespace]) {
-        // this establishment is a duplicate
-        csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
-
-        // remove the entity
-        delete myAPIEstablishments[keyNoWhitespace];
-      } else {
-        // does not yet exist
-        allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
-      }
-    });
-
-    await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, myCurrentEstablishments);
-  } else {
-    console.info('API bulkupload - validateBulkUploadFiles: no establishment records');
-  }
+  const { csvEstablishmentSchemaErrors, myEstablishments } = await validateWorkplace(
+    establishments,
+    allEstablishmentsByKey,
+    myAPIEstablishments,
+    myCurrentEstablishments,
+  );
 
   establishments.metadata.records = myEstablishments.length;
 
