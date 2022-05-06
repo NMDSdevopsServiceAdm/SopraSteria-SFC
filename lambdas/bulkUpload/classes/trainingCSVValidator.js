@@ -192,84 +192,54 @@ class TrainingCsvValidator {
       return;
     }
 
-    const actualDate = moment.utc(this._currentLine.DATECOMPLETED, 'DD/MM/YYYY', true);
-    const errMessage = this._getValidateDateCompletedErrMessage(actualDate);
+    const dateCompleted = moment.utc(this._currentLine.DATECOMPLETED, 'DD/MM/YYYY', true);
+    const errMessage = this._getValidateDateCompletedErrMessage(dateCompleted);
 
     if (!errMessage) {
-      this._dateCompleted = actualDate;
+      this._dateCompleted = dateCompleted;
       return;
     }
     this._addValidationError('DATE_COMPLETED_ERROR', errMessage, this._currentLine.DATECOMPLETED, 'DATECOMPLETED');
   }
 
-  _getValidateDateCompletedErrMessage(actualDate) {
-    if (!actualDate.isValid()) {
+  _getValidateDateCompletedErrMessage(dateCompleted) {
+    if (!dateCompleted.isValid()) {
       return 'DATECOMPLETED is incorrectly formatted';
-    } else if (actualDate.isAfter(moment())) {
+    } else if (dateCompleted.isAfter(moment())) {
       return 'DATECOMPLETED is in the future';
     }
     return;
   }
 
-  _checkForEmptyOrNullDate(date) {
-    if (!date || date === '') {
-      return true;
+  _validateExpiry() {
+    if (this._checkForEmptyOrNullDate(this._currentLine.EXPIRYDATE)) {
+      this._expiry = this._currentLine.EXPIRYDATE;
+      return;
     }
-    return false;
+
+    const expiredDate = moment.utc(this._currentLine.EXPIRYDATE, 'DD/MM/YYYY', true);
+    const validationErrorDetails = this._getValidateExpiryErrDetails(expiredDate);
+
+    if (!validationErrorDetails) {
+      this._expiry = expiredDate;
+      return;
+    }
+
+    this._addValidationError(
+      'EXPIRY_DATE_ERROR',
+      validationErrorDetails.errMessage,
+      this._currentLine.EXPIRYDATE,
+      validationErrorDetails.errColumnName,
+    );
   }
 
-  _validateExpiry() {
-    // optional
-    const myDateExpiry = this._currentLine.EXPIRYDATE;
-    const dateFormatRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/;
-    const actualDate = moment.utc(myDateExpiry, 'DD/MM/YYYY');
-    const myDateCompleted = this._currentLine.DATECOMPLETED;
-    const actualDateCompleted = moment.utc(myDateCompleted, 'DD/MM/YYYY');
-
-    if (myDateExpiry) {
-      if (!dateFormatRegex.test(myDateExpiry)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: TrainingCsvValidator.EXPIRY_DATE_ERROR,
-          errType: 'EXPIRY_DATE_ERROR',
-          error: 'EXPIRYDATE is incorrectly formatted',
-          source: this._currentLine.EXPIRYDATE,
-          column: 'EXPIRYDATE',
-        });
-        return false;
-      } else if (!actualDate.isValid()) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: TrainingCsvValidator.EXPIRY_DATE_ERROR,
-          errType: 'EXPIRY_DATE_ERROR',
-          error: 'EXPIRYDATE is invalid',
-          source: this._currentLine.EXPIRYDATE,
-          column: 'EXPIRYDATE',
-        });
-        return false;
-      } else if (actualDate.isSameOrBefore(actualDateCompleted, 'day')) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: TrainingCsvValidator.EXPIRY_DATE_ERROR,
-          errType: 'EXPIRY_DATE_ERROR',
-          error: 'EXPIRYDATE must be after DATECOMPLETED',
-          source: this._currentLine.EXPIRYDATE,
-          column: 'EXPIRYDATE/DATECOMPLETED',
-        });
-        return false;
-      } else {
-        this._expiry = actualDate;
-        return true;
-      }
-    } else {
-      return true;
+  _getValidateExpiryErrDetails(expiredDate) {
+    if (!expiredDate.isValid()) {
+      return { errMessage: 'EXPIRYDATE is incorrectly formatted', errColumnName: 'EXPIRYDATE' };
+    } else if (expiredDate.isSameOrBefore(this._dateCompleted, 'day')) {
+      return { errMessage: 'EXPIRYDATE must be after DATECOMPLETED', errColumnName: 'EXPIRYDATE/DATECOMPLETED' };
     }
+    return;
   }
 
   _validateDescription() {
@@ -367,6 +337,13 @@ class TrainingCsvValidator {
 
       this._notes = notes;
     }
+  }
+
+  _checkForEmptyOrNullDate(date) {
+    if (!date || date === '') {
+      return true;
+    }
+    return false;
   }
 
   _addValidationError(errorType, errorMessage, errorSource, columnName) {

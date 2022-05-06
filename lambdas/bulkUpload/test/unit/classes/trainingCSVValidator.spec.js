@@ -18,7 +18,7 @@ describe('trainingCSVValidator', () => {
         CATEGORY: 1,
         DESCRIPTION: 'training',
         DATECOMPLETED: '01/01/2022',
-        EXPIRYDATE: '',
+        EXPIRYDATE: '15/04/2022',
         ACCREDITED: '',
         NOTES: '',
       };
@@ -413,6 +413,107 @@ describe('trainingCSVValidator', () => {
             error: 'DATECOMPLETED is in the future',
             source: trainingCsv.DATECOMPLETED,
             column: 'DATECOMPLETED',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
+
+    describe('_validateExpiry()', async () => {
+      it('should pass validation and set _expiry to EXPIRYDATE if a valid EXPIRYDATE is provided', async () => {
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+        await validator._validateExpiry();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._expiry).to.deep.equal(moment.utc('15/04/2022', 'DD/MM/YYYY', true));
+      });
+
+      it('should pass validation and set _expiry to an empty string if EXPIRYDATE is an empty string', async () => {
+        trainingCsv.EXPIRYDATE = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+        await validator._validateExpiry();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._expiry).to.deep.equal('');
+      });
+
+      it('should pass validation and set _expiry to null if EXPIRYDATE is null', async () => {
+        trainingCsv.EXPIRYDATE = null;
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+        await validator._validateExpiry();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._expiry).to.deep.equal(null);
+      });
+    });
+
+    describe('_getValidateExpiryErrMessage()', async () => {
+      it('should add EXPIRY_DATE_ERROR to validationErrors and set _expiry as null if EXPIRYDATE is incorrectly formatted', async () => {
+        trainingCsv.EXPIRYDATE = '12323423423';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateExpiry();
+
+        expect(validator._expiry).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1030,
+            errType: 'EXPIRY_DATE_ERROR',
+            error: 'EXPIRYDATE is incorrectly formatted',
+            source: trainingCsv.EXPIRYDATE,
+            column: 'EXPIRYDATE',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add EXPIRY_DATE_ERROR to validationErrors and set _expiry as null if EXPIRYDATE is a date set before DATECOMPLETED ', async () => {
+        trainingCsv.EXPIRYDATE = '01/01/2000';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateDateCompleted();
+        await validator._validateExpiry();
+
+        expect(validator._expiry).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1030,
+            errType: 'EXPIRY_DATE_ERROR',
+            error: 'EXPIRYDATE must be after DATECOMPLETED',
+            source: trainingCsv.EXPIRYDATE,
+            column: 'EXPIRYDATE/DATECOMPLETED',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add EXPIRY_DATE_ERROR to validationErrors and set _expiry as null if EXPIRYDATE is the same date as DATECOMPLETED ', async () => {
+        trainingCsv.EXPIRYDATE = '01/01/2022';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateDateCompleted();
+        await validator._validateExpiry();
+
+        expect(validator._expiry).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1030,
+            errType: 'EXPIRY_DATE_ERROR',
+            error: 'EXPIRYDATE must be after DATECOMPLETED',
+            source: trainingCsv.EXPIRYDATE,
+            column: 'EXPIRYDATE/DATECOMPLETED',
             lineNumber: 1,
             name: 'foo',
             worker: 'bar',
