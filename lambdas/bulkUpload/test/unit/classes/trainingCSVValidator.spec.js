@@ -345,13 +345,33 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_validateDateCompleted()', async () => {
-      it('should pass validation and set _dateCompleted if a valid DATECOMPLETED is provided', async () => {
+      it('should pass validation and set _dateCompleted to DATECOMPLETED if a valid DATECOMPLETED is provided', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
         await validator._validateDateCompleted();
 
         expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._dateCompleted).to.deep.equal(moment.utc('01/01/2022', 'DD/MM/YYYY'));
+        expect(validator._dateCompleted).to.deep.equal(moment.utc('01/01/2022', 'DD/MM/YYYY', true));
+      });
+
+      it('should pass validation and set _dateCompleted to an empty string if the DATECOMPLETED is a empty string', async () => {
+        trainingCsv.DATECOMPLETED = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+        await validator._validateDateCompleted();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._dateCompleted).to.equal('');
+      });
+
+      it('should pass validation and set _dateCompleted to null if the DATECOMPLETED is null', async () => {
+        trainingCsv.DATECOMPLETED = null;
+        const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
+
+        await validator._validateDateCompleted();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._dateCompleted).to.equal(null);
       });
     });
 

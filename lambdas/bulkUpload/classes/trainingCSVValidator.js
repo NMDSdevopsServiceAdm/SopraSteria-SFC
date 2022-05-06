@@ -187,11 +187,13 @@ class TrainingCsvValidator {
   }
 
   _validateDateCompleted() {
-    // optional
-    const myDateCompleted = this._currentLine.DATECOMPLETED;
-    const dateFormatRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/;
-    const actualDate = moment.utc(myDateCompleted, 'DD/MM/YYYY');
-    const errMessage = this._getValidateDateCompletedErrMessage(myDateCompleted, dateFormatRegex, actualDate);
+    if (this._checkForEmptyOrNullDate(this._currentLine.DATECOMPLETED)) {
+      this._dateCompleted = this._currentLine.DATECOMPLETED;
+      return;
+    }
+
+    const actualDate = moment.utc(this._currentLine.DATECOMPLETED, 'DD/MM/YYYY', true);
+    const errMessage = this._getValidateDateCompletedErrMessage(actualDate);
 
     if (!errMessage) {
       this._dateCompleted = actualDate;
@@ -200,15 +202,20 @@ class TrainingCsvValidator {
     this._addValidationError('DATE_COMPLETED_ERROR', errMessage, this._currentLine.DATECOMPLETED, 'DATECOMPLETED');
   }
 
-  _getValidateDateCompletedErrMessage(myDateCompleted, dateFormatRegex, actualDate) {
-    if (!dateFormatRegex.test(myDateCompleted)) {
+  _getValidateDateCompletedErrMessage(actualDate) {
+    if (!actualDate.isValid()) {
       return 'DATECOMPLETED is incorrectly formatted';
-    } else if (!actualDate.isValid()) {
-      return 'DATECOMPLETED is invalid';
     } else if (actualDate.isAfter(moment())) {
       return 'DATECOMPLETED is in the future';
     }
     return;
+  }
+
+  _checkForEmptyOrNullDate(date) {
+    if (!date || date === '') {
+      return true;
+    }
+    return false;
   }
 
   _validateExpiry() {
