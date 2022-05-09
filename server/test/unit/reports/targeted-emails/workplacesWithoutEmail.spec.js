@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const excelJS = require('exceljs');
 
-const { addContentToWorkplacesWithoutEmailTab } = require('../../../../reports/targeted-emails/WorkplacesWithoutEmail');
+const { addContentToWorkplacesWithoutEmailTab } = require('../../../../reports/targeted-emails/workplacesWithoutEmail');
 
 describe('addContentToWorkplacesWithoutEmailTab', () => {
   let mockWorkplacesWithoutEmailTab;
