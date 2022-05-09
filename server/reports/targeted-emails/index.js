@@ -1,11 +1,13 @@
 const excelUtils = require('../../utils/excelUtils');
 const { generateWorkplacesToEmailTab } = require('./workplacesToEmail');
+const { generateWorkplacesWithoutEmailTab } = require('./workplacesWithoutEmail');
 
 const generateTargetedEmailsReport = async (workbook, users, establishmentNmdsIdList) => {
   const workplacesToEmail = formatWorkplacesToEmail(users);
+  const workplacesWithoutEmail = getWorkplacesWithoutEmail(workplacesToEmail, establishmentNmdsIdList);
 
   generateWorkplacesToEmailTab(workbook, workplacesToEmail);
-  //generateWorkplacesWithoutEmailTab(workbook, establishmentNmdsIdList);
+  //generateWorkplacesWithoutEmailTab(workbook, workplacesWithoutEmail);
 
   workbook.eachSheet((sheet) => {
     excelUtils.fitColumnsToSize(sheet);
@@ -25,7 +27,12 @@ const formatWorkplace = (user) => {
   };
 };
 
+const getWorkplacesWithoutEmail = (workplacesToEmail, establishmentNmdsIdList) => {
+  return establishmentNmdsIdList.filter((id) => workplacesToEmail.find((workplace) => workplace.nmdsId === id));
+};
+
 module.exports = {
   generateTargetedEmailsReport,
   formatWorkplacesToEmail,
+  getWorkplacesWithoutEmail,
 };
