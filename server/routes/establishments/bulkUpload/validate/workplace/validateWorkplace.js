@@ -2,22 +2,17 @@ const { validateEstablishmentCsv } = require('../validateEstablishmentCsv');
 const { keepAlive } = require('../validateBulkUploadFiles');
 const { validateDuplicateLocations } = require('../validateDuplicateLocations');
 
-const validateWorkplace = async (
-  establishments,
-  allEstablishmentsByKey,
-  myAPIEstablishments,
-  myCurrentEstablishments,
-) => {
+const validateWorkplace = async (establishments, myCurrentEstablishments) => {
   const csvEstablishmentSchemaErrors = [];
-
   const myEstablishments = [];
+  const myAPIEstablishments = {};
+  const allEstablishmentsByKey = {};
 
   if (
     Array.isArray(establishments.imported) &&
     establishments.imported.length > 0 &&
     establishments.metadata.fileType === 'Establishment'
   ) {
-    // validate all establishment rows
     await Promise.all(
       establishments.imported.map((thisLine, currentLineNumber) =>
         validateEstablishmentCsv(
@@ -32,30 +27,39 @@ const validateWorkplace = async (
       ),
     );
 
-    // having parsed all establishments, check for duplicates
-    // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
-    myEstablishments.forEach((thisEstablishment) => {
-      const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, '');
-      if (allEstablishmentsByKey[keyNoWhitespace]) {
-        // this establishment is a duplicate
-        csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
-
-        // remove the entity
-        delete myAPIEstablishments[keyNoWhitespace];
-      } else {
-        // does not yet exist
-        allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
-      }
-    });
+    checkDuplicate(myEstablishments, csvEstablishmentSchemaErrors, allEstablishmentsByKey, myAPIEstablishments);
 
     await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, myCurrentEstablishments);
     return {
       csvEstablishmentSchemaErrors,
       myEstablishments,
+      myAPIEstablishments,
+      allEstablishmentsByKey,
     };
   } else {
     console.info('API bulkupload - validateBulkUploadFiles: no establishment records');
   }
 };
 
-module.exports.validateWorkplace = validateWorkplace;
+const checkDuplicate = (
+  myEstablishments,
+  csvEstablishmentSchemaErrors,
+  allEstablishmentsByKey,
+  myAPIEstablishments,
+) => {
+  myEstablishments.forEach((thisEstablishment) => {
+    const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, '');
+    if (allEstablishmentsByKey[keyNoWhitespace]) {
+      csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
+
+      delete myAPIEstablishments[keyNoWhitespace];
+    } else {
+      allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
+    }
+  });
+};
+
+module.exports = {
+  validateWorkplace,
+  checkDuplicate,
+};

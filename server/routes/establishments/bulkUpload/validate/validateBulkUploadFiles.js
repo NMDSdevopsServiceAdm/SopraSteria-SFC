@@ -49,20 +49,12 @@ const validateBulkUploadFiles = async (req, files) => {
   //    2: { },
   //    ...
   // }
-  const myAPIEstablishments = {};
-
-  // for unique/cross-reference validations
-  const allEstablishmentsByKey = {};
 
   // /////////////////////////
   // Parse and process Establishments CSV
 
-  const { csvEstablishmentSchemaErrors, myEstablishments } = await validateWorkplace(
-    establishments,
-    allEstablishmentsByKey,
-    myAPIEstablishments,
-    myCurrentEstablishments,
-  );
+  const { csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments, allEstablishmentsByKey } =
+    await validateWorkplace(establishments, myCurrentEstablishments);
 
   establishments.metadata.records = myEstablishments.length;
 
