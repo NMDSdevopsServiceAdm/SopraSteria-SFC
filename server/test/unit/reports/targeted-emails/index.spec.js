@@ -44,25 +44,25 @@ describe('reports/targetedEmails/index', () => {
   describe('getWorkplacesWithoutEmail()', () => {
     const nmdsIdsList = ['A123456', 'A123459'];
 
-    it('should return array with all nmdsIds when all IDs in workplacesToEmail', async () => {
+    it('should return empty array when workplacesToEmail has all IDs', async () => {
       const data = getWorkplacesWithoutEmail(mockWorkplacesToEmail, nmdsIdsList);
-
-      expect(data).to.deep.equal(['A123456', 'A123459']);
-    });
-
-    it('should return empty array when workplacesToEmail is empty', async () => {
-      const workplacesToEmail = [];
-
-      const data = getWorkplacesWithoutEmail(workplacesToEmail, nmdsIdsList);
 
       expect(data).to.deep.equal([]);
     });
 
-    it('should return array with first nmdsId when second ID not in workplacesToEmail', async () => {
+    it('should return array with all nmdsIds from nmdsIdsList when workplacesToEmail is empty', async () => {
+      const workplacesToEmail = [];
+
+      const data = getWorkplacesWithoutEmail(workplacesToEmail, nmdsIdsList);
+
+      expect(data).to.deep.equal(['A123456', 'A123459']);
+    });
+
+    it('should return array with first nmdsId when first ID not in workplacesToEmail', async () => {
       const workplacesToEmail = [
         {
-          nmdsId: 'A123456',
-          emailAddress: 'mock@email.com',
+          nmdsId: 'A123459',
+          emailAddress: 'mock2@email.com',
         },
       ];
 
@@ -71,11 +71,11 @@ describe('reports/targetedEmails/index', () => {
       expect(data).to.deep.equal(['A123456']);
     });
 
-    it('should return array with second nmdsId when first ID not in workplacesToEmail', async () => {
+    it('should return array with second nmdsId when second ID not in workplacesToEmail', async () => {
       const workplacesToEmail = [
         {
-          nmdsId: 'A123459',
-          emailAddress: 'mock2@email.com',
+          nmdsId: 'A123456',
+          emailAddress: 'mock@email.com',
         },
       ];
 

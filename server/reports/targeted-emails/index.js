@@ -28,7 +28,7 @@ const formatWorkplace = (user) => {
 };
 
 const getWorkplacesWithoutEmail = (workplacesToEmail, establishmentNmdsIdList) => {
-  return establishmentNmdsIdList.filter((id) => workplacesToEmail.find((workplace) => workplace.nmdsId === id));
+  return establishmentNmdsIdList.filter((id) => !workplacesToEmail.find((workplace) => workplace.nmdsId === id));
 };
 
 module.exports = {
