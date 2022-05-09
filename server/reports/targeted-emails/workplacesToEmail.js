@@ -1,3 +1,5 @@
+const { makeRowBold } = require('../../utils/excelUtils');
+
 const generateWorkplacesToEmailTab = (workbook, workplacesToEmail) => {
   const workplacesToEmailTab = workbook.addWorksheet('Found Workplaces');
 
@@ -16,8 +18,7 @@ const addHeaders = (workplacesToEmailTab) => {
     { header: 'Email Address', key: 'emailAddress' },
   ];
 
-  const headerRow = workplacesToEmailTab.getRow(1);
-  headerRow.font = { bold: true, name: 'Calibri' };
+  makeRowBold(workplacesToEmailTab, 1);
 };
 
 module.exports = {

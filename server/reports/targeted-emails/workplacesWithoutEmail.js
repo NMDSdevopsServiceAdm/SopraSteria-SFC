@@ -1,3 +1,5 @@
+const { makeRowBold } = require('../../utils/excelUtils');
+
 const generateWorkplacesWithoutEmailTab = (workbook, workplacesWithoutEmail) => {
   const workplacesWithoutEmailTab = workbook.addWorksheet('Workplaces without Email');
 
@@ -15,8 +17,7 @@ const addContentToWorkplacesWithoutEmailTab = (workplacesWithoutEmailTab, workpl
 const addHeaders = (workplacesWithoutEmailTab) => {
   workplacesWithoutEmailTab.columns = [{ header: 'NMDS ID', key: 'nmdsId' }];
 
-  const headerRow = workplacesWithoutEmailTab.getRow(1);
-  headerRow.font = { bold: true, name: 'Calibri' };
+  makeRowBold(workplacesWithoutEmailTab, 1);
 };
 
 module.exports = {
