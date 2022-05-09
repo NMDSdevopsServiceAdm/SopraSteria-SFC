@@ -7,7 +7,7 @@ const generateTargetedEmailsReport = async (workbook, users, establishmentNmdsId
   const workplacesWithoutEmail = getWorkplacesWithoutEmail(workplacesToEmail, establishmentNmdsIdList);
 
   generateWorkplacesToEmailTab(workbook, workplacesToEmail);
-  //generateWorkplacesWithoutEmailTab(workbook, workplacesWithoutEmail);
+  generateWorkplacesWithoutEmailTab(workbook, workplacesWithoutEmail);
 
   workbook.eachSheet((sheet) => {
     excelUtils.fitColumnsToSize(sheet);
