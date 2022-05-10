@@ -75,6 +75,7 @@ describe('trainingCSVValidator', () => {
 
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1060,
             errType: 'ACCREDITED_ERROR',
             error: 'ACCREDITED is invalid',
@@ -98,6 +99,7 @@ describe('trainingCSVValidator', () => {
 
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1050,
             errType: 'CATEGORY_ERROR',
             error: 'CATEGORY has not been supplied',
@@ -119,6 +121,7 @@ describe('trainingCSVValidator', () => {
 
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1050,
             errType: 'CATEGORY_ERROR',
             error: 'CATEGORY has not been supplied',
@@ -153,6 +156,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._notes).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1070,
             errType: 'NOTES_ERROR',
             error: 'NOTES is longer than 1000 characters',
@@ -197,6 +201,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._localeStId).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1000,
             errType: 'LOCALESTID_ERROR',
             error: 'LOCALESTID has not been supplied',
@@ -219,6 +224,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._localeStId).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1000,
             errType: 'LOCALESTID_ERROR',
             error: 'LOCALESTID has not been supplied',
@@ -241,6 +247,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._localeStId).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1000,
             errType: 'LOCALESTID_ERROR',
             error: 'LOCALESTID is longer than 50 characters',
@@ -287,6 +294,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._uniqueWorkerId).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1010,
             errType: 'UNIQUE_WORKER_ID_ERROR',
             error: 'UNIQUEWORKERID has not been supplied',
@@ -309,6 +317,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._uniqueWorkerId).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1010,
             errType: 'UNIQUE_WORKER_ID_ERROR',
             error: 'UNIQUEWORKERID has not been supplied',
@@ -331,6 +340,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._uniqueWorkerId).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1010,
             errType: 'UNIQUE_WORKER_ID_ERROR',
             error: 'UNIQUEWORKERID is longer than 50 characters',
@@ -386,6 +396,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._dateCompleted).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1020,
             errType: 'DATE_COMPLETED_ERROR',
             error: 'DATECOMPLETED is incorrectly formatted',
@@ -408,6 +419,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._dateCompleted).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1020,
             errType: 'DATE_COMPLETED_ERROR',
             error: 'DATECOMPLETED is in the future',
@@ -463,6 +475,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._expiry).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1030,
             errType: 'EXPIRY_DATE_ERROR',
             error: 'EXPIRYDATE is incorrectly formatted',
@@ -486,6 +499,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._expiry).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1030,
             errType: 'EXPIRY_DATE_ERROR',
             error: 'EXPIRYDATE must be after DATECOMPLETED',
@@ -509,6 +523,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._expiry).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1030,
             errType: 'EXPIRY_DATE_ERROR',
             error: 'EXPIRYDATE must be after DATECOMPLETED',
@@ -544,6 +559,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._description).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1040,
             errType: 'DESCRIPTION_ERROR',
             error: 'DESCRIPTION has not been supplied',
@@ -566,6 +582,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._description).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1040,
             errType: 'DESCRIPTION_ERROR',
             error: 'DESCRIPTION has not been supplied',
@@ -589,6 +606,7 @@ describe('trainingCSVValidator', () => {
         expect(validator._description).to.equal(null);
         expect(validator._validationErrors).to.deep.equal([
           {
+            origin: 'Training',
             errCode: 1040,
             errType: 'DESCRIPTION_ERROR',
             error: 'DESCRIPTION is longer than 120 characters',

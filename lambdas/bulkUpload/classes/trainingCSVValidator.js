@@ -324,6 +324,7 @@ class TrainingCsvValidator {
 
   _addValidationError(errorType, errorMessage, errorSource, columnName) {
     this._validationErrors.push({
+      origin: 'Training',
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
       lineNumber: this._lineNumber,
@@ -336,13 +337,7 @@ class TrainingCsvValidator {
   }
 
   get validationErrors() {
-    // include the "origin" of validation error
-    return this._validationErrors.map((thisValidation) => {
-      return {
-        origin: 'Training',
-        ...thisValidation,
-      };
-    });
+    return this._validationErrors;
   }
 }
 
