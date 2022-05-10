@@ -4,17 +4,17 @@ const BUDI = require('../classes/BUDI').BUDI;
 
 class TrainingCsvValidator {
   constructor(currentLine, lineNumber, mappings) {
-    this._currentLine = currentLine;
-    this._lineNumber = lineNumber;
-    this._validationErrors = [];
-    this._localeStId = null;
-    this._uniqueWorkerId = null;
-    this._dateCompleted = null;
-    this._expiry = null;
-    this._description = null;
-    this._category = null;
-    this._accredited = null;
-    this._notes = null;
+    this.currentLine = currentLine;
+    this.lineNumber = lineNumber;
+    this.validationErrors = [];
+    this.localeStId = null;
+    this.uniqueWorkerId = null;
+    this.dateCompleted = null;
+    this.expiry = null;
+    this.description = null;
+    this.category = null;
+    this.accredited = null;
+    this.notes = null;
 
     this.BUDI = new BUDI(mappings);
   }
@@ -62,46 +62,6 @@ class TrainingCsvValidator {
     return 2070;
   }
 
-  get lineNumber() {
-    return this._lineNumber;
-  }
-
-  get currentLine() {
-    return this._currentLine;
-  }
-
-  get localeStId() {
-    return this._localeStId;
-  }
-
-  get uniqueWorkerId() {
-    return this._uniqueWorkerId;
-  }
-
-  get dateCompleted() {
-    return this._dateCompleted;
-  }
-
-  get expiry() {
-    return this._expiry;
-  }
-
-  get description() {
-    return this._description;
-  }
-
-  get category() {
-    return this._category;
-  }
-
-  get accredited() {
-    return this._accredited;
-  }
-
-  get notes() {
-    return this._notes;
-  }
-
   validate() {
     this._validateLocaleStId();
     this._validateUniqueWorkerId();
@@ -115,42 +75,42 @@ class TrainingCsvValidator {
 
   toJSON() {
     return {
-      localId: this._localeStId,
-      uniqueWorkerId: this._uniqueWorkerId,
-      completed: this._dateCompleted ? this._dateCompleted.format('DD/MM/YYYY') : undefined,
-      expiry: this._expiry ? this._expiry.format('DD/MM/YYYY') : undefined,
-      description: this._description,
-      category: this._category,
-      accredited: this._accredited,
-      notes: this._notes,
-      lineNumber: this._lineNumber,
+      localId: this.localeStId,
+      uniqueWorkerId: this.uniqueWorkerId,
+      completed: this.dateCompleted ? this.dateCompleted.format('DD/MM/YYYY') : undefined,
+      expiry: this.expiry ? this.expiry.format('DD/MM/YYYY') : undefined,
+      description: this.description,
+      category: this.category,
+      accredited: this.accredited,
+      notes: this.notes,
+      lineNumber: this.lineNumber,
     };
   }
 
   toAPI() {
     const changeProperties = {
       trainingCategory: {
-        id: this._category,
+        id: this.category,
       },
-      completed: this._dateCompleted ? this._dateCompleted.format('YYYY-MM-DD') : undefined,
-      expires: this._expiry ? this._expiry.format('YYYY-MM-DD') : undefined,
-      title: this._description ? this._description : undefined,
-      notes: this._notes ? this._notes : undefined,
-      accredited: this._accredited ? this._accredited : undefined,
+      completed: this.dateCompleted ? this.dateCompleted.format('YYYY-MM-DD') : undefined,
+      expires: this.expiry ? this.expiry.format('YYYY-MM-DD') : undefined,
+      title: this.description ? this.description : undefined,
+      notes: this.notes ? this.notes : undefined,
+      accredited: this.accredited ? this.accredited : undefined,
     };
 
     return changeProperties;
   }
 
   _validateLocaleStId() {
-    const myLocaleStId = this._currentLine.LOCALESTID;
+    const myLocaleStId = this.currentLine.LOCALESTID;
     const MAX_LENGTH = 50;
     const errMessage = this._getValidateLocaleStIdErrMessage(myLocaleStId, MAX_LENGTH);
     if (!errMessage) {
-      this._localeStId = myLocaleStId;
+      this.localeStId = myLocaleStId;
       return;
     }
-    this._addValidationError('LOCALESTID_ERROR', errMessage, this._currentLine.LOCALESTID, 'LOCALESTID');
+    this._addValidationError('LOCALESTID_ERROR', errMessage, this.currentLine.LOCALESTID, 'LOCALESTID');
   }
 
   _getValidateLocaleStIdErrMessage(myLocaleStId, MAX_LENGTH) {
@@ -163,14 +123,14 @@ class TrainingCsvValidator {
   }
 
   _validateUniqueWorkerId() {
-    const myUniqueId = this._currentLine.UNIQUEWORKERID;
+    const myUniqueId = this.currentLine.UNIQUEWORKERID;
     const MAX_LENGTH = 50;
     const errMessage = this._getValidateUniqueWorkerIdErrMessage(myUniqueId, MAX_LENGTH);
     if (!errMessage) {
-      this._uniqueWorkerId = myUniqueId;
+      this.uniqueWorkerId = myUniqueId;
       return;
     }
-    this._addValidationError('UNIQUE_WORKER_ID_ERROR', errMessage, this._currentLine.UNIQUEWORKERID, 'UNIQUEWORKERID');
+    this._addValidationError('UNIQUE_WORKER_ID_ERROR', errMessage, this.currentLine.UNIQUEWORKERID, 'UNIQUEWORKERID');
   }
 
   _getValidateUniqueWorkerIdErrMessage(myUniqueId, MAX_LENGTH) {
@@ -183,19 +143,19 @@ class TrainingCsvValidator {
   }
 
   _validateDateCompleted() {
-    if (!this._currentLine.DATECOMPLETED) {
-      this._dateCompleted = this._currentLine.DATECOMPLETED;
+    if (!this.currentLine.DATECOMPLETED) {
+      this.dateCompleted = this.currentLine.DATECOMPLETED;
       return;
     }
 
-    const dateCompleted = moment.utc(this._currentLine.DATECOMPLETED, 'DD/MM/YYYY', true);
+    const dateCompleted = moment.utc(this.currentLine.DATECOMPLETED, 'DD/MM/YYYY', true);
     const errMessage = this._getValidateDateCompletedErrMessage(dateCompleted);
 
     if (!errMessage) {
-      this._dateCompleted = dateCompleted;
+      this.dateCompleted = dateCompleted;
       return;
     }
-    this._addValidationError('DATE_COMPLETED_ERROR', errMessage, this._currentLine.DATECOMPLETED, 'DATECOMPLETED');
+    this._addValidationError('DATE_COMPLETED_ERROR', errMessage, this.currentLine.DATECOMPLETED, 'DATECOMPLETED');
   }
 
   _getValidateDateCompletedErrMessage(dateCompleted) {
@@ -208,23 +168,23 @@ class TrainingCsvValidator {
   }
 
   _validateExpiry() {
-    if (!this._currentLine.EXPIRYDATE) {
-      this._expiry = this._currentLine.EXPIRYDATE;
+    if (!this.currentLine.EXPIRYDATE) {
+      this.expiry = this.currentLine.EXPIRYDATE;
       return;
     }
 
-    const expiredDate = moment.utc(this._currentLine.EXPIRYDATE, 'DD/MM/YYYY', true);
+    const expiredDate = moment.utc(this.currentLine.EXPIRYDATE, 'DD/MM/YYYY', true);
     const validationErrorDetails = this._getValidateExpiryErrDetails(expiredDate);
 
     if (!validationErrorDetails) {
-      this._expiry = expiredDate;
+      this.expiry = expiredDate;
       return;
     }
 
     this._addValidationError(
       'EXPIRY_DATE_ERROR',
       validationErrorDetails.errMessage,
-      this._currentLine.EXPIRYDATE,
+      this.currentLine.EXPIRYDATE,
       validationErrorDetails.errColumnName,
     );
   }
@@ -232,22 +192,22 @@ class TrainingCsvValidator {
   _getValidateExpiryErrDetails(expiredDate) {
     if (!expiredDate.isValid()) {
       return { errMessage: 'EXPIRYDATE is incorrectly formatted', errColumnName: 'EXPIRYDATE' };
-    } else if (expiredDate.isSameOrBefore(this._dateCompleted, 'day')) {
+    } else if (expiredDate.isSameOrBefore(this.dateCompleted, 'day')) {
       return { errMessage: 'EXPIRYDATE must be after DATECOMPLETED', errColumnName: 'EXPIRYDATE/DATECOMPLETED' };
     }
     return;
   }
 
   _validateDescription() {
-    const myDescription = this._currentLine.DESCRIPTION;
+    const myDescription = this.currentLine.DESCRIPTION;
     const MAX_LENGTH = 120;
     const errMessage = this._getValidateDescriptionErrMessage(myDescription, MAX_LENGTH);
 
     if (!errMessage) {
-      this._description = myDescription;
+      this.description = myDescription;
       return;
     }
-    this._addValidationError('DESCRIPTION_ERROR', errMessage, this._currentLine.DESCRIPTION, 'DESCRIPTION');
+    this._addValidationError('DESCRIPTION_ERROR', errMessage, this.currentLine.DESCRIPTION, 'DESCRIPTION');
   }
 
   _getValidateDescriptionErrMessage(myDescription, MAX_LENGTH) {
@@ -260,36 +220,36 @@ class TrainingCsvValidator {
   }
 
   _validateCategory() {
-    const category = parseInt(this._currentLine.CATEGORY, 10);
+    const category = parseInt(this.currentLine.CATEGORY, 10);
 
     if (Number.isNaN(category) || this.BUDI.trainingCategory(this.BUDI.TO_ASC, category) === null) {
       this._addValidationError(
         'CATEGORY_ERROR',
         'CATEGORY has not been supplied',
-        this._currentLine.CATEGORY,
+        this.currentLine.CATEGORY,
         'CATEGORY',
       );
       return;
     }
-    this._category = this.BUDI.trainingCategory(this.BUDI.TO_ASC, category);
+    this.category = this.BUDI.trainingCategory(this.BUDI.TO_ASC, category);
   }
 
   _validateAccredited() {
-    if (this._currentLine.ACCREDITED) {
-      const accredited = parseInt(this._currentLine.ACCREDITED, 10);
+    if (this.currentLine.ACCREDITED) {
+      const accredited = parseInt(this.currentLine.ACCREDITED, 10);
       const ALLOWED_VALUES = [0, 1, 999];
 
       if (Number.isNaN(accredited) || !ALLOWED_VALUES.includes(accredited)) {
         this._addValidationError(
           'ACCREDITED_ERROR',
           'ACCREDITED is invalid',
-          this._currentLine.ACCREDITED,
+          this.currentLine.ACCREDITED,
           'ACCREDITED',
         );
         return;
       }
 
-      this._accredited = this._convertAccreditedValue(accredited);
+      this.accredited = this._convertAccreditedValue(accredited);
     }
   }
 
@@ -304,7 +264,7 @@ class TrainingCsvValidator {
   }
 
   _validateNotes() {
-    const notes = this._currentLine.NOTES;
+    const notes = this.currentLine.NOTES;
     const MAX_LENGTH = 1000;
 
     if (notes) {
@@ -312,32 +272,28 @@ class TrainingCsvValidator {
         this._addValidationError(
           'NOTES_ERROR',
           `NOTES is longer than ${MAX_LENGTH} characters`,
-          this._currentLine.NOTES,
+          this.currentLine.NOTES,
           'NOTES',
         );
         return;
       }
 
-      this._notes = notes;
+      this.notes = notes;
     }
   }
 
   _addValidationError(errorType, errorMessage, errorSource, columnName) {
-    this._validationErrors.push({
+    this.validationErrors.push({
       origin: 'Training',
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-      lineNumber: this._lineNumber,
+      worker: this.currentLine.UNIQUEWORKERID,
+      name: this.currentLine.LOCALESTID,
+      lineNumber: this.lineNumber,
       errCode: TrainingCsvValidator[errorType],
       errType: errorType,
       error: errorMessage,
       source: errorSource,
       column: columnName,
     });
-  }
-
-  get validationErrors() {
-    return this._validationErrors;
   }
 }
 

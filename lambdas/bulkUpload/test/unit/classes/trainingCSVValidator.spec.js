@@ -191,7 +191,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_getValidateLocaleStIdErrorStatus()', () => {
-      it('should add LOCALESTID_ERROR to validationErrors and set _localStId as null if myLocaleStId length === 0', async () => {
+      it('should add LOCALESTID_ERROR to validationErrors and set localStId as null if myLocaleStId length === 0', async () => {
         trainingCsv.LOCALESTID = '';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -214,7 +214,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it("should add LOCALESTID_ERROR to validationErrors and leave _localStId as null if myLocaleStId doesn't exist", async () => {
+      it("should add LOCALESTID_ERROR to validationErrors and leave localStId as null if myLocaleStId doesn't exist", async () => {
         trainingCsv.LOCALESTID = null;
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -237,7 +237,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it("should add LOCALESTID_ERROR to validationErrors and leave _localStId as null if myLocaleStId's length is greater than MAX_LENGTH", async () => {
+      it("should add LOCALESTID_ERROR to validationErrors and leave localStId as null if myLocaleStId's length is greater than MAX_LENGTH", async () => {
         trainingCsv.LOCALESTID = 'Lorem ipsum dolor sit amet, consectetuer adipiscing';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -262,7 +262,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_validateLocaleStId()', async () => {
-      it('should pass validation and set _uniqueWorkerId if a valid LOCALESTID is provided', async () => {
+      it('should pass validation and set uniqueWorkerId if a valid LOCALESTID is provided', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
         await validator._validateLocaleStId();
@@ -273,7 +273,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_validateUniqueWorkerId()', async () => {
-      it('should pass validation and set _uniqueWorkerId if a valid UNIQUEWORKERID is provided', async () => {
+      it('should pass validation and set uniqueWorkerId if a valid UNIQUEWORKERID is provided', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
         await validator._validateUniqueWorkerId();
@@ -284,7 +284,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_getValidateUniqueWorkerIdErrMessage()', () => {
-      it('should add UNIQUE_WORKER_ID_ERROR to validationErrors and set _uniqueWorkerId as null if myUniqueId length === 0', async () => {
+      it('should add UNIQUE_WORKER_ID_ERROR to validationErrors and set uniqueWorkerId as null if myUniqueId length === 0', async () => {
         trainingCsv.UNIQUEWORKERID = '';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -307,7 +307,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave _uniqueWorkerId as null if myUniqueId doesn't exist", async () => {
+      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave uniqueWorkerId as null if myUniqueId doesn't exist", async () => {
         trainingCsv.UNIQUEWORKERID = null;
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -330,7 +330,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave _uniqueWorkerId as null if myUniqueId's length is greater than MAX_LENGTH", async () => {
+      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave uniqueWorkerId as null if myUniqueId's length is greater than MAX_LENGTH", async () => {
         trainingCsv.UNIQUEWORKERID = 'Lorem ipsum dolor sit amet, consectetuer adipiscing';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -355,7 +355,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_validateDateCompleted()', async () => {
-      it('should pass validation and set _dateCompleted to DATECOMPLETED if a valid DATECOMPLETED is provided', async () => {
+      it('should pass validation and set dateCompleted to DATECOMPLETED if a valid DATECOMPLETED is provided', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
         await validator._validateDateCompleted();
@@ -364,7 +364,7 @@ describe('trainingCSVValidator', () => {
         expect(validator.dateCompleted).to.deep.equal(moment.utc('01/01/2022', 'DD/MM/YYYY', true));
       });
 
-      it('should pass validation and set _dateCompleted to an empty string if the DATECOMPLETED is a empty string', async () => {
+      it('should pass validation and set dateCompleted to an empty string if the DATECOMPLETED is a empty string', async () => {
         trainingCsv.DATECOMPLETED = '';
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
@@ -374,7 +374,7 @@ describe('trainingCSVValidator', () => {
         expect(validator.dateCompleted).to.equal('');
       });
 
-      it('should pass validation and set _dateCompleted to null if the DATECOMPLETED is null', async () => {
+      it('should pass validation and set dateCompleted to null if the DATECOMPLETED is null', async () => {
         trainingCsv.DATECOMPLETED = null;
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
@@ -386,7 +386,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_getValidateDateCompletedErrMessage()', async () => {
-      it('should add DATE_COMPLETED_ERROR to validationErrors and set _dateCompleted as null if DATECOMPLETED is incorrectly formatted', async () => {
+      it('should add DATE_COMPLETED_ERROR to validationErrors and set dateCompleted as null if DATECOMPLETED is incorrectly formatted', async () => {
         trainingCsv.DATECOMPLETED = '12323423423';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -409,7 +409,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it('should add DATE_COMPLETED_ERROR to validationErrors and set _dateCompleted as null if DATECOMPLETED is a date set in the future', async () => {
+      it('should add DATE_COMPLETED_ERROR to validationErrors and set dateCompleted as null if DATECOMPLETED is a date set in the future', async () => {
         trainingCsv.DATECOMPLETED = '01/01/2099';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -434,7 +434,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_validateExpiry()', async () => {
-      it('should pass validation and set _expiry to EXPIRYDATE if a valid EXPIRYDATE is provided', async () => {
+      it('should pass validation and set expiry to EXPIRYDATE if a valid EXPIRYDATE is provided', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
         await validator._validateExpiry();
@@ -443,7 +443,7 @@ describe('trainingCSVValidator', () => {
         expect(validator.expiry).to.deep.equal(moment.utc('15/04/2022', 'DD/MM/YYYY', true));
       });
 
-      it('should pass validation and set _expiry to an empty string if EXPIRYDATE is an empty string', async () => {
+      it('should pass validation and set expiry to an empty string if EXPIRYDATE is an empty string', async () => {
         trainingCsv.EXPIRYDATE = '';
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
@@ -453,7 +453,7 @@ describe('trainingCSVValidator', () => {
         expect(validator.expiry).to.deep.equal('');
       });
 
-      it('should pass validation and set _expiry to null if EXPIRYDATE is null', async () => {
+      it('should pass validation and set expiry to null if EXPIRYDATE is null', async () => {
         trainingCsv.EXPIRYDATE = null;
         const validator = new TrainingCsvValidator(trainingCsv, 2, mappings);
 
@@ -465,15 +465,15 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_getValidateExpiryErrMessage()', async () => {
-      it('should add EXPIRY_DATE_ERROR to validationErrors and set _expiry as null if EXPIRYDATE is incorrectly formatted', async () => {
+      it('should add EXPIRY_DATE_ERROR to validationErrors and set expiry as null if EXPIRYDATE is incorrectly formatted', async () => {
         trainingCsv.EXPIRYDATE = '12323423423';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
         await validator._validateExpiry();
 
-        expect(validator._expiry).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.expiry).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1030,
@@ -488,7 +488,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it('should add EXPIRY_DATE_ERROR to validationErrors and set _expiry as null if EXPIRYDATE is a date set before DATECOMPLETED ', async () => {
+      it('should add EXPIRY_DATE_ERROR to validationErrors and set expiry as null if EXPIRYDATE is a date set before DATECOMPLETED ', async () => {
         trainingCsv.EXPIRYDATE = '01/01/2000';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -512,7 +512,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it('should add EXPIRY_DATE_ERROR to validationErrors and set _expiry as null if EXPIRYDATE is the same date as DATECOMPLETED ', async () => {
+      it('should add EXPIRY_DATE_ERROR to validationErrors and set expiry as null if EXPIRYDATE is the same date as DATECOMPLETED ', async () => {
         trainingCsv.EXPIRYDATE = '01/01/2022';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -538,7 +538,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_validateDescription()', async () => {
-      it('should pass validation and set _description to DESCRIPTION if a valid DESCRIPTION is provided', async () => {
+      it('should pass validation and set description to DESCRIPTION if a valid DESCRIPTION is provided', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
         await validator._validateDescription();
@@ -549,7 +549,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_getValidateDescriptionErrMessage()', async () => {
-      it('should add DESCRIPTION_ERROR to validationErrors and set _description as null if DESCRIPTION is an empty string', async () => {
+      it('should add DESCRIPTION_ERROR to validationErrors and set description as null if DESCRIPTION is an empty string', async () => {
         trainingCsv.DESCRIPTION = '';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -572,7 +572,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it('should add DESCRIPTION_ERROR to validationErrors and set _description as null if DESCRIPTION is null', async () => {
+      it('should add DESCRIPTION_ERROR to validationErrors and set description as null if DESCRIPTION is null', async () => {
         trainingCsv.DESCRIPTION = null;
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -595,7 +595,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it('should add DESCRIPTION_ERROR to validationErrors and set _description as null if DESCRIPTION is longer than MAX_LENGTH', async () => {
+      it('should add DESCRIPTION_ERROR to validationErrors and set description as null if DESCRIPTION is longer than MAX_LENGTH', async () => {
         trainingCsv.DESCRIPTION =
           'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis nato';
 
