@@ -4,7 +4,7 @@ const clonedeep = require('lodash.clonedeep');
 const moment = require('moment');
 const { sanitisePostcode } = require('../../../utils/postcodeSanitizer');
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
-const OGEstablishment = require('../../classes/establishment').Establishment;
+const Establishment = require('../../classes/establishment').Establishment;
 
 const employedContractStatusIds = [1, 2];
 const cqcRegulatedServiceCodes = [24, 25, 20, 22, 21, 23, 19, 27, 28, 26, 29, 30, 32, 31, 33, 34];
@@ -2462,7 +2462,7 @@ class WorkplaceCSVValidator {
     // get all the other records that may already exist in the db but aren't being updated or deleted
     // and check how many registered managers there is
     const dataInDB = ['UNCHECKED', 'NOCHANGE']; // for theses statuses trust the data in the DB
-    (await OGEstablishment.fetchMyEstablishmentsWorkers(this.id, this._key)).forEach((worker) => {
+    (await Establishment.fetchMyEstablishmentsWorkers(this.id, this._key)).forEach((worker) => {
       const workerFromCSV = myJSONWorkers.find((w) => {
         return w.uniqueWorkerId === worker.uniqueWorker;
       });

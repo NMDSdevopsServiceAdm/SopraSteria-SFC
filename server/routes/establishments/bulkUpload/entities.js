@@ -13,19 +13,14 @@ const restoreExistingEntities = async (
   isParent,
   assocationLevel = 1,
   onlyMine = false,
-  keepAlive = () => {},
 ) => {
   try {
     const completionBulkUploadStatus = 'COMPLETE';
     const thisUser = new User(primaryEstablishmentId);
     await thisUser.restore(null, loggedInUsername, false);
 
-    keepAlive('begin restore entities'); // keep connection alive
-
     // gets a list of "my establishments", which if a parent, includes all known subsidaries too, and this "parent's" access permissions to those subsidaries
     const myEstablishments = await thisUser.myEstablishments(isParent, null);
-
-    keepAlive('establishments retrieved'); // keep connection alive
 
     // having got this list of establishments, now need to fully restore each establishment as entities.
     //  using an object adding entities by a known key to make lookup comparisions easier.
@@ -38,8 +33,6 @@ const restoreExistingEntities = async (
 
     restoreEntityPromises.push(
       primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel).then((data) => {
-        keepAlive('establishment restored', myEstablishments.primary.uid); // keep connection alive
-
         return data;
       }),
     );
@@ -60,8 +53,6 @@ const restoreExistingEntities = async (
 
           restoreEntityPromises.push(
             newSub.restore(thisSubsidairy.uid, false, true, assocationLevel).then((data) => {
-              keepAlive('sub establishment restored', thisSubsidairy.uid); // keep connection alive
-
               return data;
             }),
           );
@@ -80,14 +71,12 @@ const restoreExistingEntities = async (
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
-const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId, keepAlive = () => {}) => {
+const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) => {
   try {
     // the result of validation is to make available an S3 object outlining ALL entities ready to be uploaded
     const allEntitiesKey = `${primaryEstablishmentId}/intermediary/all.entities.json`;
 
     const onLoadEntitiesJSON = await downloadContent(allEntitiesKey).then((myFile) => {
-      keepAlive('restoreOnloadEntities');
-
       return myFile;
     });
 
@@ -114,8 +103,6 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId, k
         );
         onloadPromises.push(
           newOnloadEstablishment.load(thisEntity, true).then((data) => {
-            keepAlive('newOnloadEstablishment loaded');
-
             return data;
           }),
         );

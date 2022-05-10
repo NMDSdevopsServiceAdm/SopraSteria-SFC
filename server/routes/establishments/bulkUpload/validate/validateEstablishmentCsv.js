@@ -10,7 +10,6 @@ const validateEstablishmentCsv = async (
   myEstablishments,
   myAPIEstablishments,
   myCurrentEstablishments,
-  keepAlive = () => {},
 ) => {
   const lineValidator = new WorkplaceCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
 
@@ -36,8 +35,6 @@ const validateEstablishmentCsv = async (
       );
 
       await thisApiEstablishment.load(thisEstablishmentAsAPI);
-
-      keepAlive('establishment loaded', currentLineNumber);
 
       if (thisApiEstablishment.validate()) {
         // No validation errors in the entity itself, so add it ready for completion

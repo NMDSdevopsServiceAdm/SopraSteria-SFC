@@ -17,10 +17,6 @@ const { validateWorkplace } = require('./workplace/validateWorkplace');
 const { validateTraining } = require('./training/validateTraining');
 const { crossValidate } = require('../../../../models/BulkImport/csv/crossValidate');
 
-const keepAlive = (stepName = '', stepId = '') => {
-  console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
-};
-
 // if commit is false, then the results of validation are not uploaded to S3
 const validateBulkUploadFiles = async (req, files) => {
   const { username, establishmentId, isParent } = req;
@@ -32,31 +28,17 @@ const validateBulkUploadFiles = async (req, files) => {
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL = 1;
 
-  keepAlive('begin validate files', establishmentId); // keep connection alive
-
   const myCurrentEstablishments = await restoreExistingEntities(
     username,
     establishmentId,
     isParent,
     RESTORE_ASSOCIATION_LEVEL,
     false,
-    keepAlive,
   );
 
-  // rather than an array of entities, entities will be known by their line number within the source, e.g:
-  // establishments: {
-  //    1: { },
-  //    2: { },
-  //    ...
-  // }
-
-  // /////////////////////////
   // Parse and process Establishments CSV
-
   const { csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments, allEstablishmentsByKey } =
     await validateWorkplace(establishments, myCurrentEstablishments);
-
-  establishments.metadata.records = myEstablishments.length;
 
   // Parse and process Workers CSV
   const { csvWorkerSchemaErrors, myAPIWorkers, workersKeyed, allWorkersByKey, myJSONWorkers } = await validateWorkers(
@@ -75,7 +57,6 @@ const validateBulkUploadFiles = async (req, files) => {
     allEstablishmentsByKey,
   );
 
-  // /////////////////////////
   // Cross Entity Validations
 
   // If the logged in account performing this validation is not a parent, then
@@ -150,7 +131,6 @@ const validateBulkUploadFiles = async (req, files) => {
     }),
   );
 
-  // /////////////////////////
   // Prepare validation results
 
   // prepare entities ready for upload/return
@@ -233,5 +213,4 @@ const getUniqueLocalAuthorities = (establishmentsAsArray) =>
 
 module.exports = {
   validateBulkUploadFiles,
-  keepAlive,
 };

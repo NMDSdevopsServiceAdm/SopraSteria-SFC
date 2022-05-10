@@ -1,5 +1,4 @@
 const { validateEstablishmentCsv } = require('../validateEstablishmentCsv');
-const { keepAlive } = require('../validateBulkUploadFiles');
 const { validateDuplicateLocations } = require('../validateDuplicateLocations');
 
 const validateWorkplace = async (establishments, myCurrentEstablishments) => {
@@ -22,7 +21,6 @@ const validateWorkplace = async (establishments, myCurrentEstablishments) => {
           myEstablishments,
           myAPIEstablishments,
           myCurrentEstablishments,
-          keepAlive,
         ),
       ),
     );
@@ -30,6 +28,9 @@ const validateWorkplace = async (establishments, myCurrentEstablishments) => {
     checkDuplicate(myEstablishments, csvEstablishmentSchemaErrors, allEstablishmentsByKey, myAPIEstablishments);
 
     await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, myCurrentEstablishments);
+
+    establishments.metadata.records = myEstablishments.length;
+
     return {
       csvEstablishmentSchemaErrors,
       myEstablishments,
@@ -51,7 +52,6 @@ const checkDuplicate = (
     const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, '');
     if (allEstablishmentsByKey[keyNoWhitespace]) {
       csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
-
       delete myAPIEstablishments[keyNoWhitespace];
     } else {
       allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
