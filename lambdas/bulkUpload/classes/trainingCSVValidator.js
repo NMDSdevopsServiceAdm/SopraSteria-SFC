@@ -1,6 +1,7 @@
 const moment = require('moment');
 
 const BUDI = require('../classes/BUDI').BUDI;
+const errors = require('../validateTraining/errors');
 
 class TrainingCsvValidator {
   constructor(currentLine, lineNumber, mappings) {
@@ -105,7 +106,7 @@ class TrainingCsvValidator {
   _validateLocaleStId() {
     const localeStId = this.currentLine.LOCALESTID;
     const MAX_LENGTH = 50;
-    const errMessage = this._getValidateLocaleStIdErrMessage(localeStId, MAX_LENGTH);
+    const errMessage = errors._getValidateLocaleStIdErrMessage(localeStId, MAX_LENGTH);
     if (!errMessage) {
       this.localeStId = localeStId;
       return;
@@ -113,33 +114,15 @@ class TrainingCsvValidator {
     this._addValidationError('LOCALESTID_ERROR', errMessage, this.currentLine.LOCALESTID, 'LOCALESTID');
   }
 
-  _getValidateLocaleStIdErrMessage(localeStId, MAX_LENGTH) {
-    if (!localeStId) {
-      return 'LOCALESTID has not been supplied';
-    } else if (localeStId.length > MAX_LENGTH) {
-      return `LOCALESTID is longer than ${MAX_LENGTH} characters`;
-    }
-    return;
-  }
-
   _validateUniqueWorkerId() {
     const uniqueId = this.currentLine.UNIQUEWORKERID;
     const MAX_LENGTH = 50;
-    const errMessage = this._getValidateUniqueWorkerIdErrMessage(uniqueId, MAX_LENGTH);
+    const errMessage = errors._getValidateUniqueWorkerIdErrMessage(uniqueId, MAX_LENGTH);
     if (!errMessage) {
       this.uniqueWorkerId = uniqueId;
       return;
     }
     this._addValidationError('UNIQUE_WORKER_ID_ERROR', errMessage, this.currentLine.UNIQUEWORKERID, 'UNIQUEWORKERID');
-  }
-
-  _getValidateUniqueWorkerIdErrMessage(uniqueId, MAX_LENGTH) {
-    if (!uniqueId) {
-      return 'UNIQUEWORKERID has not been supplied';
-    } else if (uniqueId.length > MAX_LENGTH) {
-      return `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`;
-    }
-    return;
   }
 
   _validateDateCompleted() {
@@ -149,22 +132,13 @@ class TrainingCsvValidator {
     }
 
     const dateCompleted = moment.utc(this.currentLine.DATECOMPLETED, 'DD/MM/YYYY', true);
-    const errMessage = this._getValidateDateCompletedErrMessage(dateCompleted);
+    const errMessage = errors._getValidateDateCompletedErrMessage(dateCompleted);
 
     if (!errMessage) {
       this.dateCompleted = dateCompleted;
       return;
     }
     this._addValidationError('DATE_COMPLETED_ERROR', errMessage, this.currentLine.DATECOMPLETED, 'DATECOMPLETED');
-  }
-
-  _getValidateDateCompletedErrMessage(dateCompleted) {
-    if (!dateCompleted.isValid()) {
-      return 'DATECOMPLETED is incorrectly formatted';
-    } else if (dateCompleted.isAfter(moment())) {
-      return 'DATECOMPLETED is in the future';
-    }
-    return;
   }
 
   _validateExpiry() {
@@ -174,7 +148,7 @@ class TrainingCsvValidator {
     }
 
     const expiredDate = moment.utc(this.currentLine.EXPIRYDATE, 'DD/MM/YYYY', true);
-    const validationErrorDetails = this._getValidateExpiryErrDetails(expiredDate);
+    const validationErrorDetails = errors._getValidateExpiryErrDetails(expiredDate, this.dateCompleted);
 
     if (!validationErrorDetails) {
       this.expiry = expiredDate;
@@ -189,34 +163,16 @@ class TrainingCsvValidator {
     );
   }
 
-  _getValidateExpiryErrDetails(expiredDate) {
-    if (!expiredDate.isValid()) {
-      return { errMessage: 'EXPIRYDATE is incorrectly formatted', errColumnName: 'EXPIRYDATE' };
-    } else if (expiredDate.isSameOrBefore(this.dateCompleted, 'day')) {
-      return { errMessage: 'EXPIRYDATE must be after DATECOMPLETED', errColumnName: 'EXPIRYDATE/DATECOMPLETED' };
-    }
-    return;
-  }
-
   _validateDescription() {
     const description = this.currentLine.DESCRIPTION;
     const MAX_LENGTH = 120;
-    const errMessage = this._getValidateDescriptionErrMessage(description, MAX_LENGTH);
+    const errMessage = errors._getValidateDescriptionErrMessage(description, MAX_LENGTH);
 
     if (!errMessage) {
       this.description = description;
       return;
     }
     this._addValidationError('DESCRIPTION_ERROR', errMessage, this.currentLine.DESCRIPTION, 'DESCRIPTION');
-  }
-
-  _getValidateDescriptionErrMessage(description, MAX_LENGTH) {
-    if (!description) {
-      return 'DESCRIPTION has not been supplied';
-    } else if (description.length > MAX_LENGTH) {
-      return `DESCRIPTION is longer than ${MAX_LENGTH} characters`;
-    }
-    return;
   }
 
   _validateCategory() {
