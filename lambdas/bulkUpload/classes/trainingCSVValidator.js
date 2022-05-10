@@ -7,7 +7,6 @@ class TrainingCsvValidator {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
-
     this._localeStId = null;
     this._uniqueWorkerId = null;
     this._dateCompleted = null;
@@ -104,17 +103,14 @@ class TrainingCsvValidator {
   }
 
   validate() {
-    let status = true;
-    status = !this._validateLocaleStId() ? false : status;
-    status = !this._validateUniqueWorkerId() ? false : status;
-    status = !this._validateDateCompleted() ? false : status;
-    status = !this._validateExpiry() ? false : status;
-    status = !this._validateDescription() ? false : status;
-    status = !this._validateCategory() ? false : status;
-    status = !this._validateAccredited() ? false : status;
-    status = !this._validateNotes() ? false : status;
-
-    return status;
+    this._validateLocaleStId();
+    this._validateUniqueWorkerId();
+    this._validateDateCompleted();
+    this._validateExpiry();
+    this._validateDescription();
+    this._validateCategory();
+    this._validateAccredited();
+    this._validateNotes();
   }
 
   toJSON() {
