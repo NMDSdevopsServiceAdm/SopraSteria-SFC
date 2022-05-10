@@ -521,5 +521,86 @@ describe('trainingCSVValidator', () => {
         ]);
       });
     });
+
+    describe('_validateDescription()', async () => {
+      it('should pass validation and set _description to DESCRIPTION if a valid DESCRIPTION is provided', async () => {
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateDescription();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._description).to.equal('training');
+      });
+    });
+
+    describe('_getValidateDescriptionErrMessage()', async () => {
+      it('should add DESCRIPTION_ERROR to validationErrors and set _description as null if DESCRIPTION is an empty string', async () => {
+        trainingCsv.DESCRIPTION = '';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateDescription();
+
+        expect(validator._description).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1040,
+            errType: 'DESCRIPTION_ERROR',
+            error: 'DESCRIPTION has not been supplied',
+            source: trainingCsv.DESCRIPTION,
+            column: 'DESCRIPTION',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add DESCRIPTION_ERROR to validationErrors and set _description as null if DESCRIPTION is null', async () => {
+        trainingCsv.DESCRIPTION = null;
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateDescription();
+
+        expect(validator._description).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1040,
+            errType: 'DESCRIPTION_ERROR',
+            error: 'DESCRIPTION has not been supplied',
+            source: trainingCsv.DESCRIPTION,
+            column: 'DESCRIPTION',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add DESCRIPTION_ERROR to validationErrors and set _description as null if DESCRIPTION is longer than MAX_LENGTH', async () => {
+        trainingCsv.DESCRIPTION =
+          'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis nato';
+
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        await validator._validateDescription();
+
+        expect(validator._description).to.equal(null);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            errCode: 1040,
+            errType: 'DESCRIPTION_ERROR',
+            error: 'DESCRIPTION is longer than 120 characters',
+            source: trainingCsv.DESCRIPTION,
+            column: 'DESCRIPTION',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
   });
 });
+//

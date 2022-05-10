@@ -245,35 +245,22 @@ class TrainingCsvValidator {
   _validateDescription() {
     const myDescription = this._currentLine.DESCRIPTION;
     const MAX_LENGTH = 120;
+    const errMessage = this._getValidateDescriptionErrMessage(myDescription, MAX_LENGTH);
 
-    if (!myDescription || myDescription.length === 0) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: TrainingCsvValidator.DESCRIPTION_ERROR,
-        errType: 'DESCRIPTION_ERROR',
-        error: 'DESCRIPTION has not been supplied',
-        source: this._currentLine.DESCRIPTION,
-        column: 'DESCRIPTION',
-      });
-      return false;
-    } else if (myDescription.length > MAX_LENGTH) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: TrainingCsvValidator.DESCRIPTION_ERROR,
-        errType: 'DESCRIPTION_ERROR',
-        error: `DESCRIPTION is longer than ${MAX_LENGTH} characters`,
-        source: this._currentLine.DESCRIPTION,
-        column: 'DESCRIPTION',
-      });
-      return false;
-    } else {
+    if (!errMessage) {
       this._description = myDescription;
-      return true;
+      return;
     }
+    this._addValidationError('DESCRIPTION_ERROR', errMessage, this._currentLine.DESCRIPTION, 'DESCRIPTION');
+  }
+
+  _getValidateDescriptionErrMessage(myDescription, MAX_LENGTH) {
+    if (!myDescription || myDescription.length === 0) {
+      return 'DESCRIPTION has not been supplied';
+    } else if (myDescription.length > MAX_LENGTH) {
+      return `DESCRIPTION is longer than ${MAX_LENGTH} characters`;
+    }
+    return;
   }
 
   _validateCategory() {
