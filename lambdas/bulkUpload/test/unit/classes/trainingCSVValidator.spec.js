@@ -191,7 +191,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_getValidateLocaleStIdErrorStatus()', () => {
-      it('should add LOCALESTID_ERROR to validationErrors and set localStId as null if myLocaleStId length === 0', async () => {
+      it('should add LOCALESTID_ERROR to validationErrors and set localStId as null if localeStId length === 0', async () => {
         trainingCsv.LOCALESTID = '';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -214,7 +214,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it("should add LOCALESTID_ERROR to validationErrors and leave localStId as null if myLocaleStId doesn't exist", async () => {
+      it("should add LOCALESTID_ERROR to validationErrors and leave localStId as null if localeStId doesn't exist", async () => {
         trainingCsv.LOCALESTID = null;
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -237,7 +237,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it("should add LOCALESTID_ERROR to validationErrors and leave localStId as null if myLocaleStId's length is greater than MAX_LENGTH", async () => {
+      it("should add LOCALESTID_ERROR to validationErrors and leave localStId as null if localeStId's length is greater than MAX_LENGTH", async () => {
         trainingCsv.LOCALESTID = 'Lorem ipsum dolor sit amet, consectetuer adipiscing';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -284,7 +284,7 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_getValidateUniqueWorkerIdErrMessage()', () => {
-      it('should add UNIQUE_WORKER_ID_ERROR to validationErrors and set uniqueWorkerId as null if myUniqueId length === 0', async () => {
+      it('should add UNIQUE_WORKER_ID_ERROR to validationErrors and set uniqueWorkerId as null if localeStId length === 0', async () => {
         trainingCsv.UNIQUEWORKERID = '';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -307,7 +307,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave uniqueWorkerId as null if myUniqueId doesn't exist", async () => {
+      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave uniqueWorkerId as null if localeStId doesn't exist", async () => {
         trainingCsv.UNIQUEWORKERID = null;
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -330,7 +330,7 @@ describe('trainingCSVValidator', () => {
         ]);
       });
 
-      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave uniqueWorkerId as null if myUniqueId's length is greater than MAX_LENGTH", async () => {
+      it("should add UNIQUE_WORKER_ID_ERROR to validationErrors and leave uniqueWorkerId as null if localeStId's length is greater than MAX_LENGTH", async () => {
         trainingCsv.UNIQUEWORKERID = 'Lorem ipsum dolor sit amet, consectetuer adipiscing';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);

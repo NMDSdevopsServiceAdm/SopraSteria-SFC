@@ -103,40 +103,40 @@ class TrainingCsvValidator {
   }
 
   _validateLocaleStId() {
-    const myLocaleStId = this.currentLine.LOCALESTID;
+    const localeStId = this.currentLine.LOCALESTID;
     const MAX_LENGTH = 50;
-    const errMessage = this._getValidateLocaleStIdErrMessage(myLocaleStId, MAX_LENGTH);
+    const errMessage = this._getValidateLocaleStIdErrMessage(localeStId, MAX_LENGTH);
     if (!errMessage) {
-      this.localeStId = myLocaleStId;
+      this.localeStId = localeStId;
       return;
     }
     this._addValidationError('LOCALESTID_ERROR', errMessage, this.currentLine.LOCALESTID, 'LOCALESTID');
   }
 
-  _getValidateLocaleStIdErrMessage(myLocaleStId, MAX_LENGTH) {
-    if (!myLocaleStId) {
+  _getValidateLocaleStIdErrMessage(localeStId, MAX_LENGTH) {
+    if (!localeStId) {
       return 'LOCALESTID has not been supplied';
-    } else if (myLocaleStId.length > MAX_LENGTH) {
+    } else if (localeStId.length > MAX_LENGTH) {
       return `LOCALESTID is longer than ${MAX_LENGTH} characters`;
     }
     return;
   }
 
   _validateUniqueWorkerId() {
-    const myUniqueId = this.currentLine.UNIQUEWORKERID;
+    const uniqueId = this.currentLine.UNIQUEWORKERID;
     const MAX_LENGTH = 50;
-    const errMessage = this._getValidateUniqueWorkerIdErrMessage(myUniqueId, MAX_LENGTH);
+    const errMessage = this._getValidateUniqueWorkerIdErrMessage(uniqueId, MAX_LENGTH);
     if (!errMessage) {
-      this.uniqueWorkerId = myUniqueId;
+      this.uniqueWorkerId = uniqueId;
       return;
     }
     this._addValidationError('UNIQUE_WORKER_ID_ERROR', errMessage, this.currentLine.UNIQUEWORKERID, 'UNIQUEWORKERID');
   }
 
-  _getValidateUniqueWorkerIdErrMessage(myUniqueId, MAX_LENGTH) {
-    if (!myUniqueId) {
+  _getValidateUniqueWorkerIdErrMessage(uniqueId, MAX_LENGTH) {
+    if (!uniqueId) {
       return 'UNIQUEWORKERID has not been supplied';
-    } else if (myUniqueId.length > MAX_LENGTH) {
+    } else if (uniqueId.length > MAX_LENGTH) {
       return `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`;
     }
     return;
@@ -199,21 +199,21 @@ class TrainingCsvValidator {
   }
 
   _validateDescription() {
-    const myDescription = this.currentLine.DESCRIPTION;
+    const description = this.currentLine.DESCRIPTION;
     const MAX_LENGTH = 120;
-    const errMessage = this._getValidateDescriptionErrMessage(myDescription, MAX_LENGTH);
+    const errMessage = this._getValidateDescriptionErrMessage(description, MAX_LENGTH);
 
     if (!errMessage) {
-      this.description = myDescription;
+      this.description = description;
       return;
     }
     this._addValidationError('DESCRIPTION_ERROR', errMessage, this.currentLine.DESCRIPTION, 'DESCRIPTION');
   }
 
-  _getValidateDescriptionErrMessage(myDescription, MAX_LENGTH) {
-    if (!myDescription) {
+  _getValidateDescriptionErrMessage(description, MAX_LENGTH) {
+    if (!description) {
       return 'DESCRIPTION has not been supplied';
-    } else if (myDescription.length > MAX_LENGTH) {
+    } else if (description.length > MAX_LENGTH) {
       return `DESCRIPTION is longer than ${MAX_LENGTH} characters`;
     }
     return;
