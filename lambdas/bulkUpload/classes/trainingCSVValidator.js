@@ -154,7 +154,7 @@ class TrainingCsvValidator {
   }
 
   _getValidateLocaleStIdErrMessage(myLocaleStId, MAX_LENGTH) {
-    if (!myLocaleStId || myLocaleStId.length === 0) {
+    if (!myLocaleStId) {
       return 'LOCALESTID has not been supplied';
     } else if (myLocaleStId.length > MAX_LENGTH) {
       return `LOCALESTID is longer than ${MAX_LENGTH} characters`;
@@ -174,7 +174,7 @@ class TrainingCsvValidator {
   }
 
   _getValidateUniqueWorkerIdErrMessage(myUniqueId, MAX_LENGTH) {
-    if (!myUniqueId || myUniqueId.length === 0) {
+    if (!myUniqueId) {
       return 'UNIQUEWORKERID has not been supplied';
     } else if (myUniqueId.length > MAX_LENGTH) {
       return `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`;
@@ -183,7 +183,7 @@ class TrainingCsvValidator {
   }
 
   _validateDateCompleted() {
-    if (this._checkForEmptyOrNullDate(this._currentLine.DATECOMPLETED)) {
+    if (!this._currentLine.DATECOMPLETED) {
       this._dateCompleted = this._currentLine.DATECOMPLETED;
       return;
     }
@@ -208,7 +208,7 @@ class TrainingCsvValidator {
   }
 
   _validateExpiry() {
-    if (this._checkForEmptyOrNullDate(this._currentLine.EXPIRYDATE)) {
+    if (!this._currentLine.EXPIRYDATE) {
       this._expiry = this._currentLine.EXPIRYDATE;
       return;
     }
@@ -251,7 +251,7 @@ class TrainingCsvValidator {
   }
 
   _getValidateDescriptionErrMessage(myDescription, MAX_LENGTH) {
-    if (!myDescription || myDescription.length === 0) {
+    if (!myDescription) {
       return 'DESCRIPTION has not been supplied';
     } else if (myDescription.length > MAX_LENGTH) {
       return `DESCRIPTION is longer than ${MAX_LENGTH} characters`;
@@ -307,7 +307,7 @@ class TrainingCsvValidator {
     const notes = this._currentLine.NOTES;
     const MAX_LENGTH = 1000;
 
-    if (notes && notes.length > 0) {
+    if (notes) {
       if (notes.length > MAX_LENGTH) {
         this._addValidationError(
           'NOTES_ERROR',
@@ -320,13 +320,6 @@ class TrainingCsvValidator {
 
       this._notes = notes;
     }
-  }
-
-  _checkForEmptyOrNullDate(date) {
-    if (!date || date === '') {
-      return true;
-    }
-    return false;
   }
 
   _addValidationError(errorType, errorMessage, errorSource, columnName) {
