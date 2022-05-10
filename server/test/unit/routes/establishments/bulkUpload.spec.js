@@ -20,7 +20,7 @@ const {
 
 const { sendCountToSlack } = require('../../../../routes/establishments/bulkUpload/slack');
 
-const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator');
+const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/validateWorkplaceCSV');
 const { Establishment } = require('../../../../models/classes/establishment');
 const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
 

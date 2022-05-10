@@ -1,7 +1,7 @@
 'use strict';
 
 const { Establishment } = require('../../../../models/classes/establishment');
-const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
+const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/validateWorkplaceCSV').WorkplaceCSVValidator;
 
 const validateEstablishmentCsv = async (
   thisLine,

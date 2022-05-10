@@ -2,7 +2,7 @@
 const config = require('../../../config/config');
 const models = require('../../../models');
 
-const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
+const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/validateWorkplaceCSV').WorkplaceCSVValidator;
 const { getWorkerHeadersWithExtraQuals } = require('../bulkUpload/validate/headers/worker');
 const { trainingHeaders } = require('./data/trainingHeaders');
 const WorkerCSV = require('./download/workerCSV');
