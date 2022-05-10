@@ -30,7 +30,7 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateAccredited();
 
-        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator.validationErrors).to.deep.equal([]);
       });
 
       it('should pass validation and set accredited to Yes if ACCREDITED is 1', async () => {
@@ -40,8 +40,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateAccredited();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._accredited).to.equal('Yes');
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.accredited).to.equal('Yes');
       });
 
       it('should pass validation and set accredited to No if ACCREDITED is 0', async () => {
@@ -51,8 +51,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateAccredited();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._accredited).to.equal('No');
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.accredited).to.equal('No');
       });
 
       it("should pass validation and set ACCREDITED to Don't know if ACCREDITED is 999", async () => {
@@ -62,8 +62,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateAccredited();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._accredited).to.equal("Don't know");
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.accredited).to.equal("Don't know");
       });
 
       it('should add ACCREDITED_ERROR to validationErrors if invalid ACCREDITED is provided', async () => {
@@ -73,7 +73,7 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateAccredited();
 
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1060,
@@ -97,7 +97,7 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateCategory();
 
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1050,
@@ -119,7 +119,7 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateCategory();
 
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1050,
@@ -139,8 +139,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateCategory();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._category).to.equal(8);
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.category).to.equal(8);
       });
     });
 
@@ -153,8 +153,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateNotes();
 
-        expect(validator._notes).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.notes).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1070,
@@ -176,8 +176,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateNotes();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._notes).to.equal('valid short note');
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.notes).to.equal('valid short note');
       });
 
       it('should leave notes as null and not add error if NOTES empty string', async () => {
@@ -185,8 +185,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateNotes();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._notes).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.notes).to.equal(null);
       });
     });
 
@@ -198,8 +198,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateLocaleStId();
 
-        expect(validator._localeStId).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.localeStId).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1000,
@@ -221,8 +221,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateLocaleStId();
 
-        expect(validator._localeStId).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.localeStId).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1000,
@@ -244,8 +244,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateLocaleStId();
 
-        expect(validator._localeStId).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.localeStId).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1000,
@@ -267,8 +267,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateLocaleStId();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._localeStId).to.equal('foo');
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.localeStId).to.equal('foo');
       });
     });
 
@@ -278,8 +278,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateUniqueWorkerId();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._uniqueWorkerId).to.equal('bar');
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.uniqueWorkerId).to.equal('bar');
       });
     });
 
@@ -291,8 +291,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateUniqueWorkerId();
 
-        expect(validator._uniqueWorkerId).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.uniqueWorkerId).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1010,
@@ -314,8 +314,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateUniqueWorkerId();
 
-        expect(validator._uniqueWorkerId).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.uniqueWorkerId).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1010,
@@ -337,8 +337,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateUniqueWorkerId();
 
-        expect(validator._uniqueWorkerId).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.uniqueWorkerId).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1010,
@@ -360,8 +360,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateDateCompleted();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._dateCompleted).to.deep.equal(moment.utc('01/01/2022', 'DD/MM/YYYY', true));
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.dateCompleted).to.deep.equal(moment.utc('01/01/2022', 'DD/MM/YYYY', true));
       });
 
       it('should pass validation and set _dateCompleted to an empty string if the DATECOMPLETED is a empty string', async () => {
@@ -370,8 +370,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateDateCompleted();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._dateCompleted).to.equal('');
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.dateCompleted).to.equal('');
       });
 
       it('should pass validation and set _dateCompleted to null if the DATECOMPLETED is null', async () => {
@@ -380,8 +380,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateDateCompleted();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._dateCompleted).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.dateCompleted).to.equal(null);
       });
     });
 
@@ -393,8 +393,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateDateCompleted();
 
-        expect(validator._dateCompleted).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.dateCompleted).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1020,
@@ -416,8 +416,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateDateCompleted();
 
-        expect(validator._dateCompleted).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.dateCompleted).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1020,
@@ -439,8 +439,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateExpiry();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._expiry).to.deep.equal(moment.utc('15/04/2022', 'DD/MM/YYYY', true));
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.expiry).to.deep.equal(moment.utc('15/04/2022', 'DD/MM/YYYY', true));
       });
 
       it('should pass validation and set _expiry to an empty string if EXPIRYDATE is an empty string', async () => {
@@ -449,8 +449,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateExpiry();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._expiry).to.deep.equal('');
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.expiry).to.deep.equal('');
       });
 
       it('should pass validation and set _expiry to null if EXPIRYDATE is null', async () => {
@@ -459,8 +459,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateExpiry();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._expiry).to.deep.equal(null);
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.expiry).to.deep.equal(null);
       });
     });
 
@@ -496,8 +496,8 @@ describe('trainingCSVValidator', () => {
         await validator._validateDateCompleted();
         await validator._validateExpiry();
 
-        expect(validator._expiry).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.expiry).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1030,
@@ -520,8 +520,8 @@ describe('trainingCSVValidator', () => {
         await validator._validateDateCompleted();
         await validator._validateExpiry();
 
-        expect(validator._expiry).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.expiry).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1030,
@@ -543,8 +543,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateDescription();
 
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._description).to.equal('training');
+        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.description).to.equal('training');
       });
     });
 
@@ -556,8 +556,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateDescription();
 
-        expect(validator._description).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.description).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1040,
@@ -579,8 +579,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateDescription();
 
-        expect(validator._description).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.description).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1040,
@@ -603,8 +603,8 @@ describe('trainingCSVValidator', () => {
 
         await validator._validateDescription();
 
-        expect(validator._description).to.equal(null);
-        expect(validator._validationErrors).to.deep.equal([
+        expect(validator.description).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1040,

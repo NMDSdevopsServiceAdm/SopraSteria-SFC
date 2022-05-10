@@ -78,7 +78,7 @@ class TrainingCsvValidator {
     return this._uniqueWorkerId;
   }
 
-  get completed() {
+  get dateCompleted() {
     return this._dateCompleted;
   }
 
