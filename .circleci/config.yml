@@ -529,9 +529,7 @@ workflows:
           folder: bulkUpload
           context: serverless-deployment
           requires:
-            - test_frontend
-            - test_backend
-            - performance
+            - blue_green_benchmarks
           filters:
             branches:
               only:
@@ -541,9 +539,7 @@ workflows:
           folder: bulkUpload
           context: serverless-deployment
           requires:
-            - test_frontend
-            - test_backend
-            - performance
+            - blue_green_staging
           filters:
             branches:
               only:
@@ -553,9 +549,7 @@ workflows:
           folder: bulkUpload
           context: serverless-deployment
           requires:
-            - test_frontend
-            - test_backend
-            - performance
+            - preprod_deploy
           filters:
             branches:
               only:
@@ -565,9 +559,7 @@ workflows:
           folder: bulkUpload
           context: serverless-deployment
           requires:
-            - test_frontend
-            - test_backend
-            - performance
+            - prod_deploy
           filters:
             # ignore any commit on any branch by default
             branches:
