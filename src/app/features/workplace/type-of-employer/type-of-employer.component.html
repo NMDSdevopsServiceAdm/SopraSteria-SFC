@@ -17,7 +17,7 @@
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('employerType') }}
           </span>
           <div class="govuk-radios govuk-radios--conditional">
-            <ng-container *ngFor="let answer of options; let idx = index">
+            <ng-container *ngFor="let option of options; let idx = index">
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
@@ -25,10 +25,10 @@
                   id="employerType-{{ idx }}"
                   name="employerType"
                   type="radio"
-                  [value]="answer"
+                  [value]="option.value"
                 />
                 <label class="govuk-label govuk-radios__label" for="employerType-{{ idx }}">
-                  {{ answer }}
+                  {{ option.text }}
                 </label>
               </div>
 
