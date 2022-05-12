@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const establishments = require('../../../mockdata/establishment').data;
 const knownHeaders = require('../../../mockdata/establishment').knownHeaders;
-const establishmentCsv = require('../../../../../models/BulkImport/csv/validateWorkplaceCSV').WorkplaceCSVValidator;
+const establishmentCsv = require('../../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 
 const testUtils = require('../../../../../utils/testUtils');
 const sinon = require('sinon');

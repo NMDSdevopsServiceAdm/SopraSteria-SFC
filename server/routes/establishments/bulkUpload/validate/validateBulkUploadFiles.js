@@ -11,7 +11,7 @@ const {
 const { buStates } = require('../states');
 const { processDifferenceReport } = require('./processDifferenceReport');
 
-const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/validateWorkplaceCSV').WorkplaceCSVValidator;
+const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 const { validateWorkers } = require('./workers/validateWorkers');
 const { validateWorkplace } = require('./workplace/validateWorkplace');
 const { validateTraining } = require('./training/validateTraining');

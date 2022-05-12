@@ -1,4 +1,4 @@
-const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/validateWorkplaceCSV').WorkplaceCSVValidator;
+const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 
 const isWorkerFile = (fileAsString) => {
   const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;

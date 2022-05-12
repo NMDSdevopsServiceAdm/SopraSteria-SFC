@@ -3,7 +3,7 @@ const csv = require('csvtojson');
 
 const config = require('../../../config/config');
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
-const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/validateWorkplaceCSV').WorkplaceCSVValidator;
+const EstablishmentCsvValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 const { validateWorkerHeaders } = require('./validate/headers/worker');
 const { validateTrainingHeaders } = require('./validate/headers/training');
 const { isWorkerFile, isTrainingFile } = require('./whichFile');

@@ -1,7 +1,7 @@
 'use strict';
 
 const { Establishment } = require('../../../../models/classes/establishment');
-const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/validateWorkplaceCSV').WorkplaceCSVValidator;
+const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 
 const validateEstablishmentCsv = async (
   thisLine,
@@ -12,6 +12,11 @@ const validateEstablishmentCsv = async (
   myCurrentEstablishments,
 ) => {
   const lineValidator = new WorkplaceCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
+  console.log({
+    thisLine,
+    currentLineNumber,
+    myCurrentEstablishments,
+  });
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   await lineValidator.validate();
