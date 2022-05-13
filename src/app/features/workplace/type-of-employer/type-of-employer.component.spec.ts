@@ -82,7 +82,7 @@ describe('TypeOfEmployerComponent', () => {
     fireEvent.click(submitButton);
     fixture.detectChanges();
 
-    const errorMessages = getAllByText('Select an Employer type');
+    const errorMessages = getAllByText('Select the Employer type');
     expect(errorMessages.length).toEqual(2);
   });
 
