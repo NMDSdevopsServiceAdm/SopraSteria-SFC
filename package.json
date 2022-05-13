@@ -179,7 +179,7 @@
     "require-dir": "^1.2.0",
     "rimraf": "^3.0.2",
     "sandboxed-module": "^2.0.4",
-    "sinon": "^9.2.4",
+    "sinon": "^14.0.0",
     "sinon-chai": "^3.7.0",
     "source-map-explorer": "^2.5.2",
     "supertest": "^6.2.2",
