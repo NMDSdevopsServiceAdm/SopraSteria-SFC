@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -5,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { WindowRef } from '@core/services/window.ref';
-import { SearchModule } from '@features/search/search.module';
+import { AdminModule } from '@features/admin/admin.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -23,12 +24,14 @@ describe('TargetedEmailsComponent', () => {
         SharedModule,
         HttpClientTestingModule,
         RouterTestingModule,
-        SearchModule,
         FormsModule,
         ReactiveFormsModule,
         NgxDropzoneModule,
+        AdminModule,
       ],
       providers: [
+        EmailCampaignService,
+        DecimalPipe,
         {
           provide: WindowRef,
           useClass: WindowRef,
@@ -82,7 +85,7 @@ describe('TargetedEmailsComponent', () => {
       expect(totalEmail.innerHTML).toContain('1,500');
     });
 
-    it("should display 0 emails to be sent when the group and template haven't been selected", async () => {
+    it(`should display 0 emails to be sent when the group and template haven't been selected`, async () => {
       const component = await setup();
 
       component.fixture.componentInstance.emailGroup = null;
@@ -93,7 +96,7 @@ describe('TargetedEmailsComponent', () => {
       expect(totalEmails.innerHTML).toContain('0');
     });
 
-    it("should disable the Send emails button when the group and template haven't been selected", async () => {
+    it(`should disable the Send emails button when the group and template haven't been selected`, async () => {
       const component = await setup();
 
       component.fixture.componentInstance.emailGroup = '';
@@ -261,6 +264,59 @@ describe('TargetedEmailsComponent', () => {
         userEvent.upload(fileInput[1], file);
         expect(fixture.componentInstance.totalEmails).toEqual(3);
         expect(getTargetedTotalValidEmailsSpy).toHaveBeenCalledOnceWith(fileFormData);
+      });
+
+      it('should only display Download targeted emails report link after file uploaded when Multiple accounts selected', async () => {
+        const { fixture, getByLabelText, getAllByLabelText, queryByText } = await setup();
+
+        const emailCampaignService = TestBed.inject(EmailCampaignService);
+        spyOn(emailCampaignService, 'getTargetedTotalValidEmails').and.callFake(() => of({ totalEmails: 3 }));
+
+        const groupSelect = getByLabelText('Email group', { exact: false });
+        fireEvent.change(groupSelect, { target: { value: 'multipleAccounts' } });
+        fixture.detectChanges();
+
+        expect(queryByText('Download targeted emails report')).toBeFalsy();
+
+        const fileInput = getAllByLabelText('upload files here');
+        const file = new File(['some file content'], 'establishments.csv', { type: 'text/csv' });
+        const fileFormData: FormData = new FormData();
+        fileFormData.append('targetedRecipientsFile', file);
+
+        userEvent.upload(fileInput[1], file);
+        fixture.detectChanges();
+
+        expect(queryByText('Download targeted emails report')).toBeTruthy();
+      });
+
+      it('should call getTargetedEmailsReport in emailCampaign service when download button clicked', async () => {
+        const { fixture, getByText, getByLabelText, getAllByLabelText, queryByText } = await setup();
+
+        const emailCampaignService = TestBed.inject(EmailCampaignService);
+        spyOn(emailCampaignService, 'getTargetedTotalValidEmails').and.callFake(() => of({ totalEmails: 3 }));
+        const getTargetedEmailsReportSpy = spyOn(emailCampaignService, 'getTargetedEmailsReport').and.callFake(() =>
+          of(null),
+        );
+        const saveSpy = spyOn(fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+
+        const groupSelect = getByLabelText('Email group', { exact: false });
+        fireEvent.change(groupSelect, { target: { value: 'multipleAccounts' } });
+        fixture.detectChanges();
+
+        expect(queryByText('Download targeted emails report')).toBeFalsy();
+
+        const fileInput = getAllByLabelText('upload files here');
+        const file = new File(['some file content'], 'establishments.csv', { type: 'text/csv' });
+        const fileFormData: FormData = new FormData();
+        fileFormData.append('targetedRecipientsFile', file);
+
+        userEvent.upload(fileInput[1], file);
+        fixture.detectChanges();
+
+        fireEvent.click(getByText('Download targeted emails report'));
+
+        expect(getTargetedEmailsReportSpy).toHaveBeenCalledWith(fileFormData);
+        expect(saveSpy).toHaveBeenCalled();
       });
 
       it('should call createTargetedEmailsCampaign with multipleAccounts, template id and file when file uploaded and sending emails confirmed', async () => {

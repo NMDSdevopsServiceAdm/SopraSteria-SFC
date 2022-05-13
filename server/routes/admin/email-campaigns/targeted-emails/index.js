@@ -9,6 +9,9 @@ const sendEmail = require('../../../../services/email-campaigns/targeted-emails/
 const models = require('../../../../models/');
 const { getTargetedEmailTemplates } = require('./templates');
 const { sanitizeFilePath } = require('../../../../utils/security/sanitizeFilePath');
+const moment = require('moment');
+const excelJS = require('exceljs');
+const targetedEmailsReport = require('../../../../reports/targeted-emails');
 
 const router = express.Router();
 
@@ -102,6 +105,33 @@ const createEmailCampaign = async (userID) => {
   });
 };
 
+const createTargetedEmailsReport = async (req, res) => {
+  try {
+    const establishmentNmdsIdList = parseNmdsIdsIfFileExists(req.file);
+    const users = await getGroupOfUsers('multipleAccounts', establishmentNmdsIdList);
+
+    const workbook = new excelJS.Workbook();
+
+    workbook.creator = 'Skills-For-Care';
+    workbook.properties.date1904 = true;
+
+    await targetedEmailsReport.generateTargetedEmailsReport(workbook, users, establishmentNmdsIdList);
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + moment().format('DD-MM-YYYY') + '-targetedEmails.xlsx',
+    );
+
+    await workbook.xlsx.write(res);
+
+    return res.status(200).end();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+};
+
 const parseNmdsIdsIfFileExists = (file) => {
   if (!file) return null;
 
@@ -158,7 +188,10 @@ router.route('/').post(
   createTargetedEmailsCampaign,
 );
 
+router.route('/report').post(upload.single('targetedRecipientsFile'), createTargetedEmailsReport);
+
 module.exports = router;
 module.exports.getTargetedTotalEmails = getTargetedTotalEmails;
 module.exports.createTargetedEmailsCampaign = createTargetedEmailsCampaign;
 module.exports.getGroupOfUsers = getGroupOfUsers;
+module.exports.createTargetedEmailsReport = createTargetedEmailsReport;
