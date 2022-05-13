@@ -1,8 +1,8 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
     <ng-container *ngIf="workplace && canEditEstablishment">
-      <p *ngIf="!workplace.employerType || updateStaffRecords">What you need to do first.</p>
-      <app-inset-text *ngIf="!workplace.employerType || updateStaffRecords" [color]="'todo'">
+      <p *ngIf="!workplace.employerType">What you need to do first.</p>
+      <app-inset-text *ngIf="!workplace.employerType" [color]="'todo'">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
             <a
@@ -10,13 +10,6 @@
               [routerLink]="['/workplace', workplace?.uid, 'start']"
               data-testid="add-workplace-info"
               >Add workplace information</a
-            >
-          </div>
-        </div>
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-            <a href="#" (click)="selectStaffTab($event)" *ngIf="updateStaffRecords" data-testid="add-staff-banner"
-              >Add staff records</a
             >
           </div>
         </div>

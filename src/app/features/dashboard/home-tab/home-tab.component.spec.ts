@@ -110,17 +110,6 @@ describe('HomeTabComponent', () => {
     expect(link.innerHTML).toContain('Add workplace information');
     expect(link.getAttribute('href')).toContain('start');
   });
-  it('Add staff banner has correct title', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.updateStaffRecords = true;
-    component.fixture.detectChanges();
-
-    const link = component.getByTestId('add-staff-banner');
-    // Assert
-    expect(link.innerHTML).toContain('Add staff records');
-  });
 
   it('should not show the more staff records banner if there are equal staff records', async () => {
     // Arrange
