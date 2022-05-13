@@ -100,15 +100,17 @@ describe('HomeTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('has Add Workplace Information', async () => {
+  it('displays add workplace info text when no employer type', async () => {
     // Arrange
     const { component } = await setup();
     // Act
-    const link = component.getByTestId('add-workplace-info');
+    const link = component.getByText('Start to add more details about your workplace');
 
     // Assert
-    expect(link.innerHTML).toContain('Add workplace information');
-    expect(link.getAttribute('href')).toContain('start');
+    expect(link).toBeTruthy();
+    expect(link.getAttribute('href')).toBe(
+      '/workplace/' + component.fixture.componentInstance.workplace.uid + '/start',
+    );
   });
 
   it('should not show the more staff records banner if there are equal staff records', async () => {
