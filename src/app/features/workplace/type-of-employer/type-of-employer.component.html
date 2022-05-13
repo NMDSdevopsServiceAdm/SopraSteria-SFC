@@ -33,7 +33,7 @@
               </div>
 
               <div
-                *ngIf="answer === 'Other'"
+                *ngIf="option.value === 'Other'"
                 class="govuk-radios__conditional"
                 [class.govuk-radios__conditional--hidden]="form.get('employerType').value !== 'Other'"
                 id="conditional-employerType-conditional-1"

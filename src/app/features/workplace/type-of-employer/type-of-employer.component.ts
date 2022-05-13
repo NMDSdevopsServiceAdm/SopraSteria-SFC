@@ -55,7 +55,7 @@ export class TypeOfEmployerComponent extends Question {
         type: [
           {
             name: 'required',
-            message: 'Please select an Employer type',
+            message: 'Select an Employer type',
           },
         ],
       },
