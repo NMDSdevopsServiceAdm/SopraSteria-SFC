@@ -20,6 +20,10 @@ export class BenchmarksService {
     this.returnToURL = returnTo;
   }
 
+  postBenchmarkTabUsage(establishmentId: string) {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/benchmarks/usage`, null);
+  }
+
   getTileData(establishmentId: string, tilesNeeded: string[]): Observable<BenchmarksResponse> {
     let param = '';
     if (tilesNeeded.length) {
@@ -34,9 +38,5 @@ export class BenchmarksService {
 
   getAllRankingData(establishmentId: string): Observable<AllRankingsResponse> {
     return this.http.get<AllRankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings`);
-  }
-
-  logBenchmarkTabUsage(establishmentId: string): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${establishmentId}/benchmarks/rankings/logbenchmarks`);
   }
 }
