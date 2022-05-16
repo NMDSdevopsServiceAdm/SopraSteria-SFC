@@ -3,7 +3,7 @@ const csv = require('csvtojson');
 
 const config = require('../../../config/config');
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
-const workplaceCSVValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
+const WorkplaceCSVValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 const { validateWorkerHeaders } = require('./validate/headers/worker');
 const { validateTrainingHeaders } = require('./validate/headers/training');
 const { isWorkerFile, isTrainingFile } = require('./whichFile');
@@ -154,7 +154,7 @@ const uploadedPut = async (req, res) => {
     const allContent = await Promise.all(createModelPromises);
 
     allContent.forEach((myfile) => {
-      if (workplaceCSVValidator.isContent(myfile.data)) {
+      if (WorkplaceCSVValidator.isContent(myfile.data)) {
         myDownloads.establishments = myfile.data;
         establishmentMetadata.filename = myfile.filename;
         establishmentMetadata.fileType = 'Establishment';
@@ -220,7 +220,7 @@ const uploadedPut = async (req, res) => {
 
     if (importedEstablishments) {
       if (
-        new workplaceCSVValidator(importedEstablishments[firstRow], firstLineNumber).preValidate(establishmentHeaders)
+        new WorkplaceCSVValidator(importedEstablishments[firstRow], firstLineNumber).preValidate(establishmentHeaders)
       ) {
         // count records and update metadata
         establishmentMetadata.records = importedEstablishments.length;

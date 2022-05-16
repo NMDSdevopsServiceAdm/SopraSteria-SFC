@@ -1,4 +1,4 @@
-const workplaceCSVValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
+const WorkplaceCSVValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 
 const isWorkerFile = (fileAsString) => {
   const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
@@ -13,7 +13,7 @@ const isTrainingFile = (fileAsString) => {
 };
 
 const getFileType = (fileData) => {
-  if (workplaceCSVValidator.isContent(fileData)) {
+  if (WorkplaceCSVValidator.isContent(fileData)) {
     return 'Establishment';
   } else if (isWorkerFile(fileData)) {
     return 'Worker';
