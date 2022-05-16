@@ -12,11 +12,6 @@ const validateEstablishmentCsv = async (
   myCurrentEstablishments,
 ) => {
   const lineValidator = new WorkplaceCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
-  console.log({
-    thisLine,
-    currentLineNumber,
-    myCurrentEstablishments,
-  });
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   await lineValidator.validate();
