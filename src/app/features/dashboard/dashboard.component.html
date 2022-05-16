@@ -2,7 +2,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <app-tabs (selectedTabClick)="logBenchmarkTabUsage($event)">
+    <app-tabs (selectedTabClick)="tabClickEvent($event)">
       <app-tab [title]="'Home'">
         <app-home-tab [workplace]="workplace" [workerCount]="workerCount"></app-home-tab>
       </app-tab>
