@@ -13,10 +13,10 @@ import { Question } from '../question/question.component';
 })
 export class TypeOfEmployerComponent extends Question {
   public options = [
-    { value: 'Local Authority (adult services)', text: 'Local Authority (adult services)' },
-    { value: 'Local Authority (generic/other)', text: 'Local Authority (generic/other)' },
-    { value: 'Private Sector', text: 'Private Sector' },
-    { value: 'Voluntary / Charity', text: 'Voluntary or Charity' },
+    { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
+    { value: 'Local Authority (generic/other)', text: 'Local authority (generic/other)' },
+    { value: 'Private Sector', text: 'Private sector' },
+    { value: 'Voluntary / Charity', text: 'Voluntary or charity' },
     { value: 'Other', text: 'Other' },
   ];
   public maxLength = 120;
@@ -55,7 +55,7 @@ export class TypeOfEmployerComponent extends Question {
         type: [
           {
             name: 'required',
-            message: 'Select the Employer type',
+            message: 'Select the type of employer',
           },
         ],
       },
