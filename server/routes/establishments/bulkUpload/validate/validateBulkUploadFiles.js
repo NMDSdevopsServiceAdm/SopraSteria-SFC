@@ -11,17 +11,11 @@ const {
 const { buStates } = require('../states');
 const { processDifferenceReport } = require('./processDifferenceReport');
 
-const EstablishmentCsvValidator = require('../../../../models/BulkImport/csv/establishments').Establishment;
-
-const { validateEstablishmentCsv } = require('./validateEstablishmentCsv');
-const { validateDuplicateLocations } = require('./validateDuplicateLocations');
+const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 const { validateWorkers } = require('./workers/validateWorkers');
+const { validateWorkplace } = require('./workplace/validateWorkplace');
 const { validateTraining } = require('./training/validateTraining');
 const { crossValidate } = require('../../../../models/BulkImport/csv/crossValidate');
-
-const keepAlive = (stepName = '', stepId = '') => {
-  console.log(`Bulk Upload /validate keep alive: ${new Date()} ${stepName} ${stepId}`);
-};
 
 // if commit is false, then the results of validation are not uploaded to S3
 const validateBulkUploadFiles = async (req, files) => {
@@ -31,14 +25,8 @@ const validateBulkUploadFiles = async (req, files) => {
   const workers = files.Worker;
   const training = files.Training;
 
-  const csvEstablishmentSchemaErrors = [];
-
-  const myEstablishments = [];
-
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL = 1;
-
-  keepAlive('begin validate files', establishmentId); // keep connection alive
 
   const myCurrentEstablishments = await restoreExistingEntities(
     username,
@@ -46,64 +34,11 @@ const validateBulkUploadFiles = async (req, files) => {
     isParent,
     RESTORE_ASSOCIATION_LEVEL,
     false,
-    keepAlive,
   );
 
-  // rather than an array of entities, entities will be known by their line number within the source, e.g:
-  // establishments: {
-  //    1: { },
-  //    2: { },
-  //    ...
-  // }
-  const myAPIEstablishments = {};
-
-  // for unique/cross-reference validations
-  const allEstablishmentsByKey = {};
-
-  // /////////////////////////
   // Parse and process Establishments CSV
-  if (
-    Array.isArray(establishments.imported) &&
-    establishments.imported.length > 0 &&
-    establishments.metadata.fileType === 'Establishment'
-  ) {
-    // validate all establishment rows
-    await Promise.all(
-      establishments.imported.map((thisLine, currentLineNumber) =>
-        validateEstablishmentCsv(
-          thisLine,
-          currentLineNumber + 2,
-          csvEstablishmentSchemaErrors,
-          myEstablishments,
-          myAPIEstablishments,
-          myCurrentEstablishments,
-          keepAlive,
-        ),
-      ),
-    );
-
-    // having parsed all establishments, check for duplicates
-    // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
-    myEstablishments.forEach((thisEstablishment) => {
-      const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, '');
-      if (allEstablishmentsByKey[keyNoWhitespace]) {
-        // this establishment is a duplicate
-        csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
-
-        // remove the entity
-        delete myAPIEstablishments[keyNoWhitespace];
-      } else {
-        // does not yet exist
-        allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
-      }
-    });
-
-    await validateDuplicateLocations(myEstablishments, csvEstablishmentSchemaErrors, myCurrentEstablishments);
-  } else {
-    console.info('API bulkupload - validateBulkUploadFiles: no establishment records');
-  }
-
-  establishments.metadata.records = myEstablishments.length;
+  const { csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments, allEstablishmentsByKey } =
+    await validateWorkplace(establishments, myCurrentEstablishments);
 
   // Parse and process Workers CSV
   const { csvWorkerSchemaErrors, myAPIWorkers, workersKeyed, allWorkersByKey, myJSONWorkers } = await validateWorkers(
@@ -122,7 +57,6 @@ const validateBulkUploadFiles = async (req, files) => {
     allEstablishmentsByKey,
   );
 
-  // /////////////////////////
   // Cross Entity Validations
 
   // If the logged in account performing this validation is not a parent, then
@@ -131,7 +65,7 @@ const validateBulkUploadFiles = async (req, files) => {
     const MAX_ESTABLISHMENTS = 1;
 
     if (establishments.imported.length !== MAX_ESTABLISHMENTS) {
-      csvEstablishmentSchemaErrors.unshift(EstablishmentCsvValidator.justOneEstablishmentError());
+      csvEstablishmentSchemaErrors.unshift(WorkplaceCsvValidator.justOneEstablishmentError());
     }
   }
 
@@ -146,13 +80,13 @@ const validateBulkUploadFiles = async (req, files) => {
 
     if (!onloadedPrimaryEstablishment) {
       csvEstablishmentSchemaErrors.unshift(
-        EstablishmentCsvValidator.missingPrimaryEstablishmentError(primaryEstablishment.name),
+        WorkplaceCsvValidator.missingPrimaryEstablishmentError(primaryEstablishment.name),
       );
     } else {
       // primary establishment does exist in given CSV; check STATUS is not DELETE - cannot delete the primary establishment
       if (onloadedPrimaryEstablishment.status === 'DELETE') {
         csvEstablishmentSchemaErrors.unshift(
-          EstablishmentCsvValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name),
+          WorkplaceCsvValidator.cannotDeletePrimaryEstablishmentError(primaryEstablishment.name),
         );
       }
     }
@@ -197,7 +131,6 @@ const validateBulkUploadFiles = async (req, files) => {
     }),
   );
 
-  // /////////////////////////
   // Prepare validation results
 
   // prepare entities ready for upload/return
@@ -280,5 +213,4 @@ const getUniqueLocalAuthorities = (establishmentsAsArray) =>
 
 module.exports = {
   validateBulkUploadFiles,
-  keepAlive,
 };
