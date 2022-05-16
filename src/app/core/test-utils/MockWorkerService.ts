@@ -283,3 +283,10 @@ export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
     return of({ uid: '1' } as WorkerEditResponse);
   }
 }
+
+@Injectable()
+export class MockWorkerServiceWithoutReturnUrl extends MockWorkerService {
+  public get returnTo(): URLStructure {
+    return;
+  }
+}

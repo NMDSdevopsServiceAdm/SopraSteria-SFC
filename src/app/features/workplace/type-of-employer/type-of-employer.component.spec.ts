@@ -38,7 +38,7 @@ describe('TypeOfEmployerComponent', () => {
     };
   }
 
-  it('should render a TotalStaff component', async () => {
+  it('should render the TypeOfEmployer component', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
@@ -50,9 +50,7 @@ describe('TypeOfEmployerComponent', () => {
   });
 
   it('should show the save and continue button when there is not a return value', async () => {
-    const { fixture, getByText } = await setup();
-
-    fixture.detectChanges();
+    const { getByText } = await setup();
 
     expect(getByText('Save and continue')).toBeTruthy();
   });
