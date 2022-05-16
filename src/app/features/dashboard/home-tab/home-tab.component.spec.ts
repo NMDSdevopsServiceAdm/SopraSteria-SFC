@@ -84,7 +84,6 @@ describe('HomeTabComponent', () => {
 
     component.fixture.componentInstance.canEditEstablishment = true;
     component.fixture.componentInstance.workplace = Establishment;
-    component.fixture.componentInstance.workplace.employerType = null;
     component.fixture.detectChanges();
 
     return {
@@ -95,31 +94,34 @@ describe('HomeTabComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
 
-    component.fixture.detectChanges();
-
     expect(component).toBeTruthy();
   });
 
-  it('has Add Workplace Information', async () => {
+  it('displays add workplace info text when no employer type', async () => {
     // Arrange
     const { component } = await setup();
-    // Act
-    const link = component.getByTestId('add-workplace-info');
-
-    // Assert
-    expect(link.innerHTML).toContain('Add workplace information');
-    expect(link.getAttribute('href')).toContain('start');
-  });
-  it('Add staff banner has correct title', async () => {
-    // Arrange
-    const { component } = await setup();
-    // Act
-    component.fixture.componentInstance.updateStaffRecords = true;
+    component.fixture.componentInstance.workplace.employerType = null;
     component.fixture.detectChanges();
+    // Act
+    const link = component.getByText('Start to add more details about your workplace');
 
-    const link = component.getByTestId('add-staff-banner');
     // Assert
-    expect(link.innerHTML).toContain('Add staff records');
+    expect(link).toBeTruthy();
+    expect(link.getAttribute('href')).toBe(
+      '/workplace/' + component.fixture.componentInstance.workplace.uid + '/start',
+    );
+  });
+
+  it('does not display add workplace info text when employer type is provided', async () => {
+    // Arrange
+    const { component } = await setup();
+
+    component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
+    component.fixture.detectChanges();
+    // Act
+    const link = component.queryByText('Start to add more details about your workplace');
+    // Assert
+    expect(link).toBeFalsy();
   });
 
   it('should not show the more staff records banner if there are equal staff records', async () => {
@@ -137,6 +139,7 @@ describe('HomeTabComponent', () => {
     // Assert
     expect(childDebugElement).toBeFalsy();
   });
+
   it('should show the more staff records banner if the user does have permissions to canAddWorker', async () => {
     // Arrange
     const { component } = await setup();
@@ -203,6 +206,7 @@ describe('HomeTabComponent', () => {
     // Assert
     expect(childDebugElement).toBeTruthy();
   });
+
   it('should not show the staff mismatch banner if the eight weeks date is in the future', async () => {
     // Arrange
     const { component } = await setup();
@@ -234,6 +238,7 @@ describe('HomeTabComponent', () => {
 
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
   });
+
   describe('View the ASC-WDS Benefits Bundle', async () => {
     it('should navigate to `/benefits-bundle` when pressing the "Benefite Bundle and NEW link" button', async () => {
       const { component } = await setup();
@@ -243,6 +248,7 @@ describe('HomeTabComponent', () => {
       expect(benefiteBundleRoute.getAttribute('href')).toBe('/benefits-bundle');
     });
   });
+
   describe('Other links', () => {
     describe('Link to my parent organisation', () => {
       it('should show Link to my parent organisation pending when trying to link to a parent', async () => {
