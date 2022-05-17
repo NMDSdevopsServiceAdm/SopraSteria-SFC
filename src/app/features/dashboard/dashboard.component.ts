@@ -143,11 +143,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public tabClickEvent($event) {
     if ($event.tabSlug === 'benchmarks') {
-      this.subscriptions.add(
-        this.benchmarksService.postBenchmarkTabUsage(this.establishmentId).subscribe((data) => {
-          console.log(data);
-        }),
-      );
+      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.establishmentId).subscribe());
     }
   }
 
