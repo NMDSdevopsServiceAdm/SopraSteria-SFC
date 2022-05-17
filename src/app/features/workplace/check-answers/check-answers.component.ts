@@ -17,22 +17,17 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
 
   constructor(private location: Location, private establishmentService: EstablishmentService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+      this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
         this.establishment = establishment;
 
         this.summaryReturnUrl = { url: ['/workplace', establishment.uid, 'check-answers'] };
-      })
+      }),
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-  goBack(event) {
-    event.preventDefault();
-    this.location.back();
   }
 }
