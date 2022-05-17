@@ -32,14 +32,14 @@ describe('SubmitButtonComponent', () => {
       expect(queryByText('Exit')).toBeFalsy();
     });
 
-    it(`should render the 'Save and continue' button and 'View record summary' link when in workplace flow`, async () => {
+    it(`should render the 'Save and continue' button and 'View workplace details' link when in workplace flow`, async () => {
       const { fixture, getByText, queryByText } = await setup();
 
       fixture.componentInstance.isExistingStaffRecord = false;
       fixture.detectChanges();
 
       expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('View record summary')).toBeTruthy();
+      expect(getByText('View workplace details')).toBeTruthy();
       expect(queryByText('Exit')).toBeFalsy();
     });
 
@@ -54,7 +54,7 @@ describe('SubmitButtonComponent', () => {
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Exit')).toBeTruthy();
       expect(queryByText('View this staff record')).toBeFalsy();
-      expect(queryByText('View record summary')).toBeFalsy();
+      expect(queryByText('View workplace details')).toBeFalsy();
     });
 
     it('should render the correct cta button and exit text with a fallback', async () => {
