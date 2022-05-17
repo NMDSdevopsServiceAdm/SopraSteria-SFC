@@ -106,4 +106,8 @@ export class MockBenchmarksService extends BenchmarksService {
   public getAllRankingData(establishmentUid): Observable<AllRankingsResponse> {
     return of(allRankingsData);
   }
+
+  public postBenchmarkTabUsage(establishmentUid: string) {
+    return of(null);
+  }
 }
