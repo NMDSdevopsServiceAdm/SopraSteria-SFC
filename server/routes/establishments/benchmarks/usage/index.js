@@ -19,3 +19,4 @@ const postBenchmarkTabUsage = async (req, res) => {
 router.route('/').post(postBenchmarkTabUsage);
 
 module.exports = router;
+module.exports.postBenchmarkTabUsage = postBenchmarkTabUsage;
