@@ -102,7 +102,7 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
     this.unselectTabs();
     tab.active = true;
 
-    this.selectedTabClick.emit({ tabIndex: this.currentTab });
+    this.selectedTabClick.emit({ tabSlug: tab.slug });
 
     const path = hasCurrentTab ? this.location.path().split('?')[0] : this.location.path();
     this.location.replaceState(`${path}#${tab.slug}`);
