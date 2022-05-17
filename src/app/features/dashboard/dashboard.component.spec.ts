@@ -263,6 +263,25 @@ describe('DashboardComponent', () => {
         fireEvent.click(benchmarksTab);
         expect(benchmarkUsageSpy).toHaveBeenCalled();
       });
+
+      it('should not call postBenchmarkTabUsage when the other dashboard tabs are clicked', async () => {
+        const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
+
+        component.canViewBenchmarks = true;
+        fixture.detectChanges();
+
+        const homeTab = getByTestId('tab_home');
+        const workplaceTab = getByTestId('tab_workplace');
+        const staffRecordsTab = getByTestId('tab_staff-records');
+        const trainingAndQualificationsTab = getByTestId('tab_training-and-qualifications');
+
+        fireEvent.click(homeTab);
+        fireEvent.click(workplaceTab);
+        fireEvent.click(staffRecordsTab);
+        fireEvent.click(trainingAndQualificationsTab);
+
+        expect(benchmarkUsageSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });
