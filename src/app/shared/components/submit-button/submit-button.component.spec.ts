@@ -49,7 +49,6 @@ describe('SubmitButtonComponent', () => {
       const component = fixture.componentInstance;
       component.recordSummary = false;
       component.canExit = true;
-      component.isExistingStaffRecord = false;
       fixture.detectChanges();
 
       expect(getByText('Save and continue')).toBeTruthy();
@@ -64,7 +63,6 @@ describe('SubmitButtonComponent', () => {
       const component = fixture.componentInstance;
       component.recordSummary = false;
       component.canExit = true;
-      component.isExistingStaffRecord = false;
       fixture.detectChanges();
 
       expect(getByText('Save and continue')).toBeTruthy();
@@ -120,7 +118,6 @@ describe('SubmitButtonComponent', () => {
     const { fixture, getByText } = await setup();
 
     fixture.componentInstance.canExit = true;
-    fixture.componentInstance.isExistingStaffRecord = false;
     fixture.detectChanges();
 
     const spy = spyOn(fixture.componentInstance.clicked, 'emit');

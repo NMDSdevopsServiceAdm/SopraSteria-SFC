@@ -121,7 +121,7 @@ describe('StaffDetailsComponent', () => {
     it(`should show 'Save staff record' cta button and 'Cancel' link when adding a staff record`, async () => {
       const { component } = await setup(true, 0, false);
 
-      component.fixture.componentInstance.worker = null;
+      component.fixture.componentInstance.canReturn = false;
       component.fixture.detectChanges();
 
       expect(component.getByText('Save staff record')).toBeTruthy();
