@@ -23,7 +23,7 @@ module.exports = {
         },
         ViewedTime: {
           type: Sequelize.DataTypes.DATE,
-          allowNull: true,
+          allowNull: false,
         },
       },
       { schema: 'cqc' },
