@@ -21,7 +21,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public showInputTextforOtherRole: boolean;
   public submitTitle = 'Save staff record';
   public canExit = true;
-  public canReturn = false;
   public exitText = 'Cancel';
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
@@ -85,7 +84,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       this.return = mandatoryDetailsURL;
     }
 
-    this.canReturn = true;
     this.submitTitle = 'Save staff record';
   }
 

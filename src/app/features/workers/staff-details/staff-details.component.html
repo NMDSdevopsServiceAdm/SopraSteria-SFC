@@ -114,11 +114,11 @@
     </div>
   </div>
   <app-submit-button
-    [return]="canReturn"
+    [return]="return"
     [canExit]="canExit"
     [exitText]="exitText"
     [recordSummary]="false"
-    [callToAction]="this.submitTitle"
+    [callToAction]="submitTitle"
     [isExistingStaffRecord]="!!worker"
     (clicked)="onSubmit($event)"
   ></app-submit-button>

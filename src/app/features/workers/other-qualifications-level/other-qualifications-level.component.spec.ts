@@ -75,7 +75,7 @@ describe('OtherQualificationsLevelComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the page with a save and return button', async () => {
+  it('should render the page with a save and return button when there return value is null', async () => {
     const { component, fixture } = await setup();
 
     component.return = null;
@@ -88,7 +88,7 @@ describe('OtherQualificationsLevelComponent', () => {
     expect(viewRecordLink).toBeTruthy();
   });
 
-  it('should render the page with a save and return button and an exit link', async () => {
+  it('should render the page with a save and return button and an exit link when there is a return value', async () => {
     await setup();
 
     const button = screen.getByText('Save and return');

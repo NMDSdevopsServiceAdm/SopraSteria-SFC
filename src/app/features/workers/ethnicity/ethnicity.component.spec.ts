@@ -7,11 +7,11 @@ import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { AdultSocialCareStartedComponent } from './adult-social-care-started.component';
+import { EthnicityComponent } from './ethnicity.component';
 
-describe('AdultSocialCareStartedComponent', () => {
+describe('EthnicityComponent', () => {
   async function setup(returnUrl = true) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(AdultSocialCareStartedComponent, {
+    const { fixture, getByText, getAllByText, getByLabelText } = await render(EthnicityComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
@@ -45,7 +45,7 @@ describe('AdultSocialCareStartedComponent', () => {
     };
   }
 
-  it('should render the AdultSocialCareStartedComponent', async () => {
+  it('should render the EthnicityComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });

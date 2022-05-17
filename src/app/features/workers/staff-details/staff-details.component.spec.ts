@@ -19,7 +19,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -36,7 +36,7 @@ describe('StaffDetailsComponent', () => {
     },
   });
 
-  async function setup(isAdmin = true, subsidiaries = 0) {
+  async function setup(isAdmin = true, subsidiaries = 0, returnUrl = true) {
     const establishment = establishmentBuilder();
     const component = await render(StaffDetailsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -76,7 +76,7 @@ describe('StaffDetailsComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: MockWorkerService,
+          useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
         },
         {
           provide: ActivatedRoute,
@@ -115,6 +115,25 @@ describe('StaffDetailsComponent', () => {
   it('should render a StaffDetails', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('submit buttons', () => {
+    it(`should show 'Save staff record' cta button and 'Cancel' link when adding a staff record`, async () => {
+      const { component } = await setup(true, 0, false);
+
+      component.fixture.componentInstance.worker = null;
+      component.fixture.detectChanges();
+
+      expect(component.getByText('Save staff record')).toBeTruthy();
+      expect(component.getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should show 'Save and return' cta button and 'Cancel' link when editing a staff record`, async () => {
+      const { component } = await setup();
+
+      expect(component.getByText('Save and return')).toBeTruthy();
+      expect(component.getByText('Cancel')).toBeTruthy();
+    });
   });
 
   it('should be able to submit when given correct data', async () => {
