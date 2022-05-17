@@ -1,16 +1,24 @@
 <ng-container *ngIf="establishment">
-  <h1 class="govuk-heading-xl">
-    <span class="govuk-caption-xl">Workplace summary</span>
+  <h1 class="govuk-heading-l" data-testid="establishmentHeading">
+    <span class="govuk-caption-l">Workplace summary</span>
     {{ establishment.name }}
   </h1>
-
-  <p class="govuk-!-margin-bottom-8">
-    Before saving this workplace record, check the information you have provided is correct.
-  </p>
-
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-8">
+        Check the workplace details you've added before you confirm them.
+      </p>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <a
+        class="govuk-button govuk-util__float-right"
+        role="button"
+        draggable="false"
+        [routerLink]="['/workplace', establishment.uid, 'success']"
+      >
+        Confirm workplace details
+      </a>
+    </div>
+  </div>
   <app-workplace-summary [workplace]="establishment" [return]="summaryReturnUrl"></app-workplace-summary>
-
-  <a class="govuk-button" role="button" draggable="false" [routerLink]="['/workplace', establishment.uid, 'success']">
-    Save and complete
-  </a>
 </ng-container>

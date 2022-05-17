@@ -32,4 +32,18 @@ describe('CheckAnswersComponent', () => {
 
     expect(component).toBeTruthy();
   });
+
+  it('should display the Establishment name in heading', async () => {
+    const { getByTestId, fixture } = await setup();
+
+    expect(getByTestId('establishmentHeading').innerHTML).toContain(fixture.componentInstance.establishment.name);
+  });
+
+  it('should have link to success page on Confirm workplace details button', async () => {
+    const { getByText, fixture } = await setup();
+
+    expect(getByText('Confirm workplace details').getAttribute('href')).toBe(
+      `/workplace/${fixture.componentInstance.establishment.uid}/success`,
+    );
+  });
 });
