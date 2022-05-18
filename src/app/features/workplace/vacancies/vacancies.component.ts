@@ -20,11 +20,11 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   public jobs: Job[] = [];
   public vacanciesKnownOptions = [
     {
-      label: 'There are no current staff vacancies.',
+      label: 'There are no current staff vacancies',
       value: jobOptionsEnum.NONE,
     },
     {
-      label: `I don't know how many current staff vacancies there are.`,
+      label: `I do not know how many current staff vacancies there are`,
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];

@@ -10,28 +10,24 @@
   <fieldset class="govuk-fieldset">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">Add current staff vacancies</h1>
-          <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">Add your current staff vacancies</h1>
         </legend>
+        <p>This should only be for permanent or temporary staff.</p>
       </div>
     </div>
     <ng-container formArrayName="vacancies">
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
-          <label for="jobRole-0" class="govuk-label">Job role</label>
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <label for="total-0" class="govuk-label">Number of vacancies</label>
-        </div>
-      </div>
       <div
         *ngFor="let vacancy of vacanciesArray.controls; let i = index"
         [formGroupName]="i"
         [class.govuk-form-group--error]="submitted && vacancy.invalid"
       >
-        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+        <div class="govuk-grid-row govuk-!-margin-bottom-6" data-testid="row-{{ i }}">
+          <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
+          </div>
           <div class="govuk-grid-column-two-thirds">
+            <label for="jobRole-{{ i }}" class="govuk-label">Job role</label>
             <span *ngIf="submitted" id="vacancy-{{ i }}-error" class="govuk-error-message">
               <ng-container *ngIf="submitted && vacancy.get('jobRole').invalid">
                 {{ getFormErrorMessage('vacancies.jobRole', 'required') }}
@@ -52,6 +48,7 @@
           </div>
 
           <div class="govuk-grid-column-one-third">
+            <label for="total-{{ i }}" class="govuk-label">Number of vacancies</label>
             <span *ngIf="submitted" id="vacancy-total-{{ i }}-error" class="govuk-error-message">
               <ng-container *ngIf="submitted && vacancy.get('total').invalid">
                 <span *ngIf="vacancy.get('total').errors.required">
@@ -82,6 +79,7 @@
             >
           </div>
         </div>
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-7" />
       </div>
     </ng-container>
     <div class="govuk-grid-row">
@@ -92,11 +90,11 @@
           type="button"
           (click)="addVacancy()"
         >
-          Add another staff vacancy
+          Add another job role
         </button>
       </div>
       <div class="govuk-grid-column-one-third">
-        <p class="govuk-heading-m">Total: {{ totalVacancies }}</p>
+        <p class="govuk-heading-m">Total vacancies: {{ totalVacancies }}</p>
       </div>
     </div>
 
