@@ -27,7 +27,6 @@ describe('OtherQualificationsComponent', () => {
             parent: {
               snapshot: {
                 data: {
-                  establishment: { uid: 'mocked-uid' },
                   establishment: workplace,
                 },
               },
