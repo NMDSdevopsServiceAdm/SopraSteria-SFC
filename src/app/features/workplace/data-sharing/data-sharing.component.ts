@@ -39,7 +39,7 @@ export class DataSharingComponent extends Question {
       });
     }
 
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
   }
 
   protected setupServerErrorsMap(): void {
