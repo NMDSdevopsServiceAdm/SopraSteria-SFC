@@ -88,11 +88,11 @@ describe('OtherQualificationsLevelComponent', () => {
     expect(viewRecordLink).toBeTruthy();
   });
 
-  it('should render the page with a save and return button and an exit link when there is a return value', async () => {
+  it('should render the page with a save and return button and an cancel link when there is a return value', async () => {
     await setup();
 
     const button = screen.getByText('Save and return');
-    const exitLink = screen.getByText('Exit');
+    const exitLink = screen.getByText('Cancel');
 
     expect(button).toBeTruthy();
     expect(exitLink).toBeTruthy();

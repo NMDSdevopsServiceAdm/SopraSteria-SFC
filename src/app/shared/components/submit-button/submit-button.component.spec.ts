@@ -13,7 +13,7 @@ describe('SubmitButtonComponent', () => {
         callToAction: 'Save and continue',
         recordSummary: true,
         canExit: false,
-        exitText: 'Exit',
+        exitText: 'Cancel',
         isExistingStaffRecord: true,
       },
     });
@@ -29,7 +29,7 @@ describe('SubmitButtonComponent', () => {
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
-      expect(queryByText('Exit')).toBeFalsy();
+      expect(queryByText('Cancel')).toBeFalsy();
     });
 
     it(`should render the 'Save and continue' button and 'View workplace details' link when in workplace flow`, async () => {
@@ -40,10 +40,10 @@ describe('SubmitButtonComponent', () => {
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View workplace details')).toBeTruthy();
-      expect(queryByText('Exit')).toBeFalsy();
+      expect(queryByText('Cancel')).toBeFalsy();
     });
 
-    it(`should render the 'Save and continue' button and 'Exit' link when recordSummary is false, canExit is true`, async () => {
+    it(`should render the 'Save and continue' button and 'Cancel' link when recordSummary is false, canExit is true`, async () => {
       const { fixture, getByText, queryByText } = await setup();
 
       const component = fixture.componentInstance;
@@ -52,12 +52,12 @@ describe('SubmitButtonComponent', () => {
       fixture.detectChanges();
 
       expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('Exit')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
       expect(queryByText('View this staff record')).toBeFalsy();
       expect(queryByText('View workplace details')).toBeFalsy();
     });
 
-    it('should render the correct cta button and exit text with a fallback', async () => {
+    it('should render the correct cta button and cancel text with a fallback', async () => {
       const { fixture, rerender, getByText } = await setup();
 
       const component = fixture.componentInstance;
@@ -66,31 +66,31 @@ describe('SubmitButtonComponent', () => {
       fixture.detectChanges();
 
       expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('Exit')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
 
       // update directive
-      rerender({ callToAction: 'Call to action', exitText: 'Cancel' });
+      rerender({ callToAction: 'Call to action', exitText: 'Exit' });
       expect(getByText('Call to action')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
+      expect(getByText('Exit')).toBeTruthy();
     });
   });
 
   describe('return is true', () => {
-    it(`should render the 'Save and continue' button and 'Exit' link`, async () => {
+    it(`should render the 'Save and continue' button and 'Cancel' link`, async () => {
       const { getByText } = await setup(true);
 
       expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Exit')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it('should render the correct exit text with a fallback', async () => {
+    it('should render the correct cancel text with a fallback', async () => {
       const { rerender, getByText } = await setup(true);
 
-      expect(getByText('Exit')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
 
       // update directive
-      rerender({ exitText: 'Cancel' });
-      expect(getByText('Cancel')).toBeTruthy();
+      rerender({ exitText: 'Exit' });
+      expect(getByText('Exit')).toBeTruthy();
     });
   });
 
@@ -123,7 +123,7 @@ describe('SubmitButtonComponent', () => {
     const spy = spyOn(fixture.componentInstance.clicked, 'emit');
     expect(spy).not.toHaveBeenCalled();
 
-    fireEvent.click(getByText('Exit'));
+    fireEvent.click(getByText('Cancel'));
     expect(spy).toHaveBeenCalledWith({ action: 'exit', save: false });
   });
 });

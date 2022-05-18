@@ -160,12 +160,12 @@ describe('NursingSpecialismComponent', () => {
       expect(getByText('View this staff record')).toBeTruthy();
     });
 
-    it(`should show 'Save and return' cta button and 'Exit' link if a return url is provided`, async () => {
+    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const worker = workerBuilder();
       const { getByText } = await getNursingSpecialismComponent(worker);
 
       expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Exit')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
     });
   });
 });

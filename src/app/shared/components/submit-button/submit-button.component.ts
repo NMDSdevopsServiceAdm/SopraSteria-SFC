@@ -10,7 +10,7 @@ export class SubmitButtonComponent {
   @Input() callToAction = 'Save and continue';
   @Input() recordSummary = true;
   @Input() canExit = false;
-  @Input() exitText = 'Exit';
+  @Input() exitText = 'Cancel';
   @Input() isExistingStaffRecord = true;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 

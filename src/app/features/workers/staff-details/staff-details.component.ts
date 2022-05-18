@@ -22,7 +22,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public submitTitle = 'Save staff record';
   public canReturn = false;
   public canExit = true;
-  public exitText = 'Cancel';
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
 
