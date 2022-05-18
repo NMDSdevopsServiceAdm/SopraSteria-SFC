@@ -24,6 +24,10 @@ export class BenchmarksService {
     return this.http.post<any>(`/api/establishment/${establishmentId}/benchmarks/usage`, null);
   }
 
+  getBenchmarkTabUsage(establishmentId: string) {
+    return this.http.get<any>(`/api/establishment/2364/benchmarks/usage`);
+  }
+
   getTileData(establishmentId: string, tilesNeeded: string[]): Observable<BenchmarksResponse> {
     let param = '';
     if (tilesNeeded.length) {

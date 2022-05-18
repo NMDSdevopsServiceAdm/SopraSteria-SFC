@@ -34,5 +34,14 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  BenchmarksViewed.getBenchmarskTabUsage = async function (establishmentId) {
+    return await this.findOne({
+      attributes: ['ID', 'ViewedTime'],
+      where: {
+        EstablishmentID: establishmentId,
+      },
+    });
+  };
+
   return BenchmarksViewed;
 };
