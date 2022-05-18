@@ -25,7 +25,7 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.subscriptions.add(
       this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
         this.establishment = establishment;
@@ -35,7 +35,7 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
