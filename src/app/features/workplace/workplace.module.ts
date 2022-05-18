@@ -34,7 +34,6 @@ import { SelectWorkplaceComponent } from './select-workplace/select-workplace.co
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StartersComponent } from './starters/starters.component';
-import { SuccessComponent } from './success/success.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
@@ -65,7 +64,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ServiceUsersComponent,
     StartComponent,
     StartersComponent,
-    SuccessComponent,
     TypeOfEmployerComponent,
     UserAccountDeleteDialogComponent,
     UserAccountEditPermissionsComponent,

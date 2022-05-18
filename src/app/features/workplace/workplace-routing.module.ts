@@ -39,7 +39,6 @@ import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
-import { SuccessComponent } from './success/success.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
@@ -278,15 +277,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Check Answers',
-        },
-      },
-      {
-        path: 'success',
-        component: SuccessComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Success',
         },
       },
       {
