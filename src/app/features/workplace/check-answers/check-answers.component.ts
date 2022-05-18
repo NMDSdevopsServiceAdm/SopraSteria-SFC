@@ -1,7 +1,9 @@
 import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -15,20 +17,34 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
   public summaryReturnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private location: Location, private establishmentService: EstablishmentService) {}
+  constructor(
+    private location: Location,
+    private establishmentService: EstablishmentService,
+    private router: Router,
+    protected route: ActivatedRoute,
+    private alertService: AlertService,
+  ) {}
 
   ngOnInit() {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+      this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
         this.establishment = establishment;
 
         this.summaryReturnUrl = { url: ['/workplace', establishment.uid, 'check-answers'] };
-      })
+      }),
     );
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  public showConfirmWorkplaceDetailsAlert(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+    this.alertService.addAlert({
+      type: 'success',
+      message: `You've confirmed the workplace details that you added`,
+    });
   }
 
   goBack(event) {

@@ -10,7 +10,7 @@
 
   <app-workplace-summary [workplace]="establishment" [return]="summaryReturnUrl"></app-workplace-summary>
 
-  <a class="govuk-button" role="button" draggable="false" [routerLink]="['/dashboard']" [fragment]="'workplace'">
+  <a class="govuk-button" role="button" draggable="false" (click)="showConfirmWorkplaceDetailsAlert()">
     Save and complete
   </a>
 </ng-container>
