@@ -21,6 +21,7 @@ describe('SalaryComponent', () => {
             parent: {
               snapshot: {
                 data: {
+                  establishment: { uid: 'mocked-uid' },
                   primaryWorkplace: {},
                 },
               },

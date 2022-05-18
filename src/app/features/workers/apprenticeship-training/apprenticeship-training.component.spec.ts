@@ -21,6 +21,7 @@ describe('ApprenticeshipTrainingComponent', () => {
             parent: {
               snapshot: {
                 data: {
+                  establishment: { uid: 'mocked-uid' },
                   primaryWorkplace: {},
                 },
               },

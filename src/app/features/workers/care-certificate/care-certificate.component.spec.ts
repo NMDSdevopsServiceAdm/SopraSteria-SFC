@@ -21,6 +21,7 @@ describe('CareCertificateComponent', () => {
             parent: {
               snapshot: {
                 data: {
+                  establishment: { uid: 'mocked-uid' },
                   primaryWorkplace: {},
                 },
               },

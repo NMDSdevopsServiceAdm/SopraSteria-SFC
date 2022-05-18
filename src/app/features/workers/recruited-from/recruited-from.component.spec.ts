@@ -21,6 +21,7 @@ describe('RecruitedFromComponent', () => {
             parent: {
               snapshot: {
                 data: {
+                  establishment: { uid: 'mocked-uid' },
                   primaryWorkplace: {},
                 },
               },

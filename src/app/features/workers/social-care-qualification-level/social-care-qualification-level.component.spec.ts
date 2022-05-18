@@ -21,6 +21,7 @@ describe('SocialCareQualificationLevelComponent', () => {
             parent: {
               snapshot: {
                 data: {
+                  establishment: { uid: 'mocked-uid' },
                   primaryWorkplace: {},
                 },
               },

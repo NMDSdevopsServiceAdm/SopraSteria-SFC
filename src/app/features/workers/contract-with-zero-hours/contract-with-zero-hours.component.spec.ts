@@ -21,6 +21,7 @@ describe('ContractWithZeroHoursComponent', () => {
             parent: {
               snapshot: {
                 data: {
+                  establishment: { uid: 'mocked-uid' },
                   primaryWorkplace: {},
                 },
               },
