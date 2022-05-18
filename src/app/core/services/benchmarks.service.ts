@@ -20,6 +20,10 @@ export class BenchmarksService {
     this.returnToURL = returnTo;
   }
 
+  postBenchmarkTabUsage(establishmentId: string) {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/benchmarks/usage`, null);
+  }
+
   getTileData(establishmentId: string, tilesNeeded: string[]): Observable<BenchmarksResponse> {
     let param = '';
     if (tilesNeeded.length) {
