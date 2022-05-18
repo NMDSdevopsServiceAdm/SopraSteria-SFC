@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -37,7 +37,9 @@ describe('DataSharingComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const router = injector.inject(Router) as Router;
 
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(null);
     const updateDataSharingSpy = spyOn(establishmentService, 'updateDataSharing').and.returnValue(of(true));
     const updateSharingPermissionsBannerSpy = spyOn(
       establishmentService,
@@ -51,6 +53,7 @@ describe('DataSharingComponent', () => {
       getAllByText,
       queryByText,
       getByTestId,
+      routerSpy,
       updateDataSharingSpy,
       updateSharingPermissionsBannerSpy,
     };
@@ -261,6 +264,18 @@ describe('DataSharingComponent', () => {
       expect(shareWithForm.localAuthorities).toBe(null);
       expect(shareWithForm.cqc).toBe(null);
     });
+  });
+
+  it('should have link to vacancies page on continue button', async () => {
+    const { fixture, getByText, routerSpy } = await setup();
+    fixture.componentInstance.return = null;
+    fixture.detectChanges();
+
+    const workplaceUid = fixture.componentInstance.establishment.uid;
+    const continueButton = getByText('Save and continue');
+    fireEvent.click(continueButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceUid, 'vacancies']);
   });
 
   describe('removing sharing permission banner function', () => {
