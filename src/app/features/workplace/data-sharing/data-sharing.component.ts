@@ -80,7 +80,7 @@ export class DataSharingComponent extends Question {
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
+    this.nextRoute = ['/workplace', this.establishment.uid, 'vacancies'];
   }
 
   protected removeSharingPermissionsBanner(completeFunction): void {
