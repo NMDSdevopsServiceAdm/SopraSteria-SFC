@@ -1,24 +1,23 @@
-import { getTestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WorkplaceService } from '@core/services/workplace.service';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { DatePickerComponent } from '@shared/components/date-picker/date-picker.component';
-import { SubmitButtonComponent } from '@shared/components/submit-button/submit-button.component';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { BackService } from '@core/services/back.service';
-import { QuestionComponent } from '../question/question.component';
 import { ErrorSummaryComponent } from '@shared/components/error-summary/error-summary.component';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-
+import { SubmitButtonComponent } from '@shared/components/submit-button/submit-button.component';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
+import { QuestionComponent } from '../question/question.component';
 import { MainJobStartDateComponent } from './main-job-start-date.component';
 
 describe('MainJobStartDateComponent', () => {
@@ -96,7 +95,7 @@ describe('MainJobStartDateComponent', () => {
     expect(getByLabelText('Year')).toBeTruthy();
 
     expect(getByText('Save and return')).toBeTruthy();
-    expect(getByText('Exit')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
   it('renders "Save and continue" if clicking through from staff-records section of dashhboard', async () => {
@@ -171,7 +170,7 @@ describe('MainJobStartDateComponent', () => {
   it('allows the user to exit the flow', async () => {
     const { getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup();
 
-    userEvent.click(getByText('Exit'));
+    userEvent.click(getByText('Cancel'));
     expect(submitSpy).toHaveBeenCalledOnceWith({ action: 'return', save: false });
     expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
     expect(workerServiceSpy).not.toHaveBeenCalled();

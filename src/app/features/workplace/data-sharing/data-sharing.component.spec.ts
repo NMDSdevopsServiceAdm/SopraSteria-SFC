@@ -291,13 +291,13 @@ describe('DataSharingComponent', () => {
       expect(updateSharingPermissionsBannerSpy).toHaveBeenCalled();
     });
 
-    it('should call updateSharingPermissionsBanner when the exit button is clicked', async () => {
+    it('should call updateSharingPermissionsBanner when the cancel button is clicked', async () => {
       const { component, fixture, getByText, updateSharingPermissionsBannerSpy } = await setup();
 
       component.establishment.showSharingPermissionsBanner = true;
       fixture.detectChanges();
 
-      const returnButton = getByText('Exit');
+      const returnButton = getByText('Cancel');
       fireEvent.click(returnButton);
 
       expect(updateSharingPermissionsBannerSpy).toHaveBeenCalled();
