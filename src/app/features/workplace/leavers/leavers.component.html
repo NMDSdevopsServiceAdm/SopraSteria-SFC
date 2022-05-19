@@ -10,27 +10,30 @@
   <fieldset class="govuk-fieldset">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">Staff who have left in the last 12 months</h1>
-          <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading govuk-!-margin-bottom-9">
+            Add your staff leavers from the last 12 months
+          </h1>
+          <p class="govuk-hint">These should only be leavers who are permanent or temporary staff.</p>
         </legend>
       </div>
     </div>
     <ng-container formArrayName="leavers">
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
-          <label for="jobRole-0" class="govuk-label">Job Role</label>
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <label for="total-0" class="govuk-label">Number of leavers</label>
-        </div>
-      </div>
       <div
         *ngFor="let leaver of leavers.controls; let i = index"
         [formGroupName]="i"
         [class.govuk-form-group--error]="submitted && leaver.invalid"
       >
         <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div>
+            <h2 class="govuk-grid-column-full govuk-heading-m">Job role {{ i + 1 }}</h2>
+          </div>
+          <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
+            <label for="jobRole-0" class="govuk-label">Job Role</label>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <label for="total-0" class="govuk-label">Number of leavers</label>
+          </div>
           <div class="govuk-grid-column-two-thirds">
             <span *ngIf="submitted" id="leaver-{{ i }}-error" class="govuk-error-message">
               <ng-container *ngIf="submitted && leaver.get('jobRole').invalid">
@@ -89,11 +92,11 @@
           type="button"
           (click)="addLeaver()"
         >
-          Add another leaver
+          Add another job role
         </button>
       </div>
       <div class="govuk-grid-column-one-third">
-        <p class="govuk-heading-m">Total: {{ totalLeavers }}</p>
+        <p class="govuk-heading-m">Total Leavers: {{ totalLeavers }}</p>
       </div>
     </div>
 
