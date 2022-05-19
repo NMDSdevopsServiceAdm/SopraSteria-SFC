@@ -39,7 +39,7 @@ export class DataSharingComponent extends Question {
       });
     }
 
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
   }
 
   protected setupServerErrorsMap(): void {
@@ -80,7 +80,7 @@ export class DataSharingComponent extends Question {
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'total-staff'];
+    this.nextRoute = ['/workplace', this.establishment.uid, 'vacancies'];
   }
 
   protected removeSharingPermissionsBanner(completeFunction): void {
