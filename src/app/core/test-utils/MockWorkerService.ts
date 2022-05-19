@@ -222,9 +222,9 @@ export const qualificationRecord = {
 
 @Injectable()
 export class MockWorkerService extends WorkerService {
-  private _worker;
+  public _worker;
 
-  public static factory(worker) {
+  public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
       const service = new MockWorkerService(httpClient);
       if (worker) {
@@ -281,5 +281,23 @@ export class MockWorkerService extends WorkerService {
 export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
   updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
     return of({ uid: '1' } as WorkerEditResponse);
+  }
+}
+
+@Injectable()
+export class MockWorkerServiceWithoutReturnUrl extends MockWorkerService {
+  public static factory(worker: Worker) {
+    return (httpClient: HttpClient) => {
+      const service = new MockWorkerServiceWithoutReturnUrl(httpClient);
+      if (worker) {
+        service.worker = worker;
+        service.worker$ = of(worker as Worker);
+      }
+      return service;
+    };
+  }
+
+  public get returnTo(): URLStructure {
+    return;
   }
 }

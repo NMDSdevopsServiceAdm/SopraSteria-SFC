@@ -5,12 +5,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -21,7 +23,7 @@ import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.componen
 import { TabComponent } from '@shared/components/tabs/tab.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 const MockWindow = {
@@ -69,6 +71,10 @@ describe('DashboardComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        {
+          provide: BenchmarksService,
+          useClass: MockBenchmarksService,
+        },
         { provide: WindowToken, useValue: MockWindow },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         { provide: WorkerService, useClass: MockWorkerService },
@@ -98,6 +104,9 @@ describe('DashboardComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
+    const benchmarksService = injector.inject(BenchmarksService) as BenchmarksService;
+    const benchmarkUsageSpy = spyOn(benchmarksService, 'postBenchmarkTabUsage').and.callThrough();
+
     const component = fixture.componentInstance;
     return {
       component,
@@ -108,6 +117,7 @@ describe('DashboardComponent', () => {
       establishmentService,
       router,
       alertSpy,
+      benchmarkUsageSpy,
     };
   }
 
@@ -238,6 +248,39 @@ describe('DashboardComponent', () => {
           type: 'success',
           message: `You've confirmed the details of the staff record you added`,
         });
+      });
+    });
+
+    describe('tabClickEvent', () => {
+      it('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
+        const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
+
+        component.canViewBenchmarks = true;
+        fixture.detectChanges();
+
+        const benchmarksTab = getByTestId('tab_benchmarks');
+
+        fireEvent.click(benchmarksTab);
+        expect(benchmarkUsageSpy).toHaveBeenCalled();
+      });
+
+      it('should not call postBenchmarkTabUsage when the other dashboard tabs are clicked', async () => {
+        const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
+
+        component.canViewBenchmarks = true;
+        fixture.detectChanges();
+
+        const homeTab = getByTestId('tab_home');
+        const workplaceTab = getByTestId('tab_workplace');
+        const staffRecordsTab = getByTestId('tab_staff-records');
+        const trainingAndQualificationsTab = getByTestId('tab_training-and-qualifications');
+
+        fireEvent.click(homeTab);
+        fireEvent.click(workplaceTab);
+        fireEvent.click(staffRecordsTab);
+        fireEvent.click(trainingAndQualificationsTab);
+
+        expect(benchmarkUsageSpy).not.toHaveBeenCalled();
       });
     });
   });
