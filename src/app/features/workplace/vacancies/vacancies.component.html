@@ -22,7 +22,7 @@
         [formGroupName]="i"
         [class.govuk-form-group--error]="submitted && vacancy.invalid"
       >
-        <div class="govuk-grid-row govuk-!-margin-bottom-6" data-testid="row-{{ i }}">
+        <div class="govuk-grid-row govuk-!-margin-bottom-6" [attr.data-testid]="'row-' + i">
           <div class="govuk-grid-column-full">
             <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
           </div>
