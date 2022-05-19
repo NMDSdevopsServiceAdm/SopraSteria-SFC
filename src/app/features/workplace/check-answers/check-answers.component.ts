@@ -1,6 +1,5 @@
-import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
@@ -18,10 +17,8 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private location: Location,
     private establishmentService: EstablishmentService,
     private router: Router,
-    protected route: ActivatedRoute,
     private alertService: AlertService,
   ) {}
 
@@ -39,16 +36,13 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public showConfirmWorkplaceDetailsAlert(): void {
+  public showConfirmWorkplaceDetailsAlert(event: Event): void {
+    event.preventDefault();
+
     this.router.navigate(['/dashboard'], { fragment: 'workplace' });
     this.alertService.addAlert({
       type: 'success',
       message: `You've confirmed the workplace details that you added`,
     });
-  }
-
-  goBack(event) {
-    event.preventDefault();
-    this.location.back();
   }
 }
