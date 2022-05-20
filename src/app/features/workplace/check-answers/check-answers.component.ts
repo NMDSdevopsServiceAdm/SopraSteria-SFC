@@ -1,7 +1,8 @@
-import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -15,7 +16,11 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
   public summaryReturnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private location: Location, private establishmentService: EstablishmentService) {}
+  constructor(
+    private establishmentService: EstablishmentService,
+    private router: Router,
+    private alertService: AlertService,
+  ) {}
 
   ngOnInit(): void {
     this.subscriptions.add(
@@ -29,5 +34,13 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public showConfirmWorkplaceDetailsAlert(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+    this.alertService.addAlert({
+      type: 'success',
+      message: `You've confirmed the workplace details that you added`,
+    });
   }
 }
