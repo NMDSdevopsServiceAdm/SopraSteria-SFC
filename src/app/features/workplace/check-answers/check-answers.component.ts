@@ -36,9 +36,7 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public showConfirmWorkplaceDetailsAlert(event: Event): void {
-    event.preventDefault();
-
+  public showConfirmWorkplaceDetailsAlert(): void {
     this.router.navigate(['/dashboard'], { fragment: 'workplace' });
     this.alertService.addAlert({
       type: 'success',
