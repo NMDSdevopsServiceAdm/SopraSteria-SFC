@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
@@ -12,6 +13,7 @@ import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -24,14 +26,14 @@ import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-
 import { TabComponent } from '@shared/components/tabs/tab.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { ViewMyWorkplacesComponent } from '../view-my-workplaces/view-my-workplaces.component';
 
 describe('view-workplace', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
-    const component = await render(ViewWorkplaceComponent, {
+    const { fixture, getByTestId, getByText, queryByTestId, queryByText } = await render(ViewWorkplaceComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -72,6 +74,10 @@ describe('view-workplace', () => {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
+        {
+          provide: BenchmarksService,
+          useClass: MockBenchmarksService,
+        },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         { provide: WorkerService, useClass: MockWorkerService },
         {
@@ -88,12 +94,23 @@ describe('view-workplace', () => {
       ],
     });
 
+    const component = fixture.componentInstance;
+
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
 
+    const benchmarksService = injector.inject(BenchmarksService) as BenchmarksService;
+    const benchmarkUsageSpy = spyOn(benchmarksService, 'postBenchmarkTabUsage').and.callThrough();
+
     return {
+      getByTestId,
+      queryByTestId,
+      queryByText,
+      getByText,
+      benchmarkUsageSpy,
       component,
+      fixture,
       establishmentService,
       router,
     };
@@ -106,83 +123,82 @@ describe('view-workplace', () => {
 
   describe('Tabs', () => {
     it('should display the Benchmarks tab when the workplace has canViewBenchmarks permissions', async () => {
-      const { component } = await setup(true);
+      const { component, fixture, getByTestId } = await setup(true);
 
       const establishment = {
-        ...component.fixture.componentInstance.workplace,
+        ...component.workplace,
       };
-      component.fixture.componentInstance.canViewBenchmarks = true;
-      component.fixture.componentInstance.workplace = establishment;
-      component.fixture.detectChanges();
+      component.canViewBenchmarks = true;
+      component.workplace = establishment;
+      fixture.detectChanges();
 
-      expect(component.getByTestId('tab_benchmarks')).toBeTruthy();
+      expect(getByTestId('tab_benchmarks')).toBeTruthy();
     });
     it('should not display the Benchmarks tab when the workplace doesnt have canViewBenchmarks permissions', async () => {
-      const { component } = await setup(true);
+      const { component, fixture, queryByTestId } = await setup(true);
 
       const establishment = {
-        ...component.fixture.componentInstance.workplace,
+        ...component.workplace,
       };
-      component.fixture.componentInstance.canViewBenchmarks = false;
-      component.fixture.componentInstance.workplace = establishment;
-      component.fixture.detectChanges();
+      component.canViewBenchmarks = false;
+      component.workplace = establishment;
+      fixture.detectChanges();
 
-      expect(component.queryByTestId('tab_benchmarks')).toBeNull();
+      expect(queryByTestId('tab_benchmarks')).toBeNull();
     });
     it('should display the Users tab', async () => {
-      const { component } = await setup(true);
+      const { component, fixture, getByText } = await setup(true);
 
       const establishment = {
-        ...component.fixture.componentInstance.workplace,
+        ...component.workplace,
       };
       establishment.isRegulated = false;
-      component.fixture.componentInstance.workplace = establishment;
-      component.fixture.detectChanges();
+      component.workplace = establishment;
+      fixture.detectChanges();
 
-      expect(component.getByText('Users')).toBeTruthy();
+      expect(getByText('Users')).toBeTruthy();
     });
 
     it('should display a flag on the workplace tab when the sharing permisson banner is true', async () => {
-      const { component } = await setup();
+      const { component, fixture, getByTestId } = await setup();
 
-      component.fixture.componentInstance.showSharingPermissionsBanner = true;
-      component.fixture.detectChanges();
+      component.showSharingPermissionsBanner = true;
+      fixture.detectChanges();
 
-      expect(component.getByTestId('red-flag')).toBeTruthy();
+      expect(getByTestId('red-flag')).toBeTruthy();
     });
   });
 
   describe('Archive Workplace', () => {
     it('should display a Delete Workplace link if user is an admin', async () => {
-      const { component } = await setup(true);
+      const { getByText } = await setup(true);
 
-      component.getByText('Delete Workplace');
+      expect(getByText('Delete Workplace')).toBeTruthy();
     });
 
     it('should not display a Delete Workplace link if user not an admin', async () => {
-      const { component } = await setup(false);
+      const { queryByText } = await setup(false);
 
-      expect(component.queryByText('Delete Workplace')).toBeNull();
+      expect(queryByText('Delete Workplace')).toBeNull();
     });
 
     it('should display a modal when the user clicks on Delete Workplace', async () => {
-      const { component } = await setup(true);
+      const { getByText } = await setup(true);
 
-      const deleteWorkplace = component.getByText('Delete Workplace');
+      const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
 
       const dialog = await within(document.body).findByRole('dialog');
 
-      const cancel = within(dialog).getByText('Cancel');
-      cancel.click();
+      expect(within(dialog).getByText('Delete workplace')).toBeTruthy();
     });
 
     it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
-      const { component, establishmentService } = await setup(true);
+      const { component, establishmentService, getByText } = await setup(true);
 
       const spy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
 
-      const deleteWorkplace = component.getByText('Delete Workplace');
+      const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
 
       const dialog = await within(document.body).findByRole('dialog');
@@ -193,13 +209,13 @@ describe('view-workplace', () => {
     });
 
     it('should redirect the user after deleting a workplace', async () => {
-      const { component, establishmentService, router } = await setup(true);
+      const { establishmentService, router, getByText } = await setup(true);
 
       spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
       const spy = spyOn(router, 'navigate');
       spy.and.returnValue(Promise.resolve(true));
 
-      const deleteWorkplace = component.getByText('Delete Workplace');
+      const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
 
       const dialog = await within(document.body).findByRole('dialog');
@@ -207,6 +223,37 @@ describe('view-workplace', () => {
       confirm.click();
 
       expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('tabClickEvent', () => {
+    it('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
+      const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
+
+      component.canViewBenchmarks = true;
+      fixture.detectChanges();
+
+      const benchmarksTab = getByTestId('tab_benchmarks');
+
+      fireEvent.click(benchmarksTab);
+      expect(benchmarkUsageSpy).toHaveBeenCalled();
+    });
+
+    it('should not call postBenchmarkTabUsage when the other dashboard tabs are clicked', async () => {
+      const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
+
+      component.canViewBenchmarks = true;
+      fixture.detectChanges();
+
+      const workplaceTab = getByTestId('tab_workplace');
+      const staffRecordsTab = getByTestId('tab_staff-records');
+      const trainingAndQualificationsTab = getByTestId('tab_training-and-qualifications');
+
+      fireEvent.click(workplaceTab);
+      fireEvent.click(staffRecordsTab);
+      fireEvent.click(trainingAndQualificationsTab);
+
+      expect(benchmarkUsageSpy).not.toHaveBeenCalled();
     });
   });
 });
