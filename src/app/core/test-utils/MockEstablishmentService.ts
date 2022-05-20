@@ -137,6 +137,12 @@ export class MockEstablishmentService extends EstablishmentService {
 }
 
 @Injectable()
+export class MockEstablishmentServiceWithoutReturn extends MockEstablishmentService {
+  public get returnTo(): URLStructure {
+    return;
+  }
+}
+@Injectable()
 export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmentService {
   public get establishment(): Establishment {
     return {
