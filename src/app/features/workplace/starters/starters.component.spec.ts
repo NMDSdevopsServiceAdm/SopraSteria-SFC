@@ -4,21 +4,24 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentServiceWithNoEmployerType } from '@core/test-utils/MockEstablishmentService';
+import {
+  MockEstablishmentService,
+  MockEstablishmentServiceWithoutReturn,
+} from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { StartersComponent } from './starters.component';
 
 describe('StartersComponent', () => {
-  async function setup() {
+  async function setup(returnUrl = true) {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(StartersComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentServiceWithNoEmployerType,
+          useClass: returnUrl ? MockEstablishmentService : MockEstablishmentServiceWithoutReturn,
         },
       ],
     });
@@ -42,9 +45,26 @@ describe('StartersComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the save and continue button when there is not a return value', async () => {
-    const { getByText } = await setup();
+  it('should display no starters and do not know radio buttons', async () => {
+    const { getByLabelText } = await setup();
 
-    expect(getByText('Save and continue')).toBeTruthy();
+    expect(getByLabelText('There have been no new starters in the last 12 months')).toBeTruthy();
+    expect(getByLabelText('I do not know how many new starters there have been')).toBeTruthy();
+  });
+
+  describe('Submit buttons', () => {
+    it('should display Save and continue button and View workplace details link when returnTo not set in establishmentService', async () => {
+      const { getByText } = await setup(false);
+
+      expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('View workplace details')).toBeTruthy();
+    });
+
+    it('should display Save and return button and Cancel link when returnTo set in establishmentService', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
   });
 });

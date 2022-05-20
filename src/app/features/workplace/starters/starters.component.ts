@@ -19,11 +19,11 @@ export class StartersComponent extends Question {
   public jobs: Job[] = [];
   public startersKnownOptions = [
     {
-      label: 'There have been no new starters.',
+      label: 'There have been no new starters in the last 12 months',
       value: jobOptionsEnum.NONE,
     },
     {
-      label: `I don't know how many new starters there have been.`,
+      label: 'I do not know how many new starters there have been',
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
