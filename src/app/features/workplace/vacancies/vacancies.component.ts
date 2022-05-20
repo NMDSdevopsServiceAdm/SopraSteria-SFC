@@ -28,7 +28,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
-  private minVacancies = 0;
+  private minVacancies = 1;
   private maxVacancies = 999;
 
   constructor(
@@ -45,17 +45,17 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   get vacanciesArray(): FormArray {
-    console.log('*** vacancies array ***');
+    // console.log('*** vacancies array ***');
     return this.form.get('vacancies') as FormArray;
   }
 
   get allJobsSelected(): boolean {
-    console.log('*** all jobs selected ***');
+    // console.log('*** all jobs selected ***');
     return this.vacanciesArray.length >= this.jobs.length;
   }
 
   get totalVacancies(): number {
-    console.log('*** total vacancies ***');
+    // console.log('*** total vacancies ***');
     return this.vacanciesArray.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
   }
 
