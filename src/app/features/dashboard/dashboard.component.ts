@@ -25,7 +25,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public canViewListOfWorkers: boolean;
   public totalStaffRecords: number;
   public workplace: Establishment;
-  public establishmentId: string;
   public trainingAlert: number;
   public canViewBenchmarks: boolean;
   public workplaceUid: string | null;
@@ -56,7 +55,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.authService.isOnAdminScreen = false;
     this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.establishmentId = this.establishmentService.establishmentId;
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
 
@@ -143,7 +141,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public tabClickEvent($event) {
     if ($event.tabSlug === 'benchmarks') {
-      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.establishmentId).subscribe());
+      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplace.id).subscribe());
     }
   }
 
