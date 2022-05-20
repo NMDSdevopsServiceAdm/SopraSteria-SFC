@@ -28,7 +28,7 @@
           </div>
           <div class="govuk-grid-column-two-thirds">
             <label for="jobRole-{{ i }}" class="govuk-label">Job role</label>
-            <span *ngIf="submitted" id="vacancy-{{ i }}-error" class="govuk-error-message">
+            <span *ngIf="submitted" id="vacancies-jobRole-error" class="govuk-error-message">
               <ng-container *ngIf="submitted && vacancy.get('jobRole').invalid">
                 {{ getFormErrorMessage('vacancies.jobRole', 'required') }}
               </ng-container>
@@ -49,7 +49,7 @@
 
           <div class="govuk-grid-column-one-third">
             <label for="total-{{ i }}" class="govuk-label">Number of vacancies</label>
-            <span *ngIf="submitted" id="vacancy-total-{{ i }}-error" class="govuk-error-message">
+            <span *ngIf="submitted" id="vacancies-total-error" class="govuk-error-message">
               <ng-container *ngIf="submitted && vacancy.get('total').invalid">
                 <span *ngIf="vacancy.get('total').errors.required">
                   {{ getFormErrorMessage('vacancies.total', 'required') }}</span
