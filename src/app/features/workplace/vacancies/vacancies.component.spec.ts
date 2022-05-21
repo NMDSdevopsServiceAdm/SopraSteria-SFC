@@ -17,7 +17,7 @@ import { VacanciesComponent } from './vacancies.component';
 
 fdescribe('VacanciesComponent', () => {
   async function setup(returnUrl = true) {
-    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByText } = await render(
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByText, queryAllByText } = await render(
       VacanciesComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -47,6 +47,7 @@ fdescribe('VacanciesComponent', () => {
       getByLabelText,
       getByTestId,
       queryByText,
+      queryAllByText,
     };
   }
 
@@ -109,6 +110,88 @@ fdescribe('VacanciesComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+  });
+
+  describe('errors', () => {
+    xit('should show an error if the job role and number of vacancies are not filled in, and neither radio button has been selected', async () => {
+      const { fixture, getByText, getAllByText } = await setup();
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      const errorMessages = getAllByText(
+        'Select the job role and enter the number of vacancies, or tell us there are none',
+      );
+      expect(errorMessages.length).toEqual(2);
+    });
+
+    it('should show an error if the job role is not filled in but the number of vacanies is, and neither radio button has been selected', async () => {
+      const { component, fixture, getByText, getAllByText, queryAllByText } = await setup();
+
+      component.form.get('vacancies').setValue([{ jobRole: null, total: 1 }]);
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      const errorMessages = getAllByText('Select the job role');
+      expect(errorMessages.length).toEqual(2);
+      expect(queryAllByText('Enter the number of vacancies').length).toEqual(0);
+    });
+
+    it('should show an error if the number of vacancies is not filled in but the job role is, and neither radio button has been selected', async () => {
+      const { component, fixture, getByText, getAllByText, queryAllByText } = await setup();
+
+      component.form.get('vacancies').setValue([{ jobRole: 'Job0', total: null }]);
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      const errorMessages = getAllByText('Enter the number of vacancies');
+      expect(errorMessages.length).toEqual(2);
+      expect(queryAllByText('Select the job role').length).toEqual(0);
+    });
+
+    it('should show an error if the job role and number of vacancies is filled in but the vacancies is 0', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+
+      component.form.get('vacancies').setValue([{ jobRole: 'Job0', total: 0 }]);
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      const errorMessages = getAllByText('Enter the number of vacancies as a digit larger than 0');
+      expect(errorMessages.length).toEqual(2);
+    });
+
+    it('should show an error if the job role and number of vacancies is filled in but the vacancies is negative', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+
+      component.form.get('vacancies').setValue([{ jobRole: 'Job0', total: -1 }]);
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      const errorMessages = getAllByText('Enter the number of vacancies as a digit larger than 0');
+      expect(errorMessages.length).toEqual(2);
+    });
+
+    it('should show an error if the job role and number of vacancies is filled in but the vacancies is greater than the max allowed number', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+
+      component.form.get('vacancies').setValue([{ jobRole: 'Job0', total: 1000 }]);
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      const errorMessages = getAllByText('Enter the number of vacancies as a digit lower than 1000');
+      expect(errorMessages.length).toEqual(2);
     });
   });
 });

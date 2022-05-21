@@ -90,10 +90,14 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group({
-      vacancies: this.formBuilder.array([]),
-      vacanciesKnown: null,
-    });
+    this.form = this.formBuilder.group(
+      {
+        vacancies: this.formBuilder.array([]),
+        vacanciesKnown: null,
+      },
+      { onUpdate: 'submit' },
+    );
+    console.log(this.form);
   }
 
   private getJobs(): void {
@@ -129,7 +133,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Job role is required.',
+            message: 'Select the job role',
           },
         ],
       },
@@ -138,15 +142,15 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Enter number of vacancies.',
+            message: 'Enter the number of vacancies',
           },
           {
             name: 'min',
-            message: `Vacancies must be ${this.minVacancies} or above`,
+            message: `Enter the number of vacancies as a digit larger than ${this.minVacancies - 1}`,
           },
           {
             name: 'max',
-            message: `Vacancies must be ${this.maxVacancies} or lower`,
+            message: `Enter the number of vacancies as a digit lower than ${this.maxVacancies + 1}`,
           },
         ],
       },
@@ -164,6 +168,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   public addVacancy(): void {
+    console.log('**** add Vacancy ****');
+    this.submitted = false;
     this.vacanciesArray.push(this.createVacancyControl());
   }
 
@@ -173,10 +179,13 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private createVacancyControl(jobId = null, total = null): FormGroup {
-    return this.formBuilder.group({
-      jobRole: [jobId, [Validators.required]],
-      total: [total, [Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
-    });
+    return this.formBuilder.group(
+      {
+        jobRole: [jobId, [Validators.required]],
+        total: [total, [Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -208,12 +217,13 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected onSuccess(): void {
-    if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies) && !this.return) {
-      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
-      this.submitAction.action = null;
-    } else {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
-    }
+    // if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies) && !this.return) {
+    //   this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
+    //   this.submitAction.action = null;
+    // } else {
+    //   this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
+    // }
+    console.log('On success');
   }
 
   public getFormErrorMessage(item: string, errorType: string): string {
