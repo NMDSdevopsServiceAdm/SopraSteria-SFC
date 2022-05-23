@@ -22,7 +22,7 @@ const cqcStatusCheck = async (req, res) => {
   } catch (error) {
     console.error('CQC API Error: ', error);
     // If the CQC API responds with a 404, we treat that as an unregistered workplace
-    if (error.response.status === 404) {
+    if (error.response && error.response.status === 404) {
       result.cqcStatusMatch = false;
     } else {
       result.cqcStatusMatch = true;
