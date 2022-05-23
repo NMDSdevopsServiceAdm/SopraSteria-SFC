@@ -33,10 +33,7 @@
       ></app-summary-record-change>
     </dd>
   </div>
-  <div
-    class="govuk-summary-list__row"
-    *ngIf="workplace?.isRegulated && workplace?.mainService?.name != 'Head office services'"
-  >
+  <div class="govuk-summary-list__row" *ngIf="workplace?.isRegulated">
     <dt class="govuk-summary-list__key">CQC location ID</dt>
     <dd class="govuk-summary-list__value">
       {{ workplace.locationId }}

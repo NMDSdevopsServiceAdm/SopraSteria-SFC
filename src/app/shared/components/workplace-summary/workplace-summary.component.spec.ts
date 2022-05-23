@@ -200,31 +200,11 @@ describe('WorkplaceSummaryComponent', async () => {
       expect(queryByText('CQC location ID')).toBeFalsy();
     });
 
-    it('should not show CQC location ID when workplace is CQC regulated but has Head office services as main service', async () => {
+    it('should show CQC location ID when workplace is CQC regulated', async () => {
       const { component, fixture, queryByText } = await setup();
 
       component.canEditEstablishment = true;
       component.workplace.isRegulated = true;
-      component.workplace.mainService = {
-        id: 16,
-        name: 'Head office services',
-      };
-
-      fixture.detectChanges();
-
-      expect(queryByText('CQC location ID')).toBeFalsy();
-    });
-
-    it('should show CQC location ID when workplace is CQC regulated and does not have Head office services as main service', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.canEditEstablishment = true;
-      component.workplace.isRegulated = true;
-      component.workplace.mainService = {
-        id: 12,
-        name: 'Shared lives',
-      };
-
       fixture.detectChanges();
 
       expect(queryByText('CQC location ID')).toBeTruthy();
