@@ -20,9 +20,8 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public jobsAvailable: Job[] = [];
   public showInputTextforOtherRole: boolean;
   public submitTitle = 'Save staff record';
-  public canExit = true;
   public canReturn = false;
-  public exitText = 'Cancel';
+  public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
 
@@ -69,7 +68,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         : ['/workplace', this.workplace.uid];
   }
 
-  renderInEditMode() {
+  renderInEditMode(): void {
     this.form.patchValue({
       nameOrId: this.worker.nameOrId,
       mainJob: this.worker.mainJob.jobId,
@@ -86,7 +85,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
 
     this.canReturn = true;
-    this.submitTitle = 'Save staff record';
   }
 
   public setupFormErrorsMap(): void {
