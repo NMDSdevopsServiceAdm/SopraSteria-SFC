@@ -34,7 +34,7 @@ describe('SubmitButtonComponent', () => {
     const { getByText } = await setup();
 
     expect(getByText('Save and continue')).toBeTruthy();
-    expect(getByText('View record summary')).toBeTruthy();
+    expect(getByText('View workplace details')).toBeTruthy();
     expect(getByText('Exit')).toBeTruthy();
   });
 
@@ -65,7 +65,7 @@ describe('SubmitButtonComponent', () => {
     const spy = spyOn(fixture.componentInstance.clicked, 'emit');
     expect(spy).not.toHaveBeenCalled();
 
-    fireEvent.click(getByText('View record summary'));
+    fireEvent.click(getByText('View workplace details'));
     expect(spy).toHaveBeenCalledWith({ action: 'summary', save: false });
   });
 
