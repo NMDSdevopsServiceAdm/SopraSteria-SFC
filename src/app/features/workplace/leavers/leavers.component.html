@@ -66,7 +66,7 @@
               </ng-container>
             </span>
             <input
-              class="govuk-input govuk-!-width-one-third govuk-!-margin-right-9"
+              class="govuk-input govuk-!-width-one-quarter govuk-!-margin-right-5"
               [class.govuk-input--error]="submitted && leaver.get('total').invalid"
               [formControlName]="'total'"
               id="total-{{ i }}"
@@ -76,7 +76,7 @@
             <a
               *ngIf="leavers.length > 1"
               href="#"
-              class="govuk-list govuk-list--inline govuk-!-width-one-third govuk-!-margin-left-6"
+              class="govuk-list govuk-list--inline govuk-!-width-one-third"
               (click)="removeLeaver($event, i)"
               >Remove</a
             >
