@@ -189,6 +189,48 @@ describe('WorkplaceSummaryComponent', async () => {
     });
   });
 
+  describe('CQC location ID', async () => {
+    it('should not show CQC location ID when workplace is not CQC regulated', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.canEditEstablishment = true;
+      component.workplace.isRegulated = false;
+      fixture.detectChanges();
+
+      expect(queryByText('CQC location ID')).toBeFalsy();
+    });
+
+    it('should not show CQC location ID when workplace is CQC regulated but has Head office services as main service', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.canEditEstablishment = true;
+      component.workplace.isRegulated = true;
+      component.workplace.mainService = {
+        id: 16,
+        name: 'Head office services',
+      };
+
+      fixture.detectChanges();
+
+      expect(queryByText('CQC location ID')).toBeFalsy();
+    });
+
+    it('should show CQC location ID when workplace is CQC regulated and does not have Head office services as main service', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.canEditEstablishment = true;
+      component.workplace.isRegulated = true;
+      component.workplace.mainService = {
+        id: 12,
+        name: 'Shared lives',
+      };
+
+      fixture.detectChanges();
+
+      expect(queryByText('CQC location ID')).toBeTruthy();
+    });
+  });
+
   describe('Staff records banner', async () => {
     it('should show banner if you have more staff records', async () => {
       const { component, fixture } = await setup();
