@@ -270,13 +270,15 @@ describe('server/routes/establishments/cqcStatus', async () => {
     });
 
     describe('checkMainServiceMatch()', async () => {
-      it('should return true if no main service mapping found when converting main service to CQC', async () => {
+      // For case when provider with Head office services as
+      // main service (which should not have location ID) mistakenly adds a location ID
+      it('should return false if no main service mapping found when converting main service to CQC', async () => {
         const location = { locationID: '1-4413548038', mainService: 'Head office services' };
         const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(location.locationID);
 
         const mainServiceCheck = checkMainServiceMatch(location.mainService, workplaceCQCData.gacServiceTypes);
 
-        expect(mainServiceCheck).to.equal(true);
+        expect(mainServiceCheck).to.equal(false);
       });
 
       it('should return true if null passed in as main service', async () => {
