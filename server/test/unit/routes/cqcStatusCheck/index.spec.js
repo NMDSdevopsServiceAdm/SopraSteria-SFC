@@ -257,7 +257,7 @@ describe('server/routes/establishments/cqcStatus', async () => {
   });
 
   // This is a little odd but since we are relying on a third party, it's useful to check that
-  // the name's don't change, otherwise the mapping function is redundent.
+  // the names don't change, otherwise the mapping function is redundant.
   describe('mainService check', async () => {
     locationIDs.forEach(async (location) => {
       it(`should find ${location.locationID} and match main service`, async () => {
@@ -265,7 +265,30 @@ describe('server/routes/establishments/cqcStatus', async () => {
 
         const mainServiceCheck = checkMainServiceMatch(location.mainService, workplaceCQCData.gacServiceTypes);
 
-        expect(mainServiceCheck).to.deep.equal(true);
+        expect(mainServiceCheck).to.equal(true);
+      });
+    });
+
+    describe('checkMainServiceMatch()', async () => {
+      it('should return true if no main service mapping found when converting main service to CQC', async () => {
+        const location = { locationID: '1-4413548038', mainService: 'Head office services' };
+        const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(location.locationID);
+
+        const mainServiceCheck = checkMainServiceMatch(location.mainService, workplaceCQCData.gacServiceTypes);
+
+        expect(mainServiceCheck).to.equal(true);
+      });
+
+      it('should return true if null passed in as main service', async () => {
+        const mainServiceCheck = checkMainServiceMatch(null, []);
+
+        expect(mainServiceCheck).to.equal(true);
+      });
+
+      it('should return true if null passed in as cqcServices', async () => {
+        const mainServiceCheck = checkMainServiceMatch(locationIDs[0].mainService, null);
+
+        expect(mainServiceCheck).to.equal(true);
       });
     });
   });

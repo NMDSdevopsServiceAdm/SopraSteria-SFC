@@ -50,6 +50,7 @@ function checkMainServiceMatch(mainService, cqcServices) {
   if (!mainService || !cqcServices) return true;
 
   const cqcMainService = convertMainServiceToCQC(mainService);
+  if (!cqcMainService) return true;
 
   return cqcServices.some((service) => cqcMainService.cqc.includes(service.name));
 }
