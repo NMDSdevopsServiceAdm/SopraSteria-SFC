@@ -254,6 +254,60 @@ describe('server/routes/establishments/cqcStatus', async () => {
 
       expect(res._getData()).to.deep.equal(expectedResult);
     });
+
+    it('should return a false flag if a 404 error is thrown in getWorkplaceCQCData', async () => {
+      const request = {
+        method: 'GET',
+        url: `/api/cqcStatusCheck/${registeredLocationId}`,
+        params: {
+          locationID: registeredLocationId,
+        },
+        query: {
+          postcode: 'WA5 6BL',
+        },
+      };
+
+      sinon.restore();
+      sinon.stub(CQCDataAPI, 'getWorkplaceCQCData').throws({ response: { status: 404 } });
+
+      const expectedResult = {
+        cqcStatusMatch: false,
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await cqcStatusCheck(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+    });
+
+    it('should return a true flag if an unexpected error is thrown', async () => {
+      const request = {
+        method: 'GET',
+        url: `/api/cqcStatusCheck/${registeredLocationId}`,
+        params: {
+          locationID: registeredLocationId,
+        },
+        query: {
+          postcode: 'WA5 6BL',
+        },
+      };
+
+      sinon.restore();
+      sinon.stub(CQCDataAPI, 'getWorkplaceCQCData').throws();
+
+      const expectedResult = {
+        cqcStatusMatch: true,
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await cqcStatusCheck(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+    });
   });
 
   // This is a little odd but since we are relying on a third party, it's useful to check that
