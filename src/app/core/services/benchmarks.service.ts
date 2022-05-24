@@ -20,7 +20,7 @@ export class BenchmarksService {
     this.returnToURL = returnTo;
   }
 
-  postBenchmarkTabUsage(establishmentId: string) {
+  postBenchmarkTabUsage(establishmentId: number) {
     return this.http.post<any>(`/api/establishment/${establishmentId}/benchmarks/usage`, null);
   }
 

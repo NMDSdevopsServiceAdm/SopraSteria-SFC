@@ -6,6 +6,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -41,6 +42,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private dialogService: DialogService,
     private establishmentService: EstablishmentService,
+    private benchmarksService: BenchmarksService,
     private permissionsService: PermissionsService,
     private router: Router,
     private userService: UserService,
@@ -53,7 +55,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     this.workplace = this.establishmentService.establishment;
-
     this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
@@ -167,6 +168,12 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       }
     } else {
       return 0;
+    }
+  }
+
+  public tabClickEvent($event) {
+    if ($event.tabSlug === 'benchmarks') {
+      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplace.id).subscribe());
     }
   }
 

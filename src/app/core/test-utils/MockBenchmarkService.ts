@@ -107,7 +107,7 @@ export class MockBenchmarksService extends BenchmarksService {
     return of(allRankingsData);
   }
 
-  public postBenchmarkTabUsage(establishmentUid: string) {
+  public postBenchmarkTabUsage(establishmentUid: number) {
     return of(null);
   }
 }
