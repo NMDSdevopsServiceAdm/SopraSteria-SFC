@@ -11,11 +11,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading govuk-!-margin-bottom-8">
-            Add your staff leavers from the last 12 months
-          </h1>
-          <p>These should only be leavers who were permanent or temporary staff.</p>
+          <h1 class="govuk-fieldset__heading">Add your staff leavers from the last 12 months</h1>
         </legend>
+        <p class="govuk-!-margin-top-8 govuk-!-margin-bottom-6">
+          These should only be leavers who were permanent or temporary staff.
+        </p>
       </div>
     </div>
     <ng-container formArrayName="leavers">
@@ -25,8 +25,8 @@
         [class.govuk-form-group--error]="submitted && leaver.invalid"
       >
         <div class="govuk-grid-row govuk-!-margin-bottom-6">
-          <div>
-            <h2 class="govuk-grid-column-full govuk-heading-s">Job role {{ i + 1 }}</h2>
+          <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
           </div>
           <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
             <label for="jobRole-0" class="govuk-label">Job role</label>

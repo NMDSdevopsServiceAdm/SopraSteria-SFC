@@ -24,13 +24,11 @@
         [formGroupName]="i"
         [class.govuk-form-group--error]="submitted && record.invalid"
       >
-        <div class="govuk-grid-row govuk-!-margin-bottom-3" [attr.data-testid]="'row-' + i">
+        <div class="govuk-grid-row govuk-!-margin-bottom-6" [attr.data-testid]="'row-' + i">
           <div class="govuk-grid-column-full">
             <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
           </div>
-        </div>
-        <div class="govuk-grid-row govuk-!-margin-bottom-6">
-          <div class="govuk-grid-column-two-thirds">
+          <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
             <label for="jobRole-{{ i }}" class="govuk-label">Job role</label>
             <span *ngIf="submitted" id="record-{{ i }}-error" class="govuk-error-message">
               <ng-container *ngIf="submitted && record.get('jobId').invalid">
@@ -66,7 +64,7 @@
               </ng-container>
             </span>
             <input
-              class="govuk-input govuk-!-width-one-half"
+              class="govuk-input govuk-!-width-one-quarter govuk-!-margin-right-5"
               [class.govuk-input--error]="submitted && record.get('total').invalid"
               [formControlName]="'total'"
               id="total-{{ i }}"
@@ -76,13 +74,13 @@
             <a
               *ngIf="starterRecords.length > 1"
               href="#"
-              class="govuk-list govuk-list--inline govuk-!-margin-left-3"
+              class="govuk-list govuk-list--inline govuk-!-width-one-third"
               (click)="removeRecord($event, i)"
               >Remove</a
             >
           </div>
         </div>
-        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-5" />
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-7" />
       </div>
     </ng-container>
     <div class="govuk-grid-row">
