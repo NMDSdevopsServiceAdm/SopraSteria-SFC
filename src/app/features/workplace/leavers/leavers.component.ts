@@ -20,11 +20,11 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   public jobs: Job[] = [];
   public leaversKnownOptions = [
     {
-      label: 'There have been no new leavers in the last 12 months',
+      label: 'There have been no leavers in the last 12 months',
       value: jobOptionsEnum.NONE,
     },
     {
-      label: `I do not know how many new leavers there have been`,
+      label: `I do not know how many leavers there have been`,
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
