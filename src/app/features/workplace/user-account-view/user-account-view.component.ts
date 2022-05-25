@@ -67,7 +67,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
-        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid] };
+        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid, 'users'] };
       }),
     );
   }

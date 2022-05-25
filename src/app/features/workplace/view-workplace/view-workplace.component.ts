@@ -88,7 +88,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     };
 
     this.userService.updateReturnUrl({
-      url: ['/workplace', this.workplace.uid],
+      url: ['/workplace', this.workplace.uid, 'users'],
     });
   }
 
