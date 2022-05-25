@@ -36,7 +36,7 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
     this.setBackLink();
     this.subscriptions.add(
       this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
-        this.return = returnUrl ? returnUrl : { url: ['/dashboard'] };
+        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid, 'users'] };
       }),
     );
   }
@@ -49,7 +49,7 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
         () => {
-          this.router.navigate(this.return.url, { fragment: 'users' });
+          this.router.navigate(this.return.url);
           this.successAlert();
         },
         () => {

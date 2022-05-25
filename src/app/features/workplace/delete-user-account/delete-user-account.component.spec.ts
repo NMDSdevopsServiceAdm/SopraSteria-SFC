@@ -93,7 +93,7 @@ describe('DeleteUserAccountComponent', () => {
     fireEvent.click(deleteButton);
     component.fixture.detectChanges();
 
-    expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'users' });
+    expect(spy).toHaveBeenCalledWith(['/workplace', '12345asdfg', 'users']);
   });
 
   it('should have a success alert when delete is successful', async () => {
