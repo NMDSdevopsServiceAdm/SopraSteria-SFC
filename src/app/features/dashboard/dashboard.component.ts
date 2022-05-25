@@ -75,7 +75,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     this.showBanner && this.showStaffRecordBanner();
-    this.setUserServiceReturnUrl();
     this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
   }
 
@@ -102,13 +101,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private setShowSecondUserBanner(): void {
     const users = this.route.snapshot.data.users ? this.route.snapshot.data.users : [];
     this.showSecondUserBanner = this.canAddUser && users.length === 1;
-  }
-
-  private setUserServiceReturnUrl(): void {
-    this.userService.updateReturnUrl({
-      url: ['/dashboard'],
-      fragment: 'users',
-    });
   }
 
   private setCheckCQCDetailsBannerInEstablishmentService(): void {

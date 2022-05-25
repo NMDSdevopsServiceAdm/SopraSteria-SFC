@@ -184,14 +184,6 @@ describe('DashboardComponent', () => {
       expect(getByTestId('red-flag')).toBeTruthy();
     });
 
-    describe('Users tab warning', () => {
-      it('should not display an orange flag on the Users tab when more than one user', async () => {
-        const { queryByTestId } = await setup(false);
-
-        expect(queryByTestId('orange-flag')).toBeFalsy();
-      });
-    });
-
     describe('Staff records tab warning', () => {
       it('should not display an orange flag on the Staff records tab when not 0 staff records', async () => {
         const totalStaffRecords = 3;
