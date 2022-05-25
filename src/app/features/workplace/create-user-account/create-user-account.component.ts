@@ -112,8 +112,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
 
   get returnTo(): URLStructure {
     return {
-      url: ['/dashboard'],
-      fragment: 'users',
+      url: ['/workplace', this.workplace.uid, 'users'],
     };
   }
 
