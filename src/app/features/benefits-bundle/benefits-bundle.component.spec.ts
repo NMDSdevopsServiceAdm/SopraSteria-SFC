@@ -193,7 +193,7 @@ describe('BenefitsBundleComponent', () => {
     });
   });
 
-  fdescribe('Links', () => {
+  describe('Links', () => {
     it('should display the SfC bookshop link in the bookshop content', async () => {
       const { getByText } = await setup();
 
