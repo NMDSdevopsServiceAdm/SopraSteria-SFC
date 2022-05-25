@@ -9,7 +9,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkerService } from '../../../core/services/worker.service';
-import { MockWorkerService } from '../../../core/test-utils/MockWorkerService';
+import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '../../../core/test-utils/MockWorkerService';
 import { FluJabComponent } from './flu-jab.component';
 
 const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
@@ -31,7 +31,7 @@ const workerWithFluJab = () =>
     },
   });
 
-const getFluJabComponent = async (worker) => {
+const getFluJabComponent = async (worker, returnUrl = true) => {
   return render(FluJabComponent, {
     imports: [
       FormsModule,
@@ -43,7 +43,7 @@ const getFluJabComponent = async (worker) => {
     providers: [
       {
         provide: WorkerService,
-        useFactory: MockWorkerService.factory(worker),
+        useFactory: returnUrl ? MockWorkerService.factory(worker) : MockWorkerServiceWithoutReturnUrl.factory(worker),
         deps: [HttpClient],
       },
       {
@@ -116,5 +116,23 @@ describe('FluJabComponent', () => {
     const req = httpTestingController.expectOne(`/api/establishment/mocked-uid/worker/${worker.uid}`);
 
     expect(req.request.body).toEqual({ fluJab: null });
+  });
+
+  describe('submit buttons', () => {
+    it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
+      const worker = workerBuilder();
+      const { getByText } = await getFluJabComponent(worker, false);
+
+      expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('View this staff record')).toBeTruthy();
+    });
+
+    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
+      const worker = workerBuilder();
+      const { getByText } = await getFluJabComponent(worker);
+
+      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
   });
 });

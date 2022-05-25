@@ -14,15 +14,15 @@ export class StartComponent implements OnInit, OnDestroy {
 
   constructor(private establishmentService: EstablishmentService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+      this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
         this.establishment = establishment;
-      })
+      }),
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }

@@ -3,6 +3,7 @@ const router = express.Router({ mergeParams: true });
 const models = require('../../../models');
 const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
+const usage = require('./usage');
 const { getPay, getQualifications, getSickness, getTurnover } = require('./benchmarksService');
 
 const { hasPermission } = require('../../../utils/security/hasPermission');
@@ -110,6 +111,7 @@ router.use('/', hasPermission('canViewBenchmarks'));
 router.route('/').get(viewBenchmarks);
 
 router.use('/rankings', rankings);
+router.use('/usage', usage);
 
 module.exports = router;
 module.exports.pay = pay;

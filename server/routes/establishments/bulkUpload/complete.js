@@ -14,7 +14,6 @@ const completeNewEstablishment = async (
   onloadEstablishments,
   primaryEstablishmentId,
   primaryEstablishmentUid,
-  keepAlive = () => {},
 ) => {
   try {
     const startTime = new Date();
@@ -28,11 +27,8 @@ const completeNewEstablishment = async (
     if (foundOnloadEstablishment) {
       // as this new establishment is created from a parent, it automatically becomes a sub
       foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
-      keepAlive('foundOnloadEstablishment initialised');
       await foundOnloadEstablishment.save(theLoggedInUser, true, transaction, true);
-      keepAlive('foundOnloadEstablishment saved');
       await foundOnloadEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
-      keepAlive('foundOnloadEstablishment wdf calculated');
     }
 
     const endTime = new Date();
@@ -50,7 +46,6 @@ const completeUpdateEstablishment = async (
   transaction,
   onloadEstablishments,
   myCurrentEstablishments,
-  keepAlive = () => {},
 ) => {
   try {
     const startTime = new Date();
@@ -72,13 +67,9 @@ const completeUpdateEstablishment = async (
       const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false, false, false, false, true, null, true);
       delete thisEstablishmentJSON.localIdentifier;
 
-      keepAlive('complete upload');
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
-      keepAlive('complete upload loaded');
       await foundCurrentEstablishment.save(theLoggedInUser, true, transaction, true);
-      keepAlive('complete upload saved');
       await foundCurrentEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
-      keepAlive('complete upload wdf');
 
       const endTime = new Date();
       const numberOfWorkers = foundCurrentEstablishment.workers.length;
@@ -125,10 +116,6 @@ const completeDeleteEstablishment = async (
 };
 
 const completePost = async (req, res) => {
-  const keepAlive = (stepName = '', stepId = '') => {
-    console.log(`Bulk Upload /complete keep alive: ${new Date()} ${stepName} ${stepId}`);
-  };
-
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
   const primaryEstablishmentUid = req.establishment.uid;
@@ -140,15 +127,7 @@ const completePost = async (req, res) => {
     //  validating a bulk upload and completing it.
     const completeStartTime = new Date();
     // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
-    const myCurrentEstablishments = await restoreExistingEntities(
-      theLoggedInUser,
-      primaryEstablishmentId,
-      isParent,
-      1,
-      keepAlive,
-    );
-
-    keepAlive('restore existing entities', primaryEstablishmentId);
+    const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1);
 
     const restoredExistingStateTime = new Date();
     timerLog(
@@ -158,14 +137,12 @@ const completePost = async (req, res) => {
     );
 
     try {
-      const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId, keepAlive);
+      const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
       const validationDifferenceReportDownloaded = await downloadContent(
         `${primaryEstablishmentId}/validation/difference.report.json`,
         null,
         null,
       ).then((data) => {
-        keepAlive('differences downloaded');
-
         return data;
       });
       const validationDifferenceReport = JSON.parse(validationDifferenceReportDownloaded.data);
@@ -198,11 +175,8 @@ const completePost = async (req, res) => {
                   onloadEstablishments,
                   primaryEstablishmentId,
                   primaryEstablishmentUid,
-                  keepAlive,
                 )
                   .then((data) => {
-                    keepAlive('complete new establishment');
-
                     return data;
                   })
                   .then(log),
@@ -221,11 +195,8 @@ const completePost = async (req, res) => {
                   t,
                   onloadEstablishments,
                   myCurrentEstablishments,
-                  keepAlive,
                 )
                   .then((data) => {
-                    keepAlive('completeUpdateEstablishment');
-
                     return data;
                   })
                   .then(log),
@@ -238,16 +209,8 @@ const completePost = async (req, res) => {
           await validationDifferenceReport.deleted.reduce(
             (p, thisDeletedEstablishment) =>
               p.then(() =>
-                completeDeleteEstablishment(
-                  thisDeletedEstablishment,
-                  theLoggedInUser,
-                  t,
-                  myCurrentEstablishments,
-                  keepAlive,
-                )
+                completeDeleteEstablishment(thisDeletedEstablishment, theLoggedInUser, t, myCurrentEstablishments)
                   .then((data) => {
-                    keepAlive('completeDeleteEstablishment');
-
                     return data;
                   })
                   .then(log),
@@ -270,18 +233,12 @@ const completePost = async (req, res) => {
         //  Saves the bulk upload files  to lastBulkUpload
         await saveLastBulkUpload(primaryEstablishmentId);
 
-        keepAlive('saveLastBulkUpload');
-
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
         await purgeBulkUploadS3Objects(primaryEstablishmentId);
 
-        keepAlive('purgeBulkUploadS3Objects');
-
         // confirm success against the primary establishment
         await Establishment.bulkUploadSuccess(primaryEstablishmentId);
-
-        keepAlive('bulkUploadSuccess');
 
         const completeEndTime = new Date();
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);

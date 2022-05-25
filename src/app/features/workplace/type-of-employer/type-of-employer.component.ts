@@ -13,11 +13,11 @@ import { Question } from '../question/question.component';
 })
 export class TypeOfEmployerComponent extends Question {
   public options = [
-    'Local Authority (adult services)',
-    'Local Authority (generic/other)',
-    'Private Sector',
-    'Voluntary / Charity',
-    'Other',
+    { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
+    { value: 'Local Authority (generic/other)', text: 'Local authority (generic/other)' },
+    { value: 'Private Sector', text: 'Private sector' },
+    { value: 'Voluntary / Charity', text: 'Voluntary or charity' },
+    { value: 'Other', text: 'Other' },
   ];
   public maxLength = 120;
 
@@ -26,7 +26,7 @@ export class TypeOfEmployerComponent extends Question {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -55,7 +55,7 @@ export class TypeOfEmployerComponent extends Question {
         type: [
           {
             name: 'required',
-            message: 'Please select an Employer type',
+            message: 'Select the type of employer',
           },
         ],
       },
@@ -88,9 +88,10 @@ export class TypeOfEmployerComponent extends Question {
 
   updateEstablishment(props) {
     this.subscriptions.add(
-      this.establishmentService
-        .updateTypeOfEmployer(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateTypeOfEmployer(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 }

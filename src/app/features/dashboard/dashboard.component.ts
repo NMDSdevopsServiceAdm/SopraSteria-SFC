@@ -5,6 +5,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -41,6 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
+    private benchmarksService: BenchmarksService,
     private userService: UserService,
     private workerService: WorkerService,
     private route: ActivatedRoute,
@@ -135,6 +137,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       type: 'success',
       message: `You've confirmed the details of the staff record you added`,
     });
+  }
+
+  public tabClickEvent($event) {
+    if ($event.tabSlug === 'benchmarks') {
+      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplace.id).subscribe());
+    }
   }
 
   ngOnDestroy(): void {

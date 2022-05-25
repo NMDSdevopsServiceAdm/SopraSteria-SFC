@@ -116,9 +116,8 @@
   <app-submit-button
     [return]="canReturn"
     [canExit]="canExit"
-    [exitText]="exitText"
     [recordSummary]="false"
-    [callToAction]="this.submitTitle"
+    [callToAction]="submitTitle"
     [isExistingStaffRecord]="!!worker"
     (clicked)="onSubmit($event)"
   ></app-submit-button>
