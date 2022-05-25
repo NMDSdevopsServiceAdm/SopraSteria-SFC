@@ -19,11 +19,11 @@ export class StartersComponent extends Question {
   public jobs: Job[] = [];
   public startersKnownOptions = [
     {
-      label: 'There have been no new starters.',
+      label: 'There have been no new starters in the last 12 months',
       value: jobOptionsEnum.NONE,
     },
     {
-      label: `I don't know how many new starters there have been.`,
+      label: 'I do not know how many new starters there have been',
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
@@ -59,13 +59,13 @@ export class StartersComponent extends Question {
     return this.starterRecords.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
   }
 
-  protected init() {
+  protected init(): void {
     this.getJobs();
     this.setPreviousRoute();
     this.prefill();
 
     this.subscriptions.add(
-      this.form.get('noRecordsReason').valueChanges.subscribe(value => {
+      this.form.get('noRecordsReason').valueChanges.subscribe((value) => {
         while (this.starterRecords.length > 1) {
           this.starterRecords.removeAt(1);
         }
@@ -105,13 +105,13 @@ export class StartersComponent extends Question {
       this.jobService
         .getJobs()
         .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs)),
+        .subscribe((jobs) => (this.jobs = jobs)),
     );
   }
 
   private prefill(): void {
     if (Array.isArray(this.establishment.starters) && this.establishment.starters.length) {
-      this.establishment.starters.forEach(starter =>
+      this.establishment.starters.forEach((starter) =>
         this.starterRecords.push(this.createRecordItem(starter.jobId, starter.total)),
       );
     } else {
@@ -159,9 +159,9 @@ export class StartersComponent extends Question {
 
   public selectableJobs(index): Job[] {
     return this.jobs.filter(
-      job =>
+      (job) =>
         !this.starterRecords.controls.some(
-          starter =>
+          (starter) =>
             starter !== this.starterRecords.controls[index] && parseInt(starter.get('jobId').value, 10) === job.id,
         ),
     );
@@ -203,7 +203,7 @@ export class StartersComponent extends Question {
 
     if (this.starterRecords.length) {
       return {
-        starters: this.starterRecords.value.map(starterRecord => ({
+        starters: this.starterRecords.value.map((starterRecord) => ({
           jobId: parseInt(starterRecord.jobId, 10),
           total: starterRecord.total,
         })),
@@ -216,8 +216,8 @@ export class StartersComponent extends Question {
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
       this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
-        data => this._onSuccess(data),
-        error => this.onError(error),
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
       ),
     );
   }
