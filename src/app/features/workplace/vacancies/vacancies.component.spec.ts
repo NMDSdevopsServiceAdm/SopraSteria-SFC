@@ -5,10 +5,7 @@ import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import {
-  MockEstablishmentService,
-  MockEstablishmentServiceWithoutReturn,
-} from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentService, MockEstablishmentServiceWithoutReturn } from '@core/test-utils/MockEstablishmentService';
 import { MockJobService } from '@core/test-utils/MockJobService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -127,11 +124,14 @@ fdescribe('VacanciesComponent', () => {
       expect(errorMessages.length).toEqual(2);
     });
 
-    it('should show an error if the job role is not filled in but the number of vacanies is, and neither radio button has been selected', async () => {
-      const { component, fixture, getByText, getAllByText, queryAllByText } = await setup();
+    fit('should show an error if the job role is not filled in but the number of vacanies is, and neither radio button has been selected', async () => {
+      const { component, fixture, getByText, getAllByText, getByLabelText, queryAllByText } = await setup();
 
       component.form.get('vacancies').setValue([{ jobRole: null, total: 1 }]);
-
+      const input = getByLabelText('Number of vacancies');
+      fireEvent.change(input, { target: { value: 1 } });
+      fixture.detectChanges();
+      console.log(input.innerHTML);
       const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
@@ -192,6 +192,25 @@ fdescribe('VacanciesComponent', () => {
 
       const errorMessages = getAllByText('Enter the number of vacancies as a digit lower than 1000');
       expect(errorMessages.length).toEqual(2);
+    });
+
+    it('should remove any error messages when the add another job role button is clicked', async () => {
+      const { component, fixture, getByText, getAllByText, queryAllByText } = await setup();
+
+      component.form.get('vacancies').setValue([{ jobRole: null, total: 1 }]);
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
+      fixture.detectChanges();
+
+      const errorMessages = getAllByText('Select the job role');
+      expect(errorMessages.length).toEqual(2);
+
+      const addJobButton = getByText('Add another job role');
+      fireEvent.click(addJobButton);
+      fixture.detectChanges();
+
+      expect(queryAllByText('Select the job role').length).toEqual(0);
     });
   });
 });

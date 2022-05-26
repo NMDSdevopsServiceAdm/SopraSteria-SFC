@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { take } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -30,6 +29,10 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   ];
   private minVacancies = 1;
   private maxVacancies = 999;
+  // public vacanciesArray: FormArray;
+  public formInvalid = false;
+  public formSnapshot: FormGroup;
+  public emptyForm = true;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -38,38 +41,33 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private jobService: JobService,
+    private route: ActivatedRoute,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
-
-    this.setupForm();
   }
 
   get vacanciesArray(): FormArray {
-    // console.log('*** vacancies array ***');
     return this.form.get('vacancies') as FormArray;
   }
 
   get allJobsSelected(): boolean {
-    // console.log('*** all jobs selected ***');
     return this.vacanciesArray.length >= this.jobs.length;
   }
 
   get totalVacancies(): number {
-    // console.log('*** total vacancies ***');
     return this.vacanciesArray.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
   }
 
   protected init(): void {
-    this.getJobs();
+    this.jobs = this.route.snapshot.data.jobs;
+    this.setupForm();
     this.previousRoute = ['/workplace', this.establishment.uid, 'sharing-data'];
     this.prefill();
-
     this.subscriptions.add(
       this.form.get('vacanciesKnown').valueChanges.subscribe((value) => {
         while (this.vacanciesArray.length > 1) {
           this.vacanciesArray.removeAt(1);
         }
-
         this.clearValidators(0);
         this.vacanciesArray.reset([], { emitEvent: false });
 
@@ -90,23 +88,10 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group(
-      {
-        vacancies: this.formBuilder.array([]),
-        vacanciesKnown: null,
-      },
-      { onUpdate: 'submit' },
-    );
-    console.log(this.form);
-  }
-
-  private getJobs(): void {
-    this.subscriptions.add(
-      this.jobService
-        .getJobs()
-        .pipe(take(1))
-        .subscribe((jobs) => (this.jobs = jobs)),
-    );
+    this.form = this.formBuilder.group({
+      vacancies: this.formBuilder.array([]),
+      vacanciesKnown: null,
+    });
   }
 
   private prefill(): void {
@@ -133,7 +118,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Select the job role',
+            message: 'Select the job role and enter the number of vacancies, or tell us there are none',
           },
         ],
       },
@@ -142,15 +127,64 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Enter the number of vacancies',
+            message: '',
+          },
+        ],
+      },
+    ];
+  }
+
+  private newFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'vacancies.jobRole',
+        type: [
+          {
+            name: 'required',
+            message: 'Select the job role (job role 1)',
+          },
+        ],
+      },
+      {
+        item: 'vacancies.total',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the number of vacancies (job role 1)',
           },
           {
             name: 'min',
-            message: `Enter the number of vacancies as a digit larger than ${this.minVacancies - 1}`,
+            message: `Enter the number of vacancies as a digit larger than ${this.minVacancies - 1} (job role 1)`,
           },
           {
             name: 'max',
-            message: `Enter the number of vacancies as a digit lower than ${this.maxVacancies + 1}`,
+            message: `Enter the number of vacancies as a digit lower than ${this.maxVacancies + 1} (job role 1)`,
+          },
+        ],
+      },
+      {
+        item: 'vacancies.jobRole1',
+        type: [
+          {
+            name: 'required',
+            message: 'Select the job role (job role 2)',
+          },
+        ],
+      },
+      {
+        item: 'vacancies.total1',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the number of vacancies (job role 2)',
+          },
+          {
+            name: 'min',
+            message: `Enter the number of vacancies as a digit larger than ${this.minVacancies - 1} (job role 2)`,
+          },
+          {
+            name: 'max',
+            message: `Enter the number of vacancies as a digit lower than ${this.maxVacancies + 1} (job role 2)`,
           },
         ],
       },
@@ -168,7 +202,6 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   public addVacancy(): void {
-    console.log('**** add Vacancy ****');
     this.submitted = false;
     this.vacanciesArray.push(this.createVacancyControl());
   }
@@ -179,13 +212,14 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private createVacancyControl(jobId = null, total = null): FormGroup {
-    return this.formBuilder.group(
-      {
-        jobRole: [jobId, [Validators.required]],
-        total: [total, [Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
-      },
-      { updateOn: 'submit' },
-    );
+    return this.formBuilder.group({
+      jobRole: [jobId, [Validators.required]],
+      total: [total, [Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
+    });
+    // return this.formBuilder.group({
+    //   jobRole: jobId,
+    //   total: total,
+    // });
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -233,5 +267,53 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   private clearValidators(index: number) {
     this.vacanciesArray.controls[index].get('jobRole').clearValidators();
     this.vacanciesArray.controls[index].get('total').clearValidators();
+  }
+
+  protected fixErrors(): void {
+    this.formSnapshot = this.cloneForm();
+    this.formInvalid = this.form.invalid;
+
+    const index = 0;
+    console.log(this.formSnapshot.get(`vacancies.${index}.jobRole`).value);
+    if (this.vacanciesArray.controls[0].get('jobRole').value || this.vacanciesArray.controls[0].get('total').value) {
+      this.emptyForm = false;
+      this.newFormErrorsMap();
+    } else {
+      this.emptyForm = true;
+      this.setupFormErrorsMap();
+      //   const snapshotVacanciesArray = this.formSnapshot.get('vacancies') as FormArray;
+
+      //   if (snapshotVacanciesArray.length > 1) {
+      //     snapshotVacanciesArray.controls.forEach((control, index) => {
+      //       if (index !== 0) {
+      //         control.get('jobRole').clearValidators();
+      //         control.get('total').clearValidators();
+      //       }
+      //     });
+      //   }
+    }
+    // console.log(this.formSnapshot);
+  }
+
+  private cloneForm(): FormGroup {
+    const newForm = this.formBuilder.group({
+      vacancies: this.formBuilder.array([]),
+      vacanciesKnown: null,
+    });
+
+    const newVacanciesArray = newForm.get('vacancies') as FormArray;
+    this.vacanciesArray.controls.map((control) => {
+      newVacanciesArray.push(this.createVacancyControl(control.get('jobRole').value, control.get('total').value));
+      // if (newVacanciesArray.length > 1) {
+      //   newVacanciesArray.controls.forEach((control, index) => {
+      //     if (index !== 0) {
+      //       control.get('jobRole').clearValidators();
+      //       control.get('total').clearValidators();
+      //     }
+      //   });
+      // }
+    });
+
+    return newForm;
   }
 }

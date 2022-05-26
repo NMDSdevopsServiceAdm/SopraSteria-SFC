@@ -109,6 +109,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
     this.submitAction = payload;
+
+    // console.log('**** question onSubmit *****');
+    // console.log(this.form.value);
     if (!this.submitAction.save) {
       this.establishment.showSharingPermissionsBanner
         ? this.removeSharingPermissionsBanner(() => this.navigate())
@@ -121,6 +124,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (!this.form.valid) {
+      this.fixErrors();
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
@@ -151,6 +155,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     // callback is invoked if func not declared in child to ensure navigation
     completeFunction();
   }
+  protected fixErrors(): void {}
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });

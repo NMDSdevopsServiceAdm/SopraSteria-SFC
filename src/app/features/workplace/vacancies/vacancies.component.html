@@ -1,46 +1,54 @@
 <app-error-summary
-  *ngIf="(submitted && form.invalid) || serverError"
+  *ngIf="(submitted && formInvalid) || serverError"
   [formErrorsMap]="formErrorsMap"
   [serverError]="serverError"
-  [form]="form"
+  [form]="formSnapshot"
 >
 </app-error-summary>
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">Add your current staff vacancies</h1>
-        </legend>
-        <p>These should only be vacancies for permanent or temporary staff</p>
+    <div
+      class="govuk-form-group govuk-!-margin-bottom-0"
+      [class.govuk-form-group--error]="submitted && emptyForm && this.formSnapshot.invalid"
+    >
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">Add your current staff vacancies</h1>
+          </legend>
+          <p>These should only be vacancies for permanent or temporary staff</p>
+        </div>
       </div>
-    </div>
-    <ng-container formArrayName="vacancies">
-      <!-- <div
-        *ngFor="let vacancy of vacanciesArray.controls; let i = index"
-        [formGroupName]="i"
-        [class.govuk-form-group--error]="submitted && vacancy.invalid"
-      > -->
-      <div *ngFor="let vacancy of vacanciesArray.controls; let i = index" [formGroupName]="i">
-        <div class="govuk-grid-row govuk-!-margin-bottom-6" [attr.data-testid]="'row-' + i">
-          <div class="govuk-grid-column-full">
-            <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
-          </div>
-          <div class="govuk-grid-column-two-thirds">
-            <div
-              class="govuk-form-group govuk-!-margin-bottom-0"
-              [class.govuk-form-group--error]="submitted && vacancy.get('jobRole').invalid"
-            >
+      <ng-container formArrayName="vacancies">
+        <div
+          *ngFor="let vacancy of vacanciesArray.controls; let i = index"
+          [formGroupName]="i"
+          [class.govuk-form-group--error]="submitted && !emptyForm && this.formSnapshot.invalid"
+        >
+          <div class="govuk-grid-row govuk-!-margin-bottom-6" [attr.data-testid]="'row-' + i">
+            <div class="govuk-grid-column-full">
+              <span *ngIf="submitted" class="govuk-error-message">
+                <ng-container *ngIf="submitted && emptyForm && this.formSnapshot.invalid">
+                  Select the job role and enter the number of vacancies, or tell us there are none
+                </ng-container>
+              </span>
+              <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
               <label for="jobRole-{{ i }}" class="govuk-label">Job role</label>
               <span *ngIf="submitted" id="vacancies-jobRole-error" class="govuk-error-message">
-                <ng-container *ngIf="submitted && vacancy.get('jobRole').invalid">
-                  {{ getFormErrorMessage('vacancies.jobRole', 'required') }}
+                <ng-container
+                  *ngIf="submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.jobRole').invalid"
+                >
+                  Select the job role
                 </ng-container>
               </span>
               <select
                 class="govuk-select govuk-!-width-full"
-                [class.govuk-select--error]="submitted && vacancy.get('jobRole').invalid"
+                [class.govuk-select--error]="
+                  submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.jobRole').invalid
+                "
                 [formControlName]="'jobRole'"
                 id="jobRole-{{ i }}"
                 name="jobRole"
@@ -50,31 +58,35 @@
                   {{ job.title }}
                 </option>
               </select>
+              <!-- </div> -->
             </div>
-          </div>
 
-          <div class="govuk-grid-column-one-third">
-            <div
-              class="govuk-form-group govuk-!-margin-bottom-0"
-              [class.govuk-form-group--error]="submitted && vacancy.get('total').invalid"
-            >
+            <div class="govuk-grid-column-one-third">
+              <!-- <div
+                class="govuk-form-group govuk-!-margin-bottom-0"
+                [class.govuk-form-group--error]="submitted && this.formSnapshot.get('vacancies.0.total').invalid"
+              > -->
               <label for="total-{{ i }}" class="govuk-label">Number of vacancies</label>
               <span *ngIf="submitted" id="vacancies-total-error" class="govuk-error-message">
-                <ng-container *ngIf="submitted && vacancy.get('total').invalid">
-                  <span *ngIf="vacancy.get('total').errors.required">
-                    {{ getFormErrorMessage('vacancies.total', 'required') }}</span
+                <ng-container
+                  *ngIf="submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.total').invalid"
+                >
+                  <span *ngIf="this.formSnapshot.get('vacancies.' + i + '.total').errors.required">
+                    Enter the number of vacancies</span
                   >
-                  <span *ngIf="vacancy.get('total').errors.min">
-                    {{ getFormErrorMessage('vacancies.total', 'min') }}</span
+                  <span *ngIf="this.formSnapshot.get('vacancies.' + i + '.total').errors.min">
+                    Enter the number of vacancies as a digit larger than {{ this.minVacancies - 1 }}</span
                   >
-                  <span *ngIf="vacancy.get('total').errors.max">
-                    {{ getFormErrorMessage('vacancies.total', 'max') }}
+                  <span *ngIf="this.formSnapshot.get('vacancies.' + i + '.total').errors.max">
+                    Enter the number of vacancies as a digit lower than {{ this.maxVacancies + 1 }}
                   </span>
                 </ng-container>
               </span>
               <input
                 class="govuk-input govuk-!-width-one-half"
-                [class.govuk-input--error]="submitted && vacancy.get('total').invalid"
+                [class.govuk-input--error]="
+                  submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.total').invalid
+                "
                 [formControlName]="'total'"
                 id="total-{{ i }}"
                 name="total"
@@ -89,40 +101,41 @@
               >
             </div>
           </div>
+          <!-- </div> -->
+          <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-7" />
         </div>
-        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-7" />
+      </ng-container>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+          <button
+            *ngIf="!allJobsSelected"
+            class="govuk-button govuk-button--secondary"
+            type="button"
+            (click)="addVacancy()"
+          >
+            Add another job role
+          </button>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <p class="govuk-heading-m">Total vacancies: {{ totalVacancies }}</p>
+        </div>
       </div>
-    </ng-container>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-        <button
-          *ngIf="!allJobsSelected"
-          class="govuk-button govuk-button--secondary"
-          type="button"
-          (click)="addVacancy()"
-        >
-          Add another job role
-        </button>
-      </div>
-      <div class="govuk-grid-column-one-third">
-        <p class="govuk-heading-m">Total vacancies: {{ totalVacancies }}</p>
-      </div>
-    </div>
 
-    <div class="govuk-form-group">
-      <div class="govuk-radios">
-        <div class="govuk-radios__item" *ngFor="let option of vacanciesKnownOptions; let i = index">
-          <input
-            class="govuk-radios__input"
-            id="vacanciesKnown-{{ i }}"
-            name="vacanciesKnown"
-            [formControlName]="'vacanciesKnown'"
-            type="radio"
-            [value]="option.value"
-          />
-          <label class="govuk-label govuk-radios__label" for="vacanciesKnown-{{ i }}">
-            {{ option.label }}
-          </label>
+      <div class="govuk-form-group">
+        <div class="govuk-radios">
+          <div class="govuk-radios__item" *ngFor="let option of vacanciesKnownOptions; let i = index">
+            <input
+              class="govuk-radios__input"
+              id="vacanciesKnown-{{ i }}"
+              name="vacanciesKnown"
+              [formControlName]="'vacanciesKnown'"
+              type="radio"
+              [value]="option.value"
+            />
+            <label class="govuk-label govuk-radios__label" for="vacanciesKnown-{{ i }}">
+              {{ option.label }}
+            </label>
+          </div>
         </div>
       </div>
     </div>
