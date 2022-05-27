@@ -40,22 +40,22 @@
               <span *ngIf="submitted" id="vacancies-jobRole-{{ i }}-error" class="govuk-error-message">
                 <ng-container
                   *ngIf="
-                    submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.jobRole-' + i).invalid;
+                    submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.jobRole').invalid;
                     else hiddenJobRoleError
                   "
                 >
                   Select the job role
                 </ng-container>
-                <ng-template #hiddenJobRoleError><span>&nbsp;</span></ng-template>
+                <ng-template *ngIf="!emptyForm" #hiddenJobRoleError><span>&nbsp;</span></ng-template>
               </span>
               <select
                 class="govuk-select govuk-!-width-full"
                 [class.govuk-select--error]="
-                  submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.jobRole-' + i).invalid
+                  submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.jobRole').invalid
                 "
-                [formControlName]="'jobRole-' + i"
+                [formControlName]="'jobRole'"
                 id="jobRole-{{ i }}"
-                name="jobRole-{{ i }}"
+                name="jobRole"
               >
                 <option [ngValue]="null">Select job role</option>
                 <option *ngFor="let job of selectableJobs(i)" [value]="job.id">
@@ -71,7 +71,7 @@
                 [class.govuk-form-group--error]="submitted && this.formSnapshot.get('vacancies.0.total').invalid"
               > -->
               <label for="total-{{ i }}" class="govuk-label">Number of vacancies</label>
-              <span *ngIf="submitted" id="vacancies-total-error" class="govuk-error-message">
+              <span *ngIf="submitted" id="vacancies-total-{{ i }}-error" class="govuk-error-message">
                 <ng-container
                   *ngIf="
                     submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.total').invalid;
@@ -88,7 +88,7 @@
                     Enter the number of vacancies as a digit lower than {{ this.maxVacancies + 1 }}
                   </span>
                 </ng-container>
-                <ng-template #hiddenTotalError><span>&nbsp;</span></ng-template>
+                <ng-template *ngIf="!emptyForm" #hiddenTotalError><span>&nbsp;</span></ng-template>
               </span>
               <input
                 class="govuk-input govuk-!-width-one-half"

@@ -77,7 +77,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.vacanciesArray.valueChanges.subscribe(() => {
-        this.vacanciesArray.controls[0].get('jobRole-0').setValidators([Validators.required]);
+        this.vacanciesArray.controls[0].get('jobRole').setValidators([Validators.required]);
         this.vacanciesArray.controls[0]
           .get('total')
           .setValidators([Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]);
@@ -101,7 +101,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       );
     } else {
       this.vacanciesArray.push(this.createVacancyControl());
-      console.log(this.vacanciesArray);
+      // console.log(this.vacanciesArray);
       if (
         this.establishment.vacancies === jobOptionsEnum.NONE ||
         this.establishment.vacancies === jobOptionsEnum.DONT_KNOW
@@ -115,7 +115,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'vacancies.jobRole-0',
+        item: 'vacancies.jobRole.0',
         type: [
           {
             name: 'required',
@@ -124,7 +124,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'vacancies.total',
+        item: 'vacancies.total.0',
         type: [
           {
             name: 'required',
@@ -138,7 +138,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   private newFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'vacancies.jobRole-0',
+        item: 'vacancies.jobRole.0',
         type: [
           {
             name: 'required',
@@ -147,7 +147,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'vacancies.total',
+        item: 'vacancies.total.0',
         type: [
           {
             name: 'required',
@@ -164,7 +164,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'vacancies.jobRole-1',
+        item: 'vacancies.jobRole.1',
         type: [
           {
             name: 'required',
@@ -173,7 +173,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'vacancies.total',
+        item: 'vacancies.total.1',
         type: [
           {
             name: 'required',
@@ -197,8 +197,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       (job) =>
         !this.vacanciesArray.controls.some(
           (vacancy, index) =>
-            vacancy !== this.vacanciesArray.controls[index] &&
-            parseInt(vacancy.get(`jobRole-${index}`).value, 10) === job.id,
+            vacancy !== this.vacanciesArray.controls[index] && parseInt(vacancy.get('jobRole').value, 10) === job.id,
         ),
     );
   }
@@ -214,16 +213,11 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private createVacancyControl(jobId = null, total = null): FormGroup {
-    const keyIndex = this.vacanciesArray.length;
+    // const keyIndex = this.vacanciesArray.length;
     return this.formBuilder.group({
-      [`jobRole-${keyIndex}`]: [jobId, [Validators.required]],
-      // ['jobRole-0']: [jobId, [Validators.required]],
+      jobRole: [jobId, [Validators.required]],
       total: [total, [Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
     });
-    // return this.formBuilder.group({
-    //   jobRole: jobId,
-    //   total: total,
-    // });
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -269,7 +263,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private clearValidators(index: number) {
-    this.vacanciesArray.controls[index].get(`jobRole-${index}`).clearValidators();
+    this.vacanciesArray.controls[index].get('jobRole').clearValidators();
     this.vacanciesArray.controls[index].get('total').clearValidators();
   }
 
@@ -279,7 +273,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
     const index = 0;
     // console.log(this.formSnapshot.get(`vacancies.${index}.jobRole`).value);
-    if (this.vacanciesArray.controls[0].get('jobRole-0').value || this.vacanciesArray.controls[0].get('total').value) {
+    if (this.vacanciesArray.controls[0].get('jobRole').value || this.vacanciesArray.controls[0].get('total').value) {
       this.emptyForm = false;
       this.newFormErrorsMap();
     } else {
@@ -311,7 +305,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         // this.createVacancyControl(control.get(`jobRole-${index}`).value, control.get('total').value),
         this.formBuilder.group({
           // [`jobRole-${keyIndex}`]: [jobId, [Validators.required]],
-          [`jobRole-${index}`]: [control.get(`jobRole-${index}`).value, [Validators.required]],
+          jobRole: [control.get('jobRole').value, [Validators.required]],
           total: [
             control.get('total').value,
             [Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)],
