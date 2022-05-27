@@ -51,6 +51,7 @@
                   <div
                     *ngIf="
                       !emptyForm &&
+                      this.formSnapshot.get('vacancies.' + i + '.total').invalid &&
                       (this.formSnapshot.get('vacancies.' + i + '.total').errors.min ||
                         this.formSnapshot.get('vacancies.' + i + '.total').errors.max)
                     "

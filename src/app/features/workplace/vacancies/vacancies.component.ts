@@ -227,13 +227,12 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected onSuccess(): void {
-    // if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies) && !this.return) {
-    //   this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
-    //   this.submitAction.action = null;
-    // } else {
-    //   this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
-    // }
-    console.log('On success');
+    if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies) && !this.return) {
+      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
+      this.submitAction.action = null;
+    } else {
+      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
+    }
   }
 
   public getFormErrorMessage(item: string, errorType: string): string {
@@ -276,6 +275,12 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         }),
       );
     });
+
+    if (this.form.get('vacanciesKnown').value) {
+      newVacanciesArray.controls[0].get('jobRole').clearValidators();
+      newVacanciesArray.controls[0].get('total').clearValidators();
+      newVacanciesArray.reset([], { emitEvent: false });
+    }
 
     return newForm;
   }
