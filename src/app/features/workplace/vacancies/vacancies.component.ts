@@ -188,6 +188,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   public removeVacancy(event: Event, index: number): void {
     event.preventDefault();
     this.vacanciesArray.removeAt(index);
+    this.submitted = false;
   }
 
   private createVacancyControl(jobId = null, total = null): FormGroup {
@@ -254,19 +255,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     } else {
       this.emptyForm = true;
       this.setupFormErrorsMap();
-      //   const snapshotVacanciesArray = this.formSnapshot.get('vacancies') as FormArray;
-
-      //   if (snapshotVacanciesArray.length > 1) {
-      //     snapshotVacanciesArray.controls.forEach((control, index) => {
-      //       if (index !== 0) {
-      //         control.get('jobRole').clearValidators();
-      //         control.get('total').clearValidators();
-      //       }
-      //     });
-      //   }
     }
-    // console.log('*******');
-    // console.log(this.formErrorsMap);
   }
 
   private cloneForm(): FormGroup {
@@ -278,9 +267,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     const newVacanciesArray = newForm.get('vacancies') as FormArray;
     this.vacanciesArray.controls.map((control) => {
       newVacanciesArray.push(
-        // this.createVacancyControl(control.get(`jobRole-${index}`).value, control.get('total').value),
         this.formBuilder.group({
-          // [`jobRole-${keyIndex}`]: [jobId, [Validators.required]],
           jobRole: [control.get('jobRole').value, [Validators.required]],
           total: [
             control.get('total').value,
@@ -288,14 +275,6 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
           ],
         }),
       );
-      // if (newVacanciesArray.length > 1) {
-      //   newVacanciesArray.controls.forEach((control, index) => {
-      //     if (index !== 0) {
-      //       control.get('jobRole').clearValidators();
-      //       control.get('total').clearValidators();
-      //     }
-      //   });
-      // }
     });
 
     return newForm;

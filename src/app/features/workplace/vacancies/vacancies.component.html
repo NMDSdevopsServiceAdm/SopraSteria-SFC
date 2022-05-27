@@ -97,7 +97,7 @@
                 <ng-template #hiddenTotalError><span *ngIf="!emptyForm">&nbsp;</span></ng-template>
               </span>
               <input
-                class="govuk-input govuk-!-width-one-half"
+                class="govuk-input govuk-!-width-one-quarter"
                 [class.govuk-input--error]="
                   submitted && !emptyForm && this.formSnapshot.get('vacancies.' + i + '.total').invalid
                 "

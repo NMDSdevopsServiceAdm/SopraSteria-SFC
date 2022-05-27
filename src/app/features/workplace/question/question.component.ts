@@ -110,8 +110,8 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
     this.submitAction = payload;
 
-    // console.log('**** question onSubmit *****');
-    // console.log(this.form.value);
+    console.log('**** question onSubmit *****');
+    console.log(this.form.valid);
     if (!this.submitAction.save) {
       this.establishment.showSharingPermissionsBanner
         ? this.removeSharingPermissionsBanner(() => this.navigate())
@@ -123,14 +123,13 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
+    this.fixErrors();
     if (!this.form.valid) {
-      this.fixErrors();
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
 
     const props = this.generateUpdateProps();
-
     if (isNull(props)) {
       this.onSuccess();
       this.navigate();
