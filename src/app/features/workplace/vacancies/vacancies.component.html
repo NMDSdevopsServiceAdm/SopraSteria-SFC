@@ -46,7 +46,18 @@
                 >
                   Select the job role
                 </ng-container>
-                <ng-template *ngIf="!emptyForm" #hiddenJobRoleError><span>&nbsp;</span></ng-template>
+                <ng-template #hiddenJobRoleError
+                  ><div *ngIf="!emptyForm">&nbsp;</div>
+                  <div
+                    *ngIf="
+                      !emptyForm &&
+                      (this.formSnapshot.get('vacancies.' + i + '.total').errors.min ||
+                        this.formSnapshot.get('vacancies.' + i + '.total').errors.max)
+                    "
+                  >
+                    &nbsp;
+                  </div></ng-template
+                >
               </span>
               <select
                 class="govuk-select govuk-!-width-full"
@@ -62,14 +73,9 @@
                   {{ job.title }}
                 </option>
               </select>
-              <!-- </div> -->
             </div>
 
             <div class="govuk-grid-column-one-third">
-              <!-- <div
-                class="govuk-form-group govuk-!-margin-bottom-0"
-                [class.govuk-form-group--error]="submitted && this.formSnapshot.get('vacancies.0.total').invalid"
-              > -->
               <label for="total-{{ i }}" class="govuk-label">Number of vacancies</label>
               <span *ngIf="submitted" id="vacancies-total-{{ i }}-error" class="govuk-error-message">
                 <ng-container
@@ -82,13 +88,13 @@
                     Enter the number of vacancies</span
                   >
                   <span *ngIf="this.formSnapshot.get('vacancies.' + i + '.total').errors.min">
-                    Enter the number of vacancies as a digit larger than {{ this.minVacancies - 1 }}</span
+                    Number must be between {{ this.minVacancies }} - {{ this.maxVacancies }}</span
                   >
                   <span *ngIf="this.formSnapshot.get('vacancies.' + i + '.total').errors.max">
-                    Enter the number of vacancies as a digit lower than {{ this.maxVacancies + 1 }}
+                    Number must be between {{ this.minVacancies }} - {{ this.maxVacancies }}
                   </span>
                 </ng-container>
-                <ng-template *ngIf="!emptyForm" #hiddenTotalError><span>&nbsp;</span></ng-template>
+                <ng-template #hiddenTotalError><span *ngIf="!emptyForm">&nbsp;</span></ng-template>
               </span>
               <input
                 class="govuk-input govuk-!-width-one-half"
@@ -109,7 +115,6 @@
               >
             </div>
           </div>
-          <!-- </div> -->
           <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-7" />
         </div>
       </ng-container>

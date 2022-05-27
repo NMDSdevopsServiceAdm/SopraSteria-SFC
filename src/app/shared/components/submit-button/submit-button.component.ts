@@ -18,4 +18,8 @@ export class SubmitButtonComponent {
     event.preventDefault();
     this.clicked.emit({ action, save });
   }
+
+  onButtonClick(action: string, save: boolean): void {
+    this.clicked.emit({ action, save });
+  }
 }
