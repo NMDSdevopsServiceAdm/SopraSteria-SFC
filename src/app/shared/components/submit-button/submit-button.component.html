@@ -1,7 +1,7 @@
 <div class="govuk-button-group govuk__align-items-unset">
   <ng-container *ngIf="!return; else summary">
     <div>
-      <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
+      <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onClick($event, 'continue', true)">
         {{ callToAction }}
       </button>
     </div>
@@ -17,7 +17,7 @@
     </div>
   </ng-container>
   <ng-template #summary>
-    <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('return', true)">
+    <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onClick($event, 'return', true)">
       Save and return
     </button>
 

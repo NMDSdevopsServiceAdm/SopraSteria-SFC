@@ -92,6 +92,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private prefill(): void {
+    console.log('******** prefill ********');
+    console.log(this.establishment.vacancies);
     if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
       this.establishment.vacancies.forEach((vacancy) =>
         this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId, vacancy.total)),
@@ -227,6 +229,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected onSuccess(): void {
+    console.log('onSuccess');
     if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies) && !this.return) {
       this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
       this.submitAction.action = null;
