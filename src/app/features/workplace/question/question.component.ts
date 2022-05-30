@@ -107,8 +107,18 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  public setSubmitAction(payload: { event: Event; action: string; save: boolean }): void {
+    this.submitAction = { action: payload.action, save: payload.save };
+
+    if (!payload.save) {
+      payload.event.preventDefault();
+      this.onSubmit({ action: payload.action, save: payload.save });
+    }
+  }
+
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
-    this.submitAction = payload;
+    // public onSubmit(): void {
+    // this.submitAction = payload;
 
     if (!this.submitAction.save) {
       this.establishment.showSharingPermissionsBanner
@@ -128,6 +138,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const props = this.generateUpdateProps();
+
     if (isNull(props)) {
       this.onSuccess();
       this.navigate();

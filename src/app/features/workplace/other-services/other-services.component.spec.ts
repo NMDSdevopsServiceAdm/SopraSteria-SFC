@@ -67,7 +67,7 @@ describe('OtherServicesComponent', () => {
     const errorMessage = 'Select the other services you provide';
     const event = { action: 'continue', save: true };
     fireEvent.click(yesButton);
-    component.onSubmit(event);
+    // component.onSubmit(event);
     fixture.detectChanges();
 
     expect(fixture.componentInstance.form.invalid).toBeTruthy();

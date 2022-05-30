@@ -12,14 +12,9 @@ export class SubmitButtonComponent {
   @Input() canExit = false;
   @Input() exitText = 'Cancel';
   @Input() isExistingStaffRecord = true;
-  @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
+  @Output() clicked = new EventEmitter<{ event: Event; action: string; save: boolean }>();
 
   onClick(event: Event, action: string, save: boolean): void {
-    event.preventDefault();
-    this.clicked.emit({ action, save });
-  }
-
-  onButtonClick(action: string, save: boolean): void {
-    this.clicked.emit({ action, save });
+    this.clicked.emit({ event, action, save });
   }
 }

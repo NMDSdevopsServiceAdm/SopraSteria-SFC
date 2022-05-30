@@ -101,7 +101,7 @@ describe('SubmitButtonComponent', () => {
     expect(spy).not.toHaveBeenCalled();
 
     fireEvent.click(getByText('Save and continue'));
-    expect(spy).toHaveBeenCalledWith({ action: 'continue', save: true });
+    expect(spy).toHaveBeenCalledWith({ event: new MouseEvent(''), action: 'continue', save: true });
   });
 
   it(`should emit 'summary' event on button click`, async () => {
@@ -111,7 +111,7 @@ describe('SubmitButtonComponent', () => {
     expect(spy).not.toHaveBeenCalled();
 
     fireEvent.click(getByText('View this staff record'));
-    expect(spy).toHaveBeenCalledWith({ action: 'summary', save: false });
+    expect(spy).toHaveBeenCalledWith({ event: new MouseEvent(''), action: 'summary', save: false });
   });
 
   it(`should emit the 'exit' event on button click`, async () => {
@@ -124,6 +124,6 @@ describe('SubmitButtonComponent', () => {
     expect(spy).not.toHaveBeenCalled();
 
     fireEvent.click(getByText('Cancel'));
-    expect(spy).toHaveBeenCalledWith({ action: 'exit', save: false });
+    expect(spy).toHaveBeenCalledWith({ event: new MouseEvent(''), action: 'exit', save: false });
   });
 });
