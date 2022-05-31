@@ -208,12 +208,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected onSuccess(): void {
-    if (this.establishment.leavers && Array.isArray(this.establishment.leavers) && !this.return) {
-      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-leavers']);
-      this.submitAction.action = null;
-    } else {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
-    }
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
   }
 
   private clearValidators(index: number) {
