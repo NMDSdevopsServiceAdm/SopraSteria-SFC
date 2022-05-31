@@ -127,7 +127,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    this.complexErrorHandling();
+    this.createDynamicErrorMessaging();
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
@@ -159,7 +159,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     // callback is invoked if func not declared in child to ensure navigation
     completeFunction();
   }
-  protected complexErrorHandling(): void {}
+  protected createDynamicErrorMessaging(): void {}
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });

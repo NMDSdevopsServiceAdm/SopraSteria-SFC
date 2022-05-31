@@ -79,6 +79,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
           .get('total')
           .setValidators([Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]);
 
+        this.vacanciesArray.controls[0].get('jobRole').updateValueAndValidity({ emitEvent: false });
+        this.vacanciesArray.controls[0].get('total').updateValueAndValidity({ emitEvent: false });
         this.form.get('vacanciesKnown').setValue(null, { emitEvent: false });
       }),
     );
@@ -239,9 +241,9 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     this.vacanciesArray.controls[index].get('total').clearValidators();
   }
 
-  protected complexErrorHandling(): void {
-    this.formInvalid = this.form.invalid;
-    this.formSnapshot = this.cloneForm();
+  protected createDynamicErrorMessaging(): void {
+    // this.formInvalid = this.form.invalid;
+    // this.formSnapshot = this.cloneForm();
 
     if (this.vacanciesArray.controls[0].get('jobRole').valid || this.vacanciesArray.controls[0].get('total').valid) {
       this.emptyForm = false;
