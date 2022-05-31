@@ -2,11 +2,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { SubmitButtonComponent } from './submit-button.component';
+import { WorkplaceSubmitButtonComponent } from './workplace-submit-button.component';
 
-describe('SubmitButtonComponent', () => {
+describe('WorkplaceSubmitButtonComponent', () => {
   const setup = async (shouldReturn = false) =>
-    render(SubmitButtonComponent, {
+    render(WorkplaceSubmitButtonComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       componentProperties: {
         return: shouldReturn,

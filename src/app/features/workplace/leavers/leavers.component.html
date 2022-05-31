@@ -116,9 +116,9 @@
     </div>
   </fieldset>
 
-  <app-submit-button
+  <app-workplace-submit-button
     [return]="!!return"
     [isExistingStaffRecord]="false"
-    (clicked)="onSubmit($event)"
-  ></app-submit-button>
+    (clicked)="setSubmitAction($event)"
+  ></app-workplace-submit-button>
 </form>

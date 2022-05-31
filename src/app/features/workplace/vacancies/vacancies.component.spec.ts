@@ -172,6 +172,19 @@ describe('VacanciesComponent', () => {
       });
     });
 
+    it('should do something', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const submitSpy = spyOn(component, 'onSubmit');
+      component.form.get('vacancies').setValue([{ jobRole: 1, total: 1 }]);
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(submitSpy).toHaveBeenCalled();
+    });
+
     it('should call updatedJobs when submitting form with multiple job roles and number of vacancies filled out', async () => {
       const { component, fixture, getByText, establishmentServiceSpy } = await setup(false);
 

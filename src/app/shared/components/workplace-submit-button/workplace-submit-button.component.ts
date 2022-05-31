@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-submit-button',
-  templateUrl: './submit-button.component.html',
+  selector: 'app-workplace-submit-button',
+  templateUrl: './workplace-submit-button.component.html',
 })
-export class SubmitButtonComponent {
+export class WorkplaceSubmitButtonComponent {
   @Input() return: boolean;
   @Input() saveCallback: any;
   @Input() callToAction = 'Save and continue';
@@ -14,8 +14,12 @@ export class SubmitButtonComponent {
   @Input() isExistingStaffRecord = true;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
-  onClick(event: Event, action: string, save: boolean): void {
+  onLinkClick(event: Event, action: string, save: boolean): void {
     event.preventDefault();
+    this.clicked.emit({ action, save });
+  }
+
+  onButtonClick(action: string, save: boolean): void {
     this.clicked.emit({ action, save });
   }
 }

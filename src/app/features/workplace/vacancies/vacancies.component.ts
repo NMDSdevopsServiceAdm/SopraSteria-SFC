@@ -92,8 +92,6 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private prefill(): void {
-    console.log('******** prefill ********');
-    console.log(this.establishment.vacancies);
     if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
       this.establishment.vacancies.forEach((vacancy) =>
         this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId, vacancy.total)),
@@ -229,13 +227,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected onSuccess(): void {
-    console.log('onSuccess');
-    if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies) && !this.return) {
-      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-vacancies']);
-      this.submitAction.action = null;
-    } else {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
-    }
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
   }
 
   public getFormErrorMessage(item: string, errorType: string): string {
@@ -247,7 +239,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     this.vacanciesArray.controls[index].get('total').clearValidators();
   }
 
-  protected fixErrors(): void {
+  protected complexErrorHandling(): void {
     this.formInvalid = this.form.invalid;
     this.formSnapshot = this.cloneForm();
 
@@ -267,7 +259,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     });
 
     const newVacanciesArray = newForm.get('vacancies') as FormArray;
-    this.vacanciesArray.controls.map((control) => {
+    this.vacanciesArray.controls.map((control, index) => {
       newVacanciesArray.push(
         this.formBuilder.group({
           jobRole: [control.get('jobRole').value, [Validators.required]],
@@ -277,6 +269,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
           ],
         }),
       );
+      // newVacanciesArray.controls[index].get('jobRole').setValue(control.get('jobRole').value);
+      // newVacanciesArray.controls[index].get('total').setValue(control.get('total').value);
     });
 
     if (this.form.get('vacanciesKnown').value) {
