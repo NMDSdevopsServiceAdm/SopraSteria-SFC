@@ -65,9 +65,9 @@ describe('OtherServicesComponent', () => {
     const { component, fixture, getAllByText, getByTestId } = await setup();
     const yesButton = getByTestId('otherServices-conditional-1');
     const errorMessage = 'Select the other services you provide';
-    const event = { action: 'continue', save: true };
+    component.submitAction = { action: 'continue', save: true };
     fireEvent.click(yesButton);
-    component.onSubmit(event);
+    component.onSubmit();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.form.invalid).toBeTruthy();

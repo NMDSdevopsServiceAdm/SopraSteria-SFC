@@ -42,7 +42,7 @@ export interface PrimaryAuthority {
 
 export interface Vacancy {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 

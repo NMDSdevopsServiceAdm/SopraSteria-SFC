@@ -28,7 +28,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public serverErrorsMap: Array<ErrorDefinition> = [];
   protected subscriptions: Subscription = new Subscription();
   protected initiated = false;
-  protected submitAction: { action: string; save: boolean } = null;
+  public submitAction: { action: string; save: boolean } = null;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -107,8 +107,15 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
-    this.submitAction = payload;
+  public setSubmitAction(payload: { action: string; save: boolean }): void {
+    this.submitAction = { action: payload.action, save: payload.save };
+
+    if (!payload.save) {
+      this.onSubmit();
+    }
+  }
+
+  public onSubmit(): void {
     if (!this.submitAction.save) {
       this.establishment.showSharingPermissionsBanner
         ? this.removeSharingPermissionsBanner(() => this.navigate())
@@ -120,6 +127,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
+    this.createDynamicErrorMessaging();
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
@@ -151,6 +159,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     // callback is invoked if func not declared in child to ensure navigation
     completeFunction();
   }
+  protected createDynamicErrorMessaging(): void {}
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });

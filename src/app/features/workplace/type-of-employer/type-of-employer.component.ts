@@ -30,10 +30,13 @@ export class TypeOfEmployerComponent extends Question {
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      employerType: ['', Validators.required],
-      other: [null, Validators.maxLength(this.maxLength)],
-    });
+    this.form = this.formBuilder.group(
+      {
+        employerType: ['', Validators.required],
+        other: [null, Validators.maxLength(this.maxLength)],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   protected init(): void {
@@ -86,7 +89,7 @@ export class TypeOfEmployerComponent extends Question {
       : null;
   }
 
-  updateEstablishment(props) {
+  updateEstablishment(props): void {
     this.subscriptions.add(
       this.establishmentService.updateTypeOfEmployer(this.establishment.uid, props).subscribe(
         (data) => this._onSuccess(data),

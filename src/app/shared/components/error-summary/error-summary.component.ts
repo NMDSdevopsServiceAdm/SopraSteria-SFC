@@ -83,12 +83,13 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
           Object.keys(formArray.errors).forEach(() => this.collectError(formArray, key));
         }
 
-        formArray.controls.forEach((formGroup) => {
+        formArray.controls.forEach((formGroup, index) => {
           if (formGroup.errors) {
             Object.keys(formGroup.errors).forEach(() => this.collectError(formGroup, key));
           }
 
           const formGroupControls: AbstractControl = formGroup[`controls`];
+
           if (formGroupControls) {
             Object.keys(formGroupControls).forEach((i) => {
               if (formGroupControls[i] instanceof FormArray) {
@@ -101,7 +102,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
                   }
                 });
               } else {
-                this.collectError(formGroupControls[i], `${key}.${i}`);
+                this.collectError(formGroupControls[i], `${key}.${i}.${index}`);
               }
             });
           }
@@ -142,7 +143,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
    * @param item
    */
   private transformFragmentName(item: string): string {
-    return item.replace('.', '-');
+    return item.replace(/[.]/g, '-');
   }
 
   public focusOnField(item: string) {

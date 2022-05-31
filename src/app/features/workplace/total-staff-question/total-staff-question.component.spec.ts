@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
@@ -18,7 +18,7 @@ import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { TotalStaffQuestionComponent } from './total-staff-question.component';
 
@@ -37,7 +37,7 @@ describe('TotalStaffQuestionComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
 
     const component = await render(TotalStaffQuestionComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       declarations: [],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -113,8 +113,13 @@ describe('TotalStaffQuestionComponent', () => {
 
   it('should set submitted to true', async () => {
     const { component } = await setup();
+    const form = component.fixture.componentInstance.form;
+    form.controls.totalStaff.setValue(10);
+    const button = component.getByText('Save and return');
+
+    fireEvent.click(button);
     component.fixture.detectChanges();
-    component.fixture.componentInstance.onSubmit();
+
     expect(component.fixture.componentInstance.submitted).toBeTruthy();
   });
 
