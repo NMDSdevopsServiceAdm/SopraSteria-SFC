@@ -26,8 +26,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
-  public formInvalid = false;
-  public formSnapshot: FormGroup;
+
   public emptyForm = true;
   private minVacancies = 1;
   private maxVacancies = 999;
@@ -242,9 +241,6 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected createDynamicErrorMessaging(): void {
-    // this.formInvalid = this.form.invalid;
-    // this.formSnapshot = this.cloneForm();
-
     if (this.vacanciesArray.controls[0].get('jobRole').valid || this.vacanciesArray.controls[0].get('total').valid) {
       this.emptyForm = false;
       this.newFormErrorsMap();
@@ -252,35 +248,5 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       this.emptyForm = true;
       this.setupFormErrorsMap();
     }
-  }
-
-  private cloneForm(): FormGroup {
-    const newForm = this.formBuilder.group({
-      vacancies: this.formBuilder.array([]),
-      vacanciesKnown: null,
-    });
-
-    const newVacanciesArray = newForm.get('vacancies') as FormArray;
-    this.vacanciesArray.controls.map((control, index) => {
-      newVacanciesArray.push(
-        this.formBuilder.group({
-          jobRole: [control.get('jobRole').value, [Validators.required]],
-          total: [
-            control.get('total').value,
-            [Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)],
-          ],
-        }),
-      );
-      // newVacanciesArray.controls[index].get('jobRole').setValue(control.get('jobRole').value);
-      // newVacanciesArray.controls[index].get('total').setValue(control.get('total').value);
-    });
-
-    if (this.form.get('vacanciesKnown').value) {
-      newVacanciesArray.controls[0].get('jobRole').clearValidators();
-      newVacanciesArray.controls[0].get('total').clearValidators();
-      newVacanciesArray.reset([], { emitEvent: false });
-    }
-
-    return newForm;
   }
 }
