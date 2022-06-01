@@ -65,9 +65,11 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
         }),
     );
 
+    this.setUserServiceReturnUrl();
+
     this.subscriptions.add(
       this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
-        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid, 'users'] };
+        this.return = returnUrl;
       }),
     );
   }
@@ -150,5 +152,18 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
         return user.status === 'Active' && user.role === Roles.Edit;
       }).length > 1
     );
+  }
+
+  private setUserServiceReturnUrl(): void {
+    if (this.establishmentService.isOwnWorkplace()) {
+      this.userService.updateReturnUrl({
+        url: ['/workplace', this.establishment.uid, 'users'],
+      });
+      return;
+    }
+    this.userService.updateReturnUrl({
+      url: ['/workplace', this.establishment.uid],
+      fragment: 'workplace-users',
+    });
   }
 }

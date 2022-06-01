@@ -86,10 +86,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       url: ['/workplace', this.workplace.uid],
       fragment: 'workplace',
     };
-
-    this.userService.updateReturnUrl({
-      url: ['/workplace', this.workplace.uid, 'users'],
-    });
   }
 
   public onDeleteWorkplace(event: Event): void {
