@@ -439,5 +439,41 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  User.createAdminUser = async function (adminUser) {
+    const { fullName, jobTitle, email, phoneNumber, userRole, uid, updatedBy } = adminUser;
+    return this.create({
+      FullNameValue: fullName,
+      JobTitleValue: jobTitle,
+      EmailValue: email,
+      PhoneValue: phoneNumber,
+      UserRoleValue: userRole,
+      isPrimary: false,
+      CanManageWdfClaimsValue: false,
+      archived: false,
+      uid,
+      updatedBy,
+    });
+  };
+
+  User.fetchAdminUsers = async function () {
+    return this.findAll({
+      attributes: [
+        'RegistrationID',
+        'UserUID',
+        'Archived',
+        'IsPrimary',
+        'FullNameValue',
+        'JobTitleValue',
+        'EmailValue',
+        'PhoneValue',
+        'UserRoleValue',
+      ],
+      where: {
+        UserRoleValue: { [Op.or]: ['Admin', 'AdminManager'] },
+        Archived: false,
+      },
+    });
+  };
+
   return User;
 };
