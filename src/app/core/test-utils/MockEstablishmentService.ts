@@ -205,10 +205,3 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     return;
   }
 }
-
-@Injectable()
-export class MockEstablishmentServiceWithoutReturn extends MockEstablishmentService {
-  public get returnTo(): URLStructure {
-    return;
-  }
-}
