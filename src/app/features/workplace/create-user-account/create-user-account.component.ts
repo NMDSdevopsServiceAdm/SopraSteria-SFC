@@ -111,8 +111,14 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   get returnTo(): URLStructure {
+    if (this.establishmentService.isOwnWorkplace()) {
+      return {
+        url: ['/workplace', this.workplace.uid, 'users'],
+      };
+    }
     return {
-      url: ['/workplace', this.workplace.uid, 'users'],
+      url: ['/workplace', this.workplace.uid],
+      fragment: 'workplace-users',
     };
   }
 

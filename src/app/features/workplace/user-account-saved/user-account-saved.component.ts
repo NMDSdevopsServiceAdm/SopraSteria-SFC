@@ -28,10 +28,9 @@ export class UserAccountSavedComponent implements OnInit {
 
   ngOnInit() {
     this.workplace = this.establishmentService.primaryWorkplace;
-
     this.subscriptions.add(
       this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
-        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.workplace.uid, 'users'] };
+        this.return = returnUrl;
       }),
     );
   }
