@@ -47,7 +47,6 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
     }
 
     this.getLastLoggedIn();
-    this.setUserServiceReturnUrl();
     this.setUpNotificationSubscription();
   }
 
@@ -139,12 +138,6 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
         );
       }),
     );
-  }
-
-  private setUserServiceReturnUrl(): void {
-    this.userService.updateReturnUrl({
-      url: ['/workplace', this.workplace.uid, 'users'],
-    });
   }
 
   private getLastLoggedIn(): void {
