@@ -39,10 +39,7 @@
               <label for="jobRole-{{ i }}" class="govuk-label">Job role</label>
               <span *ngIf="submitted" id="vacancies-jobRole-{{ i }}-error" class="govuk-error-message">
                 <ng-container
-                  *ngIf="
-                    submitted && !emptyForm && this.form.get('vacancies.' + i + '.jobRole').invalid;
-                    else hiddenJobRoleError
-                  "
+                  *ngIf="submitted && !emptyForm && vacancy.get('jobRole').invalid; else hiddenJobRoleError"
                 >
                   Select the job role
                 </ng-container>
@@ -51,9 +48,8 @@
                   <div
                     *ngIf="
                       !emptyForm &&
-                      this.form.get('vacancies.' + i + '.total').invalid &&
-                      (this.form.get('vacancies.' + i + '.total').errors.min ||
-                        this.form.get('vacancies.' + i + '.total').errors.max)
+                      vacancy.get('total').invalid &&
+                      (vacancy.get('total').errors.min || vacancy.get('total').errors.max)
                     "
                   >
                     &nbsp;
@@ -62,9 +58,7 @@
               </span>
               <select
                 class="govuk-select govuk-!-width-full"
-                [class.govuk-select--error]="
-                  submitted && !emptyForm && this.form.get('vacancies.' + i + '.jobRole').invalid
-                "
+                [class.govuk-select--error]="submitted && !emptyForm && vacancy.get('jobRole').invalid"
                 [formControlName]="'jobRole'"
                 id="jobRole-{{ i }}"
                 name="jobRole"
@@ -79,19 +73,12 @@
             <div class="govuk-grid-column-one-third">
               <label for="total-{{ i }}" class="govuk-label">Number of vacancies</label>
               <span *ngIf="submitted" id="vacancies-total-{{ i }}-error" class="govuk-error-message">
-                <ng-container
-                  *ngIf="
-                    submitted && !emptyForm && this.form.get('vacancies.' + i + '.total').invalid;
-                    else hiddenTotalError
-                  "
-                >
-                  <span *ngIf="this.form.get('vacancies.' + i + '.total').errors.required">
-                    Enter the number of vacancies</span
-                  >
-                  <span *ngIf="this.form.get('vacancies.' + i + '.total').errors.min">
+                <ng-container *ngIf="submitted && !emptyForm && vacancy.get('total').invalid; else hiddenTotalError">
+                  <span *ngIf="vacancy.get('total').errors.required"> Enter the number of vacancies</span>
+                  <span *ngIf="vacancy.get('total').errors.min">
                     Number must be between {{ this.minVacancies }} - {{ this.maxVacancies }}</span
                   >
-                  <span *ngIf="this.form.get('vacancies.' + i + '.total').errors.max">
+                  <span *ngIf="vacancy.get('total').errors.max">
                     Number must be between {{ this.minVacancies }} - {{ this.maxVacancies }}
                   </span>
                 </ng-container>
@@ -99,9 +86,7 @@
               </span>
               <input
                 class="govuk-input govuk-!-width-one-quarter"
-                [class.govuk-input--error]="
-                  submitted && !emptyForm && this.form.get('vacancies.' + i + '.total').invalid
-                "
+                [class.govuk-input--error]="submitted && !emptyForm && vacancy.get('total').invalid"
                 [formControlName]="'total'"
                 id="total-{{ i }}"
                 name="total"
