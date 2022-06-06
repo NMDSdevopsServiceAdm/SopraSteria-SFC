@@ -58,9 +58,9 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
       url:
         this.route.snapshot.data.primaryWorkplace &&
         this.workplace.uid === this.route.snapshot.data.primaryWorkplace.uid
-          ? ['/dashboard']
+          ? ['/workplace', this.workplace.uid, 'users']
           : ['/workplace', this.workplace.uid],
-      fragment: 'users',
+      fragment: 'workplace-users',
     };
   }
 
@@ -115,9 +115,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplace.uid, this.user.uid, { ...this.user, ...props }).subscribe(
         (data) => {
-          this.router.navigate(['/workplace', this.workplace.uid, 'user', this.user.uid], {
-            fragment: 'users',
-          });
+          this.router.navigate(['/workplace', this.workplace.uid, 'user', this.user.uid]);
           if (data.isPrimary) {
             name = this.user.fullname;
           }
