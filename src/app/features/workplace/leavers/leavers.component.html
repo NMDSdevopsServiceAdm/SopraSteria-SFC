@@ -8,113 +8,132 @@
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">Add your staff leavers from the last 12 months</h1>
-        </legend>
-        <p class="govuk-!-margin-top-8 govuk-!-margin-bottom-6">
-          These should only be leavers who were permanent or temporary staff.
-        </p>
-      </div>
-    </div>
-    <ng-container formArrayName="leavers">
-      <div
-        *ngFor="let leaver of leavers.controls; let i = index"
-        [formGroupName]="i"
-        [class.govuk-form-group--error]="submitted && leaver.invalid"
-      >
-        <div class="govuk-grid-row govuk-!-margin-bottom-6">
-          <div class="govuk-grid-column-full">
-            <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
-          </div>
-          <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
-            <label for="jobRole-0" class="govuk-label">Job role</label>
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <label for="total-0" class="govuk-label">Number of leavers</label>
-          </div>
-          <div class="govuk-grid-column-two-thirds">
-            <span *ngIf="submitted" id="leaver-{{ i }}-error" class="govuk-error-message">
-              <ng-container *ngIf="submitted && leaver.get('jobRole').invalid">
-                {{ getFormErrorMessage('leavers.jobRole', 'required') }}
-              </ng-container>
-            </span>
-            <select
-              class="govuk-select govuk-!-width-full"
-              [class.govuk-select--error]="submitted && leaver.get('jobRole').invalid"
-              [formControlName]="'jobRole'"
-              id="jobRole-{{ i }}"
-              name="jobRole"
-            >
-              <option [ngValue]="null">Select job role</option>
-              <option *ngFor="let job of selectableJobs(i)" [value]="job.id">
-                {{ job.title }}
-              </option>
-            </select>
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <span *ngIf="submitted" id="record-total-{{ i }}-error" class="govuk-error-message">
-              <ng-container *ngIf="submitted && leaver.get('total').invalid">
-                <span *ngIf="leaver.get('total').errors.required">
-                  {{ getFormErrorMessage('leavers.total', 'required') }}</span
-                >
-                <span *ngIf="leaver.get('total').errors.min"> {{ getFormErrorMessage('leavers.total', 'min') }}</span>
-                <span *ngIf="leaver.get('total').errors.max">
-                  {{ getFormErrorMessage('leavers.total', 'max') }}
-                </span>
-              </ng-container>
-            </span>
-            <input
-              class="govuk-input govuk-!-width-one-quarter govuk-!-margin-right-5"
-              [class.govuk-input--error]="submitted && leaver.get('total').invalid"
-              [formControlName]="'total'"
-              id="total-{{ i }}"
-              name="total"
-              type="number"
-            />
-            <a
-              *ngIf="leavers.length > 1"
-              href="#"
-              class="govuk-list govuk-list--inline govuk-!-width-one-third"
-              (click)="removeLeaver($event, i)"
-              >Remove</a
-            >
-          </div>
+    <div
+      class="govuk-form-group govuk-!-margin-bottom-0"
+      [class.govuk-form-group--error]="submitted && emptyForm && this.form.invalid"
+    >
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">Add your staff leavers from the last 12 months</h1>
+          </legend>
+          <p>These should only be leavers who were permanent or temporary staff.</p>
         </div>
-        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-7" />
       </div>
-    </ng-container>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-        <button
-          *ngIf="!allJobsSelected"
-          class="govuk-button govuk-button--secondary"
-          type="button"
-          (click)="addLeaver()"
+      <ng-container formArrayName="leavers">
+        <div
+          *ngFor="let leaver of leavers.controls; let i = index"
+          [formGroupName]="i"
+          [class.govuk-form-group--error]="submitted && !emptyForm && leaver.invalid"
         >
-          Add another job role
-        </button>
+          <div class="govuk-grid-row govuk-!-margin-bottom-6" [attr.data-testid]="'row-' + i">
+            <div class="govuk-grid-column-full">
+              <span *ngIf="submitted" class="govuk-error-message">
+                <ng-container *ngIf="submitted && emptyForm && this.form.invalid">
+                  Select the job role and enter the number of leavers, or tell us there are none
+                </ng-container>
+              </span>
+              <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+              <label for="jobRole-0" class="govuk-label">Job role</label>
+              <span *ngIf="submitted" id="leavers-jobRole-{{ i }}-error" class="govuk-error-message">
+                <ng-container *ngIf="submitted && !emptyForm && leaver.get('jobRole').invalid; else hiddenJobRoleError">
+                  Select the job role
+                </ng-container>
+                <ng-template #hiddenJobRoleError>
+                  <div *ngIf="!emptyForm && leaver.get('total').invalid">&nbsp;</div>
+                  <div
+                    *ngIf="
+                      !emptyForm &&
+                      leaver.get('total').invalid &&
+                      (leaver.get('total').errors.min || leaver.get('total').errors.max)
+                    "
+                  >
+                    &nbsp;
+                  </div>
+                </ng-template>
+              </span>
+              <select
+                class="govuk-select govuk-!-width-full"
+                [class.govuk-select--error]="submitted && !emptyForm && leaver.get('jobRole').invalid"
+                [formControlName]="'jobRole'"
+                id="jobRole-{{ i }}"
+                name="jobRole"
+              >
+                <option [ngValue]="null">Select job role</option>
+                <option *ngFor="let job of selectableJobs(i)" [value]="job.id">
+                  {{ job.title }}
+                </option>
+              </select>
+            </div>
+            <div class="govuk-grid-column-one-third">
+              <label for="total-{{ i }}" class="govuk-label">Number of leavers</label>
+              <span *ngIf="submitted" id="leavers-total-{{ i }}-error" class="govuk-error-message">
+                <ng-container *ngIf="submitted && !emptyForm && leaver.get('total').invalid; else hiddenTotalError">
+                  <span *ngIf="leaver.get('total').errors.required"> Enter the number of leavers</span>
+                  <span *ngIf="leaver.get('total').errors.min"
+                    >Number must be between {{ this.minTotal }} - {{ this.maxTotal }}</span
+                  >
+                  <span *ngIf="leaver.get('total').errors.max">
+                    Number must be between {{ this.minTotal }} - {{ this.maxTotal }}
+                  </span>
+                </ng-container>
+                <ng-template #hiddenTotalError
+                  ><div *ngIf="!emptyForm && leaver.get('jobRole').invalid">&nbsp;</div></ng-template
+                >
+              </span>
+              <input
+                class="govuk-input govuk-!-width-one-quarter govuk-!-margin-right-5"
+                [class.govuk-input--error]="submitted && !emptyForm && leaver.get('total').invalid"
+                [formControlName]="'total'"
+                id="total-{{ i }}"
+                name="total"
+                type="number"
+              />
+              <a
+                *ngIf="leavers.length > 1"
+                href="#"
+                class="govuk-list govuk-list--inline govuk-!-width-one-third"
+                (click)="removeLeaver($event, i)"
+                >Remove</a
+              >
+            </div>
+          </div>
+          <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-7" />
+        </div>
+      </ng-container>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+          <button
+            *ngIf="!allJobsSelected"
+            class="govuk-button govuk-button--secondary"
+            type="button"
+            (click)="addLeaver()"
+          >
+            Add another job role
+          </button>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <p class="govuk-heading-m">Total leavers: {{ totalLeavers }}</p>
+        </div>
       </div>
-      <div class="govuk-grid-column-one-third">
-        <p class="govuk-heading-m">Total leavers: {{ totalLeavers }}</p>
-      </div>
-    </div>
 
-    <div class="govuk-form-group">
-      <div class="govuk-radios">
-        <div class="govuk-radios__item" *ngFor="let option of leaversKnownOptions; let i = index">
-          <input
-            class="govuk-radios__input"
-            id="leaversKnown-{{ i }}"
-            name="leaversKnown"
-            [formControlName]="'leaversKnown'"
-            type="radio"
-            [value]="option.value"
-          />
-          <label class="govuk-label govuk-radios__label" for="leaversKnown-{{ i }}">
-            {{ option.label }}
-          </label>
+      <div class="govuk-form-group">
+        <div class="govuk-radios">
+          <div class="govuk-radios__item" *ngFor="let option of leaversKnownOptions; let i = index">
+            <input
+              class="govuk-radios__input"
+              id="leaversKnown-{{ i }}"
+              name="leaversKnown"
+              [formControlName]="'leaversKnown'"
+              type="radio"
+              [value]="option.value"
+            />
+            <label class="govuk-label govuk-radios__label" for="leaversKnown-{{ i }}">
+              {{ option.label }}
+            </label>
+          </div>
         </div>
       </div>
     </div>

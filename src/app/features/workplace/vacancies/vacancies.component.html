@@ -17,7 +17,7 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">Add your current staff vacancies</h1>
           </legend>
-          <p>These should only be vacancies for permanent or temporary staff</p>
+          <p>These should only be vacancies for permanent or temporary staff.</p>
         </div>
       </div>
       <ng-container formArrayName="vacancies">
@@ -44,7 +44,7 @@
                   Select the job role
                 </ng-container>
                 <ng-template #hiddenJobRoleError
-                  ><div *ngIf="!emptyForm">&nbsp;</div>
+                  ><div *ngIf="!emptyForm && vacancy.get('total').invalid">&nbsp;</div>
                   <div
                     *ngIf="
                       !emptyForm &&
@@ -82,7 +82,9 @@
                     Number must be between {{ this.minVacancies }} - {{ this.maxVacancies }}
                   </span>
                 </ng-container>
-                <ng-template #hiddenTotalError><span *ngIf="!emptyForm">&nbsp;</span></ng-template>
+                <ng-template #hiddenTotalError
+                  ><div *ngIf="!emptyForm && vacancy.get('jobRole').invalid">&nbsp;</div></ng-template
+                >
               </span>
               <input
                 class="govuk-input govuk-!-width-one-quarter"

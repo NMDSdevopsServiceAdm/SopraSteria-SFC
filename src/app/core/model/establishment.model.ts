@@ -54,7 +54,7 @@ export interface Starter {
 
 export interface Leaver {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 

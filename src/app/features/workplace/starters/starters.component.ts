@@ -85,6 +85,8 @@ export class StartersComponent extends Question {
           .get('total')
           .setValidators([Validators.required, Validators.min(this.minStarters), Validators.max(this.maxStarters)]);
 
+        this.starterRecords.controls[0].get('jobRole').updateValueAndValidity({ emitEvent: false });
+        this.starterRecords.controls[0].get('total').updateValueAndValidity({ emitEvent: false });
         this.form.get('noRecordsReason').setValue(null, { emitEvent: false });
       }),
     );
