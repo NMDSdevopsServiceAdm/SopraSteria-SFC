@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { JobService } from '@core/services/job.service';
 import { Question } from '@features/workplace/question/question.component';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-starters',
@@ -37,11 +35,9 @@ export class StartersComponent extends Question {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private jobService: JobService,
+    private route: ActivatedRoute,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
-
-    this.setupForm();
   }
 
   get starterRecords(): FormArray {
@@ -61,7 +57,8 @@ export class StartersComponent extends Question {
   }
 
   protected init(): void {
-    this.getJobs();
+    this.jobs = this.route.snapshot.data.jobs;
+    this.setupForm();
     this.setPreviousRoute();
     this.prefill();
 
@@ -101,15 +98,6 @@ export class StartersComponent extends Question {
 
   private setPreviousRoute(): void {
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
-  }
-
-  private getJobs(): void {
-    this.subscriptions.add(
-      this.jobService
-        .getJobs()
-        .pipe(take(1))
-        .subscribe((jobs) => (this.jobs = jobs)),
-    );
   }
 
   private prefill(): void {

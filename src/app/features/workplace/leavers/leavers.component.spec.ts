@@ -5,9 +5,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { JobService } from '@core/services/job.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockJobService } from '@core/test-utils/MockJobService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -27,10 +25,6 @@ describe('LeaversComponent', () => {
               leavers,
             }),
             deps: [HttpClient],
-          },
-          {
-            provide: JobService,
-            useClass: MockJobService,
           },
           {
             provide: ActivatedRoute,

@@ -1,12 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { JobService } from '@core/services/job.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockJobService } from '@core/test-utils/MockJobService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -27,8 +25,32 @@ describe('StartersComponent', () => {
             }),
           },
           {
-            provide: JobService,
-            useClass: MockJobService,
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                data: {
+                  jobs: [
+                    {
+                      id: 0,
+                      title: 'Job0',
+                    },
+                    {
+                      id: 1,
+                      title: 'Job1',
+                    },
+                    {
+                      id: 2,
+                      title: 'Job2',
+                    },
+                    {
+                      id: 3,
+                      title: 'Job3',
+                      other: true,
+                    },
+                  ],
+                },
+              },
+            },
           },
         ],
       },
