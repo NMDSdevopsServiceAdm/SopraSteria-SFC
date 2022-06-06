@@ -23,7 +23,9 @@ describe('VacanciesComponent', () => {
           FormBuilder,
           {
             provide: EstablishmentService,
-            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, vacancies),
+            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+              vacancies,
+            }),
             deps: [HttpClient],
           },
           {
@@ -172,19 +174,6 @@ describe('VacanciesComponent', () => {
       });
     });
 
-    it('should do something', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      const submitSpy = spyOn(component, 'onSubmit');
-      component.form.get('vacancies').setValue([{ jobRole: 1, total: 1 }]);
-
-      const button = getByText('Save and return');
-      fireEvent.click(button);
-      fixture.detectChanges();
-
-      expect(submitSpy).toHaveBeenCalled();
-    });
-
     it('should call updatedJobs when submitting form with multiple job roles and number of vacancies filled out', async () => {
       const { component, fixture, getByText, establishmentServiceSpy } = await setup(false);
 
@@ -223,7 +212,7 @@ describe('VacanciesComponent', () => {
       });
     });
 
-    it('should navigate to the next page when submitting from the flow', async () => {
+    it('should navigate to the starters page when submitting from the flow', async () => {
       const { component, fixture, getByText, routerSpy } = await setup(false);
 
       component.form.get('vacanciesKnown').setValue('None');

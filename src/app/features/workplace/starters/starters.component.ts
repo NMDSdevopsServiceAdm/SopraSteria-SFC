@@ -238,7 +238,7 @@ export class StartersComponent extends Question {
     if (this.starterRecords.length) {
       return {
         starters: this.starterRecords.value.map((starterRecord) => ({
-          jobRole: parseInt(starterRecord.jobRole, 10),
+          jobId: parseInt(starterRecord.jobRole, 10),
           total: starterRecord.total,
         })),
       };

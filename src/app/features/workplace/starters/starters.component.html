@@ -32,7 +32,7 @@
             <div class="govuk-grid-column-full">
               <span class="govuk-error-message">
                 <ng-container *ngIf="submitted && emptyForm && this.form.invalid">
-                  Select the job role and enter the number of new starters, or tell us there are none
+                  Select the job role and enter the number of starters, or tell us there are none
                 </ng-container>
               </span>
               <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
@@ -41,7 +41,7 @@
               <label for="jobRole-{{ i }}" class="govuk-label">Job role</label>
               <span *ngIf="submitted" id="starterRecords-jobRole-{{ i }}-error" class="govuk-error-message">
                 <ng-container *ngIf="submitted && !emptyForm && record.get('jobRole').invalid; else hiddenJobRoleError">
-                  {{ getFormErrorMessage('starterRecords.jobRole.' + i, 'required') }}
+                  Select the job role
                   <div *ngIf="record.get('total').invalid">&nbsp;</div>
                 </ng-container>
                 <ng-template #hiddenJobRoleError>

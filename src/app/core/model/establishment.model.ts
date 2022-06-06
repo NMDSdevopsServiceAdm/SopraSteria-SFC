@@ -48,7 +48,7 @@ export interface Vacancy {
 
 export interface Starter {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 
