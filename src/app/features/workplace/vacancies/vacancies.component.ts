@@ -249,4 +249,10 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       this.setupFormErrorsMap();
     }
   }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
+  }
 }

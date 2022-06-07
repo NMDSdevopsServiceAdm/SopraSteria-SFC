@@ -268,4 +268,10 @@ export class StartersComponent extends Question {
       this.setupFormErrorsMap();
     }
   }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
+  }
 }
