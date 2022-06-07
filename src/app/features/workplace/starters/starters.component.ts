@@ -85,6 +85,10 @@ export class StartersComponent extends Question {
         this.starterRecords.controls[0].get('jobRole').updateValueAndValidity({ emitEvent: false });
         this.starterRecords.controls[0].get('total').updateValueAndValidity({ emitEvent: false });
         this.form.get('noRecordsReason').setValue(null, { emitEvent: false });
+
+        if (this.emptyForm && this.starterRecords.controls[0].get('jobRole').value) {
+          this.submitted = false;
+        }
       }),
     );
   }
@@ -167,11 +171,11 @@ export class StartersComponent extends Question {
             },
             {
               name: 'min',
-              message: `Number must be between ${this.minStarters} - ${this.maxStarters} (job role ${index + 1})`,
+              message: `Number must be between ${this.minStarters} and ${this.maxStarters} (job role ${index + 1})`,
             },
             {
               name: 'max',
-              message: `Number must be between ${this.minStarters} - ${this.maxStarters} (job role ${index + 1})`,
+              message: `Number must be between ${this.minStarters} and ${this.maxStarters} (job role ${index + 1})`,
             },
           ],
         },

@@ -82,6 +82,10 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
         this.leavers.controls[0].get('jobRole').updateValueAndValidity({ emitEvent: false });
         this.leavers.controls[0].get('total').updateValueAndValidity({ emitEvent: false });
         this.form.get('leaversKnown').setValue(null, { emitEvent: false });
+
+        if (this.emptyForm && this.leavers.controls[0].get('jobRole').value) {
+          this.submitted = false;
+        }
       }),
     );
   }
@@ -164,11 +168,11 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
             },
             {
               name: 'min',
-              message: `Number must be between ${this.minTotal} - ${this.maxTotal} (job role ${index + 1})`,
+              message: `Number must be between ${this.minTotal} and ${this.maxTotal} (job role ${index + 1})`,
             },
             {
               name: 'max',
-              message: `Number must be between ${this.minTotal} - ${this.maxTotal} (job role ${index + 1})`,
+              message: `Number must be between ${this.minTotal} and ${this.maxTotal} (job role ${index + 1})`,
             },
           ],
         },

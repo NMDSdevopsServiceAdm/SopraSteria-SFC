@@ -304,8 +304,8 @@ describe('StartersComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(getByText('Number must be between 1 - 999 (job role 1)')).toBeTruthy();
-      expect(getByText('Number must be between 1 - 999')).toBeTruthy();
+      expect(getByText('Number must be between 1 and 999 (job role 1)')).toBeTruthy();
+      expect(getByText('Number must be between 1 and 999')).toBeTruthy();
     });
 
     it('should show an error if the job role and number of starters is filled in but the starters is negative', async () => {
@@ -317,8 +317,8 @@ describe('StartersComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(getByText('Number must be between 1 - 999 (job role 1)')).toBeTruthy();
-      expect(getByText('Number must be between 1 - 999')).toBeTruthy();
+      expect(getByText('Number must be between 1 and 999 (job role 1)')).toBeTruthy();
+      expect(getByText('Number must be between 1 and 999')).toBeTruthy();
     });
 
     it('should show an error if the job role and number of starters is filled in but the starters is greater than the max allowed number', async () => {
@@ -330,8 +330,8 @@ describe('StartersComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(getByText('Number must be between 1 - 999 (job role 1)')).toBeTruthy();
-      expect(getByText('Number must be between 1 - 999')).toBeTruthy();
+      expect(getByText('Number must be between 1 and 999 (job role 1)')).toBeTruthy();
+      expect(getByText('Number must be between 1 and 999')).toBeTruthy();
     });
 
     it('should remove any error messages when the add another job role button is clicked', async () => {
