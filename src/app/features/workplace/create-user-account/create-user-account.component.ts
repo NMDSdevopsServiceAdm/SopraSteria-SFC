@@ -51,7 +51,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
       this.setPermissionsTypeRadios();
     });
     this.subscriptions.add(
-      this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
+      this.userService.returnUrl.pipe(take(1)).subscribe((returnUrl) => {
         this.return = returnUrl;
       }),
     );

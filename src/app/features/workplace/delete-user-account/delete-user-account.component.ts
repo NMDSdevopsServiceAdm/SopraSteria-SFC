@@ -35,7 +35,7 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
     this.establishment = this.route.parent.snapshot.data.establishment;
     this.setBackLink();
     this.subscriptions.add(
-      this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
+      this.userService.returnUrl.pipe(take(1)).subscribe((returnUrl) => {
         this.return = returnUrl;
       }),
     );

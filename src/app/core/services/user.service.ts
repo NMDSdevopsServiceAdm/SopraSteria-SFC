@@ -41,12 +41,33 @@ export class UserService {
     this._userDetails$.next(userDetails);
   }
 
-  public updateReturnUrl(returnUrl: URLStructure) {
-    this._returnUrl$.next(returnUrl);
-  }
-
   public getLoggedInUser(): Observable<UserDetails> {
     return this.http.get<UserDetails>(`/api/user/me`).pipe(tap((user) => (this.loggedInUser = user)));
+  }
+
+  public get returnUrl() {
+    if (this._returnUrl$.value != null) {
+      return this.returnUrl$;
+    }
+
+    const localStorageReturnUrl = localStorage.getItem('returnUrl');
+    if (localStorageReturnUrl) {
+      this._returnUrl$.next(JSON.parse(localStorageReturnUrl));
+    } else if (isDevMode()) {
+      if (!this.returnUrl$) {
+        throw new TypeError('No returnUrl in local storage!');
+      }
+    }
+    return this.returnUrl$;
+  }
+
+  public updateReturnUrl(returnUrl: URLStructure) {
+    this._returnUrl$.next(returnUrl);
+    localStorage.setItem('returnUrl', JSON.stringify(returnUrl));
+  }
+
+  public resetReturnUrl() {
+    this._returnUrl$ = null;
   }
 
   // get agreedUpdatedTermsStatus

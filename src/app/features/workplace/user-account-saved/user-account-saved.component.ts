@@ -5,7 +5,7 @@ import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -22,14 +22,14 @@ export class UserAccountSavedComponent implements OnInit {
     private establishmentService: EstablishmentService,
   ) {}
 
-  public returnUrl$: Observable<URLStructure>;
+  // public returnUrl$: Observable<URLStructure>;
   public userDetails: UserDetails = this.route.snapshot.data.user;
   public return: URLStructure;
 
   ngOnInit() {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.subscriptions.add(
-      this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
+      this.userService.returnUrl.pipe(take(1)).subscribe((returnUrl) => {
         this.return = returnUrl;
       }),
     );

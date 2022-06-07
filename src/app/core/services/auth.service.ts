@@ -150,6 +150,7 @@ export class AuthService {
     this._isAuthenticated$.next(false);
     this.userService.loggedInUser = null;
     this.userService.resetAgreedUpdatedTermsStatus = null;
+    this.userService.resetReturnUrl;
     this.establishmentService.resetState();
     this.permissionsService.clearPermissions();
     Sentry.configureScope((scope) => {
