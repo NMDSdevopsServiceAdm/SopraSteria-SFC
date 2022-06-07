@@ -15,6 +15,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/internal/operators/take';
 
 @Component({
   selector: 'app-user-account-edit-permissions',
@@ -53,20 +54,18 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   ) {
     this.user = this.route.snapshot.data.user;
     this.workplace = this.route.parent.snapshot.data.establishment;
-
-    this.return = {
-      url:
-        this.route.snapshot.data.primaryWorkplace &&
-        this.workplace.uid === this.route.snapshot.data.primaryWorkplace.uid
-          ? ['/workplace', this.workplace.uid, 'users']
-          : ['/workplace', this.workplace.uid],
-      fragment: 'workplace-users',
-    };
   }
 
   ngOnInit(): void {
     this.setupServerErrorsMap();
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+
+    this.subscriptions.add(
+      this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
+        this.return = returnUrl;
+      }),
+    );
+
+    const journey = this.setBreadcrumbJourney();
     this.breadcrumbService.show(journey);
 
     this.form = this.formBuilder.group({
@@ -77,6 +76,14 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public setBreadcrumbJourney() {
+    if (this.return.fragment == null) {
+      return JourneyType.MY_WORKPLACE;
+    } else {
+      return JourneyType.ALL_WORKPLACES;
+    }
   }
 
   public setupServerErrorsMap(): void {

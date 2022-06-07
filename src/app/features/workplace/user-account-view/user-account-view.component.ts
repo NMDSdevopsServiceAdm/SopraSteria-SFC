@@ -51,7 +51,12 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+    this.subscriptions.add(
+      this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
+        this.return = returnUrl;
+      }),
+    );
+    const journey = this.setBreadcrumbJourney();
     this.breadcrumbService.show(journey);
 
     this.subscriptions.add(
@@ -64,18 +69,18 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
           this.setPermissions();
         }),
     );
-
-    this.setUserServiceReturnUrl();
-
-    this.subscriptions.add(
-      this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
-        this.return = returnUrl;
-      }),
-    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public setBreadcrumbJourney() {
+    if (this.return.fragment == null) {
+      return JourneyType.MY_WORKPLACE;
+    } else {
+      return JourneyType.ALL_WORKPLACES;
+    }
   }
 
   public resendActivationLink(event: Event): void {
@@ -151,18 +156,5 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
         return user.status === 'Active' && user.role === Roles.Edit;
       }).length > 1
     );
-  }
-
-  private setUserServiceReturnUrl(): void {
-    if (this.establishmentService.isOwnWorkplace()) {
-      this.userService.updateReturnUrl({
-        url: ['/workplace', this.establishment.uid, 'users'],
-      });
-      return;
-    }
-    this.userService.updateReturnUrl({
-      url: ['/workplace', this.establishment.uid],
-      fragment: 'workplace-users',
-    });
   }
 }

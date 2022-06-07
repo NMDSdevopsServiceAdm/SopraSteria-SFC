@@ -107,6 +107,10 @@ export const allWorkplacesJourney: JourneyRoute = {
             {
               title: 'Add a user',
               path: Path.CREATE_ACCOUNT,
+              referrer: {
+                path: Path.WORKPLACE,
+                fragment: 'workplace-users',
+              },
             },
             {
               title: 'User details',

@@ -54,11 +54,6 @@ describe('DeleteUserAccountComponent', () => {
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
 
-    componentInstance.return = {
-      url: ['/workplace', '12345asdfg', 'users'],
-      fragment: 'workplace-users',
-    };
-
     return {
       component,
       router,
