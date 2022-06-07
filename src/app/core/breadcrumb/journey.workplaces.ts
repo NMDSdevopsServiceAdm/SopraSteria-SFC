@@ -50,18 +50,10 @@ export const myWorkplaceJourney: JourneyRoute = {
         {
           title: 'User details',
           path: Path.USER_ACCOUNT,
-          referrer: {
-            path: Path.DASHBOARD,
-            fragment: 'home',
-          },
           children: [
             {
               title: 'Permissions',
               path: Path.USER_PERMISSIONS,
-              referrer: {
-                path: Path.DASHBOARD,
-                fragment: 'home',
-              },
             },
           ],
         },

@@ -10,8 +10,6 @@
         *ngIf="canResendActivationLink"
         draggable="false"
         role="button"
-        [routerLink]="return.url"
-        [fragment]="return.fragment"
         (click)="resendActivationLink($event)"
       >
         Resend the user set-up email</a
