@@ -81,6 +81,10 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         this.vacanciesArray.controls[0].get('jobRole').updateValueAndValidity({ emitEvent: false });
         this.vacanciesArray.controls[0].get('total').updateValueAndValidity({ emitEvent: false });
         this.form.get('vacanciesKnown').setValue(null, { emitEvent: false });
+
+        if (this.emptyForm && this.vacanciesArray.controls[0].get('jobRole').value) {
+          this.submitted = false;
+        }
       }),
     );
   }
@@ -159,11 +163,11 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
             },
             {
               name: 'min',
-              message: `Number must be between ${this.minVacancies} - ${this.maxVacancies} (job role ${index + 1})`,
+              message: `Number must be between ${this.minVacancies} and ${this.maxVacancies} (job role ${index + 1})`,
             },
             {
               name: 'max',
-              message: `Number must be between ${this.minVacancies} - ${this.maxVacancies} (job role ${index + 1})`,
+              message: `Number must be between ${this.minVacancies} and ${this.maxVacancies} (job role ${index + 1})`,
             },
           ],
         },
@@ -247,6 +251,12 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     } else {
       this.emptyForm = true;
       this.setupFormErrorsMap();
+    }
+  }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
     }
   }
 }

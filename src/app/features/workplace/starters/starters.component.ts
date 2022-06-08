@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { JobService } from '@core/services/job.service';
 import { Question } from '@features/workplace/question/question.component';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-starters',
@@ -27,7 +25,8 @@ export class StartersComponent extends Question {
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
-  private minStarters = 0;
+  public emptyForm = true;
+  private minStarters = 1;
   private maxStarters = 999;
 
   constructor(
@@ -36,11 +35,9 @@ export class StartersComponent extends Question {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private jobService: JobService,
+    private route: ActivatedRoute,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
-
-    this.setupForm();
   }
 
   get starterRecords(): FormArray {
@@ -60,7 +57,8 @@ export class StartersComponent extends Question {
   }
 
   protected init(): void {
-    this.getJobs();
+    this.jobs = this.route.snapshot.data.jobs;
+    this.setupForm();
     this.setPreviousRoute();
     this.prefill();
 
@@ -79,12 +77,18 @@ export class StartersComponent extends Question {
 
     this.subscriptions.add(
       this.starterRecords.valueChanges.subscribe(() => {
-        this.starterRecords.controls[0].get('jobId').setValidators([Validators.required]);
+        this.starterRecords.controls[0].get('jobRole').setValidators([Validators.required]);
         this.starterRecords.controls[0]
           .get('total')
           .setValidators([Validators.required, Validators.min(this.minStarters), Validators.max(this.maxStarters)]);
 
+        this.starterRecords.controls[0].get('jobRole').updateValueAndValidity({ emitEvent: false });
+        this.starterRecords.controls[0].get('total').updateValueAndValidity({ emitEvent: false });
         this.form.get('noRecordsReason').setValue(null, { emitEvent: false });
+
+        if (this.emptyForm && this.starterRecords.controls[0].get('jobRole').value) {
+          this.submitted = false;
+        }
       }),
     );
   }
@@ -98,15 +102,6 @@ export class StartersComponent extends Question {
 
   private setPreviousRoute(): void {
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
-  }
-
-  private getJobs(): void {
-    this.subscriptions.add(
-      this.jobService
-        .getJobs()
-        .pipe(take(1))
-        .subscribe((jobs) => (this.jobs = jobs)),
-    );
   }
 
   private prefill(): void {
@@ -127,34 +122,65 @@ export class StartersComponent extends Question {
   }
 
   protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'starterRecords.jobId',
-        type: [
-          {
-            name: 'required',
-            message: 'Job role is required.',
-          },
-        ],
-      },
-      {
-        item: 'starterRecords.total',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter number of new starters.',
-          },
-          {
-            name: 'min',
-            message: `New starters must be ${this.minStarters} or above.`,
-          },
-          {
-            name: 'max',
-            message: `New starters must be ${this.maxStarters} or lower.`,
-          },
-        ],
-      },
-    ];
+    this.formErrorsMap = [];
+
+    this.starterRecords.controls.forEach((control, index) => {
+      this.formErrorsMap.push(
+        {
+          item: `starterRecords.jobRole.${index}`,
+          type: [
+            {
+              name: 'required',
+              message:
+                index === 0 ? 'Select the job role and enter the number of starters, or tell us there are none' : '',
+            },
+          ],
+        },
+        {
+          item: `starterRecords.total.${index}`,
+          type: [
+            { name: 'required', message: '' },
+            { name: 'min', message: '' },
+            { name: 'max', message: '' },
+          ],
+        },
+      );
+    });
+  }
+
+  private newFormErrorsMap(): void {
+    this.formErrorsMap = [];
+
+    this.starterRecords.controls.forEach((control, index) => {
+      this.formErrorsMap.push(
+        {
+          item: `starterRecords.jobRole.${index}`,
+          type: [
+            {
+              name: 'required',
+              message: `Select the job role (job role ${index + 1})`,
+            },
+          ],
+        },
+        {
+          item: `starterRecords.total.${index}`,
+          type: [
+            {
+              name: 'required',
+              message: `Enter the number of new starters (job role ${index + 1})`,
+            },
+            {
+              name: 'min',
+              message: `Number must be between ${this.minStarters} and ${this.maxStarters} (job role ${index + 1})`,
+            },
+            {
+              name: 'max',
+              message: `Number must be between ${this.minStarters} and ${this.maxStarters} (job role ${index + 1})`,
+            },
+          ],
+        },
+      );
+    });
   }
 
   public selectableJobs(index): Job[] {
@@ -162,7 +188,7 @@ export class StartersComponent extends Question {
       (job) =>
         !this.starterRecords.controls.some(
           (starter) =>
-            starter !== this.starterRecords.controls[index] && parseInt(starter.get('jobId').value, 10) === job.id,
+            starter !== this.starterRecords.controls[index] && parseInt(starter.get('jobRole').value, 10) === job.id,
         ),
     );
   }
@@ -173,6 +199,7 @@ export class StartersComponent extends Question {
    * As the radio's shouldn't be selected
    */
   public addStarter(): void {
+    this.submitted = false;
     this.starterRecords.push(this.createRecordItem());
   }
 
@@ -185,11 +212,12 @@ export class StartersComponent extends Question {
   public removeRecord(event: Event, index: number): void {
     event.preventDefault();
     this.starterRecords.removeAt(index);
+    this.submitted = false;
   }
 
-  private createRecordItem(jobId: number = null, total: number = null): FormGroup {
+  private createRecordItem(jobRole: number = null, total: number = null): FormGroup {
     return this.formBuilder.group({
-      jobId: [jobId, [Validators.required]],
+      jobRole: [jobRole, [Validators.required]],
       total: [total, [Validators.required, Validators.min(this.minStarters), Validators.max(this.maxStarters)]],
     });
   }
@@ -204,7 +232,7 @@ export class StartersComponent extends Question {
     if (this.starterRecords.length) {
       return {
         starters: this.starterRecords.value.map((starterRecord) => ({
-          jobId: parseInt(starterRecord.jobId, 10),
+          jobId: parseInt(starterRecord.jobRole, 10),
           total: starterRecord.total,
         })),
       };
@@ -223,12 +251,7 @@ export class StartersComponent extends Question {
   }
 
   protected onSuccess(): void {
-    if (this.establishment.starters && Array.isArray(this.establishment.starters) && !this.return) {
-      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-starters']);
-      this.submitAction.action = null;
-    } else {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'leavers'];
-    }
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'leavers'];
   }
 
   public getFormErrorMessage(item: string, errorType: string): string {
@@ -236,7 +259,23 @@ export class StartersComponent extends Question {
   }
 
   private clearValidators(index: number) {
-    this.starterRecords.controls[index].get('jobId').clearValidators();
+    this.starterRecords.controls[index].get('jobRole').clearValidators();
     this.starterRecords.controls[index].get('total').clearValidators();
+  }
+
+  protected createDynamicErrorMessaging(): void {
+    if (this.starterRecords.controls[0].get('jobRole').valid || this.starterRecords.controls[0].get('total').valid) {
+      this.emptyForm = false;
+      this.newFormErrorsMap();
+    } else {
+      this.emptyForm = true;
+      this.setupFormErrorsMap();
+    }
+  }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
   }
 }
