@@ -321,6 +321,10 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/remove-parent-status`, data);
   }
 
+  public postStaffRecruitmentData(establishmentId: string, data): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/postStaffRecruitmentData`, data);
+  }
+
   public getChildWorkplaces(establishmentId: string, queryParams?: Params): Observable<GetChildWorkplacesResponse> {
     return this.http
       .get<any>(`/api/establishment/${establishmentId}/childWorkplaces`, { params: queryParams || {} })
