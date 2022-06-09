@@ -28,6 +28,7 @@ import { DeleteUserAccountComponent } from './delete-user-account/delete-user-ac
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
@@ -242,6 +243,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Leavers',
+        },
+      },
+      {
+        path: 'recruitment-advertising-cost',
+        component: RecruitmentAdvertisingCostComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Recruitment Advertising Cost',
         },
       },
       {
