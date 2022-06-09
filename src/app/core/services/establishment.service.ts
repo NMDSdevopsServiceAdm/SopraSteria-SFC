@@ -322,7 +322,11 @@ export class EstablishmentService {
   }
 
   public postStaffRecruitmentData(establishmentId: string, data): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/postStaffRecruitmentData`, data);
+    return this.http.post<any>(`/api/establishment/${establishmentId}/staffRecruitmentData`, data);
+  }
+
+  public getStaffRecruitmentData(establishmentId: string): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/staffRecruitmentData`);
   }
 
   public getChildWorkplaces(establishmentId: string, queryParams?: Params): Observable<GetChildWorkplacesResponse> {

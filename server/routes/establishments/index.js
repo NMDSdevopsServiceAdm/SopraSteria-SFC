@@ -90,7 +90,7 @@ router.use('/:id/updateSharingPermissionsBanner', SharingPermissionsBanner);
 router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
 router.use('/:id/wdfClaims', WdfClaims);
 router.use('/:id/childWorkplaces', ChildWorkplaces);
-router.use('/:id/postStaffRecruitmentData', StaffRecruitmentData);
+router.use('/:id/staffRecruitmentData', StaffRecruitmentData);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {
