@@ -89,6 +89,8 @@ export class StartersComponent extends Question {
         if (this.emptyForm && this.starterRecords.controls[0].get('jobRole').value) {
           this.submitted = false;
         }
+
+        this.addErrorLinkFunctionality();
       }),
     );
   }

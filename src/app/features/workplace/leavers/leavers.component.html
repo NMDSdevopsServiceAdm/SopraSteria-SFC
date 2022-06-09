@@ -40,6 +40,13 @@
               <span *ngIf="submitted" id="leavers-jobRole-{{ i }}-error" class="govuk-error-message">
                 <ng-container *ngIf="submitted && !emptyForm && leaver.get('jobRole').invalid; else hiddenJobRoleError">
                   Select the job role
+                  <div
+                    *ngIf="
+                      leaver.get('total').invalid && (leaver.get('total').errors.min || leaver.get('total').errors.max)
+                    "
+                  >
+                    &nbsp;
+                  </div>
                 </ng-container>
                 <ng-template #hiddenJobRoleError>
                   <div *ngIf="!emptyForm && leaver.get('total').invalid">&nbsp;</div>

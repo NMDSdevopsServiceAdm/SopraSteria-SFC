@@ -85,6 +85,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         if (this.emptyForm && this.vacanciesArray.controls[0].get('jobRole').value) {
           this.submitted = false;
         }
+
+        this.addErrorLinkFunctionality();
       }),
     );
   }
