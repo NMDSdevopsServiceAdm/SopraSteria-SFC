@@ -42,6 +42,14 @@
                   *ngIf="submitted && !emptyForm && vacancy.get('jobRole').invalid; else hiddenJobRoleError"
                 >
                   Select the job role
+                  <div
+                    *ngIf="
+                      vacancy.get('total').invalid &&
+                      (vacancy.get('total').errors.min || vacancy.get('total').errors.max)
+                    "
+                  >
+                    &nbsp;
+                  </div>
                 </ng-container>
                 <ng-template #hiddenJobRoleError
                   ><div *ngIf="!emptyForm && vacancy.get('total').invalid">&nbsp;</div>

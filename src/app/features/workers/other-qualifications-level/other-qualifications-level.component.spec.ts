@@ -75,7 +75,7 @@ describe('OtherQualificationsLevelComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the page with a save and return button when there return value is null', async () => {
+  it('should render the page with a save and continue button when there return value is null', async () => {
     const { component, fixture } = await setup();
 
     component.return = null;
@@ -89,7 +89,10 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   it('should render the page with a save and return button and an cancel link when there is a return value', async () => {
-    await setup();
+    const { component, fixture } = await setup();
+
+    component.return = { url: ['/dashboard'], fragment: 'workplace' };
+    fixture.detectChanges();
 
     const button = screen.getByText('Save and return');
     const exitLink = screen.getByText('Cancel');

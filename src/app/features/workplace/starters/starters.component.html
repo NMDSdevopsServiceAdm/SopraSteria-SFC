@@ -43,7 +43,7 @@
                   <div *ngIf="record.get('total').invalid">&nbsp;</div>
                 </ng-container>
                 <ng-template #hiddenJobRoleError>
-                  <div *ngIf="!emptyForm">&nbsp; <br />&nbsp;</div>
+                  <div *ngIf="!emptyForm && record.get('total').invalid">&nbsp; <br />&nbsp;</div>
                 </ng-template>
               </span>
               <select
@@ -71,7 +71,9 @@
                     Number must be between {{ this.minStarters }} and {{ this.maxStarters }}
                   </span>
                 </ng-container>
-                <ng-template #hiddenTotalError><div *ngIf="!emptyForm">&nbsp;</div></ng-template>
+                <ng-template #hiddenTotalError
+                  ><div *ngIf="!emptyForm && record.get('jobRole').invalid">&nbsp;</div></ng-template
+                >
               </span>
               <input
                 class="govuk-input govuk-!-width-one-quarter govuk-!-margin-right-5"
