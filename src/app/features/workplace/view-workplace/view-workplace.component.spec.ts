@@ -156,7 +156,7 @@ describe('view-workplace', () => {
       component.workplace = establishment;
       fixture.detectChanges();
 
-      expect(getByText('Users')).toBeTruthy();
+      expect(getByText('Workplace users')).toBeTruthy();
     });
 
     it('should display a flag on the workplace tab when the sharing permisson banner is true', async () => {

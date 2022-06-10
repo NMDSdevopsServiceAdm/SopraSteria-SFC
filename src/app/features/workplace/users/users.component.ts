@@ -6,6 +6,7 @@ import { Roles } from '@core/model/roles.enum';
 import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
 import { getUserPermissionsTypes } from '@core/utils/users-util';
 import { orderBy } from 'lodash';
 
@@ -25,6 +26,7 @@ export class UsersComponent implements OnInit {
     private route: ActivatedRoute,
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
+    private userService: UserService,
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +43,8 @@ export class UsersComponent implements OnInit {
       ['status', 'isPrimary', 'role', (user: UserDetails) => (user.fullname ? user.fullname.toLowerCase() : 'a')],
       ['desc', 'desc', 'asc', 'asc'],
     );
+
+    this.setUserServiceReturnUrl();
     this.setShowSecondUserBanner();
   }
 
@@ -68,5 +72,11 @@ export class UsersComponent implements OnInit {
     const editUsers = users.filter((user) => user.role === Roles.Edit);
     const readOnlyUsers = users.filter((user) => user.role === Roles.Read);
     return editUsers.length < 3 || readOnlyUsers.length < readOnlyLimit;
+  }
+
+  private setUserServiceReturnUrl(): void {
+    this.userService.updateReturnUrl({
+      url: ['/workplace', this.workplace.uid, 'users'],
+    });
   }
 }
