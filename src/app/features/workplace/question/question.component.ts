@@ -141,10 +141,10 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const props = this.generateUpdateProps();
-
+    console.log(props);
     if (isNull(props)) {
       this.onSuccess();
-      this.navigate();
+      // this.navigate();
       return;
     }
 
@@ -172,7 +172,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
     this.onSuccess();
-    this.navigate();
+    // this.navigate();
   }
 
   protected onError(error) {

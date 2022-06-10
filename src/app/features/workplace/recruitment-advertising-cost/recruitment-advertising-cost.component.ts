@@ -42,6 +42,8 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     this.setupFormValueSubscriptions();
   }
 
+  private prefill(): void {}
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
       amountSpent: [null, [Validators.pattern(FLOAT_PATTERN), this.greaterThanTwoDecimalPlacesValidator()]],
@@ -71,13 +73,15 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
 
     this.subscriptions.add(
       this.form.get('amountSpent').valueChanges.subscribe(() => {
-        // this.form
-        //   .get('amountSpent')
-        //   .setValidators([Validators.pattern(FLOAT_PATTERN), this.greaterThanTwoDecimalPlacesValidator()]);
-        // console.log(this.form.controls['amountSpent']);
+        this.form
+          .get('amountSpent')
+          .setValidators([Validators.pattern(FLOAT_PATTERN), this.greaterThanTwoDecimalPlacesValidator()]);
+
         if (this.form.get('amountSpentKnown').value !== null) {
           this.form.get('amountSpentKnown').setValue(null, { emitEvent: false });
         }
+
+        this.addErrorLinkFunctionality();
       }),
     );
   }
@@ -98,5 +102,21 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
         ],
       },
     ];
+  }
+
+  protected generateUpdateProps(): any {
+    const { amountSpent, amountSpentKnown } = this.form.value;
+
+    return amountSpentKnown ? amountSpentKnown : amountSpent;
+  }
+  // protected onSuccess(): void {
+  //   this.nextRoute
+  // }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+      this.submitted = false;
+    }
   }
 }

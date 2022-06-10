@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -27,7 +28,22 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
 
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByLabelText };
+    const injector = getTestBed();
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateJobs').and.callThrough();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    return {
+      component,
+      fixture,
+      getByText,
+      getAllByText,
+      getByLabelText,
+      establishmentService,
+      establishmentServiceSpy,
+      routerSpy,
+    };
   }
 
   it('should render a RecruitmentAdvertisingCostComponent', async () => {
@@ -88,11 +104,79 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(getByText('View workplace details')).toBeTruthy();
     });
 
+    xit('should call the xxxx when submitting form when the form has not been filled out', async () => {
+      const { fixture, getByText, establishmentServiceSpy } = await setup();
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: null });
+    });
+
+    xit('should call the xxxx when submitting form with the amount spent filled out', async () => {
+      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
+
+      const input = getByLabelText('Amount spent');
+      userEvent.type(input, '440.99');
+      fixture.detectChanges();
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: '440.99' });
+    });
+
+    xit('should call the xxxx when submitting form with a radio button selected', async () => {
+      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
+
+      const radio = getByLabelText('Nothing has been spent on advertising for staff in the last 4 weeks');
+      fireEvent.click(radio);
+      fixture.detectChanges();
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: 'None' });
+    });
+
+    xit('should navigate to the next page when submitting from the flow', async () => {
+      const { fixture, getByText, routerSpy } = await setup(false);
+
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'next-page']);
+    });
+
+    xit('should navigate to the next page when submitting from the flow', async () => {
+      const { fixture, getByText, routerSpy } = await setup(false);
+
+      const link = getByText('View workplace details');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
+    });
+
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup();
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    xit('should navigate to the summary page when submitting', async () => {
+      const { fixture, getByText, routerSpy } = await setup();
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
     });
   });
 
