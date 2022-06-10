@@ -254,10 +254,64 @@ describe('server/routes/establishments/cqcStatus', async () => {
 
       expect(res._getData()).to.deep.equal(expectedResult);
     });
+
+    it('should return a false flag if a 404 error is thrown in getWorkplaceCQCData', async () => {
+      const request = {
+        method: 'GET',
+        url: `/api/cqcStatusCheck/${registeredLocationId}`,
+        params: {
+          locationID: registeredLocationId,
+        },
+        query: {
+          postcode: 'WA5 6BL',
+        },
+      };
+
+      sinon.restore();
+      sinon.stub(CQCDataAPI, 'getWorkplaceCQCData').throws({ response: { status: 404 } });
+
+      const expectedResult = {
+        cqcStatusMatch: false,
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await cqcStatusCheck(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+    });
+
+    it('should return a true flag if an unexpected error is thrown', async () => {
+      const request = {
+        method: 'GET',
+        url: `/api/cqcStatusCheck/${registeredLocationId}`,
+        params: {
+          locationID: registeredLocationId,
+        },
+        query: {
+          postcode: 'WA5 6BL',
+        },
+      };
+
+      sinon.restore();
+      sinon.stub(CQCDataAPI, 'getWorkplaceCQCData').throws();
+
+      const expectedResult = {
+        cqcStatusMatch: true,
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await cqcStatusCheck(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+    });
   });
 
   // This is a little odd but since we are relying on a third party, it's useful to check that
-  // the name's don't change, otherwise the mapping function is redundent.
+  // the names don't change, otherwise the mapping function is redundant.
   describe('mainService check', async () => {
     locationIDs.forEach(async (location) => {
       it(`should find ${location.locationID} and match main service`, async () => {
@@ -265,7 +319,32 @@ describe('server/routes/establishments/cqcStatus', async () => {
 
         const mainServiceCheck = checkMainServiceMatch(location.mainService, workplaceCQCData.gacServiceTypes);
 
-        expect(mainServiceCheck).to.deep.equal(true);
+        expect(mainServiceCheck).to.equal(true);
+      });
+    });
+
+    describe('checkMainServiceMatch()', async () => {
+      // For case when provider with Head office services as
+      // main service (which should not have location ID) mistakenly adds a location ID
+      it('should return false if no main service mapping found when converting main service to CQC', async () => {
+        const location = { locationID: '1-4413548038', mainService: 'Head office services' };
+        const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(location.locationID);
+
+        const mainServiceCheck = checkMainServiceMatch(location.mainService, workplaceCQCData.gacServiceTypes);
+
+        expect(mainServiceCheck).to.equal(false);
+      });
+
+      it('should return true if null passed in as main service', async () => {
+        const mainServiceCheck = checkMainServiceMatch(null, []);
+
+        expect(mainServiceCheck).to.equal(true);
+      });
+
+      it('should return true if null passed in as cqcServices', async () => {
+        const mainServiceCheck = checkMainServiceMatch(locationIDs[0].mainService, null);
+
+        expect(mainServiceCheck).to.equal(true);
       });
     });
   });

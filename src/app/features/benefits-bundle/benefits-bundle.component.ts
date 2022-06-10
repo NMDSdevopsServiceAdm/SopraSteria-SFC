@@ -28,15 +28,7 @@ export class BenefitsBundleComponent implements OnInit {
       open: false,
     },
     {
-      title: '10% off registered manager membership',
-      open: false,
-    },
-    {
       title: `10% off Skills for Care's eLearning modules`,
-      open: false,
-    },
-    {
-      title: 'Funded essential training',
       open: false,
     },
     {

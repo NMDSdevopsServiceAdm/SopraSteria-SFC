@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+const { query } = require('express');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -2018,17 +2019,92 @@ module.exports = function (sequelize, DataTypes) {
     return { ...data, pendingCount };
   };
 
-  Establishment.archiveInactiveWorkplaces = async function (establishmentIds) {
-    return await this.update(
+  Establishment.getRegistrationIdsForArchiving = async function (establishmentIds, transaction) {
+    const lastMonth = moment().subtract(1, 'months').endOf('month');
+    const twentyFourLastMonths = lastMonth.clone().subtract(24, 'months').format('YYYY-MM-DD');
+    return await sequelize.query(
+      `
+    SELECT
+    u."RegistrationID"
+    FROM
+      cqc."EstablishmentLastActivity" e
+      inner join cqc."User" u  on e."EstablishmentID" = u."EstablishmentID"
+        inner join cqc."Login" l on u."RegistrationID"  = l."RegistrationID"
+    WHERE
+      e."LastLogin" <= :twentyFourLastMonths
+      AND e."LastUpdated" <= :twentyFourLastMonths
+      AND ("IsParent" = false OR
+    NOT EXISTS(
+      SELECT
+        "EstablishmentID"
+      FROM
+        cqc."EstablishmentLastActivity" s
+      WHERE
+        e."EstablishmentID" = s."ParentID"
+        AND s."LastLogin" > :twentyFourLastMonths
+        AND s."LastUpdated" > :twentyFourLastMonths
+      )
+    )
+    and e."EstablishmentID" IN(:establishmentIds)
+        `,
       {
-        archived: true,
-      },
-      {
-        where: {
-          id: establishmentIds,
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {
+          twentyFourLastMonths,
+          establishmentIds,
         },
       },
+      { transaction },
     );
+  };
+
+  Establishment.archiveInactiveWorkplaces = async function (establishmentIds) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        await Establishment.update(
+          {
+            archived: true,
+          },
+          {
+            where: {
+              id: establishmentIds,
+            },
+            transaction: t,
+          },
+        );
+
+        await sequelize.models.user.update(
+          {
+            archived: true,
+            FullNameValue: 'deleted',
+            EmailValue: 'deleted',
+          },
+          {
+            where: {
+              establishmentId: establishmentIds,
+            },
+            transaction: t,
+          },
+        );
+        const registrationIds = await Establishment.getRegistrationIdsForArchiving(establishmentIds, t);
+        const ids = registrationIds.map((r) => r.RegistrationID);
+        await sequelize.models.login.update(
+          {
+            isActive: false,
+            username: 'deleted',
+            status: 'deleted',
+          },
+          {
+            where: {
+              registrationId: ids,
+            },
+            transaction: t,
+          },
+        );
+      });
+    } catch (error) {
+      console.log({ error });
+    }
   };
 
   return Establishment;

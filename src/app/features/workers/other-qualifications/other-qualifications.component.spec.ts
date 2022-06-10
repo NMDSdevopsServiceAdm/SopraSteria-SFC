@@ -60,7 +60,7 @@ describe('OtherQualificationsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the page with a save and return button', async () => {
+  it('should render the page with a save and continue button and view this staff record link', async () => {
     const { component, fixture } = await setup();
 
     component.return = null;
@@ -74,7 +74,10 @@ describe('OtherQualificationsComponent', () => {
   });
 
   it('should render the page with a save and return button and a cancel link', async () => {
-    await setup();
+    const { component, fixture } = await setup();
+
+    component.return = { url: ['/dashboard'], fragment: 'workplace' };
+    fixture.detectChanges();
 
     const button = screen.getByText('Save and return');
     const exitLink = screen.getByText('Cancel');

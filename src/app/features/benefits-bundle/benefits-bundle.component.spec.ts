@@ -86,34 +86,8 @@ describe('BenefitsBundleComponent', () => {
       expect(getByText('10% off all publications in the Skills for Care bookshop')).toBeTruthy();
       expect(getByText('10% off values-based interviewing seminars')).toBeTruthy();
       expect(getByText('10% off valuable conversations online seminars')).toBeTruthy();
-      expect(getByText('10% off registered manager membership')).toBeTruthy();
-      expect(getByText('Funded essential training')).toBeTruthy();
       expect(getByText('5 of our top FREE digital downloads')).toBeTruthy();
       expect(getByText(`10% off Skills for Care's eLearning modules`)).toBeTruthy();
-    });
-
-    it('should drop down when clicking on funded essential training heading and include content', async () => {
-      const { getByTestId, getByText } = await setup();
-
-      expect(getByTestId('accordion-5').getAttribute('class')).not.toContain('govuk-accordion__section--expanded');
-
-      const fundedEssentialTrainingDrop = getByText('Funded essential training');
-      fireEvent.click(fundedEssentialTrainingDrop);
-
-      const droppedDiv = getByTestId('accordion-drop-5');
-
-      expect(getByTestId('accordion-5').getAttribute('class')).toContain('govuk-accordion__section--expanded');
-      expect(droppedDiv.innerText).toContain('This free training comes as 3 individual packages for your staff.');
-    });
-
-    it('should display the workplace ID in the funded essential training content', async () => {
-      const { component, getByTestId } = await setup();
-
-      const fundedEssentialTrainingContent = getByTestId('accordion-drop-5');
-
-      expect(fundedEssentialTrainingContent.innerText).toContain(
-        `Your chosen training provider will need your Workplace ID (${component.workplaceId}) when you register`,
-      );
     });
 
     describe('Open all/Close all', () => {
@@ -197,9 +171,7 @@ describe('BenefitsBundleComponent', () => {
         fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
         fireEvent.click(getByText('10% off values-based interviewing seminars'));
         fireEvent.click(getByText('10% off valuable conversations online seminars'));
-        fireEvent.click(getByText('10% off registered manager membership'));
         fireEvent.click(getByText(`10% off Skills for Care's eLearning modules`));
-        fireEvent.click(getByText('Funded essential training'));
         fireEvent.click(getByText('5 of our top FREE digital downloads'));
 
         fixture.detectChanges();
@@ -213,7 +185,7 @@ describe('BenefitsBundleComponent', () => {
         fireEvent.click(getByText('Open all'));
         fixture.detectChanges();
 
-        fireEvent.click(getByText('10% off registered manager membership'));
+        fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
         fixture.detectChanges();
 
         expect(getByText('Open all')).toBeTruthy();
@@ -251,38 +223,6 @@ describe('BenefitsBundleComponent', () => {
         'https://www.skillsforcare.org.uk/Recruitment-retention/Values-based-recruitment-and-retention/Valuable-conversations-online-seminar.aspx',
       );
       expect(link.getAttribute('target')).toBe('_blank');
-    });
-
-    it('should display the registered manager membership link in the manager membership content', async () => {
-      const { getByText } = await setup();
-
-      const link = getByText('Read more about registered manager membership');
-
-      expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Leadership-management/support-for-registered-managers/membership/membership.aspx',
-      );
-      expect(link.getAttribute('target')).toBe('_blank');
-    });
-
-    it('should display the essential training link in the funded essential training content', async () => {
-      const { getByText } = await setup();
-
-      const link = getByText('Read more about funded essential training');
-
-      expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/About/News/COVID-19-Essential-training.aspx',
-      );
-      expect(link.getAttribute('target')).toBe('_blank');
-    });
-
-    it('should display the discounts link from skills for cares endorsed training providers in content', async () => {
-      const { fixture, getByText } = await setup();
-
-      fixture.detectChanges();
-
-      const link = getByText("View discounts from Skills for Care's endorsed training providers");
-
-      expect(link.getAttribute('href')).toBe('/benefits-bundle/training-discounts');
     });
 
     it('should display the Recommendations for CQC link in the learning for managers content', async () => {
