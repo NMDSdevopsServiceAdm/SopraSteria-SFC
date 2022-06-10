@@ -12,16 +12,34 @@
         <div class="govuk-grid-column-two-thirds">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
-              How much money have you spend on advertising for staff in the last 4 weeks?
+              How much money have you spent on advertising for staff in the last 4 weeks?
             </h1>
           </legend>
         </div>
       </div>
       <div class="govuk-grid-row govuk-!-margin-bottom-6">
         <div class="govuk-grid-column-two-thirds">
-          <div class="govuk-form-group" [class.govuk-form-group--error]="">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">
             <label class="govuk-label" for="amountSpent">Amount spent</label>
             <span id="amountSpent-hint" class="govuk-hint">For example, 150.40</span>
+            <span
+              *ngIf="submitted && this.form.get('amountSpent').invalid"
+              id="amountSpent-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span>
+              <span *ngIf="this.form.get('amountSpent').errors.pattern">
+                {{ getFormErrorMessage('amountSpent', 'pattern') }}
+              </span>
+              <span
+                *ngIf="
+                  this.form.get('amountSpent').errors.greaterThanTwoDecimalPlaces &&
+                  !this.form.get('amountSpent').errors.pattern
+                "
+              >
+                {{ getFormErrorMessage('amountSpent', 'greaterThanTwoDecimalPlaces') }}
+              </span>
+            </span>
             <div class="govuk-input__wrapper">
               <div class="govuk-input__prefix">£</div>
               <input
@@ -29,7 +47,7 @@
                 [formControlName]="'amountSpent'"
                 id="amountSpent"
                 name="amountSpent"
-                [class.govuk-input--error]=""
+                [class.govuk-input--error]="this.submitted && this.form.get('amountSpent').invalid"
                 type="text"
               />
             </div>
@@ -55,7 +73,6 @@
       </div>
     </div>
   </fieldset>
+  <app-workplace-submit-button [return]="!!return" [isExistingStaffRecord]="false" (clicked)="setSubmitAction($event)">
+  </app-workplace-submit-button>
 </form>
-
-<app-workplace-submit-button [return]="!!return" [isExistingStaffRecord]="false" (clicked)="setSubmitAction($event)">
-</app-workplace-submit-button>
