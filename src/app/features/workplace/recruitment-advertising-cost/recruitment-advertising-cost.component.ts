@@ -41,8 +41,12 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     this.prefill();
   }
 
+  protected setBackLink(): void {
+    // This functionality cannot be completed until routing to this page is complete
+    this.backService.setBackLink({ url: ['/workplace', this.establishment.uid, 'check-answers'] });
+  }
+
   private prefill(): void {
-    console.log(this.establishment);
     if (this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks) {
       if (
         this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks === jobOptionsEnum.NONE ||
@@ -118,7 +122,11 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   protected generateUpdateProps(): any {
     const { amountSpent, amountSpentKnown } = this.form.value;
 
-    return amountSpentKnown ? { amountSpent: amountSpentKnown } : { amountSpent };
+    if (amountSpent || amountSpentKnown) {
+      return amountSpentKnown ? { amountSpent: amountSpentKnown } : { amountSpent };
+    }
+
+    return null;
   }
 
   protected updateEstablishment(props: any): void {
@@ -130,9 +138,9 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     );
   }
 
-  // protected onSuccess(): void {
-  //   this.nextRoute
-  // }
+  protected onSuccess(): void {
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'people-interviewed'];
+  }
 
   protected addErrorLinkFunctionality(): void {
     if (!this.errorSummaryService.formEl$.value) {

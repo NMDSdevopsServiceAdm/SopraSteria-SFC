@@ -25,23 +25,14 @@ describe('EstablishmentService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('updateStaffRecruitmentData', () => {
-    it('should call updatedStaffRecruitmentData for a given establishment with the correct data', () => {
-      service.updateStaffRecruitmentData('establishmentId', { amountSpent: '100' }).subscribe();
+  describe('postStaffRecruitmentData', () => {
+    it('should call postStaffRecruitmentData for a given establishment with the correct data', () => {
+      service.postStaffRecruitmentData('establishmentId', { amountSpent: '100' }).subscribe();
 
       const req = http.expectOne('/api/establishment/establishmentId/staffRecruitmentData');
 
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual({ staffRecruitmentData: { amountSpent: '100' } });
-    });
-  });
-
-  describe('getStaffRecruitmentData', () => {
-    it('should call getStaffRecruitmentData for a given establishment', () => {
-      service.getStaffRecruitmentData('establishmentId').subscribe();
-
-      const req = http.expectOne('/api/establishment/establishmentId/staffRecruitmentData');
-      expect(req.request.method).toBe('GET');
     });
   });
 });

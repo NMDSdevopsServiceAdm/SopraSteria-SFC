@@ -62,7 +62,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  setBackLink() {
+  protected setBackLink(): void {
     this.back = this.return ? this.return : { url: this.previousRoute };
     this.backService.setBackLink(this.back);
   }
@@ -143,7 +143,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
     if (isNull(props)) {
       this.onSuccess();
-      // this.navigate();
+      this.navigate();
       return;
     }
 
@@ -171,7 +171,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
     this.onSuccess();
-    // this.navigate();
+    this.navigate();
   }
 
   protected onError(error) {

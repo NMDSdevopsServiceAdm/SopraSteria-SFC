@@ -104,14 +104,14 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(getByText('View workplace details')).toBeTruthy();
     });
 
-    it('should call the postStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
+    it('should not call the postStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
       const { fixture, getByText, establishmentServiceSpy } = await setup();
 
       const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: null });
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
     it('should call the postStaffRecruitmentData when submitting form with the amount spent filled out', async () => {
@@ -142,25 +142,25 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: 'None' });
     });
 
-    // xit('should navigate to the next page when submitting from the flow', async () => {
-    //   const { fixture, getByText, routerSpy } = await setup(false);
+    it('should navigate to the next page when submitting from the flow', async () => {
+      const { fixture, getByText, routerSpy } = await setup(false);
 
-    //   const button = getByText('Save and continue');
-    //   fireEvent.click(button);
-    //   fixture.detectChanges();
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
 
-    //   expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'next-page']);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'people-interviewed']);
+    });
 
-    // xit('should navigate to the next page when submitting from the flow', async () => {
-    //   const { fixture, getByText, routerSpy } = await setup(false);
+    it('should navigate to the next page when submitting from the flow', async () => {
+      const { fixture, getByText, routerSpy } = await setup(false);
 
-    //   const link = getByText('View workplace details');
-    //   fireEvent.click(link);
-    //   fixture.detectChanges();
+      const link = getByText('View workplace details');
+      fireEvent.click(link);
+      fixture.detectChanges();
 
-    //   expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
+    });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup();
@@ -169,7 +169,7 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    xit('should navigate to the summary page when submitting', async () => {
+    it('should navigate to the summary page when submitting', async () => {
       const { fixture, getByText, routerSpy } = await setup();
 
       const button = getByText('Save and return');
