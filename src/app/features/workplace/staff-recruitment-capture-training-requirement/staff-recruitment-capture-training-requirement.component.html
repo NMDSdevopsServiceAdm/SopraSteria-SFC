@@ -1,1 +1,41 @@
-<div>Recruitment Capture Advertising</div>
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <fieldset class="govuk-fieldset">
+    <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              Do new starters have to repeat training they've done with previous employers?
+            </h1>
+          </legend>
+          <div class="govuk-!-margin-bottom-7">
+            <p>Training could be things like first aid or fire safety.</p>
+          </div>
+        </div>
+      </div>
+      <div class="govuk-form-group">
+        <div class="govuk-radios">
+          <div class="govuk-radios__item" *ngFor="let option of trainingRequiredOptions; let i = index">
+            <input
+              class="govuk-radios__input"
+              id="trainingRequired-{{ i }}"
+              name="trainingRequired"
+              [formControlName]="'trainingRequired'"
+              type="radio"
+              [value]="option.value"
+            />
+            <label class="govuk-label govuk-radios__label" for="trainingRequired-{{ i }}">
+              {{ option.label }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <app-workplace-submit-button
+    [return]="!!return"
+    [isExistingStaffRecord]="false"
+    (clicked)="setSubmitAction($event)"
+  ></app-workplace-submit-button>
+</form>
