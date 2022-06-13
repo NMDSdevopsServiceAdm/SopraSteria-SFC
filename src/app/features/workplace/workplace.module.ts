@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { StaffRecruitmentDataResolver } from '@core/resolvers/staffRecruitmentData.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -98,6 +99,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ExpiresSoonAlertDatesResolver,
     ChildWorkplacesResolver,
     JobsResolver,
+    StaffRecruitmentDataResolver,
   ],
 })
 export class WorkplaceModule {}

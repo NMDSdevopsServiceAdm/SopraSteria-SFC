@@ -9,6 +9,7 @@ import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { StaffRecruitmentDataResolver } from '@core/resolvers/staffRecruitmentData.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
@@ -249,6 +250,7 @@ const routes: Routes = [
         path: 'recruitment-advertising-cost',
         component: RecruitmentAdvertisingCostComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { staffRecruitmentData: StaffRecruitmentDataResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Recruitment Advertising Cost',
