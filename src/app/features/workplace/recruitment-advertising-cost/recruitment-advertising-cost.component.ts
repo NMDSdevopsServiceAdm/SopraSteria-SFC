@@ -14,8 +14,6 @@ import { Question } from '../question/question.component';
   templateUrl: './recruitment-advertising-cost.component.html',
 })
 export class RecruitmentAdvertisingCostComponent extends Question implements OnInit, OnDestroy {
-  public decimalPlaceRegex = /^\d+(?:\.\d{1,2})*$/;
-  // ^\s*(?=.*[1-9])\d*(?:\.\d{1,2})?\s*$
   public amountSpentKnownOptions = [
     {
       label: 'Nothing has been spent on advertising for staff in the last 4 weeks',
@@ -40,9 +38,22 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   protected init(): void {
     this.setupForm();
     this.setupFormValueSubscriptions();
+    this.prefill();
   }
 
-  private prefill(): void {}
+  private prefill(): void {
+    console.log(this.establishment);
+    if (this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks) {
+      if (
+        this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks === jobOptionsEnum.NONE ||
+        this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks === jobOptionsEnum.DONT_KNOW
+      ) {
+        this.form.get('amountSpentKnown').setValue(this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks);
+      } else {
+        this.form.get('amountSpent').setValue(this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks);
+      }
+    }
+  }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
@@ -112,7 +123,7 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
 
   protected updateEstablishment(props: any): void {
     this.subscriptions.add(
-      this.establishmentService.updateStaffRecruitmentData(this.establishment.uid, props).subscribe(
+      this.establishmentService.postStaffRecruitmentData(this.establishment.uid, props).subscribe(
         (data) => this._onSuccess(data),
         (error) => this.onError(error),
       ),

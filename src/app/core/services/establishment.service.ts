@@ -321,7 +321,7 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/remove-parent-status`, data);
   }
 
-  public updateStaffRecruitmentData(establishmentId: string, data): Observable<any> {
+  public postStaffRecruitmentData(establishmentId: string, data): Observable<any> {
     return this.http.post<any>(`/api/establishment/${establishmentId}/staffRecruitmentData`, {
       staffRecruitmentData: data,
     });

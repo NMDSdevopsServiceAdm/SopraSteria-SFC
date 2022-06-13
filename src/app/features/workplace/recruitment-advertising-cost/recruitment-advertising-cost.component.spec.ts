@@ -30,7 +30,7 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateStaffRecruitmentData').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -104,7 +104,7 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(getByText('View workplace details')).toBeTruthy();
     });
 
-    it('should call the updateStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
+    it('should call the postStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
       const { fixture, getByText, establishmentServiceSpy } = await setup();
 
       const button = getByText('Save and return');
@@ -114,7 +114,7 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: null });
     });
 
-    it('should call the updateStaffRecruitmentData when submitting form with the amount spent filled out', async () => {
+    it('should call the postStaffRecruitmentData when submitting form with the amount spent filled out', async () => {
       const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
       const input = getByLabelText('Amount spent');
@@ -128,7 +128,7 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: '440.99' });
     });
 
-    it('should call the updateStaffRecruitmentData when submitting form with a radio button selected', async () => {
+    it('should call the postStaffRecruitmentData when submitting form with a radio button selected', async () => {
       const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
       const radio = getByLabelText('Nothing has been spent on advertising for staff in the last 4 weeks');
