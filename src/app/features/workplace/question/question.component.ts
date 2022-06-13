@@ -116,7 +116,6 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public onSubmit(): void {
-    console.log('On submit ****');
     if (!this.submitAction.save) {
       this.establishment.showSharingPermissionsBanner
         ? this.removeSharingPermissionsBanner(() => this.navigate())
@@ -141,7 +140,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const props = this.generateUpdateProps();
-    console.log(props);
+
     if (isNull(props)) {
       this.onSuccess();
       // this.navigate();

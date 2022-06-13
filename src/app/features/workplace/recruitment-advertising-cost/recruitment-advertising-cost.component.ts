@@ -107,8 +107,18 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   protected generateUpdateProps(): any {
     const { amountSpent, amountSpentKnown } = this.form.value;
 
-    return amountSpentKnown ? amountSpentKnown : amountSpent;
+    return amountSpentKnown ? { amountSpent: amountSpentKnown } : { amountSpent };
   }
+
+  protected updateEstablishment(props: any): void {
+    this.subscriptions.add(
+      this.establishmentService.updateStaffRecruitmentData(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
+    );
+  }
+
   // protected onSuccess(): void {
   //   this.nextRoute
   // }

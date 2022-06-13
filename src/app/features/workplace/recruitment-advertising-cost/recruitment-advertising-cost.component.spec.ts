@@ -30,7 +30,7 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateJobs').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateStaffRecruitmentData').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -104,7 +104,7 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(getByText('View workplace details')).toBeTruthy();
     });
 
-    xit('should call the xxxx when submitting form when the form has not been filled out', async () => {
+    it('should call the updateStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
       const { fixture, getByText, establishmentServiceSpy } = await setup();
 
       const button = getByText('Save and return');
@@ -114,7 +114,7 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: null });
     });
 
-    xit('should call the xxxx when submitting form with the amount spent filled out', async () => {
+    it('should call the updateStaffRecruitmentData when submitting form with the amount spent filled out', async () => {
       const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
       const input = getByLabelText('Amount spent');
@@ -128,7 +128,7 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: '440.99' });
     });
 
-    xit('should call the xxxx when submitting form with a radio button selected', async () => {
+    it('should call the updateStaffRecruitmentData when submitting form with a radio button selected', async () => {
       const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
       const radio = getByLabelText('Nothing has been spent on advertising for staff in the last 4 weeks');
@@ -142,25 +142,25 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: 'None' });
     });
 
-    xit('should navigate to the next page when submitting from the flow', async () => {
-      const { fixture, getByText, routerSpy } = await setup(false);
+    // xit('should navigate to the next page when submitting from the flow', async () => {
+    //   const { fixture, getByText, routerSpy } = await setup(false);
 
-      const button = getByText('Save and continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
+    //   const button = getByText('Save and continue');
+    //   fireEvent.click(button);
+    //   fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'next-page']);
-    });
+    //   expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'next-page']);
+    // });
 
-    xit('should navigate to the next page when submitting from the flow', async () => {
-      const { fixture, getByText, routerSpy } = await setup(false);
+    // xit('should navigate to the next page when submitting from the flow', async () => {
+    //   const { fixture, getByText, routerSpy } = await setup(false);
 
-      const link = getByText('View workplace details');
-      fireEvent.click(link);
-      fixture.detectChanges();
+    //   const link = getByText('View workplace details');
+    //   fireEvent.click(link);
+    //   fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
-    });
+    //   expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
+    // });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup();
