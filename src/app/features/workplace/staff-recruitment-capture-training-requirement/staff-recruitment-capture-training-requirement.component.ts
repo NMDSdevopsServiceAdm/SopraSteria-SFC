@@ -69,8 +69,11 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   }
 
   protected generateUpdateProps(): any {
-    const trainingRequired = this.form.value;
-    return trainingRequired ? trainingRequired : null;
+    const { trainingRequired } = this.form.value;
+    if (trainingRequired) {
+      return { trainingRequired };
+    }
+    return null;
   }
 
   protected updateEstablishment(props: any): void {
