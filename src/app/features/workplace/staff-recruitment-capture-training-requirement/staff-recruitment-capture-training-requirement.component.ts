@@ -31,8 +31,6 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     },
   ];
 
-  public emptyForm = true;
-
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -42,12 +40,15 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
+
   protected init(): void {
     this.setupForm();
     this.prefill();
+  }
 
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'number-of-people-interviewed'];
+  protected setBackLink(): void {
+    // This functionality cannot be completed until routing to this page is complete
+    this.backService.setBackLink({ url: ['/workplace', this.establishment.uid, 'check-answers'] });
   }
 
   private setupForm(): void {
@@ -67,20 +68,22 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     }
   }
 
-  protected generateUpdateProps() {
-    const { trainingRequired } = this.form.value;
+  protected generateUpdateProps(): any {
+    const trainingRequired = this.form.value;
     return trainingRequired;
   }
 
-  protected updateEstablishment(props): void {
+  protected updateEstablishment(props: any): void {
     this.subscriptions.add(
-      this.establishmentService
-        .postStaffRecruitmentData(this.establishment.uid, {
-          staffRecruitmentColumn: 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
-          staffRecruitmentData: props,
-        })
-        .subscribe(),
+      this.establishmentService.postStaffRecruitmentData(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
+  }
+
+  protected onSuccess(): void {
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
   }
 
   ngOnDestroy(): void {

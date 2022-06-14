@@ -165,7 +165,7 @@ export enum mandatoryTrainingJobOption {
 
 export interface StaffRecruitmentDataRequest {
   amountSpent?: string;
-  doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
+  trainingRequired?: string;
 }
 
 export interface LocalIdentifiersRequest {

@@ -1,26 +1,33 @@
 const express = require('express');
-const { sequelize } = require('../../models');
 const router = express.Router({ mergeParams: true });
 const models = require('../../models');
-const Authorization = require('../../utils/security/isAuthenticated');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const postStaffRecruitmentData = async (req, res) => {
   try {
-    const { staffRecruitmentColumn, staffRecruitmentData } = req.body;
+    const { staffRecruitmentData } = req.body;
 
-    await sequelize.transaction(async (t) => {
-      await models.establishment.update(
-        {
-          [staffRecruitmentColumn]: staffRecruitmentData,
+    let staffRecruitmentColumn;
+    let data;
+
+    if (Object.keys(staffRecruitmentData).includes('amountSpent')) {
+      staffRecruitmentColumn = 'moneySpentOnAdvertisingInTheLastFourWeeks';
+      data = staffRecruitmentData.amountSpent;
+    } else if (Object.keys(staffRecruitmentData).includes('trainingRequired')) {
+      staffRecruitmentColumn = 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment';
+      data = staffRecruitmentData.trainingRequired;
+    }
+
+    await models.establishment.update(
+      {
+        [staffRecruitmentColumn]: data,
+      },
+      {
+        where: {
+          id: req.establishmentId,
         },
-        {
-          where: {
-            id: req.establishmentId,
-          },
-          transaction: t,
-        },
-      );
-    });
+      },
+    );
 
     return res.status(200).send();
   } catch (err) {
@@ -62,8 +69,8 @@ const getStaffRecruitmentData = async (req, res) => {
   }
 };
 
-router.route('/').post(Authorization.isAuthorised, postStaffRecruitmentData);
-router.route('/').get(Authorization.isAuthorised, getStaffRecruitmentData);
+router.route('/').post(hasPermission('canEditEstablishment'), postStaffRecruitmentData);
+router.route('/').get(hasPermission('canEditEstablishment'), getStaffRecruitmentData);
 
 module.exports = router;
 module.exports.postStaffRecruitmentData = postStaffRecruitmentData;

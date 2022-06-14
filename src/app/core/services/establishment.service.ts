@@ -11,6 +11,7 @@ import {
   LocalIdentifiersResponse,
   mandatoryTraining,
   setPermission,
+  StaffRecruitmentDataRequest,
   UpdateJobsRequest,
 } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
@@ -321,8 +322,10 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/remove-parent-status`, data);
   }
 
-  public postStaffRecruitmentData(establishmentId: string, data): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/staffRecruitmentData`, data);
+  public postStaffRecruitmentData(establishmentId: string, data: StaffRecruitmentDataRequest): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/staffRecruitmentData`, {
+      staffRecruitmentData: data,
+    });
   }
 
   public getStaffRecruitmentData(establishmentId: string): Observable<any> {

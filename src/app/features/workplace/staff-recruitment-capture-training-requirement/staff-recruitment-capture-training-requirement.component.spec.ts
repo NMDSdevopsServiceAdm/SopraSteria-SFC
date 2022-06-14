@@ -8,7 +8,9 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
+import {
+  StaffRecruitmentCaptureTrainingRequirementComponent,
+} from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup() {
@@ -54,8 +56,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      staffRecruitmentColumn: 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
-      staffRecruitmentData: 'Yes, always',
+      trainingRequired: 'Yes, always',
     });
   });
 
@@ -71,8 +72,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      staffRecruitmentColumn: 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
-      staffRecruitmentData: 'Yes, very often',
+      trainingRequired: 'Yes, very often',
     });
   });
 
@@ -88,8 +88,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      staffRecruitmentColumn: 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
-      staffRecruitmentData: 'Yes, but not very often',
+      trainingRequired: 'Yes, but not very often',
     });
   });
 
@@ -105,8 +104,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      staffRecruitmentColumn: 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
-      staffRecruitmentData: 'No, never',
+      trainingRequired: 'No, never',
     });
   });
 });
