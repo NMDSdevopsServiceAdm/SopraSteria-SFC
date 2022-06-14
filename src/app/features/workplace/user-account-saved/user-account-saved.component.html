@@ -6,13 +6,7 @@
       as a user.
     </p>
     <div class="govuk-button-group">
-      <a
-        role="button"
-        draggable="false"
-        class="govuk-button"
-        [routerLink]="(returnUrl$ | async)?.url"
-        [fragment]="'users'"
-      >
+      <a role="button" draggable="false" class="govuk-button" [routerLink]="return.url" [fragment]="return.fragment">
         View users
       </a>
     </div>

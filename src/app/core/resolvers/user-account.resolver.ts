@@ -14,7 +14,7 @@ export class UserAccountResolver implements Resolve<any> {
 
     return this.userService.getUserDetails(establishmentUid, userUid).pipe(
       catchError(() => {
-        this.router.navigate(['/workplace', establishmentUid], { fragment: 'users' });
+        this.router.navigate(['/workplace', establishmentUid, 'users']);
         return of(null);
       }),
     );

@@ -10,8 +10,8 @@
         *ngIf="canResendActivationLink"
         draggable="false"
         role="button"
-        href="#"
         (click)="resendActivationLink($event)"
+        href="#"
       >
         Resend the user set-up email</a
       >
@@ -53,7 +53,7 @@
   </div>
 </div>
 <div class="govuk-button-group">
-  <a role="button" draggable="false" class="govuk-button" [routerLink]="return.url" [fragment]="'users'">
+  <a role="button" draggable="false" class="govuk-button" [routerLink]="return.url" [fragment]="return.fragment">
     View users
   </a>
 </div>
