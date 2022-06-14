@@ -136,6 +136,7 @@ export interface Establishment {
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
+  doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -150,9 +151,21 @@ export enum jobOptionsEnum {
   NONE = 'None',
 }
 
+export enum staffRecruitmentOptionsEnum {
+  ALWAYS = 'Yes, always',
+  VERY_OFTEN = 'Yes, very often',
+  NOT_OFTEN = 'Yes, but not very often',
+  NEVER = 'No, never',
+}
+
 export enum mandatoryTrainingJobOption {
   all = 'all',
   selected = 'selected',
+}
+
+export interface StaffRecruitmentDataRequest {
+  amountSpent?: string;
+  doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
 }
 
 export interface LocalIdentifiersRequest {

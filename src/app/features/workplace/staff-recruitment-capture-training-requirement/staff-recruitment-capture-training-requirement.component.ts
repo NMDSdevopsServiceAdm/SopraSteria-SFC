@@ -44,6 +44,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   }
   protected init(): void {
     this.setupForm();
+    this.prefill();
 
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'number-of-people-interviewed'];
@@ -56,6 +57,14 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
       },
       { updateOn: 'submit' },
     );
+  }
+
+  private prefill(): void {
+    if (this.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment) {
+      this.form.patchValue({
+        trainingRequired: this.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
+      });
+    }
   }
 
   protected generateUpdateProps() {
