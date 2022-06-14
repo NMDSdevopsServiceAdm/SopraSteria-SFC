@@ -344,7 +344,8 @@ class Establishment extends EntityValidator {
 
   get doNewStartersRepeatMandatoryTrainingFromPreviousEmployment() {
     return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-    
+  }
+
   get moneySpentOnAdvertisingInTheLastFourWeeks() {
     return this._moneySpentOnAdvertisingInTheLastFourWeeks;
   }
@@ -1271,7 +1272,7 @@ class Establishment extends EntityValidator {
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
-        
+
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
