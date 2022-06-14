@@ -136,6 +136,7 @@ export interface Establishment {
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
+  moneySpentOnAdvertisingInTheLastFourWeeks?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -153,6 +154,10 @@ export enum jobOptionsEnum {
 export enum mandatoryTrainingJobOption {
   all = 'all',
   selected = 'selected',
+}
+
+export interface StaffRecruitmentDataRequest {
+  amountSpent?: string;
 }
 
 export interface LocalIdentifiersRequest {
