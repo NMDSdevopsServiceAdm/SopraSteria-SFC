@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -54,7 +54,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
-        trainingRequired: ['', Validators.required],
+        trainingRequired: null,
       },
       { updateOn: 'submit' },
     );
@@ -70,7 +70,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
 
   protected generateUpdateProps(): any {
     const trainingRequired = this.form.value;
-    return trainingRequired;
+    return trainingRequired ? trainingRequired : null;
   }
 
   protected updateEstablishment(props: any): void {
