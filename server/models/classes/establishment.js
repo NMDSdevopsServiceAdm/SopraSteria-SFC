@@ -90,6 +90,7 @@ class Establishment extends EntityValidator {
     this._expiresSoonAlertDate = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
+    this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -348,6 +349,10 @@ class Establishment extends EntityValidator {
 
   get moneySpentOnAdvertisingInTheLastFourWeeks() {
     return this._moneySpentOnAdvertisingInTheLastFourWeeks;
+  }
+
+  get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
+    return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -1272,6 +1277,8 @@ class Establishment extends EntityValidator {
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
+        this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
+          fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1744,6 +1751,8 @@ class Establishment extends EntityValidator {
         myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
+        myDefaultJSON.wouldYouAcceptCareCertificatesFromPreviousEmployment =
+          this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

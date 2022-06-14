@@ -16,6 +16,9 @@ const postStaffRecruitmentData = async (req, res) => {
     } else if (Object.keys(staffRecruitmentData).includes('trainingRequired')) {
       staffRecruitmentColumn = 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment';
       data = staffRecruitmentData.trainingRequired;
+    } else if (Object.keys(staffRecruitmentData).includes('acceptCareCertificatesFromPreviousEmployment')) {
+      staffRecruitmentColumn = 'wouldYouAcceptCareCertificatesFromPreviousEmployment';
+      data = staffRecruitmentData.acceptCareCertificatesFromPreviousEmployment;
     }
 
     await models.establishment.update(
