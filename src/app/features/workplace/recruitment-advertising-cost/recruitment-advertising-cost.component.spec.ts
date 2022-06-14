@@ -12,7 +12,7 @@ import userEvent from '@testing-library/user-event';
 
 import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost.component';
 
-fdescribe('RecruitmentAdvertisingCostComponent', () => {
+describe('RecruitmentAdvertisingCostComponent', () => {
   async function setup(returnUrl = true) {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(RecruitmentAdvertisingCostComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -104,6 +104,30 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
       expect(getByText('View workplace details')).toBeTruthy();
     });
 
+    it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
+      const { component, fixture, getByText } = await setup(false);
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+    });
+
+    it(`should call the setSubmitAction function with an action of summary and save as false when clicking 'View workplace details' link`, async () => {
+      const { component, fixture, getByText } = await setup(false);
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+      const link = getByText('View workplace details');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'summary', save: false });
+    });
+
     it('should not call the postStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
       const { fixture, getByText, establishmentServiceSpy } = await setup();
 
@@ -167,6 +191,30 @@ fdescribe('RecruitmentAdvertisingCostComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should call the setSubmitAction function with an action of return and save as true when clicking 'Save and return' button`, async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+    });
+
+    it(`should call the setSubmitAction function with an action of exit and save as false when clicking 'Cancel' link`, async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: false });
     });
 
     it('should navigate to the summary page when submitting', async () => {
