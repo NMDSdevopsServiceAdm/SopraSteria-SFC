@@ -64,7 +64,7 @@ describe('OtherServicesComponent', () => {
   it('should show error message(twice) when user tries to answer Yes with no checkboxes ticked', async () => {
     const { component, fixture, getAllByText, getByTestId } = await setup();
     const yesButton = getByTestId('otherServices-conditional-1');
-    const errorMessage = 'Select the other services you provide';
+    const errorMessage = 'Select all the other services you provide';
     component.submitAction = { action: 'continue', save: true };
     fireEvent.click(yesButton);
     component.onSubmit();
