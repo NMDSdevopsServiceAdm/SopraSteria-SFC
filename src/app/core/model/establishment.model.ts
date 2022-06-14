@@ -156,6 +156,10 @@ export enum mandatoryTrainingJobOption {
   selected = 'selected',
 }
 
+export interface StaffRecruitmentDataRequest {
+  amountSpent?: string;
+}
+
 export interface LocalIdentifiersRequest {
   localIdentifiers: LocalIdentifier[];
 }
