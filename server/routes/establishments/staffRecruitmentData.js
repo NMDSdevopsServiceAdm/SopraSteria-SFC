@@ -70,7 +70,7 @@ const getStaffRecruitmentData = async (req, res) => {
 };
 
 router.route('/').post(hasPermission('canEditEstablishment'), postStaffRecruitmentData);
-router.route('/').get(hasPermission('canEditEstablishment'), getStaffRecruitmentData);
+router.route('/').get(hasPermission('canViewEstablishment'), getStaffRecruitmentData);
 
 module.exports = router;
 module.exports.postStaffRecruitmentData = postStaffRecruitmentData;
