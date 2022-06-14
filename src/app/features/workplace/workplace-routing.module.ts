@@ -23,14 +23,12 @@ import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-
 
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
-import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
-import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
-import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
@@ -229,48 +227,32 @@ const routes: Routes = [
         },
       },
       {
-        path: 'confirm-vacancies',
-        component: ConfirmVacanciesComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Confirm Vacancies',
-        },
-      },
-      {
         path: 'starters',
         component: StartersComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Starters',
         },
       },
       {
-        path: 'confirm-starters',
-        component: ConfirmStartersComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Confirm Starters',
-        },
-      },
-      {
         path: 'leavers',
         component: LeaversComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Leavers',
         },
       },
       {
-        path: 'confirm-leavers',
-        component: ConfirmLeaversComponent,
+        path: 'recruitment-advertising-cost',
+        component: RecruitmentAdvertisingCostComponent,
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Confirm Leavers',
+          title: 'Recruitment Advertising Cost',
         },
       },
       {

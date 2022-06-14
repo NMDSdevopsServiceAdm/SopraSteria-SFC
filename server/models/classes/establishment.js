@@ -89,6 +89,7 @@ class Establishment extends EntityValidator {
     this._showSharingPermissionsBanner = null;
     this._expiresSoonAlertDate = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
+    this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -343,6 +344,9 @@ class Establishment extends EntityValidator {
 
   get doNewStartersRepeatMandatoryTrainingFromPreviousEmployment() {
     return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+    
+  get moneySpentOnAdvertisingInTheLastFourWeeks() {
+    return this._moneySpentOnAdvertisingInTheLastFourWeeks;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -519,6 +523,10 @@ class Establishment extends EntityValidator {
 
         if (document.expiresSoonAlertDate) {
           this._expiresSoonAlertDate = document.expiresSoonAlertDate;
+        }
+
+        if (document.moneySpentOnAdvertisingInTheLastFourWeeks) {
+          this._moneySpentOnAdvertisingInTheLastFourWeeks = document.moneySpentOnAdvertisingInTheLastFourWeeks;
         }
       }
 
@@ -1218,6 +1226,7 @@ class Establishment extends EntityValidator {
       }
 
       const fetchResults = await models.establishment.findOne(fetchQuery);
+
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
         this._isNew = false;
@@ -1261,6 +1270,8 @@ class Establishment extends EntityValidator {
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+        this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
+        
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1731,6 +1742,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
         myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+        myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

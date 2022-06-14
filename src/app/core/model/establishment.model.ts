@@ -48,13 +48,13 @@ export interface Vacancy {
 
 export interface Starter {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 
 export interface Leaver {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 
@@ -137,6 +137,7 @@ export interface Establishment {
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
   doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
+  moneySpentOnAdvertisingInTheLastFourWeeks?: string;
 }
 
 export interface UpdateJobsRequest {

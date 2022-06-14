@@ -4,8 +4,10 @@ import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
 import { getUserPermissionsTypes } from '@core/utils/users-util';
 import orderBy from 'lodash/orderBy';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'app-user-accounts-summary',
@@ -15,17 +17,26 @@ export class UserAccountsSummaryComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() showSecondUserBanner: boolean;
 
+  private subscriptions: Subscription = new Subscription();
   public users: Array<UserDetails> = [];
   public canAddUser: boolean;
   public canViewUser: boolean;
   public userPermissionsTypes: UserPermissionsType[];
 
-  constructor(private route: ActivatedRoute, private permissionsService: PermissionsService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private userService: UserService,
+    private permissionsService: PermissionsService,
+  ) {}
 
   ngOnInit(): void {
+    this.setUsers();
+    this.setUserServiceReturnUrl();
+  }
+
+  public setUsers(): void {
     const users = this.route.snapshot.data.users ? this.route.snapshot.data.users : [];
     this.userPermissionsTypes = getUserPermissionsTypes(true);
-
     this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
     this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser') && this.userSlotsAvailable(users);
 
@@ -56,5 +67,12 @@ export class UserAccountsSummaryComponent implements OnInit {
     const editUsers = users.filter((user) => user.role === Roles.Edit);
     const readOnlyUsers = users.filter((user) => user.role === Roles.Read);
     return editUsers.length < 3 || readOnlyUsers.length < readOnlyLimit;
+  }
+
+  private setUserServiceReturnUrl(): void {
+    this.userService.updateReturnUrl({
+      url: ['/workplace', this.workplace.uid],
+      fragment: 'workplace-users',
+    });
   }
 }

@@ -9,12 +9,12 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { VacanciesComponent } from './vacancies.component';
+import { LeaversComponent } from './leavers.component';
 
-describe('VacanciesComponent', () => {
-  async function setup(returnUrl = true, vacancies = undefined) {
+describe('LeaversComponent', () => {
+  async function setup(returnUrl = true, leavers = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByText, queryAllByText } = await render(
-      VacanciesComponent,
+      LeaversComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
@@ -22,7 +22,7 @@ describe('VacanciesComponent', () => {
           {
             provide: EstablishmentService,
             useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-              vacancies,
+              leavers,
             }),
             deps: [HttpClient],
           },
@@ -81,7 +81,7 @@ describe('VacanciesComponent', () => {
     };
   }
 
-  it('should render a VacanciesComponent', async () => {
+  it('should render a LeaversComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
@@ -91,13 +91,13 @@ describe('VacanciesComponent', () => {
 
     const inputRow = getByTestId('row-0');
 
-    expect(getByText('Add your current staff vacancies')).toBeTruthy();
+    expect(getByText('Add your staff leavers from the last 12 months')).toBeTruthy();
     expect(inputRow).toBeTruthy();
     expect(inputRow.innerText).toContain('Job role 1');
     expect(getByText('Add another job role')).toBeTruthy();
-    expect(getByText('Total vacancies: 0')).toBeTruthy();
-    expect(getByLabelText('There are no current staff vacancies')).toBeTruthy();
-    expect(getByLabelText('I do not know how many current staff vacancies there are')).toBeTruthy();
+    expect(getByText('Total leavers: 0')).toBeTruthy();
+    expect(getByLabelText('There have been no leavers in the last 12 months')).toBeTruthy();
+    expect(getByLabelText('I do not know how many leavers there have been')).toBeTruthy();
   });
 
   it('should add another input when row when the add another job role button is clicked', async () => {
@@ -116,7 +116,7 @@ describe('VacanciesComponent', () => {
     expect(secondInputRow.innerHTML).toContain('Job role 2');
   });
 
-  it('should not show the add another job button when there are there are vacancies for all available jobs', async () => {
+  it('should not show the add another job button when there are there are leavers for all available jobs', async () => {
     const { component, fixture, getByText, queryByText } = await setup();
 
     const button = getByText('Add another job role');
@@ -127,23 +127,23 @@ describe('VacanciesComponent', () => {
     expect(queryByText('Add another job role')).toBeFalsy();
   });
 
-  it('should prefill the form if the establishment has a list of job roles and number of vacancies', async () => {
-    const vacancies = [{ jobId: 0, jobTitle: 'Job0', total: 3 }];
-    const { component, getByTestId } = await setup(true, vacancies);
+  it('should prefill the form if the establishment has a list of job roles and number of leavers', async () => {
+    const leavers = [{ jobId: 0, jobTitle: 'Job0', total: 3 }];
+    const { component, getByTestId } = await setup(true, leavers);
 
     const inputRow = getByTestId('row-0');
     expect(inputRow.innerHTML).toContain('Job0');
     expect(inputRow.innerHTML).toContain('3');
-    expect(component.form.value).toEqual({ vacancies: [{ jobRole: 0, total: 3 }], vacanciesKnown: null });
+    expect(component.form.value).toEqual({ leavers: [{ jobRole: 0, total: 3 }], leaversKnown: null });
   });
 
   it('should select the radio button', async () => {
-    const vacancies = 'None';
-    const { component, fixture } = await setup(true, vacancies);
+    const leavers = 'None';
+    const { component, fixture } = await setup(true, leavers);
 
-    const radioButton = fixture.nativeElement.querySelector('input[id="vacanciesKnown-0"]');
+    const radioButton = fixture.nativeElement.querySelector('input[id="leaversKnown-0"]');
     expect(radioButton.checked).toBeTruthy();
-    expect(component.form.value).toEqual({ vacancies: [{ jobRole: null, total: null }], vacanciesKnown: 'None' });
+    expect(component.form.value).toEqual({ leavers: [{ jobRole: null, total: null }], leaversKnown: 'None' });
   });
 
   describe('submit buttons and submitting form', () => {
@@ -154,28 +154,28 @@ describe('VacanciesComponent', () => {
       expect(getByText('View workplace details')).toBeTruthy();
     });
 
-    it('should call updatedJobs when submitting form with job role and number of vacancies filled out', async () => {
+    it('should call updatedJobs when submitting form with job role and number of leavers filled out', async () => {
       const { component, fixture, getByText, establishmentServiceSpy } = await setup(false);
 
-      component.form.get('vacancies').setValue([{ jobRole: 1, total: 1 }]);
+      component.form.get('leavers').setValue([{ jobRole: 1, total: 1 }]);
 
       const button = getByText('Save and continue');
       fireEvent.click(button);
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        vacancies: [{ jobId: 1, total: 1 }],
+        leavers: [{ jobId: 1, total: 1 }],
       });
     });
 
-    it('should call updatedJobs when submitting form with multiple job roles and number of vacancies filled out', async () => {
+    it('should call updatedJobs when submitting form with multiple job roles and number of leavers filled out', async () => {
       const { component, fixture, getByText, establishmentServiceSpy } = await setup(false);
 
       const addRoleButton = getByText('Add another job role');
       fireEvent.click(addRoleButton);
       fixture.detectChanges();
 
-      component.form.get('vacancies').setValue([
+      component.form.get('leavers').setValue([
         { jobRole: 1, total: 1 },
         { jobRole: 2, total: 8 },
       ]);
@@ -185,7 +185,7 @@ describe('VacanciesComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        vacancies: [
+        leavers: [
           { jobId: 1, total: 1 },
           { jobId: 2, total: 8 },
         ],
@@ -195,33 +195,33 @@ describe('VacanciesComponent', () => {
     it('should call updatedJobs when submitting form with radio button value', async () => {
       const { component, fixture, getByText, establishmentServiceSpy } = await setup(false);
 
-      component.form.get('vacanciesKnown').setValue('None');
+      component.form.get('leaversKnown').setValue('None');
 
       const button = getByText('Save and continue');
       fireEvent.click(button);
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        vacancies: 'None',
+        leavers: 'None',
       });
     });
 
-    it('should navigate to the starters page when submitting from the flow', async () => {
+    it('should navigate to the check-answers page when submitting from the flow', async () => {
       const { component, fixture, getByText, routerSpy } = await setup(false);
 
-      component.form.get('vacanciesKnown').setValue('None');
+      component.form.get('leaversKnown').setValue('None');
 
       const button = getByText('Save and continue');
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
     });
 
     it('should navigate to the check-anwsers page when clicking view workplace details link', async () => {
       const { component, fixture, getByText, routerSpy } = await setup(false);
 
-      component.form.get('vacanciesKnown').setValue('None');
+      component.form.get('leaversKnown').setValue('None');
 
       const link = getByText('View workplace details');
       fireEvent.click(link);
@@ -240,7 +240,7 @@ describe('VacanciesComponent', () => {
     it('should navigate to the summary page when submitting', async () => {
       const { component, fixture, getByText, routerSpy } = await setup();
 
-      component.form.get('vacanciesKnown').setValue('None');
+      component.form.get('leaversKnown').setValue('None');
 
       const button = getByText('Save and return');
       fireEvent.click(button);
@@ -252,7 +252,7 @@ describe('VacanciesComponent', () => {
     it('should navigte to the correct page when clicking the cancel link', async () => {
       const { component, fixture, getByText, routerSpy } = await setup();
 
-      component.form.get('vacanciesKnown').setValue('None');
+      component.form.get('leaversKnown').setValue('None');
 
       const link = getByText('Cancel');
       fireEvent.click(link);
@@ -263,7 +263,7 @@ describe('VacanciesComponent', () => {
   });
 
   describe('errors', () => {
-    it('should show an error if the job role and number of vacancies are not filled in, and neither radio button has been selected', async () => {
+    it('should show an error if the job role and number of leavers are not filled in, and neither radio button has been selected', async () => {
       const { fixture, getByText, getAllByText } = await setup();
 
       const button = getByText('Save and return');
@@ -271,7 +271,7 @@ describe('VacanciesComponent', () => {
       fixture.detectChanges();
 
       const errorMessages = getAllByText(
-        'Select the job role and enter the number of vacancies, or tell us there are none',
+        'Select the job role and enter the number of leavers, or tell us there are none',
       );
       expect(errorMessages.length).toEqual(2);
     });
@@ -279,7 +279,7 @@ describe('VacanciesComponent', () => {
     it('should show an error if the job role is not filled in but the number of vacanies is, and neither radio button has been selected', async () => {
       const { component, fixture, getByText, queryByText } = await setup();
 
-      component.form.get('vacancies').setValue([{ jobRole: null, total: 1 }]);
+      component.form.get('leavers').setValue([{ jobRole: null, total: 1 }]);
 
       const button = getByText('Save and return');
       fireEvent.click(button);
@@ -287,29 +287,29 @@ describe('VacanciesComponent', () => {
 
       expect(getByText('Select the job role (job role 1)')).toBeTruthy();
       expect(getByText('Select the job role')).toBeTruthy();
-      expect(queryByText('Enter the number of vacancies (job role 1)')).toBeFalsy();
-      expect(queryByText('Enter the number of vacancies')).toBeFalsy();
+      expect(queryByText('Enter the number of leavers (job role 1)')).toBeFalsy();
+      expect(queryByText('Enter the number of leavers')).toBeFalsy();
     });
 
-    it('should show an error if the number of vacancies is not filled in but the job role is, and neither radio button has been selected', async () => {
+    it('should show an error if the number of leavers is not filled in but the job role is, and neither radio button has been selected', async () => {
       const { component, fixture, getByText, queryByText } = await setup();
 
-      component.form.get('vacancies').setValue([{ jobRole: 0, total: null }]);
+      component.form.get('leavers').setValue([{ jobRole: 0, total: null }]);
 
       const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(getByText('Enter the number of vacancies (job role 1)')).toBeTruthy();
-      expect(getByText('Enter the number of vacancies')).toBeTruthy();
+      expect(getByText('Enter the number of leavers (job role 1)')).toBeTruthy();
+      expect(getByText('Enter the number of leavers')).toBeTruthy();
       expect(queryByText('Select the job role (job role 1)')).toBeFalsy();
       expect(queryByText('Select the job role')).toBeFalsy();
     });
 
-    it('should show an error if the job role and number of vacancies is filled in but the vacancies is 0', async () => {
+    it('should show an error if the job role and number of leavers is filled in but the vacancies is 0', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.form.get('vacancies').setValue([{ jobRole: 0, total: 0 }]);
+      component.form.get('leavers').setValue([{ jobRole: 0, total: 0 }]);
 
       const button = getByText('Save and return');
       fireEvent.click(button);
@@ -319,10 +319,10 @@ describe('VacanciesComponent', () => {
       expect(getByText('Number must be between 1 and 999')).toBeTruthy();
     });
 
-    it('should show an error if the job role and number of vacancies is filled in but the vacancies is negative', async () => {
+    it('should show an error if the job role and number of leavers is filled in but the vacancies is negative', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.form.get('vacancies').setValue([{ jobRole: 'Job0', total: -1 }]);
+      component.form.get('leavers').setValue([{ jobRole: 'Job0', total: -1 }]);
 
       const button = getByText('Save and return');
       fireEvent.click(button);
@@ -332,10 +332,10 @@ describe('VacanciesComponent', () => {
       expect(getByText('Number must be between 1 and 999')).toBeTruthy();
     });
 
-    it('should show an error if the job role and number of vacancies is filled in but the vacancies is greater than the max allowed number', async () => {
+    it('should show an error if the job role and number of leavers is filled in but the vacancies is greater than the max allowed number', async () => {
       const { component, fixture, getByText } = await setup();
 
-      component.form.get('vacancies').setValue([{ jobRole: 0, total: 1000 }]);
+      component.form.get('leavers').setValue([{ jobRole: 0, total: 1000 }]);
 
       const button = getByText('Save and return');
       fireEvent.click(button);
@@ -348,7 +348,7 @@ describe('VacanciesComponent', () => {
     it('should remove any error messages when the add another job role button is clicked', async () => {
       const { component, fixture, getByText, queryByText } = await setup();
 
-      component.form.get('vacancies').setValue([{ jobRole: null, total: 1 }]);
+      component.form.get('leavers').setValue([{ jobRole: null, total: 1 }]);
 
       const saveButton = getByText('Save and return');
       fireEvent.click(saveButton);
