@@ -10,18 +10,18 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost.component';
+import { NumberOfInterviewsComponent } from './number-of-interviews.component';
 
-describe('RecruitmentAdvertisingCostComponent', () => {
-  async function setup(returnUrl = true, recruitmentAdvertisingCost = undefined) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(RecruitmentAdvertisingCostComponent, {
+describe('NumberOfInterviews', () => {
+  async function setup(returnUrl = true, numberOfInterviews = undefined) {
+    const { fixture, getByText, getAllByText, getByLabelText } = await render(NumberOfInterviewsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-            moneySpentOnAdvertisingInTheLastFourWeeks: recruitmentAdvertisingCost,
+            peopleInterviewedInTheLastFourWeeks: numberOfInterviews,
           }),
           deps: [HttpClient],
         },
@@ -48,36 +48,36 @@ describe('RecruitmentAdvertisingCostComponent', () => {
     };
   }
 
-  it('should render a RecruitmentAdvertisingCostComponent', async () => {
+  it('should render a NumberOfInterviewsComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
   it('should render the heading, input and radio buttons', async () => {
     const { getByText, getByLabelText } = await setup();
-    const heading = 'How much money have you spent on advertising for staff in the last 4 weeks?';
+    const heading = 'How many people have you interviewed in the last 4 weeks?';
 
     expect(getByText(heading)).toBeTruthy;
-    expect(getByLabelText('Amount spent')).toBeTruthy();
-    expect(getByLabelText('Nothing has been spent on advertising for staff in the last 4 weeks')).toBeTruthy();
-    expect(getByLabelText('I do not know how much has been spent on advertising for staff')).toBeTruthy();
+    expect(getByLabelText('Number of people interviewed')).toBeTruthy();
+    expect(getByLabelText('Nobody has been interviewed in the last 4 weeks')).toBeTruthy();
+    expect(getByLabelText('I do not know how many people have been interviewed')).toBeTruthy();
   });
 
   it('should unselect the radio button when radio button is selected and user types into the input', async () => {
     const { component, fixture, getByLabelText } = await setup();
 
     const form = component.form;
-    const radio = getByLabelText('Nothing has been spent on advertising for staff in the last 4 weeks');
+    const radio = getByLabelText('Nobody has been interviewed in the last 4 weeks');
     fireEvent.click(radio);
     fixture.detectChanges();
 
-    expect(form.value).toEqual({ amountSpent: null, amountSpentKnown: 'None' });
+    expect(form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: 'None' });
 
-    const input = getByLabelText('Amount spent');
+    const input = getByLabelText('Number of people interviewed');
     userEvent.type(input, '4');
     fixture.detectChanges();
 
-    expect(form.value).toEqual({ amountSpent: '4', amountSpentKnown: null });
+    expect(form.value).toEqual({ numberOfInterviews: '4', numberOfInterviewsKnown: null });
   });
 
   it('should clear the input when a radio button is selected and there is a value in the input', async () => {
@@ -85,47 +85,47 @@ describe('RecruitmentAdvertisingCostComponent', () => {
 
     const form = component.form;
 
-    const input = getByLabelText('Amount spent');
-    userEvent.type(input, '4.10');
+    const input = getByLabelText('Number of people interviewed');
+    userEvent.type(input, '4');
     fixture.detectChanges();
 
-    expect(form.value).toEqual({ amountSpent: '4.10', amountSpentKnown: null });
+    expect(form.value).toEqual({ numberOfInterviews: '4', numberOfInterviewsKnown: null });
 
-    const radio = getByLabelText('I do not know how much has been spent on advertising for staff');
+    const radio = getByLabelText('I do not know how many people have been interviewed');
     fireEvent.click(radio);
     fixture.detectChanges();
 
-    expect(form.value).toEqual({ amountSpent: null, amountSpentKnown: `Don't know` });
+    expect(form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: `Don't know` });
   });
 
-  it('should prefill the input if the establishment has a recruitment advertising cost value', async () => {
-    const recruitmentAdvertisingCost = '100.40';
-    const { component, fixture } = await setup(true, recruitmentAdvertisingCost);
+  it('should prefill the input if the establishment has a number of interviews value', async () => {
+    const numberOfInterviews = '100';
+    const { component, fixture } = await setup(true, numberOfInterviews);
 
-    const input = fixture.nativeElement.querySelector('input[id="amountSpent"]');
+    const input = fixture.nativeElement.querySelector('input[id="numberOfInterviews"]');
 
-    expect(input.value).toEqual('100.40');
-    expect(component.form.value).toEqual({ amountSpent: '100.40', amountSpentKnown: null });
+    expect(input.value).toEqual('100');
+    expect(component.form.value).toEqual({ numberOfInterviews: '100', numberOfInterviewsKnown: null });
   });
 
-  it('should pre select the first radio button if the establishment has a recruitment advertising cost value of "None"', async () => {
-    const recruitmentAdvertisingCost = 'None';
-    const { component, fixture } = await setup(true, recruitmentAdvertisingCost);
+  it('should pre select the first radio button if the establishment has a number of interviews value of "None"', async () => {
+    const numberOfInterviews = 'None';
+    const { component, fixture } = await setup(true, numberOfInterviews);
 
-    const radioButton = fixture.nativeElement.querySelector('input[id="amountSpentKnown-0"]');
+    const radioButton = fixture.nativeElement.querySelector('input[id="numberOfInterviewsKnown-0"]');
 
     expect(radioButton.checked).toBeTruthy();
-    expect(component.form.value).toEqual({ amountSpent: null, amountSpentKnown: 'None' });
+    expect(component.form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: 'None' });
   });
 
-  it(`should pre select the second radio button if the establishment has a recruitment advertising cost value of "Don't know"`, async () => {
-    const recruitmentAdvertisingCost = `Don't know`;
-    const { component, fixture } = await setup(true, recruitmentAdvertisingCost);
+  it(`should pre select the second radio button if the establishment has a number of interviews value of "Don't know"`, async () => {
+    const numberOfInterviews = `Don't know`;
+    const { component, fixture } = await setup(true, numberOfInterviews);
 
-    const radioButton = fixture.nativeElement.querySelector('input[id="amountSpentKnown-1"]');
+    const radioButton = fixture.nativeElement.querySelector('input[id="numberOfInterviewsKnown-1"]');
 
     expect(radioButton.checked).toBeTruthy();
-    expect(component.form.value).toEqual({ amountSpent: null, amountSpentKnown: `Don't know` });
+    expect(component.form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: `Don't know` });
   });
 
   describe('submit buttons and submitting form', () => {
@@ -173,21 +173,21 @@ describe('RecruitmentAdvertisingCostComponent', () => {
     it('should call the postStaffRecruitmentData when submitting form with the amount spent filled out', async () => {
       const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
-      const input = getByLabelText('Amount spent');
-      userEvent.type(input, '440.99');
+      const input = getByLabelText('Number of people interviewed');
+      userEvent.type(input, '440');
       fixture.detectChanges();
 
       const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: '440.99' });
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { numberOfInterviews: '440' });
     });
 
     it('should call the postStaffRecruitmentData when submitting form with a radio button selected', async () => {
       const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
-      const radio = getByLabelText('Nothing has been spent on advertising for staff in the last 4 weeks');
+      const radio = getByLabelText('Nobody has been interviewed in the last 4 weeks');
       fireEvent.click(radio);
       fixture.detectChanges();
 
@@ -195,7 +195,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { amountSpent: 'None' });
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { numberOfInterviews: 'None' });
     });
 
     it('should navigate to the next page when submitting from the flow', async () => {
@@ -205,7 +205,11 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'number-of-interviews']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
     });
 
     it('should navigate to the next page when submitting from the flow', async () => {
@@ -261,87 +265,87 @@ describe('RecruitmentAdvertisingCostComponent', () => {
   });
 
   describe('errors', () => {
-    it('should show an error if text is inputted into the amount spent input', async () => {
+    it('should show an error if text is inputted into the number of people interviewed input', async () => {
       const { fixture, getByText, getByLabelText, getAllByText } = await setup();
 
-      const input = getByLabelText('Amount spent');
+      const input = getByLabelText('Number of people interviewed');
       userEvent.type(input, 'text');
       fixture.detectChanges();
 
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Number of people interviewed must be a number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
-    it('should show an error if a negative number is inputted into the amount spent input', async () => {
+    it('should show an error if a negative number is inputted into the number of people interviewed input', async () => {
       const { fixture, getByText, getByLabelText, getAllByText } = await setup();
 
-      const input = getByLabelText('Amount spent');
+      const input = getByLabelText('Number of people interviewed');
       userEvent.type(input, '-100');
       fixture.detectChanges();
 
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Number of people interviewed must be a positive number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
-    it('should show an error if a negative decimal number is inputted into the amount spent input', async () => {
+    it('should show an error if a negative decimal number is inputted into the number of people interviewed input', async () => {
       const { fixture, getByText, getByLabelText, getAllByText } = await setup();
 
-      const input = getByLabelText('Amount spent');
+      const input = getByLabelText('Number of people interviewed');
       userEvent.type(input, '-100.30');
       fixture.detectChanges();
 
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Number of people interviewed must be a positive number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
-    it('should show an error if a number with no numbers after the decimal point is inputted into the amount spent input', async () => {
+    it('should show an error if a number with no numbers after the decimal point is inputted into the number of people interviewed input', async () => {
       const { fixture, getByText, getByLabelText, getAllByText } = await setup();
 
-      const input = getByLabelText('Amount spent');
+      const input = getByLabelText('Number of people interviewed');
       userEvent.type(input, '100.');
       fixture.detectChanges();
 
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Number of people interviewed must be a whole number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
-    it('should show an error if a mixture of numbers and text is inputted into the amount spent input', async () => {
+    it('should show an error if a mixture of numbers and text is inputted into the number of people interviewed input', async () => {
       const { fixture, getByText, getByLabelText, getAllByText } = await setup();
 
-      const input = getByLabelText('Amount spent');
+      const input = getByLabelText('Number of people interviewed');
       userEvent.type(input, '100.asdf.314');
       fixture.detectChanges();
 
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Number of people interviewed must be a number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
-    it('should show an error if a decimal number with more than 2 decimals is inputted into the amount spent input', async () => {
+    it('should show an error if a decimal number with more than 2 decimals is inputted into the number of people interviewed input', async () => {
       const { fixture, getByText, getByLabelText, getAllByText } = await setup();
 
-      const input = getByLabelText('Amount spent');
-      userEvent.type(input, '100.301');
+      const input = getByLabelText('Number of people interviewed');
+      userEvent.type(input, '100.3');
       fixture.detectChanges();
 
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must only include pence, like 132.00 or 150.40';
+      const errorMessage = 'Number of people interviewed must be a whole number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
   });

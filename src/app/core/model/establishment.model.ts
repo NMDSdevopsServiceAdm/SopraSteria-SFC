@@ -139,6 +139,7 @@ export interface Establishment {
   doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
+  peopleInterviewedInTheLastFourWeeks?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -167,6 +168,7 @@ export enum mandatoryTrainingJobOption {
 
 export interface StaffRecruitmentDataRequest {
   amountSpent?: string;
+  numberOfInterviews?: string;
   trainingRequired?: string;
   acceptCareCertificatesFromPreviousEmployment?: string;
 }

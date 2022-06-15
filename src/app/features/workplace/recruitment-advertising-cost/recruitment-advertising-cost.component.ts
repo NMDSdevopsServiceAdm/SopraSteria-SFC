@@ -158,7 +158,7 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'people-interviewed'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'number-of-interviews'];
   }
 
   protected addErrorLinkFunctionality(): void {

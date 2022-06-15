@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { staffRecruitmentOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -15,19 +16,19 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   public trainingRequiredOptions = [
     {
       label: 'Yes, always',
-      value: 'Yes, always',
+      value: staffRecruitmentOptionsEnum.ALWAYS,
     },
     {
       label: 'Yes, very often',
-      value: 'Yes, very often',
+      value: staffRecruitmentOptionsEnum.VERY_OFTEN,
     },
     {
       label: 'Yes, but not very often',
-      value: 'Yes, but not very often',
+      value: staffRecruitmentOptionsEnum.NOT_OFTEN,
     },
     {
       label: 'No, never',
-      value: 'No, never',
+      value: staffRecruitmentOptionsEnum.NEVER,
     },
   ];
 
