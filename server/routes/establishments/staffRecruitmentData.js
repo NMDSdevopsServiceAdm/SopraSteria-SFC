@@ -11,9 +11,14 @@ const postStaffRecruitmentData = async (req, res) => {
     let staffRecruitmentColumn;
     let data;
 
-    if (Object.keys(staffRecruitmentData).includes('amountSpent')) {
+    const dataObjKeys = Object.keys(staffRecruitmentData);
+
+    if (dataObjKeys.includes('amountSpent')) {
       staffRecruitmentColumn = 'moneySpentOnAdvertisingInTheLastFourWeeks';
       data = staffRecruitmentData.amountSpent;
+    } else if (dataObjKeys.includes('numberOfInterviews')) {
+      staffRecruitmentColumn = 'peopleInterviewedInTheLastFourWeeks';
+      data = staffRecruitmentData.numberOfInterviews;
     }
 
     await models.establishment.update(
