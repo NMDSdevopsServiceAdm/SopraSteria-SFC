@@ -26,6 +26,7 @@ import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
+import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
@@ -92,6 +93,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     UsersComponent,
     StaffRecruitmentCaptureTrainingRequirementComponent,
     RecruitmentAdvertisingCostComponent,
+    NumberOfInterviewsComponent,
   ],
   providers: [
     DialogService,

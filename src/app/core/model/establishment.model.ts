@@ -138,6 +138,7 @@ export interface Establishment {
   showSharingPermissionsBanner?: boolean;
   doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
+  peopleInterviewedInTheLastFourWeeks?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -166,6 +167,7 @@ export enum mandatoryTrainingJobOption {
 
 export interface StaffRecruitmentDataRequest {
   amountSpent?: string;
+  numberOfInterviews?: string;
   trainingRequired?: string;
 }
 
