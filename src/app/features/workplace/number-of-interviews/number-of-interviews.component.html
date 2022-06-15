@@ -1,0 +1,80 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+></app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <fieldset class="govuk-fieldset">
+    <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">How many people have you interviewed in the last 4 weeks?</h1>
+          </legend>
+        </div>
+      </div>
+      <div class="govuk-grid-row govuk-!-margin-bottom-6">
+        <div class="govuk-grid-column-two-thirds">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">
+            <label class="govuk-label" for="numberOfInterviews">Number of people interviewed</label>
+            <span
+              *ngIf="submitted && this.form.get('numberOfInterviews').invalid"
+              id="numberOfInterviews-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span>
+              <span *ngIf="this.form.get('numberOfInterviews').errors.nonInteger">
+                {{ getFormErrorMessage('numberOfInterviews', 'nonInteger') }}
+              </span>
+              <span *ngIf="this.form.get('numberOfInterviews').errors.negativeNumber">
+                {{ getFormErrorMessage('numberOfInterviews', 'negativeNumber') }}
+              </span>
+              <span
+                *ngIf="
+                  this.form.get('numberOfInterviews').errors.nonWholeNumber &&
+                  !this.form.get('numberOfInterviews').errors.negativeNumber &&
+                  !this.form.get('numberOfInterviews').errors.nonInteger
+                "
+              >
+                {{ getFormErrorMessage('numberOfInterviews', 'nonWholeNumber') }}
+              </span>
+            </span>
+            <div class="govuk-input__wrapper">
+              <input
+                class="govuk-input govuk-input--width-5"
+                [formControlName]="'numberOfInterviews'"
+                id="numberOfInterviews"
+                name="numberOfInterviews"
+                [class.govuk-input--error]="this.submitted && this.form.get('numberOfInterviews').invalid"
+                type="text"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="gouvk-grid-row govuk-!-margin-bottom-3">
+        <div class="govuk-form-group">
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let option of numberOfInterviewsKnownOptions; let i = index">
+              <input
+                class="govuk-radios__input"
+                type="radio"
+                id="numberOfInterviewsKnown-{{ i }}"
+                name="numberOfInterviewsKnown"
+                [formControlName]="'numberOfInterviewsKnown'"
+                [value]="option.value"
+              />
+              <label for="numberOfInterviewsKnown-{{ i }}" class="govuk-label govuk-radios__label">{{
+                option.label
+              }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  <app-workplace-submit-button [return]="!!return" [isExistingStaffRecord]="false" (clicked)="setSubmitAction($event)">
+  </app-workplace-submit-button>
+</form>

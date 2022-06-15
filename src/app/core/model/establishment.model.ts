@@ -158,6 +158,7 @@ export enum mandatoryTrainingJobOption {
 
 export interface StaffRecruitmentDataRequest {
   amountSpent?: string;
+  numberOfInterviews?: string;
 }
 
 export interface LocalIdentifiersRequest {
