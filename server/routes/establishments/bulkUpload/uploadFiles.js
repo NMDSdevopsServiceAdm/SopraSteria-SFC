@@ -61,7 +61,6 @@ const uploadedGet = async (req, res) => {
         Prefix: `${req.establishmentId}/latest/`,
       })
       .promise();
-
     const returnData = await Promise.all(
       data.Contents.filter((myFile) => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)).map(
         async (file) => {
@@ -230,19 +229,18 @@ const uploadedStarGet = async (req, res) => {
     const { data } = await S3.downloadContent(Key);
 
     let updatedData;
-
     switch (downloadType) {
-      case 'Workplace':
-      case 'Training': {
-        updatedData = data;
-        break;
-      }
       case 'Staff': {
         updatedData = await buUtils.staffData(data, downloadType);
         break;
       }
       case 'StaffSanitise': {
         updatedData = await buUtils.staffData(data, downloadType);
+        break;
+      }
+
+      default: {
+        updatedData = data;
         break;
       }
     }
