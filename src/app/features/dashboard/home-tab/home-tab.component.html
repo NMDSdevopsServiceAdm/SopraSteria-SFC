@@ -25,6 +25,22 @@
         [numberOfStaff]="workplace.numberOfStaff"
       ></app-staff-mismatch-banner>
     </ng-container>
+
+    <ng-container *ngIf="workplace && canEditEstablishment">
+      <app-inset-text [color]="'todo'">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-s govuk-!-margin-bottom-2">Staff recruitment is difficult</h2>
+            <p>
+              Skills for Care are working with the Department of Health and Social Care to help them better understand
+              how difficult it is to recruit people into the adult social care sector.
+            </p>
+            <a [routerLink]="['/benefits-bundle']"> Answer our 4 new staff recruitment questions </a>
+          </div>
+        </div>
+      </app-inset-text>
+    </ng-container>
+
     <div *ngIf="workplace">
       <div>
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
