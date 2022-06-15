@@ -1,5 +1,4 @@
 const express = require('express');
-
 const router = express.Router({ mergeParams: true });
 const models = require('../../models');
 const { hasPermission } = require('../../utils/security/hasPermission');
@@ -14,6 +13,9 @@ const postStaffRecruitmentData = async (req, res) => {
     if (Object.keys(staffRecruitmentData).includes('amountSpent')) {
       staffRecruitmentColumn = 'moneySpentOnAdvertisingInTheLastFourWeeks';
       data = staffRecruitmentData.amountSpent;
+    } else if (Object.keys(staffRecruitmentData).includes('trainingRequired')) {
+      staffRecruitmentColumn = 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment';
+      data = staffRecruitmentData.trainingRequired;
     }
 
     await models.establishment.update(

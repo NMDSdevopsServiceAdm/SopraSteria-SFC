@@ -1,0 +1,40 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              Do new starters have to repeat training they've done with previous employers?
+            </h1>
+          </legend>
+          <div class="govuk-!-margin-bottom-7">
+            <p>Training could be things like first aid or fire safety training.</p>
+          </div>
+
+          <div class="govuk-radios govuk-form-group">
+            <div class="govuk-radios__item" *ngFor="let option of trainingRequiredOptions; let i = index">
+              <input
+                class="govuk-radios__input"
+                id="trainingRequired-{{ i }}"
+                name="trainingRequired"
+                [formControlName]="'trainingRequired'"
+                type="radio"
+                [value]="option.value"
+              />
+              <label class="govuk-label govuk-radios__label" for="trainingRequired-{{ i }}">
+                {{ option.label }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <app-workplace-submit-button
+    [return]="!!return"
+    [isExistingStaffRecord]="false"
+    (clicked)="setSubmitAction($event)"
+  ></app-workplace-submit-button>
+</form>
