@@ -88,6 +88,7 @@ class Establishment extends EntityValidator {
     this._eightWeeksFromFirstLogin = null;
     this._showSharingPermissionsBanner = null;
     this._expiresSoonAlertDate = null;
+    this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
 
@@ -340,6 +341,10 @@ class Establishment extends EntityValidator {
 
   get eightWeeksFromFirstLogin() {
     return this._eightWeeksFromFirstLogin;
+  }
+
+  get doNewStartersRepeatMandatoryTrainingFromPreviousEmployment() {
+    return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
   }
 
   get moneySpentOnAdvertisingInTheLastFourWeeks() {
@@ -1273,8 +1278,11 @@ class Establishment extends EntityValidator {
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
+        this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
+          fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
+
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1743,6 +1751,8 @@ class Establishment extends EntityValidator {
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
+        myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
+          this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
       }
