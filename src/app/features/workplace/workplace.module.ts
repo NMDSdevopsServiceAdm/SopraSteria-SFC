@@ -34,7 +34,7 @@ import { SelectPrimaryUserComponent } from './select-primary-user/select-primary
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
-import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment.component';
+import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartersComponent } from './starters/starters.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';

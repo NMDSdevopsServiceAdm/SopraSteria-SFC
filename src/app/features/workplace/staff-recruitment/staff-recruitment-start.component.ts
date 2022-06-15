@@ -8,8 +8,8 @@ import { URLStructure } from '@core/model/url.model';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-staff-recruitment',
-  templateUrl: './staff-recruitment.component.html',
+  selector: 'app-staff-recruitment-start',
+  templateUrl: './staff-recruitment-start.component.html',
 })
 export class StaffRecruitmentStartComponent implements OnInit, OnDestroy {
   public establishment: Establishment;

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { StaffRecruitmentStartComponent } from './staff-recruitment.component';
+import { StaffRecruitmentStartComponent } from './staff-recruitment-start.component';
 import { render } from '@testing-library/angular';
 import { WorkplaceModule } from '../workplace.module';
 import { RouterTestingModule } from '@angular/router/testing';
