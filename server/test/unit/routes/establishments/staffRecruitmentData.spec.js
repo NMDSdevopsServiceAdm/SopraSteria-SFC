@@ -5,7 +5,7 @@ const models = require('../../../../models');
 
 const { postStaffRecruitmentData } = require('../../../../routes/establishments/staffRecruitmentData');
 
-describe.only('server/routes/establishments/staffRecruitmentData', () => {
+describe('server/routes/establishments/staffRecruitmentData', () => {
   afterEach(async () => {
     sinon.restore();
   });
