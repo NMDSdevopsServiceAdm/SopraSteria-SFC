@@ -722,6 +722,12 @@ module.exports = function (sequelize, DataTypes) {
         values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
         field: '"WouldYouAcceptCareCertificatesFromPreviousEmployment"',
       },
+      recruitmentJourneyExistingUserBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'RecruitmentJourneyExistingUserBanner',
+      },
     },
     {
       defaultScope: {

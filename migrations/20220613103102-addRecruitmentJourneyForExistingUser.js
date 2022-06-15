@@ -10,7 +10,8 @@ module.exports = {
     return Promise.all([
       queryInterface.addColumn(table, 'RecruitmentJourneyExistingUserBanner', {
         type: Sequelize.DataTypes.BOOLEAN,
-        defaultValue: true,
+        allowNull: false,
+        defaultValue: false,
       }),
     ]);
   },
