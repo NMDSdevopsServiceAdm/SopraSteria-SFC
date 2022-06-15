@@ -75,7 +75,7 @@ export class OtherServicesComponent extends Question {
       type: [
         {
           name: 'oneCheckboxRequiredIfYes',
-          message: `Select the other services you provide`,
+          message: `Select all the other services you provide`,
         },
       ],
     });

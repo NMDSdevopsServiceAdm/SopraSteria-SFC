@@ -702,7 +702,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       peopleInterviewedInTheLastFourWeeks: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: true,
         field: '"PeopleInterviewedInTheLastFourWeeks"',
       },
       moneySpentOnAdvertisingInTheLastFourWeeks: {

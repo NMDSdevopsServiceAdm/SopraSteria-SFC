@@ -62,7 +62,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  setBackLink() {
+  protected setBackLink(): void {
     this.back = this.return ? this.return : { url: this.previousRoute };
     this.backService.setBackLink(this.back);
   }
@@ -127,7 +127,13 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
+    /**
+     * Required to reinstate error links on dynamic forms
+     * where the error summary is removed on adding rows
+     */
+    this.addErrorLinkFunctionality();
     this.createDynamicErrorMessaging();
+
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
@@ -160,6 +166,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     completeFunction();
   }
   protected createDynamicErrorMessaging(): void {}
+  protected addErrorLinkFunctionality(): void {}
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });

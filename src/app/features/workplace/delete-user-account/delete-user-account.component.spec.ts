@@ -51,14 +51,14 @@ describe('DeleteUserAccountComponent', () => {
     const componentInstance = component.fixture.componentInstance;
     componentInstance.flow = '/workplace/asdfg12345/user/12345asdfg';
 
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigate');
+    routerSpy.and.returnValue(Promise.resolve(true));
 
     return {
       component,
       router,
       componentInstance,
-      spy,
+      routerSpy,
     };
   }
 
@@ -84,7 +84,7 @@ describe('DeleteUserAccountComponent', () => {
   });
 
   it('should navigate back to previous page when delete is successful', async () => {
-    const { component, componentInstance, spy } = await setup();
+    const { component, componentInstance, routerSpy } = await setup();
 
     spyOn(componentInstance.userService, 'deleteUser').and.returnValue(of({}));
 
@@ -93,7 +93,9 @@ describe('DeleteUserAccountComponent', () => {
     fireEvent.click(deleteButton);
     component.fixture.detectChanges();
 
-    expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'users' });
+    expect(routerSpy).toHaveBeenCalledWith(componentInstance.return.url, {
+      fragment: componentInstance.return.fragment,
+    });
   });
 
   it('should have a success alert when delete is successful', async () => {

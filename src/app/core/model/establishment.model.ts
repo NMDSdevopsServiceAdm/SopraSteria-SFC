@@ -48,13 +48,13 @@ export interface Vacancy {
 
 export interface Starter {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 
 export interface Leaver {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 
@@ -136,6 +136,7 @@ export interface Establishment {
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
+  moneySpentOnAdvertisingInTheLastFourWeeks?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -153,6 +154,10 @@ export enum jobOptionsEnum {
 export enum mandatoryTrainingJobOption {
   all = 'all',
   selected = 'selected',
+}
+
+export interface StaffRecruitmentDataRequest {
+  amountSpent?: string;
 }
 
 export interface LocalIdentifiersRequest {

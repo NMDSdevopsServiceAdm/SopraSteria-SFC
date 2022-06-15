@@ -106,6 +106,12 @@ export { subsid1, subsid2, subsid3 };
 export class MockUserService extends UserService {
   private subsidiaries = 2;
   private isAdmin = false;
+
+  public returnUrl$ = of({
+    url: ['/workplace', '12345asdfg', 'users'],
+    fragment: 'workplace-users',
+  });
+
   public userDetails$ = of({
     uid: 'mocked-uid',
     email: 'john@test.com',

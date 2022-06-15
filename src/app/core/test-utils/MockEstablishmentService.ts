@@ -46,14 +46,20 @@ export class MockEstablishmentService extends EstablishmentService {
     showSharingPermissionsBanner: false,
   };
 
-  public static factory(shareWith: any, returnToUrl = true, vacancies: any = undefined) {
+  public static factory(shareWith: any, returnToUrl = true, estObj: any = {}) {
     return (http: HttpClient) => {
       const service = new MockEstablishmentService(http);
       if (shareWith) {
         service.setShareWith(shareWith);
       }
       service.returnToUrl = returnToUrl;
-      if (vacancies) service.establishmentObj.vacancies = vacancies;
+
+      if (estObj) {
+        Object.keys(estObj).forEach((key) => {
+          service.establishmentObj[key] = estObj[key];
+        });
+      }
+
       return service;
     };
   }

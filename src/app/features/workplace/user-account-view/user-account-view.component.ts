@@ -51,7 +51,12 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+    this.subscriptions.add(
+      this.userService.returnUrl.pipe(take(1)).subscribe((returnUrl) => {
+        this.return = returnUrl;
+      }),
+    );
+    const journey = this.setBreadcrumbJourney();
     this.breadcrumbService.show(journey);
 
     this.subscriptions.add(
@@ -64,16 +69,18 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
           this.setPermissions();
         }),
     );
-
-    this.subscriptions.add(
-      this.userService.returnUrl$.pipe(take(1)).subscribe((returnUrl) => {
-        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid] };
-      }),
-    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public setBreadcrumbJourney() {
+    if (this.return.fragment == null) {
+      return JourneyType.MY_WORKPLACE;
+    } else {
+      return JourneyType.ALL_WORKPLACES;
+    }
   }
 
   public resendActivationLink(event: Event): void {
@@ -81,7 +88,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.resendActivationLink(this.user.uid).subscribe(
         () => {
-          this.router.navigate(this.return.url, { fragment: 'users' });
+          this.router.navigate(this.return.url, { fragment: this.return.fragment });
           this.alertService.addAlert({
             type: 'success',
             message: 'The user set-up email has been sent again.',

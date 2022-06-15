@@ -13,9 +13,11 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UserService } from '@core/services/user.service';
 import { getUserPermissionsTypes } from '@core/utils/users-util';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { take } from 'rxjs/internal/operators/take';
 
 @Component({
   selector: 'app-create-account',
@@ -38,6 +40,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
+    private userService: UserService,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -47,11 +50,27 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
       this.wdfUserFlag = value;
       this.setPermissionsTypeRadios();
     });
+    this.subscriptions.add(
+      this.userService.returnUrl.pipe(take(1)).subscribe((returnUrl) => {
+        this.return = returnUrl;
+      }),
+    );
+
     this.workplace = this.route.parent.snapshot.data.establishment;
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+
+    const journey = this.setBreadcrumbJourney();
     this.breadcrumbService.show(journey);
+
     this.addFormControls();
     this.establishmentUid = this.route.parent.snapshot.params.establishmentuid;
+  }
+
+  public setBreadcrumbJourney() {
+    if (this.return.fragment == null) {
+      return JourneyType.MY_WORKPLACE;
+    } else {
+      return JourneyType.ALL_WORKPLACES;
+    }
   }
 
   private addFormControls(): void {
@@ -111,10 +130,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   get returnTo(): URLStructure {
-    return {
-      url: ['/dashboard'],
-      fragment: 'users',
-    };
+    return this.return;
   }
 
   private setPermissionsTypeRadios(): void {
