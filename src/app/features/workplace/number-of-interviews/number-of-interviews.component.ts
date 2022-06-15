@@ -50,16 +50,16 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
   }
 
   private prefill(): void {
-    // if (this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks) {
-    //   if (
-    //     this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks === jobOptionsEnum.NONE ||
-    //     this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks === jobOptionsEnum.DONT_KNOW
-    //   ) {
-    //     this.form.get('numberOfInterviewsKnown').setValue(this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks);
-    //   } else {
-    //     this.form.get('numberOfInterviews').setValue(this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks);
-    //   }
-    // }
+    if (this.establishment.peopleInterviewedInTheLastFourWeeks) {
+      if (
+        this.establishment.peopleInterviewedInTheLastFourWeeks === jobOptionsEnum.NONE ||
+        this.establishment.peopleInterviewedInTheLastFourWeeks === jobOptionsEnum.DONT_KNOW
+      ) {
+        this.form.get('numberOfInterviewsKnown').setValue(this.establishment.peopleInterviewedInTheLastFourWeeks);
+      } else {
+        this.form.get('numberOfInterviews').setValue(this.establishment.peopleInterviewedInTheLastFourWeeks);
+      }
+    }
   }
 
   private setupForm(): void {
@@ -71,7 +71,6 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
           this.customValidator(this.positiveNumberCheckRegex, 'negativeNumber'),
           this.customValidator(this.wholeNumberCheckRegex, 'nonWholeNumber'),
         ],
-        // [this.nonIntegerValidator(), this.negativeIntegerValidator(), this.nonWholeNumberValidator()],
       ],
       numberOfInterviewsKnown: null,
     });
@@ -106,8 +105,6 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
             this.customValidator(this.positiveNumberCheckRegex, 'negativeNumber'),
             this.customValidator(this.wholeNumberCheckRegex, 'nonWholeNumber'),
           ]);
-        // .setValidators([this.nonIntegerValidator(), this.negativeIntegerValidator(), this.nonWholeNumberValidator()]);
-        // .setValidators([this.wholeNumberValidator(), Validators.pattern(INT_PATTERN)]);
 
         if (this.form.get('numberOfInterviewsKnown').value !== null) {
           this.form.get('numberOfInterviewsKnown').setValue(null, { emitEvent: false });
@@ -180,7 +177,7 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'next-page'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-capture-training-requirement'];
   }
 
   protected addErrorLinkFunctionality(): void {

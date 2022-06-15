@@ -89,6 +89,7 @@ class Establishment extends EntityValidator {
     this._showSharingPermissionsBanner = null;
     this._expiresSoonAlertDate = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
+    this._peopleInterviewedInTheLastFourWeeks = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -345,6 +346,10 @@ class Establishment extends EntityValidator {
     return this._moneySpentOnAdvertisingInTheLastFourWeeks;
   }
 
+  get peopleInterviewedInTheLastFourWeeks() {
+    return this._peopleInterviewedInTheLastFourWeeks;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -523,6 +528,10 @@ class Establishment extends EntityValidator {
 
         if (document.moneySpentOnAdvertisingInTheLastFourWeeks) {
           this._moneySpentOnAdvertisingInTheLastFourWeeks = document.moneySpentOnAdvertisingInTheLastFourWeeks;
+        }
+
+        if (document.peopleInterviewedInTheLastFourWeeks) {
+          this._peopleInterviewedInTheLastFourWeeks = document.peopleInterviewedInTheLastFourWeeks;
         }
       }
 
@@ -1265,6 +1274,7 @@ class Establishment extends EntityValidator {
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
         this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
+        this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1734,6 +1744,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
         myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
+        myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

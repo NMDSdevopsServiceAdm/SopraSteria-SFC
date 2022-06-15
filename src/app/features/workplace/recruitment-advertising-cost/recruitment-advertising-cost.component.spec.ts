@@ -13,14 +13,16 @@ import userEvent from '@testing-library/user-event';
 import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost.component';
 
 describe('RecruitmentAdvertisingCostComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(returnUrl = true, recruitmentAdvertisingCost = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(RecruitmentAdvertisingCostComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl),
+          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+            moneySpentOnAdvertisingInTheLastFourWeeks: recruitmentAdvertisingCost,
+          }),
           deps: [HttpClient],
         },
       ],
@@ -94,6 +96,36 @@ describe('RecruitmentAdvertisingCostComponent', () => {
     fixture.detectChanges();
 
     expect(form.value).toEqual({ amountSpent: null, amountSpentKnown: `Don't know` });
+  });
+
+  it('should prefill the input if the establishment has a recruitment advertising cost value', async () => {
+    const recruitmentAdvertisingCost = '100.40';
+    const { component, fixture } = await setup(true, recruitmentAdvertisingCost);
+
+    const input = fixture.nativeElement.querySelector('input[id="amountSpent"]');
+
+    expect(input.value).toEqual('100.40');
+    expect(component.form.value).toEqual({ amountSpent: '100.40', amountSpentKnown: null });
+  });
+
+  it('should pre select the first radio button if the establishment has a recruitment advertising cost value of "None"', async () => {
+    const recruitmentAdvertisingCost = 'None';
+    const { component, fixture } = await setup(true, recruitmentAdvertisingCost);
+
+    const radioButton = fixture.nativeElement.querySelector('input[id="amountSpentKnown-0"]');
+
+    expect(radioButton.checked).toBeTruthy();
+    expect(component.form.value).toEqual({ amountSpent: null, amountSpentKnown: 'None' });
+  });
+
+  it(`should pre select the second radio button if the establishment has a recruitment advertising cost value of "Don't know"`, async () => {
+    const recruitmentAdvertisingCost = `Don't know`;
+    const { component, fixture } = await setup(true, recruitmentAdvertisingCost);
+
+    const radioButton = fixture.nativeElement.querySelector('input[id="amountSpentKnown-1"]');
+
+    expect(radioButton.checked).toBeTruthy();
+    expect(component.form.value).toEqual({ amountSpent: null, amountSpentKnown: `Don't know` });
   });
 
   describe('submit buttons and submitting form', () => {

@@ -137,6 +137,7 @@ export interface Establishment {
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
+  peopleInterviewedInTheLastFourWeeks?: string;
 }
 
 export interface UpdateJobsRequest {

@@ -12,15 +12,17 @@ import userEvent from '@testing-library/user-event';
 
 import { NumberOfInterviewsComponent } from './number-of-interviews.component';
 
-fdescribe('NumberOfInteviews', () => {
-  async function setup(returnUrl = true) {
+describe('NumberOfInterviews', () => {
+  async function setup(returnUrl = true, numberOfInterviews = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(NumberOfInterviewsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl),
+          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+            peopleInterviewedInTheLastFourWeeks: numberOfInterviews,
+          }),
           deps: [HttpClient],
         },
       ],
@@ -96,6 +98,36 @@ fdescribe('NumberOfInteviews', () => {
     expect(form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: `Don't know` });
   });
 
+  it('should prefill the input if the establishment has a number of interviews value', async () => {
+    const numberOfInterviews = '100';
+    const { component, fixture } = await setup(true, numberOfInterviews);
+
+    const input = fixture.nativeElement.querySelector('input[id="numberOfInterviews"]');
+
+    expect(input.value).toEqual('100');
+    expect(component.form.value).toEqual({ numberOfInterviews: '100', numberOfInterviewsKnown: null });
+  });
+
+  it('should pre select the first radio button if the establishment has a number of interviews value of "None"', async () => {
+    const numberOfInterviews = 'None';
+    const { component, fixture } = await setup(true, numberOfInterviews);
+
+    const radioButton = fixture.nativeElement.querySelector('input[id="numberOfInterviewsKnown-0"]');
+
+    expect(radioButton.checked).toBeTruthy();
+    expect(component.form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: 'None' });
+  });
+
+  it(`should pre select the second radio button if the establishment has a number of interviews value of "Don't know"`, async () => {
+    const numberOfInterviews = `Don't know`;
+    const { component, fixture } = await setup(true, numberOfInterviews);
+
+    const radioButton = fixture.nativeElement.querySelector('input[id="numberOfInterviewsKnown-1"]');
+
+    expect(radioButton.checked).toBeTruthy();
+    expect(component.form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: `Don't know` });
+  });
+
   describe('submit buttons and submitting form', () => {
     it(`should show 'Save and continue' cta button and 'View this staff record' link`, async () => {
       const { getByText } = await setup(false);
@@ -166,14 +198,18 @@ fdescribe('NumberOfInteviews', () => {
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { numberOfInterviews: 'None' });
     });
 
-    xit('should navigate to the next page when submitting from the flow', async () => {
+    it('should navigate to the next page when submitting from the flow', async () => {
       const { fixture, getByText, routerSpy } = await setup(false);
 
       const button = getByText('Save and continue');
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'next-page']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
     });
 
     it('should navigate to the next page when submitting from the flow', async () => {
