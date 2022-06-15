@@ -28,7 +28,12 @@
               <span *ngIf="this.form.get('numberOfInterviews').errors.nonInteger">
                 {{ getFormErrorMessage('numberOfInterviews', 'nonInteger') }}
               </span>
-              <span *ngIf="this.form.get('numberOfInterviews').errors.negativeNumber">
+              <span
+                *ngIf="
+                  this.form.get('numberOfInterviews').errors.negativeNumber &&
+                  !this.form.get('numberOfInterviews').errors.nonInteger
+                "
+              >
                 {{ getFormErrorMessage('numberOfInterviews', 'negativeNumber') }}
               </span>
               <span

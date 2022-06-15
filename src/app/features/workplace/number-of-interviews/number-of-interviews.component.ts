@@ -66,7 +66,12 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
     this.form = this.formBuilder.group({
       numberOfInterviews: [
         null,
-        [this.nonIntegerValidator(), this.negativeIntegerValidator(), this.nonWholeNumberValidator()],
+        [
+          this.customValidator(this.numberCheckRegex, 'nonInteger'),
+          this.customValidator(this.positiveNumberCheckRegex, 'negativeNumber'),
+          this.customValidator(this.wholeNumberCheckRegex, 'nonWholeNumber'),
+        ],
+        // [this.nonIntegerValidator(), this.negativeIntegerValidator(), this.nonWholeNumberValidator()],
       ],
       numberOfInterviewsKnown: null,
     });
@@ -76,53 +81,8 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
     return (control: AbstractControl): { [key: string]: any } | null => {
       const { value } = control;
       const validControlValue = regexp.test(value);
-      console.log(`${error}: ${validControlValue}`);
-      console.log({ [error]: { value } });
       if (value) {
         return !validControlValue ? { [error]: { value } } : null;
-      }
-      return null;
-    };
-  }
-
-  // private wholeNumberValidator(): ValidatorFn {
-  //   return (control: AbstractControl): { [key: string]: any } | null => {
-  //     const { value } = control;
-  //     return value && value.includes('.') ? { wholeNumber: { value: control.value } } : null;
-  //   };
-  // }
-
-  private nonIntegerValidator(): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null => {
-      const { value } = control;
-      const validControlValue = this.numberCheckRegex.test(value);
-      console.log('nonIntegerValidator:', validControlValue);
-      if (value) {
-        return !validControlValue ? { nonInteger: { value: value } } : null;
-      }
-      return null;
-    };
-  }
-
-  private nonWholeNumberValidator(): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null => {
-      const { value } = control;
-      const validControlValue = this.wholeNumberCheckRegex.test(value);
-      console.log('nonWholeNumberValidator:', validControlValue);
-      if (value) {
-        return !validControlValue ? { nonWholeNumber: { value: value } } : null;
-      }
-      return null;
-    };
-  }
-
-  private negativeIntegerValidator(): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null => {
-      const { value } = control;
-      const validControlValue = this.positiveNumberCheckRegex.test(value);
-      console.log('positiveNumberCheck:', validControlValue);
-      if (value) {
-        return !validControlValue ? { negativeNumber: { value: value } } : null;
       }
       return null;
     };
@@ -141,7 +101,12 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
       this.form.get('numberOfInterviews').valueChanges.subscribe(() => {
         this.form
           .get('numberOfInterviews')
-          .setValidators([this.nonIntegerValidator(), this.negativeIntegerValidator(), this.nonWholeNumberValidator()]);
+          .setValidators([
+            this.customValidator(this.numberCheckRegex, 'nonInteger'),
+            this.customValidator(this.positiveNumberCheckRegex, 'negativeNumber'),
+            this.customValidator(this.wholeNumberCheckRegex, 'nonWholeNumber'),
+          ]);
+        // .setValidators([this.nonIntegerValidator(), this.negativeIntegerValidator(), this.nonWholeNumberValidator()]);
         // .setValidators([this.wholeNumberValidator(), Validators.pattern(INT_PATTERN)]);
 
         if (this.form.get('numberOfInterviewsKnown').value !== null) {
