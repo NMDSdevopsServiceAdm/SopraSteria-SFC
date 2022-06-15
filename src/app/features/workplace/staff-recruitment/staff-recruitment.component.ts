@@ -8,10 +8,10 @@ import { URLStructure } from '@core/model/url.model';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-start',
-  templateUrl: './start.component.html',
+  selector: 'app-staff-recruitment',
+  templateUrl: './staff-recruitment.component.html',
 })
-export class StartComponent implements OnInit, OnDestroy {
+export class StaffRecruitmentStartComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
   public primaryWorkplaceUid: string;
   public returnLink: Array<string>;
