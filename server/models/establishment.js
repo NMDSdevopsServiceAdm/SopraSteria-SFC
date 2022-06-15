@@ -2076,8 +2076,8 @@ module.exports = function (sequelize, DataTypes) {
         await sequelize.models.user.update(
           {
             archived: true,
-            FullNameValue: 'deleted',
-            EmailValue: 'deleted',
+            FullNameValue: 'inactive',
+            EmailValue: 'inactive',
           },
           {
             where: {
@@ -2087,20 +2087,23 @@ module.exports = function (sequelize, DataTypes) {
           },
         );
         const registrationIds = await Establishment.getRegistrationIdsForArchiving(establishmentIds, t);
-        const ids = registrationIds.map((r) => r.RegistrationID);
-        await sequelize.models.login.update(
-          {
-            isActive: false,
-            username: 'deleted',
-            status: 'deleted',
-          },
-          {
-            where: {
-              registrationId: ids,
+
+        const promises = registrationIds.map((registration) => {
+          return sequelize.models.login.update(
+            {
+              isActive: false,
+              username: 'inactive' + registration.RegistrationID,
+              status: 'inactive',
             },
-            transaction: t,
-          },
-        );
+            {
+              where: {
+                registrationId: registration.RegistrationID,
+              },
+              transaction: t,
+            },
+          );
+        });
+        return await Promise.all(promises);
       });
     } catch (error) {
       console.log({ error });

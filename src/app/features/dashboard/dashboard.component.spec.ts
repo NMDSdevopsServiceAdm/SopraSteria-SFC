@@ -175,20 +175,6 @@ describe('DashboardComponent', () => {
       expect(queryByTestId('tab_benchmarks')).toBeNull();
     });
 
-    it('should display the Users tab', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      const establishment = {
-        ...component.workplace,
-      };
-      establishment.isRegulated = false;
-      component.workplace = establishment;
-      component.wdfNewDesignFlag = false;
-      fixture.detectChanges();
-
-      expect(getByText('Users')).toBeTruthy();
-    });
-
     it('should display a flag on the workplace tab when the sharing permissions banner flag is true', async () => {
       const { component, fixture, getByTestId } = await setup();
 
@@ -196,20 +182,6 @@ describe('DashboardComponent', () => {
       fixture.detectChanges();
 
       expect(getByTestId('red-flag')).toBeTruthy();
-    });
-
-    describe('Users tab warning', () => {
-      it('should not display an orange flag on the Users tab when more than one user', async () => {
-        const { queryByTestId } = await setup(false);
-
-        expect(queryByTestId('orange-flag')).toBeFalsy();
-      });
-
-      it('should display an orange flag on the Users tab when only one user', async () => {
-        const { queryByTestId } = await setup(true);
-
-        expect(queryByTestId('orange-flag')).toBeTruthy();
-      });
     });
 
     describe('Staff records tab warning', () => {
