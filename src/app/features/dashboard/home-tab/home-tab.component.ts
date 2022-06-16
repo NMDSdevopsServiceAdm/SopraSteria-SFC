@@ -71,6 +71,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public workplaceUid: string;
   public now: Date = new Date();
   public wdfNewDesignFlag: boolean;
+  public recruitmentJourneyExistingUserBanner: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -90,6 +91,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.user = this.userService.loggedInUser;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.recruitmentJourneyExistingUserBanner = this.primaryWorkplace.showSharingPermissionsBanner;
 
     this.setPermissionLinks();
 

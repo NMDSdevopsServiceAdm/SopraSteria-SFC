@@ -87,6 +87,7 @@ class Establishment extends EntityValidator {
     this._lastBulkUploaded = null;
     this._eightWeeksFromFirstLogin = null;
     this._showSharingPermissionsBanner = null;
+    this._recruitmentJourneyExistingUserBanner = null;
     this._expiresSoonAlertDate = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
 
@@ -259,6 +260,10 @@ class Establishment extends EntityValidator {
 
   get showSharingPermissionsBanner() {
     return this._showSharingPermissionsBanner;
+  }
+
+  get recruitmentJourneyExistingUserBanner() {
+    return this._recruitmentJourneyExistingUserBanner;
   }
 
   get reasonsForLeaving() {
@@ -515,6 +520,10 @@ class Establishment extends EntityValidator {
 
         if ('showSharingPermissionsBanner' in document) {
           this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
+        }
+
+        if ('recruitmentJourneyExistingUserBanner' in document) {
+          this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
         }
 
         if (document.expiresSoonAlertDate) {
@@ -1738,6 +1747,10 @@ class Establishment extends EntityValidator {
 
       if (this.showSharingPermissionsBanner !== null) {
         myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
+      }
+
+      if (this.recruitmentJourneyExistingUserBanner !== null) {
+        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
       }
 
       if (this._ustatus) {

@@ -26,7 +26,7 @@
       ></app-staff-mismatch-banner>
     </ng-container>
 
-    <ng-container *ngIf="workplace && canEditEstablishment">
+    <ng-container *ngIf="workplace && canEditEstablishment && !recruitmentJourneyExistingUserBanner">
       <app-inset-text [color]="'todo'">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
@@ -35,7 +35,7 @@
               Skills for Care are working with the Department of Health and Social Care to help them better understand
               how difficult it is to recruit people into the adult social care sector.
             </p>
-            <a [routerLink]="['/benefits-bundle']"> Answer our 4 new staff recruitment questions </a>
+            <a [routerLink]="['/staff-recruitment']"> Answer our 4 new staff recruitment questions </a>
           </div>
         </div>
       </app-inset-text>
