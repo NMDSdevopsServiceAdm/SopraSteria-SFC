@@ -89,7 +89,9 @@ class Establishment extends EntityValidator {
     this._showSharingPermissionsBanner = null;
     this._recruitmentJourneyExistingUserBanner = null;
     this._expiresSoonAlertDate = null;
+    this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
+    this._peopleInterviewedInTheLastFourWeeks = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -346,8 +348,16 @@ class Establishment extends EntityValidator {
     return this._eightWeeksFromFirstLogin;
   }
 
+  get doNewStartersRepeatMandatoryTrainingFromPreviousEmployment() {
+    return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+  }
+
   get moneySpentOnAdvertisingInTheLastFourWeeks() {
     return this._moneySpentOnAdvertisingInTheLastFourWeeks;
+  }
+
+  get peopleInterviewedInTheLastFourWeeks() {
+    return this._peopleInterviewedInTheLastFourWeeks;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -532,6 +542,10 @@ class Establishment extends EntityValidator {
 
         if (document.moneySpentOnAdvertisingInTheLastFourWeeks) {
           this._moneySpentOnAdvertisingInTheLastFourWeeks = document.moneySpentOnAdvertisingInTheLastFourWeeks;
+        }
+
+        if (document.peopleInterviewedInTheLastFourWeeks) {
+          this._peopleInterviewedInTheLastFourWeeks = document.peopleInterviewedInTheLastFourWeeks;
         }
       }
 
@@ -1274,6 +1288,10 @@ class Establishment extends EntityValidator {
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
         this._recruitmentJourneyExistingUserBanner = fetchResults.recruitmentJourneyExistingUserBanner;
+        this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
+          fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+        this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
+        this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1743,8 +1761,11 @@ class Establishment extends EntityValidator {
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
+        myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
+          this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
         myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
+        myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
