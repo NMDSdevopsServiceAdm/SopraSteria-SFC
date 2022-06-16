@@ -37,6 +37,7 @@ import { SelectPrimaryUserComponent } from './select-primary-user/select-primary
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
+import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
@@ -96,6 +97,13 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Start',
+        },
+      },
+      {
+        path: 'staff-recruitment-start',
+        component: StaffRecruitmentStartComponent,
+        data: {
+          title: 'Staff Recruitment Start',
         },
       },
       {
