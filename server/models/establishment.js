@@ -2135,5 +2135,18 @@ module.exports = function (sequelize, DataTypes) {
     }
   };
 
+  Establishment.updatREcuritmentBannerForExistingUser = async function (establishmentId, data) {
+    return await this.update(
+      {
+        recruitmentJourneyExistingUserBanner: data,
+      },
+      {
+        where: {
+          id: establishmentId,
+        },
+      },
+    );
+  };
+
   return Establishment;
 };

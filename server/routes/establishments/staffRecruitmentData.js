@@ -7,7 +7,6 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const postStaffRecruitmentData = async (req, res) => {
   try {
     const { staffRecruitmentData } = req.body;
-
     let staffRecruitmentColumn;
     let data;
 
@@ -67,9 +66,25 @@ const getStaffRecruitmentData = async (req, res) => {
   }
 };
 
+const updateRecruitmentForExistingUser = async (req, res) => {
+  try {
+    const { data } = req.body;
+    await models.establishment.updatREcuritmentBannerForExistingUser(req.establishment.id, data);
+
+    res.status(200).send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send();
+  }
+};
+
 router.route('/').post(hasPermission('canEditEstablishment'), postStaffRecruitmentData);
 router.route('/').get(hasPermission('canViewEstablishment'), getStaffRecruitmentData);
+router
+  .route('/updateRecruitmentForExistingUser')
+  .post(hasPermission('canEditEstablishment'), updateRecruitmentForExistingUser);
 
 module.exports = router;
 module.exports.postStaffRecruitmentData = postStaffRecruitmentData;
 module.exports.getStaffRecruitmentData = getStaffRecruitmentData;
+module.exports.updateRecruitmentForExistingUser = updateRecruitmentForExistingUser;

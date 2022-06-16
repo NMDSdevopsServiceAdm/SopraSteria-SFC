@@ -136,6 +136,7 @@ export interface Establishment {
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
+  recruitmentJourneyExistingUserBanner?: boolean;
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
 }
 

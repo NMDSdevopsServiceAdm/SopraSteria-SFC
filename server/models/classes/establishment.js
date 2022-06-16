@@ -522,7 +522,7 @@ class Establishment extends EntityValidator {
           this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
         }
 
-        if ('recruitmentJourneyExistingUserBanner' in document) {
+        if (document.recruitmentJourneyExistingUserBanner) {
           this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
         }
 
@@ -1273,7 +1273,8 @@ class Establishment extends EntityValidator {
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
-        this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
+        this._recruitmentJourneyExistingUserBanner = fetchResults.recruitmentJourneyExistingUserBanner;
+
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1743,6 +1744,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
         myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
+        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
