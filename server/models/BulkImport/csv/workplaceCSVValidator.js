@@ -38,7 +38,8 @@ function isPerm(worker) {
 const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
-  'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,SHARELA';
+  'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,SHARELA,' +
+  'ADVERTISING,INTERVIEWS,REPEATTRAINING,ACCEPTCARECERT';
 
 class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
@@ -547,6 +548,7 @@ class WorkplaceCSVValidator {
   }
 
   async _validateAddress() {
+    console.log('****** workplaceCSVValidator.js _validateAddress ******');
     const myAddress1 = this._currentLine.ADDRESS1;
     const myAddress2 = this._currentLine.ADDRESS2;
     const myAddress3 = this._currentLine.ADDRESS3;
