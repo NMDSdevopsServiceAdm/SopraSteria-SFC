@@ -26,19 +26,16 @@
       ></app-staff-mismatch-banner>
     </ng-container>
 
-    <ng-container *ngIf="workplace && canEditEstablishment && !recruitmentJourneyExistingUserBanner">
-      <app-inset-text *ngIf="workplace.employerType" [color]="'todo'">
+    <ng-container *ngIf="workplace && !recruitmentJourneyExistingUserBanner">
+      <app-inset-text *ngIf="workplace.employerType" [color]="'todo'" class="govuk-!-margin-bottom-2">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <h2 class="govuk-heading-s govuk-!-margin-bottom-2">Staff recruitment is difficult</h2>
+            <h2 class="govuk-heading-s">Staff recruitment is difficult</h2>
             <p>
               Skills for Care are working with the Department of Health and Social Care to help them better understand
               how difficult it is to recruit people into the adult social care sector.
             </p>
-            <a
-              [routerLink]="['/workplace', workplace?.uid, 'staff-recruitment-start']"
-              (click)="setRecuritmentBannerTotrue()"
-            >
+            <a href="#" (click)="canEditEstablishment && setRecuritmentBannerTotrue($event)">
               Answer our 4 new staff recruitment questions
             </a>
           </div>
