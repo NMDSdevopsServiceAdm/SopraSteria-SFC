@@ -291,32 +291,32 @@ describe('WorkplaceSummaryComponent', async () => {
       expect(within(dataSharing).queryByText('Change')).toBeTruthy();
     });
 
-    // it('should show dash and have Add information button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment is set to null (not answered)', async () => {
-    //   const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+    it('should show dash and have Add information button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment is set to null (not answered)', async () => {
+      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
 
-    //   component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
-    //   component.canEditEstablishment = true;
-    //   fixture.detectChanges();
+      component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    //   const dataSharing = within(document.body).queryByTestId('accept-care-certificate');
+      const dataSharing = within(document.body).queryByTestId('accept-care-certificate');
 
-    //   expect(within(dataSharing).queryByText('Add')).toBeTruthy();
-    //   expect(within(dataSharing).queryByText('-')).toBeTruthy();
-    // });
+      expect(within(dataSharing).queryByText('Add')).toBeTruthy();
+      expect(within(dataSharing).queryByText('-')).toBeTruthy();
+    });
 
-    // it('should show Change button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment has a value (answered)', async () => {
-    //   const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+    it('should show Change button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment has a value (answered)', async () => {
+      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
 
-    //   component.canEditEstablishment = true;
-    //   fixture.detectChanges();
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    //   const dataSharing = within(document.body).queryByTestId('accept-care-certificate');
+      const dataSharing = within(document.body).queryByTestId('accept-care-certificate');
 
-    //   expect(
-    //     within(dataSharing).queryByText(component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment),
-    //   ).toBeTruthy();
-    //   expect(within(dataSharing).queryByText('Change')).toBeTruthy();
-    // });
+      expect(
+        within(dataSharing).queryByText(component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment),
+      ).toBeTruthy();
+      expect(within(dataSharing).queryByText('Change')).toBeTruthy();
+    });
   });
 
   describe('Staff records banner', async () => {

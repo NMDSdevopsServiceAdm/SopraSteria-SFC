@@ -21,6 +21,7 @@ const establishmentBuilder = build('Establishment', {
     moneySpentOnAdvertisingInTheLastFourWeeks: fake((f) => f.finance.amount(1, 10000, 2)),
     peopleInterviewedInTheLastFourWeeks: fake((f) => f.datatype.number(1000)),
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'Yes, always',
+    wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No, never',
   },
 });
 
