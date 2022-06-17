@@ -342,7 +342,7 @@ export class EstablishmentService {
     return this.http.post<any>(
       `/api/establishment/${establishmentId}/staffRecruitmentData/updateRecruitmentForExistingUser`,
       {
-        data,
+        recruitmentJourneyExistingUserBanner: data,
       },
     );
   }

@@ -35,7 +35,10 @@
               Skills for Care are working with the Department of Health and Social Care to help them better understand
               how difficult it is to recruit people into the adult social care sector.
             </p>
-            <a [routerLink]="['/staff-recruitment']" (click)="setRecuritmentBannerTotrue()">
+            <a
+              [routerLink]="['/workplace', workplace?.uid, 'staff-recruitment-start']"
+              (click)="setRecuritmentBannerTotrue()"
+            >
               Answer our 4 new staff recruitment questions
             </a>
           </div>

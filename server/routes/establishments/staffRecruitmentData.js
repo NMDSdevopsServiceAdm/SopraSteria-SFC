@@ -75,8 +75,11 @@ const getStaffRecruitmentData = async (req, res) => {
 
 const updateRecruitmentForExistingUser = async (req, res) => {
   try {
-    const { data } = req.body;
-    await models.establishment.updatREcuritmentBannerForExistingUser(req.establishment.id, data);
+    const { recruitmentJourneyExistingUserBanner } = req.body;
+    await models.establishment.updatREcuritmentBannerForExistingUser(
+      req.establishment.id,
+      recruitmentJourneyExistingUserBanner,
+    );
 
     res.status(200).send();
   } catch (error) {

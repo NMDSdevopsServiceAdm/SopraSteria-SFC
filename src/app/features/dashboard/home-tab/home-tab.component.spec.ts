@@ -17,7 +17,9 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import {
+  StaffMismatchBannerComponent,
+} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -237,6 +239,30 @@ describe('HomeTabComponent', () => {
     component.fixture.detectChanges();
 
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
+  });
+
+  it('displays staff-recruitment-start link  when has employer type and banner value is false', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
+    component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
+    component.fixture.detectChanges();
+    const link = component.getByText('Answer our 4 new staff recruitment questions');
+
+    expect(link).toBeTruthy();
+
+    expect(link.getAttribute('href')).toBe('/workplace/4698f4a4-ab82-4906-8b0e-3f4972375927/staff-recruitment-start');
+  });
+
+  it('shouldnt displays staff-recruitment-start link  when has employer type is null and banner value is true', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.workplace.employerType = null;
+    component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = true;
+    component.fixture.detectChanges();
+    const link = component.queryByText('Answer our 4 new staff recruitment questions');
+
+    expect(link).toBeFalsy();
   });
 
   describe('View the ASC-WDS Benefits Bundle', async () => {
