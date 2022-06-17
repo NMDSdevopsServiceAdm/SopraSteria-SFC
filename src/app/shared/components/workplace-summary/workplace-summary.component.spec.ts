@@ -330,7 +330,7 @@ describe('WorkplaceSummaryComponent', async () => {
       fixture.detectChanges();
 
       const moreRecords = within(document.body).queryByTestId('morerecords');
-      expect(moreRecords.innerHTML).toContain("You've more staff records than staff");
+      expect(moreRecords.innerHTML).toContain(`You've more staff records than staff`);
       expect(moreRecords.innerHTML).toContain('View staff records');
     });
 
@@ -344,7 +344,7 @@ describe('WorkplaceSummaryComponent', async () => {
       fixture.detectChanges();
 
       const moreRecords = within(document.body).queryByTestId('morerecords');
-      expect(moreRecords.innerHTML).toContain("You've more staff than staff records");
+      expect(moreRecords.innerHTML).toContain(`You've more staff than staff records`);
     });
 
     it('should show banner if you have more staff records and 0 staff', async () => {
@@ -357,10 +357,10 @@ describe('WorkplaceSummaryComponent', async () => {
       fixture.detectChanges();
 
       const moreRecords = within(document.body).queryByTestId('morerecords');
-      expect(moreRecords.innerHTML).toContain("You've more staff records than staff");
+      expect(moreRecords.innerHTML).toContain(`You've more staff records than staff`);
     });
 
-    it("should not show banner if you don't have permission to list workers", async () => {
+    it(`should not show banner if you don't have permission to list workers`, async () => {
       const { component, fixture } = await setup();
 
       component.workerCount = 10;

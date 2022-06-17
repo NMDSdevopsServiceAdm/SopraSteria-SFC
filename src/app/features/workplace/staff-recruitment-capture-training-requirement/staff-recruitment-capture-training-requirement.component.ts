@@ -44,12 +44,12 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
 
   protected init(): void {
     this.setupForm();
+    this.setPreviousRoute();
     this.prefill();
   }
 
-  protected setBackLink(): void {
-    // This functionality cannot be completed until routing to this page is complete
-    this.backService.setBackLink({ url: ['/workplace', this.establishment.uid, 'check-answers'] });
+  private setPreviousRoute(): void {
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'number-of-interviews'];
   }
 
   private setupForm(): void {
