@@ -162,23 +162,27 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
           if (hasProp(response, 'message')) {
             this.bulkUploadService.serverError$.next(response.message);
           } else {
-            this.establishmentService
-              .getEstablishment(this.establishmentService.primaryWorkplace.uid)
-              .pipe(
-                tap((workplace) => {
-                  return this.establishmentService.setPrimaryWorkplace(workplace);
-                }),
-              )
-              .subscribe(() => {
-                this.router.navigate(['/dashboard']);
-                this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
-              });
+            this.updateEstablishmentService();
           }
         },
         (response) => {
           this.onValidateError(response);
         },
       );
+  }
+
+  private updateEstablishmentService(): void {
+    this.establishmentService
+      .getEstablishment(this.establishmentService.primaryWorkplace.uid)
+      .pipe(
+        tap((workplace) => {
+          return this.establishmentService.setPrimaryWorkplace(workplace);
+        }),
+      )
+      .subscribe(() => {
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
+      });
   }
 
   public getValidationError(file: ValidatedFile): ErrorDefinition {
