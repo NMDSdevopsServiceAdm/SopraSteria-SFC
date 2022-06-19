@@ -1,0 +1,29 @@
+<div class="govuk-button-group govuk__align-items-unset">
+  <ng-container *ngIf="!return; else summary">
+    <div>
+      <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
+        {{ callToAction }}
+      </button>
+    </div>
+    <div *ngIf="recordSummary" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
+      <span class="govuk-visually-hidden">or</span>
+      <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'summary', false)"
+        >View {{ isExistingStaffRecord ? 'this staff record' : 'workplace details' }}</a
+      >
+    </div>
+    <div *ngIf="canExit" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
+      <span class="govuk-visually-hidden">or</span>
+      <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'exit', false)">{{ exitText }}</a>
+    </div>
+  </ng-container>
+  <ng-template #summary>
+    <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('return', true)">
+      Save and return
+    </button>
+
+    <span class="govuk-visually-hidden">or</span>
+    <a class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onLinkClick($event, 'return', false)">{{
+      exitText
+    }}</a>
+  </ng-template>
+</div>

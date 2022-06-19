@@ -96,6 +96,7 @@ import {
 } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
 import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component';
+import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
@@ -203,6 +204,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
+    WorkplaceSubmitButtonComponent,
   ],
   exports: [
     AlertComponent,
@@ -288,6 +290,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
+    WorkplaceSubmitButtonComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

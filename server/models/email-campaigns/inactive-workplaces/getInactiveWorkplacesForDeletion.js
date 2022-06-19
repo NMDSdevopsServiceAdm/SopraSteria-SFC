@@ -13,7 +13,7 @@ const getInactiveWorkplacesForDeletion = async () => {
   return await models.sequelize.query(
     `
   SELECT
-    "EstablishmentID",
+    e."EstablishmentID",
     "NameValue",
     TRIM("NmdsID") AS "NmdsID",
     "IsParent",
@@ -26,6 +26,7 @@ const getInactiveWorkplacesForDeletion = async () => {
     "PostCode"
   FROM
   	cqc."EstablishmentLastActivity" e
+
   WHERE
   	e."LastLogin" <= :twentyFourLastMonths
 	  AND e."LastUpdated" <= :twentyFourLastMonths

@@ -208,11 +208,11 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
     let type: BulkUploadFileType = null;
 
-    if (file.fileType.includes('Worker')) {
+    if (file.fileType && file.fileType.includes('Worker')) {
       type = this.sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker;
-    } else if (file.fileType.includes('Establishment')) {
+    } else if (file.fileType && file.fileType.includes('Establishment')) {
       type = BulkUploadFileType.Establishment;
-    } else if (file.fileType.includes('Training')) {
+    } else if (file.fileType && file.fileType.includes('Training')) {
       type = BulkUploadFileType.Training;
     }
 
