@@ -60,7 +60,7 @@ describe('OtherQualificationsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the page with a save and return button', async () => {
+  it('should render the page with a save and continue button when the return value is null', async () => {
     const { component, fixture } = await setup();
 
     component.return = null;
