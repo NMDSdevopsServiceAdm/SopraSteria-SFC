@@ -21,6 +21,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.component';
 
@@ -70,6 +71,7 @@ describe('DragAndDropFilesListComponent', () => {
       establishmentService,
       router,
       http,
+      bulkUploadService,
       bulkUploadServiceSpy,
     };
   };
@@ -127,7 +129,7 @@ describe('DragAndDropFilesListComponent', () => {
     fixture.detectChanges();
     const validationMsg = getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain(
-      "This file was not recognised.  Use the guidance to check it's set up correctly.",
+      "This file was not recognised. Use the guidance to check it's set up correctly.",
     );
   });
 
@@ -139,7 +141,7 @@ describe('DragAndDropFilesListComponent', () => {
     fixture.detectChanges();
     const validationMsg = getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain(
-      "This file was not recognised.  Use the guidance to check it's set up correctly.",
+      "This file was not recognised. Use the guidance to check it's set up correctly.",
     );
   });
 
@@ -171,6 +173,24 @@ describe('DragAndDropFilesListComponent', () => {
     fixture.detectChanges();
     const validationMsg = getByTestId('validationErrorMsg');
     expect(validationMsg.innerHTML).toContain('You need to select your workplace and staff files.');
+  });
+
+  it('calls complete in the bulk upload service with the correct uid, and then updates the establishment service', async () => {
+    const { component, fixture, getByText, bulkUploadService, establishmentService } = await setup();
+
+    const bulkUploadCompleteSpy = spyOn(bulkUploadService, 'complete').and.callFake(() => of({}));
+    const establishmentGetEstablishmentSpy = spyOn(establishmentService, 'getEstablishment').and.callThrough();
+
+    const dummyFiles = [WorkerFile, TrainingFile, EstablishmentFile];
+    component.uploadedFiles = dummyFiles as ValidatedFile[];
+    component.validationComplete = true;
+    fixture.detectChanges();
+
+    const button = getByText('Complete the upload');
+    fireEvent.click(button);
+
+    expect(bulkUploadCompleteSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de');
+    expect(establishmentGetEstablishmentSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de');
   });
 
   describe('DownloadContent', () => {
