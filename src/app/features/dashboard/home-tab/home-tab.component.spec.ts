@@ -246,9 +246,9 @@ describe('HomeTabComponent', () => {
       component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
       component.fixture.detectChanges();
-      const link = component.getByText('Staff recruitment is difficult');
+      const recruitmentHeader = component.getByText('Staff recruitment is difficult');
 
-      expect(link).toBeTruthy();
+      expect(recruitmentHeader).toBeTruthy();
     });
 
     it('shouldnt displays staff-recruitment-start banner  when  employer type is null and banner value is true', async () => {
@@ -257,9 +257,32 @@ describe('HomeTabComponent', () => {
       component.fixture.componentInstance.workplace.employerType = null;
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = true;
       component.fixture.detectChanges();
-      const link = component.queryByText('Staff recruitment is difficult');
+      const recruitmentHeader = component.queryByText('Staff recruitment is difficult');
 
-      expect(link).toBeFalsy();
+      expect(recruitmentHeader).toBeFalsy();
+    });
+
+    it('should update DataChangeLastUpdated column on updateLastUpdatedDataChangeDate', async () => {
+      const { component } = await setup();
+
+      const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
+      const recuritmentBannerSpy = spyOn(
+        establishmentService,
+        'updateRecruitmentJourneyExistingUser',
+      ).and.callThrough();
+
+      component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
+      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
+      component.fixture.componentInstance.canEditEstablishment = true;
+
+      const recuritmentLink = component.getByText('Answer our 4 new staff recruitment questions');
+      fireEvent.click(recuritmentLink);
+      component.fixture.detectChanges();
+
+      const establishmentUid = component.fixture.componentInstance.workplace.uid;
+      const data = (component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = true);
+
+      expect(recuritmentBannerSpy).toHaveBeenCalledWith(establishmentUid, data);
     });
   });
 
