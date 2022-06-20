@@ -76,7 +76,7 @@ const getStaffRecruitmentData = async (req, res) => {
 const updateRecruitmentForExistingUser = async (req, res) => {
   try {
     const { recruitmentJourneyExistingUserBanner } = req.body;
-    await models.establishment.updatREcuritmentBannerForExistingUser(
+    await models.establishment.updatRecuritmentBannerForExistingUser(
       req.establishment.id,
       recruitmentJourneyExistingUserBanner,
     );

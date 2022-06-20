@@ -2135,7 +2135,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   };
 
-  Establishment.updatREcuritmentBannerForExistingUser = async function (establishmentId, data) {
+  Establishment.updatRecuritmentBannerForExistingUser = async function (establishmentId, data) {
     return await this.update(
       {
         recruitmentJourneyExistingUserBanner: data,

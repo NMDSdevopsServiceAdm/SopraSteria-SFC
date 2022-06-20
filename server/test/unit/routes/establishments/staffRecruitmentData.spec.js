@@ -93,7 +93,7 @@ describe('server/routes/establishments/staffRecruitmentData', () => {
     it('should return 200 when the recruitmentJourneyExistingUserBanner has been updated', async () => {
       const body = { recruitmentJourneyExistingUserBanner: true };
       await setup(body);
-      sinon.stub(models.establishment, 'updatREcuritmentBannerForExistingUser').returns(null);
+      sinon.stub(models.establishment, 'updatRecuritmentBannerForExistingUser').returns(null);
 
       await updateRecruitmentForExistingUser(req, res);
 
@@ -104,7 +104,7 @@ describe('server/routes/establishments/staffRecruitmentData', () => {
       const body = { recruitmentJourneyExistingUserBanner: false };
       await setup(body);
 
-      sinon.stub(models.establishment, 'updatREcuritmentBannerForExistingUser').throws(() => new Error());
+      sinon.stub(models.establishment, 'updatRecuritmentBannerForExistingUser').throws(() => new Error());
 
       await updateRecruitmentForExistingUser(req, res);
 
