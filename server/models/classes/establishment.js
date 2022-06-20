@@ -788,6 +788,8 @@ class Establishment extends EntityValidator {
           attributes: ['id', 'created', 'updated'],
           ustatus: this._ustatus,
           expiresSoonAlertDate: '90',
+          moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
+          peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -977,6 +979,8 @@ class Establishment extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
             showSharingPermissionsBanner: bulkUploaded ? false : this._showSharingPermissionsBanner,
+            moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
+            peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -999,7 +1003,8 @@ class Establishment extends EntityValidator {
             // the value in lastWdfEligibility as that field is audited
             updateDocument.establishmentWdfEligibility = null;
           }
-
+          console.log('>>>>>>>>>>>>>>>>>.');
+          console.log(updateDocument);
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
             returning: true,

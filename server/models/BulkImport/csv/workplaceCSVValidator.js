@@ -85,6 +85,9 @@ class WorkplaceCSVValidator {
     this._starters = null;
     this._leavers = null;
     this._reasonsForLeaving = null;
+    this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
+    this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
+    this._peopleInterviewedInTheLastFourWeeks = null;
 
     this._id = null;
     this._ignore = false;
@@ -365,6 +368,18 @@ class WorkplaceCSVValidator {
     return this._reasonsForLeaving;
   }
 
+  get doNewStartersRepeatMandatoryTrainingFromPreviousEmployment() {
+    return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+  }
+
+  get moneySpentOnAdvertisingInTheLastFourWeeks() {
+    return this._moneySpentOnAdvertisingInTheLastFourWeeks;
+  }
+
+  get peopleInterviewedInTheLastFourWeeks() {
+    return this._peopleInterviewedInTheLastFourWeeks;
+  }
+
   _validateLocalisedId() {
     const myLocalId = this._currentLine.LOCALESTID;
 
@@ -548,7 +563,6 @@ class WorkplaceCSVValidator {
   }
 
   async _validateAddress() {
-    console.log('****** workplaceCSVValidator.js _validateAddress ******');
     const myAddress1 = this._currentLine.ADDRESS1;
     const myAddress2 = this._currentLine.ADDRESS2;
     const myAddress3 = this._currentLine.ADDRESS3;
@@ -1792,6 +1806,46 @@ class WorkplaceCSVValidator {
     return true;
   }
 
+  // 'ADVERTISING,INTERVIEWS,REPEATTRAINING,ACCEPTCARECERT';
+  _validateStaffRecruitmentData() {
+    const advertising = this._currentLine.ADVERTISING || null;
+    const interviews = this._currentLine.INTERVIEWS || null;
+    const repeatTraining = this._currentLine.REPEATTRAINING || null;
+    // const acceptCareCert = this._currentLine.ACCEPTCARECERT;
+
+    let status = true;
+
+    // if (myLocalId === null || myLocalId.length === 0) {
+    //   this._validationErrors.push({
+    //     lineNumber: this._lineNumber,
+    //     errCode: WorkplaceCSVValidator.LOCAL_ID_ERROR,
+    //     errType: 'LOCAL_ID_ERROR',
+    //     error: 'LOCALESTID has not been supplied',
+    //     source: myLocalId,
+    //     column: 'LOCALESTID',
+    //   });
+    //   status = false;
+    // } else if (myLocalId.length >= MAX_LENGTH) {
+    //   this._validationErrors.push({
+    //     lineNumber: this._lineNumber,
+    //     errCode: WorkplaceCSVValidator.LOCAL_ID_ERROR,
+    //     errType: 'LOCAL_ID_ERROR',
+    //     error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
+    //     source: myLocalId,
+    //     column: 'LOCALESTID',
+    //   });
+    //   status = false;
+    // }
+
+    // need the LOCALSTID regardless of whether it has failed validation or not
+
+    this._moneySpentOnAdvertisingInTheLastFourWeeks = advertising;
+    this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = repeatTraining;
+    this._peopleInterviewedInTheLastFourWeeks = interviews;
+
+    return status;
+  }
+
   _validateNoChange() {
     let localValidationErrors = [];
     var thisEstablishment = this._allCurrentEstablishments.find(
@@ -2221,6 +2275,18 @@ class WorkplaceCSVValidator {
     }
   }
 
+  _transformStaffRecruitmentData() {
+    if (this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment === '1') {
+      this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, always';
+    } else if (this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment === '2') {
+      this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, very often';
+    } else if (this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment === '3') {
+      this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, but not very often';
+    } else if (this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment === '4') {
+      this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'No, never';
+    }
+  }
+
   _transformAllVacanciesStartersLeavers() {
     // vacancies, starters and leavers is either an array of counts against positional indexes to _allJobs
     //  or a single value of 999
@@ -2424,6 +2490,7 @@ class WorkplaceCSVValidator {
       this._validateJobRoleTotals();
 
       this._validateReasonsForLeaving();
+      this._validateStaffRecruitmentData();
 
       // this._validateNoChange(); // Not working, disabled for LA Window
     }
@@ -2587,6 +2654,8 @@ class WorkplaceCSVValidator {
       isCQCRegulated: this._regType === 2,
     };
 
+    // console.log('******** fixed Properties *********');
+    // console.log(fixedProperties);
     // interim solution for reasons for leaving
     if (this._reasonsForLeaving && Array.isArray(this._reasonsForLeaving)) {
       fixedProperties.reasonsForLeaving = this._reasonsForLeaving
@@ -2626,7 +2695,12 @@ class WorkplaceCSVValidator {
       vacancies: this._vacancies,
       starters: this._starters,
       leavers: this._leavers,
+      doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
+        this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
+      moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
+      peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
     };
+
     if (this._allServices) {
       if (this._allServices.length === 1) {
         changeProperties.services.value = null;
