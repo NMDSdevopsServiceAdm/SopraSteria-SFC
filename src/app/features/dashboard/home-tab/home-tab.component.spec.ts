@@ -262,7 +262,7 @@ describe('HomeTabComponent', () => {
       expect(recruitmentHeader).toBeFalsy();
     });
 
-    it('should update DataChangeLastUpdated column on updateLastUpdatedDataChangeDate', async () => {
+    it('should update recruitmentJourneyExistingUserBanner column on updateRecruitmentJourneyExistingUser', async () => {
       const { component } = await setup();
 
       const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
@@ -275,14 +275,11 @@ describe('HomeTabComponent', () => {
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
       component.fixture.componentInstance.canEditEstablishment = true;
 
-      const recuritmentLink = component.getByText('Answer our 4 new staff recruitment questions');
+      const recuritmentLink = component.queryByText('Answer our 4 new staff recruitment questions');
       fireEvent.click(recuritmentLink);
       component.fixture.detectChanges();
 
-      const establishmentUid = component.fixture.componentInstance.workplace.uid;
-      const data = (component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = true);
-
-      expect(recuritmentBannerSpy).toHaveBeenCalledWith(establishmentUid, data);
+      expect(recuritmentBannerSpy).toHaveBeenCalled();
     });
   });
 
