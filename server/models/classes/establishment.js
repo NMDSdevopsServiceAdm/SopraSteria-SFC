@@ -91,6 +91,7 @@ class Establishment extends EntityValidator {
     this._expiresSoonAlertDate = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
+    this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
@@ -354,6 +355,10 @@ class Establishment extends EntityValidator {
 
   get moneySpentOnAdvertisingInTheLastFourWeeks() {
     return this._moneySpentOnAdvertisingInTheLastFourWeeks;
+  }
+
+  get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
+    return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
   }
 
   get peopleInterviewedInTheLastFourWeeks() {
@@ -1291,6 +1296,8 @@ class Establishment extends EntityValidator {
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
+        this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
+          fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
 
         // if history of the User is also required; attach the association
@@ -1765,6 +1772,8 @@ class Establishment extends EntityValidator {
           this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
         myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
+        myDefaultJSON.wouldYouAcceptCareCertificatesFromPreviousEmployment =
+          this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
       }
 

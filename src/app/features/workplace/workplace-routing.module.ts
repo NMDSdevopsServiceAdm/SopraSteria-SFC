@@ -21,6 +21,7 @@ import { UserAccountViewComponent } from '@features/workplace/user-account-view/
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
+import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
@@ -280,6 +281,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff Recruitment Capture Training Requirement',
+        },
+      },
+      {
+        path: 'accept-previous-care-certificate',
+        component: AcceptPreviousCareCertificateComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Accept Previous Care Certificate',
         },
       },
       {
