@@ -5,6 +5,7 @@ const slack = require('../../utils/slack/slack-logger');
 const sns = require('../../aws/sns');
 const Authorization = require('../../utils/security/isAuthenticated');
 const { hasPermission } = require('../../utils/security/hasPermission');
+const { Op } = require('sequelize');
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
@@ -126,12 +127,11 @@ const addEstablishment = async (req, res) => {
         serviceResults = await models.services.findOne({
           where: {
             name: establishmentData.MainService,
-            iscqcregistered: false,
+            iscqcregistered: { [Op.or]: [false, null] },
             isMain: true,
           },
         });
       }
-
       if (serviceResults && serviceResults.id && establishmentData.MainService === serviceResults.name) {
         establishmentData.MainServiceId = serviceResults.id;
       } else {
