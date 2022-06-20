@@ -3,7 +3,10 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const models = require('../../../../models');
 
-const { postStaffRecruitmentData } = require('../../../../routes/establishments/staffRecruitmentData');
+const {
+  postStaffRecruitmentData,
+  updateRecruitmentForExistingUser,
+} = require('../../../../routes/establishments/staffRecruitmentData');
 
 describe('server/routes/establishments/staffRecruitmentData', () => {
   afterEach(async () => {
@@ -65,6 +68,45 @@ describe('server/routes/establishments/staffRecruitmentData', () => {
       sinon.stub(models.establishment, 'update').throws(() => new Error());
 
       await postStaffRecruitmentData(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
+  describe('updateRecruitmentForExistingUser', () => {
+    let req;
+    let res;
+    const establishmentId = 'a131313dasd123325453bac';
+
+    const setup = async (body) => {
+      const request = {
+        method: 'POST',
+        url: `/api/establishment/${establishmentId}/staffRecruitmentData/updateRecruitmentForExistingUser`,
+        establishment: { id: establishmentId },
+        body,
+      };
+
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+    };
+
+    it('should return 200 when the recruitmentJourneyExistingUserBanner has been updated', async () => {
+      const body = { recruitmentJourneyExistingUserBanner: true };
+      await setup(body);
+      sinon.stub(models.establishment, 'updatREcuritmentBannerForExistingUser').returns(null);
+
+      await updateRecruitmentForExistingUser(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return 500 when the update throws an error', async () => {
+      const body = { recruitmentJourneyExistingUserBanner: false };
+      await setup(body);
+
+      sinon.stub(models.establishment, 'updatREcuritmentBannerForExistingUser').throws(() => new Error());
+
+      await updateRecruitmentForExistingUser(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
     });
