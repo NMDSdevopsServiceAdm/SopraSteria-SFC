@@ -136,8 +136,10 @@ export interface Establishment {
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
+  recruitmentJourneyExistingUserBanner?: boolean;
   doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
+  wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
   peopleInterviewedInTheLastFourWeeks?: string;
 }
 
@@ -169,6 +171,7 @@ export interface StaffRecruitmentDataRequest {
   amountSpent?: string;
   numberOfInterviews?: string;
   trainingRequired?: string;
+  acceptCareCertificatesFromPreviousEmployment?: string;
 }
 
 export interface LocalIdentifiersRequest {

@@ -6,7 +6,6 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const postStaffRecruitmentData = async (req, res) => {
   try {
     const { staffRecruitmentData } = req.body;
-
     let staffRecruitmentColumn;
     let data;
 
@@ -21,6 +20,9 @@ const postStaffRecruitmentData = async (req, res) => {
     } else if (dataObjKeys.includes('trainingRequired')) {
       staffRecruitmentColumn = 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment';
       data = staffRecruitmentData.trainingRequired;
+    } else if (Object.keys(staffRecruitmentData).includes('acceptCareCertificatesFromPreviousEmployment')) {
+      staffRecruitmentColumn = 'wouldYouAcceptCareCertificatesFromPreviousEmployment';
+      data = staffRecruitmentData.acceptCareCertificatesFromPreviousEmployment;
     }
 
     await models.establishment.update(
@@ -74,9 +76,28 @@ const getStaffRecruitmentData = async (req, res) => {
   }
 };
 
+const updateRecruitmentForExistingUser = async (req, res) => {
+  try {
+    const { recruitmentJourneyExistingUserBanner } = req.body;
+    await models.establishment.updatRecuritmentBannerForExistingUser(
+      req.establishment.id,
+      recruitmentJourneyExistingUserBanner,
+    );
+
+    res.status(200).send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send();
+  }
+};
+
 router.route('/').post(hasPermission('canEditEstablishment'), postStaffRecruitmentData);
 router.route('/').get(hasPermission('canViewEstablishment'), getStaffRecruitmentData);
+router
+  .route('/updateRecruitmentForExistingUser')
+  .post(hasPermission('canEditEstablishment'), updateRecruitmentForExistingUser);
 
 module.exports = router;
 module.exports.postStaffRecruitmentData = postStaffRecruitmentData;
 module.exports.getStaffRecruitmentData = getStaffRecruitmentData;
+module.exports.updateRecruitmentForExistingUser = updateRecruitmentForExistingUser;

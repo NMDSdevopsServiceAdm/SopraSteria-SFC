@@ -87,9 +87,11 @@ class Establishment extends EntityValidator {
     this._lastBulkUploaded = null;
     this._eightWeeksFromFirstLogin = null;
     this._showSharingPermissionsBanner = null;
+    this._recruitmentJourneyExistingUserBanner = null;
     this._expiresSoonAlertDate = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
+    this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
@@ -263,6 +265,10 @@ class Establishment extends EntityValidator {
     return this._showSharingPermissionsBanner;
   }
 
+  get recruitmentJourneyExistingUserBanner() {
+    return this._recruitmentJourneyExistingUserBanner;
+  }
+
   get reasonsForLeaving() {
     return this._reasonsForLeaving;
   }
@@ -349,6 +355,10 @@ class Establishment extends EntityValidator {
 
   get moneySpentOnAdvertisingInTheLastFourWeeks() {
     return this._moneySpentOnAdvertisingInTheLastFourWeeks;
+  }
+
+  get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
+    return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
   }
 
   get peopleInterviewedInTheLastFourWeeks() {
@@ -525,6 +535,10 @@ class Establishment extends EntityValidator {
 
         if ('showSharingPermissionsBanner' in document) {
           this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
+        }
+
+        if (document.recruitmentJourneyExistingUserBanner) {
+          this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
         }
 
         if (document.expiresSoonAlertDate) {
@@ -1281,9 +1295,12 @@ class Establishment extends EntityValidator {
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
+        this._recruitmentJourneyExistingUserBanner = fetchResults.recruitmentJourneyExistingUserBanner;
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
+        this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
+          fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
 
         // if history of the User is also required; attach the association
@@ -1757,11 +1774,18 @@ class Establishment extends EntityValidator {
         myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
+        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
+        myDefaultJSON.wouldYouAcceptCareCertificatesFromPreviousEmployment =
+          this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
         myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
+      }
+
+      if (this.recruitmentJourneyExistingUserBanner !== null) {
+        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
       }
 
       if (this._ustatus) {

@@ -337,4 +337,13 @@ export class EstablishmentService {
       .get<any>(`/api/establishment/${establishmentId}/childWorkplaces`, { params: queryParams || {} })
       .pipe(map((data) => data));
   }
+
+  public updateRecruitmentJourneyExistingUser(establishmentId: string, data: any): Observable<any> {
+    return this.http.post<any>(
+      `/api/establishment/${establishmentId}/staffRecruitmentData/updateRecruitmentForExistingUser`,
+      {
+        recruitmentJourneyExistingUserBanner: data,
+      },
+    );
+  }
 }
