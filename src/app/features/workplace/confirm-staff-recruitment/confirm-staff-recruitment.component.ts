@@ -2,10 +2,8 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { SummaryList } from '@core/model/summary-list.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { Subscription } from 'rxjs';
@@ -15,10 +13,9 @@ import { Subscription } from 'rxjs';
   templateUrl: './confirm-staff-recruitment.component.html',
 })
 export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
-  @Input() public summaryList: SummaryList[];
   @Input() public topBorder?: boolean;
   @Input() public wrapBorder?: boolean;
-  @Input() public canNavigate?: boolean;
+
   @Output() public setReturn = new EventEmitter();
 
   protected subscriptions: Subscription = new Subscription();
@@ -32,7 +29,6 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
   public workplaceName: string;
 
   constructor(
-    public errorSummaryService: ErrorSummaryService,
     public establishmentService: EstablishmentService,
     public router: Router,
     public workplaceService: WorkplaceService,
@@ -41,8 +37,6 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // this.return = this.establishmentService.returnTo;
-
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe((establishment) => {
         this.establishment = establishment;
@@ -57,9 +51,6 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
     this.doNewStartersRepeatTraining = this.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
     this.wouldYouAcceptPreviousCertificates = this.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment;
     this.workplaceName = this.establishment.name;
-
-    // this.setupFormErrorsMap();
-    // this.setupServerErrorsMap();
   }
 
   public emitSetReturn(): void {

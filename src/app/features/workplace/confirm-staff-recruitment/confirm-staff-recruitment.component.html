@@ -3,7 +3,7 @@
     <h1 class="govuk-heading-l">Staff recruitment</h1>
 
     <div class="govuk-button-group govuk__justify-content-space-between govuk-!-margin-top-7">
-      <p>Check the workplace details you've added before you confirm them.</p>
+      <p>Check your answers before you confirm them.</p>
       <button class="govuk-button" type="button" (click)="onSuccess()">Confirm your answers</button>
     </div>
     <dl
@@ -19,14 +19,8 @@
           {{ moneySpentOnAdvertisingInTheLastFourWeek }}
         </dd>
 
-        <dd *ngIf="canNavigate === undefined ? true : canNavigate" class="govuk-summary-list__actions">
-          <a
-            [routerLink]="[this.flow, this.establishment.uid, 'recruitment-advertising-cost']"
-            (click)="emitSetReturn()"
-          >
-            Change
-            <span class="govuk-visually-hidden"> {{ 'ke' }}</span>
-          </a>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/', this.flow, this.establishment.uid, 'recruitment-advertising-cost']"> Change </a>
         </dd>
       </div>
 
@@ -37,11 +31,8 @@
           {{ peopleInterviewedInTheLastFourWeek }}
         </dd>
 
-        <dd *ngIf="canNavigate === undefined ? true : canNavigate" class="govuk-summary-list__actions">
-          <a>
-            Change
-            <span class="govuk-visually-hidden"> {{ 'ke' }}</span>
-          </a>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/', this.flow, this.establishment.uid, 'number-of-interviews']"> Change </a>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -51,10 +42,9 @@
           {{ doNewStartersRepeatTraining }}
         </dd>
 
-        <dd *ngIf="canNavigate === undefined ? true : canNavigate" class="govuk-summary-list__actions">
-          <a>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/', this.flow, this.establishment.uid, 'staff-recruitment-capture-training-requirement']">
             Change
-            <span class="govuk-visually-hidden"> {{ 'ke' }}</span>
           </a>
         </dd>
       </div>
@@ -65,11 +55,8 @@
           {{ wouldYouAcceptPreviousCertificates }}
         </dd>
 
-        <dd *ngIf="canNavigate === undefined ? true : canNavigate" class="govuk-summary-list__actions">
-          <a>
-            Change
-            <span class="govuk-visually-hidden"> {{ 'ke' }}</span>
-          </a>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/', this.flow, this.establishment.uid, 'accept-previous-care-certificate']"> Change </a>
         </dd>
       </div>
     </dl>
