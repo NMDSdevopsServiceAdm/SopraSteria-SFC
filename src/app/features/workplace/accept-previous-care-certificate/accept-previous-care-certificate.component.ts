@@ -88,6 +88,7 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   }
 
   protected onSuccess(): void {
+    //logic required here: e.g inMiniFlow ? miniFlowSummary : workflowCheckAnswersSummary
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
   }
 

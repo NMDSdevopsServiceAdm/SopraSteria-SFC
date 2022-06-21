@@ -46,7 +46,7 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'number-of-interviews'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'recruitment-advertising-cost'];
   }
 
   private prefill(): void {
