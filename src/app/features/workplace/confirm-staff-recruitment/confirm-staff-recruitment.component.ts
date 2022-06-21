@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { SummaryList } from '@core/model/summary-list.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -28,6 +29,7 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
   public peopleInterviewedInTheLastFourWeek: string;
   public doNewStartersRepeatTraining: string;
   public wouldYouAcceptPreviousCertificates: string;
+  public workplaceName: string;
 
   constructor(
     public errorSummaryService: ErrorSummaryService,
@@ -35,6 +37,7 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
     public router: Router,
     public workplaceService: WorkplaceService,
     public backService: BackService,
+    protected alertService: AlertService,
   ) {}
 
   ngOnInit() {
@@ -53,6 +56,7 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
     this.peopleInterviewedInTheLastFourWeek = this.establishment.peopleInterviewedInTheLastFourWeeks;
     this.doNewStartersRepeatTraining = this.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
     this.wouldYouAcceptPreviousCertificates = this.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment;
+    this.workplaceName = this.establishment.name;
 
     // this.setupFormErrorsMap();
     // this.setupServerErrorsMap();
@@ -67,9 +71,12 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
     this.backService.setBackLink({ url: [this.flow, this.establishment.uid, backLinkUrl] });
   }
 
-  public onSetReturn(): void {
-    this.workplaceService.setReturnTo({
-      url: [this.flow, this.establishment.uid, 'staff-recruitment-start'],
+  public async onSuccess(): Promise<void> {
+    await this.router.navigate(['/dashboard']);
+
+    this.alertService.addAlert({
+      type: 'success',
+      message: `Your answers have been saved with your '${this.workplaceName}' information`,
     });
   }
   ngOnDestroy(): void {
