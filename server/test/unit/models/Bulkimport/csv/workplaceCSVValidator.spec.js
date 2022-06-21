@@ -38,6 +38,9 @@ const validateAPIObject = (establishmentRow) => {
     leavers: [999, 0, 0],
     shareWith: { cqc: true, localAuthorities: true },
     capacities: [0, 0, 0, 0],
+    doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 1,
+    moneySpentOnAdvertisingInTheLastFourWeeks: '101.30',
+    peopleInterviewedInTheLastFourWeeks: '9',
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {

@@ -1003,8 +1003,6 @@ class Establishment extends EntityValidator {
             // the value in lastWdfEligibility as that field is audited
             updateDocument.establishmentWdfEligibility = null;
           }
-          console.log('>>>>>>>>>>>>>>>>>.');
-          console.log(updateDocument);
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
             returning: true,
