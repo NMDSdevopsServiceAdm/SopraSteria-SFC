@@ -238,7 +238,7 @@ class WorkplaceCSVValidator {
   static get REPEAT_TRAINING_ERROR() {
     return 2420;
   }
-  static get ACCEPT_CARE_CERT() {
+  static get ACCEPT_CARE_CERT_ERROR() {
     return 2430;
   }
 
@@ -1827,7 +1827,7 @@ class WorkplaceCSVValidator {
     if (!ALLOWED_VALUES.includes(this._currentLine.REPEATTRAINING)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errcodee: WorkplaceCSVValidator.REPEAT_TRAINING_ERROR,
+        errCode: WorkplaceCSVValidator.REPEAT_TRAINING_ERROR,
         errType: 'REPEAT_TRAINING_ERROR',
         error: 'The code you have entered for REPEATTRAINING is incorrect',
         source: this._currentLine.REPEATTRAINING,
@@ -1851,7 +1851,7 @@ class WorkplaceCSVValidator {
     if (!ALLOWED_VALUES.includes(this._currentLine.ACCEPTCARECERT)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errcodee: WorkplaceCSVValidator.ACCEPT_CARE_CERT_ERROR,
+        errCode: WorkplaceCSVValidator.ACCEPT_CARE_CERT_ERROR,
         errType: 'ACCEPT_CARE_CERT_ERROR',
         error: 'The code you have entered for ACCEPTCARECERT is incorrect',
         source: this._currentLine.ACCEPTCARECERT,
@@ -1873,7 +1873,7 @@ class WorkplaceCSVValidator {
     const interviewsRegex = /^[0-9]*$/;
     const interviews = this._currentLine.INTERVIEWS;
 
-    if (!interviewsRegex.test(interviews) && interviews !== 'unknown') {
+    if (!interviewsRegex.test(interviews) && interviews.toLowerCase() !== 'unknown') {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: WorkplaceCSVValidator.INTERVIEWS_ERROR,
@@ -1894,7 +1894,7 @@ class WorkplaceCSVValidator {
     const advertisingRegex = /^\d*(\.\d{1,2})?$/;
     const advertising = this._currentLine.ADVERTISING;
 
-    if (!advertisingRegex.test(advertising) && advertising !== 'unknown') {
+    if (!advertisingRegex.test(advertising) && advertising.toLowerCase() !== 'unknown') {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: WorkplaceCSVValidator.ADVERTISING_ERROR,
@@ -2449,10 +2449,12 @@ class WorkplaceCSVValidator {
     ];
 
     interviewAndAdvertisingArr.forEach((property) => {
-      if (property.value === DONT_KNOW) {
+      if (property.value.toLowerCase() === DONT_KNOW) {
         this[property.name] = "Don't know";
       } else if (property.value === NONE) {
         this[property.name] = 'None';
+      } else if (!property.value) {
+        this[property.name] = null;
       }
     });
   }
