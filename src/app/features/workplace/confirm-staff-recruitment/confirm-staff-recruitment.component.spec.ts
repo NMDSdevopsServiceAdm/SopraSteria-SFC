@@ -9,7 +9,7 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, getByTestId, render } from '@testing-library/angular';
 
 import { WorkplaceModule } from '../workplace.module';
 import { ConfirmStaffRecruitmentComponent } from './confirm-staff-recruitment.component';
@@ -59,6 +59,7 @@ describe('ConfirmStaffRecruitmentComponent', () => {
       fixture,
       getByText,
       getAllByText,
+      getByTestId,
       routerSpy,
       alertSpy,
       backServiceSpy,
@@ -91,5 +92,32 @@ describe('ConfirmStaffRecruitmentComponent', () => {
     expect(component.establishment.peopleInterviewedInTheLastFourWeeks).toBe('None');
     expect(component.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment).toBe('No,never');
     expect(component.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment).toBe('No,never');
+  });
+
+  describe('onSuccess', () => {
+    it('should display an alert when the "Confirm your answers" button is clicked', async () => {
+      const { getByText, fixture, alertSpy } = await setup();
+
+      const confirmAndReturnButton = getByText('Confirm your answers');
+      fireEvent.click(confirmAndReturnButton);
+
+      await fixture.whenStable();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `Your answers have been saved with your 'Workplace' information`,
+      });
+    });
+  });
+
+  describe('Back link', () => {
+    it(`should set the back link to the 'accept-previous-care-certificate' if user is not primary user`, async () => {
+      const { component, backServiceSpy } = await setup();
+
+      component.setBackLink();
+
+      expect(backServiceSpy).toHaveBeenCalledWith({
+        url: ['workplace', component.establishment.uid, 'accept-previous-care-certificate'],
+      });
+    });
   });
 });
