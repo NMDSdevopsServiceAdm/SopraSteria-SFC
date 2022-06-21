@@ -73,7 +73,7 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
   callback(csvEstablishmentSchemaErrors);
 };
 
-describe.only('Bulk Upload - Establishment CSV', () => {
+describe('Bulk Upload - Establishment CSV', () => {
   beforeEach(() => {
     sandbox.stub(BUDI, 'initialize');
     sandbox.stub(WorkplaceCSVValidator.prototype, '_validateNoChange').callsFake(() => {
