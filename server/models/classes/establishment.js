@@ -552,6 +552,16 @@ class Establishment extends EntityValidator {
         if (document.peopleInterviewedInTheLastFourWeeks) {
           this._peopleInterviewedInTheLastFourWeeks = document.peopleInterviewedInTheLastFourWeeks;
         }
+
+        if (document.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment) {
+          this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
+            document.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+        }
+
+        if (document.wouldYouAcceptCareCertificatesFromPreviousEmployment) {
+          this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
+            document.wouldYouAcceptCareCertificatesFromPreviousEmployment;
+        }
       }
 
       // allow for deep restoration of entities (associations - namely Worker here)
@@ -804,6 +814,10 @@ class Establishment extends EntityValidator {
           expiresSoonAlertDate: '90',
           moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
           peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
+          doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
+            this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
+          wouldYouAcceptCareCertificatesFromPreviousEmployment:
+            this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -995,6 +1009,10 @@ class Establishment extends EntityValidator {
             showSharingPermissionsBanner: bulkUploaded ? false : this._showSharingPermissionsBanner,
             moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
             peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
+            doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
+              this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
+            wouldYouAcceptCareCertificatesFromPreviousEmployment:
+              this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1302,7 +1320,6 @@ class Establishment extends EntityValidator {
         this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
           fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
-
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed

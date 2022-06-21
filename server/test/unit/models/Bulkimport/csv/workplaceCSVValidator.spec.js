@@ -41,6 +41,7 @@ const validateAPIObject = (establishmentRow) => {
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 1,
     moneySpentOnAdvertisingInTheLastFourWeeks: '101.30',
     peopleInterviewedInTheLastFourWeeks: '9',
+    wouldYouAcceptCareCertificatesFromPreviousEmployment: 2,
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
@@ -88,7 +89,7 @@ describe('Bulk Upload - Establishment CSV', () => {
   });
 
   describe('toAPI', () => {
-    it('should return a correct API format ', async () => {
+    it.('should return a correct API format ', async () => {
       const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
 

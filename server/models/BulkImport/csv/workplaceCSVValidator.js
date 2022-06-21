@@ -1862,7 +1862,7 @@ class WorkplaceCSVValidator {
     } else {
       const acceptCareCertAsInt = parseInt(this._currentLine.ACCEPTCARECERT, 10);
 
-      this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = Number.isNaN(acceptCareCertAsInt)
+      this._wouldYouAcceptCareCertificatesFromPreviousEmployment = Number.isNaN(acceptCareCertAsInt)
         ? this._currentLine.ACCEPTCARECERT
         : acceptCareCertAsInt;
       return true;
@@ -2427,7 +2427,7 @@ class WorkplaceCSVValidator {
     const mapping = {
       1: 'Yes, always',
       2: 'Yes, very often',
-      3: 'Yes, but not often',
+      3: 'Yes, but not very often',
       4: 'No, never',
       '': null,
     };
@@ -2580,6 +2580,7 @@ class WorkplaceCSVValidator {
       this._validateAdvertising();
       this._validateInterviews();
       this._validateRepeatTraining();
+      this._validateAcceptCareCertificate();
       // this._validateNoChange(); // Not working, disabled for LA Window
     }
     return this.validationErrors.length === 0;
@@ -2785,6 +2786,7 @@ class WorkplaceCSVValidator {
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
       moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
       peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
+      wouldYouAcceptCareCertificatesFromPreviousEmployment: this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
     };
 
     if (this._allServices) {
