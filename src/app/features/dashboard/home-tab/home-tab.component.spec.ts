@@ -275,9 +275,9 @@ describe('HomeTabComponent', () => {
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
       component.fixture.componentInstance.canEditEstablishment = true;
 
-      const recuritmentLink = component.queryByText('Answer our 4 new staff recruitment questions');
-      fireEvent.click(recuritmentLink);
       component.fixture.detectChanges();
+      const recuritmentLink = component.getByText('Answer our 4 new staff recruitment questions');
+      fireEvent.click(recuritmentLink);
 
       expect(recuritmentBannerSpy).toHaveBeenCalled();
     });
