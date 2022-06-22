@@ -238,7 +238,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'recruitment-advertising-cost'];
   }
 
   private clearValidators(index: number) {

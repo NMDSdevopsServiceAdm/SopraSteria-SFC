@@ -545,12 +545,22 @@ class Establishment extends EntityValidator {
           this._expiresSoonAlertDate = document.expiresSoonAlertDate;
         }
 
-        if (document.moneySpentOnAdvertisingInTheLastFourWeeks) {
+        if ('moneySpentOnAdvertisingInTheLastFourWeeks' in document) {
           this._moneySpentOnAdvertisingInTheLastFourWeeks = document.moneySpentOnAdvertisingInTheLastFourWeeks;
         }
 
-        if (document.peopleInterviewedInTheLastFourWeeks) {
+        if ('peopleInterviewedInTheLastFourWeeks' in document) {
           this._peopleInterviewedInTheLastFourWeeks = document.peopleInterviewedInTheLastFourWeeks;
+        }
+
+        if ('doNewStartersRepeatMandatoryTrainingFromPreviousEmployment' in document) {
+          this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
+            document.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+        }
+
+        if ('wouldYouAcceptCareCertificatesFromPreviousEmployment' in document) {
+          this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
+            document.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         }
       }
 
@@ -802,6 +812,12 @@ class Establishment extends EntityValidator {
           attributes: ['id', 'created', 'updated'],
           ustatus: this._ustatus,
           expiresSoonAlertDate: '90',
+          moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
+          peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
+          doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
+            this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
+          wouldYouAcceptCareCertificatesFromPreviousEmployment:
+            this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -991,6 +1007,12 @@ class Establishment extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
             showSharingPermissionsBanner: bulkUploaded ? false : this._showSharingPermissionsBanner,
+            moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
+            peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
+            doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
+              this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
+            wouldYouAcceptCareCertificatesFromPreviousEmployment:
+              this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1013,7 +1035,6 @@ class Establishment extends EntityValidator {
             // the value in lastWdfEligibility as that field is audited
             updateDocument.establishmentWdfEligibility = null;
           }
-
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
             returning: true,
@@ -1299,7 +1320,6 @@ class Establishment extends EntityValidator {
         this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
           fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
-
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed

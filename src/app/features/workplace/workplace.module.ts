@@ -21,6 +21,7 @@ import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-c
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
+import { ConfirmStaffRecruitmentComponent } from './confirm-staff-recruitment/confirm-staff-recruitment.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
@@ -37,8 +38,8 @@ import { SelectPrimaryUserComponent } from './select-primary-user/select-primary
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
-import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartersComponent } from './starters/starters.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
@@ -98,6 +99,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     AcceptPreviousCareCertificateComponent,
     RecruitmentAdvertisingCostComponent,
     NumberOfInterviewsComponent,
+    ConfirmStaffRecruitmentComponent,
   ],
   providers: [
     DialogService,

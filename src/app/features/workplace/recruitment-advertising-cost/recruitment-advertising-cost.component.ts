@@ -6,6 +6,7 @@ import { jobOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -38,12 +39,12 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   protected init(): void {
     this.setupForm();
     this.setupFormValueSubscriptions();
+    this.setPreviousRoute();
     this.prefill();
   }
 
-  protected setBackLink(): void {
-    // This functionality cannot be completed until routing to this page is complete
-    this.backService.setBackLink({ url: ['/workplace', this.establishment.uid, 'check-answers'] });
+  private setPreviousRoute(): void {
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'leavers'];
   }
 
   private prefill(): void {
@@ -157,7 +158,21 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     );
   }
 
+  protected updateEstablishmentService(): void {
+    this.establishmentService
+      .getEstablishment(this.establishmentService.establishmentId)
+      .pipe(
+        tap((workplace) => {
+          return (
+            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
+          );
+        }),
+      )
+      .subscribe();
+  }
+
   protected onSuccess(): void {
+    this.updateEstablishmentService();
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'number-of-interviews'];
   }
 
