@@ -11,7 +11,21 @@
         <dt class="govuk-summary-list__key">Advertising spend</dt>
 
         <dd class="govuk-summary-list__value asc__preline">
-          {{ moneySpentOnAdvertisingInTheLastFourWeek }}
+          <ng-container
+            *ngIf="
+              moneySpentOnAdvertisingInTheLastFourWeek == 'None' ||
+                moneySpentOnAdvertisingInTheLastFourWeek == 'Don\'t know';
+              then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
+              else moneySpentOnAdvertisingInTheLastFourWeeksKnown
+            "
+          >
+          </ng-container>
+          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
+            {{ moneySpentOnAdvertisingInTheLastFourWeek }}
+          </ng-template>
+          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
+            £ {{ moneySpentOnAdvertisingInTheLastFourWeek }}
+          </ng-template>
         </dd>
 
         <dd class="govuk-summary-list__actions" data-testid="advertisingSpend">
