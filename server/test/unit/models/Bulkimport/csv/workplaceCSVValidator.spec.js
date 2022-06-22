@@ -1797,4 +1797,108 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(csvAsArray[28]).to.include('Test');
     });
   });
+
+  it('should leave the ADVERTISING and INTERVIEW columns blank if there values are null', async () => {
+    const establishment = apiEstablishmentBuilder();
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[30]).to.equal('');
+    expect(csvAsArray[31]).to.equal('');
+  });
+
+  it("should include 0 in the ADVERTISING and INTERVIEW columns if there values are 'None'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = 'None';
+    establishment.peopleInterviewedInTheLastFourWeeks = 'None';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[30]).to.include(0);
+    expect(csvAsArray[31]).to.include(0);
+  });
+
+  it("should include 'unknown' in the ADVERTISING and INTERVIEW columns if there values are \"Don't know\"", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = "Don't know";
+    establishment.peopleInterviewedInTheLastFourWeeks = "Don't know";
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[30]).to.include('unknown');
+    expect(csvAsArray[31]).to.include('unknown');
+  });
+
+  it('should include a value in the ADVERTISING and INTERVIEW columns if they have values', async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = '125.34';
+    establishment.peopleInterviewedInTheLastFourWeeks = '54';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[30]).to.include('125.34');
+    expect(csvAsArray[31]).to.include('54');
+  });
+
+  it('should leave the REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are null', async () => {
+    const establishment = apiEstablishmentBuilder();
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[32]).to.equal('');
+    expect(csvAsArray[33]).to.equal('');
+  });
+
+  it("should include '1' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, always'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, always';
+    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, always';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[32]).to.include(1);
+    expect(csvAsArray[33]).to.include(1);
+  });
+
+  it("should include '2' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, very often'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, very often';
+    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, very often';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[32]).to.include(2);
+    expect(csvAsArray[33]).to.include(2);
+  });
+
+  it("should include '3' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, but not very often'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, but not very often';
+    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, but not very often';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[32]).to.include(3);
+    expect(csvAsArray[33]).to.include(3);
+  });
+
+  it("should include '4' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'No, never'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'No, never';
+    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'No, never';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[32]).to.include(4);
+    expect(csvAsArray[33]).to.include(4);
+  });
 });

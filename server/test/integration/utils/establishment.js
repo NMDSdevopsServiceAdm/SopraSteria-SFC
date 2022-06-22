@@ -24,5 +24,9 @@ module.exports.apiEstablishmentBuilder = build('Establishment', {
     NumberOfStaffValue: fake((f) => f.datatype.number({ min: 10, max: 300 })),
     jobs: [],
     reasonsForLeaving: '',
+    moneySpentOnAdvertisingInTheLastFourWeeks: null,
+    peopleInterviewedInTheLastFourWeeks: null,
+    doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: null,
+    wouldYouAcceptCareCertificatesFromPreviousEmployment: null,
   },
 });
