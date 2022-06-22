@@ -9,14 +9,14 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByTestId, render } from '@testing-library/angular';
+import { fireEvent, getByTestId, render, within } from '@testing-library/angular';
 
 import { WorkplaceModule } from '../workplace.module';
 import { ConfirmStaffRecruitmentComponent } from './confirm-staff-recruitment.component';
 
 describe('ConfirmStaffRecruitmentComponent', () => {
   async function setup() {
-    const { fixture, getByText, getAllByText } = await render(ConfirmStaffRecruitmentComponent, {
+    const { fixture, getByText, getAllByText, getByTestId } = await render(ConfirmStaffRecruitmentComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
       providers: [
         WindowRef,
@@ -82,7 +82,7 @@ describe('ConfirmStaffRecruitmentComponent', () => {
     expect(getByText('Advertising spend')).toBeTruthy();
     expect(getByText('People interviewed')).toBeTruthy();
     expect(getByText('Repeat training')).toBeTruthy();
-    expect(getByText('Accept care certificate')).toBeTruthy();
+    expect(getByText('Accept Care Certificate')).toBeTruthy();
   });
 
   it('should prefill the form with the current data from the establishment service', async () => {
@@ -92,6 +92,52 @@ describe('ConfirmStaffRecruitmentComponent', () => {
     expect(component.establishment.peopleInterviewedInTheLastFourWeeks).toBe('None');
     expect(component.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment).toBe('No,never');
     expect(component.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment).toBe('No,never');
+  });
+
+  it('should set the change link to `recruitment-advertising-cost`', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    fixture.detectChanges();
+
+    const advertisingspendLastFourWeek = within(getByTestId('advertisingSpend'));
+    const changeLink = advertisingspendLastFourWeek.getByText('Change');
+
+    expect(changeLink.getAttribute('href')).toEqual('/workplace/mocked-uid/recruitment-advertising-cost');
+  });
+
+  it('should set the change link to `number-of-interviews`', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    fixture.detectChanges();
+
+    const peopleInterviewed = within(getByTestId('peopleInterviewed'));
+    const changeLink = peopleInterviewed.getByText('Change');
+
+    expect(changeLink.getAttribute('href')).toEqual('/workplace/mocked-uid/number-of-interviews');
+  });
+
+  it('should set the change link to `staff-recruitment-capture-training-requirement`', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    fixture.detectChanges();
+
+    const repeatTraining = within(getByTestId('repeatTraining'));
+    const changeLink = repeatTraining.getByText('Change');
+
+    expect(changeLink.getAttribute('href')).toEqual(
+      '/workplace/mocked-uid/staff-recruitment-capture-training-requirement',
+    );
+  });
+
+  it('should set the change link to `accept-previous-care-certificate`', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    fixture.detectChanges();
+
+    const acceptCareCertificate = within(getByTestId('acceptCareCertificate'));
+    const changeLink = acceptCareCertificate.getByText('Change');
+
+    expect(changeLink.getAttribute('href')).toEqual('/workplace/mocked-uid/accept-previous-care-certificate');
   });
 
   describe('onSuccess', () => {

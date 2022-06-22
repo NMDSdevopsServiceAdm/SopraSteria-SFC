@@ -19,7 +19,7 @@
           {{ moneySpentOnAdvertisingInTheLastFourWeek }}
         </dd>
 
-        <dd class="govuk-summary-list__actions">
+        <dd class="govuk-summary-list__actions" data-testid="advertisingSpend">
           <a [routerLink]="['/', this.flow, this.establishment.uid, 'recruitment-advertising-cost']"> Change </a>
         </dd>
       </div>
@@ -31,7 +31,7 @@
           {{ peopleInterviewedInTheLastFourWeek }}
         </dd>
 
-        <dd class="govuk-summary-list__actions">
+        <dd class="govuk-summary-list__actions" data-testid="peopleInterviewed">
           <a [routerLink]="['/', this.flow, this.establishment.uid, 'number-of-interviews']"> Change </a>
         </dd>
       </div>
@@ -42,20 +42,20 @@
           {{ doNewStartersRepeatTraining }}
         </dd>
 
-        <dd class="govuk-summary-list__actions">
+        <dd class="govuk-summary-list__actions" data-testid="repeatTraining">
           <a [routerLink]="['/', this.flow, this.establishment.uid, 'staff-recruitment-capture-training-requirement']">
             Change
           </a>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Accept care certificate</dt>
+        <dt class="govuk-summary-list__key">Accept Care Certificate</dt>
 
         <dd class="govuk-summary-list__value asc__preline">
           {{ wouldYouAcceptPreviousCertificates }}
         </dd>
 
-        <dd class="govuk-summary-list__actions">
+        <dd class="govuk-summary-list__actions" data-testid="acceptCareCertificate">
           <a [routerLink]="['/', this.flow, this.establishment.uid, 'accept-previous-care-certificate']"> Change </a>
         </dd>
       </div>

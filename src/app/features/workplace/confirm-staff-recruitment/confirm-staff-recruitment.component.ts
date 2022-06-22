@@ -26,7 +26,6 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
   public peopleInterviewedInTheLastFourWeek: string;
   public doNewStartersRepeatTraining: string;
   public wouldYouAcceptPreviousCertificates: string;
-  public workplaceName: string;
 
   constructor(
     public establishmentService: EstablishmentService,
@@ -40,7 +39,6 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe((establishment) => {
         this.establishment = establishment;
-        console.log(this.establishment);
 
         this.primaryWorkplace = this.establishmentService.primaryWorkplace;
         this.setBackLink();
@@ -50,7 +48,6 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
     this.peopleInterviewedInTheLastFourWeek = this.establishment.peopleInterviewedInTheLastFourWeeks;
     this.doNewStartersRepeatTraining = this.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
     this.wouldYouAcceptPreviousCertificates = this.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-    this.workplaceName = this.establishment.name;
   }
 
   public emitSetReturn(): void {
@@ -67,7 +64,7 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
 
     this.alertService.addAlert({
       type: 'success',
-      message: `Your answers have been saved with your '${this.workplaceName}' information`,
+      message: `Your answers have been saved with your 'Workplace' information`,
     });
   }
   ngOnDestroy(): void {
