@@ -1,6 +1,5 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
-const { query } = require('express');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -1263,6 +1262,10 @@ module.exports = function (sequelize, DataTypes) {
         'StartersValue',
         'LeaversValue',
         'reasonsForLeaving',
+        'moneySpentOnAdvertisingInTheLastFourWeeks',
+        'peopleInterviewedInTheLastFourWeeks',
+        'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
+        'wouldYouAcceptCareCertificatesFromPreviousEmployment',
       ],
       where: {
         [Op.or]: [
