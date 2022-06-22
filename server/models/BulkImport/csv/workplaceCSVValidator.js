@@ -2449,12 +2449,12 @@ class WorkplaceCSVValidator {
     ];
 
     interviewAndAdvertisingArr.forEach((property) => {
-      if (property.value.toLowerCase() === DONT_KNOW) {
+      if (!property.value) {
+        this[property.name] = null;
+      } else if (property.value.toLowerCase() === DONT_KNOW) {
         this[property.name] = "Don't know";
       } else if (property.value === NONE) {
         this[property.name] = 'None';
-      } else if (!property.value) {
-        this[property.name] = null;
       }
     });
   }
@@ -2998,6 +2998,43 @@ class WorkplaceCSVValidator {
       columns.push('');
       columns.push('');
     }
+
+    // ShareLA
+    columns.push('');
+
+    // Advertising, interviews,
+    const advertisingAndInterviewsMapping = (value) => {
+      if (value === "Don't know") {
+        return 'unknown';
+      } else if (value === 'None') {
+        return 0;
+      } else if (!value) {
+        return '';
+      } else {
+        return value;
+      }
+    };
+
+    columns.push(advertisingAndInterviewsMapping(entity.moneySpentOnAdvertisingInTheLastFourWeeks));
+    columns.push(advertisingAndInterviewsMapping(entity.peopleInterviewedInTheLastFourWeeks));
+
+    // RepeatTraining and AcceptCareCertifiicate
+    const repeatTrainingAndCareCertMapping = (value) => {
+      if (value === 'Yes, always') {
+        return 1;
+      } else if (value === 'Yes, very often') {
+        return 2;
+      } else if (value === 'Yes, but not very often') {
+        return 3;
+      } else if (value === 'No, never') {
+        return 4;
+      } else if (!value) {
+        return '';
+      }
+    };
+
+    columns.push(repeatTrainingAndCareCertMapping(entity.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment));
+    columns.push(repeatTrainingAndCareCertMapping(entity.wouldYouAcceptCareCertificatesFromPreviousEmployment));
 
     return columns.join(',');
   }

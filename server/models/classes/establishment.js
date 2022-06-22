@@ -545,20 +545,20 @@ class Establishment extends EntityValidator {
           this._expiresSoonAlertDate = document.expiresSoonAlertDate;
         }
 
-        if (document.moneySpentOnAdvertisingInTheLastFourWeeks) {
+        if ('moneySpentOnAdvertisingInTheLastFourWeeks' in document) {
           this._moneySpentOnAdvertisingInTheLastFourWeeks = document.moneySpentOnAdvertisingInTheLastFourWeeks;
         }
 
-        if (document.peopleInterviewedInTheLastFourWeeks) {
+        if ('peopleInterviewedInTheLastFourWeeks' in document) {
           this._peopleInterviewedInTheLastFourWeeks = document.peopleInterviewedInTheLastFourWeeks;
         }
 
-        if (document.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment) {
+        if ('doNewStartersRepeatMandatoryTrainingFromPreviousEmployment' in document) {
           this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
             document.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         }
 
-        if (document.wouldYouAcceptCareCertificatesFromPreviousEmployment) {
+        if ('wouldYouAcceptCareCertificatesFromPreviousEmployment' in document) {
           this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
             document.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         }
