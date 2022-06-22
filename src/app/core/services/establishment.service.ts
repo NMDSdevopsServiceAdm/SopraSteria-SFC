@@ -74,6 +74,7 @@ export class EstablishmentService {
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private _checkCQCDetailsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _inStaffRecruitmentFlow$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
@@ -162,6 +163,14 @@ export class EstablishmentService {
 
   public setCheckCQCDetailsBanner(data: boolean) {
     this._checkCQCDetailsBanner$.next(data);
+  }
+
+  public get inStaffRecruitmentFlow$() {
+    return this._inStaffRecruitmentFlow$.asObservable();
+  }
+
+  public setInStaffRecruitmentFlow(data: boolean) {
+    this._inStaffRecruitmentFlow$.next(data);
   }
 
   getEstablishment(id: string, wdf: boolean = false) {
