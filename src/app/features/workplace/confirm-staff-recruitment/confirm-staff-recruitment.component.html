@@ -2,16 +2,11 @@
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-l">Staff recruitment</h1>
 
-    <div class="govuk-button-group govuk__justify-content-space-between govuk-!-margin-top-7">
+    <div class="govuk-button-group govuk__justify-content-space-between govuk-!-margin-top-7 govuk-!-margin-bottom-7">
       <p>Check your answers before you confirm them.</p>
       <button class="govuk-button" type="button" (click)="onSuccess()">Confirm your answers</button>
     </div>
-    <dl
-      class="govuk-summary-list govuk-!-margin-bottom-0"
-      [class.govuk-summary-list--no-border]="topBorder || wrapBorder"
-      [class.govuk-summary-list--top-border]="topBorder"
-      [class.govuk-summary-list--wrap-border]="wrapBorder"
-    >
+    <dl class="govuk-summary-list govuk-!-margin-bottom-0 govuk-summary-list--top-border">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Advertising spend</dt>
 
