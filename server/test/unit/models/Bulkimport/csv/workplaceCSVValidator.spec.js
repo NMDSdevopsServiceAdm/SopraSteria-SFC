@@ -1804,8 +1804,8 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csv = WorkplaceCSVValidator.toCSV(establishment);
     const csvAsArray = csv.split(',');
 
+    expect(csvAsArray[29]).to.equal('');
     expect(csvAsArray[30]).to.equal('');
-    expect(csvAsArray[31]).to.equal('');
   });
 
   it("should include 0 in the ADVERTISING and INTERVIEW columns if there values are 'None'", async () => {
@@ -1816,8 +1816,8 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csv = WorkplaceCSVValidator.toCSV(establishment);
     const csvAsArray = csv.split(',');
 
+    expect(csvAsArray[29]).to.include(0);
     expect(csvAsArray[30]).to.include(0);
-    expect(csvAsArray[31]).to.include(0);
   });
 
   it("should include 'unknown' in the ADVERTISING and INTERVIEW columns if there values are \"Don't know\"", async () => {
@@ -1828,8 +1828,8 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csv = WorkplaceCSVValidator.toCSV(establishment);
     const csvAsArray = csv.split(',');
 
+    expect(csvAsArray[29]).to.include('unknown');
     expect(csvAsArray[30]).to.include('unknown');
-    expect(csvAsArray[31]).to.include('unknown');
   });
 
   it('should include a value in the ADVERTISING and INTERVIEW columns if they have values', async () => {
@@ -1840,8 +1840,8 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csv = WorkplaceCSVValidator.toCSV(establishment);
     const csvAsArray = csv.split(',');
 
-    expect(csvAsArray[30]).to.include('125.34');
-    expect(csvAsArray[31]).to.include('54');
+    expect(csvAsArray[29]).to.include('125.34');
+    expect(csvAsArray[30]).to.include('54');
   });
 
   it('should leave the REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are null', async () => {
@@ -1850,8 +1850,8 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csv = WorkplaceCSVValidator.toCSV(establishment);
     const csvAsArray = csv.split(',');
 
+    expect(csvAsArray[31]).to.equal('');
     expect(csvAsArray[32]).to.equal('');
-    expect(csvAsArray[33]).to.equal('');
   });
 
   it("should include '1' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, always'", async () => {
@@ -1862,8 +1862,8 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csv = WorkplaceCSVValidator.toCSV(establishment);
     const csvAsArray = csv.split(',');
 
+    expect(csvAsArray[31]).to.include(1);
     expect(csvAsArray[32]).to.include(1);
-    expect(csvAsArray[33]).to.include(1);
   });
 
   it("should include '2' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, very often'", async () => {
@@ -1874,8 +1874,8 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csv = WorkplaceCSVValidator.toCSV(establishment);
     const csvAsArray = csv.split(',');
 
+    expect(csvAsArray[31]).to.include(2);
     expect(csvAsArray[32]).to.include(2);
-    expect(csvAsArray[33]).to.include(2);
   });
 
   it("should include '3' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, but not very often'", async () => {
@@ -1886,8 +1886,8 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csv = WorkplaceCSVValidator.toCSV(establishment);
     const csvAsArray = csv.split(',');
 
+    expect(csvAsArray[31]).to.include(3);
     expect(csvAsArray[32]).to.include(3);
-    expect(csvAsArray[33]).to.include(3);
   });
 
   it("should include '4' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'No, never'", async () => {
@@ -1898,7 +1898,7 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csv = WorkplaceCSVValidator.toCSV(establishment);
     const csvAsArray = csv.split(',');
 
+    expect(csvAsArray[31]).to.include(4);
     expect(csvAsArray[32]).to.include(4);
-    expect(csvAsArray[33]).to.include(4);
   });
 });
