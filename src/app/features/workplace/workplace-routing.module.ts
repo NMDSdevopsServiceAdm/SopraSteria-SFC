@@ -24,6 +24,7 @@ import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
+import { ConfirmStaffRecruitmentComponent } from './confirm-staff-recruitment/confirm-staff-recruitment.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
@@ -38,8 +39,8 @@ import { SelectPrimaryUserComponent } from './select-primary-user/select-primary
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
-import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
@@ -281,6 +282,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff Recruitment Capture Training Requirement',
+        },
+      },
+      {
+        path: 'confirm-staff-recruitment',
+        component: ConfirmStaffRecruitmentComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Confirm Staff Recruitment',
         },
       },
       {

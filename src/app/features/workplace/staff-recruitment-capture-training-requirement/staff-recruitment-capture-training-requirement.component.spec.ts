@@ -12,14 +12,16 @@ import { fireEvent, render } from '@testing-library/angular';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
-  async function setup(returnUrl = true) {
+  async function setup(returnUrl = true, repeatTraining = undefined) {
     const { fixture, getByText, getByLabelText } = await render(StaffRecruitmentCaptureTrainingRequirementComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl),
+          useClass: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+            doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: repeatTraining,
+          }),
           deps: [HttpClient],
         },
       ],
@@ -104,6 +106,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       const { fixture, getByText, establishmentServiceSpy } = await setup();
 
       const button = getByText('Save and return');
+
       fireEvent.click(button);
       fixture.detectChanges();
 

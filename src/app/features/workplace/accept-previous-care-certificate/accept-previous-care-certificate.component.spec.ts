@@ -12,14 +12,16 @@ import { fireEvent, render } from '@testing-library/angular';
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate.component';
 
 describe('AcceptPreviousCareCertificateComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(returnUrl = true, acceptCareCertificate = undefined) {
     const { fixture, getByText, getByLabelText } = await render(AcceptPreviousCareCertificateComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl),
+          useClass: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+            wouldYouAcceptCareCertificatesFromPreviousEmployment: acceptCareCertificate,
+          }),
           deps: [HttpClient],
         },
       ],
