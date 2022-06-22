@@ -5,7 +5,6 @@ import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-check-answers',
@@ -15,7 +14,6 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
   public summaryReturnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
-
   constructor(
     private establishmentService: EstablishmentService,
     private router: Router,
@@ -24,20 +22,16 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.establishmentService
-        .getEstablishment(this.establishmentService.establishmentId)
-        .pipe(take(1))
-        .subscribe((establishment) => {
-          this.establishment = establishment;
-          this.summaryReturnUrl = { url: ['/workplace', establishment.uid, 'check-answers'] };
-        }),
+      this.establishmentService.establishment$.subscribe((establishment) => {
+        this.establishment = establishment;
+        this.summaryReturnUrl = { url: ['/workplace', establishment.uid, 'check-answers'] };
+      }),
     );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
   public showConfirmWorkplaceDetailsAlert(): void {
     this.router.navigate(['/dashboard'], { fragment: 'workplace' });
     this.alertService.addAlert({

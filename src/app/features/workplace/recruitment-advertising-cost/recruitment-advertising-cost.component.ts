@@ -163,7 +163,9 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
       .getEstablishment(this.establishmentService.establishmentId)
       .pipe(
         tap((workplace) => {
-          return this.establishmentService.setPrimaryWorkplace(workplace);
+          return (
+            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
+          );
         }),
       )
       .subscribe();

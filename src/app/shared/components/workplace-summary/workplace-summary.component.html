@@ -512,7 +512,21 @@
           -
         </ng-container>
         <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksType>
-          £{{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
+          <ng-container
+            *ngIf="
+              workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'None' ||
+                workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'Don\'t know';
+              then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
+              else moneySpentOnAdvertisingInTheLastFourWeeksKnown
+            "
+          >
+          </ng-container>
+          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
+            {{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
+          </ng-template>
+          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
+            £{{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
+          </ng-template>
         </ng-template>
       </app-summary-record-value>
     </dd>

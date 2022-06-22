@@ -234,7 +234,7 @@ describe('WorkplaceSummaryComponent', async () => {
       const dataSharing = within(document.body).queryByTestId('advertising-spend');
 
       expect(
-        within(dataSharing).queryByText(component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks),
+        within(dataSharing).getByText(`£${component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks}`),
       ).toBeTruthy();
       expect(within(dataSharing).queryByText('Change')).toBeTruthy();
     });
