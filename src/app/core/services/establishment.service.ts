@@ -94,6 +94,10 @@ export class EstablishmentService {
     this._primaryWorkplace$.next(workplace);
   }
 
+  public setWorkplace(workplace: Establishment) {
+    this._establishment$.next(workplace);
+  }
+
   public get establishment$() {
     if (this._establishment$.value !== null) {
       return this._establishment$.asObservable();

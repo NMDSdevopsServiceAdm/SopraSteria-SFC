@@ -5,6 +5,7 @@ import { staffRecruitmentOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -44,12 +45,12 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
 
   protected init(): void {
     this.setupForm();
+    this.setPreviousRoute();
     this.prefill();
   }
 
-  protected setBackLink(): void {
-    // This functionality cannot be completed until routing to this page is complete
-    this.backService.setBackLink({ url: ['/workplace', this.establishment.uid, 'check-answers'] });
+  private setPreviousRoute(): void {
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-capture-training-requirement'];
   }
 
   private setupForm(): void {
@@ -87,7 +88,23 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     );
   }
 
+  protected updateEstablishmentService(): void {
+    this.establishmentService
+      .getEstablishment(this.establishmentService.establishmentId)
+      .pipe(
+        tap((workplace) => {
+          return (
+            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
+          );
+        }),
+      )
+      .subscribe();
+  }
+
   protected onSuccess(): void {
+    this.updateEstablishmentService();
+
+    //logic required here: e.g inMiniFlow ? miniFlowSummary : workflowCheckAnswersSummary
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
   }
 

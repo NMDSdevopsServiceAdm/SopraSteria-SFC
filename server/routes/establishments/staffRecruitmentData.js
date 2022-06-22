@@ -20,7 +20,7 @@ const postStaffRecruitmentData = async (req, res) => {
     } else if (dataObjKeys.includes('trainingRequired')) {
       staffRecruitmentColumn = 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment';
       data = staffRecruitmentData.trainingRequired;
-    } else if (Object.keys(staffRecruitmentData).includes('acceptCareCertificatesFromPreviousEmployment')) {
+    } else if (dataObjKeys.includes('acceptCareCertificatesFromPreviousEmployment')) {
       staffRecruitmentColumn = 'wouldYouAcceptCareCertificatesFromPreviousEmployment';
       data = staffRecruitmentData.acceptCareCertificatesFromPreviousEmployment;
     }
