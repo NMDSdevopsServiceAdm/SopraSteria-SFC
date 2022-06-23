@@ -23,6 +23,7 @@ import { SharedModule } from '@shared/shared.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 
 import { AdminMenuComponent } from './admin-menu/admin-menu.component';
+import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { AdminComponent } from './admin.component';
 import { AdminRoutingModule } from './admin.routing.module';
 import { ApprovalOrRejectionDialogComponent } from './components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
@@ -90,6 +91,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     CQCMainServiceChangeListComponent,
     ParentRequestsListComponent,
     DragAndDropUploadComponent,
+    AdminUsersComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
