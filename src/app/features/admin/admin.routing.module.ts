@@ -275,7 +275,7 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'admin-users',
+    path: 'users',
     children: [
       {
         path: '',
