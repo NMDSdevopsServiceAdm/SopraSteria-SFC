@@ -26,8 +26,7 @@ const getInactiveWorkplacesForDeletion = async () => {
     "PostCode"
   FROM
   	cqc."EstablishmentLastActivity" e
-    inner join cqc."User" u  on e."EstablishmentID" = u."EstablishmentID"
-		  inner join cqc."Login" l on u."RegistrationID"  = l."RegistrationID"
+
   WHERE
   	e."LastLogin" <= :twentyFourLastMonths
 	  AND e."LastUpdated" <= :twentyFourLastMonths

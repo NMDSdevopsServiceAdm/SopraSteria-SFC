@@ -20,7 +20,7 @@ import saveAs from 'file-saver';
 import filter from 'lodash/filter';
 import findIndex from 'lodash/findIndex';
 import { combineLatest, Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-drag-and-drop-files-list',
@@ -159,18 +159,30 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       .subscribe(
         (response: any) => {
           const hasProp = (obj, prop) => Object.prototype.hasOwnProperty.bind(obj)(prop);
-
           if (hasProp(response, 'message')) {
             this.bulkUploadService.serverError$.next(response.message);
           } else {
-            this.router.navigate(['/dashboard']);
-            this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
+            this.updateEstablishmentService();
           }
         },
         (response) => {
           this.onValidateError(response);
         },
       );
+  }
+
+  private updateEstablishmentService(): void {
+    this.establishmentService
+      .getEstablishment(this.establishmentService.primaryWorkplace.uid)
+      .pipe(
+        tap((workplace) => {
+          return this.establishmentService.setPrimaryWorkplace(workplace);
+        }),
+      )
+      .subscribe(() => {
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
+      });
   }
 
   public getValidationError(file: ValidatedFile): ErrorDefinition {
@@ -196,11 +208,11 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
     let type: BulkUploadFileType = null;
 
-    if (file.fileType.includes('Worker')) {
+    if (file.fileType && file.fileType.includes('Worker')) {
       type = this.sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker;
-    } else if (file.fileType.includes('Establishment')) {
+    } else if (file.fileType && file.fileType.includes('Establishment')) {
       type = BulkUploadFileType.Establishment;
-    } else if (file.fileType.includes('Training')) {
+    } else if (file.fileType && file.fileType.includes('Training')) {
       type = BulkUploadFileType.Training;
     }
 
@@ -305,7 +317,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     });
 
     invalidFiles.map((item: ValidatedFile) => {
-      this.fileErrors[item.key] = "This file was not recognised.  Use the guidance to check it's set up correctly.";
+      this.fileErrors[item.key] = `This file was not recognised. Use the guidance to check it's set up correctly.`;
     });
 
     return invalidFiles.length > 0;
