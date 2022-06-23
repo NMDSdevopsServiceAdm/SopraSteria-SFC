@@ -17,10 +17,12 @@ export class UserService {
   private _userDetails$: BehaviorSubject<UserDetails> = new BehaviorSubject<UserDetails>(null);
   private _returnUrl$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
   private _loggedInUser$: BehaviorSubject<UserDetails> = new BehaviorSubject<UserDetails>(null);
+  private _users$: BehaviorSubject<Array<UserDetails>> = new BehaviorSubject<Array<UserDetails>>(null);
   public userDetails$: Observable<UserDetails> = this._userDetails$.asObservable();
   public returnUrl$: Observable<URLStructure> = this._returnUrl$.asObservable();
   public migratedUserTermsAccepted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public agreedUpdatedTerms$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public users$: Observable<Array<UserDetails>> = this._users$.asObservable();
   private _agreedUpdatedTermsStatus: boolean = null;
 
   constructor(private http: HttpClient) {}
@@ -39,6 +41,10 @@ export class UserService {
 
   public updateState(userDetails: UserDetails) {
     this._userDetails$.next(userDetails);
+  }
+
+  public updateUsers(users: UserDetails[]) {
+    this._users$.next(users);
   }
 
   public getLoggedInUser(): Observable<UserDetails> {

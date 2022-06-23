@@ -6,7 +6,7 @@
       >
       <h1 class="govuk-fieldset__heading">Users ({{ users.length }})</h1>
     </legend>
-    <div *ngIf="showSecondUserBanner">
+    <div *ngIf="showSecondUserBanner" class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
       <app-inset-text [color]="'todo'">
         <h3 class="govuk-heading-s">You should add a second user</h3>
         <p>
