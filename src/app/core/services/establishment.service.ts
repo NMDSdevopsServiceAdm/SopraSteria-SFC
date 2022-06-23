@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
@@ -170,11 +170,24 @@ export class EstablishmentService {
   }
 
   public get inStaffRecruitmentFlow$() {
+    if (this._inStaffRecruitmentFlow$) {
+      return this._inStaffRecruitmentFlow$.asObservable();
+    }
+
+    const inStaffRecruitmentFlow = localStorage.getItem('inStaffRecruitmentFlow');
+
+    if (inStaffRecruitmentFlow) {
+      this._inStaffRecruitmentFlow$ = JSON.parse(inStaffRecruitmentFlow);
+    } else if (isDevMode() && !this._inStaffRecruitmentFlow$) {
+      throw new TypeError('No value for inRecruitmentFlow in local storage!');
+    }
+
     return this._inStaffRecruitmentFlow$.asObservable();
   }
 
   public setInStaffRecruitmentFlow(data: boolean) {
     this._inStaffRecruitmentFlow$.next(data);
+    localStorage.setItem('inStaffRecruitmentFlow', data.toString());
   }
 
   getEstablishment(id: string, wdf: boolean = false) {

@@ -5,7 +5,7 @@ import { staffRecruitmentOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { tap } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -33,6 +33,8 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     },
   ];
 
+  public inStaffRecruitmentFlow: boolean;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -46,11 +48,20 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   protected init(): void {
     this.setupForm();
     this.setPreviousRoute();
+    this.getInStaffRecruitmentFlow();
     this.prefill();
   }
 
   private setPreviousRoute(): void {
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-capture-training-requirement'];
+  }
+
+  private getInStaffRecruitmentFlow() {
+    this.subscriptions.add(
+      this.establishmentService.inStaffRecruitmentFlow$.pipe(take(1)).subscribe((inFlow) => {
+        this.inStaffRecruitmentFlow = inFlow;
+      }),
+    );
   }
 
   private setupForm(): void {
@@ -105,7 +116,9 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     this.updateEstablishmentService();
 
     //logic required here: e.g inMiniFlow ? miniFlowSummary : workflowCheckAnswersSummary
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
+    this.nextRoute = this.inStaffRecruitmentFlow
+      ? ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment']
+      : ['/workplace', `${this.establishment.uid}`, 'check-answers'];
   }
 
   ngOnDestroy(): void {

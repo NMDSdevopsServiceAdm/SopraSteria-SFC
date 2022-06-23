@@ -6,7 +6,7 @@ import { jobOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { tap } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -26,6 +26,8 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     },
   ];
 
+  private inStaffRecruitmentFlow: boolean;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -39,12 +41,23 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   protected init(): void {
     this.setupForm();
     this.setupFormValueSubscriptions();
+    this.getInStaffRecruitmentFlow();
     this.setPreviousRoute();
     this.prefill();
   }
 
+  private getInStaffRecruitmentFlow() {
+    this.subscriptions.add(
+      this.establishmentService.inStaffRecruitmentFlow$.pipe(take(1)).subscribe((inFlow) => {
+        this.inStaffRecruitmentFlow = inFlow;
+      }),
+    );
+  }
+
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'leavers'];
+    this.previousRoute = this.inStaffRecruitmentFlow
+      ? ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-start']
+      : ['/workplace', `${this.establishment.uid}`, 'leavers'];
   }
 
   private prefill(): void {
