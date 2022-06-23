@@ -115,7 +115,6 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   protected onSuccess(): void {
     this.updateEstablishmentService();
 
-    //logic required here: e.g inMiniFlow ? miniFlowSummary : workflowCheckAnswersSummary
     this.nextRoute = this.inStaffRecruitmentFlow
       ? ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment']
       : ['/workplace', `${this.establishment.uid}`, 'check-answers'];

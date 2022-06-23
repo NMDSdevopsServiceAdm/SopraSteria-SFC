@@ -31,6 +31,7 @@
   <app-workplace-submit-button
     [return]="!!return"
     [isExistingStaffRecord]="false"
+    [recordSummary]="!this.inStaffRecruitmentFlow"
     (clicked)="setSubmitAction($event)"
   ></app-workplace-submit-button>
 </form>

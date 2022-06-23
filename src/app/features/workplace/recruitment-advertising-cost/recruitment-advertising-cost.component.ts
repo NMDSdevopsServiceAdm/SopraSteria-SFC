@@ -26,7 +26,7 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     },
   ];
 
-  private inStaffRecruitmentFlow: boolean;
+  public inStaffRecruitmentFlow: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -44,6 +44,8 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     this.getInStaffRecruitmentFlow();
     this.setPreviousRoute();
     this.prefill();
+
+    console.log(this.inStaffRecruitmentFlow);
   }
 
   private getInStaffRecruitmentFlow() {
@@ -134,23 +136,23 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   }
 
   // additional logic required in this, cannot be completed until routing to this page is complete
-  protected navigate(): void {
-    const action = this.submitAction.action;
+  // protected navigate(): void {
+  //   const action = this.submitAction.action;
 
-    if (!action) return;
+  //   if (!action) return;
 
-    switch (action) {
-      case 'continue':
-        this.router.navigate(this.nextRoute);
-        break;
-      case 'summary':
-        this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
-        break;
-      case 'return':
-        this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
-        break;
-    }
-  }
+  //   switch (action) {
+  //     case 'continue':
+  //       this.router.navigate(this.nextRoute);
+  //       break;
+  //     case 'summary':
+  //       this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
+  //       break;
+  //     case 'return':
+  //       this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
+  //       break;
+  //   }
+  // }
 
   protected generateUpdateProps(): any {
     const { amountSpent, amountSpentKnown } = this.form.value;
