@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, UpdateJobsRequest } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -12,19 +12,60 @@ import { subsid1, subsid2, subsid3 } from './MockUserService';
 @Injectable()
 export class MockEstablishmentService extends EstablishmentService {
   public shareWith: any = { cqc: null, localAuthorities: null };
+  private returnToUrl = true;
+  public establishmentObj = {
+    address: 'mock establishment address',
+    capacities: [],
+    created: undefined,
+    dataOwner: undefined,
+    dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
+    dataPermissions: undefined,
+    employerType: { other: 'mock employerType other', value: 'mock employerType value' },
+    id: 0,
+    isRegulated: false,
+    leavers: undefined,
+    localAuthorities: [],
+    mainService: { name: 'Care', id: 123, isCQC: false },
+    name: 'mock establishment name',
+    nmdsId: 'mock nmdsId',
+    numberOfStaff: 0,
+    otherServices: { value: null, services: [] },
+    postcode: 'mock establishment postcode',
+    primaryAuthority: undefined,
+    serviceUsers: [],
+    shareWith: this.shareWith,
+    starters: undefined,
+    totalLeavers: 0,
+    totalStarters: 0,
+    totalVacancies: 0,
+    totalWorkers: 0,
+    uid: 'mocked-uid',
+    updated: undefined,
+    updatedBy: 'mock establishment updatedBy',
+    vacancies: undefined,
+    showSharingPermissionsBanner: false,
+  };
 
-  public static factory(shareWith: any) {
+  public static factory(shareWith: any, returnToUrl = true, estObj: any = {}) {
     return (http: HttpClient) => {
       const service = new MockEstablishmentService(http);
       if (shareWith) {
         service.setShareWith(shareWith);
       }
+      service.returnToUrl = returnToUrl;
+
+      if (estObj) {
+        Object.keys(estObj).forEach((key) => {
+          service.establishmentObj[key] = estObj[key];
+        });
+      }
+
       return service;
     };
   }
 
   public setShareWith(shareWith: any) {
-    this.shareWith = shareWith;
+    this.establishmentObj.shareWith = shareWith;
   }
 
   public get establishment$(): Observable<Establishment> {
@@ -40,45 +81,18 @@ export class MockEstablishmentService extends EstablishmentService {
   }
 
   public get establishment(): Establishment {
-    return {
-      address: 'mock establishment address',
-      capacities: [],
-      created: undefined,
-      dataOwner: undefined,
-      dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
-      dataPermissions: undefined,
-      employerType: { other: 'mock employerType other', value: 'mock employerType value' },
-      id: 0,
-      isRegulated: false,
-      leavers: undefined,
-      localAuthorities: [],
-      mainService: { name: 'Care', id: 123, isCQC: false },
-      name: 'mock establishment name',
-      nmdsId: 'mock nmdsId',
-      numberOfStaff: 0,
-      otherServices: { value: null, services: [] },
-      postcode: 'mock establishment postcode',
-      primaryAuthority: undefined,
-      serviceUsers: [],
-      shareWith: this.shareWith,
-      starters: undefined,
-      totalLeavers: 0,
-      totalStarters: 0,
-      totalVacancies: 0,
-      totalWorkers: 0,
-      uid: 'mocked-uid',
-      updated: undefined,
-      updatedBy: 'mock establishment updatedBy',
-      vacancies: undefined,
-      showSharingPermissionsBanner: false,
-    };
+    return this.establishmentObj;
   }
 
   public get returnTo(): URLStructure {
-    return {
-      url: ['/dashboard'],
-      fragment: 'workplace',
-    };
+    if (this.returnToUrl) {
+      return {
+        url: ['/dashboard'],
+        fragment: 'workplace',
+      };
+    } else {
+      return;
+    }
   }
 
   public get establishmentId(): string {
@@ -134,52 +148,65 @@ export class MockEstablishmentService extends EstablishmentService {
       activeWorkplaceCount: 2,
     } as GetChildWorkplacesResponse);
   }
-}
 
-@Injectable()
-export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmentService {
-  public get establishment(): Establishment {
-    return {
-      address: 'mock establishment address',
-      capacities: [],
+  public updateJobs(establishmemntId, data: UpdateJobsRequest): Observable<Establishment> {
+    return of({
       created: undefined,
-      dataOwner: undefined,
-      dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
-      dataPermissions: undefined,
-      employerType: undefined,
+      dataOwnershipRequested: '',
       id: 0,
-      isRegulated: false,
-      leavers: undefined,
-      localAuthorities: [],
-      mainService: { name: 'Care', id: 123, isCQC: false },
-      name: 'mock establishment name',
-      nmdsId: 'mock nmdsId',
-      numberOfStaff: 0,
-      otherServices: { value: null, services: [] },
-      postcode: 'mock establishment postcode',
-      primaryAuthority: undefined,
-      serviceUsers: [],
-      shareWith: this.shareWith,
-      starters: undefined,
-      totalLeavers: 0,
-      totalStarters: 0,
+      linkToParentRequested: null,
+      name: 'Test Workplace',
+      showSharingPermissionsBanner: false,
       totalVacancies: 0,
-      totalWorkers: 0,
       uid: 'mocked-uid',
       updated: undefined,
-      updatedBy: 'mock establishment updatedBy',
-      vacancies: undefined,
-      showSharingPermissionsBanner: false,
-    };
-  }
-
-  public get returnTo(): URLStructure {
-    return;
+      updatedBy: '',
+      vacancies: 'None',
+    } as Establishment);
   }
 }
 
 @Injectable()
 export class MockEstablishmentServiceWithoutReturn extends MockEstablishmentService {
+  public get returnTo(): URLStructure {
+    return;
+  }
+}
+@Injectable()
+export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmentService {
+  public establishmentObj = {
+    address: 'mock establishment address',
+    capacities: [],
+    created: undefined,
+    dataOwner: undefined,
+    dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
+    dataPermissions: undefined,
+    employerType: undefined,
+    id: 0,
+    isRegulated: false,
+    leavers: undefined,
+    localAuthorities: [],
+    mainService: { name: 'Care', id: 123, isCQC: false },
+    name: 'mock establishment name',
+    nmdsId: 'mock nmdsId',
+    numberOfStaff: 0,
+    otherServices: { value: null, services: [] },
+    postcode: 'mock establishment postcode',
+    primaryAuthority: undefined,
+    serviceUsers: [],
+    shareWith: this.shareWith,
+    starters: undefined,
+    totalLeavers: 0,
+    totalStarters: 0,
+    totalVacancies: 0,
+    totalWorkers: 0,
+    uid: 'mocked-uid',
+    updated: undefined,
+    updatedBy: 'mock establishment updatedBy',
+    vacancies: undefined,
+    showSharingPermissionsBanner: false,
+  };
+
   public get returnTo(): URLStructure {
     return;
   }

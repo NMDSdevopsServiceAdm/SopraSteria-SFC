@@ -4,7 +4,6 @@ import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -19,21 +18,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public user: UserDetails;
   public showDropdown = false;
   public workplaceId: string;
-  public wdfNewDesignFlag: boolean;
 
   constructor(
     private authService: AuthService,
     private idleService: IdleService,
     private userService: UserService,
     private establishmentService: EstablishmentService,
-    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.getUser();
     this.onAdminScreen();
-
-    this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
   }
 
   ngOnDestroy(): void {

@@ -155,6 +155,10 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
     const selectedWorkPlaceServiceId: number = parseInt(this.form.get('workplaceService').value, 10);
     const workplaceService: Service = filter(this.allServices, { id: selectedWorkPlaceServiceId })[0];
 
+    if (workplaceService.isCQC === null) {
+      workplaceService.isCQC = this.workplaceService.isCqcRegulated$.value;
+    }
+
     if (workplaceService.other) {
       workplaceService.otherName = this.form.get(`otherWorkplaceService${selectedWorkPlaceServiceId}`).value;
     }
