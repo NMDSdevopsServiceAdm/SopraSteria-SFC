@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserDetails, UserStatus } from '@core/model/userDetails.model';
+import { UserDetails } from '@core/model/userDetails.model';
 
 @Component({
   selector: 'app-admin-users',
@@ -16,10 +16,6 @@ export class AdminUsersComponent implements OnInit {
   ngOnInit(): void {
     this.users = this.route.snapshot.data.adminUsers.adminUsers;
     this.flow = this.router.url;
-  }
-
-  public isPending(user: UserDetails): boolean {
-    return user.status === UserStatus.Pending;
   }
 
   public navigateToAddAdminUserPage(): void {

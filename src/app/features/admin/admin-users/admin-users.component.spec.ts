@@ -59,6 +59,12 @@ describe('AdminMenuComponent', () => {
     expect(button).toBeTruthy();
   });
 
+  it('should render a user table', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('table')).toBeTruthy();
+  });
+
   it('should navigate to next page when add an admin button is clicked', async () => {
     const { component, fixture, getByText, routerSpy } = await setup();
 
@@ -69,30 +75,6 @@ describe('AdminMenuComponent', () => {
     fireEvent.click(button);
 
     expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin/users', 'add-admin']);
-  });
-
-  it('should render a table with a row for each admin user, and with the headings', async () => {
-    const { getByText, getByTestId } = await setup();
-
-    expect(getByText('Full name')).toBeTruthy();
-    expect(getByText('Username')).toBeTruthy();
-    expect(getByText('Last updated')).toBeTruthy();
-    expect(getByText('Permissions')).toBeTruthy();
-    expect(getByText('Status')).toBeTruthy();
-
-    expect(getByTestId('row-0')).toBeTruthy();
-    expect(getByTestId('row-1')).toBeTruthy();
-    expect(getByTestId('row-2')).toBeTruthy();
-  });
-
-  it('should render a pending user row with additional highlight class', async () => {
-    const { component, getByTestId } = await setup();
-
-    const adminUsers = component.users;
-    const index = adminUsers.findIndex((user) => user.status === 'Pending');
-
-    const row = getByTestId(`row-${index}`);
-    expect(row.getAttribute('class')).toContain('govuk-error-table__row--highlight');
   });
 
   it('should render the correct information in the table for each admin user', async () => {

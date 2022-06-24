@@ -1,0 +1,51 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <table class="govuk-table" data-testid="table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Full name</th>
+          <th class="govuk-table__header" scope="col">Username</th>
+          <th class="govuk-table__header" scope="col">Last updated</th>
+          <th class="govuk-table__header" scope="col">Permissions</th>
+          <th class="govuk-table__header" scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <ng-container *ngFor="let user of users; index as i">
+          <tr
+            class="govuk-table__row"
+            [attr.data-testid]="'row-' + i"
+            [class.govuk-error-table__row--highlight]="isPending(user)"
+          >
+            <td class="govuk-table__cell" [ngClass]="{ 'govuk-!-padding-left-3': isPending(user) }">
+              <ng-container *ngIf="canViewUser; else noLink">
+                <a
+                  [routerLink]="
+                    workplace ? ['/workplace', workplace.uid, 'user', user.uid] : ['/sfcadmin', 'users', user.uid]
+                  "
+                  data-testid="username-link"
+                  >{{ user.fullname }}</a
+                >
+              </ng-container>
+              <ng-template #noLink>
+                <span [attr.data-testid]="'no-link-full-name-' + i">{{ user.fullname }}</span>
+              </ng-template>
+            </td>
+            <td class="govuk-table__cell">
+              {{ isPending(user) ? '-' : user.username }}
+            </td>
+            <td class="govuk-table__cell">
+              {{ user.updated | date: 'd MMM y' }}
+            </td>
+            <td class="govuk-table__cell">
+              {{ user.role }}
+            </td>
+            <td class="govuk-table__cell">
+              {{ user.status }}
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>
