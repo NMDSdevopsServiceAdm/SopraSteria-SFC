@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
-import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
+import { UserDetails, UserPermissionsType } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -50,21 +50,6 @@ export class UsersComponent implements OnInit {
 
   public setShowSecondUserBanner(): void {
     this.showSecondUserBanner = this.canAddUser && this.route.snapshot.data.users?.length === 1;
-  }
-
-  public getUserType(user: UserDetails): string {
-    const userType = this.userPermissionsTypes.find(
-      (type) =>
-        type.role === user.role &&
-        type.canManageWdfClaims === user.canManageWdfClaims &&
-        !!user.isPrimary === !!type.isPrimary,
-    );
-
-    return userType?.userTableValue;
-  }
-
-  public isPending(user: UserDetails): boolean {
-    return user.status === UserStatus.Pending;
   }
 
   private userSlotsAvailable(users: UserDetails[]): boolean {

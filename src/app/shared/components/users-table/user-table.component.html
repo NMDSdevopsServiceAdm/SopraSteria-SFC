@@ -38,7 +38,7 @@
               {{ user.updated | date: 'd MMM y' }}
             </td>
             <td class="govuk-table__cell">
-              {{ user.role }}
+              {{ getUserType(user) }}
             </td>
             <td class="govuk-table__cell">
               {{ user.status }}

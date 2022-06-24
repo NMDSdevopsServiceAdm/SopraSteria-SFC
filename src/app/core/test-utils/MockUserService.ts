@@ -177,6 +177,7 @@ export class MockUserService extends UserService {
   }
 }
 
+@Injectable()
 export class MockUserServiceWithNoUserDetails extends MockUserService {
   public userDetails$ = of({
     uid: '',
