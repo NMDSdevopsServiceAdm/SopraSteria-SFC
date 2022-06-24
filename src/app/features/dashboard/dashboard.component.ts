@@ -57,6 +57,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
+    this.establishmentService.setInStaffRecruitmentFlow(false);
 
     if (this.workplace) {
       this.getPermissions();

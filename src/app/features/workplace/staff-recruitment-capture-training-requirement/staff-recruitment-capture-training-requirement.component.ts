@@ -5,7 +5,7 @@ import { staffRecruitmentOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { take, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -48,16 +48,8 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   protected init(): void {
     this.setupForm();
     this.setPreviousRoute();
-    this.getInStaffRecruitmentFlow();
+    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
-  }
-
-  private getInStaffRecruitmentFlow() {
-    this.subscriptions.add(
-      this.establishmentService.inStaffRecruitmentFlow$.pipe(take(1)).subscribe((inFlow) => {
-        this.inStaffRecruitmentFlow = inFlow;
-      }),
-    );
   }
 
   private setPreviousRoute(): void {

@@ -74,10 +74,11 @@ export class EstablishmentService {
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private _checkCQCDetailsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _inStaffRecruitmentFlow$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private inStaffRecruitmentFlow$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
+  private _inStaffRecruitmentFlow: boolean;
 
   constructor(private http: HttpClient) {}
 
@@ -125,6 +126,7 @@ export class EstablishmentService {
   public resetState() {
     this._establishmentId = null;
     this._establishment$.next(null);
+    this._inStaffRecruitmentFlow = false;
     this.setPrimaryWorkplace(null);
     this.setCheckCQCDetailsBanner(false);
   }
@@ -169,24 +171,24 @@ export class EstablishmentService {
     this._checkCQCDetailsBanner$.next(data);
   }
 
-  public get inStaffRecruitmentFlow$() {
-    if (this._inStaffRecruitmentFlow$) {
-      return this._inStaffRecruitmentFlow$.asObservable();
+  public get inStaffRecruitmentFlow() {
+    if (this._inStaffRecruitmentFlow) {
+      return this._inStaffRecruitmentFlow;
     }
 
     const inStaffRecruitmentFlow = localStorage.getItem('inStaffRecruitmentFlow');
 
     if (inStaffRecruitmentFlow) {
-      this._inStaffRecruitmentFlow$ = JSON.parse(inStaffRecruitmentFlow);
-    } else if (isDevMode() && !this._inStaffRecruitmentFlow$) {
+      this._inStaffRecruitmentFlow = JSON.parse(inStaffRecruitmentFlow);
+    } else if (isDevMode() && !this._inStaffRecruitmentFlow) {
       throw new TypeError('No value for inRecruitmentFlow in local storage!');
     }
 
-    return this._inStaffRecruitmentFlow$.asObservable();
+    return this._inStaffRecruitmentFlow;
   }
 
   public setInStaffRecruitmentFlow(data: boolean) {
-    this._inStaffRecruitmentFlow$.next(data);
+    this._inStaffRecruitmentFlow = data;
     localStorage.setItem('inStaffRecruitmentFlow', data.toString());
   }
 
