@@ -16,6 +16,7 @@ import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-req
 import { GetRegistrationNotesResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
 import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
+import { AddEditAdminUsersComponent } from './admin-users/add-edit-admin-users/add-edit-admin-users.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
@@ -283,6 +284,11 @@ const routes: Routes = [
         component: AdminUsersComponent,
         data: { title: 'Admin Users' },
         resolve: { adminUsers: GetAdminUsersResolver },
+      },
+      {
+        path: 'add-admin',
+        component: AddEditAdminUsersComponent,
+        data: { title: 'Add Admin Users' },
       },
     ],
   },
