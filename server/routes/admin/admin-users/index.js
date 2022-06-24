@@ -27,10 +27,38 @@ const createAdminUser = async (req, res) => {
 const fetchAdminUsers = async (req, res) => {
   try {
     const adminUsers = await models.user.fetchAdminUsers();
-    res.status(200).json({ adminUsers });
+    const formattedAdminUsers = transformAdminUsers(adminUsers);
+    res.status(200).json({ adminUsers: formattedAdminUsers });
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: 'Could not fetch admin users' });
+  }
+};
+
+const transformAdminUsers = (adminUsers) => {
+  return adminUsers.map((adminUser) => {
+    return {
+      uid: adminUser.uid,
+      fullname: adminUser.FullNameValue,
+      role: adminUser.UserRoleValue,
+      email: adminUser.EmailValue,
+      phone: adminUser.PhoneValue,
+      jobTitle: adminUser.JobTitleValue,
+      username: adminUser.login.username,
+      updated: adminUser.updated,
+      isPrimary: adminUser.IsPrimary,
+      status: statusTranslator(adminUser.login),
+    };
+  });
+};
+
+const statusTranslator = (loginDetails) => {
+  if (loginDetails && loginDetails.status) {
+    return loginDetails.status;
+  } else if (loginDetails && loginDetails.username) {
+    return 'Active';
+  } else {
+    return 'Pending';
   }
 };
 

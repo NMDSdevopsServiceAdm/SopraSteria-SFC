@@ -1,18 +1,28 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UserDetails, UserStatus } from '@core/model/userDetails.model';
 
 @Component({
   selector: 'app-admin-users',
   templateUrl: './admin-users.component.html',
 })
 export class AdminUsersComponent implements OnInit {
-  public users = [];
+  public users: UserDetails[] = [];
+  public canViewUser = true;
+  public flow: string;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
-    console.log('Here');
-    console.log(this.route.snapshot);
-    // const users = this.route.snapshot.data.adminUsers;
+    this.users = this.route.snapshot.data.adminUsers.adminUsers;
+    this.flow = this.router.url;
+  }
+
+  public isPending(user: UserDetails): boolean {
+    return user.status === UserStatus.Pending;
+  }
+
+  public navigateToAddAdminUserPage(): void {
+    this.router.navigate([this.flow, 'add-admin']);
   }
 }

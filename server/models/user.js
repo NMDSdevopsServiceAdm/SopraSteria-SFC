@@ -459,7 +459,7 @@ module.exports = function (sequelize, DataTypes) {
     return this.findAll({
       attributes: [
         'RegistrationID',
-        'UserUID',
+        'uid',
         'Archived',
         'IsPrimary',
         'FullNameValue',
@@ -467,11 +467,18 @@ module.exports = function (sequelize, DataTypes) {
         'EmailValue',
         'PhoneValue',
         'UserRoleValue',
+        'updated',
       ],
       where: {
         UserRoleValue: { [Op.or]: ['Admin', 'AdminManager'] },
         Archived: false,
       },
+      include: [
+        {
+          model: sequelize.models.login,
+          attributes: ['username', 'status'],
+        },
+      ],
     });
   };
 

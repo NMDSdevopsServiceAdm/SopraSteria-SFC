@@ -6,7 +6,7 @@ import { AdminModule } from '@features/admin/admin.module';
 
 import { GetAdminUsersResolver } from './get-admin-users.resolver';
 
-fdescribe('GetAdminUsersResolver', () => {
+describe('GetAdminUsersResolver', () => {
   let resolver: GetAdminUsersResolver;
 
   beforeEach(() => {
