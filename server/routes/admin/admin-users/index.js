@@ -65,3 +65,6 @@ const statusTranslator = (loginDetails) => {
 module.exports = router;
 module.exports.createAdminUser = createAdminUser;
 module.exports.fetchAdminUsers = fetchAdminUsers;
+module.exports.transformAdminUsers = transformAdminUsers;
+
+module.exports.statusTranslator = statusTranslator;
