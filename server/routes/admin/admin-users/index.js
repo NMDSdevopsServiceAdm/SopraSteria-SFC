@@ -12,11 +12,15 @@ router.route('/').get(async (req, res) => {
 
 const createAdminUser = async (req, res) => {
   const { adminUser } = req.body;
-  console.log('**********************');
-  console.log(adminUser);
+
   try {
     const uid = uuid.v4();
     const user = await models.user.findByUUID(req.userUid);
+
+    if (!user) {
+      return res.status(401).json({ message: 'The user creating the new admin cannot be found' });
+    }
+
     await models.user.createAdminUser({ ...adminUser, uid, updatedBy: user.FullNameValue });
     res.status(200).json({ message: 'Admin user successfully created' });
   } catch (error) {
