@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
-import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminService';
+import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminUsersService';
 import { EditUser, ReadUser } from '@core/test-utils/MockUserService';
 import { getUserPermissionsTypes } from '@core/utils/users-util';
 import { SharedModule } from '@shared/shared.module';

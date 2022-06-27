@@ -57,8 +57,14 @@ export class AddEditAdminUsersComponent extends AccountDetailsDirective {
   }
 
   protected save(): void {
-    this.adminUsersService.createAdminUser(this.form.value).subscribe(
-      () => this.router.navigate([this.return]),
+    const newAdminUser = {
+      ...this.form.value,
+      role: this.form.get('permissionsType').value,
+    };
+    delete newAdminUser.permissionsType;
+
+    this.adminUsersService.createAdminUser(newAdminUser).subscribe(
+      () => this.router.navigate(this.return.url),
       (error: HttpErrorResponse) => this.onError(error),
     );
   }

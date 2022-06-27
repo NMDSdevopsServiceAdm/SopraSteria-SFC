@@ -12,7 +12,7 @@ const {
   createAdminUser,
 } = require('../../../../../routes/admin/admin-users');
 
-describe.only('routes/admin/admin-user', () => {
+describe('routes/admin/admin-user', () => {
   let req, res;
 
   const mockAdminUserDetails = {
@@ -144,13 +144,13 @@ describe.only('routes/admin/admin-user', () => {
     });
   });
 
-  describe.only('createAdminUser', () => {
+  describe('createAdminUser', () => {
     const newAdmin = {
       fullname: 'admin user',
       jobTitle: 'administrator',
       email: 'admin@email.com',
       phone: '01234567890',
-      permissionsType: 'Admin',
+      role: 'Admin',
     };
 
     beforeEach(() => {
