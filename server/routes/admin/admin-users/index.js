@@ -12,7 +12,8 @@ router.route('/').get(async (req, res) => {
 
 const createAdminUser = async (req, res) => {
   const { adminUser } = req.body;
-
+  console.log('**********************');
+  console.log(adminUser);
   try {
     const uid = uuid.v4();
     const user = await models.user.findByUUID(req.userUid);
@@ -44,7 +45,7 @@ const transformAdminUsers = (adminUsers) => {
       email: adminUser.EmailValue,
       phone: adminUser.PhoneValue,
       jobTitle: adminUser.JobTitleValue,
-      username: adminUser.login.username,
+      username: adminUser.login && adminUser.login.username,
       updated: adminUser.updated,
       isPrimary: adminUser.IsPrimary,
       status: statusTranslator(adminUser.login),

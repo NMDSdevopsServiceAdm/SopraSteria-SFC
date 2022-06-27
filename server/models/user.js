@@ -440,13 +440,13 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   User.createAdminUser = async function (adminUser) {
-    const { fullName, jobTitle, email, phoneNumber, userRole, uid, updatedBy } = adminUser;
+    const { fullname, jobTitle, email, phone, permissionsType, uid, updatedBy } = adminUser;
     return this.create({
-      FullNameValue: fullName,
+      FullNameValue: fullname,
       JobTitleValue: jobTitle,
       EmailValue: email,
-      PhoneValue: phoneNumber,
-      UserRoleValue: userRole,
+      PhoneValue: phone,
+      UserRoleValue: permissionsType,
       isPrimary: false,
       CanManageWdfClaimsValue: false,
       archived: false,
