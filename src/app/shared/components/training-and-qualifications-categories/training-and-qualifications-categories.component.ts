@@ -25,7 +25,6 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   public filterValue: string;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
-  public trainingAndQualsRoute: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(

@@ -7,7 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, screen } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -17,7 +17,7 @@ describe('OtherQualificationsComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   async function setup() {
-    const { fixture } = await render(OtherQualificationsComponent, {
+    const { fixture, getByText } = await render(OtherQualificationsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
         BackService,
@@ -52,6 +52,7 @@ describe('OtherQualificationsComponent', () => {
       component,
       fixture,
       routerSpy,
+      getByText,
     };
   }
 
@@ -60,67 +61,64 @@ describe('OtherQualificationsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the page with a save and continue button when the return value is null', async () => {
-    const { component, fixture } = await setup();
+  it('should render the page with a save and continue button and view this staff record link', async () => {
+    const { component, fixture, getByText } = await setup();
 
     component.return = null;
     fixture.detectChanges();
 
-    const button = screen.getByText('Save and continue');
-    const viewRecordLink = screen.getByText('View this staff record');
+    const button = getByText('Save and continue');
+    const viewRecordLink = getByText('View this staff record');
 
     expect(button).toBeTruthy();
     expect(viewRecordLink).toBeTruthy();
   });
 
   it('should render the page with a save and return button and a cancel link', async () => {
-    const { component, fixture } = await setup();
+    const { getByText } = await setup();
 
-    component.return = { url: ['/dashboard'], fragment: 'workplace' };
-    fixture.detectChanges();
-
-    const button = screen.getByText('Save and return');
-    const exitLink = screen.getByText('Cancel');
+    const button = getByText('Save and return');
+    const exitLink = getByText('Cancel');
 
     expect(button).toBeTruthy();
     expect(exitLink).toBeTruthy();
   });
 
   it('should run getRoutePath with a blank string', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, getByText } = await setup();
     const getRoutePathSpy = spyOn(component, 'getRoutePath');
 
     component.worker.otherQualification = 'No';
     fixture.detectChanges();
 
-    const button = screen.getByText('Save and return');
+    const button = getByText('Save and return');
     fireEvent.click(button);
 
     expect(getRoutePathSpy).toHaveBeenCalledWith('');
   });
 
   it('should run getRoutePath with a other-qualifications-level string when otherQualification is yes', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, getByText } = await setup();
     const getRoutePathSpy = spyOn(component, 'getRoutePath');
 
     component.worker.otherQualification = 'Yes';
     fixture.detectChanges();
 
-    const button = screen.getByText('Save and return');
+    const button = getByText('Save and return');
     fireEvent.click(button);
 
     expect(getRoutePathSpy).toHaveBeenCalledWith('other-qualifications-level');
   });
 
   it('should navigate back to staff-record when View this staff record link is clicked', async () => {
-    const { component, fixture, routerSpy } = await setup();
+    const { component, fixture, routerSpy, getByText } = await setup();
 
     component.return = null;
     fixture.detectChanges();
 
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
-    const viewRecordLink = screen.getByText('View this staff record');
+    const viewRecordLink = getByText('View this staff record');
     fireEvent.click(viewRecordLink);
 
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceUid, 'staff-record', workerUid]);
