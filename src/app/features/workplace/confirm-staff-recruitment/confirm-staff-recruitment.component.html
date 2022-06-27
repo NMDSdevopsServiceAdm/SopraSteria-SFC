@@ -37,7 +37,7 @@
         <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="advertisingSpend">
           <app-summary-record-change
             [explanationText]="' advertising spend'"
-            [link]="['/workplace', this.establishment.uid, 'recruitment-advertising-cost']"
+            [link]="['/', this.flow, this.establishment.uid, 'recruitment-advertising-cost']"
             [hasData]="moneySpentOnAdvertisingInTheLastFourWeek"
             (setReturnClicked)="this.setReturn()"
           ></app-summary-record-change>
@@ -75,7 +75,7 @@
           </ng-template>
         </dd>
 
-        <dd class="govuk-summary-list__actions" data-testid="repeatTraining">
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="repeatTraining">
           <app-summary-record-change
             [explanationText]="' repeat training'"
             [link]="['/', this.flow, this.establishment.uid, 'staff-recruitment-capture-training-requirement']"
@@ -88,7 +88,12 @@
         <dt class="govuk-summary-list__key">Accept Care Certificate</dt>
 
         <dd class="govuk-summary-list__value asc__preline">
-          {{ wouldYouAcceptPreviousCertificates }}
+          <ng-container *ngIf="!wouldYouAcceptPreviousCertificates; else wouldYouAcceptPreviousCertificatesType">
+            -
+          </ng-container>
+          <ng-template #wouldYouAcceptPreviousCertificatesType>
+            {{ wouldYouAcceptPreviousCertificates }}
+          </ng-template>
         </dd>
 
         <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="acceptCareCertificate">

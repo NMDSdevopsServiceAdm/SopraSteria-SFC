@@ -36,14 +36,19 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
-    this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe((establishment) => {
-        this.establishment = establishment;
+    this.getEstablishmentData();
+  }
 
-        this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-      }),
-    );
+  public getEstablishmentData(): void {
+    this.establishmentService.getEstablishment(this.establishmentService.establishmentId).subscribe((establishment) => {
+      this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+      this.setEstablishmentData(establishment);
+      this.setBackLink();
+    });
+  }
 
+  public setEstablishmentData(establishment) {
+    this.establishment = establishment;
     this.moneySpentOnAdvertisingInTheLastFourWeek = this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks;
     this.peopleInterviewedInTheLastFourWeek = this.establishment.peopleInterviewedInTheLastFourWeeks;
     this.doNewStartersRepeatTraining = this.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
