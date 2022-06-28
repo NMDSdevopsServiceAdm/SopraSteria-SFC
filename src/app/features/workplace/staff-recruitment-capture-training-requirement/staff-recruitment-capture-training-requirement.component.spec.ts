@@ -28,6 +28,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     const component = fixture.componentInstance;
+    component.inStaffRecruitmentFlow = false;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();

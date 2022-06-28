@@ -28,6 +28,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     });
 
     const component = fixture.componentInstance;
+    component.inStaffRecruitmentFlow = false;
+
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
@@ -72,10 +74,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button and 'View this staff record' link`, async () => {
-      const { component, fixture, getByText } = await setup(false);
-
-      component.inStaffRecruitmentFlow = false;
-      fixture.detectChanges();
+      const { getByText } = await setup(false);
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View workplace details')).toBeTruthy();
@@ -95,9 +94,6 @@ describe('AcceptPreviousCareCertificateComponent', () => {
 
     it(`should call the setSubmitAction function with an action of summary and save as false when clicking 'View workplace details' link`, async () => {
       const { component, fixture, getByText } = await setup(false);
-
-      component.inStaffRecruitmentFlow = false;
-      fixture.detectChanges();
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
