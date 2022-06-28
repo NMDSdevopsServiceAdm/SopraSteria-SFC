@@ -84,7 +84,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
     };
   }
 
-  public setupFormErrorsMap(): void {
+  protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'fullname',

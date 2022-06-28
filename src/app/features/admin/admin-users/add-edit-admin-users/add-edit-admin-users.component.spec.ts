@@ -16,30 +16,33 @@ import { AddEditAdminUsersComponent } from './add-edit-admin-users.component';
 
 fdescribe('AdminMenuComponent', () => {
   async function setup() {
-    const { fixture, getByText, getByTestId, getByLabelText } = await render(AddEditAdminUsersComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        //   {
-        //     provide: ActivatedRoute,
-        //     useValue: {
-        //       snapshot: {
-        //         url: ['/sfcadmin', 'users'],
-        //         data: {
-        //           adminUsers: { adminUsers: [AdminUser(), PendingAdminUser(), AdminManagerUser()] as UserDetails[] },
-        //         },
-        //       },
-        //     },
-        //   },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
-        },
-        {
-          provide: AdminUsersService,
-          useClass: MockAdminUsersService,
-        },
-      ],
-    });
+    const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
+      AddEditAdminUsersComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          //   {
+          //     provide: ActivatedRoute,
+          //     useValue: {
+          //       snapshot: {
+          //         url: ['/sfcadmin', 'users'],
+          //         data: {
+          //           adminUsers: { adminUsers: [AdminUser(), PendingAdminUser(), AdminManagerUser()] as UserDetails[] },
+          //         },
+          //       },
+          //     },
+          //   },
+          {
+            provide: BreadcrumbService,
+            useClass: MockBreadcrumbService,
+          },
+          {
+            provide: AdminUsersService,
+            useClass: MockAdminUsersService,
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
 
@@ -52,8 +55,10 @@ fdescribe('AdminMenuComponent', () => {
       component,
       fixture,
       getByText,
+      getAllByText,
       getByTestId,
       getByLabelText,
+      queryByText,
       routerSpy,
       adminUsersService,
     };
@@ -131,5 +136,227 @@ fdescribe('AdminMenuComponent', () => {
     fireEvent.click(button);
 
     expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'users']);
+  });
+
+  xit('should show banner when an admin user is successfully added', async () => {});
+
+  describe('error messages', () => {
+    it('should show all the required error messages if nothing is input into the form', async () => {
+      const { fixture, getByText, getAllByText } = await setup();
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Enter their full name').length).toEqual(2);
+      expect(getAllByText('Enter their job title').length).toEqual(2);
+      expect(getAllByText('Enter an email address').length).toEqual(2);
+      expect(getAllByText('Enter a phone number').length).toEqual(2);
+      expect(getAllByText('Select a permission').length).toEqual(2);
+    });
+
+    it('should just show the required error message for full name when all other fields are filled out and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText, queryByText } = await setup();
+
+      const { form } = component;
+      form.markAsDirty();
+      form.get('jobTitle').setValue('administrator');
+      form.get('email').setValue('admin@email.com');
+      form.get('phone').setValue('01234567890');
+      form.get('permissionsType').setValue('Admin');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Enter their full name').length).toEqual(2);
+      expect(queryByText('Enter their job title')).toBeFalsy();
+      expect(queryByText('Enter an email addres')).toBeFalsy();
+      expect(queryByText('Enter a phone number')).toBeFalsy();
+      expect(queryByText('Select a permission')).toBeFalsy();
+    });
+
+    it('should just show an error message when the full name is greater than 120 characters and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+      const longString =
+        'ThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLong';
+      const { form } = component;
+      form.markAsDirty();
+      form.get('fullname').setValue(longString);
+      form.get('jobTitle').setValue('administrator');
+      form.get('email').setValue('admin@email.com');
+      form.get('phone').setValue('01234567890');
+      form.get('permissionsType').setValue('Admin');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Full name must be 120 characters or fewer').length).toEqual(2);
+    });
+
+    it('should just show the required error message for jobTitle when all other fields are filled out and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText, queryByText } = await setup();
+
+      const { form } = component;
+      form.markAsDirty();
+      form.get('fullname').setValue('Admin User');
+      form.get('email').setValue('admin@email.com');
+      form.get('phone').setValue('01234567890');
+      form.get('permissionsType').setValue('Admin');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Enter their job title').length).toEqual(2);
+      expect(queryByText('Enter their full name')).toBeFalsy();
+      expect(queryByText('Enter an email addres')).toBeFalsy();
+      expect(queryByText('Enter a phone number')).toBeFalsy();
+      expect(queryByText('Select a permission')).toBeFalsy();
+    });
+
+    it('should just show an error message when the job title is greater than 120 characters and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+      const longString =
+        'ThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLong';
+      const { form } = component;
+      form.markAsDirty();
+      form.get('fullname').setValue('Admin User');
+      form.get('jobTitle').setValue(longString);
+      form.get('email').setValue('admin@email.com');
+      form.get('phone').setValue('01234567890');
+      form.get('permissionsType').setValue('Admin');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Job title must be 120 characters or fewer').length).toEqual(2);
+    });
+
+    it('should just show the required error message for email when all other fields are filled out and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText, queryByText } = await setup();
+
+      const { form } = component;
+      form.markAsDirty();
+      form.get('fullname').setValue('Admin User');
+      form.get('jobTitle').setValue('administrator');
+      form.get('phone').setValue('01234567890');
+      form.get('permissionsType').setValue('Admin');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Enter an email address').length).toEqual(2);
+      expect(queryByText('Enter their full name')).toBeFalsy();
+      expect(queryByText('Enter their job title')).toBeFalsy();
+      expect(queryByText('Enter a phone number')).toBeFalsy();
+      expect(queryByText('Select a permission')).toBeFalsy();
+    });
+
+    it('should just show an error message when the email is greater than 120 characters and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+      const longString =
+        'ThisIsTooLong@ThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLong.com';
+      const { form } = component;
+      form.markAsDirty();
+      form.get('fullname').setValue('Admin User');
+      form.get('jobTitle').setValue('administrator');
+      form.get('email').setValue(longString);
+      form.get('phone').setValue('01234567890');
+      form.get('permissionsType').setValue('Admin');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Email address must be 120 characters or fewer').length).toEqual(2);
+    });
+
+    it('should just show an error message when the email is not in a valid format and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+
+      const invalidEmail = 'invalidEmailAddress';
+
+      const { form } = component;
+      form.markAsDirty();
+      form.get('fullname').setValue('Admin User');
+      form.get('jobTitle').setValue('administrator');
+      form.get('email').setValue(invalidEmail);
+      form.get('phone').setValue('01234567890');
+      form.get('permissionsType').setValue('Admin');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Enter the email address in the correct format, like name@example.com').length).toEqual(2);
+    });
+
+    it('should just show the required error message for phone when all other fields are filled out and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText, queryByText } = await setup();
+
+      const { form } = component;
+      form.markAsDirty();
+      form.get('fullname').setValue('Admin User');
+      form.get('jobTitle').setValue('administrator');
+      form.get('email').setValue('admin@email.com');
+      form.get('permissionsType').setValue('Admin');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Enter a phone number').length).toEqual(2);
+      expect(queryByText('Enter their full name')).toBeFalsy();
+      expect(queryByText('Enter their job title')).toBeFalsy();
+      expect(queryByText('Enter an email addres')).toBeFalsy();
+      expect(queryByText('Select a permission')).toBeFalsy();
+    });
+
+    it('should just show an error message when the phone number is not in a valid format and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup();
+
+      const invalidPhoneNumber = 'invalidPhoneNumber';
+
+      const { form } = component;
+      form.markAsDirty();
+      form.get('fullname').setValue('Admin User');
+      form.get('jobTitle').setValue('administrator');
+      form.get('email').setValue('admin@email.com');
+      form.get('phone').setValue(invalidPhoneNumber);
+      form.get('permissionsType').setValue('Admin');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(
+        getAllByText('Enter the phone number like 01632 960 001, 07700 900 982 or +44 0808 157 0192').length,
+      ).toEqual(2);
+    });
+
+    it('should just show the required error message for permissionsType when all other fields are filled out and the form is submitted', async () => {
+      const { component, fixture, getByText, getAllByText, queryByText } = await setup();
+
+      const { form } = component;
+      form.markAsDirty();
+      form.get('fullname').setValue('Admin User');
+      form.get('jobTitle').setValue('administrator');
+      form.get('email').setValue('admin@email.com');
+      form.get('phone').setValue('01234567890');
+
+      const button = getByText('Save admin user');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(getAllByText('Select a permission').length).toEqual(2);
+      expect(queryByText('Enter their full name')).toBeFalsy();
+      expect(queryByText('Enter their job title')).toBeFalsy();
+      expect(queryByText('Enter an email addres')).toBeFalsy();
+      expect(queryByText('Enter a phone number')).toBeFalsy();
+    });
   });
 });

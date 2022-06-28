@@ -35,7 +35,6 @@ export class AddEditAdminUsersComponent extends AccountDetailsDirective {
   protected init(): void {
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
     this.return = { url: ['/sfcadmin', 'users'] };
-
     this.addFormControls();
   }
 
@@ -54,6 +53,67 @@ export class AddEditAdminUsersComponent extends AccountDetailsDirective {
         },
       ],
     });
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'fullname',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter their full name',
+          },
+          {
+            name: 'maxlength',
+            message: 'Full name must be 120 characters or fewer',
+          },
+        ],
+      },
+      {
+        item: 'jobTitle',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter their job title',
+          },
+          {
+            name: 'maxlength',
+            message: 'Job title must be 120 characters or fewer',
+          },
+        ],
+      },
+      {
+        item: 'email',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter an email address',
+          },
+          {
+            name: 'maxlength',
+            message: 'Email address must be 120 characters or fewer',
+          },
+          {
+            name: 'pattern',
+            message: 'Enter the email address in the correct format, like name@example.com',
+          },
+        ],
+      },
+      {
+        item: 'phone',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter a phone number',
+          },
+          {
+            name: 'pattern',
+            message: 'Enter the phone number like 01632 960 001, 07700 900 982 or +44 0808 157 0192',
+          },
+        ],
+      },
+    ];
   }
 
   protected save(): void {
