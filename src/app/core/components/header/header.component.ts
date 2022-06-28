@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.getUser();
     this.onAdminScreen();
     this.getUsers();

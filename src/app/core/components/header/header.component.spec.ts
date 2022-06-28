@@ -1,16 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockUserService } from '@core/test-utils/MockUserService';
+import { EditUser, MockUserService } from '@core/test-utils/MockUserService';
 import { render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { HeaderComponent } from './header.component';
 
@@ -39,10 +42,12 @@ describe('HeaderComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const userService = injector.inject(UserService) as UserService;
 
     return {
       component,
       router,
+      userService,
     };
   }
 
@@ -84,6 +89,30 @@ describe('HeaderComponent', () => {
       const usersLink = component.getByText('Users');
 
       expect(usersLink.getAttribute('href')).toEqual(`/workplace/${workplaceId}/users`);
+    });
+
+    it('should render users link with the correct href and a notification flag when on a workplace and only one user is registered', async () => {
+      const { component } = await setup(false, 0, true);
+
+      const workplaceId = component.fixture.componentInstance.workplaceId;
+      const usersLink = component.getByText('Users');
+
+      expect(usersLink.getAttribute('href')).toEqual(`/workplace/${workplaceId}/users`);
+      expect(component.getByTestId('singleUserNotification')).toBeTruthy();
+    });
+
+    it('should render users link with the correct href and no notification flag when on a workplace and more than one user is registered', async () => {
+      const { component, userService } = await setup(false, 0, true);
+
+      spyOn(userService, 'getAllUsersForEstablishment').and.returnValue(of([EditUser(), EditUser()] as UserDetails[]));
+      component.fixture.componentInstance.getUsers();
+      component.fixture.detectChanges();
+
+      const workplaceId = component.fixture.componentInstance.workplaceId;
+      const usersLink = component.getByText('Users');
+
+      expect(usersLink.getAttribute('href')).toEqual(`/workplace/${workplaceId}/users`);
+      expect(component.queryByTestId('singleUserNotification')).toBeFalsy();
     });
 
     it('should not show a users link when logged in and on the admin pages', async () => {
