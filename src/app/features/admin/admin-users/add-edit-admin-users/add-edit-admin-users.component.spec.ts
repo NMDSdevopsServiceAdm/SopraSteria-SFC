@@ -16,7 +16,7 @@ import userEvent from '@testing-library/user-event';
 
 import { AddEditAdminUsersComponent } from './add-edit-admin-users.component';
 
-describe('AdminMenuComponent', () => {
+describe('AddEditAdminUsersMenuComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
       AddEditAdminUsersComponent,

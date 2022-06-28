@@ -39,7 +39,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
   public submitted = false;
   public return: URLStructure;
   protected back: URLStructure;
-  protected formErrorsMap: Array<ErrorDetails>;
+  public formErrorsMap: Array<ErrorDetails>;
   protected subscriptions: Subscription = new Subscription();
 
   constructor(

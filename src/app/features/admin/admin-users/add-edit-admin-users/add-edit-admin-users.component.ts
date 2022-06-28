@@ -38,6 +38,7 @@ export class AddEditAdminUsersComponent extends AccountDetailsDirective {
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
     this.return = { url: ['/sfcadmin', 'users'] };
     this.addFormControls();
+    console.log(this.form);
   }
 
   private addFormControls(): void {
