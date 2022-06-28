@@ -5,7 +5,9 @@ import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockAdminUsersService } from '@core/test-utils/admin/MockAdminUsersService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
@@ -14,24 +16,15 @@ import userEvent from '@testing-library/user-event';
 
 import { AddEditAdminUsersComponent } from './add-edit-admin-users.component';
 
-fdescribe('AdminMenuComponent', () => {
+describe('AdminMenuComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
       AddEditAdminUsersComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
-          //   {
-          //     provide: ActivatedRoute,
-          //     useValue: {
-          //       snapshot: {
-          //         url: ['/sfcadmin', 'users'],
-          //         data: {
-          //           adminUsers: { adminUsers: [AdminUser(), PendingAdminUser(), AdminManagerUser()] as UserDetails[] },
-          //         },
-          //       },
-          //     },
-          //   },
+          AlertService,
+          WindowRef,
           {
             provide: BreadcrumbService,
             useClass: MockBreadcrumbService,
@@ -50,6 +43,8 @@ fdescribe('AdminMenuComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const adminUsersService = injector.inject(AdminUsersService) as AdminUsersService;
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     return {
       component,
@@ -61,6 +56,7 @@ fdescribe('AdminMenuComponent', () => {
       queryByText,
       routerSpy,
       adminUsersService,
+      alertSpy,
     };
   }
 
@@ -138,7 +134,23 @@ fdescribe('AdminMenuComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'users']);
   });
 
-  xit('should show banner when an admin user is successfully added', async () => {});
+  it('should show banner when an admin user is successfully added', async () => {
+    const { fixture, getByText, getByLabelText, alertSpy } = await setup();
+
+    userEvent.type(getByLabelText('Full name'), 'Admin user');
+    userEvent.type(getByLabelText('Job title'), 'Administrator');
+    userEvent.type(getByLabelText('Email address'), 'admin@email.com');
+    userEvent.type(getByLabelText('Phone number'), '01234567890');
+    fireEvent.click(getByLabelText('Admin'));
+
+    fireEvent.click(getByText('Save admin user'));
+    fixture.detectChanges();
+
+    expect(alertSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'Admin user has been added',
+    });
+  });
 
   describe('error messages', () => {
     it('should show all the required error messages if nothing is input into the form', async () => {

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Roles } from '@core/model/roles.enum';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -28,6 +29,7 @@ export class AddEditAdminUsersComponent extends AccountDetailsDirective {
     protected fb: FormBuilder,
     protected router: Router,
     private adminUsersService: AdminUsersService,
+    private alertService: AlertService,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -124,7 +126,10 @@ export class AddEditAdminUsersComponent extends AccountDetailsDirective {
     delete newAdminUser.permissionsType;
 
     this.adminUsersService.createAdminUser(newAdminUser).subscribe(
-      () => this.router.navigate(this.return.url),
+      () => {
+        this.router.navigate(this.return.url);
+        this.alertService.addAlert({ type: 'success', message: 'Admin user has been added' });
+      },
       (error: HttpErrorResponse) => this.onError(error),
     );
   }
