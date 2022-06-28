@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 import { NumberOfInterviewsComponent } from './number-of-interviews.component';
 
 describe('NumberOfInterviews', () => {
-  async function setup(returnUrl = true, numberOfInterviews = undefined) {
+  async function setup(returnUrl = true, numberOfInterviews = undefined, inStaffRecruitmentFlow = false) {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(NumberOfInterviewsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -29,7 +29,7 @@ describe('NumberOfInterviews', () => {
     });
 
     const component = fixture.componentInstance;
-    component.inStaffRecruitmentFlow = false;
+    component.inStaffRecruitmentFlow = inStaffRecruitmentFlow;
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;

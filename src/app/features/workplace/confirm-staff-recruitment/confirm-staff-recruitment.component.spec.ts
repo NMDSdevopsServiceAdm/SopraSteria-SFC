@@ -114,132 +114,134 @@ describe('ConfirmStaffRecruitmentComponent', () => {
     expect(component.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment).toBe('No, never');
   });
 
-  it('should show the change link when moneySpentOnAdvertisingInTheLastFourWeek is not null and set the link to `recruitment-advertising-cost`', async () => {
-    const { component, fixture } = await setup();
+  describe('Change links', () => {
+    it('should show the change link when moneySpentOnAdvertisingInTheLastFourWeek is not null and set the link to `recruitment-advertising-cost`', async () => {
+      const { component, fixture } = await setup();
 
-    component.moneySpentOnAdvertisingInTheLastFourWeek = establishment.moneySpentOnAdvertisingInTheLastFourWeeks;
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
+      component.moneySpentOnAdvertisingInTheLastFourWeek = establishment.moneySpentOnAdvertisingInTheLastFourWeeks;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
+      const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
 
-    expect(advertisingspendLastFourWeek.innerHTML).toContain('Change');
-    expect(advertisingspendLastFourWeek.innerHTML).toContain(
-      `href="/workplace/${establishment.uid}/recruitment-advertising-cost"`,
-    );
-  });
+      expect(advertisingspendLastFourWeek.innerHTML).toContain('Change');
+      expect(advertisingspendLastFourWeek.innerHTML).toContain(
+        `href="/workplace/${establishment.uid}/recruitment-advertising-cost"`,
+      );
+    });
 
-  it('should show the add link when moneySpentOnAdvertisingInTheLastFourWeek is null and set the link to `recruitment-advertising-cost`', async () => {
-    const { component, fixture } = await setup();
+    it('should show the add link when moneySpentOnAdvertisingInTheLastFourWeek is null and set the link to `recruitment-advertising-cost`', async () => {
+      const { component, fixture } = await setup();
 
-    component.moneySpentOnAdvertisingInTheLastFourWeek = null;
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
+      component.moneySpentOnAdvertisingInTheLastFourWeek = null;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
+      const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
 
-    expect(advertisingspendLastFourWeek.innerHTML).toContain('Add');
-    expect(advertisingspendLastFourWeek.innerHTML).toContain(
-      `href="/workplace/${establishment.uid}/recruitment-advertising-cost"`,
-    );
-  });
+      expect(advertisingspendLastFourWeek.innerHTML).toContain('Add');
+      expect(advertisingspendLastFourWeek.innerHTML).toContain(
+        `href="/workplace/${establishment.uid}/recruitment-advertising-cost"`,
+      );
+    });
 
-  it('should show the change link when peopleInterviewedInTheLastFourWeeks is not null and set the link to `number-of-interviews`', async () => {
-    const { component, fixture } = await setup();
+    it('should show the change link when peopleInterviewedInTheLastFourWeeks is not null and set the link to `number-of-interviews`', async () => {
+      const { component, fixture } = await setup();
 
-    component.peopleInterviewedInTheLastFourWeek = establishment.peopleInterviewedInTheLastFourWeeks;
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
+      component.peopleInterviewedInTheLastFourWeek = establishment.peopleInterviewedInTheLastFourWeeks;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    const peopleInterviewedInTheLastFourWeeks = within(document.body).queryByTestId('peopleInterviewed');
+      const peopleInterviewedInTheLastFourWeeks = within(document.body).queryByTestId('peopleInterviewed');
 
-    expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain('Change');
-    expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain(
-      `href="/workplace/${establishment.uid}/number-of-interviews"`,
-    );
-  });
+      expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain('Change');
+      expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain(
+        `href="/workplace/${establishment.uid}/number-of-interviews"`,
+      );
+    });
 
-  it('should show the add link when peopleInterviewedInTheLastFourWeeks is null and set the link to `number-of-interviews`', async () => {
-    const { component, fixture } = await setup();
+    it('should show the add link when peopleInterviewedInTheLastFourWeeks is null and set the link to `number-of-interviews`', async () => {
+      const { component, fixture } = await setup();
 
-    component.peopleInterviewedInTheLastFourWeek = null;
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
+      component.peopleInterviewedInTheLastFourWeek = null;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    const peopleInterviewedInTheLastFourWeeks = within(document.body).queryByTestId('peopleInterviewed');
+      const peopleInterviewedInTheLastFourWeeks = within(document.body).queryByTestId('peopleInterviewed');
 
-    expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain('Add');
-    expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain(
-      `href="/workplace/${establishment.uid}/number-of-interviews"`,
-    );
-  });
+      expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain('Add');
+      expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain(
+        `href="/workplace/${establishment.uid}/number-of-interviews"`,
+      );
+    });
 
-  it('should show the change link when doNewStartersRepeatTraining is not null and set the link to `staff-recruitment-capture-training-requirement`', async () => {
-    const { component, fixture } = await setup();
+    it('should show the change link when doNewStartersRepeatTraining is not null and set the link to `staff-recruitment-capture-training-requirement`', async () => {
+      const { component, fixture } = await setup();
 
-    component.doNewStartersRepeatTraining = establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
+      component.doNewStartersRepeatTraining = establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    const doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = within(document.body).queryByTestId(
-      'repeatTraining',
-    );
+      const doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = within(document.body).queryByTestId(
+        'repeatTraining',
+      );
 
-    expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain('Change');
-    expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain(
-      `href="/workplace/${establishment.uid}/staff-recruitment-capture-training-requirement"`,
-    );
-  });
+      expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain('Change');
+      expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain(
+        `href="/workplace/${establishment.uid}/staff-recruitment-capture-training-requirement"`,
+      );
+    });
 
-  it('should show the add link when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is null and set the link to `staff-recruitment-capture-training-requirement`', async () => {
-    const { component, fixture } = await setup();
+    it('should show the add link when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is null and set the link to `staff-recruitment-capture-training-requirement`', async () => {
+      const { component, fixture } = await setup();
 
-    component.doNewStartersRepeatTraining = null;
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
+      component.doNewStartersRepeatTraining = null;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    const doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = within(document.body).queryByTestId(
-      'repeatTraining',
-    );
+      const doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = within(document.body).queryByTestId(
+        'repeatTraining',
+      );
 
-    expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain('Add');
-    expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain(
-      `href="/workplace/${establishment.uid}/staff-recruitment-capture-training-requirement"`,
-    );
-  });
+      expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain('Add');
+      expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain(
+        `href="/workplace/${establishment.uid}/staff-recruitment-capture-training-requirement"`,
+      );
+    });
 
-  it('should show the change link when wouldYouAcceptPreviousCertificates is not null and set the link to `accept-previous-care-certificate`', async () => {
-    const { component, fixture } = await setup();
+    it('should show the change link when wouldYouAcceptPreviousCertificates is not null and set the link to `accept-previous-care-certificate`', async () => {
+      const { component, fixture } = await setup();
 
-    component.wouldYouAcceptPreviousCertificates = establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
+      component.wouldYouAcceptPreviousCertificates = establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    const wouldYouAcceptCareCertificatesFromPreviousEmployment = within(document.body).queryByTestId(
-      'acceptCareCertificate',
-    );
+      const wouldYouAcceptCareCertificatesFromPreviousEmployment = within(document.body).queryByTestId(
+        'acceptCareCertificate',
+      );
 
-    expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain('Change');
-    expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain(
-      `href="/workplace/${establishment.uid}/accept-previous-care-certificate"`,
-    );
-  });
+      expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain('Change');
+      expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain(
+        `href="/workplace/${establishment.uid}/accept-previous-care-certificate"`,
+      );
+    });
 
-  it('should show the add link when wouldYouAcceptPreviousCertificates is null and set the link to `accept-previous-care-certificate`', async () => {
-    const { component, fixture } = await setup();
+    it('should show the add link when wouldYouAcceptPreviousCertificates is null and set the link to `accept-previous-care-certificate`', async () => {
+      const { component, fixture } = await setup();
 
-    component.wouldYouAcceptPreviousCertificates = null;
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
+      component.wouldYouAcceptPreviousCertificates = null;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
 
-    const wouldYouAcceptCareCertificatesFromPreviousEmployment = within(document.body).queryByTestId(
-      'acceptCareCertificate',
-    );
+      const wouldYouAcceptCareCertificatesFromPreviousEmployment = within(document.body).queryByTestId(
+        'acceptCareCertificate',
+      );
 
-    expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain('Add');
-    expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain(
-      `href="/workplace/${establishment.uid}/accept-previous-care-certificate"`,
-    );
+      expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain('Add');
+      expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain(
+        `href="/workplace/${establishment.uid}/accept-previous-care-certificate"`,
+      );
+    });
   });
 
   describe('onSuccess', () => {

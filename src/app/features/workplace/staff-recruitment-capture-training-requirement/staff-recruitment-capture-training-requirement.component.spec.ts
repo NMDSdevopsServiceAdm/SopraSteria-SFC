@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
-  async function setup(returnUrl = true, repeatTraining = undefined) {
+  async function setup(returnUrl = true, repeatTraining = undefined, inStaffRecruitmentFlow = false) {
     const { fixture, getByText, getByLabelText } = await render(StaffRecruitmentCaptureTrainingRequirementComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -28,7 +28,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     const component = fixture.componentInstance;
-    component.inStaffRecruitmentFlow = false;
+    component.inStaffRecruitmentFlow = inStaffRecruitmentFlow;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();

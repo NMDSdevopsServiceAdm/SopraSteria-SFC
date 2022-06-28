@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost.component';
 
 describe('RecruitmentAdvertisingCostComponent', () => {
-  async function setup(returnUrl = true, recruitmentAdvertisingCost = undefined) {
+  async function setup(returnUrl = true, recruitmentAdvertisingCost = undefined, inStaffRecruitmentFlow = false) {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(RecruitmentAdvertisingCostComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -29,7 +29,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
     });
 
     const component = fixture.componentInstance;
-
+    component.inStaffRecruitmentFlow = inStaffRecruitmentFlow;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
@@ -131,7 +131,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
   describe('submit buttons and submitting form', () => {
     it(`should show 'Save and continue' cta button and 'View this staff record'`, async () => {
       const { component, fixture, getByText } = await setup(false);
-      component.inStaffRecruitmentFlow = false;
+
       fixture.detectChanges();
 
       expect(getByText('Save and continue')).toBeTruthy();
