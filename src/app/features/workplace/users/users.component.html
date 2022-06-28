@@ -1,12 +1,12 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
+  <div class="govuk-grid-column-two-thirds">
     <legend class="fobuk-fieldset__legend govuk-fieldset__legend--l">
       <span class="govuk-caption-l" data-testid="workplace-name"
         >{{ workplace.name }} (Workplace ID: {{ workplace.nmdsId }})</span
       >
       <h1 class="govuk-fieldset__heading">Users ({{ users.length }})</h1>
     </legend>
-    <div *ngIf="showSecondUserBanner">
+    <div *ngIf="showSecondUserBanner" class="govuk-grid-column-full govuk-!-padding-left-0">
       <app-inset-text [color]="'todo'">
         <h3 class="govuk-heading-s">You should add a second user</h3>
         <p>
@@ -16,12 +16,12 @@
       </app-inset-text>
     </div>
   </div>
-  <div class="govuk-grid-column-full govuk-util__align-right">
+  <div class="govuk-grid-column-one-third govuk-util__align-right govuk-!-margin-bottom-0">
     <a
       *ngIf="canAddUser"
       role="button"
       draggable="false"
-      class="govuk-button"
+      class="govuk-button govuk-!-margin-top-6 govuk-!-margin-bottom-0"
       [routerLink]="['/workplace', workplace.uid, 'user', 'create']"
     >
       Add a user

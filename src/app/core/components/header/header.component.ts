@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
-import { Subscription } from 'rxjs';
+import { async, Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,7 @@ import { Subscription } from 'rxjs';
 export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public isOnAdminScreen: boolean;
+  public users: Array<UserDetails>;
   public fullname: string;
   public user: UserDetails;
   public showDropdown = false;
@@ -26,9 +28,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.getUser();
     this.onAdminScreen();
+    this.getUsers();
   }
 
   ngOnDestroy(): void {
@@ -42,6 +45,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.fullname = user && user.fullname ? user.fullname.split(' ')[0] : null;
       }),
     );
+  }
+
+  public getUsers(): void {
+    this.subscriptions.add(this.userService.users$.subscribe((users) => (this.users = users)));
+    this.userService
+      .getAllUsersForEstablishment(this.workplaceId)
+      .subscribe((users) => this.userService.updateUsers(users));
   }
 
   public isLoggedIn(): boolean {
