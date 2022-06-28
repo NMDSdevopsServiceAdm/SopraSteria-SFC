@@ -130,9 +130,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
 
   describe('submit buttons and submitting form', () => {
     it(`should show 'Save and continue' cta button and 'View this staff record'`, async () => {
-      const { component, fixture, getByText } = await setup(false);
-
-      fixture.detectChanges();
+      const { getByText } = await setup(false);
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View workplace details')).toBeTruthy();
@@ -152,9 +150,6 @@ describe('RecruitmentAdvertisingCostComponent', () => {
 
     it(`should call the setSubmitAction function with an action of summary and save as false when clicking 'View workplace details' link`, async () => {
       const { component, fixture, getByText } = await setup(false);
-
-      component.inStaffRecruitmentFlow = false;
-      fixture.detectChanges();
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
@@ -215,9 +210,6 @@ describe('RecruitmentAdvertisingCostComponent', () => {
 
     it('should navigate to the next page when submitting from the flow', async () => {
       const { component, fixture, getByText, routerSpy } = await setup(false);
-
-      component.inStaffRecruitmentFlow = false;
-      fixture.detectChanges();
 
       const link = getByText('View workplace details');
       fireEvent.click(link);
