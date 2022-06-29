@@ -29,7 +29,6 @@ describe('NumberOfInterviews', () => {
     });
 
     const component = fixture.componentInstance;
-
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();

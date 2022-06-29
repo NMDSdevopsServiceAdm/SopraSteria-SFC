@@ -26,6 +26,8 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     },
   ];
 
+  public inStaffRecruitmentFlow: boolean;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -39,12 +41,15 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   protected init(): void {
     this.setupForm();
     this.setupFormValueSubscriptions();
+    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.setPreviousRoute();
     this.prefill();
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'leavers'];
+    this.previousRoute = this.inStaffRecruitmentFlow
+      ? ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-start']
+      : ['/workplace', `${this.establishment.uid}`, 'leavers'];
   }
 
   private prefill(): void {
@@ -118,25 +123,6 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
         ],
       },
     ];
-  }
-
-  // additional logic required in this, cannot be completed until routing to this page is complete
-  protected navigate(): void {
-    const action = this.submitAction.action;
-
-    if (!action) return;
-
-    switch (action) {
-      case 'continue':
-        this.router.navigate(this.nextRoute);
-        break;
-      case 'summary':
-        this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
-        break;
-      case 'return':
-        this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
-        break;
-    }
   }
 
   protected generateUpdateProps(): any {

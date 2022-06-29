@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
+import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { BackService } from '@core/services/back.service';
-import { URLStructure } from '@core/model/url.model';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-staff-recruitment-start',
@@ -28,6 +27,9 @@ export class StaffRecruitmentStartComponent implements OnInit, OnDestroy {
         this.establishment = establishment;
       }),
     );
+
+    this.establishmentService.setInStaffRecruitmentFlow(true);
+
     this.fragment = history.state?.navigatedFromFragment;
     this.setReturnLink();
     this.setBackLink();

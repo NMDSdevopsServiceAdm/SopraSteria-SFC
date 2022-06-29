@@ -29,6 +29,8 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
     },
   ];
 
+  public inStaffRecruitmentFlow: boolean;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -42,6 +44,7 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
   protected init(): void {
     this.setupForm();
     this.setupFormValueSubscriptions();
+    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.setPreviousRoute();
     this.prefill();
   }
@@ -137,25 +140,6 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
         ],
       },
     ];
-  }
-
-  // additional logic required in this, cannot be completed until routing to this page is complete
-  protected navigate(): void {
-    const action = this.submitAction.action;
-
-    if (!action) return;
-
-    switch (action) {
-      case 'continue':
-        this.router.navigate(this.nextRoute);
-        break;
-      case 'summary':
-        this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
-        break;
-      case 'return':
-        this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
-        break;
-    }
   }
 
   protected generateUpdateProps(): any {

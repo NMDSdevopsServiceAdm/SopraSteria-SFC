@@ -29,7 +29,6 @@ describe('RecruitmentAdvertisingCostComponent', () => {
     });
 
     const component = fixture.componentInstance;
-
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
@@ -129,7 +128,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
   });
 
   describe('submit buttons and submitting form', () => {
-    it(`should show 'Save and continue' cta button and 'View this staff record' link`, async () => {
+    it(`should show 'Save and continue' cta button and 'View this staff record'`, async () => {
       const { getByText } = await setup(false);
 
       expect(getByText('Save and continue')).toBeTruthy();
@@ -209,7 +208,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
     });
 
     it('should navigate to the next page when submitting from the flow', async () => {
-      const { fixture, getByText, routerSpy } = await setup(false);
+      const { component, fixture, getByText, routerSpy } = await setup(false);
 
       const link = getByText('View workplace details');
       fireEvent.click(link);

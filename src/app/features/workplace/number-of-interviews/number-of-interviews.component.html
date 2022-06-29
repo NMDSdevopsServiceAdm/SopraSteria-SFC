@@ -80,6 +80,11 @@
       </div>
     </div>
   </fieldset>
-  <app-workplace-submit-button [return]="!!return" [isExistingStaffRecord]="false" (clicked)="setSubmitAction($event)">
+  <app-workplace-submit-button
+    [return]="!!return"
+    [recordSummary]="!this.inStaffRecruitmentFlow"
+    [isExistingStaffRecord]="false"
+    (clicked)="setSubmitAction($event)"
+  >
   </app-workplace-submit-button>
 </form>

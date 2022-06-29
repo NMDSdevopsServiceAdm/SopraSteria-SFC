@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
@@ -77,6 +77,7 @@ export class EstablishmentService {
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
+  private _inStaffRecruitmentFlow: boolean;
 
   constructor(private http: HttpClient) {}
 
@@ -124,6 +125,7 @@ export class EstablishmentService {
   public resetState() {
     this._establishmentId = null;
     this._establishment$.next(null);
+    this._inStaffRecruitmentFlow = false;
     this.setPrimaryWorkplace(null);
     this.setCheckCQCDetailsBanner(false);
   }
@@ -166,6 +168,27 @@ export class EstablishmentService {
 
   public setCheckCQCDetailsBanner(data: boolean) {
     this._checkCQCDetailsBanner$.next(data);
+  }
+
+  public get inStaffRecruitmentFlow() {
+    if (this._inStaffRecruitmentFlow) {
+      return this._inStaffRecruitmentFlow;
+    }
+
+    const inStaffRecruitmentFlow = localStorage.getItem('inStaffRecruitmentFlow');
+
+    if (inStaffRecruitmentFlow) {
+      this._inStaffRecruitmentFlow = JSON.parse(inStaffRecruitmentFlow);
+    } else if (isDevMode() && !this._inStaffRecruitmentFlow) {
+      throw new TypeError('No value for inRecruitmentFlow in local storage!');
+    }
+
+    return this._inStaffRecruitmentFlow;
+  }
+
+  public setInStaffRecruitmentFlow(data: boolean) {
+    this._inStaffRecruitmentFlow = data;
+    localStorage.setItem('inStaffRecruitmentFlow', data.toString());
   }
 
   getEstablishment(id: string, wdf: boolean = false) {

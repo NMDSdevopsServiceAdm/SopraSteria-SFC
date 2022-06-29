@@ -10,26 +10,37 @@
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Advertising spend</dt>
 
-        <dd class="govuk-summary-list__value asc__preline">
+        <dd class="govuk-summary-list__value">
           <ng-container
-            *ngIf="
-              moneySpentOnAdvertisingInTheLastFourWeek == 'None' ||
-                moneySpentOnAdvertisingInTheLastFourWeek == 'Don\'t know';
-              then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
-              else moneySpentOnAdvertisingInTheLastFourWeeksKnown
-            "
+            *ngIf="!moneySpentOnAdvertisingInTheLastFourWeek; else moneySpentOnAdvertisingInTheLastFourWeekType"
           >
+            -
           </ng-container>
+          <ng-template #moneySpentOnAdvertisingInTheLastFourWeekType>
+            <ng-container
+              *ngIf="
+                moneySpentOnAdvertisingInTheLastFourWeek == 'None' ||
+                  moneySpentOnAdvertisingInTheLastFourWeek == 'Don\'t know';
+                then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
+                else moneySpentOnAdvertisingInTheLastFourWeeksKnown
+              "
+            >
+            </ng-container>
+          </ng-template>
           <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
             {{ moneySpentOnAdvertisingInTheLastFourWeek }}
           </ng-template>
           <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
-            £ {{ moneySpentOnAdvertisingInTheLastFourWeek }}
+            £{{ moneySpentOnAdvertisingInTheLastFourWeek }}
           </ng-template>
         </dd>
-
-        <dd class="govuk-summary-list__actions" data-testid="advertisingSpend">
-          <a [routerLink]="['/', this.flow, this.establishment.uid, 'recruitment-advertising-cost']"> Change </a>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="advertisingSpend">
+          <app-summary-record-change
+            [explanationText]="' advertising spend'"
+            [link]="['/', this.flow, this.establishment.uid, 'recruitment-advertising-cost']"
+            [hasData]="moneySpentOnAdvertisingInTheLastFourWeek"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
         </dd>
       </div>
 
@@ -37,35 +48,61 @@
         <dt class="govuk-summary-list__key">People interviewed</dt>
 
         <dd class="govuk-summary-list__value asc__preline">
-          {{ peopleInterviewedInTheLastFourWeek }}
+          <ng-container *ngIf="!peopleInterviewedInTheLastFourWeek; else peopleInterviewedInTheLastFourWeekType">
+            -
+          </ng-container>
+          <ng-template #peopleInterviewedInTheLastFourWeekType>
+            {{ peopleInterviewedInTheLastFourWeek }}
+          </ng-template>
         </dd>
 
-        <dd class="govuk-summary-list__actions" data-testid="peopleInterviewed">
-          <a [routerLink]="['/', this.flow, this.establishment.uid, 'number-of-interviews']"> Change </a>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="peopleInterviewed">
+          <app-summary-record-change
+            [explanationText]="' people interviewed'"
+            [link]="['/', this.flow, this.establishment.uid, 'number-of-interviews']"
+            [hasData]="peopleInterviewedInTheLastFourWeek"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Repeat training</dt>
 
         <dd class="govuk-summary-list__value asc__preline">
-          {{ doNewStartersRepeatTraining }}
+          <ng-container *ngIf="!doNewStartersRepeatTraining; else doNewStartersRepeatTrainingType"> - </ng-container>
+          <ng-template #doNewStartersRepeatTrainingType>
+            {{ doNewStartersRepeatTraining }}
+          </ng-template>
         </dd>
 
-        <dd class="govuk-summary-list__actions" data-testid="repeatTraining">
-          <a [routerLink]="['/', this.flow, this.establishment.uid, 'staff-recruitment-capture-training-requirement']">
-            Change
-          </a>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="repeatTraining">
+          <app-summary-record-change
+            [explanationText]="' repeat training'"
+            [link]="['/', this.flow, this.establishment.uid, 'staff-recruitment-capture-training-requirement']"
+            [hasData]="doNewStartersRepeatTraining"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Accept Care Certificate</dt>
 
         <dd class="govuk-summary-list__value asc__preline">
-          {{ wouldYouAcceptPreviousCertificates }}
+          <ng-container *ngIf="!wouldYouAcceptPreviousCertificates; else wouldYouAcceptPreviousCertificatesType">
+            -
+          </ng-container>
+          <ng-template #wouldYouAcceptPreviousCertificatesType>
+            {{ wouldYouAcceptPreviousCertificates }}
+          </ng-template>
         </dd>
 
-        <dd class="govuk-summary-list__actions" data-testid="acceptCareCertificate">
-          <a [routerLink]="['/', this.flow, this.establishment.uid, 'accept-previous-care-certificate']"> Change </a>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="acceptCareCertificate">
+          <app-summary-record-change
+            [explanationText]="' accept care certificate'"
+            [link]="['/', this.flow, this.establishment.uid, 'accept-previous-care-certificate']"
+            [hasData]="wouldYouAcceptPreviousCertificates"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
         </dd>
       </div>
     </dl>

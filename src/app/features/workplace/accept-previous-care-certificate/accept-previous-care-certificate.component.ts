@@ -33,6 +33,8 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     },
   ];
 
+  public inStaffRecruitmentFlow: boolean;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -46,6 +48,7 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   protected init(): void {
     this.setupForm();
     this.setPreviousRoute();
+    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
   }
 
@@ -104,8 +107,9 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   protected onSuccess(): void {
     this.updateEstablishmentService();
 
-    //logic required here: e.g inMiniFlow ? miniFlowSummary : workflowCheckAnswersSummary
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
+    this.nextRoute = this.inStaffRecruitmentFlow
+      ? ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment']
+      : ['/workplace', `${this.establishment.uid}`, 'check-answers'];
   }
 
   ngOnDestroy(): void {
