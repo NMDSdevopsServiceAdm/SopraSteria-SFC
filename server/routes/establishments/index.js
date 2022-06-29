@@ -36,6 +36,7 @@ const SharingPermissionsBanner = require('./sharingPermissionsBanner');
 const ExpiresSoonAlertDates = require('./expiresSoonAlertDates');
 const WdfClaims = require('./wdfClaims');
 const ChildWorkplaces = require('./childWorkplaces');
+const StaffRecruitmentData = require('./staffRecruitmentData');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -90,6 +91,7 @@ router.use('/:id/updateSharingPermissionsBanner', SharingPermissionsBanner);
 router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
 router.use('/:id/wdfClaims', WdfClaims);
 router.use('/:id/childWorkplaces', ChildWorkplaces);
+router.use('/:id/staffRecruitmentData', StaffRecruitmentData);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {

@@ -239,6 +239,50 @@ describe('HomeTabComponent', () => {
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
   });
 
+  describe('Staff recruitment is difficult', async () => {
+    it('displays staff-recruitment-start link  when has employer type and banner value is false', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
+      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
+      component.fixture.detectChanges();
+      const recruitmentHeader = component.getByText('Staff recruitment is difficult');
+
+      expect(recruitmentHeader).toBeTruthy();
+    });
+
+    it('shouldnt displays staff-recruitment-start banner  when  employer type is null and banner value is true', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.workplace.employerType = null;
+      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = true;
+      component.fixture.detectChanges();
+      const recruitmentHeader = component.queryByText('Staff recruitment is difficult');
+
+      expect(recruitmentHeader).toBeFalsy();
+    });
+
+    it('should update recruitmentJourneyExistingUserBanner column on updateRecruitmentJourneyExistingUser', async () => {
+      const { component } = await setup();
+
+      const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
+      const recuritmentBannerSpy = spyOn(
+        establishmentService,
+        'updateRecruitmentJourneyExistingUser',
+      ).and.callThrough();
+
+      component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
+      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
+      component.fixture.componentInstance.canEditEstablishment = true;
+
+      component.fixture.detectChanges();
+      const recuritmentLink = component.getByText('Answer our 4 new staff recruitment questions');
+      fireEvent.click(recuritmentLink);
+
+      expect(recuritmentBannerSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('View the ASC-WDS Benefits Bundle', async () => {
     it('should navigate to `/benefits-bundle` when pressing the "Benefite Bundle and NEW link" button', async () => {
       const { component } = await setup();
