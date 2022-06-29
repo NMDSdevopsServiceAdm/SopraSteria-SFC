@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate.component';
 
 describe('AcceptPreviousCareCertificateComponent', () => {
-  async function setup(returnUrl = true, acceptCareCertificate = undefined, inStaffRecruitmentFlow = false) {
+  async function setup(returnUrl = true, acceptCareCertificate = undefined) {
     const { fixture, getByText, getByLabelText } = await render(AcceptPreviousCareCertificateComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -28,8 +28,6 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     });
 
     const component = fixture.componentInstance;
-    component.inStaffRecruitmentFlow = inStaffRecruitmentFlow;
-
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();

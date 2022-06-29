@@ -88,6 +88,10 @@ export class MockEstablishmentService extends EstablishmentService {
     return this.establishmentObj;
   }
 
+  public get inStaffRecruitmentFlow(): boolean {
+    return false;
+  }
+
   public get returnTo(): URLStructure {
     if (this.returnToUrl) {
       return {

@@ -44,8 +44,8 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
   protected init(): void {
     this.setupForm();
     this.setupFormValueSubscriptions();
-    this.setPreviousRoute();
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
+    this.setPreviousRoute();
     this.prefill();
   }
 

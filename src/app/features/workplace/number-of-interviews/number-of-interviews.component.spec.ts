@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 import { NumberOfInterviewsComponent } from './number-of-interviews.component';
 
 describe('NumberOfInterviews', () => {
-  async function setup(returnUrl = true, numberOfInterviews = undefined, inStaffRecruitmentFlow = false) {
+  async function setup(returnUrl = true, numberOfInterviews = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(NumberOfInterviewsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -29,8 +29,6 @@ describe('NumberOfInterviews', () => {
     });
 
     const component = fixture.componentInstance;
-    component.inStaffRecruitmentFlow = inStaffRecruitmentFlow;
-
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
@@ -104,8 +102,6 @@ describe('NumberOfInterviews', () => {
     const { component, fixture } = await setup(true, numberOfInterviews);
 
     const input = fixture.nativeElement.querySelector('input[id="numberOfInterviews"]');
-    fireEvent.click(input);
-    fixture.detectChanges();
 
     expect(input.value).toEqual('100');
     expect(component.form.value).toEqual({ numberOfInterviews: '100', numberOfInterviewsKnown: null });
@@ -116,8 +112,6 @@ describe('NumberOfInterviews', () => {
     const { component, fixture } = await setup(true, numberOfInterviews);
 
     const radioButton = fixture.nativeElement.querySelector('input[id="numberOfInterviewsKnown-0"]');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
 
     expect(radioButton.checked).toBeTruthy();
     expect(component.form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: 'None' });
@@ -128,8 +122,6 @@ describe('NumberOfInterviews', () => {
     const { component, fixture } = await setup(true, numberOfInterviews);
 
     const radioButton = fixture.nativeElement.querySelector('input[id="numberOfInterviewsKnown-1"]');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
 
     expect(radioButton.checked).toBeTruthy();
     expect(component.form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: `Don't know` });
