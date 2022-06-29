@@ -480,7 +480,7 @@ const partAddUser = async (req, res) => {
 
 const notPermittedToRegisterNewUser = (role) => !role || role === 'Read' || role === 'None';
 
-const newUserRoleNotValid = (role) => !['Edit', 'Read', 'None'].includes(role);
+const newUserRoleNotValid = (role) => !['Edit', 'Read', 'None', 'Admin', 'AdminManager'].includes(role);
 
 // Resend activation link
 const resendActivationLink = async (req, res) => {
@@ -1085,6 +1085,7 @@ router.route('/changePassword').post(Authorization.isAuthorised, changePassword)
 router
   .route('/add/establishment/:id')
   .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddUser);
+router.route('/add/admin').post(Authorization.isAuthorised, partAddUser);
 router.route('/:uid/resend-activation').post(Authorization.isAuthorised, resendActivationLink);
 router.route('/validateAddUser').post(finishAddUser);
 router.route('/add').post(Authorization.isAuthorisedAddUser, addUser);

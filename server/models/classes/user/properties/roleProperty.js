@@ -13,7 +13,7 @@ exports.UserRoleProperty = class UserRoleProperty extends ChangePropertyPrototyp
   // concrete implementations
   async restoreFromJson(document) {
     if (document.role) {
-      const ALLOWED_ROLES = ['None', 'Read', 'Edit'];
+      const ALLOWED_ROLES = ['None', 'Read', 'Edit', 'Admin', 'AdminManager'];
       if (ALLOWED_ROLES.includes(document.role)) {
         this.property = document.role;
       } else {

@@ -23,6 +23,7 @@ const JSON_DOCUMENT_TYPE = require('./user/userProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUMENT;
 
 const bcrypt = require('bcrypt-nodejs');
+const { isAdminRole } = require('../../utils/adminUtils');
 const passwordValidator = require('../../utils/security/passwordValidation').isPasswordValid;
 
 // establishment entity
@@ -210,7 +211,7 @@ class User {
       this._isNew = true;
       this._uid = uuid.v4();
 
-      if (!this._isEstablishmentIdValid)
+      if (!this._isEstablishmentIdValid && !isAdminRole(this.userRole))
         throw new UserExceptions.UserSaveException(
           null,
           this._uid,
@@ -235,7 +236,6 @@ class User {
   async load(document) {
     try {
       await this._properties.restore(document, JSON_DOCUMENT_TYPE);
-
       // for user, the username and password are additional (non property based) optional attributes
       if (document.username) {
         this._username = escape(document.username);
@@ -356,8 +356,9 @@ class User {
   // saves the User to DB. Returns true if saved; false if not.
   // Throws "UserSaveException" on error
   async save(savedBy, ttl = 0, externalTransaction = null, firstSave = false) {
+    console.log('******* save ********');
     let mustSave = this._initialise();
-
+    console.log(mustSave);
     if (!this.uid) {
       this._log(User.LOG_ERROR, 'Not able to save an unknown uid');
       throw new UserExceptions.UserSaveException(
