@@ -95,11 +95,11 @@ describe('UserTableComponent', () => {
   });
 
   describe('Permissions column', () => {
-    it('should have permission as Admin or AdminManagers if the users are an admin or an admin manager', async () => {
+    it('should have permission as Admin or Admin manager if the users are an admin or an admin manager', async () => {
       const { queryAllByText, queryByText } = await setup(true);
 
       expect(queryAllByText('Admin')).toBeTruthy();
-      expect(queryByText('AdminManager')).toBeTruthy();
+      expect(queryByText('Admin manager')).toBeTruthy();
     });
 
     it('should have permission as Primary edit and WDF when user isPrimary and canManageWdfClaims are true and role is Edit', async () => {

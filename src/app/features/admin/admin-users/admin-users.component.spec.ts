@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { AdminUsersComponent } from './admin-users.component';
 
-describe('AdminMenuComponent', () => {
+describe('AdminUsersComponent', () => {
   async function setup() {
     const { fixture, getByText, getByTestId } = await render(AdminUsersComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -91,11 +91,12 @@ describe('AdminMenuComponent', () => {
     adminUsers.forEach((adminUser, index) => {
       const row = getByTestId(`row-${index}`);
       const usernameValue = adminUser.status === 'Pending' ? '-' : adminUser.status;
+      const role = adminUser.role === 'AdminManager' ? 'Admin manager' : adminUser.role;
 
       expect(row.innerText).toContain(adminUser.fullname);
       expect(row.innerText).toContain(usernameValue);
       expect(row.innerText).toContain('2 Jan 2022');
-      expect(row.innerText).toContain(adminUser.role);
+      expect(row.innerText).toContain(role);
       expect(row.innerText).toContain(adminUser.status);
     });
   });

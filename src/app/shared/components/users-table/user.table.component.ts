@@ -27,6 +27,6 @@ export class UserTableComponent {
 
       return userType?.userTableValue;
     }
-    return user.role;
+    return user.role === 'AdminManager' ? 'Admin manager' : user.role;
   }
 }
