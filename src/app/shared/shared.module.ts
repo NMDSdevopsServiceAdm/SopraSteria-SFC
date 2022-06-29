@@ -69,6 +69,7 @@ import { TrainingAndQualificationsTabComponent } from './components/training-and
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
+import { UserTableComponent } from './components/users-table/user.table.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
 import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
@@ -183,6 +184,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
+    UserTableComponent,
   ],
   exports: [
     SummaryRecordChangeComponent,
@@ -270,6 +272,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
+    UserTableComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
