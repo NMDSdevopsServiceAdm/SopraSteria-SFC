@@ -14,6 +14,7 @@ enum Path {
   CQC_MAIN_SERVICE_CHANGE_REQUEST = '/sfcadmin/cqc-main-service -change/:establishmentUid',
   ADMIN_USERS = '/sfcadmin/users',
   ADD_ADMIN_USER_DETAILS = '/sfcadmin/users/add-admin-user-details',
+  VIEW_ADMIN_USER_DETAILS = '/sfcadmin/users/:useruid',
 }
 
 export const adminJourney: JourneyRoute = {
@@ -123,6 +124,10 @@ export const adminUserJourney: JourneyRoute = {
             {
               title: 'Add admin user details',
               path: Path.ADD_ADMIN_USER_DETAILS,
+            },
+            {
+              title: 'Admin user details',
+              path: Path.VIEW_ADMIN_USER_DETAILS,
             },
           ],
         },

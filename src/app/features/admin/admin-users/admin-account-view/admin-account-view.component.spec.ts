@@ -2,16 +2,23 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { AdminAccountViewComponent } from './admin-account-view.component';
 
-describe('UserAccountViewComponent', () => {
+describe('AdminAccountViewComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(AdminAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [],
+      providers: [
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
+        },
+      ],
     });
 
     const component = fixture.componentInstance;
