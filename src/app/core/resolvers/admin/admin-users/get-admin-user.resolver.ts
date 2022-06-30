@@ -11,6 +11,7 @@ export class GetAdminUserResolver implements Resolve<any> {
 
   resolve(route: ActivatedRouteSnapshot): Observable<UserDetails> {
     const userUid = route.paramMap.get('useruid');
+
     return this.adminUserService.getAdminUser(userUid).pipe(
       catchError(() => {
         this.router.navigate(['/problem-with-the-service']);

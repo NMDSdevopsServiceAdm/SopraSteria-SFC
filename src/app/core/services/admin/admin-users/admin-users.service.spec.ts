@@ -14,7 +14,6 @@ describe('AdminUsersService', () => {
       providers: [AdminUsersService],
     });
     service = TestBed.inject(AdminUsersService);
-
     http = TestBed.inject(HttpTestingController);
   });
 
@@ -49,6 +48,15 @@ describe('AdminUsersService', () => {
       const req = http.expectOne('/api/user/add/admin');
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(newAdminUser);
+    });
+  });
+
+  describe('getAdminUser', () => {
+    it('should call the endpoint for retrieving a single admin user', () => {
+      service.getAdminUser('mock-useruid').subscribe();
+
+      const req = http.expectOne('/api/user/admin/mock-useruid');
+      expect(req.request.method).toBe('GET');
     });
   });
 });

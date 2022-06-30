@@ -19,7 +19,6 @@ export class AdminUsersService {
   }
 
   public getAdminUser(userId: string): Observable<UserDetails> {
-    console.log(userId);
-    return this.http.get<UserDetails>(`api/user/admin/${userId}`);
+    return this.http.get<UserDetails>(`/api/user/admin/${userId}`);
   }
 }

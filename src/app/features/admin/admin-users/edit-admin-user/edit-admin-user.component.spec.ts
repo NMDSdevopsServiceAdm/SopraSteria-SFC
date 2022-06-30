@@ -14,7 +14,7 @@ import { render } from '@testing-library/angular';
 
 import { EditAdminUserComponent } from './edit-admin-user.component';
 
-fdescribe('EditAdminUserMenuComponent', () => {
+describe('EditAdminUserMenuComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
       EditAdminUserComponent,
