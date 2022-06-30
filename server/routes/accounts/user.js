@@ -52,6 +52,17 @@ const listAllUsers = async (req, res) => {
   }
 };
 
+const listAdminUsers = async (req, res) => {
+  try {
+    const adminUsers = await User.User.fetchAdminUsers();
+
+    return res.status(200).json({ adminUsers });
+  } catch (err) {
+    console.error('user::admin - failed', err);
+    return res.status(500).send('Failed to get admin users');
+  }
+};
+
 const getUser = async (req, res) => {
   let userId;
   const establishment = req.establishment;
@@ -1067,6 +1078,7 @@ const swapEstablishment = async (req, res) => {
 };
 
 router.route('/').get(return200);
+router.route('/admin').get(Authorization.isAuthorised, listAdminUsers);
 router
   .route('/establishment/:id')
   .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewListOfUsers'), listAllUsers);
@@ -1082,10 +1094,10 @@ router
 router.route('/me').get(Authorization.isAuthorised, getMe);
 router.route('/resetPassword').post(Authorization.isAuthorisedPasswdReset, resetPassword);
 router.route('/changePassword').post(Authorization.isAuthorised, changePassword);
+router.route('/add/admin').post(Authorization.isAuthorised, partAddUser);
 router
   .route('/add/establishment/:id')
   .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddUser);
-router.route('/add/admin').post(Authorization.isAuthorised, partAddUser);
 router.route('/:uid/resend-activation').post(Authorization.isAuthorised, resendActivationLink);
 router.route('/validateAddUser').post(finishAddUser);
 router.route('/add').post(Authorization.isAuthorisedAddUser, addUser);

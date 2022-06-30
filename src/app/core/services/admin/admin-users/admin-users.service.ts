@@ -11,12 +11,8 @@ export class AdminUsersService {
   constructor(private http: HttpClient) {}
 
   public getAdminUsers(): Observable<UserDetails[]> {
-    return this.http.get<UserDetails[]>('/api/admin/admin-users');
+    return this.http.get<UserDetails[]>('/api/user/admin');
   }
-
-  // public createAdminUser(newUser: UserDetails): Observable<UserDetails> {
-  //   return this.http.post<UserDetails>('/api/admin/admin-users/create-admin-user', { adminUser: newUser });
-  // }
 
   public createAdminUser(requestPayload: CreateAccountRequest): Observable<CreateAccountResponse> {
     return this.http.post<CreateAccountResponse>(`/api/user/add/admin`, requestPayload);

@@ -948,6 +948,25 @@ class User {
     return returnData;
   }
 
+  static async fetchAdminUsers() {
+    const adminUsers = await models.user.fetchAdminUsers();
+    const formattedAdminUser = adminUsers.map((adminUser) => {
+      return {
+        uid: adminUser.uid,
+        fullname: adminUser.FullNameValue,
+        role: adminUser.UserRoleValue,
+        email: adminUser.EmailValue,
+        phone: adminUser.PhoneValue,
+        jobTitle: adminUser.JobTitleValue,
+        username: adminUser.login && adminUser.login.username,
+        updated: adminUser.updated.toJSON(),
+        isPrimary: adminUser.IsPrimary,
+        status: User.statusTranslator(adminUser.login),
+      };
+    });
+    return formattedAdminUser;
+  }
+
   // returns a set of User based on given filter criteria (all if no filters defined) - restricted to the given Establishment
   static async fetch(establishmentId, filters = null) {
     if (filters) throw new Error('Filters not implemented');

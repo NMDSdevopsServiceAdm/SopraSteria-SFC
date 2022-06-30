@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { Roles } from '@core/model/roles.enum';
 
 import { AdminUsersService } from './admin-users.service';
 
@@ -29,7 +30,7 @@ describe('AdminUsersService', () => {
     it('should call the endpoint for getting admin uses', () => {
       service.getAdminUsers().subscribe();
 
-      const req = http.expectOne('/api/admin/admin-users');
+      const req = http.expectOne('/api/user/admin');
       expect(req.request.method).toBe('GET');
     });
   });
@@ -41,13 +42,13 @@ describe('AdminUsersService', () => {
         jobTitle: 'administrator',
         email: 'admin@email.com',
         phone: '01234567890',
-        permissionsType: 'Admin',
+        role: Roles.Admin,
       };
       service.createAdminUser(newAdminUser).subscribe();
 
-      const req = http.expectOne('/api/admin/admin-users/create-admin-user');
+      const req = http.expectOne('/api/user/add/admin');
       expect(req.request.method).toBe('POST');
-      expect(req.request.body.adminUser).toEqual(newAdminUser);
+      expect(req.request.body).toEqual(newAdminUser);
     });
   });
 });

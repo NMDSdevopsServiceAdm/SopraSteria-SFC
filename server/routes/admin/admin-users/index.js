@@ -35,7 +35,7 @@ const fetchAdminUsers = async (req, res) => {
     const formattedAdminUsers = transformAdminUsers(adminUsers);
     res.status(200).json({ adminUsers: formattedAdminUsers });
   } catch (error) {
-    console.error(error);
+    console.error('user::admin - failed', error);
     res.status(400).json({ message: 'Could not fetch admin users' });
   }
 };

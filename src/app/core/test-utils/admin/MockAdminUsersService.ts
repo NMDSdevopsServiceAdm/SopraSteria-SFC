@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserDetails } from '@core/model/userDetails.model';
+import { CreateAccountRequest, CreateAccountResponse } from '@core/model/account.model';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { build, fake } from '@jackfranklin/test-data-bot/build';
 import { Observable, of } from 'rxjs';
@@ -38,7 +38,7 @@ export const PendingAdminUser = () => {
 
 @Injectable()
 export class MockAdminUsersService extends AdminUsersService {
-  public createAdminUser(newUser: UserDetails): Observable<UserDetails> {
+  public createAdminUser(newUser: CreateAccountRequest): Observable<CreateAccountResponse> {
     return of(null);
   }
 }
