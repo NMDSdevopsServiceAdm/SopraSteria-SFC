@@ -11,19 +11,18 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">
-            Forgot your password?
-          </h1>
+          <h1 class="govuk-fieldset__heading">Forgot your password?</h1>
         </legend>
 
         <p>Enter your username or email address and we will send you a link to reset your password.</p>
 
-        <div class="govuk-form-group" [class.govuk-form-group--error]="form.get('usernameOrEmail').errors && submitted">
-          <label class="govuk-label" for="usernameOrEmail">
-            Username or email address
-          </label>
+        <div
+          class="govuk-form-group govuk-!-margin-bottom-7"
+          [class.govuk-form-group--error]="form.get('usernameOrEmail').errors && submitted"
+        >
+          <label class="govuk-label" for="usernameOrEmail"> Username or email address </label>
           <span
-            id="username-issued-error"
+            id="usernameOrEmail-error"
             class="govuk-error-message"
             *ngIf="form.get('usernameOrEmail').errors?.required && submitted"
           >

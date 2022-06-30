@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-fp-confirmation',
@@ -6,4 +6,5 @@ import { Component, Input } from '@angular/core';
 })
 export class ForgotYourPasswordConfirmationComponent {
   @Input() resetPasswordLink: string;
+  @Input() emailAddress: string;
 }
