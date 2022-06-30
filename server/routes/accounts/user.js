@@ -1079,7 +1079,7 @@ const swapEstablishment = async (req, res) => {
 };
 
 router.route('/').get(return200);
-router.route('/admin').get(Authorization.isAuthorised, listAdminUsers);
+router.route('/admin').get(Authorization.isAdmin, listAdminUsers);
 router
   .route('/establishment/:id')
   .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewListOfUsers'), listAllUsers);
@@ -1095,7 +1095,7 @@ router
 router.route('/me').get(Authorization.isAuthorised, getMe);
 router.route('/resetPassword').post(Authorization.isAuthorisedPasswdReset, resetPassword);
 router.route('/changePassword').post(Authorization.isAuthorised, changePassword);
-router.route('/add/admin').post(Authorization.isAuthorised, partAddUser);
+router.route('/add/admin').post(Authorization.isAdmin, partAddUser);
 router
   .route('/add/establishment/:id')
   .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddUser);

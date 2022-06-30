@@ -948,7 +948,7 @@ class User {
 
   static async fetchAdminUsers() {
     const adminUsers = await models.user.fetchAdminUsers();
-    const formattedAdminUser = adminUsers.map((adminUser) => {
+    const formattedAdminUsers = adminUsers.map((adminUser) => {
       return {
         uid: adminUser.uid,
         fullname: adminUser.FullNameValue,
@@ -962,7 +962,12 @@ class User {
         status: User.statusTranslator(adminUser.login),
       };
     });
-    return formattedAdminUser;
+
+    formattedAdminUsers.sort((a, b) => {
+      if (a.status > b.status) return -1;
+      return new Date(b.updated) - new Date(a.updated);
+    });
+    return formattedAdminUsers;
   }
 
   // returns a set of User based on given filter criteria (all if no filters defined) - restricted to the given Establishment

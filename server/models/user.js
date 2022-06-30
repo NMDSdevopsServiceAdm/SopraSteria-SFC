@@ -479,6 +479,7 @@ module.exports = function (sequelize, DataTypes) {
           attributes: ['username', 'status'],
         },
       ],
+      order: [['updated', 'DESC']],
     });
   };
 

@@ -16,7 +16,6 @@ router.use('/email-campaigns', require('./email-campaigns'));
 router.use('/move-workplace', require('./move-workplace'));
 router.use('/local-authority-return', require('./local-authority-return'));
 router.use('/remove-parent-status', require('./remove-parent-status'));
-router.use('/admin-users', require('./admin-users'));
 
 router.route('/').post(async function (req, res) {
   return res.status(200).send({ success: 'from admin' });

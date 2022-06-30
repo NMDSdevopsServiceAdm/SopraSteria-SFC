@@ -79,18 +79,6 @@ describe('server/models/classes/user.js', () => {
 
     const expectedResponse = [
       {
-        uid: 'mocked-uid',
-        fullname: 'Admin User',
-        role: 'Admin',
-        email: 'admin@email.com',
-        phone: '01234567890',
-        jobTitle: 'admin',
-        updated: '2022-01-02T00:00:00.000Z',
-        username: 'adminUser',
-        isPrimary: null,
-        status: 'Active',
-      },
-      {
         uid: 'mocked-uid2',
         fullname: 'Admin Manager',
         role: 'AdminManager',
@@ -101,6 +89,18 @@ describe('server/models/classes/user.js', () => {
         username: null,
         isPrimary: null,
         status: 'Pending',
+      },
+      {
+        uid: 'mocked-uid',
+        fullname: 'Admin User',
+        role: 'Admin',
+        email: 'admin@email.com',
+        phone: '01234567890',
+        jobTitle: 'admin',
+        updated: '2022-01-02T00:00:00.000Z',
+        username: 'adminUser',
+        isPrimary: null,
+        status: 'Active',
       },
     ];
 
