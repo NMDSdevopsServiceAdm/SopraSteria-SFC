@@ -14,6 +14,7 @@ export class UserFormComponent {
   @Input() submitted = false;
   @Input() formControlsMap: any[];
   @Input() permissionsTypeRadios: UserPermissionsType[];
+  @Input() title: string;
   @Input() getFirstErrorMessage: (item: string) => string;
 
   constructor(private errorSummaryService: ErrorSummaryService) {}

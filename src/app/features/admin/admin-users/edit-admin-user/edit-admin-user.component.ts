@@ -12,15 +12,16 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 
 @Component({
-  selector: 'app-add-edit-users',
-  templateUrl: 'add-edit-admin-users.component.html',
+  selector: 'app-edit-admin-user',
+  templateUrl: 'edit-admin-user.component.html',
 })
-export class AddEditAdminUsersComponent extends AccountDetailsDirective {
-  public callToActionLabel = 'Save admin user';
+export class EditAdminUserComponent extends AccountDetailsDirective {
+  public callToActionLabel = 'Save and return';
   public permissionsTypeRadios = [
     { label: 'Admin manager', permissionsQuestionValue: Roles.AdminManager },
     { label: 'Admin', permissionsQuestionValue: Roles.Admin },
   ];
+  public title = 'Change admin user details';
 
   constructor(
     private breadcrumbService: BreadcrumbService,

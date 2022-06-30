@@ -14,12 +14,12 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { AddEditAdminUsersComponent } from './add-edit-admin-users.component';
+import { AddAdminUserComponent } from './add-admin-user.component';
 
-describe('AddEditAdminUsersMenuComponent', () => {
+describe('AddAdminUserComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
-      AddEditAdminUsersComponent,
+      AddAdminUserComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
@@ -60,7 +60,7 @@ describe('AddEditAdminUsersMenuComponent', () => {
     };
   }
 
-  it('should render a AdminUsersComponent', async () => {
+  it('should render a AddAdminUserComponent', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();

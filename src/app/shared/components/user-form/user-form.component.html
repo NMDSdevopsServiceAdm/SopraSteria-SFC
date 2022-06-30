@@ -1,7 +1,7 @@
 <div [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m govuk-!-margin-bottom-8">
-      <h1 class="govuk-fieldset__heading">Add admin user details</h1>
+      <h1 class="govuk-fieldset__heading">{{ title }}</h1>
     </legend>
 
     <ng-container *ngFor="let item of formControlsMap">

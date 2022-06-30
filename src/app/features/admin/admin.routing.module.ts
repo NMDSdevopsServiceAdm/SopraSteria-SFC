@@ -16,8 +16,9 @@ import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-req
 import { GetRegistrationNotesResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
 import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
-import { AddEditAdminUsersComponent } from './admin-users/add-edit-admin-users/add-edit-admin-users.component';
+import { AddAdminUserComponent } from './admin-users/add-admin-user/add-admin-user.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
+import { EditAdminUserComponent } from './admin-users/edit-admin-user/edit-admin-user.component';
 import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { EmailsComponent } from './emails/emails.component';
@@ -287,8 +288,13 @@ const routes: Routes = [
       },
       {
         path: 'add-admin',
-        component: AddEditAdminUsersComponent,
-        data: { title: 'Add Admin Users' },
+        component: AddAdminUserComponent,
+        data: { title: 'Add Admin User' },
+      },
+      {
+        path: ':id/edit',
+        component: EditAdminUserComponent,
+        data: { title: 'Edit Admin User' },
       },
     ],
   },
