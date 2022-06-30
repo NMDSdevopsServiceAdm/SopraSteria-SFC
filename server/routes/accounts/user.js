@@ -1114,3 +1114,5 @@ router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablis
 module.exports = router;
 module.exports.meetsMaxUserLimit = meetsMaxUserLimit;
 module.exports.partAddUser = partAddUser;
+
+module.exports.listAdminUsers = listAdminUsers;

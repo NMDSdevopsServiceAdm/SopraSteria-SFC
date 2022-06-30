@@ -3,7 +3,7 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
-const { meetsMaxUserLimit, partAddUser } = require('../../../../routes/accounts/user');
+const { meetsMaxUserLimit, partAddUser, listAdminUsers } = require('../../../../routes/accounts/user');
 const User = require('../../../../models/classes/user').User;
 
 describe('user.js', () => {
@@ -222,6 +222,69 @@ describe('user.js', () => {
       await partAddUser(req, res);
 
       expect(res.statusCode).to.equal(403);
+    });
+  });
+
+  describe('listAdminUsers', () => {
+    const expectedResponse = [
+      {
+        uid: 'mocked-uid',
+        fullname: 'Admin User',
+        role: 'Admin',
+        email: 'admin@email.com',
+        phone: '01234567890',
+        jobTitle: 'admin',
+        updated: '2022-01-02T00:00:00.000Z',
+        username: 'adminUser',
+        isPrimary: null,
+        status: 'Active',
+      },
+      {
+        uid: 'mocked-uid2',
+        fullname: 'Admin Manager',
+        role: 'AdminManager',
+        email: 'adminManager@email.com',
+        phone: '01928374650',
+        jobTitle: 'admin manager',
+        updated: '2022-05-01T23:00:00.000Z',
+        username: null,
+        isPrimary: null,
+        status: 'Pending',
+      },
+    ];
+
+    beforeEach(() => {
+      const request = {
+        method: 'GET',
+        url: 'api/users/admin',
+      };
+
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+    });
+
+    it('should return a status of 200 and an array of all the admin users', async () => {
+      sinon.stub(User, 'fetchAdminUsers').returns(expectedResponse);
+      await listAdminUsers(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ adminUsers: expectedResponse });
+    });
+
+    it('should pass the back an empty array, if there are no admin users', async () => {
+      sinon.stub(User, 'fetchAdminUsers').returns([]);
+      await listAdminUsers(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ adminUsers: [] });
+    });
+
+    it('should throw an error if there is a problem retrieving admin users', async () => {
+      sinon.stub(User, 'fetchAdminUsers').throws(() => new Error());
+      await listAdminUsers(req, res);
+
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.deep.equal('Failed to get admin users');
     });
   });
 });
