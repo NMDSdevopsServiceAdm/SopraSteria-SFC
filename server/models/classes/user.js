@@ -356,9 +356,7 @@ class User {
   // saves the User to DB. Returns true if saved; false if not.
   // Throws "UserSaveException" on error
   async save(savedBy, ttl = 0, externalTransaction = null, firstSave = false) {
-    console.log('******* save ********');
     let mustSave = this._initialise();
-    console.log(mustSave);
     if (!this.uid) {
       this._log(User.LOG_ERROR, 'Not able to save an unknown uid');
       throw new UserExceptions.UserSaveException(

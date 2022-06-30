@@ -426,19 +426,20 @@ const partAddUser = async (req, res) => {
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
+  const errorMessage = isAdminRole(req.role) ? 'add/admin' : 'add/establishment/:id';
   // ensure only a user having the role of Edit can register a new user
   if (notPermittedToRegisterNewUser(req.role)) {
-    console.error('/add/establishment/:id - given user does not have sufficient permission');
+    console.error(`${errorMessage} - given user does not have sufficient permission`);
     return res.status(401).send();
   }
 
   if (newUserRoleNotValid(req.body.role)) {
-    console.error('/add/establishment/:id - Invalid request');
+    console.error(`${errorMessage} - Invalid request`);
     return res.status(403).send();
   }
 
   if (await meetsMaxUserLimit(establishmentId, req)) {
-    console.error('/add/establishment/:id - Invalid request');
+    console.error(`${errorMessage} - Invalid request`);
     return res
       .status(400)
       .send('This user cannot have this permission, the workplace already has the maximum of this type');
@@ -475,13 +476,13 @@ const partAddUser = async (req, res) => {
     }
   } catch (err) {
     if (err instanceof User.UserExceptions.UserJsonException) {
-      console.error('/add/establishment/:id POST: ', err.message);
+      console.error(`${errorMessage} POST: `, err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof User.UserExceptions.UserSaveException && err.message === 'Missing Mandatory properties') {
-      console.error('/add/establishment/:id POST: ', err.message);
+      console.error(`${errorMessage} POST: `, err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof User.UserExceptions.UserSaveException) {
-      console.error('/add/establishment/:id POST: ', err.message);
+      console.error(`${errorMessage} POST: `, err.message);
       return res.status(500).send(err.safe);
     }
 
