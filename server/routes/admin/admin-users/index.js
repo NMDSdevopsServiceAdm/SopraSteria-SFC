@@ -16,6 +16,11 @@ const createAdminUser = async (req, res) => {
   try {
     const uid = uuid.v4();
     const user = await models.user.findByUUID(req.userUid);
+
+    if (!user) {
+      return res.status(401).json({ message: 'The user creating the new admin cannot be found' });
+    }
+
     await models.user.createAdminUser({ ...adminUser, uid, updatedBy: user.FullNameValue });
     res.status(200).json({ message: 'Admin user successfully created' });
   } catch (error) {
@@ -44,7 +49,7 @@ const transformAdminUsers = (adminUsers) => {
       email: adminUser.EmailValue,
       phone: adminUser.PhoneValue,
       jobTitle: adminUser.JobTitleValue,
-      username: adminUser.login.username,
+      username: adminUser.login && adminUser.login.username,
       updated: adminUser.updated,
       isPrimary: adminUser.IsPrimary,
       status: statusTranslator(adminUser.login),

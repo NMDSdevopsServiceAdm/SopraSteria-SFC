@@ -12,4 +12,8 @@ export class AdminUsersService {
   public getAdminUsers(): Observable<UserDetails[]> {
     return this.http.get<UserDetails[]>('/api/admin/admin-users');
   }
+
+  public createAdminUser(newUser: UserDetails): Observable<UserDetails> {
+    return this.http.post<UserDetails>('/api/admin/admin-users/create-admin-user', { adminUser: newUser });
+  }
 }

@@ -2,9 +2,15 @@ const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
+const uuid = require('uuid');
 
 const models = require('../../../../../models');
-const { fetchAdminUsers, transformAdminUsers, statusTranslator } = require('../../../../../routes/admin/admin-users');
+const {
+  fetchAdminUsers,
+  transformAdminUsers,
+  statusTranslator,
+  createAdminUser,
+} = require('../../../../../routes/admin/admin-users');
 
 describe('routes/admin/admin-user', () => {
   let req, res;
@@ -129,12 +135,70 @@ describe('routes/admin/admin-user', () => {
       expect(res._getJSONData()).to.deep.equal({ adminUsers: [] });
     });
 
-    it('shoud return an error if there is a problem retrieving admin users', async () => {
+    it('should throw an error if there is a problem retrieving admin users', async () => {
       sinon.stub(models.user, 'fetchAdminUsers').throws(() => new Error());
       await fetchAdminUsers(req, res);
 
       expect(res.statusCode).to.equal(400);
       expect(res._getJSONData()).to.deep.equal({ message: 'Could not fetch admin users' });
+    });
+  });
+
+  describe('createAdminUser', () => {
+    const newAdmin = {
+      fullname: 'admin user',
+      jobTitle: 'administrator',
+      email: 'admin@email.com',
+      phone: '01234567890',
+      role: 'Admin',
+    };
+
+    beforeEach(() => {
+      const request = {
+        method: 'POST',
+        url: 'api/admin/admin-user/create-admin-user',
+        body: { adminUser: newAdmin },
+        userUid: 'mocked-user-uid',
+      };
+
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+
+      sinon.stub(uuid, 'v4').returns('mocked-uid');
+    });
+
+    it('should return a status of 200 and a success message when successfully creating and admin', async () => {
+      sinon.stub(models.user, 'findByUUID').returns({ FullNameValue: 'Mock User' });
+      sinon.stub(models.user, 'createAdminUser');
+      await createAdminUser(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ message: 'Admin user successfully created' });
+    });
+
+    it('should return a status of 400 if the user cannot be found', async () => {
+      sinon.stub(models.user, 'findByUUID').returns(null);
+      await createAdminUser(req, res);
+
+      expect(res.statusCode).to.equal(401);
+      expect(res._getJSONData()).to.deep.equal({ message: 'The user creating the new admin cannot be found' });
+    });
+
+    it('should throw an error if there is a problem getting the user', async () => {
+      sinon.stub(models.user, 'findByUUID').throws(() => new Error());
+      await createAdminUser(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getJSONData()).to.deep.equal({ message: 'Admin user could not be created' });
+    });
+
+    it('should throw an error if there is a problem creating the new admin', async () => {
+      sinon.stub(models.user, 'findByUUID').returns({ FullNameValue: 'Mock User' });
+      sinon.stub(models.user, 'createAdminUser').throws(() => new Error());
+      await createAdminUser(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getJSONData()).to.deep.equal({ message: 'Admin user could not be created' });
     });
   });
 });
