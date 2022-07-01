@@ -59,4 +59,22 @@ describe('AdminUsersService', () => {
       expect(req.request.method).toBe('GET');
     });
   });
+
+  describe('updateAdminUser', () => {
+    it('should call the update admin user endpoint with user id and user details', () => {
+      const updatedAdminUser = {
+        fullname: 'updated admin user',
+        jobTitle: 'administrator',
+        email: 'admin@email.com',
+        phone: '01234567890',
+        role: Roles.AdminManager,
+      };
+      const userId = 'mock-userId';
+      service.updateAdminUserDetails(userId, updatedAdminUser).subscribe();
+
+      const req = http.expectOne(`/api/user/admin/${userId}`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual(updatedAdminUser);
+    });
+  });
 });
