@@ -52,6 +52,17 @@ const listAllUsers = async (req, res) => {
   }
 };
 
+const listAdminUsers = async (req, res) => {
+  try {
+    const adminUsers = await User.User.fetchAdminUsers();
+
+    return res.status(200).json({ adminUsers });
+  } catch (err) {
+    console.error('user::admin - failed', err);
+    return res.status(500).send('Failed to get admin users');
+  }
+};
+
 const getUser = async (req, res) => {
   let userId;
   const establishment = req.establishment;
@@ -415,19 +426,20 @@ const partAddUser = async (req, res) => {
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
+  const errorMessage = isAdminRole(req.role) ? 'add/admin' : 'add/establishment/:id';
   // ensure only a user having the role of Edit can register a new user
   if (notPermittedToRegisterNewUser(req.role)) {
-    console.error('/add/establishment/:id - given user does not have sufficient permission');
+    console.error(`${errorMessage} - given user does not have sufficient permission`);
     return res.status(401).send();
   }
 
   if (newUserRoleNotValid(req.body.role)) {
-    console.error('/add/establishment/:id - Invalid request');
+    console.error(`${errorMessage} - Invalid request`);
     return res.status(403).send();
   }
 
   if (await meetsMaxUserLimit(establishmentId, req)) {
-    console.error('/add/establishment/:id - Invalid request');
+    console.error(`${errorMessage} - Invalid request`);
     return res
       .status(400)
       .send('This user cannot have this permission, the workplace already has the maximum of this type');
@@ -464,13 +476,13 @@ const partAddUser = async (req, res) => {
     }
   } catch (err) {
     if (err instanceof User.UserExceptions.UserJsonException) {
-      console.error('/add/establishment/:id POST: ', err.message);
+      console.error(`${errorMessage} POST: `, err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof User.UserExceptions.UserSaveException && err.message === 'Missing Mandatory properties') {
-      console.error('/add/establishment/:id POST: ', err.message);
+      console.error(`${errorMessage} POST: `, err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof User.UserExceptions.UserSaveException) {
-      console.error('/add/establishment/:id POST: ', err.message);
+      console.error(`${errorMessage} POST: `, err.message);
       return res.status(500).send(err.safe);
     }
 
@@ -480,7 +492,7 @@ const partAddUser = async (req, res) => {
 
 const notPermittedToRegisterNewUser = (role) => !role || role === 'Read' || role === 'None';
 
-const newUserRoleNotValid = (role) => !['Edit', 'Read', 'None'].includes(role);
+const newUserRoleNotValid = (role) => !['Edit', 'Read', 'None', 'Admin', 'AdminManager'].includes(role);
 
 // Resend activation link
 const resendActivationLink = async (req, res) => {
@@ -1067,6 +1079,7 @@ const swapEstablishment = async (req, res) => {
 };
 
 router.route('/').get(return200);
+router.route('/admin').get(Authorization.isAdmin, listAdminUsers);
 router
   .route('/establishment/:id')
   .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewListOfUsers'), listAllUsers);
@@ -1082,6 +1095,7 @@ router
 router.route('/me').get(Authorization.isAuthorised, getMe);
 router.route('/resetPassword').post(Authorization.isAuthorisedPasswdReset, resetPassword);
 router.route('/changePassword').post(Authorization.isAuthorised, changePassword);
+router.route('/add/admin').post(Authorization.isAdmin, partAddUser);
 router
   .route('/add/establishment/:id')
   .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddUser);
@@ -1100,3 +1114,5 @@ router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablis
 module.exports = router;
 module.exports.meetsMaxUserLimit = meetsMaxUserLimit;
 module.exports.partAddUser = partAddUser;
+
+module.exports.listAdminUsers = listAdminUsers;
