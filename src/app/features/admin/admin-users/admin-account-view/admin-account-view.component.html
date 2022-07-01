@@ -10,6 +10,7 @@
       <a
         class="govuk-list govuk-button-link govuk-list--inline govuk__flex govuk__align-items-center govuk-util__float-right govuk-!-margin-left-9"
         draggable="false"
+        *ngIf="isAdminManager()"
         role="button"
         href="#"
       >
@@ -17,6 +18,11 @@
         <span class="govuk-!-margin-left-1">Delete this admin user</span></a
       >
     </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-summary-list [wrapBorder]="true" [summaryList]="userDetails"></app-summary-list>
   </div>
 </div>
 <div class="govuk-button-group">
