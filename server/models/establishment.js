@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+const { query } = require('express');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -699,34 +700,6 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'IsNationalOrg',
       },
-      peopleInterviewedInTheLastFourWeeks: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"PeopleInterviewedInTheLastFourWeeks"',
-      },
-      moneySpentOnAdvertisingInTheLastFourWeeks: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"MoneySpentOnAdvertisingInTheLastFourWeeks"',
-      },
-      doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: {
-        type: DataTypes.ENUM,
-        allowNull: true,
-        values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
-        field: '"DoNewStartersRepeatMandatoryTrainingFromPreviousEmployment"',
-      },
-      wouldYouAcceptCareCertificatesFromPreviousEmployment: {
-        type: DataTypes.ENUM,
-        allowNull: true,
-        values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
-        field: '"WouldYouAcceptCareCertificatesFromPreviousEmployment"',
-      },
-      recruitmentJourneyExistingUserBanner: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-        field: 'RecruitmentJourneyExistingUserBanner',
-      },
     },
     {
       defaultScope: {
@@ -1262,10 +1235,6 @@ module.exports = function (sequelize, DataTypes) {
         'StartersValue',
         'LeaversValue',
         'reasonsForLeaving',
-        'moneySpentOnAdvertisingInTheLastFourWeeks',
-        'peopleInterviewedInTheLastFourWeeks',
-        'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
-        'wouldYouAcceptCareCertificatesFromPreviousEmployment',
       ],
       where: {
         [Op.or]: [
@@ -2139,19 +2108,6 @@ module.exports = function (sequelize, DataTypes) {
     } catch (error) {
       console.log({ error });
     }
-  };
-
-  Establishment.updatRecuritmentBannerForExistingUser = async function (establishmentId, data) {
-    return await this.update(
-      {
-        recruitmentJourneyExistingUserBanner: data,
-      },
-      {
-        where: {
-          id: establishmentId,
-        },
-      },
-    );
   };
 
   return Establishment;
