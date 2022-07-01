@@ -128,9 +128,8 @@ const getMe = async (req, res) => {
 
 // updates a user with given uid or username
 const updateUser = async (req, res) => {
-  console.log('*********** update user ***********');
   const userId = req.params.userId;
-  console.log(userId);
+
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
@@ -145,8 +144,7 @@ const updateUser = async (req, res) => {
   }
 
   const thisUser = new User.User(establishmentId);
-  console.log('>>>>>>>>>>>>>>>>>>');
-  // console.log(thisUser);
+
   try {
     // before updating a Worker, we need to be sure the Worker is
     //  available to the given establishment. The best way of doing that
@@ -1128,3 +1126,4 @@ module.exports.meetsMaxUserLimit = meetsMaxUserLimit;
 module.exports.partAddUser = partAddUser;
 
 module.exports.listAdminUsers = listAdminUsers;
+module.exports.updateUser = updateUser;
