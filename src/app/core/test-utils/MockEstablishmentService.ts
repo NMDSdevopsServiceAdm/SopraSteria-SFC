@@ -44,10 +44,6 @@ export class MockEstablishmentService extends EstablishmentService {
     updatedBy: 'mock establishment updatedBy',
     vacancies: undefined,
     showSharingPermissionsBanner: false,
-    moneySpentOnAdvertisingInTheLastFourWeeks: '78',
-    peopleInterviewedInTheLastFourWeeks: 'None',
-    doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'No,never',
-    wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}) {
@@ -86,10 +82,6 @@ export class MockEstablishmentService extends EstablishmentService {
 
   public get establishment(): Establishment {
     return this.establishmentObj;
-  }
-
-  public get inStaffRecruitmentFlow(): boolean {
-    return false;
   }
 
   public get returnTo(): URLStructure {
@@ -213,10 +205,6 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     updatedBy: 'mock establishment updatedBy',
     vacancies: undefined,
     showSharingPermissionsBanner: false,
-    moneySpentOnAdvertisingInTheLastFourWeeks: '78',
-    peopleInterviewedInTheLastFourWeeks: 'None',
-    doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'No,never',
-    wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
   };
 
   public get returnTo(): URLStructure {

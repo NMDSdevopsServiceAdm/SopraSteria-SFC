@@ -13,9 +13,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  DeleteWorkplaceDialogComponent,
-} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -57,7 +55,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     this.workplace = this.establishmentService.establishment;
-    this.establishmentService.setInStaffRecruitmentFlow(false);
     this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');

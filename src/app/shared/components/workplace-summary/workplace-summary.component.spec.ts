@@ -211,114 +211,6 @@ describe('WorkplaceSummaryComponent', async () => {
     });
   });
 
-  describe('staff recruitment', async () => {
-    it('should show dash and have Add information button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType is set to null (not answered)', async () => {
-      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
-
-      component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks = null;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const dataSharing = within(document.body).queryByTestId('advertising-spend');
-
-      expect(within(dataSharing).queryByText('Add')).toBeTruthy();
-      expect(within(dataSharing).queryByText('-')).toBeTruthy();
-    });
-
-    it('should show Change button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType has a value (answered)', async () => {
-      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
-
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const dataSharing = within(document.body).queryByTestId('advertising-spend');
-
-      expect(
-        within(dataSharing).getByText(`£${component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks}`),
-      ).toBeTruthy();
-      expect(within(dataSharing).queryByText('Change')).toBeTruthy();
-    });
-
-    it('should show dash and have Add information button on People Interviewed row when peopleInterviewedInTheLastFourWeeks is set to null (not answered)', async () => {
-      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
-
-      component.workplace.peopleInterviewedInTheLastFourWeeks = null;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const dataSharing = within(document.body).queryByTestId('people-interviewed');
-
-      expect(within(dataSharing).queryByText('Add')).toBeTruthy();
-      expect(within(dataSharing).queryByText('-')).toBeTruthy();
-    });
-
-    it('should show Change button on People Interviewed row when peopleInterviewedInTheLastFourWeeks has a value (answered)', async () => {
-      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
-
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const dataSharing = within(document.body).queryByTestId('people-interviewed');
-
-      expect(within(dataSharing).queryByText(component.workplace.peopleInterviewedInTheLastFourWeeks)).toBeTruthy();
-      expect(within(dataSharing).queryByText('Change')).toBeTruthy();
-    });
-
-    it('should show dash and have Add information button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is set to null (not answered)', async () => {
-      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
-
-      component.workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const dataSharing = within(document.body).queryByTestId('people-training');
-
-      expect(within(dataSharing).queryByText('Add')).toBeTruthy();
-      expect(within(dataSharing).queryByText('-')).toBeTruthy();
-    });
-
-    it('should show Change button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment has a value (answered)', async () => {
-      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
-
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const dataSharing = within(document.body).queryByTestId('people-training');
-
-      expect(
-        within(dataSharing).queryByText(component.workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment),
-      ).toBeTruthy();
-      expect(within(dataSharing).queryByText('Change')).toBeTruthy();
-    });
-
-    it('should show dash and have Add information button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment is set to null (not answered)', async () => {
-      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
-
-      component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const dataSharing = within(document.body).queryByTestId('accept-care-certificate');
-
-      expect(within(dataSharing).queryByText('Add')).toBeTruthy();
-      expect(within(dataSharing).queryByText('-')).toBeTruthy();
-    });
-
-    it('should show Change button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment has a value (answered)', async () => {
-      const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
-
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const dataSharing = within(document.body).queryByTestId('accept-care-certificate');
-
-      expect(
-        within(dataSharing).queryByText(component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment),
-      ).toBeTruthy();
-      expect(within(dataSharing).queryByText('Change')).toBeTruthy();
-    });
-  });
-
   describe('Staff records banner', async () => {
     it('should show banner if you have more staff records', async () => {
       const { component, fixture } = await setup();
@@ -330,7 +222,7 @@ describe('WorkplaceSummaryComponent', async () => {
       fixture.detectChanges();
 
       const moreRecords = within(document.body).queryByTestId('morerecords');
-      expect(moreRecords.innerHTML).toContain(`You've more staff records than staff`);
+      expect(moreRecords.innerHTML).toContain("You've more staff records than staff");
       expect(moreRecords.innerHTML).toContain('View staff records');
     });
 
@@ -344,7 +236,7 @@ describe('WorkplaceSummaryComponent', async () => {
       fixture.detectChanges();
 
       const moreRecords = within(document.body).queryByTestId('morerecords');
-      expect(moreRecords.innerHTML).toContain(`You've more staff than staff records`);
+      expect(moreRecords.innerHTML).toContain("You've more staff than staff records");
     });
 
     it('should show banner if you have more staff records and 0 staff', async () => {
@@ -357,10 +249,10 @@ describe('WorkplaceSummaryComponent', async () => {
       fixture.detectChanges();
 
       const moreRecords = within(document.body).queryByTestId('morerecords');
-      expect(moreRecords.innerHTML).toContain(`You've more staff records than staff`);
+      expect(moreRecords.innerHTML).toContain("You've more staff records than staff");
     });
 
-    it(`should not show banner if you don't have permission to list workers`, async () => {
+    it("should not show banner if you don't have permission to list workers", async () => {
       const { component, fixture } = await setup();
 
       component.workerCount = 10;

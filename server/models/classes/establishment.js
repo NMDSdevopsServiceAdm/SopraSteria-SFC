@@ -87,12 +87,7 @@ class Establishment extends EntityValidator {
     this._lastBulkUploaded = null;
     this._eightWeeksFromFirstLogin = null;
     this._showSharingPermissionsBanner = null;
-    this._recruitmentJourneyExistingUserBanner = null;
     this._expiresSoonAlertDate = null;
-    this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
-    this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
-    this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
-    this._peopleInterviewedInTheLastFourWeeks = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -265,10 +260,6 @@ class Establishment extends EntityValidator {
     return this._showSharingPermissionsBanner;
   }
 
-  get recruitmentJourneyExistingUserBanner() {
-    return this._recruitmentJourneyExistingUserBanner;
-  }
-
   get reasonsForLeaving() {
     return this._reasonsForLeaving;
   }
@@ -347,22 +338,6 @@ class Establishment extends EntityValidator {
 
   get eightWeeksFromFirstLogin() {
     return this._eightWeeksFromFirstLogin;
-  }
-
-  get doNewStartersRepeatMandatoryTrainingFromPreviousEmployment() {
-    return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-  }
-
-  get moneySpentOnAdvertisingInTheLastFourWeeks() {
-    return this._moneySpentOnAdvertisingInTheLastFourWeeks;
-  }
-
-  get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
-    return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
-  }
-
-  get peopleInterviewedInTheLastFourWeeks() {
-    return this._peopleInterviewedInTheLastFourWeeks;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -537,30 +512,8 @@ class Establishment extends EntityValidator {
           this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
         }
 
-        if (document.recruitmentJourneyExistingUserBanner) {
-          this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
-        }
-
         if (document.expiresSoonAlertDate) {
           this._expiresSoonAlertDate = document.expiresSoonAlertDate;
-        }
-
-        if ('moneySpentOnAdvertisingInTheLastFourWeeks' in document) {
-          this._moneySpentOnAdvertisingInTheLastFourWeeks = document.moneySpentOnAdvertisingInTheLastFourWeeks;
-        }
-
-        if ('peopleInterviewedInTheLastFourWeeks' in document) {
-          this._peopleInterviewedInTheLastFourWeeks = document.peopleInterviewedInTheLastFourWeeks;
-        }
-
-        if ('doNewStartersRepeatMandatoryTrainingFromPreviousEmployment' in document) {
-          this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
-            document.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        }
-
-        if ('wouldYouAcceptCareCertificatesFromPreviousEmployment' in document) {
-          this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
-            document.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         }
       }
 
@@ -812,12 +765,6 @@ class Establishment extends EntityValidator {
           attributes: ['id', 'created', 'updated'],
           ustatus: this._ustatus,
           expiresSoonAlertDate: '90',
-          moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
-          peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
-          doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
-            this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
-          wouldYouAcceptCareCertificatesFromPreviousEmployment:
-            this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1007,12 +954,6 @@ class Establishment extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
             showSharingPermissionsBanner: bulkUploaded ? false : this._showSharingPermissionsBanner,
-            moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
-            peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
-            doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
-              this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
-            wouldYouAcceptCareCertificatesFromPreviousEmployment:
-              this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1035,6 +976,7 @@ class Establishment extends EntityValidator {
             // the value in lastWdfEligibility as that field is audited
             updateDocument.establishmentWdfEligibility = null;
           }
+
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
             returning: true,
@@ -1271,7 +1213,6 @@ class Establishment extends EntityValidator {
       }
 
       const fetchResults = await models.establishment.findOne(fetchQuery);
-
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
         this._isNew = false;
@@ -1313,13 +1254,6 @@ class Establishment extends EntityValidator {
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
-        this._recruitmentJourneyExistingUserBanner = fetchResults.recruitmentJourneyExistingUserBanner;
-        this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
-          fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
-        this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
-          fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-        this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1788,21 +1722,10 @@ class Establishment extends EntityValidator {
         myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
         myDefaultJSON.lastBulkUploaded = this.lastBulkUploaded;
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
-        myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
-          this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
-        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
-        myDefaultJSON.wouldYouAcceptCareCertificatesFromPreviousEmployment =
-          this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-        myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
         myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
-      }
-
-      if (this.recruitmentJourneyExistingUserBanner !== null) {
-        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
       }
 
       if (this._ustatus) {
