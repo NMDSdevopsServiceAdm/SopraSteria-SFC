@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { GetAdminUserResolver } from '@core/resolvers/admin/admin-users/get-admin-user.resolver';
 import { GetAdminUsersResolver } from '@core/resolvers/admin/admin-users/get-admin-users.resolver';
 import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
 import { GetIndividualCqcMainServiceChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
@@ -292,9 +293,10 @@ const routes: Routes = [
         data: { title: 'Add Admin User' },
       },
       {
-        path: ':id/edit',
+        path: ':useruid/edit',
         component: EditAdminUserComponent,
         data: { title: 'Edit Admin User' },
+        resolve: { adminUser: GetAdminUserResolver },
       },
     ],
   },

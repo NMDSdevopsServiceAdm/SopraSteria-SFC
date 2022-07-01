@@ -3,6 +3,7 @@ import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { GetAdminUserResolver } from '@core/resolvers/admin/admin-users/get-admin-user.resolver';
 import { GetAdminUsersResolver } from '@core/resolvers/admin/admin-users/get-admin-users.resolver';
 import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
 import { GetIndividualCqcMainServiceChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
@@ -119,6 +120,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     InactiveWorkplacesForDeletionResolver,
     DragAndDropUploadComponent,
     GetAdminUsersResolver,
+    GetAdminUserResolver,
   ],
   bootstrap: [AdminComponent],
 })

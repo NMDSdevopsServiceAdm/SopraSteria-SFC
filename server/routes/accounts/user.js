@@ -128,7 +128,9 @@ const getMe = async (req, res) => {
 
 // updates a user with given uid or username
 const updateUser = async (req, res) => {
+  console.log('*********** update user ***********');
   const userId = req.params.userId;
+  console.log(userId);
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
@@ -143,7 +145,8 @@ const updateUser = async (req, res) => {
   }
 
   const thisUser = new User.User(establishmentId);
-
+  console.log('>>>>>>>>>>>>>>>>>>');
+  // console.log(thisUser);
   try {
     // before updating a Worker, we need to be sure the Worker is
     //  available to the given establishment. The best way of doing that
@@ -166,7 +169,14 @@ const updateUser = async (req, res) => {
       }
 
       if (req.body.role && thisUser.userRole !== req.body.role) {
-        if (!(req.body.role == 'Edit' || req.body.role == 'Read')) {
+        if (
+          !(
+            req.body.role == 'Edit' ||
+            req.body.role == 'Read' ||
+            req.body.role === 'Admin' ||
+            req.body.role === 'AdminManager'
+          )
+        ) {
           return res.status(400).send('Invalid request');
         }
 
@@ -1080,6 +1090,8 @@ const swapEstablishment = async (req, res) => {
 
 router.route('/').get(return200);
 router.route('/admin').get(Authorization.isAdmin, listAdminUsers);
+router.route('/admin/:userId').get(Authorization.isAuthorised, getUser);
+router.route('/admin/:userId').put(Authorization.isAuthorised, updateUser);
 router
   .route('/establishment/:id')
   .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewListOfUsers'), listAllUsers);

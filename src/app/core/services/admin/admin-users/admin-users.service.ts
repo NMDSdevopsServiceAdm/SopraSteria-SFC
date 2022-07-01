@@ -21,4 +21,8 @@ export class AdminUsersService {
   public getAdminUser(userId: string): Observable<UserDetails> {
     return this.http.get<UserDetails>(`/api/user/admin/${userId}`);
   }
+
+  public updateAdminUserDetails(userId: string, userDetails: UserDetails): Observable<UserDetails> {
+    return this.http.put<UserDetails>(`/api/user/admin/${userId}`, userDetails);
+  }
 }
