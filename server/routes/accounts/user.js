@@ -1090,6 +1090,7 @@ router.route('/validateAddUser').post(finishAddUser);
 router.route('/add').post(Authorization.isAuthorisedAddUser, addUser);
 router.route('/my/establishments').get(Authorization.isAuthorised, listEstablishments);
 
+router.route('/admin/:userId').get(Authorization.isAuthorised, getUser);
 router.use('/my/notifications', Authorization.isAuthorised);
 router.route('/my/notifications').get(listNotifications);
 router.route('/my/notifications/:notificationUid').get(getNotification);
