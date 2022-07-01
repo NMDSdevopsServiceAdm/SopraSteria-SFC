@@ -362,8 +362,11 @@ const isAdmin = (req, res, next) => {
 
   if (token) {
     // var dec = getverify(token, Token_Secret);
-
+    console.log('token:', token);
+    console.log('token_secret:', Token_Secret);
     jwt.verify(token, Token_Secret, function (err, claim) {
+      console.log('**********');
+      console.log(claim);
       if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send('Invalid Token');
       } else {
@@ -375,6 +378,44 @@ const isAdmin = (req, res, next) => {
           req.userUid = claim.userUid;
           req.user = {
             id: claim.userUid,
+          };
+          req.establishment = {
+            id: null,
+            uid: null,
+          };
+          next();
+        }
+      }
+    });
+  } else {
+    // not authenticated
+    res.status(401).send('Requires authorisation');
+  }
+};
+
+const isAdminManager = (req, res, next) => {
+  const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
+
+  if (token) {
+    // var dec = getverify(token, Token_Secret);
+
+    jwt.verify(token, Token_Secret, function (err, claim) {
+      if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
+        return res.status(403).send('Invalid Token');
+      } else {
+        if (claim.role !== 'AdminManager') {
+          return res.status(403).send("You're not an admin manager");
+        } else {
+          req.username = claim.sub;
+          req.role = claim.role;
+          req.userUid = claim.userUid;
+          req.user = {
+            id: claim.userUid,
+          };
+          req.establishment = {
+            id: null,
+            uid: null,
           };
           next();
         }
@@ -443,6 +484,7 @@ exports.isAuthorisedPasswdReset = isAuthorisedPasswdReset;
 exports.isAuthorisedAddUser = isAuthorisedAddUser;
 exports.isAuthorisedInternalAdminApp = isAuthorisedInternalAdminApp;
 exports.isAdmin = isAdmin;
+exports.isAdminManager = isAdminManager;
 exports.isAuthorisedRegistrationApproval = isAuthorisedRegistrationApproval;
 exports.isAdminOrOnDemandReporting = isAdminOrOnDemandReporting;
 exports.authorisedEstablishmentPermissionCheck = authorisedEstablishmentPermissionCheck;

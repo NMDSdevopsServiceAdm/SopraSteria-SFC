@@ -17,7 +17,6 @@ export class AdminUsersComponent implements OnInit {
 
   ngOnInit(): void {
     this.users = this.route.snapshot.data.adminUsers.adminUsers;
-    console.log(this.users);
     this.flow = this.router.url;
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
   }

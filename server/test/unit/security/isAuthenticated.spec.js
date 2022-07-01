@@ -7,7 +7,12 @@ const config = require('../../../config/config');
 const models = require('../../../models');
 const jwt = require('jsonwebtoken');
 
-const { getTokenSecret, authorisedEstablishmentPermissionCheck } = require('../../../utils/security/isAuthenticated');
+const {
+  getTokenSecret,
+  authorisedEstablishmentPermissionCheck,
+  isAdmin,
+  isAdminManager,
+} = require('../../../utils/security/isAuthenticated');
 
 describe('isAuthenticated', () => {
   describe('getTokenSecret', () => {
@@ -793,6 +798,55 @@ describe('isAuthenticated', () => {
 
       expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
       expect(next.calledOnce).to.be.true;
+    });
+  });
+
+  describe.only('isAdmin', () => {
+    let jwtStub;
+    let claimReturn;
+
+    beforeEach(() => {
+      jwtStub = sinon.stub(jwt, 'verify');
+
+      claimReturn = {
+        aud: config.get('jwt.aud.login'),
+        iss: config.get('jwt.iss'),
+        EstblishmentId: null,
+        EstablishmentUID: null,
+        sub: 'anySub',
+        userUid: 'someUid',
+        parentId: 123,
+        isParent: false,
+        role: 'Admin',
+      };
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('returns a 401 if no token is available', async () => {
+      const req = httpMocks.createRequest({ headers: {} });
+      const res = httpMocks.createResponse();
+
+      await isAdmin(req, res, sinon.fake());
+      expect(res.statusCode).to.equal(401);
+    });
+
+    it.only('returns a 403 with error message if claim audience does not match', async () => {
+      jwtStub.returns({ ...claimReturn });
+
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdmin(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.deep.equal({ success: false, message: 'token is invalid' });
     });
   });
 });
