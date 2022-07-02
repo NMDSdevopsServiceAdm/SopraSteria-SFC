@@ -362,11 +362,7 @@ const isAdmin = (req, res, next) => {
 
   if (token) {
     // var dec = getverify(token, Token_Secret);
-    console.log('token:', token);
-    console.log('token_secret:', Token_Secret);
     jwt.verify(token, Token_Secret, function (err, claim) {
-      console.log('**********');
-      console.log(claim);
       if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send('Invalid Token');
       } else {
