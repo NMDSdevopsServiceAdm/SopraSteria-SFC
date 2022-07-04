@@ -3,7 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { AdminManagerUser, AdminUser } from '@core/test-utils/admin/MockAdminUsersService';
+import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminUsersService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
 import { queryByText, render } from '@testing-library/angular';
@@ -11,7 +11,7 @@ import { queryByText, render } from '@testing-library/angular';
 import { AdminAccountViewComponent } from './admin-account-view.component';
 
 describe('AdminAccountViewComponent', () => {
-  async function setup(isAdminManagerType = true) {
+  async function setup(isAdminManagerType = true, pending = false) {
     const { fixture, getByText, queryByText } = await render(AdminAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -24,7 +24,7 @@ describe('AdminAccountViewComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                adminUser: isAdminManagerType ? AdminManagerUser() : AdminUser(),
+                adminUser: isAdminManagerType ? AdminManagerUser() : pending ? PendingAdminUser() : AdminUser(),
               },
             },
           },
@@ -55,17 +55,16 @@ describe('AdminAccountViewComponent', () => {
   });
 
   describe('buttons and links', async () => {
-    //TODO: update this test when link functionality is implemented
-    xit('should render a Resend the user email link if user is pending', async () => {
-      const { queryByText } = await setup();
+    it('should render a Resend the user email link if user is pending', async () => {
+      const { queryByText } = await setup(false, true);
 
       expect(queryByText('Resend the user set-up email')).toBeTruthy();
     });
 
-    xit('shouldnt render a Resend the user email link if user is not pending', async () => {
+    it('shouldnt render a Resend the user email link if user is not pending', async () => {
       const { queryByText } = await setup(false);
 
-      expect(queryByText('Resend the user set-up email')).toBeTruthy();
+      expect(queryByText('Resend the user set-up email')).toBeFalsy();
     });
 
     it('shouldnt render a delete this user link when user is not an AdminManager', async () => {

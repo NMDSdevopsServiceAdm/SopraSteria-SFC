@@ -4,13 +4,13 @@
   </div>
   <div class="govuk-grid-column-two-thirds">
     <div class="govuk-!-margin-top-0 govuk-button-heading-group">
-      <a class="govuk-list govuk-util__float-right" draggable="false" role="button" href="#">
+      <a *ngIf="isPending" class="govuk-list govuk-util__float-right" draggable="false" role="button" href="#">
         Resend the user set-up email</a
       >
       <a
         class="govuk-list govuk-button-link govuk-list--inline govuk__flex govuk__align-items-center govuk-util__float-right govuk-!-margin-left-9"
         draggable="false"
-        *ngIf="isAdminManager()"
+        *ngIf="isAdminManger"
         role="button"
         href="#"
       >

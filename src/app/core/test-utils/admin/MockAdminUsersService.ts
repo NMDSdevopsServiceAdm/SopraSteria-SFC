@@ -31,7 +31,7 @@ export const PendingAdminUser = () => {
   return AdminUser({
     overrides: {
       status: 'Pending',
-      username: '',
+      username: null,
     },
   });
 };

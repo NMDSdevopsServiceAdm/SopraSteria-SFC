@@ -13,6 +13,8 @@ export class AdminAccountViewComponent implements OnInit {
   public user: UserDetails;
   public userDetails: SummaryList[];
   public canNavigate: boolean;
+  public isAdminManger: boolean;
+  public isPending: boolean;
 
   constructor(private route: ActivatedRoute, private router: Router, public breadcrumbService: BreadcrumbService) {
     this.user = this.route.snapshot.data.adminUser;
@@ -20,11 +22,17 @@ export class AdminAccountViewComponent implements OnInit {
 
   public ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
+    this.isAdminManger = this.setIsAdminManager();
+    this.isPending = this.setIsPending();
     this.setAdminUserDetails();
   }
 
-  public isAdminManager(): boolean {
+  public setIsAdminManager(): boolean {
     return this.user.role === 'AdminManager';
+  }
+
+  public setIsPending(): boolean {
+    return this.user.username === null;
   }
 
   private setAdminUserDetails(): void {
@@ -32,7 +40,7 @@ export class AdminAccountViewComponent implements OnInit {
       {
         label: 'Full name',
         data: this.user.fullname,
-        route: this.isAdminManager() ? { url: ['edit'] } : undefined,
+        route: this.isAdminManger ? { url: ['edit'] } : undefined,
       },
       {
         label: 'Job title',
