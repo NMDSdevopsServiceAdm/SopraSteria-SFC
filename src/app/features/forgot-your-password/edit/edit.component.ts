@@ -37,7 +37,7 @@ export class ForgotYourPasswordEditComponent implements OnInit, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Enter the username or email address.',
+            message: 'Enter the username or email address',
           },
         ],
       },
