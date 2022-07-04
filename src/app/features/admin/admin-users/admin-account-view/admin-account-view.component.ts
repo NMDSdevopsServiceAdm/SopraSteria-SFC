@@ -3,7 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 @Component({
   selector: 'app-admin-account-view',
@@ -16,23 +18,33 @@ export class AdminAccountViewComponent implements OnInit {
   public isAdminManger: boolean;
   public isPending: boolean;
 
-  constructor(private route: ActivatedRoute, private router: Router, public breadcrumbService: BreadcrumbService) {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    public breadcrumbService: BreadcrumbService,
+    private permissionsService: PermissionsService,
+    private authService: AuthService,
+  ) {
     this.user = this.route.snapshot.data.adminUser;
   }
 
   public ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
-    this.isAdminManger = this.setIsAdminManager();
+    this.isAdminManger = this.setLoggedInUserPermissions();
     this.isPending = this.setIsPending();
     this.setAdminUserDetails();
   }
 
-  public setIsAdminManager(): boolean {
-    return this.user.role === 'AdminManager';
-  }
-
   public setIsPending(): boolean {
     return this.user.username === null;
+  }
+
+  public setLoggedInUserPermissions(): boolean {
+    //TODO Change this to a new AdminManager Permission
+    if (this.authService.userInfo().role === 'AdminManager') {
+      return true;
+    }
+    return false;
   }
 
   private setAdminUserDetails(): void {

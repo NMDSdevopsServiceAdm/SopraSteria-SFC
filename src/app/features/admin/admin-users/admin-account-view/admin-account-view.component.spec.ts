@@ -2,19 +2,31 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminUsersService';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { queryByText, render } from '@testing-library/angular';
 
 import { AdminAccountViewComponent } from './admin-account-view.component';
 
-describe('AdminAccountViewComponent', () => {
+fdescribe('AdminAccountViewComponent', () => {
   async function setup(isAdminManagerType = true, pending = false) {
     const { fixture, getByText, queryByText } = await render(AdminAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
+        {
+          provide: AuthService,
+          useClass: MockAuthService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
