@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminUsersService';
@@ -10,11 +11,11 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { queryByText, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { AdminAccountViewComponent } from './admin-account-view.component';
 
-fdescribe('AdminAccountViewComponent', () => {
+describe('AdminAccountViewComponent', () => {
   async function setup(isAdminManagerType = true, pending = false) {
     const { fixture, getByText, queryByText } = await render(AdminAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -37,6 +38,9 @@ fdescribe('AdminAccountViewComponent', () => {
             snapshot: {
               data: {
                 adminUser: isAdminManagerType ? AdminManagerUser() : pending ? PendingAdminUser() : AdminUser(),
+                loggedInUser: {
+                  role: isAdminManagerType ? Roles.AdminManager : Roles.Admin,
+                },
               },
             },
           },

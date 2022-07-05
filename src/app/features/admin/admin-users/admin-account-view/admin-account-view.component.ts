@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
@@ -15,7 +16,7 @@ export class AdminAccountViewComponent implements OnInit {
   public user: UserDetails;
   public userDetails: SummaryList[];
   public canNavigate: boolean;
-  public isAdminManger: boolean;
+  public isAdminManager: boolean;
   public isPending: boolean;
 
   constructor(
@@ -30,7 +31,7 @@ export class AdminAccountViewComponent implements OnInit {
 
   public ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
-    this.isAdminManger = this.setLoggedInUserPermissions();
+    this.isAdminManager = this.route.snapshot.data.loggedInUser.role === Roles.AdminManager;
     this.isPending = this.setIsPending();
     this.setAdminUserDetails();
   }
@@ -39,20 +40,12 @@ export class AdminAccountViewComponent implements OnInit {
     return this.user.username === null;
   }
 
-  public setLoggedInUserPermissions(): boolean {
-    //TODO Change this to a new AdminManager Permission
-    if (this.authService.userInfo().role === 'AdminManager') {
-      return true;
-    }
-    return false;
-  }
-
   private setAdminUserDetails(): void {
     this.userDetails = [
       {
         label: 'Full name',
         data: this.user.fullname,
-        route: this.isAdminManger ? { url: ['edit'] } : undefined,
+        route: this.isAdminManager ? { url: ['edit'] } : undefined,
       },
       {
         label: 'Job title',
