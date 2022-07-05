@@ -98,10 +98,19 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
 
     this.subscriptions.add(
       this.createAccountService.createAccount(this.establishmentUid, convertedFormData).subscribe(
-        (data) => this.navigateToNextRoute(data),
+        (data) => {
+          this.updateEstablishmentUsers();
+          this.navigateToNextRoute(data);
+        },
         (error: HttpErrorResponse) => this.onError(error),
       ),
     );
+  }
+
+  private updateEstablishmentUsers(): void {
+    this.userService.getAllUsersForEstablishment(this.establishmentUid).subscribe((users) => {
+      this.userService.updateUsers(users);
+    });
   }
 
   private convertPermissions(formValue): CreateAccountRequest {

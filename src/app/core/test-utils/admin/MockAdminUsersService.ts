@@ -9,10 +9,10 @@ export const AdminUser = build('AdminUser', {
     uid: fake((f) => f.datatype.uuid()),
     fullname: fake((f) => f.name.findName()),
     role: 'Admin',
-    email: fake((f) => f.internet.email),
+    email: fake((f) => f.internet.email()),
     phone: fake((f) => f.phone.phoneNumber()),
-    jobTitle: fake((f) => f.name.jobTitle),
-    username: fake((f) => f.internet.userName),
+    jobTitle: fake((f) => f.name.jobTitle()),
+    username: fake((f) => f.internet.userName()),
     updated: '01/02/2022',
     isPrimary: null,
     status: 'Active',
@@ -31,7 +31,7 @@ export const PendingAdminUser = () => {
   return AdminUser({
     overrides: {
       status: 'Pending',
-      username: '',
+      username: null,
     },
   });
 };
