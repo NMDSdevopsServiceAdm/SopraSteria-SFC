@@ -20,7 +20,7 @@ export class ForgotYourPasswordEditComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      usernameOrEmail: ['', [Validators.required, Validators.maxLength(120)]],
+      usernameOrEmail: ['', { validators: [Validators.required, Validators.maxLength(120)], updateOn: 'submit' }],
     });
 
     this.setupFormErrorsMap();
