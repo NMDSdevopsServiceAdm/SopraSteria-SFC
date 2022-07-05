@@ -129,6 +129,10 @@ export class UserService {
     return this.http.put<UserDetails>(`/api/user/establishment/${workplaceUid}/${userUid}`, userDetails);
   }
 
+  public updateAdminUserDetails(userUid: string, userDetails: UserDetails): Observable<UserDetails> {
+    return this.http.put<UserDetails>(`/api/user/admin/me/${userUid}`, userDetails);
+  }
+
   /*
    * DELETE /api/user/establishment/:establishmentUID/:userUID
    */
