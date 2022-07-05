@@ -3,6 +3,7 @@ import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { GetAdminUserResolver } from '@core/resolvers/admin/admin-users/get-admin-user.resolver';
 import { GetAdminUsersResolver } from '@core/resolvers/admin/admin-users/get-admin-users.resolver';
 import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
 import { GetIndividualCqcMainServiceChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
@@ -25,6 +26,7 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 
 import { AdminMenuComponent } from './admin-menu/admin-menu.component';
 import { AddEditAdminUsersComponent } from './admin-users/add-edit-admin-users/add-edit-admin-users.component';
+import { AdminAccountViewComponent } from './admin-users/admin-account-view/admin-account-view.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { AdminComponent } from './admin.component';
 import { AdminRoutingModule } from './admin.routing.module';
@@ -66,6 +68,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     NgxDropzoneModule,
   ],
   declarations: [
+    AdminAccountViewComponent,
     AdminMenuComponent,
     LocalAuthoritiesReturnComponent,
     AdminComponent,
@@ -117,6 +120,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     InactiveWorkplacesForDeletionResolver,
     DragAndDropUploadComponent,
     GetAdminUsersResolver,
+    GetAdminUserResolver,
   ],
   bootstrap: [AdminComponent],
 })

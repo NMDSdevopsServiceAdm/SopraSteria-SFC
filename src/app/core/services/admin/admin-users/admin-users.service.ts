@@ -17,4 +17,8 @@ export class AdminUsersService {
   public createAdminUser(requestPayload: CreateAccountRequest): Observable<CreateAccountResponse> {
     return this.http.post<CreateAccountResponse>(`/api/user/add/admin`, requestPayload);
   }
+
+  public getAdminUser(userId: string): Observable<UserDetails> {
+    return this.http.get<UserDetails>(`/api/user/admin/${userId}`);
+  }
 }

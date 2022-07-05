@@ -1,0 +1,30 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">Admin user details</h2>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-!-margin-top-0 govuk-button-heading-group">
+      <a *ngIf="isPending" class="govuk-list govuk-util__float-right" draggable="false" role="button" href="#">
+        Resend the user set-up email</a
+      >
+      <a
+        class="govuk-list govuk-button-link govuk-list--inline govuk__flex govuk__align-items-center govuk-util__float-right govuk-!-margin-left-9"
+        draggable="false"
+        *ngIf="isAdminManager"
+        role="button"
+        href="#"
+      >
+        <img src="/assets/images/bin.svg" alt="" />
+        <span class="govuk-!-margin-left-1">Delete this admin user</span></a
+      >
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-summary-list [wrapBorder]="true" [summaryList]="userDetails"></app-summary-list>
+  </div>
+</div>
+<div class="govuk-button-group">
+  <a role="button" draggable="false" class="govuk-button" [routerLink]="['/sfcadmin', 'users']"> View admin users </a>
+</div>
