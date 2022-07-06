@@ -1,11 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import {
   AdminManagerUser,
@@ -19,7 +20,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { AdminAccountViewComponent } from './admin-account-view.component';
 
@@ -184,6 +185,21 @@ describe('AdminAccountViewComponent', () => {
 
       expect(queryByText('Permissions')).toBeTruthy();
       expect(queryByText('Admin')).toBeTruthy();
+    });
+  });
+
+  describe('resendActivationLink', async () => {
+    it('should send the email by rendering  resendActivationLink function', async () => {
+      const { fixture, getByText } = await setup(true, true);
+
+      const userService = TestBed.inject(UserService) as UserService;
+      const resendActivationLinkSpy = spyOn(userService, 'resendActivationLink').and.callThrough();
+
+      fixture.detectChanges();
+      const resendEmailLink = getByText('Resend the user set-up email');
+      fireEvent.click(resendEmailLink);
+
+      expect(resendActivationLinkSpy).toHaveBeenCalled();
     });
   });
 });
