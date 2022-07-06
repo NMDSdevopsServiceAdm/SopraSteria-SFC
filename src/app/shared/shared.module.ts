@@ -41,6 +41,7 @@ import { PageComponent } from './components/page/page.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
+import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { ProgressComponent } from './components/progress/progress.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
@@ -183,6 +184,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
+    ProgressBarComponent,
   ],
   exports: [
     SummaryRecordChangeComponent,
@@ -270,6 +272,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
+    ProgressBarComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
