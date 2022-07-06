@@ -1,42 +1,38 @@
-<h3 class="govuk-!-margin-bottom-0">Make a claim</h3>
-<hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-<ng-container *ngFor="let step of sections; index as i">
-  <p class="govuk-!-display-block govuk-!-margin-bottom-0">
+<ng-container *ngFor="let section of sections; index as i">
+  <p
+    class="govuk-!-display-block govuk-!-margin-bottom-0 govuk-!-font-size-16"
+    [ngClass]="
+      (currentSectionIndex > i && 'govuk-!-font-weight-bold') || (currentSectionIndex < i && 'asc-colour-grey')
+    "
+  >
     <img
-      *ngIf="i < stepIndex"
+      *ngIf="i < currentSectionIndex"
       [attr.data-testid]="'completed-' + i"
       class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
       src="/assets/images/progress-bar/done.svg"
       alt=""
     />
     <img
-      *ngIf="i == stepIndex"
-      [attr.data-testid]="'currentStep-' + i"
+      *ngIf="i === currentSectionIndex"
+      [attr.data-testid]="'currentSection-' + i"
       class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
       src="/assets/images/progress-bar/doing.svg"
       alt=""
     />
     <img
-      *ngIf="i > stepIndex"
-      [attr.data-testid]="'notCompleted-' + i"
+      *ngIf="i > currentSectionIndex"
+      [attr.data-testid]="'todo-' + i"
       class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-      src="/assets/images/progress-bar/to-do.svg"
+      src="/assets/images/progress-bar/todo.svg"
       alt=""
     />
-    {{ step }}
+    {{ section }}
   </p>
   <img
-    *ngIf="i < stepIndex"
-    [attr.data-testid]="'blackLine-' + i"
+    *ngIf="i < sections.length - 1"
+    [attr.data-testid]="'greenLine-' + i"
     class="govuk-!-display-block govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-!-margin-left-2"
-    src="/assets/images/progress-bar/black-line.svg"
-    alt=""
-  />
-  <img
-    *ngIf="i >= stepIndex && i != sections.length - 1"
-    [attr.data-testid]="'greyLine-' + i"
-    class="govuk-!-display-block govuk-!-margin-top-0 govuk-!-margin-bottom-0 govuk-!-margin-left-2"
-    src="/assets/images/progress-bar/grey-line.svg"
+    src="/assets/images/progress-bar/green-line.svg"
     alt=""
   />
 </ng-container>
