@@ -40,9 +40,8 @@ export class EditAdminUserComponent extends AccountDetailsDirective {
 
   protected init(): void {
     this.user = this.route.snapshot.data.adminUser;
-    // breadcrumbs and return need updating
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
-    this.return = { url: ['/sfcadmin', 'users'] };
+    this.return = { url: ['/sfcadmin', 'users', this.user.uid] };
 
     this.addFormControls();
     this.prefillForm();

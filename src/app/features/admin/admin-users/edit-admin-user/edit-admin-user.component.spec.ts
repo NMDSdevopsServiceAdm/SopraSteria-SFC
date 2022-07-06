@@ -42,6 +42,7 @@ describe('EditAdminUserMenuComponent', () => {
                     email: 'admin@email.com',
                     phone: '01234567890',
                     role: 'Admin',
+                    uid: 'mocked-uid',
                   },
                 },
               },
@@ -110,11 +111,11 @@ describe('EditAdminUserMenuComponent', () => {
     expect(getByText('Cancel')).toBeTruthy();
   });
 
-  xit('should render the cancel link with correct url', async () => {
+  it('should render the cancel link with correct url', async () => {
     const { getByText } = await setup();
 
     const link = getByText('Cancel');
-    expect(link.getAttribute('href')).toEqual('/sfcadmin/users');
+    expect(link.getAttribute('href')).toEqual('/sfcadmin/users/mocked-uid');
   });
 
   describe('error messages', () => {
