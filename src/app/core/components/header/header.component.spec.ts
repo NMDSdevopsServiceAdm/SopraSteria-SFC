@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -118,7 +117,7 @@ describe('HeaderComponent', () => {
     it('should not show a users link when logged in and on the admin pages', async () => {
       const { component } = await setup(true, 0, true);
 
-      component.fixture.componentInstance.isOnAdminScreen = true;
+      component.fixture.componentInstance.workplaceId = undefined;
       component.fixture.detectChanges();
 
       expect(component.queryByText('Users')).toBeFalsy();
