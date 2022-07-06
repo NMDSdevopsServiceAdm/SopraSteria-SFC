@@ -21,7 +21,7 @@ describe('GetAdminUsersResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it('should call getAdmiunUsers', () => {
+  it('should call getAdminUsers', () => {
     const adminUsersService = TestBed.inject(AdminUsersService);
     spyOn(adminUsersService, 'getAdminUsers').and.callThrough();
 

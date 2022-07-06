@@ -1,9 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Roles } from '@core/model/roles.enum';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -12,14 +11,13 @@ import { MockAdminUsersService } from '@core/test-utils/admin/MockAdminUsersServ
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import userEvent from '@testing-library/user-event';
 
-import { AddEditAdminUsersComponent } from './add-edit-admin-users.component';
+import { EditAdminUserComponent } from './edit-admin-user.component';
 
-describe('AddEditAdminUsersMenuComponent', () => {
+describe('EditAdminUserMenuComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
-      AddEditAdminUsersComponent,
+      EditAdminUserComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
@@ -32,6 +30,23 @@ describe('AddEditAdminUsersMenuComponent', () => {
           {
             provide: AdminUsersService,
             useClass: MockAdminUsersService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                data: {
+                  adminUser: {
+                    fullname: 'Admin User',
+                    jobTitle: 'Administrator',
+                    email: 'admin@email.com',
+                    phone: '01234567890',
+                    role: 'Admin',
+                    uid: 'mocked-uid',
+                  },
+                },
+              },
+            },
           },
         ],
       },
@@ -60,28 +75,39 @@ describe('AddEditAdminUsersMenuComponent', () => {
     };
   }
 
-  it('should render a AdminUsersComponent', async () => {
+  it('should render a EditAdminUserComponent', async () => {
     const { component } = await setup();
-
     expect(component).toBeTruthy();
   });
 
-  it('should render the page heading, correct inputs and radios', async () => {
-    const { getByText, getByLabelText } = await setup();
+  it('should render the title, and prefill the form', async () => {
+    const { component, fixture, getByText } = await setup();
 
-    expect(getByText('Add admin user details')).toBeTruthy();
-    expect(getByLabelText('Full name')).toBeTruthy();
-    expect(getByLabelText('Job title')).toBeTruthy();
-    expect(getByLabelText('Email address')).toBeTruthy();
-    expect(getByLabelText('Phone number')).toBeTruthy();
-    expect(getByLabelText('Admin manager')).toBeTruthy();
-    expect(getByLabelText('Admin')).toBeTruthy();
+    const fullnameInput = fixture.nativeElement.querySelector('input[id="fullname"]');
+    const jobTitleInput = fixture.nativeElement.querySelector('input[id="jobTitle"]');
+    const emailInput = fixture.nativeElement.querySelector('input[id="email"]');
+    const phoneInput = fixture.nativeElement.querySelector('input[id="phone"]');
+    const permissionsInput = fixture.nativeElement.querySelector('input[id="permissionsType-1"]');
+
+    expect(getByText('Change admin user details')).toBeTruthy();
+    expect(fullnameInput.value).toEqual('Admin User');
+    expect(jobTitleInput.value).toEqual('Administrator');
+    expect(emailInput.value).toEqual('admin@email.com');
+    expect(phoneInput.value).toEqual('01234567890');
+    expect(permissionsInput.checked).toBeTruthy();
+    expect(component.form.value).toEqual({
+      fullname: 'Admin User',
+      jobTitle: 'Administrator',
+      email: 'admin@email.com',
+      phone: '01234567890',
+      permissionsType: 'Admin',
+    });
   });
 
   it('should render a call to action button and cancel link', async () => {
     const { getByText } = await setup();
 
-    expect(getByText('Save admin user')).toBeTruthy();
+    expect(getByText('Save and return')).toBeTruthy();
     expect(getByText('Cancel')).toBeTruthy();
   });
 
@@ -89,74 +115,21 @@ describe('AddEditAdminUsersMenuComponent', () => {
     const { getByText } = await setup();
 
     const link = getByText('Cancel');
-    expect(link.getAttribute('href')).toEqual('/sfcadmin/users');
-  });
-
-  it('should call the createAdminUser function when submitting the form', async () => {
-    const { fixture, getByText, getByLabelText, adminUsersService } = await setup();
-    const createAdminUserSpy = spyOn(adminUsersService, 'createAdminUser').and.callThrough();
-
-    userEvent.type(getByLabelText('Full name'), 'Admin user');
-    userEvent.type(getByLabelText('Job title'), 'Administrator');
-    userEvent.type(getByLabelText('Email address'), 'admin@email.com');
-    userEvent.type(getByLabelText('Phone number'), '01234567890');
-    fireEvent.click(getByLabelText('Admin'));
-
-    fireEvent.click(getByText('Save admin user'));
-    fixture.detectChanges();
-
-    expect(createAdminUserSpy).toHaveBeenCalledWith({
-      fullname: 'Admin user',
-      jobTitle: 'Administrator',
-      email: 'admin@email.com',
-      phone: '01234567890',
-      role: Roles.Admin,
-    });
-  });
-
-  it('should navigate back to users table after successfully submitting form', async () => {
-    const { component, fixture, getByText, routerSpy, adminUsersService } = await setup();
-    spyOn(adminUsersService, 'createAdminUser').and.callThrough();
-    const { form } = component;
-
-    form.markAsDirty();
-    form.get('fullname').setValue('Admin user');
-    form.get('jobTitle').setValue('administrator');
-    form.get('email').setValue('admin@email.com');
-    form.get('phone').setValue('01234567890');
-    form.get('permissionsType').setValue('Admin');
-
-    fixture.detectChanges();
-
-    const button = getByText('Save admin user');
-    fireEvent.click(button);
-
-    expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'users']);
-  });
-
-  it('should show banner when an admin user is successfully added', async () => {
-    const { fixture, getByText, getByLabelText, alertSpy } = await setup();
-
-    userEvent.type(getByLabelText('Full name'), 'Admin user');
-    userEvent.type(getByLabelText('Job title'), 'Administrator');
-    userEvent.type(getByLabelText('Email address'), 'admin@email.com');
-    userEvent.type(getByLabelText('Phone number'), '01234567890');
-    fireEvent.click(getByLabelText('Admin'));
-
-    fireEvent.click(getByText('Save admin user'));
-    fixture.detectChanges();
-
-    expect(alertSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'Admin user has been added',
-    });
+    expect(link.getAttribute('href')).toEqual('/sfcadmin/users/mocked-uid');
   });
 
   describe('error messages', () => {
     it('should show all the required error messages if nothing is input into the form', async () => {
-      const { fixture, getByText, getAllByText } = await setup();
+      const { component, fixture, getByText, getAllByText } = await setup();
 
-      const button = getByText('Save admin user');
+      const { form } = component;
+      form.get('fullname').setValue(null);
+      form.get('jobTitle').setValue(null);
+      form.get('email').setValue(null);
+      form.get('phone').setValue(null);
+      form.get('permissionsType').setValue(null);
+
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -170,14 +143,9 @@ describe('AddEditAdminUsersMenuComponent', () => {
     it('should just show the required error message for full name when all other fields are filled out and the form is submitted', async () => {
       const { component, fixture, getByText, getAllByText, queryByText } = await setup();
 
-      const { form } = component;
-      form.markAsDirty();
-      form.get('jobTitle').setValue('administrator');
-      form.get('email').setValue('admin@email.com');
-      form.get('phone').setValue('01234567890');
-      form.get('permissionsType').setValue('Admin');
+      component.form.get('fullname').setValue(null);
 
-      const button = getByText('Save admin user');
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -192,15 +160,10 @@ describe('AddEditAdminUsersMenuComponent', () => {
       const { component, fixture, getByText, getAllByText } = await setup();
       const longString =
         'ThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLong';
-      const { form } = component;
-      form.markAsDirty();
-      form.get('fullname').setValue(longString);
-      form.get('jobTitle').setValue('administrator');
-      form.get('email').setValue('admin@email.com');
-      form.get('phone').setValue('01234567890');
-      form.get('permissionsType').setValue('Admin');
 
-      const button = getByText('Save admin user');
+      component.form.get('fullname').setValue(longString);
+
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -210,14 +173,9 @@ describe('AddEditAdminUsersMenuComponent', () => {
     it('should just show the required error message for jobTitle when all other fields are filled out and the form is submitted', async () => {
       const { component, fixture, getByText, getAllByText, queryByText } = await setup();
 
-      const { form } = component;
-      form.markAsDirty();
-      form.get('fullname').setValue('Admin User');
-      form.get('email').setValue('admin@email.com');
-      form.get('phone').setValue('01234567890');
-      form.get('permissionsType').setValue('Admin');
+      component.form.get('jobTitle').setValue(null);
 
-      const button = getByText('Save admin user');
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -232,15 +190,10 @@ describe('AddEditAdminUsersMenuComponent', () => {
       const { component, fixture, getByText, getAllByText } = await setup();
       const longString =
         'ThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLong';
-      const { form } = component;
-      form.markAsDirty();
-      form.get('fullname').setValue('Admin User');
-      form.get('jobTitle').setValue(longString);
-      form.get('email').setValue('admin@email.com');
-      form.get('phone').setValue('01234567890');
-      form.get('permissionsType').setValue('Admin');
 
-      const button = getByText('Save admin user');
+      component.form.get('jobTitle').setValue(longString);
+
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -250,14 +203,9 @@ describe('AddEditAdminUsersMenuComponent', () => {
     it('should just show the required error message for email when all other fields are filled out and the form is submitted', async () => {
       const { component, fixture, getByText, getAllByText, queryByText } = await setup();
 
-      const { form } = component;
-      form.markAsDirty();
-      form.get('fullname').setValue('Admin User');
-      form.get('jobTitle').setValue('administrator');
-      form.get('phone').setValue('01234567890');
-      form.get('permissionsType').setValue('Admin');
+      component.form.get('email').setValue(null);
 
-      const button = getByText('Save admin user');
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -272,15 +220,10 @@ describe('AddEditAdminUsersMenuComponent', () => {
       const { component, fixture, getByText, getAllByText } = await setup();
       const longString =
         'ThisIsTooLong@ThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLongThisIsTooLong.com';
-      const { form } = component;
-      form.markAsDirty();
-      form.get('fullname').setValue('Admin User');
-      form.get('jobTitle').setValue('administrator');
-      form.get('email').setValue(longString);
-      form.get('phone').setValue('01234567890');
-      form.get('permissionsType').setValue('Admin');
 
-      const button = getByText('Save admin user');
+      component.form.get('email').setValue(longString);
+
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -289,18 +232,11 @@ describe('AddEditAdminUsersMenuComponent', () => {
 
     it('should just show an error message when the email is not in a valid format and the form is submitted', async () => {
       const { component, fixture, getByText, getAllByText } = await setup();
-
       const invalidEmail = 'invalidEmailAddress';
 
-      const { form } = component;
-      form.markAsDirty();
-      form.get('fullname').setValue('Admin User');
-      form.get('jobTitle').setValue('administrator');
-      form.get('email').setValue(invalidEmail);
-      form.get('phone').setValue('01234567890');
-      form.get('permissionsType').setValue('Admin');
+      component.form.get('email').setValue(invalidEmail);
 
-      const button = getByText('Save admin user');
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -310,14 +246,9 @@ describe('AddEditAdminUsersMenuComponent', () => {
     it('should just show the required error message for phone when all other fields are filled out and the form is submitted', async () => {
       const { component, fixture, getByText, getAllByText, queryByText } = await setup();
 
-      const { form } = component;
-      form.markAsDirty();
-      form.get('fullname').setValue('Admin User');
-      form.get('jobTitle').setValue('administrator');
-      form.get('email').setValue('admin@email.com');
-      form.get('permissionsType').setValue('Admin');
+      component.form.get('phone').setValue(null);
 
-      const button = getByText('Save admin user');
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -333,42 +264,15 @@ describe('AddEditAdminUsersMenuComponent', () => {
 
       const invalidPhoneNumber = 'invalidPhoneNumber';
 
-      const { form } = component;
-      form.markAsDirty();
-      form.get('fullname').setValue('Admin User');
-      form.get('jobTitle').setValue('administrator');
-      form.get('email').setValue('admin@email.com');
-      form.get('phone').setValue(invalidPhoneNumber);
-      form.get('permissionsType').setValue('Admin');
+      component.form.get('phone').setValue(invalidPhoneNumber);
 
-      const button = getByText('Save admin user');
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
       expect(
         getAllByText('Enter the phone number like 01632 960 001, 07700 900 982 or +44 0808 157 0192').length,
       ).toEqual(2);
-    });
-
-    it('should just show the required error message for permissionsType when all other fields are filled out and the form is submitted', async () => {
-      const { component, fixture, getByText, getAllByText, queryByText } = await setup();
-
-      const { form } = component;
-      form.markAsDirty();
-      form.get('fullname').setValue('Admin User');
-      form.get('jobTitle').setValue('administrator');
-      form.get('email').setValue('admin@email.com');
-      form.get('phone').setValue('01234567890');
-
-      const button = getByText('Save admin user');
-      fireEvent.click(button);
-      fixture.detectChanges();
-
-      expect(getAllByText('Select a permission').length).toEqual(2);
-      expect(queryByText('Enter their full name')).toBeFalsy();
-      expect(queryByText('Enter their job title')).toBeFalsy();
-      expect(queryByText('Enter an email addres')).toBeFalsy();
-      expect(queryByText('Enter a phone number')).toBeFalsy();
     });
   });
 });

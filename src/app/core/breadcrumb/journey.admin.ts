@@ -15,6 +15,7 @@ enum Path {
   ADMIN_USERS = '/sfcadmin/users',
   ADD_ADMIN_USER_DETAILS = '/sfcadmin/users/add-admin-user-details',
   VIEW_ADMIN_USER_DETAILS = '/sfcadmin/users/:useruid',
+  EDIT_ADMIN_USER_DETAILS = '/sfcadmin/users/:useruid/edit',
 }
 
 export const adminJourney: JourneyRoute = {
@@ -128,6 +129,12 @@ export const adminUserJourney: JourneyRoute = {
             {
               title: 'Admin user details',
               path: Path.VIEW_ADMIN_USER_DETAILS,
+              children: [
+                {
+                  title: 'Change admin user details',
+                  path: Path.EDIT_ADMIN_USER_DETAILS,
+                },
+              ],
             },
           ],
         },

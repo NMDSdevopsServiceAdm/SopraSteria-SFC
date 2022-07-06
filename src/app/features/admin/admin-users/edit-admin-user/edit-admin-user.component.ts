@@ -1,9 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Roles } from '@core/model/roles.enum';
+import { UserDetails } from '@core/model/userDetails.model';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -12,15 +13,17 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 
 @Component({
-  selector: 'app-add-edit-users',
-  templateUrl: 'add-edit-admin-users.component.html',
+  selector: 'app-edit-admin-user',
+  templateUrl: 'edit-admin-user.component.html',
 })
-export class AddEditAdminUsersComponent extends AccountDetailsDirective {
-  public callToActionLabel = 'Save admin user';
+export class EditAdminUserComponent extends AccountDetailsDirective {
+  public callToActionLabel = 'Save and return';
   public permissionsTypeRadios = [
     { label: 'Admin manager', permissionsQuestionValue: Roles.AdminManager },
     { label: 'Admin', permissionsQuestionValue: Roles.Admin },
   ];
+  public title = 'Change admin user details';
+  public user: UserDetails;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -30,14 +33,18 @@ export class AddEditAdminUsersComponent extends AccountDetailsDirective {
     protected router: Router,
     private adminUsersService: AdminUsersService,
     private alertService: AlertService,
+    private route: ActivatedRoute,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
 
   protected init(): void {
+    this.user = this.route.snapshot.data.adminUser;
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
-    this.return = { url: ['/sfcadmin', 'users'] };
+    this.return = { url: ['/sfcadmin', 'users', this.user.uid] };
+
     this.addFormControls();
+    this.prefillForm();
   }
 
   private addFormControls(): void {
@@ -54,6 +61,16 @@ export class AddEditAdminUsersComponent extends AccountDetailsDirective {
           message: 'Select a permission',
         },
       ],
+    });
+  }
+
+  protected prefillForm(): void {
+    this.form.setValue({
+      fullname: this.user.fullname,
+      jobTitle: this.user.jobTitle,
+      email: this.user.email,
+      phone: this.user.phone,
+      permissionsType: this.user.role,
     });
   }
 
@@ -125,10 +142,13 @@ export class AddEditAdminUsersComponent extends AccountDetailsDirective {
     };
     delete newAdminUser.permissionsType;
 
-    this.adminUsersService.createAdminUser(newAdminUser).subscribe(
+    this.adminUsersService.updateAdminUserDetails(this.user.uid, newAdminUser).subscribe(
       () => {
         this.router.navigate(this.return.url);
-        this.alertService.addAlert({ type: 'success', message: 'Admin user has been added' });
+        this.alertService.addAlert({
+          type: 'success',
+          message: `${this.user.username} user details have been updated`,
+        });
       },
       (error: HttpErrorResponse) => this.onError(error),
     );

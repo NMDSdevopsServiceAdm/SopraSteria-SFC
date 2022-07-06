@@ -135,10 +135,12 @@ export class MockUserService extends UserService {
       email: 'test@developer.com',
       fullname: 'John Smith',
       jobTitle: 'Developer',
-      phone: '',
-      role: this.isAdmin ? ('Admin' as Roles) : undefined,
+      phone: '01234567890',
+      role: this.isAdmin ? Roles.Admin : Roles.Read,
     };
   }
+
+  public set loggedInUser(user: UserDetails) {}
 
   public get loggedInUser$(): Observable<UserDetails> {
     return of(this.loggedInUser);
@@ -173,6 +175,10 @@ export class MockUserService extends UserService {
   }
 
   public updateUserDetails(): Observable<any> {
+    return of({});
+  }
+
+  public updateAdminUserDetails(): Observable<any> {
     return of({});
   }
 }

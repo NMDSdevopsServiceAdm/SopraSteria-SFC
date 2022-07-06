@@ -25,9 +25,10 @@ import { SharedModule } from '@shared/shared.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 
 import { AdminMenuComponent } from './admin-menu/admin-menu.component';
-import { AddEditAdminUsersComponent } from './admin-users/add-edit-admin-users/add-edit-admin-users.component';
+import { AddAdminUserComponent } from './admin-users/add-admin-user/add-admin-user.component';
 import { AdminAccountViewComponent } from './admin-users/admin-account-view/admin-account-view.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
+import { EditAdminUserComponent } from './admin-users/edit-admin-user/edit-admin-user.component';
 import { AdminComponent } from './admin.component';
 import { AdminRoutingModule } from './admin.routing.module';
 import { ApprovalOrRejectionDialogComponent } from './components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
@@ -97,7 +98,8 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     ParentRequestsListComponent,
     DragAndDropUploadComponent,
     AdminUsersComponent,
-    AddEditAdminUsersComponent,
+    AddAdminUserComponent,
+    EditAdminUserComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
