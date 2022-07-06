@@ -3,9 +3,17 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
+import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminUsersService';
+import { WindowRef } from '@core/services/window.ref';
+import {
+  AdminManagerUser,
+  AdminUser,
+  PendingAdminManager,
+  PendingAdminUser,
+} from '@core/test-utils/admin/MockAdminUsersService';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -17,9 +25,26 @@ import { AdminAccountViewComponent } from './admin-account-view.component';
 
 describe('AdminAccountViewComponent', () => {
   async function setup(isAdminManagerType = true, pending = false) {
+    let user;
+
+    if (isAdminManagerType && pending) {
+      user = PendingAdminManager();
+    } else if (pending && !isAdminManagerType) {
+      user = PendingAdminUser();
+    } else if (isAdminManagerType && !pending) {
+      user = AdminManagerUser();
+    } else {
+      user = AdminUser();
+    }
     const { fixture, getByText, queryByText } = await render(AdminAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
+        AlertService,
+        WindowRef,
+        {
+          provide: ActivatedRoute,
+          useValue: MockActivatedRoute,
+        },
         {
           provide: AuthService,
           useClass: MockAuthService,
@@ -37,7 +62,7 @@ describe('AdminAccountViewComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                adminUser: isAdminManagerType ? AdminManagerUser() : pending ? PendingAdminUser() : AdminUser(),
+                adminUser: user,
                 loggedInUser: {
                   role: isAdminManagerType ? Roles.AdminManager : Roles.Admin,
                 },
@@ -71,8 +96,8 @@ describe('AdminAccountViewComponent', () => {
   });
 
   describe('buttons and links', async () => {
-    it('should render a Resend the user email link if user is pending', async () => {
-      const { queryByText } = await setup(false, true);
+    it('should render a Resend the user email link if user is pending and is Admin manager', async () => {
+      const { queryByText, component } = await setup(true, true);
 
       expect(queryByText('Resend the user set-up email')).toBeTruthy();
     });
