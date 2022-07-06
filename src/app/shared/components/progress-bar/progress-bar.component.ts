@@ -6,6 +6,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ProgressBarComponent implements OnInit {
   @Input() sections: string[];
+  public stepIndex = 1;
 
   public ngOnInit(): void {
     console.log('******* progress bar *********');
