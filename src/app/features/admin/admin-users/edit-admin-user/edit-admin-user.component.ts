@@ -144,8 +144,7 @@ export class EditAdminUserComponent extends AccountDetailsDirective {
     delete newAdminUser.permissionsType;
 
     this.adminUsersService.updateAdminUserDetails(this.user.uid, newAdminUser).subscribe(
-      (data) => {
-        console.log(data);
+      () => {
         this.router.navigate(this.return.url);
         this.alertService.addAlert({
           type: 'success',

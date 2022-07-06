@@ -166,15 +166,13 @@ const updateUser = async (req, res) => {
         return res.status(403).send();
       }
 
-      if (req.body.role && thisUser.userRole !== req.body.role) {
-        if (
-          !(
-            req.body.role == 'Edit' ||
-            req.body.role == 'Read' ||
-            req.body.role === 'Admin' ||
-            req.body.role === 'AdminManager'
-          )
-        ) {
+      if (
+        req.body.role &&
+        thisUser.userRole !== req.body.role &&
+        req.body.role !== 'Admin' &&
+        req.body.role !== 'AdminManager'
+      ) {
+        if (!(req.body.role == 'Edit' || req.body.role == 'Read')) {
           return res.status(400).send('Invalid request');
         }
 
@@ -218,6 +216,8 @@ const updateUser = async (req, res) => {
       return res.status(404).send('Not Found');
     }
   } catch (err) {
+    console.log('******** error ************');
+    console.log(err);
     if (err instanceof User.UserExceptions.UserJsonException) {
       console.error('User PUT: ', err.message);
       return res.status(400).send(err.safe);
