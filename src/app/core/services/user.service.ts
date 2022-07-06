@@ -155,6 +155,12 @@ export class UserService {
     });
   }
 
+  public resendActivationLinkAdmin(useruid: string) {
+    return this.http.post(`/api/user/${useruid}/resend-activation-admin`, null, {
+      responseType: 'text' as 'json',
+    });
+  }
+
   /*
    * GET Api to fetch all the establishmnet
    */

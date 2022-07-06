@@ -59,7 +59,7 @@ export class AdminAccountViewComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     this.subscriptions.add(
-      this.userService.resendActivationLink(this.user.uid).subscribe(
+      this.userService.resendActivationLinkAdmin(this.user.uid).subscribe(
         () => {
           this.router.navigate(this.return.url);
           this.alertService.addAlert({

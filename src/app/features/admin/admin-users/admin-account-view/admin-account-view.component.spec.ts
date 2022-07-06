@@ -188,18 +188,18 @@ describe('AdminAccountViewComponent', () => {
     });
   });
 
-  describe('resendActivationLink', async () => {
-    it('should send the email by rendering  resendActivationLink function', async () => {
+  describe('resendActivationLinkAdmin', async () => {
+    it('should send the email by rendering  resendActivationLinkAdmin function', async () => {
       const { fixture, getByText } = await setup(true, true);
 
       const userService = TestBed.inject(UserService) as UserService;
-      const resendActivationLinkSpy = spyOn(userService, 'resendActivationLink').and.callThrough();
+      const resendActivationLinkAdminSpy = spyOn(userService, 'resendActivationLinkAdmin').and.callThrough();
 
       fixture.detectChanges();
       const resendEmailLink = getByText('Resend the user set-up email');
       fireEvent.click(resendEmailLink);
 
-      expect(resendActivationLinkSpy).toHaveBeenCalled();
+      expect(resendActivationLinkAdminSpy).toHaveBeenCalled();
     });
   });
 });
