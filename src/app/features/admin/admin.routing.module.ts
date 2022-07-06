@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { RoleGuard } from '@core/guards/role/role.guard';
+import { Roles } from '@core/model/roles.enum';
 import { GetAdminUserResolver } from '@core/resolvers/admin/admin-users/get-admin-user.resolver';
 import { GetAdminUsersResolver } from '@core/resolvers/admin/admin-users/get-admin-users.resolver';
 import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
@@ -17,9 +19,10 @@ import { GetRegistrationsResolver } from '@core/resolvers/admin/registration-req
 import { GetRegistrationNotesResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-registration-notes.resolver';
 import { GetSingleRegistrationResolver } from '@core/resolvers/admin/registration-requests/single-registration/get-single-registration.resolver';
 
-import { AddEditAdminUsersComponent } from './admin-users/add-edit-admin-users/add-edit-admin-users.component';
+import { AddAdminUserComponent } from './admin-users/add-admin-user/add-admin-user.component';
 import { AdminAccountViewComponent } from './admin-users/admin-account-view/admin-account-view.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
+import { EditAdminUserComponent } from './admin-users/edit-admin-user/edit-admin-user.component';
 import { CqcIndividualMainServiceChangeComponent } from './cqc-main-service-change/cqc-individual-main-service-change/cqc-individual-main-service-change.component';
 import { CQCMainServiceChangeListComponent } from './cqc-main-service-change/cqc-main-service-change-list.component';
 import { EmailsComponent } from './emails/emails.component';
@@ -289,14 +292,32 @@ const routes: Routes = [
       },
       {
         path: 'add-admin',
-        component: AddEditAdminUsersComponent,
-        data: { title: 'Add Admin Users' },
+        component: AddAdminUserComponent,
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.AdminManager],
+          title: 'Add Admin User',
+        },
       },
       {
         path: ':useruid',
-        component: AdminAccountViewComponent,
-        data: { title: 'View Admin User' },
         resolve: { adminUser: GetAdminUserResolver },
+        children: [
+          {
+            path: '',
+            component: AdminAccountViewComponent,
+            data: { title: 'View Admin User' },
+          },
+          {
+            path: 'edit',
+            component: EditAdminUserComponent,
+            canActivate: [RoleGuard],
+            data: {
+              roles: [Roles.AdminManager],
+              title: 'Edit Admin User',
+            },
+          },
+        ],
       },
     ],
   },

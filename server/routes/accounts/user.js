@@ -129,6 +129,7 @@ const getMe = async (req, res) => {
 // updates a user with given uid or username
 const updateUser = async (req, res) => {
   const userId = req.params.userId;
+
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
@@ -165,7 +166,12 @@ const updateUser = async (req, res) => {
         return res.status(403).send();
       }
 
-      if (req.body.role && thisUser.userRole !== req.body.role) {
+      if (
+        req.body.role &&
+        thisUser.userRole !== req.body.role &&
+        req.body.role !== 'Admin' &&
+        req.body.role !== 'AdminManager'
+      ) {
         if (!(req.body.role == 'Edit' || req.body.role == 'Read')) {
           return res.status(400).send('Invalid request');
         }
@@ -210,6 +216,8 @@ const updateUser = async (req, res) => {
       return res.status(404).send('Not Found');
     }
   } catch (err) {
+    console.log('******** error ************');
+    console.log(err);
     if (err instanceof User.UserExceptions.UserJsonException) {
       console.error('User PUT: ', err.message);
       return res.status(400).send(err.safe);
@@ -1080,6 +1088,9 @@ const swapEstablishment = async (req, res) => {
 
 router.route('/').get(return200);
 router.route('/admin').get(Authorization.isAdmin, listAdminUsers);
+router.route('/admin/:userId').get(Authorization.isAdmin, getUser);
+router.route('/admin/:userId').put(Authorization.isAdminManager, updateUser);
+router.route('/admin/me/:userId').put(Authorization.isAdmin, updateUser);
 router
   .route('/establishment/:id')
   .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewListOfUsers'), listAllUsers);
@@ -1095,7 +1106,7 @@ router
 router.route('/me').get(Authorization.isAuthorised, getMe);
 router.route('/resetPassword').post(Authorization.isAuthorisedPasswdReset, resetPassword);
 router.route('/changePassword').post(Authorization.isAuthorised, changePassword);
-router.route('/add/admin').post(Authorization.isAdmin, partAddUser);
+router.route('/add/admin').post(Authorization.isAdminManager, partAddUser);
 router
   .route('/add/establishment/:id')
   .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddUser);
@@ -1117,3 +1128,4 @@ module.exports.meetsMaxUserLimit = meetsMaxUserLimit;
 module.exports.partAddUser = partAddUser;
 
 module.exports.listAdminUsers = listAdminUsers;
+module.exports.updateUser = updateUser;

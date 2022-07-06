@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminUsersService';
@@ -12,8 +13,8 @@ import { fireEvent, render } from '@testing-library/angular';
 import { AdminUsersComponent } from './admin-users.component';
 
 describe('AdminUsersComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getByTestId } = await render(AdminUsersComponent, {
+  async function setup(adminManager = false) {
+    const { fixture, getByText, getByTestId, queryByText } = await render(AdminUsersComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -23,6 +24,7 @@ describe('AdminUsersComponent', () => {
               url: ['/sfcadmin', 'users'],
               data: {
                 adminUsers: { adminUsers: [AdminUser(), PendingAdminUser(), AdminManagerUser()] as UserDetails[] },
+                loggedInUser: { role: adminManager ? Roles.AdminManager : Roles.Admin },
               },
             },
           },
@@ -45,6 +47,7 @@ describe('AdminUsersComponent', () => {
       fixture,
       getByText,
       getByTestId,
+      queryByText,
       routerSpy,
     };
   }
@@ -55,14 +58,28 @@ describe('AdminUsersComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the number of admin users in the heading and a button for adding a user', async () => {
+  it('should show the number of admin users in the heading', async () => {
     const { getByText } = await setup();
 
     const pageHeading = getByText('Admin users (3)');
-    const button = getByText('Add an admin user');
 
     expect(pageHeading).toBeTruthy();
+  });
+
+  it('should show a button for adding an admin user if the user is an adminManager', async () => {
+    const { getByText } = await setup(true);
+
+    const button = getByText('Add an admin user');
+
     expect(button).toBeTruthy();
+  });
+
+  it('should not show a button for adding an admin user if the user is an admin', async () => {
+    const { queryByText } = await setup();
+
+    const button = queryByText('Add an admin user');
+
+    expect(button).toBeFalsy();
   });
 
   it('should render a user table', async () => {
@@ -72,7 +89,7 @@ describe('AdminUsersComponent', () => {
   });
 
   it('should navigate to next page when add an admin button is clicked', async () => {
-    const { component, fixture, getByText, routerSpy } = await setup();
+    const { component, fixture, getByText, routerSpy } = await setup(true);
 
     component.flow = '/sfcadmin/users';
     fixture.detectChanges();

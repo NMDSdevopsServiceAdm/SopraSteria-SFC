@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
-import { async, Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -14,7 +13,7 @@ import { async, Observable, Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public isOnAdminScreen: boolean;
+  public isOnAdminScreen = true;
   public users: Array<UserDetails>;
   public fullname: string;
   public user: UserDetails;
@@ -31,7 +30,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getUser();
     this.onAdminScreen();
-    this.getUsers();
+    this.workplaceId && this.getUsers();
   }
 
   ngOnDestroy(): void {
@@ -66,7 +65,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.authService.isOnAdminScreen$.subscribe((isOnAdminScreen) => {
         this.isOnAdminScreen = isOnAdminScreen;
-
         this.getEstablishmentId();
       }),
     );
