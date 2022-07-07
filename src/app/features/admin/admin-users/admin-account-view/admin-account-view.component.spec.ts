@@ -3,10 +3,10 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
+import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import {
   AdminManagerUser,
@@ -192,7 +192,7 @@ describe('AdminAccountViewComponent', () => {
     it('should send the email by rendering  resendActivationLinkAdmin function', async () => {
       const { fixture, getByText } = await setup(true, true);
 
-      const userService = TestBed.inject(UserService) as UserService;
+      const userService = TestBed.inject(AdminUsersService) as AdminUsersService;
       const resendActivationLinkAdminSpy = spyOn(userService, 'resendActivationLinkAdmin').and.callThrough();
 
       fixture.detectChanges();

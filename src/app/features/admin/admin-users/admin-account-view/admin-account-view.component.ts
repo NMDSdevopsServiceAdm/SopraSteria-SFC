@@ -5,6 +5,7 @@ import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -34,6 +35,7 @@ export class AdminAccountViewComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userService: UserService,
     private alertService: AlertService,
+    private adminUsersService: AdminUsersService,
   ) {
     this.user = this.route.snapshot.data.adminUser;
   }
@@ -59,7 +61,7 @@ export class AdminAccountViewComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     this.subscriptions.add(
-      this.userService.resendActivationLinkAdmin(this.user.uid).subscribe(
+      this.adminUsersService.resendActivationLinkAdmin(this.user.uid).subscribe(
         () => {
           this.router.navigate(this.return.url);
           this.alertService.addAlert({
