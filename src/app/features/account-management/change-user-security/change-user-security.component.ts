@@ -66,8 +66,31 @@ export class ChangeUserSecurityComponent extends SecurityQuestionDirective {
   }
 
   private changeUserDetails(userDetails: UserDetails): void {
+    if (this.userDetails.role.includes('Admin')) {
+      this.updateAdminUser(userDetails);
+    } else {
+      this.updateUser(userDetails);
+    }
+  }
+
+  private updateUser(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.primaryWorkplace.uid, this.userDetails.uid, userDetails).subscribe(
+        (data) => {
+          this.userService.loggedInUser = { ...this.userDetails, ...data };
+          this.router.navigate(['/account-management']);
+        },
+        (error: HttpErrorResponse) => {
+          this.form.setErrors({ serverError: true });
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        },
+      ),
+    );
+  }
+
+  private updateAdminUser(userDetails: UserDetails): void {
+    this.subscriptions.add(
+      this.userService.updateAdminUserDetails(this.userDetails.uid, userDetails).subscribe(
         (data) => {
           this.userService.loggedInUser = { ...this.userDetails, ...data };
           this.router.navigate(['/account-management']);

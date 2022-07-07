@@ -15,12 +15,12 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { ChangeYourDetailsComponent } from './change-your-details.component';
+import { ChangeUserSecurityComponent } from './change-user-security.component';
 
-describe('ChangeYourDetailsComponent', () => {
+describe('ChangeUserSecurityComponent', () => {
   async function setup(isAdmin = false) {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
-      ChangeYourDetailsComponent,
+      ChangeUserSecurityComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
@@ -63,7 +63,7 @@ describe('ChangeYourDetailsComponent', () => {
     };
   }
 
-  it('should render a ChangeYourDetailsComponent', async () => {
+  it('should render a ChangeUserSecurityComponent', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
@@ -78,7 +78,7 @@ describe('ChangeYourDetailsComponent', () => {
     fireEvent.click(button);
     fixture.detectChanges();
 
-    const userDetails = component.form.value;
+    const userDetails = component.userDetails;
 
     expect(updateUserSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de', 'mocked-uid', userDetails);
   });
@@ -94,7 +94,7 @@ describe('ChangeYourDetailsComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/account-management']);
   });
 
-  it('should call updateUserDetails with updated information if the user is not an admin', async () => {
+  it('should call updateUserDetails with updated information if the user is not admin', async () => {
     const { component, fixture, getByText, userService } = await setup(true);
 
     const updateUserSpy = spyOn(userService, 'updateAdminUserDetails').and.callThrough();
@@ -103,12 +103,12 @@ describe('ChangeYourDetailsComponent', () => {
     fireEvent.click(button);
     fixture.detectChanges();
 
-    const userDetails = component.form.value;
+    const userDetails = component.userDetails;
 
     expect(updateUserSpy).toHaveBeenCalledWith('mocked-uid', userDetails);
   });
 
-  it('should navigate away from page when successfully updating user', async () => {
+  it('should navigate away from page when successfully updating admin user', async () => {
     const { fixture, getByText, routerSpy, userService } = await setup(true);
 
     spyOn(userService, 'updateAdminUserDetails').and.callThrough();

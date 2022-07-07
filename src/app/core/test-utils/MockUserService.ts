@@ -137,6 +137,8 @@ export class MockUserService extends UserService {
       jobTitle: 'Developer',
       phone: '01234567890',
       role: this.isAdmin ? Roles.Admin : Roles.Read,
+      securityQuestion: 'Not relevant',
+      securityQuestionAnswer: 'Not relevant',
     };
   }
 
