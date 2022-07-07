@@ -1,22 +1,27 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Add more details about your workplace</h1>
+
+    <p class="govuk-details__text">
+      We'll ask you a maximum of 11 questions. If necessary, you can skip the questions and answer them later in the
+      Workplace section of ASC-WDS.
+    </p>
+
     <p>We would like to know:</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>what type of employer you are (for example, local authority)</li>
       <li>whether you provide any other services</li>
-      <li>the capacity of the services that you provide</li>
-      <li>who uses your service</li>
-      <li>whether we can share your data</li>
+      <li>the capacity of the services that you provide (if applicable)</li>
+      <li>who uses your services</li>
       <li>whether you have any current staff vacancies</li>
       <li>whether you've had new starters or leavers in the last 12 months</li>
-      <li>how much money you've spent on advertising for staff in the last 4 weeks</li>
+      <li>how much money you've spent on advertising for new staff in the last 4 weeks</li>
       <li>how many people you've interviewed in the last 4 weeks</li>
       <li>whether new starters have to repeat training done with previous employers</li>
       <li>whether you'd accept a Care Certificate from a worker's previous employer</li>
+      <li>whether we can share your data</li>
     </ul>
     <a
-      [routerLink]="['/workplace', establishment.uid, 'type-of-employer']"
+      [routerLink]="['/workplace', establishment.uid, 'other-services']"
       role="button"
       draggable="false"
       class="govuk-button govuk-!-margin-top-5"

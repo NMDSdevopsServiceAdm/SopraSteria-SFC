@@ -1,13 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { StartComponent } from './start.component';
-import { render } from '@testing-library/angular';
-import { WorkplaceModule } from '../workplace.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { render } from '@testing-library/angular';
+
+import { WorkplaceModule } from '../workplace.module';
+import { StartComponent } from './start.component';
 
 describe('StartComponent (workplace)', () => {
   async function setup(navigatedFromFragment = '') {
@@ -41,7 +41,7 @@ describe('StartComponent (workplace)', () => {
     const workplaceUid = component.establishment.uid;
     const continueButton = getByText('Continue');
 
-    expect(continueButton.getAttribute('href')).toBe('/workplace/' + workplaceUid + '/type-of-employer');
+    expect(continueButton.getAttribute('href')).toBe('/workplace/' + workplaceUid + '/other-services');
   });
 
   it('should set the back link to the dashboard home fragment when no navigatedFromFragment state is passed', async () => {
