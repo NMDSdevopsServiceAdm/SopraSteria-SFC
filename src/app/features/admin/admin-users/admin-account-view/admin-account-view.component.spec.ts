@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -5,10 +6,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { UserService } from '@core/services/user.service';
 import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminUsersService';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -17,6 +20,7 @@ import { AdminAccountViewComponent } from './admin-account-view.component';
 
 describe('AdminAccountViewComponent', () => {
   async function setup(isAdminManagerType = true, pending = false) {
+    const role = isAdminManagerType ? Roles.AdminManager : Roles.Admin;
     const { fixture, getByText, queryByText } = await render(AdminAccountViewComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -38,12 +42,14 @@ describe('AdminAccountViewComponent', () => {
             snapshot: {
               data: {
                 adminUser: isAdminManagerType ? AdminManagerUser() : pending ? PendingAdminUser() : AdminUser(),
-                loggedInUser: {
-                  role: isAdminManagerType ? Roles.AdminManager : Roles.Admin,
-                },
               },
             },
           },
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(0, role),
+          deps: [HttpClient],
         },
       ],
     });
@@ -77,34 +83,34 @@ describe('AdminAccountViewComponent', () => {
       expect(queryByText('Resend the user set-up email')).toBeTruthy();
     });
 
-    it('shouldnt render a Resend the user email link if user is not pending', async () => {
+    it('should not render a Resend the user email link if user is not pending', async () => {
       const { queryByText } = await setup(false);
 
       expect(queryByText('Resend the user set-up email')).toBeFalsy();
     });
 
-    it('shouldnt render a delete this user link when user is not an AdminManager', async () => {
+    it('should not render a delete this user link when user is not an AdminManager', async () => {
       const { queryByText } = await setup(false);
 
       expect(queryByText('Delete this admin user')).toBeFalsy();
     });
 
     it('should render a delete this user link when user is an AdminManager', async () => {
-      const { queryByText } = await setup();
+      const { getByText } = await setup(true);
 
-      expect(queryByText('Delete this admin user')).toBeTruthy();
+      expect(getByText('Delete this admin user')).toBeTruthy();
     });
 
-    it('shouldnt render a change link when user is not an AdminManager', async () => {
+    it('should not render a change link when user is not an AdminManager', async () => {
       const { queryByText } = await setup(false);
 
       expect(queryByText('Change')).toBeFalsy();
     });
 
     it('should render a change link when user is an AdminManager', async () => {
-      const { queryByText } = await setup();
+      const { getByText } = await setup(true);
 
-      expect(queryByText('Change')).toBeTruthy();
+      expect(getByText('Change')).toBeTruthy();
     });
 
     it('Should navigate to admin users summary page when view admin users button is clicked', async () => {

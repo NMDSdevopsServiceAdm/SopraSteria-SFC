@@ -10,6 +10,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { UserService } from '@core/services/user.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 
 @Component({
@@ -24,6 +25,7 @@ export class EditAdminUserComponent extends AccountDetailsDirective {
   ];
   public title = 'Change admin user details';
   public user: UserDetails;
+  private loggedInUser: UserDetails;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -34,12 +36,14 @@ export class EditAdminUserComponent extends AccountDetailsDirective {
     private adminUsersService: AdminUsersService,
     private alertService: AlertService,
     private route: ActivatedRoute,
+    private userService: UserService,
   ) {
     super(backService, errorSummaryService, fb, router);
   }
 
   protected init(): void {
     this.user = this.route.snapshot.data.adminUser;
+    this.loggedInUser = this.route.snapshot.data.loggedInUser;
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
     this.return = { url: ['/sfcadmin', 'users', this.user.uid] };
 
@@ -143,11 +147,15 @@ export class EditAdminUserComponent extends AccountDetailsDirective {
     delete newAdminUser.permissionsType;
 
     this.adminUsersService.updateAdminUserDetails(this.user.uid, newAdminUser).subscribe(
-      () => {
+      (data) => {
         this.router.navigate(this.return.url);
+        // if adminManager is editing their info, update the logged in user with new data
+        if (this.loggedInUser.uid === data.uid) {
+          this.userService.loggedInUser = { ...this.loggedInUser, ...data };
+        }
         this.alertService.addAlert({
           type: 'success',
-          message: `${this.user.username} user details have been updated`,
+          message: `The user details for ${data.fullname} have been updated`,
         });
       },
       (error: HttpErrorResponse) => this.onError(error),

@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,7 +19,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { ChangeUserSecurityComponent } from './change-user-security.component';
 
 describe('ChangeUserSecurityComponent', () => {
-  async function setup(isAdmin = false) {
+  async function setup(role = Roles.Edit) {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
       ChangeUserSecurityComponent,
       {
@@ -32,7 +33,7 @@ describe('ChangeUserSecurityComponent', () => {
           },
           {
             provide: UserService,
-            useFactory: MockUserService.factory(0, isAdmin),
+            useFactory: MockUserService.factory(0, role),
             deps: [HttpClient],
           },
           {
@@ -83,7 +84,7 @@ describe('ChangeUserSecurityComponent', () => {
     expect(updateUserSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de', 'mocked-uid', userDetails);
   });
 
-  it('should navigate away from page when successfully updating user', async () => {
+  it('should navigate away from page when successfully updating a user', async () => {
     const { fixture, getByText, routerSpy, userService } = await setup();
 
     spyOn(userService, 'updateUserDetails').and.callThrough();
@@ -94,8 +95,8 @@ describe('ChangeUserSecurityComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/account-management']);
   });
 
-  it('should call updateUserDetails with updated information if the user is not admin', async () => {
-    const { component, fixture, getByText, userService } = await setup(true);
+  it('should call updateUserDetails with updated information if the user is an admin', async () => {
+    const { component, fixture, getByText, userService } = await setup(Roles.Admin);
 
     const updateUserSpy = spyOn(userService, 'updateAdminUserDetails').and.callThrough();
     const button = getByText('Save and return');
@@ -108,8 +109,8 @@ describe('ChangeUserSecurityComponent', () => {
     expect(updateUserSpy).toHaveBeenCalledWith('mocked-uid', userDetails);
   });
 
-  it('should navigate away from page when successfully updating admin user', async () => {
-    const { fixture, getByText, routerSpy, userService } = await setup(true);
+  it('should navigate away from page when successfully updating an admin user', async () => {
+    const { fixture, getByText, routerSpy, userService } = await setup(Roles.Admin);
 
     spyOn(userService, 'updateAdminUserDetails').and.callThrough();
     const button = getByText('Save and return');

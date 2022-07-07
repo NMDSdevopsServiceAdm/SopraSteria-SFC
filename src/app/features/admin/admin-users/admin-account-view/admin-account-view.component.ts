@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
-import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
 
 @Component({
   selector: 'app-admin-account-view',
@@ -21,17 +20,15 @@ export class AdminAccountViewComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     public breadcrumbService: BreadcrumbService,
-    private permissionsService: PermissionsService,
-    private authService: AuthService,
+    private userService: UserService,
   ) {
     this.user = this.route.snapshot.data.adminUser;
   }
 
   public ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ADMIN_USERS);
-    this.isAdminManager = this.route.snapshot.data.loggedInUser.role === Roles.AdminManager;
+    this.isAdminManager = this.userService.loggedInUser.role === Roles.AdminManager;
     this.isPending = this.setIsPending();
     this.setAdminUserDetails();
   }

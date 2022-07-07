@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,7 +19,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { ChangeYourDetailsComponent } from './change-your-details.component';
 
 describe('ChangeYourDetailsComponent', () => {
-  async function setup(isAdmin = false) {
+  async function setup(role = Roles.Edit) {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
       ChangeYourDetailsComponent,
       {
@@ -32,7 +33,7 @@ describe('ChangeYourDetailsComponent', () => {
           },
           {
             provide: UserService,
-            useFactory: MockUserService.factory(0, isAdmin),
+            useFactory: MockUserService.factory(0, role),
             deps: [HttpClient],
           },
           {
@@ -95,7 +96,7 @@ describe('ChangeYourDetailsComponent', () => {
   });
 
   it('should call updateUserDetails with updated information if the user is an admin', async () => {
-    const { component, fixture, getByText, userService } = await setup(true);
+    const { component, fixture, getByText, userService } = await setup(Roles.Admin);
 
     const updateUserSpy = spyOn(userService, 'updateAdminUserDetails').and.callThrough();
     const button = getByText('Save and return');
@@ -109,7 +110,7 @@ describe('ChangeYourDetailsComponent', () => {
   });
 
   it('should navigate away from page when successfully updating admin user', async () => {
-    const { fixture, getByText, routerSpy, userService } = await setup(true);
+    const { fixture, getByText, routerSpy, userService } = await setup(Roles.Admin);
 
     spyOn(userService, 'updateAdminUserDetails').and.callThrough();
     const button = getByText('Save and return');
