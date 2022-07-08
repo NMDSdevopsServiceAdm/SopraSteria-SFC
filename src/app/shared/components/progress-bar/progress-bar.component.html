@@ -1,0 +1,46 @@
+<div class="asc-progress-bar govuk-!-margin-right-2">
+  <ng-container *ngFor="let section of sections; index as i">
+    <div class="govuk__flex">
+      <div class="govuk-!-margin-right-3">
+        <img
+          *ngIf="i < currentSectionIndex"
+          [attr.data-testid]="'completed-' + i"
+          class="govuk-util__vertical-align-top"
+          src="/assets/images/progress-bar/done.svg"
+          alt=""
+        />
+        <img
+          *ngIf="i === currentSectionIndex"
+          [attr.data-testid]="'currentSection-' + i"
+          class="govuk-util__vertical-align-top"
+          src="/assets/images/progress-bar/doing.svg"
+          alt=""
+        />
+        <img
+          *ngIf="i > currentSectionIndex"
+          [attr.data-testid]="'todo-' + i"
+          class="govuk-util__vertical-align-top"
+          src="/assets/images/progress-bar/todo.svg"
+          alt=""
+        />
+      </div>
+      <div class="govuk__flex govuk__align-items-center">
+        <span
+          class="govuk-!-font-size-16"
+          [ngClass]="
+            (currentSectionIndex > i && 'govuk-!-font-weight-bold') || (currentSectionIndex < i && 'asc-colour-grey')
+          "
+        >
+          {{ section }}
+        </span>
+      </div>
+    </div>
+    <img
+      *ngIf="i < sections.length - 1"
+      [attr.data-testid]="'greenLine-' + i"
+      class="govuk-!-display-block govuk-!-margin-top-0 govuk-!-margin-bottom-0"
+      src="/assets/images/progress-bar/green-line.svg"
+      alt=""
+    />
+  </ng-container>
+</div>
