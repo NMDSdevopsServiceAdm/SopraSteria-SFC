@@ -7,6 +7,8 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { DialogService } from '@core/services/dialog.service';
+import { DeleteAdminUserComponent } from '../delete-admin-user/delete-admin-user.component';
 
 @Component({
   selector: 'app-admin-account-view',
@@ -25,6 +27,7 @@ export class AdminAccountViewComponent implements OnInit {
     public breadcrumbService: BreadcrumbService,
     private permissionsService: PermissionsService,
     private authService: AuthService,
+    public dialogService: DialogService,
   ) {
     this.user = this.route.snapshot.data.adminUser;
   }
@@ -34,6 +37,30 @@ export class AdminAccountViewComponent implements OnInit {
     this.isAdminManager = this.route.snapshot.data.loggedInUser.role === Roles.AdminManager;
     this.isPending = this.setIsPending();
     this.setAdminUserDetails();
+  }
+
+  public deleteUserModal(): void {
+    this.dialogService.open(DeleteAdminUserComponent, {}).afterClosed.subscribe((deleteConfirmed) => {
+      if (deleteConfirmed) {
+        this.onDeleteUser();
+      }
+    });
+  }
+
+  public onDeleteUser(): void {
+    console.log('Admin Deleted');
+    // this.subscriptions.add(
+    //   this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
+    //     () => {
+    //       this.updateEstablishmentUsers();
+    //       this.router.navigate(this.return.url, { fragment: this.return.fragment });
+    //       this.successAlert();
+    //     },
+    //     () => {
+    //       this.errorAlert();
+    //     },
+    //   ),
+    // );
   }
 
   public setIsPending(): boolean {
