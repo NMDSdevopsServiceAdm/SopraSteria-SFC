@@ -28,17 +28,26 @@
           </div>
         </ng-container>
       </fieldset>
-      <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
-        <button class="govuk-button" type="submit">Save and Return</button>
-        <a
-          href="#"
-          class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
-          (click)="returnToWorkPlace($event)"
-          >Exit</a
-        >
+      <ng-container *ngIf="isWorkplaceFlow; else continueAndExitButtons">
+        <app-workplace-submit-button
+          [return]="!!return"
+          (clicked)="setSubmitAction($event)"
+          [isExistingStaffRecord]="false"
+        ></app-workplace-submit-button>
       </ng-container>
-      <ng-template #workplaceAdd>
-        <button class="govuk-button" type="submit">Continue</button>
+      <ng-template #continueAndExitButtons>
+        <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
+          <button class="govuk-button" type="submit">Save and Return</button>
+          <a
+            href="#"
+            class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+            (click)="returnToWorkPlace($event)"
+            >Exit</a
+          >
+        </ng-container>
+        <ng-template #workplaceAdd>
+          <button class="govuk-button" type="submit">Continue</button>
+        </ng-template>
       </ng-template>
     </form>
   </div>
