@@ -70,7 +70,7 @@
   </div>
 
   <ng-container>
-    <div class="govuk-summary-list__row">
+    <div class="govuk-summary-list__row" data-testid="services-section">
       <dt class="govuk-summary-list__key">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Services</h2>
       </dt>
@@ -198,7 +198,7 @@
   </ng-container>
 
   <ng-container>
-    <div class="govuk-summary-list__row">
+    <div class="govuk-summary-list__row" data-testid="vacancies-and-turnover-section">
       <dt class="govuk-summary-list__key">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Vacancies and turnover</h2>
       </dt>
@@ -295,7 +295,6 @@
               !workplace.wdf?.starters.updatedSinceEffectiveDate
             )
           "
-          [changeLink]="getRoutePath('starters')"
           [explanationText]="' new starters'"
           [link]="['/workplace', workplace.uid, 'starters']"
           [hasData]="workplace.starters?.length"
@@ -356,7 +355,7 @@
   </ng-container>
 
   <ng-container>
-    <div class="govuk-summary-list__row">
+    <div class="govuk-summary-list__row" data-testid="recruitment-section">
       <dt class="govuk-summary-list__key">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Recruitment</h2>
       </dt>
@@ -436,7 +435,7 @@
       </dd>
     </div>
 
-    <div class="govuk-summary-list__row" data-testid="people-training">
+    <div class="govuk-summary-list__row" data-testid="repeat-training">
       <dt class="govuk-summary-list__key">Repeat training</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
@@ -500,7 +499,7 @@
   </ng-container>
 
   <ng-container>
-    <div class="govuk-summary-list__row">
+    <div class="govuk-summary-list__row" data-testid="permissions-section">
       <dt class="govuk-summary-list__key">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Permissions</h2>
       </dt>

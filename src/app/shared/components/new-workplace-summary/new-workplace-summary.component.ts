@@ -182,6 +182,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   }
 
   public getRoutePath(name: string): Array<string> {
+    console.log('getRoutePath');
     return ['/workplace', this.workplace.uid, name];
   }
 
