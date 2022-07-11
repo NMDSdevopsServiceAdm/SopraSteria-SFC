@@ -25,4 +25,10 @@ export class AdminUsersService {
   public updateAdminUserDetails(userId: string, userDetails: UserDetails): Observable<UserDetails> {
     return this.http.put<UserDetails>(`/api/user/admin/${userId}`, userDetails);
   }
+
+  public resendActivationLinkAdmin(useruid: string) {
+    return this.http.post(`/api/user/${useruid}/resend-activation-admin`, null, {
+      responseType: 'text' as 'json',
+    });
+  }
 }

@@ -36,6 +36,16 @@ export const PendingAdminUser = () => {
   });
 };
 
+export const PendingAdminManager = () => {
+  return AdminUser({
+    overrides: {
+      status: 'Pending',
+      role: 'AdminManager',
+      username: null,
+    },
+  });
+};
+
 @Injectable()
 export class MockAdminUsersService extends AdminUsersService {
   public createAdminUser(newUser: CreateAccountRequest): Observable<CreateAccountResponse> {
