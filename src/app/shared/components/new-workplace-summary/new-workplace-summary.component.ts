@@ -111,9 +111,9 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   ngOnInit(): void {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-    this.checkAnswersPage = this.return.url.includes('check-answers');
-    console.log(this.workplace);
-    console.log(this.hasCapacity);
+
+    this.checkAnswersPage = this.return?.url.includes('check-answers');
+
     this.setTotalStaffWarning();
     if (this.canEditEstablishment && this.wdfView) {
       this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
