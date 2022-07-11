@@ -301,12 +301,12 @@ const routes: Routes = [
       },
       {
         path: ':useruid',
-        resolve: { adminUser: GetAdminUserResolver },
         children: [
           {
             path: '',
             component: AdminAccountViewComponent,
             data: { title: 'View Admin User' },
+            resolve: { adminUser: GetAdminUserResolver },
           },
           {
             path: 'edit',
@@ -316,6 +316,7 @@ const routes: Routes = [
               roles: [Roles.AdminManager],
               title: 'Edit Admin User',
             },
+            resolve: { adminUser: GetAdminUserResolver },
           },
         ],
       },

@@ -9,12 +9,15 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { DialogService } from '@core/services/dialog.service';
 import { DeleteAdminUserComponent } from '../delete-admin-user/delete-admin-user.component';
+import { Subscription } from 'rxjs';
+import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 
 @Component({
   selector: 'app-admin-account-view',
   templateUrl: './admin-account-view.component.html',
 })
 export class AdminAccountViewComponent implements OnInit {
+  private subscriptions: Subscription = new Subscription();
   public user: UserDetails;
   public userDetails: SummaryList[];
   public canNavigate: boolean;
@@ -27,6 +30,7 @@ export class AdminAccountViewComponent implements OnInit {
     public breadcrumbService: BreadcrumbService,
     private permissionsService: PermissionsService,
     private authService: AuthService,
+    private adminUsersService: AdminUsersService,
     public dialogService: DialogService,
   ) {
     this.user = this.route.snapshot.data.adminUser;
@@ -39,28 +43,26 @@ export class AdminAccountViewComponent implements OnInit {
     this.setAdminUserDetails();
   }
 
-  public deleteUserModal(): void {
+  public deleteUserModal(event: Event): void {
+    event.preventDefault();
     this.dialogService.open(DeleteAdminUserComponent, {}).afterClosed.subscribe((deleteConfirmed) => {
       if (deleteConfirmed) {
         this.onDeleteUser();
+        this.router.navigate(['/sfcadmin', 'users']);
       }
     });
   }
 
   public onDeleteUser(): void {
     console.log('Admin Deleted');
-    // this.subscriptions.add(
-    //   this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
-    //     () => {
-    //       this.updateEstablishmentUsers();
-    //       this.router.navigate(this.return.url, { fragment: this.return.fragment });
-    //       this.successAlert();
-    //     },
-    //     () => {
-    //       this.errorAlert();
-    //     },
-    //   ),
-    // );
+    this.subscriptions.add(
+      this.adminUsersService.deleteAdminUserDetails(this.user.uid).subscribe(
+        () => {
+          this.adminUsersService.getAdminUsers();
+        },
+        (error) => console.log(error),
+      ),
+    );
   }
 
   public setIsPending(): boolean {

@@ -25,4 +25,8 @@ export class AdminUsersService {
   public updateAdminUserDetails(userId: string, userDetails: UserDetails): Observable<UserDetails> {
     return this.http.put<UserDetails>(`/api/user/admin/${userId}`, userDetails);
   }
+
+  public deleteAdminUserDetails(userId: string) {
+    return this.http.delete(`/api/user/admin/${userId}`);
+  }
 }
