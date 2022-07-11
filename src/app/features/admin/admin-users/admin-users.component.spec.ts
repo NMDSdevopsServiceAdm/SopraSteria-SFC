@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -5,15 +6,17 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { UserService } from '@core/services/user.service';
 import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminUsersService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { AdminUsersComponent } from './admin-users.component';
 
 describe('AdminUsersComponent', () => {
-  async function setup(adminManager = false) {
+  async function setup(role = Roles.Admin) {
     const { fixture, getByText, getByTestId, queryByText } = await render(AdminUsersComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -24,7 +27,6 @@ describe('AdminUsersComponent', () => {
               url: ['/sfcadmin', 'users'],
               data: {
                 adminUsers: { adminUsers: [AdminUser(), PendingAdminUser(), AdminManagerUser()] as UserDetails[] },
-                loggedInUser: { role: adminManager ? Roles.AdminManager : Roles.Admin },
               },
             },
           },
@@ -32,6 +34,11 @@ describe('AdminUsersComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(0, role),
+          deps: [HttpClient],
         },
       ],
     });
@@ -41,6 +48,7 @@ describe('AdminUsersComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const userService = injector.inject(UserService) as UserService;
 
     return {
       component,
@@ -49,6 +57,7 @@ describe('AdminUsersComponent', () => {
       getByTestId,
       queryByText,
       routerSpy,
+      userService,
     };
   }
 
@@ -67,7 +76,7 @@ describe('AdminUsersComponent', () => {
   });
 
   it('should show a button for adding an admin user if the user is an adminManager', async () => {
-    const { getByText } = await setup(true);
+    const { getByText } = await setup(Roles.AdminManager);
 
     const button = getByText('Add an admin user');
 
@@ -89,7 +98,7 @@ describe('AdminUsersComponent', () => {
   });
 
   it('should navigate to next page when add an admin button is clicked', async () => {
-    const { component, fixture, getByText, routerSpy } = await setup(true);
+    const { component, fixture, getByText, routerSpy } = await setup(Roles.AdminManager);
 
     component.flow = '/sfcadmin/users';
     fixture.detectChanges();

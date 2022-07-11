@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
@@ -33,7 +34,7 @@ describe('TotalStaffQuestionComponent', () => {
     },
   });
 
-  async function setup(shareWith: any = null, isAdmin = true, subsidiaries = 0) {
+  async function setup(shareWith: any = null) {
     const establishment = establishmentBuilder() as Establishment;
 
     const component = await render(TotalStaffQuestionComponent, {
@@ -57,7 +58,7 @@ describe('TotalStaffQuestionComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          useFactory: MockUserService.factory(0, Roles.Admin),
           deps: [HttpClient],
         },
         {
