@@ -50,6 +50,8 @@ describe('ChangeUserSecurityComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const userService = injector.inject(UserService) as UserService;
+    const updateUserSpy = spyOn(userService, 'updateUserDetails').and.callThrough();
+    const updateAdminUserSpy = spyOn(userService, 'updateAdminUserDetails').and.callThrough();
 
     return {
       component,
@@ -60,7 +62,8 @@ describe('ChangeUserSecurityComponent', () => {
       getByLabelText,
       queryByText,
       routerSpy,
-      userService,
+      updateUserSpy,
+      updateAdminUserSpy,
     };
   }
 
@@ -71,9 +74,8 @@ describe('ChangeUserSecurityComponent', () => {
   });
 
   it('should call updateUserDetails with updated information if the user is not an admin', async () => {
-    const { component, fixture, getByText, userService } = await setup();
+    const { component, fixture, getByText, updateUserSpy } = await setup();
 
-    const updateUserSpy = spyOn(userService, 'updateUserDetails').and.callThrough();
     const button = getByText('Save and return');
 
     fireEvent.click(button);
@@ -85,9 +87,8 @@ describe('ChangeUserSecurityComponent', () => {
   });
 
   it('should navigate away from page when successfully updating a user', async () => {
-    const { fixture, getByText, routerSpy, userService } = await setup();
+    const { fixture, getByText, routerSpy } = await setup();
 
-    spyOn(userService, 'updateUserDetails').and.callThrough();
     const button = getByText('Save and return');
     fireEvent.click(button);
     fixture.detectChanges();
@@ -96,9 +97,8 @@ describe('ChangeUserSecurityComponent', () => {
   });
 
   it('should call updateUserDetails with updated information if the user is an admin', async () => {
-    const { component, fixture, getByText, userService } = await setup(Roles.Admin);
+    const { component, fixture, getByText, updateAdminUserSpy } = await setup(Roles.Admin);
 
-    const updateUserSpy = spyOn(userService, 'updateAdminUserDetails').and.callThrough();
     const button = getByText('Save and return');
 
     fireEvent.click(button);
@@ -106,13 +106,12 @@ describe('ChangeUserSecurityComponent', () => {
 
     const userDetails = component.userDetails;
 
-    expect(updateUserSpy).toHaveBeenCalledWith('mocked-uid', userDetails);
+    expect(updateAdminUserSpy).toHaveBeenCalledWith('mocked-uid', userDetails);
   });
 
   it('should navigate away from page when successfully updating an admin user', async () => {
-    const { fixture, getByText, routerSpy, userService } = await setup(Roles.Admin);
+    const { fixture, getByText, routerSpy } = await setup(Roles.Admin);
 
-    spyOn(userService, 'updateAdminUserDetails').and.callThrough();
     const button = getByText('Save and return');
     fireEvent.click(button);
     fixture.detectChanges();
