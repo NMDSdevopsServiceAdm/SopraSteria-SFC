@@ -115,8 +115,6 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setSubmitAction(payload: { action: string; save: boolean }): void {
-    console.log(payload);
-
     this.submitAction = { action: payload.action, save: payload.save };
 
     if (!payload.save) {
