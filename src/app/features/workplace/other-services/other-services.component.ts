@@ -57,6 +57,7 @@ export class OtherServicesComponent extends Question {
     );
 
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
   }
 
   private oneCheckboxRequiredIfYes(form: FormGroup) {

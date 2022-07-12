@@ -5,12 +5,12 @@
         {{ callToAction }}
       </button>
     </div>
+
     <div *ngIf="recordSummary" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
       <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'summary', false)"
-        >View {{ isExistingStaffRecord ? 'this staff record' : 'workplace details' }}</a
-      >
+      <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'skip', false)">Skip this question</a>
     </div>
+
     <div *ngIf="canExit" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
       <span class="govuk-visually-hidden">or</span>
       <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'exit', false)">{{ exitText }}</a>

@@ -22,6 +22,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public previousRoute: string[];
   public nextRoute: string[];
   public back: URLStructure;
+  public skipRoute: string[];
 
   public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
@@ -96,6 +97,12 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
         break;
 
+      case 'skip':
+        // const url1 = this.isPrimaryWorkplace ? ['/dashboard'] : ['/workplace', this.establishment.uid];
+        // this.router.navigate(url1, { fragment: 'workplace' });
+        this.router.navigate(this.skipRoute);
+        break;
+
       case 'exit':
         const url = this.isPrimaryWorkplace ? ['/dashboard'] : ['/workplace', this.establishment.uid];
         this.router.navigate(url, { fragment: 'workplace' });
@@ -108,6 +115,8 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setSubmitAction(payload: { action: string; save: boolean }): void {
+    console.log(payload);
+
     this.submitAction = { action: payload.action, save: payload.save };
 
     if (!payload.save) {
