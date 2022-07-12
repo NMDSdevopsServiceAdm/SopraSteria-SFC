@@ -5,23 +5,21 @@ import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
-import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { DialogService } from '@core/services/dialog.service';
 import { DeleteAdminUserComponent } from '../delete-admin-user/delete-admin-user.component';
-import { Subscription } from 'rxjs';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-admin-account-view',
   templateUrl: './admin-account-view.component.html',
 })
-
 export class AdminAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public user: UserDetails;

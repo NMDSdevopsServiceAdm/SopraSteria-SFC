@@ -28,11 +28,11 @@ export class AdminUsersService {
 
   public deleteAdminUserDetails(userId: string) {
     return this.http.delete(`/api/user/admin/${userId}`);
+  }
 
   public resendActivationLinkAdmin(useruid: string) {
     return this.http.post(`/api/user/${useruid}/resend-activation-admin`, null, {
       responseType: 'text' as 'json',
     });
-
   }
 }
