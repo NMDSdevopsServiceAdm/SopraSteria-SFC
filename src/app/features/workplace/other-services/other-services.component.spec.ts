@@ -40,6 +40,17 @@ describe('OtherServicesComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the section, the question and the progress bar', async () => {
+    const { getByText, getAllByText } = await setup();
+
+    expect(getAllByText('Services').length).toEqual(2);
+    expect(getByText('Do you provide any other services?')).toBeTruthy();
+    expect(getByText('Vacancies and turnover')).toBeTruthy();
+    expect(getByText('Recruitment')).toBeTruthy();
+    expect(getByText('Staff benefits')).toBeTruthy();
+    expect(getByText('Permissions')).toBeTruthy();
+  });
+
   it('should display dropdown checkboxes when Yes is selected', async () => {
     const { fixture, getByTestId, queryByText } = await setup();
     const yesButton = getByTestId('otherServices-conditional-1');

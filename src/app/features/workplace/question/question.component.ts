@@ -29,6 +29,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected subscriptions: Subscription = new Subscription();
   protected initiated = false;
   public submitAction: { action: string; save: boolean } = null;
+  public sections = ['Services', 'Vacancies and turnover', 'Recruitment', 'Staff benefits', 'Permissions'];
 
   constructor(
     protected formBuilder: FormBuilder,
