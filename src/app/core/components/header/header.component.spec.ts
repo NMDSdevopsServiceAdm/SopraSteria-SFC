@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,13 +19,14 @@ import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
   async function setup(isAdmin = false, subsidiaries = 0, isLoggedIn: boolean = false) {
+    const role = isAdmin ? Roles.Admin : Roles.Edit;
     const component = await render(HeaderComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [HeaderComponent],
       providers: [
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          useFactory: MockUserService.factory(subsidiaries, role),
           deps: [HttpClient],
         },
         {

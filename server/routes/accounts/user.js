@@ -1112,6 +1112,7 @@ router
   .route('/add/establishment/:id')
   .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddUser);
 router.route('/:uid/resend-activation').post(Authorization.isAuthorised, resendActivationLink);
+router.route('/:uid/resend-activation-admin').post(Authorization.isAdminManager, resendActivationLink);
 router.route('/validateAddUser').post(finishAddUser);
 router.route('/add').post(Authorization.isAuthorisedAddUser, addUser);
 router.route('/my/establishments').get(Authorization.isAuthorised, listEstablishments);

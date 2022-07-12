@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -33,6 +34,7 @@ import { ViewMyWorkplacesComponent } from '../view-my-workplaces/view-my-workpla
 
 describe('view-workplace', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
+    const role = isAdmin ? Roles.Admin : Roles.Edit;
     const { fixture, getByTestId, getByText, queryByTestId, queryByText } = await render(ViewWorkplaceComponent, {
       imports: [
         SharedModule,
@@ -55,7 +57,7 @@ describe('view-workplace', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          useFactory: MockUserService.factory(subsidiaries, role),
           deps: [HttpClient],
         },
         {
@@ -194,7 +196,7 @@ describe('view-workplace', () => {
     });
 
     it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
-      const { component, establishmentService, getByText } = await setup(true);
+      const { establishmentService, getByText } = await setup(true);
 
       const spy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
 

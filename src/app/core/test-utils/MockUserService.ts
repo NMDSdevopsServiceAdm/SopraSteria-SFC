@@ -105,7 +105,7 @@ export { subsid1, subsid2, subsid3 };
 @Injectable()
 export class MockUserService extends UserService {
   private subsidiaries = 2;
-  private isAdmin = false;
+  private role = Roles.Edit;
 
   public returnUrl$ = of({
     url: ['/workplace', '12345asdfg', 'users'],
@@ -120,11 +120,11 @@ export class MockUserService extends UserService {
     phone: '01234 345634',
   });
 
-  public static factory(subsidiaries = 0, isAdmin = false) {
+  public static factory(subsidiaries = 0, role = Roles.Edit) {
     return (httpClient: HttpClient) => {
       const service = new MockUserService(httpClient);
       service.subsidiaries = subsidiaries;
-      service.isAdmin = isAdmin;
+      service.role = role;
       return service;
     };
   }
@@ -136,7 +136,9 @@ export class MockUserService extends UserService {
       fullname: 'John Smith',
       jobTitle: 'Developer',
       phone: '01234567890',
-      role: this.isAdmin ? Roles.Admin : Roles.Read,
+      role: this.role,
+      securityQuestion: 'Not relevant',
+      securityQuestionAnswer: 'Not relevant',
     };
   }
 

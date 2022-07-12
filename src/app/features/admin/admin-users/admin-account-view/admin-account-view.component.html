@@ -3,8 +3,15 @@
     <h2 class="govuk-heading-m">Admin user details</h2>
   </div>
   <div class="govuk-grid-column-two-thirds">
-    <div class="govuk-!-margin-top-0 govuk-button-heading-group">
-      <a *ngIf="isPending" class="govuk-list govuk-util__float-right" draggable="false" role="button" href="#">
+    <div class="govuk-button-heading-group">
+      <a
+        *ngIf="isPending && isAdminManager"
+        class="govuk-list govuk-list--inline"
+        draggable="false"
+        role="button"
+        (click)="resendActivationLink($event)"
+        href="#"
+      >
         Resend the user set-up email</a
       >
       <a
