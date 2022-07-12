@@ -1091,6 +1091,7 @@ router.route('/admin').get(Authorization.isAdmin, listAdminUsers);
 router.route('/admin/:userId').get(Authorization.isAdmin, getUser);
 router.route('/admin/:userId').put(Authorization.isAdminManager, updateUser);
 router.route('/admin/me/:userId').put(Authorization.isAdmin, updateUser);
+router.route('/admin/:userid').delete(Authorization.isAdminManager, deleteUser);
 router
   .route('/establishment/:id')
   .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewListOfUsers'), listAllUsers);

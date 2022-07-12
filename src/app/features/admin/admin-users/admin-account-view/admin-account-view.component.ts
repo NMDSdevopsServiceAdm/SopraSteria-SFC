@@ -5,12 +5,16 @@ import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
-import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { DialogService } from '@core/services/dialog.service';
+import { DeleteAdminUserComponent } from '../delete-admin-user/delete-admin-user.component';
+import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-admin-account-view',
@@ -28,9 +32,12 @@ export class AdminAccountViewComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     public breadcrumbService: BreadcrumbService,
+    private permissionsService: PermissionsService,
+    private authService: AuthService,
+    private adminUsersService: AdminUsersService,
+    public dialogService: DialogService,
     private userService: UserService,
     private alertService: AlertService,
-    private adminUsersService: AdminUsersService,
     private router: Router,
   ) {
     this.user = this.route.snapshot.data.adminUser;
@@ -47,6 +54,25 @@ export class AdminAccountViewComponent implements OnInit, OnDestroy {
     this.isAdminManager = this.userService.loggedInUser.role === Roles.AdminManager;
     this.isPending = this.setIsPending();
     this.setAdminUserDetails();
+  }
+
+  public deleteUserModal(event: Event): void {
+    event.preventDefault();
+    this.dialogService.open(DeleteAdminUserComponent, {}).afterClosed.subscribe((deleteConfirmed) => {
+      if (deleteConfirmed) {
+        this.onDeleteUser();
+      }
+    });
+  }
+
+  public onDeleteUser(): void {
+    this.subscriptions.add(
+      this.adminUsersService.deleteAdminUserDetails(this.user.uid).subscribe(() => {
+        this.adminUsersService.getAdminUsers().subscribe(() => {
+          this.router.navigate(['/sfcadmin', 'users']);
+        });
+      }),
+    );
   }
 
   public setIsPending(): boolean {

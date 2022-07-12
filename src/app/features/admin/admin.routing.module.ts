@@ -321,7 +321,6 @@ const routes: Routes = [
       },
       {
         path: ':useruid',
-
         children: [
           {
             path: '',
