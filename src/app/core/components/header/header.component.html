@@ -34,13 +34,19 @@
               >{{ fullname }}</a
             >
           </li>
-          <li *ngIf="!isOnAdminScreen" class="govuk-header__navigation-item" routerLinkActive="active">
+          <li *ngIf="workplaceId" class="govuk-header__navigation-item" routerLinkActive="active">
             <a
               [routerLink]="['/workplace', workplaceId, 'users']"
               class="govuk-header__link"
               routerLinkActive="govuk-link--no-underline"
-              >Users</a
-            >
+              >Users<img
+                src="/assets/images/flag-orange.svg"
+                alt="Add more users"
+                class="govuk-!-margin-right-1 govuk-!-margin-bottom-1"
+                style="height: 16px; width: 16px"
+                *ngIf="users && users.length == 1"
+                data-testid="singleUserNotification"
+            /></a>
           </li>
           <li class="govuk-header__navigation-item">
             <a href="#" (click)="signOut($event)" class="govuk-header__link">Sign out</a>

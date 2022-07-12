@@ -3,6 +3,8 @@ import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { GetAdminUserResolver } from '@core/resolvers/admin/admin-users/get-admin-user.resolver';
+import { GetAdminUsersResolver } from '@core/resolvers/admin/admin-users/get-admin-users.resolver';
 import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-cqc-main-service-change-list.resolver';
 import { GetIndividualCqcMainServiceChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
 import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
@@ -23,6 +25,10 @@ import { SharedModule } from '@shared/shared.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 
 import { AdminMenuComponent } from './admin-menu/admin-menu.component';
+import { AddAdminUserComponent } from './admin-users/add-admin-user/add-admin-user.component';
+import { AdminAccountViewComponent } from './admin-users/admin-account-view/admin-account-view.component';
+import { AdminUsersComponent } from './admin-users/admin-users.component';
+import { EditAdminUserComponent } from './admin-users/edit-admin-user/edit-admin-user.component';
 import { AdminComponent } from './admin.component';
 import { AdminRoutingModule } from './admin.routing.module';
 import { ApprovalOrRejectionDialogComponent } from './components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
@@ -63,6 +69,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     NgxDropzoneModule,
   ],
   declarations: [
+    AdminAccountViewComponent,
     AdminMenuComponent,
     LocalAuthoritiesReturnComponent,
     AdminComponent,
@@ -90,6 +97,9 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     CQCMainServiceChangeListComponent,
     ParentRequestsListComponent,
     DragAndDropUploadComponent,
+    AdminUsersComponent,
+    AddAdminUserComponent,
+    EditAdminUserComponent,
   ],
   providers: [
     LocalAuthoritiesReturnService,
@@ -111,6 +121,8 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     GetIndividualParentRequestResolver,
     InactiveWorkplacesForDeletionResolver,
     DragAndDropUploadComponent,
+    GetAdminUsersResolver,
+    GetAdminUserResolver,
   ],
   bootstrap: [AdminComponent],
 })

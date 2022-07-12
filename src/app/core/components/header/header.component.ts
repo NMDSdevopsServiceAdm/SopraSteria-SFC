@@ -13,7 +13,8 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public isOnAdminScreen: boolean;
+  public isOnAdminScreen = true;
+  public users: Array<UserDetails>;
   public fullname: string;
   public user: UserDetails;
   public showDropdown = false;
@@ -26,9 +27,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.getUser();
     this.onAdminScreen();
+    this.workplaceId && this.getUsers();
   }
 
   ngOnDestroy(): void {
@@ -44,6 +46,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
   }
 
+  public getUsers(): void {
+    this.subscriptions.add(this.userService.users$.subscribe((users) => (this.users = users)));
+    this.userService
+      .getAllUsersForEstablishment(this.workplaceId)
+      .subscribe((users) => this.userService.updateUsers(users));
+  }
+
   public isLoggedIn(): boolean {
     return this.authService.isAuthenticated();
   }
@@ -56,7 +65,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.authService.isOnAdminScreen$.subscribe((isOnAdminScreen) => {
         this.isOnAdminScreen = isOnAdminScreen;
-
         this.getEstablishmentId();
       }),
     );

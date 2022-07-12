@@ -105,7 +105,7 @@ export { subsid1, subsid2, subsid3 };
 @Injectable()
 export class MockUserService extends UserService {
   private subsidiaries = 2;
-  private isAdmin = false;
+  private role = Roles.Edit;
 
   public returnUrl$ = of({
     url: ['/workplace', '12345asdfg', 'users'],
@@ -120,11 +120,11 @@ export class MockUserService extends UserService {
     phone: '01234 345634',
   });
 
-  public static factory(subsidiaries = 0, isAdmin = false) {
+  public static factory(subsidiaries = 0, role = Roles.Edit) {
     return (httpClient: HttpClient) => {
       const service = new MockUserService(httpClient);
       service.subsidiaries = subsidiaries;
-      service.isAdmin = isAdmin;
+      service.role = role;
       return service;
     };
   }
@@ -135,10 +135,14 @@ export class MockUserService extends UserService {
       email: 'test@developer.com',
       fullname: 'John Smith',
       jobTitle: 'Developer',
-      phone: '',
-      role: this.isAdmin ? ('Admin' as Roles) : undefined,
+      phone: '01234567890',
+      role: this.role,
+      securityQuestion: 'Not relevant',
+      securityQuestionAnswer: 'Not relevant',
     };
   }
+
+  public set loggedInUser(user: UserDetails) {}
 
   public get loggedInUser$(): Observable<UserDetails> {
     return of(this.loggedInUser);
@@ -175,8 +179,13 @@ export class MockUserService extends UserService {
   public updateUserDetails(): Observable<any> {
     return of({});
   }
+
+  public updateAdminUserDetails(): Observable<any> {
+    return of({});
+  }
 }
 
+@Injectable()
 export class MockUserServiceWithNoUserDetails extends MockUserService {
   public userDetails$ = of({
     uid: '',

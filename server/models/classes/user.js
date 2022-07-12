@@ -23,6 +23,7 @@ const JSON_DOCUMENT_TYPE = require('./user/userProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUMENT;
 
 const bcrypt = require('bcrypt-nodejs');
+const { isAdminRole } = require('../../utils/adminUtils');
 const passwordValidator = require('../../utils/security/passwordValidation').isPasswordValid;
 
 // establishment entity
@@ -210,7 +211,7 @@ class User {
       this._isNew = true;
       this._uid = uuid.v4();
 
-      if (!this._isEstablishmentIdValid)
+      if (!this._isEstablishmentIdValid && !isAdminRole(this.userRole))
         throw new UserExceptions.UserSaveException(
           null,
           this._uid,
@@ -235,7 +236,6 @@ class User {
   async load(document) {
     try {
       await this._properties.restore(document, JSON_DOCUMENT_TYPE);
-
       // for user, the username and password are additional (non property based) optional attributes
       if (document.username) {
         this._username = escape(document.username);
@@ -357,7 +357,6 @@ class User {
   // Throws "UserSaveException" on error
   async save(savedBy, ttl = 0, externalTransaction = null, firstSave = false) {
     let mustSave = this._initialise();
-
     if (!this.uid) {
       this._log(User.LOG_ERROR, 'Not able to save an unknown uid');
       throw new UserExceptions.UserSaveException(
@@ -945,6 +944,30 @@ class User {
     });
 
     return returnData;
+  }
+
+  static async fetchAdminUsers() {
+    const adminUsers = await models.user.fetchAdminUsers();
+    const formattedAdminUsers = adminUsers.map((adminUser) => {
+      return {
+        uid: adminUser.uid,
+        fullname: adminUser.FullNameValue,
+        role: adminUser.UserRoleValue,
+        email: adminUser.EmailValue,
+        phone: adminUser.PhoneValue,
+        jobTitle: adminUser.JobTitleValue,
+        username: adminUser.login && adminUser.login.username,
+        updated: adminUser.updated.toJSON(),
+        isPrimary: adminUser.IsPrimary,
+        status: User.statusTranslator(adminUser.login),
+      };
+    });
+
+    formattedAdminUsers.sort((a, b) => {
+      if (a.status > b.status) return -1;
+      return new Date(b.updated) - new Date(a.updated);
+    });
+    return formattedAdminUsers;
   }
 
   // returns a set of User based on given filter criteria (all if no filters defined) - restricted to the given Establishment

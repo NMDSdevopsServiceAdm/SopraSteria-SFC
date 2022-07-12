@@ -6,6 +6,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
+import { Roles } from '@core/model/roles.enum';
 import { WorkerEditResponse } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -36,7 +37,7 @@ describe('StaffDetailsComponent', () => {
     },
   });
 
-  async function setup(isAdmin = true, subsidiaries = 0, returnUrl = true) {
+  async function setup(returnUrl = true) {
     const establishment = establishmentBuilder();
     const component = await render(StaffDetailsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -59,7 +60,7 @@ describe('StaffDetailsComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          useFactory: MockUserService.factory(0, Roles.Admin),
           deps: [HttpClient],
         },
         {
@@ -119,7 +120,7 @@ describe('StaffDetailsComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save staff record' cta button and 'Cancel' link when adding a staff record`, async () => {
-      const { component } = await setup(true, 0, false);
+      const { component } = await setup(false);
 
       component.fixture.componentInstance.canReturn = false;
       component.fixture.detectChanges();
