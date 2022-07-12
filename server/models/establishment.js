@@ -727,6 +727,12 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'RecruitmentJourneyExistingUserBanner',
       },
+      showAddWorkplaceDetailsBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+        field: 'ShowAddWorkplaceDetailsBanner',
+      },
     },
     {
       defaultScope: {
