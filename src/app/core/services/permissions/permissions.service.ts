@@ -34,8 +34,6 @@ export class PermissionsService {
   }
 
   public can(workplaceUid: string, permissionType: PermissionType): boolean {
-    console.log('log');
-
     const permissions = this.permissions(workplaceUid);
 
     return permissions.includes(permissionType);

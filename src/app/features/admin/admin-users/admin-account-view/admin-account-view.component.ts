@@ -67,14 +67,11 @@ export class AdminAccountViewComponent implements OnInit, OnDestroy {
 
   public onDeleteUser(): void {
     this.subscriptions.add(
-      this.adminUsersService.deleteAdminUserDetails(this.user.uid).subscribe(
-        () => {
-          this.adminUsersService.getAdminUsers().subscribe(() => {
-            this.router.navigate(['/sfcadmin', 'users']);
-          });
-        },
-        (error) => console.log(error),
-      ),
+      this.adminUsersService.deleteAdminUserDetails(this.user.uid).subscribe(() => {
+        this.adminUsersService.getAdminUsers().subscribe(() => {
+          this.router.navigate(['/sfcadmin', 'users']);
+        });
+      }),
     );
   }
 
