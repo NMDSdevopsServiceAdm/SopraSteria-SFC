@@ -48,17 +48,17 @@ export class AdminAccountViewComponent implements OnInit {
     this.dialogService.open(DeleteAdminUserComponent, {}).afterClosed.subscribe((deleteConfirmed) => {
       if (deleteConfirmed) {
         this.onDeleteUser();
-        this.router.navigate(['/sfcadmin', 'users']);
       }
     });
   }
 
   public onDeleteUser(): void {
-    console.log('Admin Deleted');
     this.subscriptions.add(
       this.adminUsersService.deleteAdminUserDetails(this.user.uid).subscribe(
         () => {
-          this.adminUsersService.getAdminUsers();
+          this.adminUsersService.getAdminUsers().subscribe(() => {
+            this.router.navigate(['/sfcadmin', 'users']);
+          });
         },
         (error) => console.log(error),
       ),
