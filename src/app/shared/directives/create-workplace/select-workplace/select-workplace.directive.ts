@@ -13,7 +13,6 @@ import { Subscription } from 'rxjs';
 @Directive()
 export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public isWorkplaceFlow: boolean;
   public flow: string;
   public locationAddresses: Array<LocationAddress>;
   public form: FormGroup;

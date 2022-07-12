@@ -26,7 +26,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected init(): void {
-    this.isWorkplaceFlow = true;
     this.flow = `workplace/${this.establishmentService.establishmentId}`;
     this.workplace = this.establishmentService.establishment;
     this.isCQCLocationUpdate = true;
