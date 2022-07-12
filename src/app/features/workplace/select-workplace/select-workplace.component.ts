@@ -26,9 +26,20 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected init(): void {
+    this.isWorkplaceFlow = true;
     this.flow = `workplace/${this.establishmentService.establishmentId}`;
     this.workplace = this.establishmentService.establishment;
     this.isCQCLocationUpdate = true;
+  }
+
+  public setSubmitAction(payload: { action: string; save: boolean }): void {
+    if (!payload.save) {
+      this.navigate();
+    }
+  }
+
+  protected navigate(): void {
+    this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
   }
 
   protected setBackLink(): void {
