@@ -98,8 +98,6 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'skip':
-        // const url1 = this.isPrimaryWorkplace ? ['/dashboard'] : ['/workplace', this.establishment.uid];
-        // this.router.navigate(url1, { fragment: 'workplace' });
         this.router.navigate(this.skipRoute);
         break;
 
