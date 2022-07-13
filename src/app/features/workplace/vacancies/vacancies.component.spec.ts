@@ -147,11 +147,11 @@ describe('VacanciesComponent', () => {
   });
 
   describe('submit buttons and submitting form', () => {
-    it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
+    it(`should show 'Save and continue' cta button and 'Skip this question' link, if a return url is not provided`, async () => {
       const { getByText } = await setup(false);
 
       expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('View workplace details')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it('should call updatedJobs when submitting form with job role and number of vacancies filled out', async () => {
@@ -218,7 +218,7 @@ describe('VacanciesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
     });
 
-    it('should navigate to the check-anwsers page when clicking view workplace details link', async () => {
+    xit('should navigate to the check-anwsers page when clicking view workplace details link', async () => {
       const { component, fixture, getByText, routerSpy } = await setup(false);
 
       component.form.get('vacanciesKnown').setValue('None');

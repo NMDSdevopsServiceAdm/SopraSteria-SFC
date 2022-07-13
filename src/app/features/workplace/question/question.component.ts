@@ -22,6 +22,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public previousRoute: string[];
   public nextRoute: string[];
   public back: URLStructure;
+  public skipRoute: string[];
 
   public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
@@ -95,6 +96,10 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
       case 'summary':
         this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
+        break;
+
+      case 'skip':
+        this.router.navigate(this.skipRoute);
         break;
 
       case 'exit':
