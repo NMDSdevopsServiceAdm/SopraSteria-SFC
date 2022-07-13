@@ -12,7 +12,7 @@
         <fieldset class="govuk-fieldset" aria-describedby="otherJobRoles-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
-              <span class="govuk-caption-l">{{ section }}</span>
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
               Do you provide any other services?
             </h1>
           </legend>
@@ -134,8 +134,12 @@
       </div>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div class="govuk-util__float-right">
-        <app-progress-bar [sections]="sections" [currentSection]="section"></app-progress-bar>
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="sections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
