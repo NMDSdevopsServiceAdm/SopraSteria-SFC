@@ -93,6 +93,7 @@ class Establishment extends EntityValidator {
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
+    this._showAddWorkplaceDetailsBanner = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -365,6 +366,10 @@ class Establishment extends EntityValidator {
     return this._peopleInterviewedInTheLastFourWeeks;
   }
 
+  get showAddWorkplaceDetailsBanner() {
+    return this._showAddWorkplaceDetailsBanner;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -561,6 +566,10 @@ class Establishment extends EntityValidator {
         if ('wouldYouAcceptCareCertificatesFromPreviousEmployment' in document) {
           this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
             document.wouldYouAcceptCareCertificatesFromPreviousEmployment;
+        }
+
+        if ('showAddWorkplaceDetailsBanner' in document) {
+          this._showAddWorkplaceDetailsBanner = document.showAddWorkplaceDetailsBanner;
         }
       }
 
@@ -1013,6 +1022,7 @@ class Establishment extends EntityValidator {
               this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
             wouldYouAcceptCareCertificatesFromPreviousEmployment:
               this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
+            showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1320,6 +1330,7 @@ class Establishment extends EntityValidator {
         this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
           fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
+        this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1795,6 +1806,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.wouldYouAcceptCareCertificatesFromPreviousEmployment =
           this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
+        myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

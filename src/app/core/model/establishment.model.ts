@@ -63,6 +63,11 @@ export interface Category {
   title: string;
 }
 
+export interface BannerFlag {
+  property: string;
+  value: boolean;
+}
+
 export interface WDF {
   effectiveFrom: Date;
   overalWdfEligible: boolean;

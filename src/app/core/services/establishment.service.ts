@@ -4,6 +4,7 @@ import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
   allMandatoryTrainingCategories,
+  BannerFlag,
   CancelOwnerShip,
   ChangeOwner,
   Establishment,
@@ -247,6 +248,10 @@ export class EstablishmentService {
 
   updateSharingPermissionsBanner(establishmentId: string, data: any): Observable<any> {
     return this.http.post<any>(`/api/establishment/${establishmentId}/updateSharingPermissionsBanner`, data);
+  }
+
+  updateWorkplaceBanner(establishmentId: string, data: BannerFlag): Observable<BannerFlag> {
+    return this.http.post<BannerFlag>(`/api/establishment/${establishmentId}/updateEstablishmentBanner`, data);
   }
 
   updateLocalAuthorities(establishmentId, data) {
