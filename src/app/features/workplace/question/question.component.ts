@@ -102,8 +102,6 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'return':
-        console.log(this.return);
-
         this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
         break;
     }

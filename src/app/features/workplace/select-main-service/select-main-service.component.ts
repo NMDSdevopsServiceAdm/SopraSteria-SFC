@@ -31,6 +31,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   protected init() {
     this.workplace = this.establishmentService.establishment;
     this.selectedMainService = this.workplace.mainService;
+    this.isWorkPlaceUpdate = true;
     this.setBackLink();
   }
 
@@ -61,6 +62,16 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
         }
       }),
     );
+  }
+
+  public setSubmitAction(payload: { action: string; save: boolean }): void {
+    if (!payload.save) {
+      this.navigate();
+    }
+  }
+
+  protected navigate(): void {
+    this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
   }
 
   protected setBackLink(): void {
