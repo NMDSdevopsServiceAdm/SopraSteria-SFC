@@ -97,10 +97,10 @@ describe('HomeTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('displays add workplace info text when no employer type', async () => {
+  it('displays add workplace info text when addWorkplaceDetailBanner is true', async () => {
     // Arrange
     const { component } = await setup();
-    component.fixture.componentInstance.workplace.employerType = null;
+    component.fixture.componentInstance.addWorkplaceDetailsBanner = true;
     component.fixture.detectChanges();
     // Act
     const link = component.getByText('Start to add more details about your workplace');
@@ -112,11 +112,11 @@ describe('HomeTabComponent', () => {
     );
   });
 
-  it('does not display add workplace info text when employer type is provided', async () => {
+  it('does not display add workplace info text when addWorkplaceDetailBanner is false', async () => {
     // Arrange
     const { component } = await setup();
 
-    component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
+    component.fixture.componentInstance.addWorkplaceDetailsBanner = false;
     component.fixture.detectChanges();
     // Act
     const link = component.queryByText('Start to add more details about your workplace');

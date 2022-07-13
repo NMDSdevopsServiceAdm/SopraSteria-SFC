@@ -1,7 +1,7 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
     <ng-container *ngIf="workplace && canEditEstablishment">
-      <app-inset-text *ngIf="!workplace.employerType" [color]="'todo'">
+      <app-inset-text *ngIf="addWorkplaceDetailsBanner" [color]="'todo'">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
             <a [routerLink]="['/workplace', workplace?.uid, 'start']">Start to add more details about your workplace</a>

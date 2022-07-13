@@ -146,6 +146,7 @@ export interface Establishment {
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
   peopleInterviewedInTheLastFourWeeks?: string;
+  showAddWorkplaceDetailsBanner?: boolean;
 }
 
 export interface UpdateJobsRequest {
