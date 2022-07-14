@@ -152,10 +152,21 @@ export class EstablishmentService {
   }
 
   public get returnTo(): URLStructure {
+    if (this.returnTo$.value) {
+      return this.returnTo$.value;
+    }
+    const returnTo = localStorage.getItem('returnTo');
+    if (returnTo) {
+      this.returnTo$.next(JSON.parse(returnTo));
+    } else if (isDevMode() && !this.returnTo$.value) {
+      throw new TypeError('No returnTo in local storage!');
+    }
+
     return this.returnTo$.value;
   }
 
-  public setReturnTo(returnTo: URLStructure) {
+  public setReturnTo(returnTo: URLStructure): void {
+    localStorage.setItem('returnTo', JSON.stringify(returnTo));
     this.returnTo$.next(returnTo);
   }
 

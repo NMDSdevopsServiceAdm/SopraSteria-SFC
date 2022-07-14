@@ -93,7 +93,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
       const { component, fixture, getByText } = await setup(false);
 
-      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction');
 
       const link = getByText('Skip this question');
       fireEvent.click(link);

@@ -14,7 +14,6 @@ describe('WorkplaceSubmitButtonComponent', () => {
         recordSummary: true,
         canExit: false,
         exitText: 'Cancel',
-        isExistingStaffRecord: true,
       },
     });
 
@@ -24,19 +23,8 @@ describe('WorkplaceSubmitButtonComponent', () => {
   });
 
   describe('return is false', () => {
-    it(`should render the 'Save and continue' button and 'Skip this question' link when in staff flow`, async () => {
+    it(`should render the 'Save and continue' button and 'Skip this question' link`, async () => {
       const { getByText, queryByText } = await setup();
-
-      expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('Skip this question')).toBeTruthy();
-      expect(queryByText('Cancel')).toBeFalsy();
-    });
-
-    it(`should render the 'Save and continue' button and 'Skip this question' link when in workplace flow`, async () => {
-      const { fixture, getByText, queryByText } = await setup();
-
-      fixture.componentInstance.isExistingStaffRecord = false;
-      fixture.detectChanges();
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
