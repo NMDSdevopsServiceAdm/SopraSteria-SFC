@@ -1,7 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -12,12 +13,12 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { QuestionComponent } from '@features/workers/question/question.component';
 import { SubmitButtonComponent } from '@shared/components/submit-button/submit-button.component';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, queryByText, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { ServiceUsersComponent } from './service-users.component';
 
-const test = [
+const mockServiceUser = [
   {
     group: 'Older people',
     services: [
@@ -82,10 +83,13 @@ describe('ServiceUsersComponent', () => {
       },
     );
     const component = fixture.componentInstance;
-    const userServiceSpy = TestBed.inject(ServiceUsersService) as ServiceUsersService;
-    spyOn(userServiceSpy, 'getServiceUsers').and.returnValue(of(test));
+    const injector = getTestBed();
+    const userServiceSpy = injector.inject(ServiceUsersService) as ServiceUsersService;
+    spyOn(userServiceSpy, 'getServiceUsers').and.returnValue(of(mockServiceUser));
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId };
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, routerSpy };
   };
 
   it('should render an ServiceUsersComponent', async () => {
@@ -111,5 +115,46 @@ describe('ServiceUsersComponent', () => {
     fixture.detectChanges();
 
     expect(getByTestId('progress-bar')).toBeTruthy();
+  });
+
+  describe(`'Save and continue' and skip question`, () => {
+    it(`should show 'Save and continue' cta button and 'Skip this question' link`, async () => {
+      const { getByText, component, fixture, queryByText } = await setup();
+      component['init']();
+
+      component.return = null;
+      fixture.detectChanges();
+
+      expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
+    });
+
+    it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
+      const { component, fixture, getByText } = await setup();
+      component['init']();
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+      component.return = null;
+      fixture.detectChanges();
+
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    });
+
+    it('should navigate to the next page when skip the question', async () => {
+      const { fixture, getByText, routerSpy, component } = await setup();
+      component['init']();
+
+      component.return = null;
+      fixture.detectChanges();
+
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'vacancies']);
+    });
   });
 });
