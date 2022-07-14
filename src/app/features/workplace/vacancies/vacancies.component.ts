@@ -57,7 +57,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   protected init(): void {
     this.jobs = this.route.snapshot.data.jobs;
     this.setupForm();
-    this.previousRoute = ['/workplace', this.establishment.uid, 'sharing-data'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
     this.prefill();
     this.subscriptions.add(
       this.form.get('vacanciesKnown').valueChanges.subscribe((value) => {
