@@ -63,6 +63,11 @@ export interface Category {
   title: string;
 }
 
+export interface BannerFlag {
+  property: string;
+  value: boolean;
+}
+
 export interface WDF {
   effectiveFrom: Date;
   overalWdfEligible: boolean;
@@ -141,6 +146,7 @@ export interface Establishment {
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
   peopleInterviewedInTheLastFourWeeks?: string;
+  showAddWorkplaceDetailsBanner?: boolean;
 }
 
 export interface UpdateJobsRequest {

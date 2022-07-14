@@ -19,6 +19,7 @@ export class OtherServicesComponent extends Question {
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];
   public serviceGroups: Array<ServiceGroup>;
+  public section = 'Services';
 
   constructor(
     protected formBuilder: FormBuilder,

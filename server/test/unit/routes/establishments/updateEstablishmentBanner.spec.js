@@ -3,14 +3,14 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const Establishment = require('../../../../models/classes/establishment');
 
-const { updateSharingPermissionsBanner } = require('../../../../routes/establishments/sharingPermissionsBanner');
+const { updateEstablishmentBanner } = require('../../../../routes/establishments/updateEstablishmentBanner');
 
-describe('server/routes/establishments/sharingPermissionsBanner', () => {
+describe('server/routes/establishments/updateEstablishmentBanner', () => {
   afterEach(async () => {
     sinon.restore();
   });
 
-  describe('sharingPermissionsBanner', () => {
+  describe('updateEstablishmentBanner', () => {
     let req;
     let res;
     let establishment;
@@ -25,9 +25,9 @@ describe('server/routes/establishments/sharingPermissionsBanner', () => {
 
       const request = {
         method: 'POST',
-        url: `/api/establishment/${establishmentId}/updateSharingPermissionsBanner`,
+        url: `/api/establishment/${establishmentId}/updateEstablishmentBanner`,
         params: { establishmentId },
-        body: { showPermissionsBannerFlag: false },
+        body: { property: 'showAddWorkplaceDetailsBanner', value: false },
       };
 
       req = httpMocks.createRequest(request);
@@ -37,11 +37,11 @@ describe('server/routes/establishments/sharingPermissionsBanner', () => {
       res = httpMocks.createResponse();
     });
 
-    it('should return 200 when the sharingPermissionBanner has been updated', async () => {
+    it('should return 200 when the showAddWorkplaceDetailsBanner has been updated', async () => {
       sinon.stub(establishment, 'restore').returns(true);
 
-      await updateSharingPermissionsBanner(req, res, establishment);
-      expect(establishment._showSharingPermissionsBanner).to.equal(false);
+      await updateEstablishmentBanner(req, res, establishment);
+      expect(establishment._showAddWorkplaceDetailsBanner).to.equal(false);
       expect(res.statusCode).to.deep.equal(200);
     });
 
@@ -49,7 +49,7 @@ describe('server/routes/establishments/sharingPermissionsBanner', () => {
       sinon.stub(establishment, 'restore').returns(true);
       sinon.stub(establishment, 'load').returns(false);
 
-      await updateSharingPermissionsBanner(req, res, establishment);
+      await updateEstablishmentBanner(req, res, establishment);
 
       expect(res.statusCode).to.deep.equal(400);
       expect(res._getData()).to.deep.equal('Unexpected Input.');
@@ -58,7 +58,7 @@ describe('server/routes/establishments/sharingPermissionsBanner', () => {
     it('should return 401 when the establishment is not restored', async () => {
       sinon.stub(establishment, 'restore').returns(false);
 
-      await updateSharingPermissionsBanner(req, res, establishment);
+      await updateEstablishmentBanner(req, res, establishment);
 
       expect(res.statusCode).to.deep.equal(401);
       expect(res._getData()).to.deep.equal('Not Found');

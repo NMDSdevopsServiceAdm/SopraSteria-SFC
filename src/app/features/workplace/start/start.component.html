@@ -22,6 +22,7 @@
     </ul>
     <a
       [routerLink]="['/workplace', establishment.uid, 'other-services']"
+      (click)="removeAddDetailsBanner($event)"
       role="button"
       draggable="false"
       class="govuk-button govuk-!-margin-top-5"

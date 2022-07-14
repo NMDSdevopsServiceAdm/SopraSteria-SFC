@@ -2,18 +2,19 @@ const router = require('express').Router({ mergeParams: true });
 const Establishment = require('../../models/classes/establishment');
 const { hasPermission } = require('../../utils/security/hasPermission');
 
-const sharingPermissionsBanner = async (req, res) => {
+const establishmentBanner = async (req, res) => {
   const thisEstablishment = new Establishment.Establishment(req.username);
-  await updateSharingPermissionsBanner(req, res, thisEstablishment);
+  await updateEstablishmentBanner(req, res, thisEstablishment);
 };
 
-const updateSharingPermissionsBanner = async (req, res, establishment) => {
+const updateEstablishmentBanner = async (req, res, establishment) => {
   const establishmentId = req.establishmentId;
 
   try {
+    const { property, value } = req.body;
     if (await establishment.restore(establishmentId)) {
       const isValidEstablishment = await establishment.load({
-        showSharingPermissionsBanner: req.body.showPermissionsBannerFlag,
+        [property]: value,
       });
 
       if (isValidEstablishment) {
@@ -39,8 +40,7 @@ const updateSharingPermissionsBanner = async (req, res, establishment) => {
   }
 };
 
-router.route('/').post(hasPermission('canEditEstablishment'), sharingPermissionsBanner);
+router.route('/').post(hasPermission('canEditEstablishment'), establishmentBanner);
 
 module.exports = router;
-module.exports.sharingPermissionsBanner = sharingPermissionsBanner;
-module.exports.updateSharingPermissionsBanner = updateSharingPermissionsBanner;
+module.exports.updateEstablishmentBanner = updateEstablishmentBanner;

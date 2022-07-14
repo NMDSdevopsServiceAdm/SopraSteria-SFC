@@ -1,13 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { StaffRecruitmentStartComponent } from './staff-recruitment-start.component';
-import { render } from '@testing-library/angular';
-import { WorkplaceModule } from '../workplace.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { render } from '@testing-library/angular';
+
+import { WorkplaceModule } from '../workplace.module';
+import { StaffRecruitmentStartComponent } from './staff-recruitment-start.component';
 
 describe('StaffRecruitmentStartComponent (workplace)', () => {
   async function setup(navigatedFromFragment = '') {

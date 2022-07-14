@@ -10,7 +10,12 @@
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="otherJobRoles-hint">
-          <h1 class="govuk-heading-l">Do you provide any other services?</h1>
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              Do you provide any other services?
+            </h1>
+          </legend>
           <div class="govuk-!-margin-bottom-7">
             <p>
               You selected '{{ establishment.mainService.name }}' as your main service when you created your account.
@@ -126,6 +131,15 @@
             </div>
           </div>
         </fieldset>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="sections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
