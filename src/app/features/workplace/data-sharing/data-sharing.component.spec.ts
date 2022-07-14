@@ -41,10 +41,9 @@ describe('DataSharingComponent', () => {
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(null);
     const updateDataSharingSpy = spyOn(establishmentService, 'updateDataSharing').and.returnValue(of(true));
-    const updateSharingPermissionsBannerSpy = spyOn(
-      establishmentService,
-      'updateSharingPermissionsBanner',
-    ).and.returnValue(of(true));
+    const updateWorkplaceBannerSpy = spyOn(establishmentService, 'updateWorkplaceBanner').and.returnValue(
+      of({ property: 'showAddWorkplaceDetailsBanner', value: false }),
+    );
 
     return {
       fixture,
@@ -55,7 +54,7 @@ describe('DataSharingComponent', () => {
       getByTestId,
       routerSpy,
       updateDataSharingSpy,
-      updateSharingPermissionsBannerSpy,
+      updateWorkplaceBannerSpy,
     };
   }
 
@@ -279,8 +278,8 @@ describe('DataSharingComponent', () => {
   });
 
   describe('removing sharing permission banner function', () => {
-    it('should call updateSharingPermissionsBanner when the save and return button is clicked', async () => {
-      const { component, fixture, getByText, updateSharingPermissionsBannerSpy } = await setup();
+    it('should call updateWorkplaceBanner when the save and return button is clicked', async () => {
+      const { component, fixture, getByText, updateWorkplaceBannerSpy } = await setup();
 
       component.establishment.showSharingPermissionsBanner = true;
       fixture.detectChanges();
@@ -288,11 +287,11 @@ describe('DataSharingComponent', () => {
       const returnButton = getByText('Save and return');
       fireEvent.click(returnButton);
 
-      expect(updateSharingPermissionsBannerSpy).toHaveBeenCalled();
+      expect(updateWorkplaceBannerSpy).toHaveBeenCalled();
     });
 
-    it('should call updateSharingPermissionsBanner when the cancel button is clicked', async () => {
-      const { component, fixture, getByText, updateSharingPermissionsBannerSpy } = await setup();
+    it('should call updateWorkplaceBanner when the cancel button is clicked', async () => {
+      const { component, fixture, getByText, updateWorkplaceBannerSpy } = await setup();
 
       component.establishment.showSharingPermissionsBanner = true;
       fixture.detectChanges();
@@ -300,7 +299,7 @@ describe('DataSharingComponent', () => {
       const returnButton = getByText('Cancel');
       fireEvent.click(returnButton);
 
-      expect(updateSharingPermissionsBannerSpy).toHaveBeenCalled();
+      expect(updateWorkplaceBannerSpy).toHaveBeenCalled();
     });
   });
 });

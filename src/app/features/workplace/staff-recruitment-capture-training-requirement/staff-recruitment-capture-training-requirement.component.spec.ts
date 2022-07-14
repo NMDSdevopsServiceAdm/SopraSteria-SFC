@@ -9,7 +9,9 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
+import {
+  StaffRecruitmentCaptureTrainingRequirementComponent,
+} from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(returnUrl = true, repeatTraining = undefined) {
@@ -93,7 +95,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
       const { component, fixture, getByText } = await setup(false);
 
-      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction');
 
       const link = getByText('Skip this question');
       fireEvent.click(link);
