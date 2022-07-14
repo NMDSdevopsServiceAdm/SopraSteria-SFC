@@ -82,7 +82,7 @@
       </fieldset>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div class="govuk-util__float-right">
+      <div *ngIf="!return" class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
           [sections]="sections"
