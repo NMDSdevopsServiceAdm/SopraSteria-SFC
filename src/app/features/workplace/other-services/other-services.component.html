@@ -39,7 +39,9 @@
               data-testid="checkboxes"
             >
               <div class="govuk-form-group">
-                <span id="otherJobRoles-hint" class="govuk-hint"> Select all that apply. </span>
+                <div class="govuk-!-margin-bottom-3">
+                  <p><span id="otherJobRoles-hint"> Select all that apply. </span></p>
+                </div>
                 <span
                   *ngIf="submitted && form.get('otherServices').errors"
                   id="otherServices-error"
