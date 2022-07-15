@@ -95,7 +95,7 @@
                     >
                   </span>
                   <input
-                    class="govuk-input govuk-!-width-one-quarter govuk-!-margin-right-5"
+                    class="govuk-input govuk-!-width-one-half govuk-!-margin-right-5"
                     [class.govuk-input--error]="submitted && !emptyForm && leaver.get('total').invalid"
                     [formControlName]="'total'"
                     id="total-{{ i }}"
@@ -128,7 +128,7 @@
               </button>
             </div>
             <div class="govuk-grid-column-one-third govuk-!-margin-top-1">
-              <p class="govuk-heading-m">Total leavers: {{ totalLeavers }}</p>
+              <p class="govuk-heading-s">Total leavers: {{ totalLeavers }}</p>
             </div>
           </div>
 
