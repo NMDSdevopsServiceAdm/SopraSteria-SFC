@@ -225,7 +225,7 @@ describe('LeaversComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'recruitment-advertising-cost']);
     });
 
-    it('should navigate to the check-anwsers page when clicking Skip this question link', async () => {
+    it('should navigate to the next page when clicking Skip this question link', async () => {
       const { component, fixture, getByText, routerSpy } = await setup(false);
 
       component.form.get('leaversKnown').setValue('None');
