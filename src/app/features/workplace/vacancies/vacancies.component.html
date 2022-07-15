@@ -96,7 +96,7 @@
                     >
                   </span>
                   <input
-                    class="govuk-input govuk-!-width-one-quarter"
+                    class="govuk-input govuk-!-width-one-half"
                     [class.govuk-input--error]="submitted && !emptyForm && vacancy.get('total').invalid"
                     [formControlName]="'total'"
                     id="total-{{ i }}"
@@ -129,7 +129,7 @@
               </button>
             </div>
             <div class="govuk-grid-column-one-third govuk-!-margin-top-1">
-              <p class="govuk-heading-m">Total vacancies: {{ totalVacancies }}</p>
+              <p class="govuk-heading-s">Total vacancies: {{ totalVacancies }}</p>
             </div>
           </div>
 
