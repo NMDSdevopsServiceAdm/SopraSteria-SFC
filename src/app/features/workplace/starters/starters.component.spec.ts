@@ -135,6 +135,16 @@ describe('StartersComponent', () => {
     expect(component.form.value).toEqual({ starterRecords: [{ jobRole: null, total: null }], noRecordsReason: 'None' });
   });
 
+  fit('should render the progress bar when in the flow', async () => {
+    const { component, fixture, getByTestId } = await setup();
+    component['init']();
+
+    component.return = null;
+    fixture.detectChanges();
+
+    expect(getByTestId('progress-bar')).toBeTruthy();
+  });
+
   describe('Submit buttons and submitting form', () => {
     it('should display Save and continue button and Skip this question link when returnTo not set in establishmentService', async () => {
       const { getByText } = await setup(false);
@@ -207,16 +217,15 @@ describe('StartersComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'leavers']);
     });
 
-    xit('should navigate to the check-anwsers page when clicking view workplace details link', async () => {
-      const { component, fixture, getByText, routerSpy } = await setup(false);
+    it(`should show 'Save and continue' cta button and 'Skip this question' link`, async () => {
+      const { getByText, component, fixture } = await setup();
+      component['init']();
 
-      component.form.get('noRecordsReason').setValue('None');
-
-      const link = getByText('View workplace details');
-      fireEvent.click(link);
+      component.return = null;
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
+      expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it('should display Save and return button and Cancel link when returnTo set in establishmentService', async () => {
@@ -248,6 +257,19 @@ describe('StartersComponent', () => {
       fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+    });
+
+    it('should navigate to the next page when skip the question', async () => {
+      const { fixture, getByText, routerSpy, component } = await setup();
+      component['init']();
+
+      component.return = null;
+      fixture.detectChanges();
+
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'leavers']);
     });
   });
 
