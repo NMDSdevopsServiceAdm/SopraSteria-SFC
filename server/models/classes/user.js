@@ -712,9 +712,6 @@ class User {
   // returns true on success; false if no User
   // Can throw WorkerRestoreException exception.
   async restore(uid, uname, showHistory = false) {
-    console.log('******************* user class restore ********************');
-    console.log('$$$$$ restore - uid:', uid);
-    console.log('$$$$$ restore - uname:', uname);
     if (!uid && !uname) {
       console.log('$$$$ restore - no unname or uid');
       throw new UserExceptions.UserRestoreException(
@@ -732,12 +729,10 @@ class User {
       //  fetch, we are sure to only fetch those
       //  User records associated to the given
       //   establishment
-      console.log('$$$$$ restore - inside try');
       let fetchQuery = null;
 
       if (uname) {
         // fetch by username
-        console.log('$$$$$ restore - fetchByUname');
         fetchQuery = {
           where: {
             archived: false,
@@ -754,7 +749,6 @@ class User {
         };
       } else {
         // fetch by uid
-        console.log('$$$$$ restore - fetchByUid');
         fetchQuery = {
           where: {
             uid: uid,
@@ -769,12 +763,9 @@ class User {
         };
       }
 
-      console.log('$$$$$ restore - fetchQuery:', !!fetchQuery);
       const fetchResults = await models.user.findOne(fetchQuery);
-      console.log('$$$$$ restore - fetchResults:', !!fetchResults);
-      console.log('$$$$$ restore - fetchResults id:', fetchResults.id);
+
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
-        console.log('$$$$$ restore - inside if');
         // update self - don't use setters because they modify the change state
         this._isNew = false;
         this._id = fetchResults.id;
@@ -804,14 +795,13 @@ class User {
           });
         }
 
-        console.log('$$$$$ restore - Before fetchResults.auditEvents');
         if (fetchResults.auditEvents) {
           this._auditEvents = fetchResults.auditEvents;
         }
-        console.log('$$$$$ restore - Before fetchResults.auditEvents');
+
         // load extendable properties
         await this._properties.restore(fetchResults, SEQUELIZE_DOCUMENT_TYPE);
-        console.log('$$$$$ restore - after this._properties.restore');
+
         return true;
       }
 
@@ -826,16 +816,14 @@ class User {
 
   async delete(deletedBy, externalTransaction = null) {
     console.log('******************* user class delete ********************');
-    console.log('££££ delete - deletedBy:'.deletedBy);
+    console.log('££££ delete - deletedBy:', deletedBy);
     try {
-      console.log('££££ delete - inside try');
       const updatedTimestamp = new Date();
+      const randomNewUsername = uuid.v4();
+      const oldUsername = this._username;
 
       await models.sequelize.transaction(async (t) => {
-        console.log('££££ delete - inside transaction');
         const thisTransaction = externalTransaction ? externalTransaction : t;
-        let randomNewUsername = uuid.v4();
-        let oldUsername = this._username;
 
         const updateDocument = {
           updated: updatedTimestamp,
@@ -850,7 +838,6 @@ class User {
           SecurityQuestionAnswerValue: '',
         };
 
-        console.log('££££ delete - before user update');
         let [updatedRecordCount] = await models.user.update(updateDocument, {
           returning: true,
           where: {
@@ -860,11 +847,7 @@ class User {
           transaction: thisTransaction,
         });
 
-        console.log('££££ delete - user updatedRecordCount:', updatedRecordCount);
-        console.log('££££ delete - before login update');
         if (updatedRecordCount === 1) {
-          console.log('££££ delete - inside updatedRecordCount if');
-          console.log('££££ delete - before login update');
           await models.login.update(
             {
               username: randomNewUsername,
@@ -877,7 +860,7 @@ class User {
               transaction: thisTransaction,
             },
           );
-          console.log('££££ delete - before addUserTracking update');
+
           await models.addUserTracking.update(
             {
               completed: new Date(),
@@ -901,32 +884,6 @@ class User {
           await models.userAudit.create(auditEvent, { transaction: thisTransaction });
 
           console.log('££££ delete - before establishmentAudit update');
-          await models.sequelize.query(
-            'UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-            {
-              replacements: { username: oldUsername, usernameNew: randomNewUsername },
-              type: models.sequelize.QueryTypes.UPDATE,
-              transaction: thisTransaction,
-            },
-          );
-          console.log('££££ delete - before userAudit update');
-          await models.sequelize.query(
-            'UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-            {
-              replacements: { username: oldUsername, usernameNew: randomNewUsername },
-              type: models.sequelize.QueryTypes.UPDATE,
-              transaction: thisTransaction,
-            },
-          );
-          console.log('££££ delete - before workerAudit update');
-          await models.sequelize.query(
-            'UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-            {
-              replacements: { username: oldUsername, usernameNew: randomNewUsername },
-              type: models.sequelize.QueryTypes.UPDATE,
-              transaction: thisTransaction,
-            },
-          );
 
           this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
         } else {
@@ -939,8 +896,33 @@ class User {
           );
         }
       });
+
+      console.log('££££ delete - before EstablismentAudit');
+      await models.sequelize.query(
+        'UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
+        {
+          replacements: { username: oldUsername, usernameNew: randomNewUsername },
+          type: models.sequelize.QueryTypes.UPDATE,
+        },
+      );
+      console.log('££££ delete - before UserAudit');
+      await models.sequelize.query(
+        'UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
+        {
+          replacements: { username: oldUsername, usernameNew: randomNewUsername },
+          type: models.sequelize.QueryTypes.UPDATE,
+        },
+      );
+      console.log('££££ delete - before WorkerAudit');
+      await models.sequelize.query(
+        'UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
+        {
+          replacements: { username: oldUsername, usernameNew: randomNewUsername },
+          type: models.sequelize.QueryTypes.UPDATE,
+        },
+      );
+      console.log('££££ delete - after WorkerAudit');
     } catch (err) {
-      console.log('££££ delete - Error');
       console.error('throwing error');
       console.error(err);
       throw new UserExceptions.UserDeleteException(
@@ -1271,7 +1253,6 @@ class User {
 
   // Maps the correct status depending on a user's login state
   static statusTranslator(loginDetails) {
-    console.log('$$$$$ statusTranslator - logdinDetails:', loginDetails);
     if (loginDetails && loginDetails.status) {
       return loginDetails.status;
     } else if (loginDetails && loginDetails.username) {
