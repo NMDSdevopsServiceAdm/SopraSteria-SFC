@@ -13,50 +13,56 @@ import { VacanciesComponent } from './vacancies.component';
 
 describe('VacanciesComponent', () => {
   async function setup(returnUrl = true, vacancies = undefined) {
-    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByText, queryAllByText } = await render(
-      VacanciesComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        providers: [
-          FormBuilder,
-          {
-            provide: EstablishmentService,
-            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-              vacancies,
-            }),
-            deps: [HttpClient],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                data: {
-                  jobs: [
-                    {
-                      id: 0,
-                      title: 'Job0',
-                    },
-                    {
-                      id: 1,
-                      title: 'Job1',
-                    },
-                    {
-                      id: 2,
-                      title: 'Job2',
-                    },
-                    {
-                      id: 3,
-                      title: 'Job3',
-                      other: true,
-                    },
-                  ],
-                },
+    const {
+      fixture,
+      getByText,
+      getAllByText,
+      getByLabelText,
+      getByTestId,
+      queryByText,
+      queryAllByText,
+      queryByTestId,
+    } = await render(VacanciesComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      providers: [
+        FormBuilder,
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+            vacancies,
+          }),
+          deps: [HttpClient],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                jobs: [
+                  {
+                    id: 0,
+                    title: 'Job0',
+                  },
+                  {
+                    id: 1,
+                    title: 'Job1',
+                  },
+                  {
+                    id: 2,
+                    title: 'Job2',
+                  },
+                  {
+                    id: 3,
+                    title: 'Job3',
+                    other: true,
+                  },
+                ],
               },
             },
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
 
     const component = fixture.componentInstance;
 
@@ -78,6 +84,7 @@ describe('VacanciesComponent', () => {
       establishmentService,
       establishmentServiceSpy,
       routerSpy,
+      queryByTestId,
     };
   }
 
@@ -218,16 +225,25 @@ describe('VacanciesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
     });
 
-    xit('should navigate to the check-anwsers page when clicking view workplace details link', async () => {
+    it('should navigate to the check-anwsers page when clicking Skip this question link', async () => {
       const { component, fixture, getByText, routerSpy } = await setup(false);
 
-      component.form.get('vacanciesKnown').setValue('None');
-
-      const link = getByText('View workplace details');
+      const link = getByText('Skip this question');
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
+    });
+
+    it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
+      const { component, getByText } = await setup(false);
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
@@ -363,6 +379,20 @@ describe('VacanciesComponent', () => {
 
       expect(queryByText('Select the job role (job role 1)')).toBeFalsy();
       expect(queryByText('Select the job role')).toBeFalsy();
+    });
+  });
+  describe('progress-bar', () => {
+    it('should render the section, the question but not the progress bar when not in the flow', async () => {
+      const { getByTestId, queryByTestId } = await setup();
+
+      expect(getByTestId('section-heading')).toBeTruthy();
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+
+    it('should render the progress bar when in the flow', async () => {
+      const { component, fixture, getByTestId } = await setup(false);
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
     });
   });
 });
