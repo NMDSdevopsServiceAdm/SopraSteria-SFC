@@ -10,6 +10,7 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
           <h1 class="govuk-fieldset__heading">What's the capacity of your services?</h1>
         </legend>
         <p>
@@ -67,6 +68,15 @@
           </div>
         </ng-container>
       </fieldset>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="sections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
     </div>
   </div>
 
