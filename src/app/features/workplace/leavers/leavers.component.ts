@@ -91,6 +91,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
         this.addErrorLinkFunctionality();
       }),
     );
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'recruitment-advertising-cost'];
   }
 
   private setupForm(): void {
