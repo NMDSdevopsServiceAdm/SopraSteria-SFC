@@ -8,6 +8,7 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { DialogService } from '@core/services/dialog.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import {
@@ -46,6 +47,7 @@ describe('AdminAccountViewComponent', () => {
       providers: [
         AlertService,
         WindowRef,
+        DialogService,
         {
           provide: ActivatedRoute,
           useValue: MockActivatedRoute,
