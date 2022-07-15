@@ -119,7 +119,7 @@ describe('HeaderComponent', () => {
     it('should not show a users link when logged in and on the admin pages', async () => {
       const { component } = await setup(true, 0, true);
 
-      component.fixture.componentInstance.isOnAdminScreen = true;
+      component.fixture.componentInstance.workplaceId = undefined;
       component.fixture.detectChanges();
 
       expect(component.queryByText('Users')).toBeFalsy();

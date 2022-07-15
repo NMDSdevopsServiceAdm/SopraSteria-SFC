@@ -77,13 +77,4 @@ describe('AdminUsersService', () => {
       expect(req.request.body).toEqual(updatedAdminUser);
     });
   });
-
-  describe('deleteAdminUserDetails', () => {
-    it('should call the delete admin user details endpoint', () => {
-      service.deleteAdminUserDetails('mock-userId').subscribe();
-
-      const req = http.expectOne('/api/user/admin/mock-userId');
-      expect(req.request.method).toBe('DELETE');
-    });
-  });
 });

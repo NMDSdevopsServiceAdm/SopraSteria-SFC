@@ -29,7 +29,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getUser();
-    this.setupUserSubscription();
     this.onAdminScreen();
     this.workplaceId && this.getUsers();
   }
@@ -47,15 +46,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
   }
 
-  private setupUserSubscription(): void {
-    this.subscriptions.add(
-      this.userService.users$.subscribe((users) => {
-        this.users = users;
-      }),
-    );
-  }
-
   public getUsers(): void {
+    this.subscriptions.add(this.userService.users$.subscribe((users) => (this.users = users)));
     this.userService
       .getAllUsersForEstablishment(this.workplaceId)
       .subscribe((users) => this.userService.updateUsers(users));
