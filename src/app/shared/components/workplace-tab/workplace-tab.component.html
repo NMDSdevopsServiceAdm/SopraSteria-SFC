@@ -32,20 +32,17 @@
   </div>
 </ng-container>
 
-<ng-container *ngIf="updateWorkplaceAlert; then alert; else summary"></ng-container>
-<ng-template #alert>
+<ng-container>
   <app-inset-text *ngIf="updateWorkplaceAlert" color="todo">
     <a [routerLink]="['/workplace', workplace?.uid, 'start']" [state]="{ navigatedFromFragment: 'workplace' }">
       Start to add more details about your workplace
     </a>
   </app-inset-text>
-</ng-template>
-
-<ng-template #summary>
-  <app-workplace-summary
+  <app-new-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-new-workplace-summary>
+  <!-- <app-workplace-summary
     *ngIf="workplace"
     [workplace]="workplace"
     [workerCount]="workerCount"
     [return]="summaryReturnUrl"
-  ></app-workplace-summary>
-</ng-template>
+  ></app-workplace-summary> -->
+</ng-container>
