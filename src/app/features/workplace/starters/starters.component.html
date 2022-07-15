@@ -91,13 +91,7 @@
                     name="total"
                     type="number"
                   />
-                  <a
-                    *ngIf="starterRecords.length > 1"
-                    href="#"
-                    class="govuk-list govuk-list--inline govuk-!-width-one-third"
-                    (click)="removeRecord($event, i)"
-                    >Remove</a
-                  >
+                  <a *ngIf="starterRecords.length > 1" href="#" (click)="removeRecord($event, i)">Remove</a>
                 </div>
               </div>
               <hr
@@ -117,7 +111,7 @@
               </button>
             </div>
             <div class="govuk-grid-column-one-third govuk-!-margin-top-1">
-              <p class="govuk-heading-m govuk__nowrap">Total vacancies: {{ totalStarters }}</p>
+              <p class="govuk-heading-s">Total vacancies: {{ totalStarters }}</p>
             </div>
           </div>
 
