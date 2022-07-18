@@ -713,7 +713,6 @@ class User {
   // Can throw WorkerRestoreException exception.
   async restore(uid, uname, showHistory = false) {
     if (!uid && !uname) {
-      console.log('$$$$ restore - no unname or uid');
       throw new UserExceptions.UserRestoreException(
         null,
         null,
@@ -815,8 +814,6 @@ class User {
   }
 
   async delete(deletedBy, externalTransaction = null) {
-    console.log('******************* user class delete ********************');
-    console.log('££££ delete - deletedBy:', deletedBy);
     try {
       const updatedTimestamp = new Date();
       const randomNewUsername = uuid.v4();
@@ -880,14 +877,11 @@ class User {
             property: 'isActive',
             event: {},
           };
-          console.log('££££ delete - before auditEvent create');
-          await models.userAudit.create(auditEvent, { transaction: thisTransaction });
 
-          console.log('££££ delete - before establishmentAudit update');
+          await models.userAudit.create(auditEvent, { transaction: thisTransaction });
 
           this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
         } else {
-          console.log('££££ delete - error if updatedRecordCount is not 1');
           throw new UserExceptions.UserDeleteException(
             null,
             this.uid,
@@ -897,31 +891,23 @@ class User {
         }
       });
 
-      console.log('££££ delete - before EstablismentAudit');
-      await models.sequelize.query(
+      models.sequelize.query(
         'UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
         {
           replacements: { username: oldUsername, usernameNew: randomNewUsername },
           type: models.sequelize.QueryTypes.UPDATE,
         },
       );
-      console.log('££££ delete - before UserAudit');
-      await models.sequelize.query(
-        'UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-        {
-          replacements: { username: oldUsername, usernameNew: randomNewUsername },
-          type: models.sequelize.QueryTypes.UPDATE,
-        },
-      );
-      console.log('££££ delete - before WorkerAudit');
-      await models.sequelize.query(
-        'UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-        {
-          replacements: { username: oldUsername, usernameNew: randomNewUsername },
-          type: models.sequelize.QueryTypes.UPDATE,
-        },
-      );
-      console.log('££££ delete - after WorkerAudit');
+
+      models.sequelize.query('UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username', {
+        replacements: { username: oldUsername, usernameNew: randomNewUsername },
+        type: models.sequelize.QueryTypes.UPDATE,
+      });
+
+      models.sequelize.query('UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username', {
+        replacements: { username: oldUsername, usernameNew: randomNewUsername },
+        type: models.sequelize.QueryTypes.UPDATE,
+      });
     } catch (err) {
       console.error('throwing error');
       console.error(err);
