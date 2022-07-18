@@ -14,19 +14,22 @@ import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-c
 
 describe('RecruitmentAdvertisingCostComponent', () => {
   async function setup(returnUrl = true, recruitmentAdvertisingCost = undefined) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(RecruitmentAdvertisingCostComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-            moneySpentOnAdvertisingInTheLastFourWeeks: recruitmentAdvertisingCost,
-          }),
-          deps: [HttpClient],
-        },
-      ],
-    });
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      RecruitmentAdvertisingCostComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: EstablishmentService,
+            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+              moneySpentOnAdvertisingInTheLastFourWeeks: recruitmentAdvertisingCost,
+            }),
+            deps: [HttpClient],
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -41,6 +44,8 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      getByTestId,
+      queryByTestId,
       establishmentService,
       establishmentServiceSpy,
       routerSpy,
@@ -125,6 +130,24 @@ describe('RecruitmentAdvertisingCostComponent', () => {
 
     expect(radioButton.checked).toBeTruthy();
     expect(component.form.value).toEqual({ amountSpent: null, amountSpentKnown: `Don't know` });
+  });
+
+  it('should render the section, the question but not the progress bar when not in the flow', async () => {
+    const { getByText, getByTestId, queryByTestId, fixture, component } = await setup();
+    fixture.detectChanges();
+
+    expect(getByTestId('section-heading')).toBeTruthy();
+    expect(getByText('How much money have you spent on advertising for staff in the last 4 weeks?')).toBeTruthy();
+    expect(queryByTestId('progress-bar')).toBeFalsy();
+  });
+
+  it('should render the progress bar when in the flow', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.return = null;
+    fixture.detectChanges();
+
+    expect(getByTestId('progress-bar')).toBeTruthy();
   });
 
   describe('submit buttons and submitting form', () => {
