@@ -14,6 +14,7 @@ import { Question } from '../question/question.component';
   templateUrl: './accept-previous-care-certificate.component.html',
 })
 export class AcceptPreviousCareCertificateComponent extends Question implements OnInit, OnDestroy {
+  public section = 'Recruitment';
   public previousCareCertificateOptions = [
     {
       label: 'Yes, always',
@@ -50,6 +51,7 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     this.setPreviousRoute();
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
+    this.skipRoute = this.getNextRoute();
   }
 
   private setPreviousRoute(): void {
@@ -104,12 +106,15 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
       .subscribe();
   }
 
-  protected onSuccess(): void {
-    this.updateEstablishmentService();
-
-    this.nextRoute = this.inStaffRecruitmentFlow
+  protected getNextRoute(): any {
+    return this.inStaffRecruitmentFlow
       ? ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment']
       : ['/workplace', `${this.establishment.uid}`, 'check-answers'];
+  }
+
+  protected onSuccess(): void {
+    this.updateEstablishmentService();
+    this.nextRoute = this.getNextRoute();
   }
 
   ngOnDestroy(): void {
