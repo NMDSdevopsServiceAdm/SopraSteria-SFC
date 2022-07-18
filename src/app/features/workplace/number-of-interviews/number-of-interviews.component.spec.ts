@@ -134,7 +134,6 @@ describe('NumberOfInterviews', () => {
 
   it('should render the progress bar when in the flow', async () => {
     const { component, fixture, getByTestId } = await setup();
-    component['init']();
 
     component.return = null;
     fixture.detectChanges();
@@ -235,7 +234,6 @@ describe('NumberOfInterviews', () => {
 
     it('should navigate to the next page when skip the question', async () => {
       const { fixture, getByText, routerSpy, component } = await setup();
-      component['init']();
 
       component.return = null;
       fixture.detectChanges();
