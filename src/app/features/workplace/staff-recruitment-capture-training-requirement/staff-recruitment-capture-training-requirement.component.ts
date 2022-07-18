@@ -34,6 +34,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   ];
 
   public inStaffRecruitmentFlow: boolean;
+  public section = 'Recruitment';
 
   constructor(
     protected formBuilder: FormBuilder,
