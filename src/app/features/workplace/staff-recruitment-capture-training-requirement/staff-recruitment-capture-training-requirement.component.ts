@@ -51,6 +51,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     this.setPreviousRoute();
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
   }
 
   private setPreviousRoute(): void {
