@@ -14,6 +14,7 @@ import { Question } from '../question/question.component';
   templateUrl: './number-of-interviews.component.html',
 })
 export class NumberOfInterviewsComponent extends Question implements OnInit, OnDestroy {
+  public section = 'Recruitment';
   private numberCheckRegex = /^-?\d*(\.\d*)?$/;
   private wholeNumberCheckRegex = /^-?[A-Za-z0-9]*$/;
   private positiveNumberCheckRegex = /^[A-Za-z\d*(.\d*)]*$/;
@@ -47,6 +48,7 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.setPreviousRoute();
     this.prefill();
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-capture-training-requirement'];
   }
 
   private setPreviousRoute(): void {
