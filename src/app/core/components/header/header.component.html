@@ -34,7 +34,7 @@
               >{{ fullname }}</a
             >
           </li>
-          <li *ngIf="workplaceId" class="govuk-header__navigation-item" routerLinkActive="active">
+          <li *ngIf="workplaceId && !isOnAdminScreen" class="govuk-header__navigation-item" routerLinkActive="active">
             <a
               [routerLink]="['/workplace', workplaceId, 'users']"
               class="govuk-header__link"

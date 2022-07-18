@@ -625,7 +625,10 @@ const finishAddUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
+  console.log('********************** user.js accounts/deleteUser ******************************');
+
   const userId = req.params.userid;
+  console.log('##### deleteUser - userId:', userId);
 
   const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
   if (!uuidRegex.test(userId.toUpperCase())) {
@@ -635,23 +638,30 @@ const deleteUser = async (req, res) => {
   const thisUser = new User.User(userId);
 
   try {
+    console.log('##### deleteUser - inside try');
     if (await thisUser.restore(userId, null, false)) {
+      console.log('##### deleteUser - restore succeeded');
       if (thisUser.username && thisUser.username == req.username) {
         return res.status(400).send('Cannot delete own user account');
       }
 
       if (thisUser._isPrimary) {
+        console.log('##### deleteUser - user is primary');
         return res.status(400).send('Cannot delete primary account');
       }
 
       console.log('restored about to delete');
       await thisUser.delete(req.username);
+      console.log('##### deleteUser - delete completed');
       return res.status(204).send();
     } else {
+      console.log('##### deleteUser - restore failed');
       console.log('404 not found that user');
       return res.status(404).send('Not Found');
     }
   } catch (err) {
+    console.log('##### deleteUser - error');
+    console.log(err);
     const thisError = new User.UserExceptions.UserRestoreException(
       thisUser.id,
       thisUser.uid,

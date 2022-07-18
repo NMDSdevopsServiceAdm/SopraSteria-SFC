@@ -4,10 +4,11 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
+import { UserDetails } from '@core/model/userDetails.model';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
-import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { DialogService } from '@core/services/dialog.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import {
@@ -17,13 +18,13 @@ import {
   PendingAdminUser,
 } from '@core/test-utils/admin/MockAdminUsersService';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { AdminAccountViewComponent } from './admin-account-view.component';
 
@@ -46,13 +47,10 @@ describe('AdminAccountViewComponent', () => {
       providers: [
         AlertService,
         WindowRef,
+        DialogService,
         {
           provide: ActivatedRoute,
           useValue: MockActivatedRoute,
-        },
-        {
-          provide: AuthService,
-          useClass: MockAuthService,
         },
         {
           provide: FeatureFlagsService,
@@ -85,6 +83,7 @@ describe('AdminAccountViewComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const adminUsersService = TestBed.inject(AdminUsersService) as AdminUsersService;
 
     return {
       fixture,
@@ -93,6 +92,7 @@ describe('AdminAccountViewComponent', () => {
       router,
       getByText,
       queryByText,
+      adminUsersService,
     };
   }
 
@@ -195,17 +195,83 @@ describe('AdminAccountViewComponent', () => {
   });
 
   describe('resendActivationLinkAdmin', async () => {
-    it('should send the email by rendering  resendActivationLinkAdmin function', async () => {
-      const { fixture, getByText } = await setup(true, true);
+    it('should send the email by rendering resendActivationLinkAdmin function', async () => {
+      const { fixture, getByText, adminUsersService } = await setup(true, true);
 
-      const userService = TestBed.inject(AdminUsersService) as AdminUsersService;
-      const resendActivationLinkAdminSpy = spyOn(userService, 'resendActivationLinkAdmin').and.callThrough();
+      const resendActivationLinkAdminSpy = spyOn(adminUsersService, 'resendActivationLinkAdmin').and.callThrough();
 
-      fixture.detectChanges();
       const resendEmailLink = getByText('Resend the user set-up email');
       fireEvent.click(resendEmailLink);
+      fixture.detectChanges();
 
       expect(resendActivationLinkAdminSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('deleting admin user', () => {
+    it('should dipslay a modal when clicking the Delete admin user link', async () => {
+      const { fixture, getByText } = await setup();
+
+      const deleteLink = getByText('Delete this admin user');
+      fireEvent.click(deleteLink);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+
+      expect(within(dialog).getByText(`You're about to delete this admin user`)).toBeTruthy();
+    });
+
+    it('should call deleteAdminUserDetails with the the user id', async () => {
+      const { component, fixture, getByText, adminUsersService } = await setup();
+
+      const deleteAdminSpy = spyOn(adminUsersService, 'deleteAdminUserDetails');
+      const deleteLink = getByText('Delete this admin user');
+      fireEvent.click(deleteLink);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete admin user');
+      fireEvent.click(confirm);
+      fixture.detectChanges();
+
+      const userId = component.user.uid;
+      expect(deleteAdminSpy).toHaveBeenCalledWith(userId);
+    });
+
+    it('should call getAdminUser once the admin user has been deleted', async () => {
+      const { fixture, getByText, adminUsersService } = await setup();
+
+      spyOn(adminUsersService, 'deleteAdminUserDetails').and.returnValue(of({}));
+      const getAdminUsersSpy = spyOn(adminUsersService, 'getAdminUsers');
+
+      const deleteLink = getByText('Delete this admin user');
+      fireEvent.click(deleteLink);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete admin user');
+      fireEvent.click(confirm);
+      fixture.detectChanges();
+
+      expect(getAdminUsersSpy).toHaveBeenCalled();
+    });
+
+    it('should navigate back to the admin users page when admin user has been deleted', async () => {
+      const { fixture, getByText, adminUsersService, routerSpy } = await setup();
+
+      spyOn(adminUsersService, 'deleteAdminUserDetails').and.returnValue(of({}));
+      spyOn(adminUsersService, 'getAdminUsers').and.returnValue(of([{}] as UserDetails[]));
+
+      const deleteLink = getByText('Delete this admin user');
+      fireEvent.click(deleteLink);
+      fixture.detectChanges();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete admin user');
+      fireEvent.click(confirm);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'users']);
     });
   });
 });

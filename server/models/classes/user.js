@@ -747,7 +747,7 @@ class User {
           ],
         };
       } else {
-        // fetch by username
+        // fetch by uid
         fetchQuery = {
           where: {
             uid: uid,
@@ -763,6 +763,7 @@ class User {
       }
 
       const fetchResults = await models.user.findOne(fetchQuery);
+
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
         this._isNew = false;
@@ -815,11 +816,11 @@ class User {
   async delete(deletedBy, externalTransaction = null) {
     try {
       const updatedTimestamp = new Date();
+      const randomNewUsername = uuid.v4();
+      const oldUsername = this._username;
 
       await models.sequelize.transaction(async (t) => {
         const thisTransaction = externalTransaction ? externalTransaction : t;
-        let randomNewUsername = uuid.v4();
-        let oldUsername = this._username;
 
         const updateDocument = {
           updated: updatedTimestamp,
@@ -827,7 +828,6 @@ class User {
           archived: true,
           FullNameValue: false,
           isPrimary: false,
-          Username: randomNewUsername,
           EmailValue: '',
           PhoneValue: '',
           JobTitle: '',
@@ -847,6 +847,7 @@ class User {
         if (updatedRecordCount === 1) {
           await models.login.update(
             {
+              username: randomNewUsername,
               isActive: false,
             },
             {
@@ -876,32 +877,8 @@ class User {
             property: 'isActive',
             event: {},
           };
-          await models.userAudit.create(auditEvent, { transaction: thisTransaction });
 
-          await models.sequelize.query(
-            'UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-            {
-              replacements: { username: oldUsername, usernameNew: randomNewUsername },
-              type: models.sequelize.QueryTypes.UPDATE,
-              transaction: thisTransaction,
-            },
-          );
-          await models.sequelize.query(
-            'UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-            {
-              replacements: { username: oldUsername, usernameNew: randomNewUsername },
-              type: models.sequelize.QueryTypes.UPDATE,
-              transaction: thisTransaction,
-            },
-          );
-          await models.sequelize.query(
-            'UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-            {
-              replacements: { username: oldUsername, usernameNew: randomNewUsername },
-              type: models.sequelize.QueryTypes.UPDATE,
-              transaction: thisTransaction,
-            },
-          );
+          await models.userAudit.create(auditEvent, { transaction: thisTransaction });
 
           this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
         } else {
@@ -912,6 +889,24 @@ class User {
             `Failed to update (archive) user record with uid: ${this._uid}`,
           );
         }
+      });
+
+      models.sequelize.query(
+        'UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
+        {
+          replacements: { username: oldUsername, usernameNew: randomNewUsername },
+          type: models.sequelize.QueryTypes.UPDATE,
+        },
+      );
+
+      models.sequelize.query('UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username', {
+        replacements: { username: oldUsername, usernameNew: randomNewUsername },
+        type: models.sequelize.QueryTypes.UPDATE,
+      });
+
+      models.sequelize.query('UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username', {
+        replacements: { username: oldUsername, usernameNew: randomNewUsername },
+        type: models.sequelize.QueryTypes.UPDATE,
       });
     } catch (err) {
       console.error('throwing error');
