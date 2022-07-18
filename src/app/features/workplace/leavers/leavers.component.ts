@@ -29,6 +29,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   public emptyForm = true;
   private minTotal = 1;
   private maxTotal = 999;
+  public section = 'Vacancies and turnover';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -90,6 +91,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
         this.addErrorLinkFunctionality();
       }),
     );
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'recruitment-advertising-cost'];
   }
 
   private setupForm(): void {
