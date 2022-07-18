@@ -14,19 +14,22 @@ import { NumberOfInterviewsComponent } from './number-of-interviews.component';
 
 describe('NumberOfInterviews', () => {
   async function setup(returnUrl = true, numberOfInterviews = undefined) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(NumberOfInterviewsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-            peopleInterviewedInTheLastFourWeeks: numberOfInterviews,
-          }),
-          deps: [HttpClient],
-        },
-      ],
-    });
+    const { fixture, getByText, getByTestId, getAllByText, queryByTestId, getByLabelText } = await render(
+      NumberOfInterviewsComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: EstablishmentService,
+            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+              peopleInterviewedInTheLastFourWeeks: numberOfInterviews,
+            }),
+            deps: [HttpClient],
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -41,6 +44,8 @@ describe('NumberOfInterviews', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      getByTestId,
+      queryByTestId,
       establishmentService,
       establishmentServiceSpy,
       routerSpy,
@@ -54,7 +59,7 @@ describe('NumberOfInterviews', () => {
 
   it('should render the heading, input and radio buttons', async () => {
     const { getByText, getByLabelText } = await setup();
-    const heading = 'How many people have you interviewed in the last 4 weeks?';
+    const heading = `How many people have you interviewed for care worker roles in the last 4 weeks?`;
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByLabelText('Number of people interviewed')).toBeTruthy();
@@ -125,6 +130,22 @@ describe('NumberOfInterviews', () => {
 
     expect(radioButton.checked).toBeTruthy();
     expect(component.form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: `Don't know` });
+  });
+
+  it('should render the progress bar when in the flow', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.return = null;
+    fixture.detectChanges();
+
+    expect(getByTestId('progress-bar')).toBeTruthy();
+  });
+
+  it('should render the section, the question but not the progress bar when not in the flow', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('section-heading')).toBeTruthy();
+    expect(queryByTestId('progress-bar')).toBeFalsy();
   });
 
   describe('submit buttons and submitting form', () => {
@@ -211,14 +232,20 @@ describe('NumberOfInterviews', () => {
       ]);
     });
 
-    xit('should navigate to the next page when submitting from the flow', async () => {
-      const { fixture, getByText, routerSpy } = await setup(false);
+    it('should navigate to the next page when skip the question', async () => {
+      const { fixture, getByText, routerSpy, component } = await setup();
 
-      const link = getByText('View workplace details');
-      fireEvent.click(link);
+      component.return = null;
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
