@@ -28,6 +28,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   public confirmedFields: Array<string> = [];
   public showTotalStaffWarning: boolean;
   public checkAnswersPage: boolean;
+  public now: Date = new Date();
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
   @Input() wdfView = false;
@@ -196,6 +197,10 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
         }
       }),
     );
+  }
+
+  public convertToDate(dateString: string): Date {
+    return new Date(dateString);
   }
 
   public updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {

@@ -16,6 +16,7 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
+import dayjs from 'dayjs';
 
 import { establishmentWithShareWith, establishmentWithWdfBuilder } from '../../../../../server/test/factories/models';
 import { NewWorkplaceSummaryComponent } from './new-workplace-summary.component';
@@ -60,19 +61,414 @@ describe('NewWorkplaceSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the sections', async () => {
-    const { getByTestId } = await setup();
+  it('should render all the sections', async () => {
+    const { component, fixture, getByTestId } = await setup();
 
+    component.workplace.isRegulated = true;
+    fixture.detectChanges();
+
+    expect(getByTestId('workplace-section')).toBeTruthy();
+    expect(getByTestId('cqcLocationId')).toBeTruthy();
+    expect(getByTestId('numberOfStaff')).toBeTruthy();
+    expect(getByTestId('employerType')).toBeTruthy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
     expect(getByTestId('recruitment-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
   });
 
+  it('should render the certain sections when on the check-answers page', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+    component.checkAnswersPage = true;
+    fixture.detectChanges();
+
+    expect(queryByTestId('workplace-section')).toBeFalsy();
+    expect(queryByTestId('cqcLocationId')).toBeFalsy();
+    expect(queryByTestId('numberOfStaff')).toBeFalsy();
+    expect(queryByTestId('employerType')).toBeFalsy();
+    expect(getByTestId('services-section')).toBeTruthy();
+    expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
+    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('permissions-section')).toBeTruthy();
+  });
+
+  it('should render the workplace and services section when the workplace details flow has not been completed', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+    component.workplace.isRegulated = true;
+    component.workplace.showAddWorkplaceDetailsBanner = true;
+    fixture.detectChanges();
+
+    expect(getByTestId('workplace-section')).toBeTruthy();
+    expect(getByTestId('cqcLocationId')).toBeTruthy();
+    expect(getByTestId('numberOfStaff')).toBeTruthy();
+    expect(getByTestId('employerType')).toBeTruthy();
+    expect(getByTestId('services-section')).toBeTruthy();
+    expect(queryByTestId('vacancies-and-turnover-section')).toBeFalsy();
+    expect(queryByTestId('recruitment-section')).toBeFalsy();
+    expect(queryByTestId('permissions-section')).toBeFalsy();
+  });
+
+  describe('workplace-section', () => {
+    describe('Workplace name', () => {
+      it('should render the workplace name and address', async () => {
+        const { component, fixture, getByText } = await setup();
+
+        component.workplace.name = 'Care 1';
+        component.workplace.address = 'Care Home, Leeds';
+        component.workplace.address1 = 'Care Home';
+        component.workplace.address2 = 'Care Street';
+        component.workplace.address3 = 'Town';
+        component.workplace.town = 'Leeds';
+        component.workplace.county = 'Yorkshire';
+        component.workplace.postcode = 'LS1 1AB';
+
+        fixture.detectChanges();
+
+        const workplace = component.workplace;
+
+        expect(getByText('Workplace name')).toBeTruthy();
+        expect(getByText('Workplace address')).toBeTruthy();
+        expect(getByText(workplace.name)).toBeTruthy();
+        expect(getByText(workplace.address1)).toBeTruthy();
+        expect(getByText(workplace.address2)).toBeTruthy();
+        expect(getByText(workplace.address3)).toBeTruthy();
+        expect(getByText(workplace.town)).toBeTruthy();
+        expect(getByText(workplace.county)).toBeTruthy();
+        expect(getByText(workplace.postcode)).toBeTruthy();
+      });
+
+      it('should render a Change link', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.name = 'Care Home';
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const workplaceRow = within(document.body).queryByTestId('workplace-section');
+        const link = within(workplaceRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-workplace-details`);
+      });
+    });
+
+    describe('CQC Location ID', () => {
+      it('should render the locationID and a Change link if the workplace is regulated', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.isRegulated = true;
+        component.canEditEstablishment = true;
+        component.workplace.locationId = '1-23452354';
+
+        fixture.detectChanges();
+
+        const cqcLocationIdRow = within(document.body).queryByTestId('cqcLocationId');
+        const link = within(cqcLocationIdRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/regulated-by-cqc`);
+        expect(within(cqcLocationIdRow).queryByText(component.workplace.locationId)).toBeTruthy();
+      });
+
+      it('should render not the locationID if the workplace is not regulated', async () => {
+        const { component, fixture, queryByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        expect(queryByTestId('cqcLocationId')).toBeFalsy();
+      });
+    });
+
+    describe('Number of staff', () => {
+      it('should render the number of staff and a Change link with a bottom border', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = 4;
+
+        fixture.detectChanges();
+
+        const numberOfStaffRow = within(document.body).queryByTestId('numberOfStaff');
+        const link = within(numberOfStaffRow).queryByText('Change');
+        const property = within(numberOfStaffRow).queryByText('Number of staff');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/total-staff`);
+        expect(property.getAttribute('class')).not.toContain('asc-no-border');
+        expect(within(numberOfStaffRow).queryByText('4')).toBeTruthy();
+      });
+
+      it('should render the number of staff row without bottom border when there is a staff mismatch and it has been longer than 8 weeks since first login', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        component.canViewListOfWorkers = true;
+        component.workerCount = 2;
+        component.workplace.numberOfStaff = 4;
+        component.wdfView = false;
+        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
+        fixture.detectChanges();
+
+        const numberOfStaffRow = within(document.body).queryByTestId('numberOfStaff');
+        const property = within(numberOfStaffRow).queryByText('Number of staff');
+
+        expect(property.getAttribute('class')).toContain('asc-no-border');
+      });
+    });
+
+    describe('Number of staff warning', () => {
+      it('should show banner if you have more staff records', async () => {
+        const { component, fixture } = await setup();
+
+        component.workerCount = 10;
+        component.workplace.numberOfStaff = 9;
+        component.wdfView = false;
+        component.canViewListOfWorkers = true;
+        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
+
+        fixture.detectChanges();
+
+        const moreRecords = within(document.body).queryByTestId('morerecords');
+        expect(moreRecords.innerHTML).toContain(`You've more staff records than staff`);
+        expect(moreRecords.innerHTML).toContain('View staff records');
+      });
+
+      it('should show banner if you have more total staff', async () => {
+        const { component, fixture } = await setup();
+
+        component.workerCount = 8;
+        component.workplace.numberOfStaff = 9;
+        component.wdfView = false;
+        component.canViewListOfWorkers = true;
+        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
+        fixture.detectChanges();
+
+        const moreRecords = within(document.body).queryByTestId('morerecords');
+        expect(moreRecords.innerHTML).toContain(`You've more staff than staff records`);
+      });
+
+      it('should show banner if you have more staff records and 0 staff', async () => {
+        const { component, fixture } = await setup();
+
+        component.workerCount = 10;
+        component.workplace.numberOfStaff = 0;
+        component.wdfView = false;
+        component.canViewListOfWorkers = true;
+        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
+        fixture.detectChanges();
+
+        const moreRecords = within(document.body).queryByTestId('morerecords');
+        expect(moreRecords.innerHTML).toContain(`You've more staff records than staff`);
+      });
+
+      it('should not show banner if first login date is within eight weeks of now', async () => {
+        const { component, fixture } = await setup();
+
+        component.workerCount = 10;
+        component.workplace.numberOfStaff = 0;
+        component.wdfView = false;
+        component.canViewListOfWorkers = true;
+        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).add(1, 'day').toString();
+        fixture.detectChanges();
+
+        const moreRecords = within(document.body).queryByTestId('morerecords');
+        expect(moreRecords).toBe(null);
+      });
+
+      it(`should not show banner if you don't have permission to list workers`, async () => {
+        const { component, fixture } = await setup();
+
+        component.workerCount = 10;
+        component.workplace.numberOfStaff = 9;
+        component.wdfView = false;
+        component.canViewListOfWorkers = false;
+        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
+        fixture.detectChanges();
+
+        const moreRecords = within(document.body).queryByTestId('morerecords');
+        expect(moreRecords).toBe(null);
+      });
+
+      it('should not show banner if it is the WDF View', async () => {
+        const { component, fixture } = await setup();
+
+        component.workerCount = 10;
+        component.workplace.numberOfStaff = 9;
+        component.wdfView = true;
+        component.canViewListOfWorkers = true;
+        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
+        fixture.detectChanges();
+
+        const moreRecords = within(document.body).queryByTestId('morerecords');
+        expect(moreRecords).toBe(null);
+      });
+    });
+
+    describe('Employer type', () => {
+      it('should render the employer type and a Change link when employer type is the other field in object', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.employerType = { other: 'Adult care', value: 'Other' };
+
+        fixture.detectChanges();
+
+        const employerTypeRow = within(document.body).queryByTestId('employerType');
+        const link = within(employerTypeRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/type-of-employer`);
+        expect(within(employerTypeRow).queryByText('Adult care')).toBeTruthy();
+      });
+
+      it('should render the employer type and a Change link when employer type is the other field in object', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.employerType = { other: null, value: 'Voluntary / Charity' };
+
+        fixture.detectChanges();
+
+        const employerTypeRow = within(document.body).queryByTestId('employerType');
+        const link = within(employerTypeRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/type-of-employer`);
+        expect(within(employerTypeRow).queryByText('Voluntary / Charity')).toBeTruthy();
+      });
+    });
+  });
+
   describe('services section', () => {
+    it('should show the main services row but not the other rows if not on the check answers page and the update flow has not been completed', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+      component.workplace.showAddWorkplaceDetailsBanner = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('mainService')).toBeTruthy();
+      expect(queryByTestId('otherServices')).toBeFalsy();
+      expect(queryByTestId('serviceCapacity')).toBeFalsy();
+      expect(queryByTestId('serviceUsers')).toBeFalsy();
+    });
+
+    it('should show all the rows if not on the check answers page and the update flow has been completed', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.workplace.showAddWorkplaceDetailsBanner = false;
+      fixture.detectChanges();
+
+      expect(getByTestId('mainService')).toBeTruthy();
+      expect(getByTestId('otherServices')).toBeTruthy();
+      expect(getByTestId('serviceCapacity')).toBeTruthy();
+      expect(getByTestId('serviceUsers')).toBeTruthy();
+    });
+
+    it('should show not show the main service row if on the check answers page', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+      component.checkAnswersPage = true;
+      fixture.detectChanges();
+
+      expect(queryByTestId('mainService')).toBeFalsy();
+      expect(getByTestId('otherServices')).toBeTruthy();
+      expect(getByTestId('serviceCapacity')).toBeTruthy();
+      expect(getByTestId('serviceUsers')).toBeTruthy();
+    });
+
+    describe('Main service', () => {
+      it('should show Pending on main service when non-CQC to CQC main service change has been requested', async () => {
+        const { component, fixture } = await setup();
+
+        component.cqcStatusRequested = true;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const mainServiceChangeOrPending = within(document.body).queryByTestId('main-service-change-or-pending');
+        expect(mainServiceChangeOrPending.innerHTML).toContain('Pending');
+      });
+
+      it('should show Change on main service when non-CQC to CQC main service change has NOT been requested', async () => {
+        const { component, fixture } = await setup();
+
+        component.cqcStatusRequested = false;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const mainServiceChangeOrPending = within(document.body).queryByTestId('main-service-change-or-pending');
+        expect(mainServiceChangeOrPending.innerHTML).toContain('Change');
+      });
+
+      it('should show requested service name when non-CQC to CQC main service change has been requested', async () => {
+        const { component, fixture } = await setup();
+
+        component.cqcStatusRequested = true;
+        component.requestedServiceName = 'Requested service name';
+        fixture.detectChanges();
+
+        const mainServiceName = within(document.body).queryByTestId('main-service-name');
+        expect(mainServiceName.innerHTML).toContain(component.requestedServiceName);
+        expect(mainServiceName.innerHTML).not.toContain(component.workplace.mainService.name);
+      });
+
+      it('should show existing service name when non-CQC to CQC main service change has NOT been requested', async () => {
+        const { component, fixture } = await setup();
+
+        component.cqcStatusRequested = false;
+        fixture.detectChanges();
+
+        const mainServiceName = within(document.body).queryByTestId('main-service-name');
+        expect(mainServiceName.innerHTML).toContain(component.workplace.mainService.name);
+        expect(mainServiceName.innerHTML).not.toContain(component.requestedServiceName);
+      });
+
+      it('should show the Change link when there is a main service', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const mainServiceRow = within(document.body).queryByTestId('mainService');
+        const link = within(mainServiceRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/main-service-cqc`);
+      });
+
+      it('should show the Provide information link when there is not a main service', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.mainService = null;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const mainServiceRow = within(document.body).queryByTestId('mainService');
+        const link = within(mainServiceRow).queryByText('Provide information');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/main-service-cqc`);
+      });
+
+      it('should show the Pending link when the cqcStatusRequested is true', async () => {
+        const { component, fixture } = await setup();
+
+        component.cqcStatusRequested = true;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const mainServiceRow = within(document.body).queryByTestId('mainService');
+        const text = within(mainServiceRow).queryByText('Pending');
+
+        expect(text).toBeTruthy();
+      });
+    });
+
     describe('Other services', () => {
       it('should show dash and have Add information button on when otherServices is null', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.otherServices = { value: null };
         component.canEditEstablishment = true;
@@ -87,7 +483,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show None and have Change link when otherServices is No', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.otherServices = { value: 'No' };
         component.canEditEstablishment = true;
@@ -102,7 +498,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show list of one other service and have Change link when otherServices is Yes and there is one other service', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.otherServices = {
           value: 'Yes',
@@ -121,7 +517,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show list of multiple other services and have Change link when otherServices is Yes and there are multiple other services', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.otherServices = {
           value: 'Yes',
@@ -153,7 +549,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Service capacity', () => {
       it('should show dash and have Add information button on when capacities is an empty array', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.capacities = [];
         component.canEditEstablishment = true;
@@ -168,7 +564,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show service capacity and have Change link when capacity array is not emtpy', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.capacities = [
           { answer: 4, question: 'Number of people receiving care on the completion date', questionId: 2, seq: 0 },
@@ -186,7 +582,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show multiple service capacities and have Change link when capacity array has a length greater than 1', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.capacities = [
           { answer: 4, question: 'How many people do you currently have', questionId: 1, seq: 0 },
@@ -208,7 +604,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Service users', () => {
       it('should show dash and have Add information button on when serviceUsers is an empty array', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.serviceUsers = [];
         component.canEditEstablishment = true;
@@ -223,7 +619,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show the service users and have Change link when serviceUsers is not an empty array', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.serviceUsers = [
           {
@@ -245,7 +641,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show multiple service users and have Change link when serviceUsers is an array of length greater than 1', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.serviceUsers = [
           {
@@ -277,7 +673,7 @@ describe('NewWorkplaceSummaryComponent', () => {
   describe('Vacancies and turnover section', () => {
     describe('Current staff vacancies', () => {
       it('should show dash and have Add information button on when starters is null', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.vacancies = null;
         component.canEditEstablishment = true;
@@ -292,7 +688,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show Don't know and a Change link when vacancies is set to Don't know`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.vacancies = `Don't know`;
         component.canEditEstablishment = true;
@@ -307,7 +703,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show None and a Change link when vacancies is set to None`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.vacancies = `None`;
         component.canEditEstablishment = true;
@@ -322,7 +718,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show one job vacancy with number of vacancies and a Change link when one job has vacancies`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.vacancies = [{ jobId: 1, title: 'Administrative', total: 3 }];
         component.canEditEstablishment = true;
@@ -337,7 +733,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show multiple job vacancies with the number of vacancies for each job and a Change link when multiple jobs have vacancies`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.vacancies = [
           { jobId: 1, title: 'Administrative', total: 3 },
@@ -399,7 +795,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('New starters', () => {
       it('should show dash and have Add information button on when starters is null', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.starters = null;
         component.canEditEstablishment = true;
@@ -414,7 +810,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show Don't know and a Change link when starters is set to Don't know`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.starters = `Don't know`;
         component.canEditEstablishment = true;
@@ -429,7 +825,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show None and a Change link when starters is set to None`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.starters = `None`;
         component.canEditEstablishment = true;
@@ -444,7 +840,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show one job with number of starters and a Change link when there is one job with starters`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.starters = [{ jobId: 1, title: 'Administrative', total: 3 }];
         component.canEditEstablishment = true;
@@ -459,7 +855,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show multiple jobs with the number of starters for each job and a Change link when multiple jobs have starters`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.starters = [
           { jobId: 1, title: 'Administrative', total: 3 },
@@ -521,7 +917,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Staff leavers', () => {
       it('should show dash and have Add information button on when leavers is null', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.leavers = null;
         component.canEditEstablishment = true;
@@ -536,7 +932,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show Don't know and a Change link when leavers is set to Don't know`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.leavers = `Don't know`;
         component.canEditEstablishment = true;
@@ -551,7 +947,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show None and a Change link when leavers is set to None`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.leavers = `None`;
         component.canEditEstablishment = true;
@@ -566,7 +962,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show one job with number of leavers and a Change link when there is one job with leavers`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.leavers = [{ jobId: 1, title: 'Administrative', total: 3 }];
         component.canEditEstablishment = true;
@@ -581,7 +977,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show multiple jobs with the number of leavers for each job and a Change link when multiple jobs have leavers`, async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.leavers = [
           { jobId: 1, title: 'Administrative', total: 3 },
@@ -645,7 +1041,7 @@ describe('NewWorkplaceSummaryComponent', () => {
   describe('Recruitment section', () => {
     describe('Advertising spend', () => {
       it('should show dash and have Add information button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType is set to null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks = null;
         component.canEditEstablishment = true;
@@ -660,7 +1056,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType has a value (answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -678,7 +1074,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('People interviewed', () => {
       it('should show dash and have Add information button on People Interviewed row when peopleInterviewedInTheLastFourWeeks is set to null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.peopleInterviewedInTheLastFourWeeks = null;
         component.canEditEstablishment = true;
@@ -693,7 +1089,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on People Interviewed row when peopleInterviewedInTheLastFourWeeks has a value (answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -711,7 +1107,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Repeat training', () => {
       it('should show dash and have Add information button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is set to null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
         component.canEditEstablishment = true;
@@ -728,7 +1124,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment has a value (answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -751,7 +1147,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Accept care certificate', () => {
       it('should show dash and have Add information button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment is set to null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
         component.canEditEstablishment = true;
@@ -769,7 +1165,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment has a value (answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -793,7 +1189,7 @@ describe('NewWorkplaceSummaryComponent', () => {
   describe('Permissions section', () => {
     describe('Data sharing', () => {
       it('should show dash and have Add information button on Data sharing when cqc and localAuthorities set to null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
+        const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
         fixture.detectChanges();

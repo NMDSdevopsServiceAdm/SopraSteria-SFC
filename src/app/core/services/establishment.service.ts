@@ -158,8 +158,6 @@ export class EstablishmentService {
     const returnTo = localStorage.getItem('returnTo');
     if (returnTo) {
       this.returnTo$.next(JSON.parse(returnTo));
-    } else if (isDevMode() && !this.returnTo$.value) {
-      throw new TypeError('No returnTo in local storage!');
     }
 
     return this.returnTo$.value;
