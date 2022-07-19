@@ -64,6 +64,12 @@ describe('WorkplaceSummaryComponent', async () => {
   });
 
   describe('Main service states', async () => {
+    it('should show the Services header for Services category', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Services')).toBeTruthy();
+    });
+
     it('should show Pending on main service when non-CQC to CQC main service change has been requested', async () => {
       const { component, fixture } = await setup();
 
@@ -111,6 +117,12 @@ describe('WorkplaceSummaryComponent', async () => {
   });
 
   describe('Data sharing states', async () => {
+    it('should show the Permissions header for Permissions category', async () => {
+      const { getByText } = await setup({ cqc: null, localAuthorities: null });
+
+      expect(getByText('Permissions')).toBeTruthy();
+    });
+
     it('should show dash and have Add information button on Data sharing when cqc and localAuthorities set to null (not answered)', async () => {
       const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
 
@@ -212,6 +224,12 @@ describe('WorkplaceSummaryComponent', async () => {
   });
 
   describe('staff recruitment', async () => {
+    it('should show the Recruitment header for recruitment category', async () => {
+      const { getByText } = await setup({ cqc: null, localAuthorities: null });
+
+      expect(getByText('Recruitment')).toBeTruthy();
+    });
+
     it('should show dash and have Add information button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType is set to null (not answered)', async () => {
       const { component, fixture } = await setup({ cqc: null, localAuthorities: null });
 
@@ -397,6 +415,12 @@ describe('WorkplaceSummaryComponent', async () => {
     });
 
     describe('New starters field confirmation', async () => {
+      it('should show the Vacancies and turnover header for Vacancies and turnover category', async () => {
+        const { getByText } = await setup();
+
+        expect(getByText('Vacancies and turnover')).toBeTruthy();
+      });
+
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Starters', async () => {
         const { component, fixture, getByText } = await setup();
 
