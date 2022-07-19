@@ -44,6 +44,74 @@
   </div>
 
   <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key" [class.asc-no-border]="staffMismatchWarning()">Total number of staff</dt>
+    <dd class="govuk-summary-list__value" [class.asc-no-border]="staffMismatchWarning()">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="workplace.wdf?.numberOfStaff"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
+        {{ workplace.numberOfStaff | numericAnswer }}
+      </app-summary-record-value>
+      <app-wdf-field-confirmation
+        *ngIf="
+          canEditEstablishment &&
+          wdfView &&
+          workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
+          !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
+          workplace.numberOfStaff === workerCount
+        "
+        [changeLink]="getRoutePath('total-staff')"
+        (fieldConfirmation)="this.confirmField('numberOfStaff')"
+        (setReturnClicked)="this.setReturn()"
+      ></app-wdf-field-confirmation>
+      <app-wdf-staff-mismatch-message
+        *ngIf="wdfView && this.showTotalStaffWarning"
+        [workplace]="workplace"
+        [workerCount]="workerCount"
+        [overallWdfEligibility]="overallWdfEligibility"
+      ></app-wdf-staff-mismatch-message>
+    </dd>
+    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [class.asc-no-border]="staffMismatchWarning()">
+      <app-summary-record-change
+        *ngIf="
+          !(
+            wdfView &&
+            workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
+            !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
+            workplace.numberOfStaff === workerCount
+          )
+        "
+        [explanationText]="' total number of staff'"
+        [link]="['/workplace', workplace.uid, 'total-staff']"
+        [hasData]="isNumber(workplace.numberOfStaff)"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
+    </dd>
+  </div>
+  <ng-container *ngIf="staffMismatchWarning()">
+    <div class="govuk-summary-list__row spacer"></div>
+    <div class="govuk-summary-list__row asc-warning-banner" data-testid="morerecords">
+      <dt class="govuk-summary-list__key">
+        <span class="govuk-visually-hidden">Total number of staff warning</span>
+      </dt>
+      <dd class="govuk-summary-list__value">
+        <p *ngIf="workplace.numberOfStaff > workerCount">You've more staff than staff records</p>
+        <p *ngIf="workplace.numberOfStaff < workerCount">You've more staff records than staff</p>
+        <p *ngIf="workplace.numberOfStaff == null">The total number of staff is missing</p>
+      </dd>
+      <dd class="govuk-summary-list__actions">
+        <a *ngIf="workplace.numberOfStaff" href="#" (click)="selectStaffTab($event)">View staff records</a>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row spacer">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </ng-container>
+
+  <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Employer type</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value
@@ -69,6 +137,9 @@
     </dd>
   </div>
 
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-6">Services</h2>
+  </div>
   <div class="govuk-summary-list__row" [ngClass]="{ 'govuk-panel--light-blue': cqcStatusRequested }">
     <dt class="govuk-summary-list__key" [ngClass]="{ 'govuk-!-padding-left-3': cqcStatusRequested }">Main service</dt>
     <dd class="govuk-summary-list__value" data-testid="main-service-name">
@@ -253,103 +324,9 @@
     </dd>
   </div>
 
-  <div class="govuk-summary-list__row" data-testid="data-sharing">
-    <dt class="govuk-summary-list__key">Data sharing</dt>
-    <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="!workplace.shareWith?.cqc && !workplace.shareWith?.localAuthorities; else sharing">
-        <ng-container
-          *ngIf="
-            workplace.shareWith?.cqc === false || workplace.shareWith?.localAuthorities === false;
-            else notProvided
-          "
-        >
-          Not sharing
-        </ng-container>
-        <ng-template #notProvided> - </ng-template>
-      </ng-container>
-      <ng-template #sharing>
-        <p *ngIf="workplace.shareWith?.cqc">Care Quality Commission (CQC)</p>
-        <p *ngIf="workplace.shareWith?.localAuthorities">Local authorities</p>
-      </ng-template>
-    </dd>
-    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' data sharing'"
-        [link]="['/workplace', workplace.uid, 'sharing-data']"
-        [hasData]="workplace.shareWith?.cqc !== null || workplace.shareWith?.localAuthorities !== null"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key" [class.asc-no-border]="staffMismatchWarning()">Total number of staff</dt>
-    <dd class="govuk-summary-list__value" [class.asc-no-border]="staffMismatchWarning()">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="workplace.wdf?.numberOfStaff"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        {{ workplace.numberOfStaff | numericAnswer }}
-      </app-summary-record-value>
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditEstablishment &&
-          wdfView &&
-          workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
-          !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
-          workplace.numberOfStaff === workerCount
-        "
-        [changeLink]="getRoutePath('total-staff')"
-        (fieldConfirmation)="this.confirmField('numberOfStaff')"
-        (setReturnClicked)="this.setReturn()"
-      ></app-wdf-field-confirmation>
-      <app-wdf-staff-mismatch-message
-        *ngIf="wdfView && this.showTotalStaffWarning"
-        [workplace]="workplace"
-        [workerCount]="workerCount"
-        [overallWdfEligibility]="overallWdfEligibility"
-      ></app-wdf-staff-mismatch-message>
-    </dd>
-    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" [class.asc-no-border]="staffMismatchWarning()">
-      <app-summary-record-change
-        *ngIf="
-          !(
-            wdfView &&
-            workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
-            !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
-            workplace.numberOfStaff === workerCount
-          )
-        "
-        [explanationText]="' total number of staff'"
-        [link]="['/workplace', workplace.uid, 'total-staff']"
-        [hasData]="isNumber(workplace.numberOfStaff)"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-6">Vacancies and turnover</h2>
   </div>
-  <ng-container *ngIf="staffMismatchWarning()">
-    <div class="govuk-summary-list__row spacer"></div>
-    <div class="govuk-summary-list__row asc-warning-banner" data-testid="morerecords">
-      <dt class="govuk-summary-list__key">
-        <span class="govuk-visually-hidden">Total number of staff warning</span>
-      </dt>
-      <dd class="govuk-summary-list__value">
-        <p *ngIf="workplace.numberOfStaff > workerCount">You've more staff than staff records</p>
-        <p *ngIf="workplace.numberOfStaff < workerCount">You've more staff records than staff</p>
-        <p *ngIf="workplace.numberOfStaff == null">The total number of staff is missing</p>
-      </dd>
-      <dd class="govuk-summary-list__actions">
-        <a *ngIf="workplace.numberOfStaff" href="#" (click)="selectStaffTab($event)">View staff records</a>
-      </dd>
-    </div>
-    <div class="govuk-summary-list__row spacer">
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-  </ng-container>
-
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Current staff vacancies</dt>
     <dd class="govuk-summary-list__value">
@@ -494,6 +471,10 @@
     </dd>
   </div>
 
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-6">Recruitment</h2>
+  </div>
+
   <div class="govuk-summary-list__row" data-testid="advertising-spend">
     <dt class="govuk-summary-list__key">Advertising spend</dt>
     <dd class="govuk-summary-list__value">
@@ -624,6 +605,38 @@
         [explanationText]="' accept care certificate'"
         [link]="['/workplace', workplace.uid, 'accept-previous-care-certificate']"
         [hasData]="workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-6">Permissions</h2>
+  </div>
+  <div class="govuk-summary-list__row" data-testid="data-sharing">
+    <dt class="govuk-summary-list__key">Data sharing</dt>
+    <dd class="govuk-summary-list__value">
+      <ng-container *ngIf="!workplace.shareWith?.cqc && !workplace.shareWith?.localAuthorities; else sharing">
+        <ng-container
+          *ngIf="
+            workplace.shareWith?.cqc === false || workplace.shareWith?.localAuthorities === false;
+            else notProvided
+          "
+        >
+          Not sharing
+        </ng-container>
+        <ng-template #notProvided> - </ng-template>
+      </ng-container>
+      <ng-template #sharing>
+        <p *ngIf="workplace.shareWith?.cqc">Care Quality Commission (CQC)</p>
+        <p *ngIf="workplace.shareWith?.localAuthorities">Local authorities</p>
+      </ng-template>
+    </dd>
+    <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+      <app-summary-record-change
+        [explanationText]="' data sharing'"
+        [link]="['/workplace', workplace.uid, 'sharing-data']"
+        [hasData]="workplace.shareWith?.cqc !== null || workplace.shareWith?.localAuthorities !== null"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
