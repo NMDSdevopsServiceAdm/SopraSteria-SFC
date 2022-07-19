@@ -108,7 +108,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it('should navigate to the check answers page when skip the question', async () => {
+    it('should navigate to the sharing-data page when skip the question', async () => {
       const { fixture, getByText, routerSpy, component } = await setup();
 
       component.return = null;
