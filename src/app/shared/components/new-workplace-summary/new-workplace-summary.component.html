@@ -7,7 +7,7 @@
   }"
 >
   <ng-container *ngIf="!checkAnswersPage">
-    <div class="govuk-summary-list__row">
+    <div class="govuk-summary-list__row" data-testid="workplace-section">
       <dt class="govuk-summary-list__key">
         <div>Workplace name</div>
         <div *ngIf="workplace && workplace.address" class="govuk-!-padding-top-2">Workplace address</div>
@@ -34,7 +34,7 @@
         ></app-summary-record-change>
       </dd>
     </div>
-    <div class="govuk-summary-list__row" *ngIf="workplace?.isRegulated && !checkAnswersPage">
+    <div class="govuk-summary-list__row" *ngIf="workplace?.isRegulated" data-testid="cqcLocationId">
       <dt class="govuk-summary-list__key">CQC location ID</dt>
       <dd class="govuk-summary-list__value">
         {{ workplace.locationId }}
@@ -43,9 +43,17 @@
         <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()"> Change </a>
       </dd>
     </div>
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key" [class.asc-no-border]="staffMismatchWarning()">Number of staff</dt>
-      <dd class="govuk-summary-list__value" [class.asc-no-border]="staffMismatchWarning()">
+    <div class="govuk-summary-list__row" data-testid="numberOfStaff">
+      <dt
+        class="govuk-summary-list__key"
+        [class.asc-no-border]="staffMismatchWarning() && convertToDate(workplace.eightWeeksFromFirstLogin) < now"
+      >
+        Number of staff
+      </dt>
+      <dd
+        class="govuk-summary-list__value"
+        [class.asc-no-border]="staffMismatchWarning() && convertToDate(workplace.eightWeeksFromFirstLogin) < now"
+      >
         <app-summary-record-value
           [wdfView]="wdfView"
           [wdfValue]="workplace.wdf?.numberOfStaff"
@@ -75,7 +83,7 @@
       <dd
         *ngIf="canEditEstablishment"
         class="govuk-summary-list__actions"
-        [class.asc-no-border]="staffMismatchWarning()"
+        [class.asc-no-border]="staffMismatchWarning() && convertToDate(workplace.eightWeeksFromFirstLogin) < now"
       >
         <app-summary-record-change
           *ngIf="
@@ -93,7 +101,7 @@
         ></app-summary-record-change>
       </dd>
     </div>
-    <ng-container *ngIf="staffMismatchWarning()">
+    <ng-container *ngIf="staffMismatchWarning() && convertToDate(workplace.eightWeeksFromFirstLogin) < now">
       <div class="govuk-summary-list__row spacer"></div>
       <div class="govuk-summary-list__row asc-warning-banner" data-testid="morerecords">
         <dt class="govuk-summary-list__key">
@@ -114,7 +122,7 @@
         <div></div>
       </div>
     </ng-container>
-    <div class="govuk-summary-list__row" *ngIf="!checkAnswersPage">
+    <div class="govuk-summary-list__row" data-testid="employerType">
       <dt class="govuk-summary-list__key">Employer type</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
@@ -153,6 +161,7 @@
       *ngIf="!checkAnswersPage"
       class="govuk-summary-list__row"
       [ngClass]="{ 'govuk-panel--light-blue': cqcStatusRequested }"
+      data-testid="mainService"
     >
       <dt class="govuk-summary-list__key" [ngClass]="{ 'govuk-!-padding-left-3': cqcStatusRequested }">Main service</dt>
       <dd class="govuk-summary-list__value" data-testid="main-service-name">
