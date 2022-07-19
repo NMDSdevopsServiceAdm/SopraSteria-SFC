@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -13,26 +13,40 @@ import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-c
 
 describe('AcceptPreviousCareCertificateComponent', () => {
   async function setup(returnUrl = true, acceptCareCertificate = undefined) {
-    const { fixture, getByText, getByLabelText } = await render(AcceptPreviousCareCertificateComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-            wouldYouAcceptCareCertificatesFromPreviousEmployment: acceptCareCertificate,
-          }),
-          deps: [HttpClient],
-        },
-      ],
-    });
+    const { fixture, getByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      AcceptPreviousCareCertificateComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+              wouldYouAcceptCareCertificatesFromPreviousEmployment: acceptCareCertificate,
+            }),
+            deps: [HttpClient],
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByText, getByLabelText, establishmentServiceSpy };
+    return {
+      component,
+      fixture,
+      getByText,
+      getByLabelText,
+      getByTestId,
+      queryByTestId,
+      establishmentServiceSpy,
+      routerSpy,
+    };
   }
 
   it('should render AcceptPreviousCareCertificateComponent', async () => {
@@ -70,12 +84,40 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     expect(form.value).toEqual({ acceptCareCertificatesFromPreviousEmployment: 'No, never' });
   });
 
+  it('should render the progress bar when in the flow', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.return = null;
+    fixture.detectChanges();
+
+    expect(getByTestId('progress-bar')).toBeTruthy();
+  });
+
+  it('should render the section, the question but not the progress bar when not in the flow', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('section-heading')).toBeTruthy();
+    expect(queryByTestId('progress-bar')).toBeFalsy();
+  });
+
   describe('submit buttons', () => {
-    it(`should show 'Save and continue' cta button and 'View this staff record' link`, async () => {
+    it(`should show 'Save and continue' cta button and 'Skip this question' link`, async () => {
       const { getByText } = await setup(false);
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
+    });
+
+    it('should navigate to the check answers page when skip the question', async () => {
+      const { fixture, getByText, routerSpy, component } = await setup();
+
+      component.return = null;
+      fixture.detectChanges();
+
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {

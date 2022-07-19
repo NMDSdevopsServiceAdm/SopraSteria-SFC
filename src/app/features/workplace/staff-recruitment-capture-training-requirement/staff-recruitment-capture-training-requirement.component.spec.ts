@@ -2,39 +2,51 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import {
-  StaffRecruitmentCaptureTrainingRequirementComponent,
-} from './staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(returnUrl = true, repeatTraining = undefined) {
-    const { fixture, getByText, getByLabelText } = await render(StaffRecruitmentCaptureTrainingRequirementComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-            doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: repeatTraining,
-          }),
-          deps: [HttpClient],
-        },
-      ],
-    });
+    const { fixture, getByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      StaffRecruitmentCaptureTrainingRequirementComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+              doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: repeatTraining,
+            }),
+            deps: [HttpClient],
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByText, getByLabelText, establishmentServiceSpy };
+    return {
+      component,
+      fixture,
+      getByText,
+      getByLabelText,
+      establishmentServiceSpy,
+      routerSpy,
+      getByTestId,
+      queryByTestId,
+    };
   }
 
   it('should render StaffRecruitmentCaptureTrainingRequirementComponent', async () => {
@@ -44,7 +56,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
 
   it('should render the heading, input and radio buttons', async () => {
     const { getByText, getByLabelText } = await setup();
-    const heading = `Do new starters have to repeat training they've done with previous employers?`;
+    const heading = `Do new care workers have to repeat training they've done with previous employers?`;
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByLabelText('Yes, always')).toBeTruthy();
@@ -102,6 +114,16 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       fixture.detectChanges();
 
       expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    });
+
+    it('should navigate to the next page when clicking Skip this question link', async () => {
+      const { component, fixture, getByText, routerSpy } = await setup(false);
+
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'accept-previous-care-certificate']);
     });
 
     it('should not call the postStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
@@ -210,6 +232,21 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
         trainingRequired: 'No, never',
       });
+    });
+  });
+
+  describe('progress-bar', () => {
+    it('should render the section, the question but not the progress bar when not in the flow', async () => {
+      const { getByTestId, queryByTestId } = await setup();
+
+      expect(getByTestId('section-heading')).toBeTruthy();
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+
+    it('should render the progress bar when in the flow', async () => {
+      const { component, fixture, getByTestId } = await setup(false);
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
     });
   });
 });
