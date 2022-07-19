@@ -13,6 +13,7 @@ import { Question } from '../question/question.component';
   templateUrl: './data-sharing.component.html',
 })
 export class DataSharingComponent extends Question {
+  public section = 'Permissions';
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -39,7 +40,8 @@ export class DataSharingComponent extends Question {
       });
     }
 
-    this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'accept-previous-care-certificate'];
+    this.skipRoute = ['/workplace', this.establishment.uid, 'check-answers'];
   }
 
   protected setupServerErrorsMap(): void {
@@ -80,7 +82,7 @@ export class DataSharingComponent extends Question {
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', this.establishment.uid, 'vacancies'];
+    this.nextRoute = ['/workplace', this.establishment.uid, 'check-answers'];
   }
 
   protected removeSharingPermissionsBanner(completeFunction): void {
