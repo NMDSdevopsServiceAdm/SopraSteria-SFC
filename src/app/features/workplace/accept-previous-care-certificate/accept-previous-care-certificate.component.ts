@@ -109,7 +109,7 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   protected getNextRoute(): any {
     return this.inStaffRecruitmentFlow
       ? ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment']
-      : ['/workplace', `${this.establishment.uid}`, 'check-answers'];
+      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 
   protected onSuccess(): void {
