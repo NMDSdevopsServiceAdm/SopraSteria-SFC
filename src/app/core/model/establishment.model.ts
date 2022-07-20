@@ -173,6 +173,12 @@ export enum mandatoryTrainingJobOption {
   selected = 'selected',
 }
 
+export enum StaffBenefitEnum {
+  YES = 'Yes',
+  NO = 'NO',
+  DONT_KNOW = "Don't know",
+}
+
 export interface StaffRecruitmentDataRequest {
   amountSpent?: string;
   numberOfInterviews?: string;
