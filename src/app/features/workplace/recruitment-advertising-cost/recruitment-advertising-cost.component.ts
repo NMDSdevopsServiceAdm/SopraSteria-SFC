@@ -27,6 +27,7 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   ];
 
   public inStaffRecruitmentFlow: boolean;
+  public section = 'Recruitment';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -42,14 +43,15 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     this.setupForm();
     this.setupFormValueSubscriptions();
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
-    this.setPreviousRoute();
+    this.setRoutes();
     this.prefill();
   }
 
-  private setPreviousRoute(): void {
+  private setRoutes(): void {
     this.previousRoute = this.inStaffRecruitmentFlow
       ? ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-start']
       : ['/workplace', `${this.establishment.uid}`, 'leavers'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'number-of-interviews'];
   }
 
   private prefill(): void {
