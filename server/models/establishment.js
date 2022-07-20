@@ -733,6 +733,28 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: true,
         field: 'ShowAddWorkplaceDetailsBanner',
       },
+      careWorkersLeaveDaysPerYear: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'CareWorkersLeaveDaysPerYear',
+      },
+      careWorkersCashLoyaltyForFirstTwoYears: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'CareWorkersCashLoyaltyForFirstTwoYears',
+      },
+      doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'DoCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent',
+      },
+      doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'DoCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness',
+      },
     },
     {
       defaultScope: {
