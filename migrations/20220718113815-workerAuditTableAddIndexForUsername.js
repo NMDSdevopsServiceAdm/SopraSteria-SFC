@@ -10,6 +10,9 @@ module.exports = {
       {
         fields: ['Username'],
       },
+      {
+        name: 'worker_audit__username_idx',
+      },
     );
   },
 
@@ -19,7 +22,7 @@ module.exports = {
         tableName: 'WorkerAudit',
         schema: 'cqc',
       },
-      'cqc."worker_audit__username"',
+      'cqc."worker_audit__username_idx"',
     );
   },
 };
