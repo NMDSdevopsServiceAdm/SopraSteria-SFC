@@ -13,7 +13,7 @@
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
               <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+                <span class="govuk-caption-l" data-testid="section-heading">Recruitment</span>
                 <h1 class="govuk-fieldset__heading govuk__nowrap">
                   How many people have you <br />
                   interviewed for care worker roles <br />
@@ -92,7 +92,6 @@
       <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
-          [header]="'Recruitment'"
           [sections]="workplaceFlowSections"
           [currentSection]="section"
         ></app-progress-bar>
