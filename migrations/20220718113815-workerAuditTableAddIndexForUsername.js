@@ -4,7 +4,9 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.sequelize.transaction(async (transaction) => {
       await Promise.all([
-        queryInterface.sequelize.query('DROP INDEX IF EXISTS cqc."worker_audit__username";', { transaction }),
+        queryInterface.sequelize.query('DROP INDEX IF EXISTS cqc."worker_audit__username" ON cqc."WorkerAudit";', {
+          transaction,
+        }),
         queryInterface.addIndex(
           {
             tableName: 'WorkerAudit',
