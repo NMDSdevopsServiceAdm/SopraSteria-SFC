@@ -2,18 +2,20 @@
 
 module.exports = {
   up: async (queryInterface) => {
-    await queryInterface.addIndex(
-      {
-        tableName: 'WorkerAudit',
-        schema: 'cqc',
-      },
-      {
-        fields: ['Username'],
-      },
-      {
-        name: 'worker_audit__username_idx',
-      },
-    );
+    await queryInterface.sequelize.transaction(async (transaction) => {
+      await Promise.all([
+        queryInterface.sequelize.query('DROP INDEX IF EXISTS cqc."worker_audit__username";', { transaction }),
+        queryInterface.addIndex(
+          {
+            tableName: 'WorkerAudit',
+            schema: 'cqc',
+          },
+          {
+            fields: ['Username'],
+          },
+        ),
+      ]);
+    });
   },
 
   down: async (queryInterface) => {
@@ -22,7 +24,7 @@ module.exports = {
         tableName: 'WorkerAudit',
         schema: 'cqc',
       },
-      'cqc."worker_audit__username_idx"',
+      'cqc."worker_audit__username"',
     );
   },
 };
