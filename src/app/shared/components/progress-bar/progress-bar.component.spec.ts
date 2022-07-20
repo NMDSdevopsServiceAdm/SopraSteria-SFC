@@ -11,6 +11,7 @@ describe('ProgressBarComponent', () => {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(ProgressBarComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       componentProperties: {
+        header: 'Section Heading',
         sections: ['Section 1', 'Section 2', 'Section 3', 'Section 4', 'Section 5'],
         currentSection,
       },
@@ -24,6 +25,12 @@ describe('ProgressBarComponent', () => {
   it('should render a User Account Summary Workplace Component', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the section heading', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Section Heading')).toBeTruthy();
   });
 
   it('should render all the sections', async () => {
