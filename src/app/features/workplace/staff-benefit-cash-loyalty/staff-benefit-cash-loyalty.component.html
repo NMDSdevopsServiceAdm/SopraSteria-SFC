@@ -1,0 +1,23 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <div class="govuk-form-group govuk-!-margin-bottom-0">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              Do you pay care workers a cash loyalty bonus within their first 2 years of employment?
+            </h1>
+          </legend>
+          <div class="govuk-!-margin-bottom-6">
+            <p>We only want to know about bonuses given for staying in a role, not for things like performance.</p>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+  <app-workplace-submit-button
+    [return]="!!return"
+    [recordSummary]="!this.inStaffRecruitmentFlow"
+    (clicked)="setSubmitAction($event)"
+  ></app-workplace-submit-button>
+</form>
