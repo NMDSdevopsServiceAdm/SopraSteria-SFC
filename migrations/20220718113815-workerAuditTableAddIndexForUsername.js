@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface) => {
     await queryInterface.sequelize.transaction(async (transaction) => {
       await Promise.all([
         queryInterface.sequelize.query('DROP INDEX IF EXISTS cqc."worker_audit__username";', { transaction }),

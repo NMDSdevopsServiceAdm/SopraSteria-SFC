@@ -14,6 +14,7 @@ import { WindowRef } from '@core/services/window.ref';
 import {
   AdminManagerUser,
   AdminUser,
+  MockAdminUsersService,
   PendingAdminManager,
   PendingAdminUser,
 } from '@core/test-utils/admin/MockAdminUsersService';
@@ -59,6 +60,10 @@ describe('AdminAccountViewComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
+        },
+        {
+          provide: AdminUsersService,
+          useClass: MockAdminUsersService,
         },
         {
           provide: ActivatedRoute,
@@ -224,7 +229,7 @@ describe('AdminAccountViewComponent', () => {
     it('should call deleteAdminUserDetails with the the user id', async () => {
       const { component, fixture, getByText, adminUsersService } = await setup();
 
-      const deleteAdminSpy = spyOn(adminUsersService, 'deleteAdminUserDetails');
+      const deleteAdminSpy = spyOn(adminUsersService, 'deleteAdminUserDetails').and.returnValue(of({}));
       const deleteLink = getByText('Delete this admin user');
       fireEvent.click(deleteLink);
       fixture.detectChanges();
