@@ -94,6 +94,10 @@ class Establishment extends EntityValidator {
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
     this._showAddWorkplaceDetailsBanner = null;
+    this._careWorkersLeaveDaysPerYear = null;
+    this._careWorkersCashLoyaltyForFirstTwoYears = null;
+    this._doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent = null;
+    this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -370,6 +374,22 @@ class Establishment extends EntityValidator {
     return this._showAddWorkplaceDetailsBanner;
   }
 
+  get careWorkersLeaveDaysPerYear() {
+    return this._careWorkersLeaveDaysPerYear;
+  }
+
+  get careWorkersCashLoyaltyForFirstTwoYears() {
+    return this._careWorkersCashLoyaltyForFirstTwoYears;
+  }
+
+  get doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent() {
+    return this._doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent;
+  }
+
+  get doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness() {
+    return this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -570,6 +590,24 @@ class Establishment extends EntityValidator {
 
         if ('showAddWorkplaceDetailsBanner' in document) {
           this._showAddWorkplaceDetailsBanner = document.showAddWorkplaceDetailsBanner;
+        }
+
+        if ('careWorkersLeaveDaysPerYear' in document) {
+          this._careWorkersLeaveDaysPerYear = document.careWorkersLeaveDaysPerYear;
+        }
+
+        if ('careWorkersCashLoyaltyForFirstTwoYears' in document) {
+          this._careWorkersCashLoyaltyForFirstTwoYears = document.careWorkersCashLoyaltyForFirstTwoYears;
+        }
+
+        if ('doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent' in document) {
+          this._doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent =
+            document.doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent;
+        }
+
+        if ('doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness' in document) {
+          this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness =
+            document.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
         }
       }
 
