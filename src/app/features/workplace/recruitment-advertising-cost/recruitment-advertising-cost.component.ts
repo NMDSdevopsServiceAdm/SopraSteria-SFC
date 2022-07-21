@@ -27,7 +27,7 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   ];
 
   public inStaffRecruitmentFlow: boolean;
-  public section = 'Recruitment';
+  public section: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -45,6 +45,7 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.setRoutes();
     this.prefill();
+    this.section = this.inStaffRecruitmentFlow ? 'People interviewed' : 'Recruitment';
   }
 
   private setRoutes(): void {
