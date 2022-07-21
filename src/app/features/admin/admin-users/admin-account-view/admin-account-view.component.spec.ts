@@ -229,7 +229,7 @@ describe('AdminAccountViewComponent', () => {
     it('should call deleteAdminUserDetails with the the user id', async () => {
       const { component, fixture, getByText, adminUsersService } = await setup();
 
-      const deleteAdminSpy = spyOn(adminUsersService, 'deleteAdminUserDetails');
+      const deleteAdminSpy = spyOn(adminUsersService, 'deleteAdminUserDetails').and.returnValue(of({}));
       const deleteLink = getByText('Delete this admin user');
       fireEvent.click(deleteLink);
       fixture.detectChanges();
