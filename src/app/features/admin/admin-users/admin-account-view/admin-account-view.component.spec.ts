@@ -14,6 +14,7 @@ import { WindowRef } from '@core/services/window.ref';
 import {
   AdminManagerUser,
   AdminUser,
+  MockAdminUsersService,
   PendingAdminManager,
   PendingAdminUser,
 } from '@core/test-utils/admin/MockAdminUsersService';
@@ -59,6 +60,10 @@ describe('AdminAccountViewComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
+        },
+        {
+          provide: AdminUsersService,
+          useClass: MockAdminUsersService,
         },
         {
           provide: ActivatedRoute,
