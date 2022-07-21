@@ -112,10 +112,5 @@
       </div>
     </div>
   </div>
-  <app-workplace-submit-button
-    [return]="!!return"
-    [recordSummary]="!this.inStaffRecruitmentFlow"
-    (clicked)="setSubmitAction($event)"
-  >
-  </app-workplace-submit-button>
+  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"> </app-workplace-submit-button>
 </form>

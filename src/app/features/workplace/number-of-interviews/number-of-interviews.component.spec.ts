@@ -170,15 +170,6 @@ describe('NumberOfInterviews', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it(`should show only show 'Save and continue' cta button when in staff recruitement flow`, async () => {
-      const { component, fixture, getByText, queryByText } = await setup(false);
-      component.inStaffRecruitmentFlow = true;
-      fixture.detectChanges();
-
-      expect(getByText('Save and continue')).toBeTruthy();
-      expect(queryByText('Skip this question')).toBeFalsy();
-    });
-
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
       const { component, fixture, getByText } = await setup(false);
 
