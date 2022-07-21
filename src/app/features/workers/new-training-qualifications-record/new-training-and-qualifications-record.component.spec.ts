@@ -25,9 +25,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
   const yesterday = new Date();
   const tomorrow = new Date();
+  const activeDate = new Date();
 
   yesterday.setDate(yesterday.getDate() - 1);
   tomorrow.setDate(tomorrow.getDate() + 1);
+  activeDate.setDate(activeDate.getDate() + 93);
 
   async function setup(
     otherJob = false,
@@ -77,7 +79,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                             {
                               accredited: true,
                               completed: new Date('10/20/2021'),
-                              expires: new Date('10/20/2022'),
+                              expires: activeDate,
                               title: 'Health training',
                               trainingCategory: { id: 1, category: 'Health' },
                               trainingStatus: 3,

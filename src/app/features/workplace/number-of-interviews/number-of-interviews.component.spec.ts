@@ -14,7 +14,7 @@ import { NumberOfInterviewsComponent } from './number-of-interviews.component';
 
 describe('NumberOfInterviews', () => {
   async function setup(returnUrl = true, numberOfInterviews = undefined) {
-    const { fixture, getByText, getByTestId, getAllByText, queryByTestId, getByLabelText } = await render(
+    const { fixture, getByText, getByTestId, getAllByText, queryByTestId, getByLabelText, queryByText } = await render(
       NumberOfInterviewsComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -46,6 +46,7 @@ describe('NumberOfInterviews', () => {
       getByLabelText,
       getByTestId,
       queryByTestId,
+      queryByText,
       establishmentService,
       establishmentServiceSpy,
       routerSpy,
@@ -132,20 +133,33 @@ describe('NumberOfInterviews', () => {
     expect(component.form.value).toEqual({ numberOfInterviews: null, numberOfInterviewsKnown: `Don't know` });
   });
 
-  it('should render the progress bar when in the flow', async () => {
-    const { component, fixture, getByTestId } = await setup();
+  describe('progress bar', () => {
+    it('should render the workplace progress bar when in the recruitment flow', async () => {
+      const { component, fixture, getByTestId } = await setup();
 
-    component.return = null;
-    fixture.detectChanges();
+      component.return = null;
+      fixture.detectChanges();
 
-    expect(getByTestId('progress-bar')).toBeTruthy();
-  });
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
 
-  it('should render the section, the question but not the progress bar when not in the flow', async () => {
-    const { getByTestId, queryByTestId } = await setup();
+    it('should render the section, the question but not the progress bar when not in the flow', async () => {
+      const { getByTestId, queryByTestId } = await setup();
 
-    expect(getByTestId('section-heading')).toBeTruthy();
-    expect(queryByTestId('progress-bar')).toBeFalsy();
+      expect(getByTestId('section-heading')).toBeTruthy();
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+
+    it('should render the recruitment and staff benefits progress bar when in the staff recruitment flow', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.return = null;
+      component.inStaffRecruitmentFlow = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('progress-bar-2')).toBeTruthy();
+      expect(getByTestId('progress-bar-3')).toBeTruthy();
+    });
   });
 
   describe('submit buttons and submitting form', () => {
@@ -154,6 +168,15 @@ describe('NumberOfInterviews', () => {
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
+    });
+
+    it(`should show only show 'Save and continue' cta button when in staff recruitement flow`, async () => {
+      const { component, fixture, getByText, queryByText } = await setup(false);
+      component.inStaffRecruitmentFlow = true;
+      fixture.detectChanges();
+
+      expect(getByText('Save and continue')).toBeTruthy();
+      expect(queryByText('Skip this question')).toBeFalsy();
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
@@ -218,7 +241,7 @@ describe('NumberOfInterviews', () => {
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { numberOfInterviews: 'None' });
     });
 
-    it('should navigate to the next page when submitting from the flow', async () => {
+    it('should navigate to the staff-recruitment-capture-training-requirement page when submitting from the flow', async () => {
       const { fixture, getByText, routerSpy } = await setup(false);
 
       const button = getByText('Save and continue');
