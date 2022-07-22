@@ -84,20 +84,33 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     expect(form.value).toEqual({ acceptCareCertificatesFromPreviousEmployment: 'No, never' });
   });
 
-  it('should render the progress bar when in the flow', async () => {
-    const { component, fixture, getByTestId } = await setup();
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { component, fixture, getByTestId } = await setup();
 
-    component.return = null;
-    fixture.detectChanges();
+      component.return = null;
+      fixture.detectChanges();
 
-    expect(getByTestId('progress-bar')).toBeTruthy();
-  });
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
 
-  it('should render the section, the question but not the progress bar when not in the flow', async () => {
-    const { getByTestId, queryByTestId } = await setup();
+    it('should render the section, the question but not the progress bar when not in the flow', async () => {
+      const { getByTestId, queryByTestId } = await setup();
 
-    expect(getByTestId('section-heading')).toBeTruthy();
-    expect(queryByTestId('progress-bar')).toBeFalsy();
+      expect(getByTestId('section-heading')).toBeTruthy();
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+
+    it('should render the recruitment and staff benefits progress bar when in the staff recruitment flow', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.return = null;
+      component.inStaffRecruitmentFlow = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('progress-bar-2')).toBeTruthy();
+      expect(getByTestId('progress-bar-3')).toBeTruthy();
+    });
   });
 
   describe('submit buttons', () => {
