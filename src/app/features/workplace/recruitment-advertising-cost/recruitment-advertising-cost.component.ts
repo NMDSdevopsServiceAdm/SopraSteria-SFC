@@ -45,7 +45,7 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.setRoutes();
     this.prefill();
-    this.section = this.inStaffRecruitmentFlow ? 'People interviewed' : 'Recruitment';
+    this.section = this.inStaffRecruitmentFlow ? 'Advertising spend' : 'Recruitment';
   }
 
   private setRoutes(): void {
