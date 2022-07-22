@@ -57,9 +57,8 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   public onChange(answer: string) {
     if (answer === 'Yes') {
       this.showTextBox = true;
-
       this.addControl();
-    } else if (answer === 'No') {
+    } else if (answer) {
       this.showTextBox = false;
       const { cashAmount } = this.form.controls;
       if (cashAmount) {
