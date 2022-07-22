@@ -14,7 +14,7 @@ import { Question } from '../question/question.component';
   templateUrl: './accept-previous-care-certificate.component.html',
 })
 export class AcceptPreviousCareCertificateComponent extends Question implements OnInit, OnDestroy {
-  public section = 'Recruitment';
+  public section: string;
   public previousCareCertificateOptions = [
     {
       label: 'Yes, always',
@@ -52,6 +52,7 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
     this.skipRoute = this.getNextRoute();
+    this.section = this.inStaffRecruitmentFlow ? 'Care Certificates' : 'Recruitment';
   }
 
   private setPreviousRoute(): void {
