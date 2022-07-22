@@ -51,7 +51,7 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     this.setPreviousRoute();
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
-    this.skipRoute = this.getNextRoute();
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
   }
 
   private setPreviousRoute(): void {
@@ -106,15 +106,9 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
       .subscribe();
   }
 
-  protected getNextRoute(): any {
-    return this.inStaffRecruitmentFlow
-      ? ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment']
-      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
-  }
-
   protected onSuccess(): void {
     this.updateEstablishmentService();
-    this.nextRoute = this.getNextRoute();
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
   }
 
   ngOnDestroy(): void {

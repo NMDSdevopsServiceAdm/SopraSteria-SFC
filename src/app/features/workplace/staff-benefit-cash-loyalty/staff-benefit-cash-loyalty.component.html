@@ -5,6 +5,7 @@
         <div class="govuk-form-group govuk-!-margin-bottom-0">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
               Do you pay care workers a cash loyalty bonus within their first 2 years of employment?
             </h1>
           </legend>
@@ -67,10 +68,34 @@
         </div>
       </fieldset>
     </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="sections"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+      <div *ngIf="!return && inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <div class="govuk-!-margin-bottom-4">
+          <app-progress-bar
+            data-testid="progress-bar-2"
+            [header]="'Recruitment'"
+            [sections]="recruitmentSections"
+            [completeProgressBar]="true"
+            [currentSection]="section"
+          ></app-progress-bar>
+        </div>
+        <app-progress-bar
+          data-testid="progress-bar-3"
+          [header]="'Staff benefits'"
+          [sections]="staffBenefitsSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
-  <app-workplace-submit-button
-    [return]="!!return"
-    [recordSummary]="!this.inStaffRecruitmentFlow"
-    (clicked)="setSubmitAction($event)"
-  ></app-workplace-submit-button>
+
+  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
 </form>

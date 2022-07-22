@@ -30,6 +30,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
 
   public showTextBox = false;
   public inStaffRecruitmentFlow: boolean;
+  public section: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -52,7 +53,16 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
     }
   }
 
-  protected init(): void {}
+  protected init(): void {
+    this.setPreviousRoute();
+    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
+    this.section = this.inStaffRecruitmentFlow ? 'Loyalty bonus' : 'Staff benefits';
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'sick-pay'];
+  }
+
+  private setPreviousRoute(): void {
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
+  }
 
   public onChange(answer: string) {
     if (answer === 'Yes') {
