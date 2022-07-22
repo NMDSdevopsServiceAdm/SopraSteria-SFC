@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,8 +13,23 @@ import { Question } from '../question/question.component';
   templateUrl: './staff-benefit-cash-loyalty.component.html',
 })
 export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit, OnDestroy {
+  public cashLoyaltyRequiredOptions = [
+    {
+      label: 'Yes',
+      value: StaffBenefitEnum.YES,
+    },
+    {
+      label: 'No',
+      value: StaffBenefitEnum.NO,
+    },
+    {
+      label: "Don't know",
+      value: StaffBenefitEnum.DONT_KNOW,
+    },
+  ];
+
+  public showTextBox = false;
   public inStaffRecruitmentFlow: boolean;
-  public section = 'Recruitment';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -23,9 +39,38 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
     protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    {
+      this.form = this.formBuilder.group({
+        cashLoyalty: [
+          null,
+          {
+            validators: Validators.required,
+            updateOn: 'submit',
+          },
+        ],
+      });
+    }
   }
 
   protected init(): void {}
+
+  public onChange(answer: string) {
+    if (answer === 'Yes') {
+      this.showTextBox = true;
+
+      this.addControl();
+    } else if (answer === 'No') {
+      this.showTextBox = false;
+      const { cashAmount } = this.form.controls;
+      if (cashAmount) {
+        this.form.removeControl('cashAmount');
+      }
+    }
+  }
+
+  public addControl() {
+    this.form.addControl('cashAmount', new FormControl(null, { updateOn: 'submit' }));
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
