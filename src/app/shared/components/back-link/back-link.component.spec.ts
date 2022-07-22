@@ -1,26 +1,27 @@
+import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackLinkService } from '@core/services/back-link/back-link.service';
+import { BackService } from '@core/services/back.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { NewBackLinkComponent } from './new-back-link.component';
+import { BackLinkComponent } from './back-link.component';
 
-describe('NewBackLinkComponent', () => {
+describe('BackLinkComponent', () => {
   const setup = async () => {
-    const { fixture, getByText } = await render(NewBackLinkComponent, {
+    const { fixture, getByText } = await render(BackLinkComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
-      providers: [BackLinkService],
+      providers: [BackService],
     });
     const component = fixture.componentInstance;
 
     return { component, fixture, getByText };
   };
 
-  it('should render the NewBackLinkComponent', async () => {
+  it('should render the BackLinkComponent', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
@@ -29,16 +30,16 @@ describe('NewBackLinkComponent', () => {
   it('should call the backLinkService when the back link is clicked', async () => {
     const { component, fixture, getByText } = await setup();
 
-    const backLinkService = TestBed.inject(BackLinkService);
-    const backLinkServiceSpy = spyOn(backLinkService, 'goBack');
+    const location = TestBed.inject(Location);
+    const locationSpy = spyOn(location, 'back');
 
-    component.back = true;
+    component.back = { url: ['/'] };
     fixture.detectChanges();
 
     const backLink = getByText('Back');
     fireEvent.click(backLink);
     fixture.detectChanges();
 
-    expect(backLinkServiceSpy).toHaveBeenCalled();
+    expect(locationSpy).toHaveBeenCalled();
   });
 });

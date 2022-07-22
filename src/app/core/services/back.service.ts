@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { URLStructure } from '@core/model/url.model';
@@ -13,7 +12,7 @@ export class BackService {
   private readonly _back$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
   public readonly back$: Observable<URLStructure> = this._back$.asObservable();
 
-  constructor(private router: Router, private location: Location) {
+  constructor(private router: Router) {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),

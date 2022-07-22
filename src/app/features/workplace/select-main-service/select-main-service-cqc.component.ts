@@ -17,7 +17,7 @@ export class SelectMainServiceCqcComponent extends Question {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    public establishmentService: EstablishmentService
+    public establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -46,10 +46,9 @@ export class SelectMainServiceCqcComponent extends Question {
 
     if (this.form.valid) {
       this.establishmentService.mainServiceCQC = this.form.get('cqc').value;
-      this.router.navigate(['/workplace', this.establishmentService.establishmentId, 'main-service'])
+      this.router.navigate(['/workplace', this.establishmentService.establishmentId, 'main-service']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
-
 }
