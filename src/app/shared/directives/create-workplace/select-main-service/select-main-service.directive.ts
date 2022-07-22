@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 @Directive()
 export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
+  public isWorkPlaceUpdate: boolean;
   protected allServices: Array<Service> = [];
   protected flow: string;
   protected otherServiceMaxLength = 120;
