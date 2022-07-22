@@ -22,6 +22,7 @@ import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplace
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
+import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay-component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmStaffRecruitmentComponent } from './confirm-staff-recruitment/confirm-staff-recruitment.component';
@@ -300,6 +301,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Accept Previous Care Certificate',
+        },
+      },
+      {
+        path: 'benefits-statutory-sick-pay',
+        component: BenefitsStatutorySickPayComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Benefits Statutory Sick Pay',
         },
       },
       {
