@@ -34,7 +34,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   ];
 
   public inStaffRecruitmentFlow: boolean;
-  public section = 'Recruitment';
+  public section: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -52,6 +52,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
+    this.section = this.inStaffRecruitmentFlow ? 'Training' : 'Recruitment';
   }
 
   private setPreviousRoute(): void {
