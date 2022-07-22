@@ -67,7 +67,11 @@
   </div>
   <div class="govuk-grid-column-one-third">
     <div *ngIf="!return" class="govuk-util__float-right">
-      <app-progress-bar data-testid="progress-bar" [sections]="sections" [currentSection]="section"></app-progress-bar>
+      <app-progress-bar
+        data-testid="progress-bar"
+        [sections]="workplaceFlowSections"
+        [currentSection]="section"
+      ></app-progress-bar>
     </div>
   </div>
 </div>

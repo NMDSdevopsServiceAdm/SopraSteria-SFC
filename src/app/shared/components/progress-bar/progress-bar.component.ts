@@ -6,8 +6,10 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./progress-bar.component.scss'],
 })
 export class ProgressBarComponent implements OnInit {
+  @Input() header: string;
   @Input() sections: string[];
   @Input() currentSection: string;
+  @Input() completeProgressBar = false;
   public currentSectionIndex: number;
 
   public ngOnInit(): void {
