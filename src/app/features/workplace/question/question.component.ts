@@ -30,7 +30,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected subscriptions: Subscription = new Subscription();
   protected initiated = false;
   public submitAction: { action: string; save: boolean } = null;
-  public sections = ['Services', 'Vacancies and turnover', 'Recruitment', 'Staff benefits', 'Permissions'];
+  public workplaceFlowSections = ['Services', 'Vacancies and turnover', 'Recruitment', 'Staff benefits', 'Permissions'];
+  public recruitmentSections = ['Advertising spend', 'People interviewed', 'Training', 'Care Certificates'];
+  public staffBenefitsSections = ['Loyalty bonus', `Statutory 'sick pay`, 'Pensions', 'Holiday leave'];
 
   constructor(
     protected formBuilder: FormBuilder,

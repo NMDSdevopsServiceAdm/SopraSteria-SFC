@@ -13,7 +13,7 @@
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
               <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+                <span class="govuk-caption-l" data-testid="section-heading">Recruitment</span>
                 <h1 class="govuk-fieldset__heading govuk__nowrap">
                   How many people have you <br />
                   interviewed for care worker roles <br />
@@ -89,19 +89,28 @@
       </fieldset>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div *ngIf="!return" class="govuk-util__float-right">
+      <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
-          [sections]="sections"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+      <div *ngIf="!return && inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar-2"
+          [header]="'Recruitment'"
+          [sections]="recruitmentSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+        <app-progress-bar
+          data-testid="progress-bar-3"
+          [header]="'Staff benefits'"
+          [sections]="staffBenefitsSections"
           [currentSection]="section"
         ></app-progress-bar>
       </div>
     </div>
   </div>
-  <app-workplace-submit-button
-    [return]="!!return"
-    [recordSummary]="!this.inStaffRecruitmentFlow"
-    (clicked)="setSubmitAction($event)"
-  >
-  </app-workplace-submit-button>
+  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"> </app-workplace-submit-button>
 </form>
