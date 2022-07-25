@@ -82,7 +82,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: activeDate,
                               title: 'Health training',
                               trainingCategory: { id: 1, category: 'Health' },
-                              trainingStatus: 3,
+                              trainingStatus: 0,
                               uid: 'someHealthuid',
                             },
                           ],
