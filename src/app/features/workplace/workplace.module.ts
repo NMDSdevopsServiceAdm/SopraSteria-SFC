@@ -18,6 +18,7 @@ import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.m
 import { SharedModule } from '@shared/shared.module';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
+import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay-component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
@@ -100,6 +101,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     RecruitmentAdvertisingCostComponent,
     NumberOfInterviewsComponent,
     ConfirmStaffRecruitmentComponent,
+    BenefitsStatutorySickPayComponent,
   ],
   providers: [
     DialogService,
