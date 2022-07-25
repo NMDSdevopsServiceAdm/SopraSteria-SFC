@@ -34,7 +34,7 @@ describe('NumberOfInterviews', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -194,7 +194,7 @@ describe('NumberOfInterviews', () => {
       expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
     });
 
-    it('should not call the postStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
+    it('should not call the updateSingleEstablishmentField when submitting form when the form has not been filled out', async () => {
       const { fixture, getByText, establishmentServiceSpy } = await setup();
 
       const button = getByText('Save and return');
@@ -204,7 +204,7 @@ describe('NumberOfInterviews', () => {
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('should call the postStaffRecruitmentData when submitting form with the amount spent filled out', async () => {
+    it('should call the updateSingleEstablishmentField when submitting form with the amount spent filled out', async () => {
       const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
       const input = getByLabelText('Number of people interviewed');
@@ -215,10 +215,13 @@ describe('NumberOfInterviews', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { numberOfInterviews: '440' });
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
+        property: 'peopleInterviewedInTheLastFourWeeks',
+        value: '440',
+      });
     });
 
-    it('should call the postStaffRecruitmentData when submitting form with a radio button selected', async () => {
+    it('should call the updateSingleEstablishmentField when submitting form with a radio button selected', async () => {
       const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
       const radio = getByLabelText('Nobody has been interviewed in the last 4 weeks');
@@ -229,7 +232,10 @@ describe('NumberOfInterviews', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', { numberOfInterviews: 'None' });
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
+        property: 'peopleInterviewedInTheLastFourWeeks',
+        value: 'None',
+      });
     });
 
     it('should navigate to the staff-recruitment-capture-training-requirement page when submitting from the flow', async () => {

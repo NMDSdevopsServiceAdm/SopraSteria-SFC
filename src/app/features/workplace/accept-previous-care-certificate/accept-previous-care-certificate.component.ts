@@ -86,8 +86,12 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   }
 
   protected updateEstablishment(props: any): void {
+    const careCertificateData = {
+      property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+      value: props.acceptCareCertificatesFromPreviousEmployment,
+    };
     this.subscriptions.add(
-      this.establishmentService.postStaffRecruitmentData(this.establishment.uid, props).subscribe(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, careCertificateData).subscribe(
         (data) => this._onSuccess(data),
         (error) => this.onError(error),
       ),

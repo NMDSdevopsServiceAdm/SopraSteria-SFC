@@ -33,7 +33,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -157,7 +157,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
     });
 
-    it('should not call the postStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
+    it('should not call the updateSingleEstablishmentField when submitting form when the form has not been filled out', async () => {
       const { fixture, getByText, establishmentServiceSpy } = await setup();
 
       const button = getByText('Save and return');
@@ -212,7 +212,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        acceptCareCertificatesFromPreviousEmployment: 'Yes, always',
+        property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        value: 'Yes, always',
       });
     });
 
@@ -228,7 +229,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        acceptCareCertificatesFromPreviousEmployment: 'Yes, very often',
+        property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        value: 'Yes, very often',
       });
     });
 
@@ -244,7 +246,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        acceptCareCertificatesFromPreviousEmployment: 'Yes, but not very often',
+        property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        value: 'Yes, but not very often',
       });
     });
 
@@ -260,7 +263,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        acceptCareCertificatesFromPreviousEmployment: 'No, never',
+        property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        value: 'No, never',
       });
     });
   });

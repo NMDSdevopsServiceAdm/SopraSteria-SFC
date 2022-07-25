@@ -138,8 +138,12 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   }
 
   protected updateEstablishment(props: any): void {
+    const advertisingCostData = {
+      property: 'moneySpentOnAdvertisingInTheLastFourWeeks',
+      value: props.amountSpent,
+    };
     this.subscriptions.add(
-      this.establishmentService.postStaffRecruitmentData(this.establishment.uid, props).subscribe(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, advertisingCostData).subscribe(
         (data) => this._onSuccess(data),
         (error) => this.onError(error),
       ),
