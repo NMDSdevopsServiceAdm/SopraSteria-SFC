@@ -147,7 +147,6 @@ export interface Establishment {
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
   peopleInterviewedInTheLastFourWeeks?: string;
   showAddWorkplaceDetailsBanner?: boolean;
-  doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness?: string;
 }
 
 export interface UpdateJobsRequest {
