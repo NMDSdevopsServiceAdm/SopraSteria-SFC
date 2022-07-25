@@ -259,6 +259,10 @@ export class EstablishmentService {
     return this.http.post<BannerFlag>(`/api/establishment/${establishmentId}/updateEstablishmentBanner`, data);
   }
 
+  updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/updateSingleEstablishmentField`, data);
+  }
+
   updateLocalAuthorities(establishmentId, data) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }

@@ -5,6 +5,7 @@ import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -45,9 +46,9 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     this.setupForm();
     this.setPreviousRoute();
     this.inStaffRecruitmentAndBenefitsFlow = this.establishmentService.inStaffRecruitmentFlow;
-    // this.prefill();
+    this.prefill();
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-pension'];
-    this.section = this.inStaffRecruitmentAndBenefitsFlow ? `Statutory 'sick pay` : 'Staff benefits';
+    this.section = this.inStaffRecruitmentAndBenefitsFlow ? `Statutory 'sick pay'` : 'Staff benefits';
   }
 
   private setPreviousRoute(): void {
@@ -63,48 +64,52 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     );
   }
 
-  // private prefill(): void {
-  //   if (this.establishment.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness) {
-  //     this.form.patchValue({
-  //       statutorySickPay: this.establishment.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
-  //     });
-  //   }
-  // }
+  private prefill(): void {
+    if (this.establishment.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness) {
+      this.form.patchValue({
+        statutorySickPay: this.establishment.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
+      });
+    }
+  }
 
-  // protected generateUpdateProps(): any {
-  //   const { statutorySickPay } = this.form.value;
-  //   if (statutorySickPay) {
-  //     return { statutorySickPay };
-  //   }
-  //   return null;
-  // }
+  protected generateUpdateProps(): any {
+    const { statutorySickPay } = this.form.value;
+    if (statutorySickPay) {
+      return { statutorySickPay };
+    }
+    return null;
+  }
 
-  // protected updateEstablishment(props: any): void {
-  //   this.subscriptions.add(
-  //     this.establishmentService.postStaffRecruitmentData(this.establishment.uid, props).subscribe(
-  //       (data) => this._onSuccess(data),
-  //       (error) => this.onError(error),
-  //     ),
-  //   );
-  // }
+  protected updateEstablishment(props: any): void {
+    const sickPayData = {
+      property: 'doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness',
+      value: props.statutorySickPay,
+    };
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, sickPayData).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
+    );
+  }
 
-  // protected updateEstablishmentService(): void {
-  //   this.establishmentService
-  //     .getEstablishment(this.establishmentService.establishmentId)
-  //     .pipe(
-  //       tap((workplace) => {
-  //         return (
-  //           this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
-  //         );
-  //       }),
-  //     )
-  //     .subscribe();
-  // }
+  protected updateEstablishmentService(): void {
+    this.establishmentService
+      .getEstablishment(this.establishmentService.establishmentId)
+      .pipe(
+        tap((workplace) => {
+          return (
+            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
+          );
+        }),
+      )
+      .subscribe();
+  }
 
-  // protected onSuccess(): void {
-  //   this.updateEstablishmentService();
-  //   this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-pension'];
-  // }
+  protected onSuccess(): void {
+    this.updateEstablishmentService();
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-pension'];
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
