@@ -865,6 +865,8 @@ class Establishment extends EntityValidator {
             this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
           wouldYouAcceptCareCertificatesFromPreviousEmployment:
             this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
+          doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness:
+            this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1061,6 +1063,8 @@ class Establishment extends EntityValidator {
             wouldYouAcceptCareCertificatesFromPreviousEmployment:
               this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
             showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
+            doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness:
+              this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1369,6 +1373,8 @@ class Establishment extends EntityValidator {
           fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
+        this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness =
+          fetchResults.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1845,6 +1851,8 @@ class Establishment extends EntityValidator {
           this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
+        myDefaultJSON.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness =
+          this.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
