@@ -13,7 +13,7 @@ import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-rec
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(returnUrl = true, repeatTraining = undefined) {
-    const { fixture, getByText, getByLabelText, getByTestId, queryByTestId } = await render(
+    const { fixture, getByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       StaffRecruitmentCaptureTrainingRequirementComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -46,6 +46,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       routerSpy,
       getByTestId,
       queryByTestId,
+      queryByText,
     };
   }
 
@@ -117,7 +118,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     it('should navigate to the next page when clicking Skip this question link', async () => {
-      const { component, fixture, getByText, routerSpy } = await setup(false);
+      const { fixture, getByText, routerSpy } = await setup(false);
 
       const link = getByText('Skip this question');
       fireEvent.click(link);
@@ -244,9 +245,20 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     it('should render the progress bar when in the flow', async () => {
-      const { component, fixture, getByTestId } = await setup(false);
+      const { getByTestId } = await setup(false);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should render the recruitment and staff benefits progress bar when in the staff recruitment flow', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.return = null;
+      component.inStaffRecruitmentFlow = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('progress-bar-2')).toBeTruthy();
+      expect(getByTestId('progress-bar-3')).toBeTruthy();
     });
   });
 });
