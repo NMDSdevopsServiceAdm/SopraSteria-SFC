@@ -111,8 +111,10 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   }
 
   protected generateUpdateProps(): any {
-    const { cashLoyalty } = this.form.value;
-
+    const { cashLoyalty, cashAmount } = this.form.value;
+    if (cashAmount) {
+      return cashAmount;
+    }
     if (cashLoyalty) {
       return cashLoyalty;
     }
@@ -149,7 +151,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
 
   protected onSuccess(): void {
     this.updateEstablishmentService();
-    // this.nextRoute = ['/workplace', `${this.establishment.uid}`,  'benefits-statutory-sick-pay'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
   }
 
   protected setupFormErrorsMap(): void {
