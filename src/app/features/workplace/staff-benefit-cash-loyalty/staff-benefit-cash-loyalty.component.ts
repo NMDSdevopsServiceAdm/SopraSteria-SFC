@@ -6,6 +6,7 @@ import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -32,8 +33,6 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   public showTextBox = false;
   public inStaffRecruitmentFlow: boolean;
   public section: string;
-  public submitted = false;
-  public submittedWithAddtionalFields = false;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -45,13 +44,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
     {
       this.form = this.formBuilder.group({
-        cashLoyalty: [
-          null,
-          {
-            validators: Validators.required,
-            updateOn: 'submit',
-          },
-        ],
+        cashLoyalty: null,
       });
     }
   }
@@ -61,7 +54,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
     this.setPreviousRoute();
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.section = this.inStaffRecruitmentFlow ? 'Loyalty bonus' : 'Staff benefits';
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'sick-pay'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
   }
 
   private setPreviousRoute(): void {
@@ -115,6 +108,48 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
       }
       return null;
     };
+  }
+
+  protected generateUpdateProps(): any {
+    const { cashLoyalty } = this.form.value;
+
+    if (cashLoyalty) {
+      return cashLoyalty;
+    }
+
+    return null;
+  }
+
+  protected updateEstablishment(props: any): void {
+    const cashLoyaltyData = {
+      property: 'careWorkersCashLoyaltyForFirstTwoYears',
+      value: props,
+    };
+
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, cashLoyaltyData).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
+    );
+  }
+
+  protected updateEstablishmentService(): void {
+    this.establishmentService
+      .getEstablishment(this.establishmentService.establishmentId)
+      .pipe(
+        tap((workplace) => {
+          return (
+            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
+          );
+        }),
+      )
+      .subscribe();
+  }
+
+  protected onSuccess(): void {
+    this.updateEstablishmentService();
+    // this.nextRoute = ['/workplace', `${this.establishment.uid}`,  'benefits-statutory-sick-pay'];
   }
 
   protected setupFormErrorsMap(): void {
