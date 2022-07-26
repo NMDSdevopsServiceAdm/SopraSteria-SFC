@@ -33,7 +33,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'postStaffRecruitmentData').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -84,20 +84,33 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     expect(form.value).toEqual({ acceptCareCertificatesFromPreviousEmployment: 'No, never' });
   });
 
-  it('should render the progress bar when in the flow', async () => {
-    const { component, fixture, getByTestId } = await setup();
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { component, fixture, getByTestId } = await setup();
 
-    component.return = null;
-    fixture.detectChanges();
+      component.return = null;
+      fixture.detectChanges();
 
-    expect(getByTestId('progress-bar')).toBeTruthy();
-  });
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
 
-  it('should render the section, the question but not the progress bar when not in the flow', async () => {
-    const { getByTestId, queryByTestId } = await setup();
+    it('should render the section, the question but not the progress bar when not in the flow', async () => {
+      const { getByTestId, queryByTestId } = await setup();
 
-    expect(getByTestId('section-heading')).toBeTruthy();
-    expect(queryByTestId('progress-bar')).toBeFalsy();
+      expect(getByTestId('section-heading')).toBeTruthy();
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+
+    it('should render the recruitment and staff benefits progress bar when in the staff recruitment flow', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.return = null;
+      component.inStaffRecruitmentFlow = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('progress-bar-2')).toBeTruthy();
+      expect(getByTestId('progress-bar-3')).toBeTruthy();
+    });
   });
 
   describe('submit buttons', () => {
@@ -144,7 +157,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
     });
 
-    it('should not call the postStaffRecruitmentData when submitting form when the form has not been filled out', async () => {
+    it('should not call the updateSingleEstablishmentField when submitting form when the form has not been filled out', async () => {
       const { fixture, getByText, establishmentServiceSpy } = await setup();
 
       const button = getByText('Save and return');
@@ -199,7 +212,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        acceptCareCertificatesFromPreviousEmployment: 'Yes, always',
+        property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        value: 'Yes, always',
       });
     });
 
@@ -215,7 +229,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        acceptCareCertificatesFromPreviousEmployment: 'Yes, very often',
+        property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        value: 'Yes, very often',
       });
     });
 
@@ -231,7 +246,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        acceptCareCertificatesFromPreviousEmployment: 'Yes, but not very often',
+        property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        value: 'Yes, but not very often',
       });
     });
 
@@ -247,7 +263,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        acceptCareCertificatesFromPreviousEmployment: 'No, never',
+        property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        value: 'No, never',
       });
     });
   });

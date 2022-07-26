@@ -866,6 +866,8 @@ class Establishment extends EntityValidator {
           wouldYouAcceptCareCertificatesFromPreviousEmployment:
             this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
           careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
+          doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness:
+            this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1063,6 +1065,8 @@ class Establishment extends EntityValidator {
               this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
             showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
             careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
+            doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness:
+              this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1372,6 +1376,8 @@ class Establishment extends EntityValidator {
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
+        this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness =
+          fetchResults.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1849,6 +1855,8 @@ class Establishment extends EntityValidator {
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
+        myDefaultJSON.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness =
+          this.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

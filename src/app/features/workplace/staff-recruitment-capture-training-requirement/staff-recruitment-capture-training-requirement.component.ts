@@ -34,7 +34,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   ];
 
   public inStaffRecruitmentFlow: boolean;
-  public section = 'Recruitment';
+  public section: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -52,6 +52,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
+    this.section = this.inStaffRecruitmentFlow ? 'Training' : 'Recruitment';
   }
 
   private setPreviousRoute(): void {
@@ -84,11 +85,17 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   }
 
   protected updateEstablishment(props: any): void {
+    const trainingRequirementData = {
+      property: 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
+      value: props.trainingRequired,
+    };
     this.subscriptions.add(
-      this.establishmentService.postStaffRecruitmentData(this.establishment.uid, props).subscribe(
-        (data) => this._onSuccess(data),
-        (error) => this.onError(error),
-      ),
+      this.establishmentService
+        .updateSingleEstablishmentField(this.establishment.uid, trainingRequirementData)
+        .subscribe(
+          (data) => this._onSuccess(data),
+          (error) => this.onError(error),
+        ),
     );
   }
 

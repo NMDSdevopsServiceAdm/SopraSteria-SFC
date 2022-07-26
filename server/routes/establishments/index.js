@@ -35,8 +35,8 @@ const Benchmarks = require('./benchmarks');
 const ExpiresSoonAlertDates = require('./expiresSoonAlertDates');
 const WdfClaims = require('./wdfClaims');
 const ChildWorkplaces = require('./childWorkplaces');
-const StaffRecruitmentData = require('./staffRecruitmentData');
 const UpdateEstablishmentBanner = require('./updateEstablishmentBanner');
+const UpdateSingleEstablishmentField = require('./updateSingleEstablishmentField');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -90,8 +90,8 @@ router.use('/:id/benchmarks', Benchmarks);
 router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
 router.use('/:id/wdfClaims', WdfClaims);
 router.use('/:id/childWorkplaces', ChildWorkplaces);
-router.use('/:id/staffRecruitmentData', StaffRecruitmentData);
 router.use('/:id/updateEstablishmentBanner', UpdateEstablishmentBanner);
+router.use('/:id/updateSingleEstablishmentField', UpdateSingleEstablishmentField);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {

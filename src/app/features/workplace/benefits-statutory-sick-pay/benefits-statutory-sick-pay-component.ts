@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { staffRecruitmentOptionsEnum } from '@core/model/establishment.model';
+import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -10,31 +10,27 @@ import { tap } from 'rxjs/operators';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-accept-previous-care-certificate',
-  templateUrl: './accept-previous-care-certificate.component.html',
+  selector: 'app-benefits-statutory-sick-pay',
+  templateUrl: './benefits-statutory-sick-pay-component.html',
 })
-export class AcceptPreviousCareCertificateComponent extends Question implements OnInit, OnDestroy {
-  public section: string;
-  public previousCareCertificateOptions = [
+export class BenefitsStatutorySickPayComponent extends Question implements OnInit, OnDestroy {
+  public statuorySickPayOptions = [
     {
-      label: 'Yes, always',
-      value: staffRecruitmentOptionsEnum.ALWAYS,
+      label: 'Yes',
+      value: StaffBenefitEnum.YES,
     },
     {
-      label: 'Yes, very often',
-      value: staffRecruitmentOptionsEnum.VERY_OFTEN,
+      label: 'No',
+      value: StaffBenefitEnum.NO,
     },
     {
-      label: 'Yes, but not very often',
-      value: staffRecruitmentOptionsEnum.NOT_OFTEN,
-    },
-    {
-      label: 'No, never',
-      value: staffRecruitmentOptionsEnum.NEVER,
+      label: `Don't know`,
+      value: StaffBenefitEnum.DONT_KNOW,
     },
   ];
 
-  public inStaffRecruitmentFlow: boolean;
+  public inStaffRecruitmentAndBenefitsFlow: boolean;
+  public section: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -49,49 +45,48 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   protected init(): void {
     this.setupForm();
     this.setPreviousRoute();
-    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
+    this.inStaffRecruitmentAndBenefitsFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
-    this.section = this.inStaffRecruitmentFlow ? 'Care Certificates' : 'Recruitment';
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-pension'];
+    this.section = this.inStaffRecruitmentAndBenefitsFlow ? `Statutory 'sick pay'` : 'Staff benefits';
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-capture-training-requirement'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-loyalty-bonus'];
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
-        acceptCareCertificatesFromPreviousEmployment: null,
+        statutorySickPay: null,
       },
       { updateOn: 'submit' },
     );
   }
 
   private prefill(): void {
-    if (this.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment) {
+    if (this.establishment.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness) {
       this.form.patchValue({
-        acceptCareCertificatesFromPreviousEmployment:
-          this.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment,
+        statutorySickPay: this.establishment.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
       });
     }
   }
 
   protected generateUpdateProps(): any {
-    const { acceptCareCertificatesFromPreviousEmployment } = this.form.value;
-    if (acceptCareCertificatesFromPreviousEmployment) {
-      return { acceptCareCertificatesFromPreviousEmployment };
+    const { statutorySickPay } = this.form.value;
+    if (statutorySickPay) {
+      return { statutorySickPay };
     }
     return null;
   }
 
   protected updateEstablishment(props: any): void {
-    const careCertificateData = {
-      property: 'wouldYouAcceptCareCertificatesFromPreviousEmployment',
-      value: props.acceptCareCertificatesFromPreviousEmployment,
+    const sickPayData = {
+      property: 'doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness',
+      value: props.statutorySickPay,
     };
     this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, careCertificateData).subscribe(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, sickPayData).subscribe(
         (data) => this._onSuccess(data),
         (error) => this.onError(error),
       ),
@@ -113,7 +108,7 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
 
   protected onSuccess(): void {
     this.updateEstablishmentService();
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-pension'];
   }
 
   ngOnDestroy(): void {

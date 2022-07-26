@@ -5,8 +5,8 @@
         <div class="govuk-form-group govuk-!-margin-bottom-0">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
-              <span class="govuk-caption-l" data-testid="section-heading">Recruitment</span>
-              Do new care workers have to repeat training they've done with previous employers?
+              <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
+              Do you pay your care workers more than statutory 'sick pay' if they cannot work because of illness?
             </h1>
           </legend>
           <div class="govuk-!-margin-bottom-6">
@@ -14,16 +14,16 @@
           </div>
           <div class="gouvk-grid-row govuk-!-margin-bottom-3">
             <div class="govuk-radios">
-              <div class="govuk-radios__item" *ngFor="let option of trainingRequiredOptions; let i = index">
+              <div class="govuk-radios__item" *ngFor="let option of statuorySickPayOptions; let i = index">
                 <input
                   class="govuk-radios__input"
-                  id="trainingRequired-{{ i }}"
-                  name="trainingRequired"
-                  [formControlName]="'trainingRequired'"
+                  id="statutorySickPay-{{ i }}"
+                  name="statutorySickPay"
+                  [formControlName]="'statutorySickPay'"
                   type="radio"
                   [value]="option.value"
                 />
-                <label class="govuk-label govuk-radios__label" for="trainingRequired-{{ i }}">
+                <label class="govuk-label govuk-radios__label" for="statutorySickPay-{{ i }}">
                   {{ option.label }}
                 </label>
               </div>
@@ -33,19 +33,19 @@
       </fieldset>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
+      <div *ngIf="!return && !inStaffRecruitmentAndBenefitsFlow" class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
           [sections]="workplaceFlowSections"
           [currentSection]="section"
         ></app-progress-bar>
       </div>
-      <div *ngIf="!return && inStaffRecruitmentFlow" class="govuk-util__float-right">
+      <div *ngIf="!return && inStaffRecruitmentAndBenefitsFlow" class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar-2"
           [header]="'Recruitment'"
           [sections]="recruitmentSections"
-          [currentSection]="section"
+          [completeProgressBar]="true"
         ></app-progress-bar>
         <app-progress-bar
           data-testid="progress-bar-3"

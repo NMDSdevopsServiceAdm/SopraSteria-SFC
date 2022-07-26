@@ -150,6 +150,7 @@ export interface Establishment {
   careWorkersLeaveDaysPerYear?: string;
   careWorkersCashLoyaltyForFirstTwoYears?: string;
   doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent?: string;
+  doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness?: string;
 }
 
 export interface UpdateJobsRequest {
