@@ -150,7 +150,6 @@ export interface Establishment {
   careWorkersLeaveDaysPerYear?: string;
   careWorkersCashLoyaltyForFirstTwoYears?: string;
   doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent?: string;
-  doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -179,7 +178,7 @@ export enum mandatoryTrainingJobOption {
 
 export enum StaffBenefitEnum {
   YES = 'Yes',
-  NO = 'NO',
+  NO = 'No',
   DONT_KNOW = "Don't know",
 }
 

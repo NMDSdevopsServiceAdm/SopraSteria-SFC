@@ -57,11 +57,11 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   }
 
   protected init(): void {
+    this.prefill();
     this.setPreviousRoute();
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.section = this.inStaffRecruitmentFlow ? 'Loyalty bonus' : 'Staff benefits';
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'sick-pay'];
-    this.establishment;
   }
 
   private setPreviousRoute(): void {
@@ -82,8 +82,22 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
     }
   }
 
+  private prefill(): void {
+    if (this.establishment.careWorkersCashLoyaltyForFirstTwoYears) {
+      if (Number(this.establishment.careWorkersCashLoyaltyForFirstTwoYears)) {
+        this.form.get('cashLoyalty').setValue(StaffBenefitEnum.YES, { onlyself: false, emitEvent: true });
+        this.onChange(StaffBenefitEnum.YES);
+        this.form.get('cashAmount').setValue(this.establishment.careWorkersCashLoyaltyForFirstTwoYears);
+      } else {
+        this.form.get('cashLoyalty').setValue(this.establishment.careWorkersCashLoyaltyForFirstTwoYears);
+      }
+    }
+  }
+
   public addControl() {
-    this.form.addControl('cashAmount', new FormControl(null, { updateOn: 'submit' }));
+    if (!this.form.controls.cashAmount) {
+      this.form.addControl('cashAmount', new FormControl(null, { updateOn: 'submit' }));
+    }
   }
 
   public addValidationToControl() {

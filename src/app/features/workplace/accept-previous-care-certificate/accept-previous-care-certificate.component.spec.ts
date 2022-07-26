@@ -117,7 +117,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       const link = getByText('Skip this question');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'sharing-data']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
