@@ -1,0 +1,117 @@
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render } from '@testing-library/angular';
+
+import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty.component';
+
+describe('StaffBenefitCashLoyaltyComponent', () => {
+  async function setup(returnUrl = true, cashLoyalty = undefined) {
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      StaffBenefitCashLoyaltyComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: EstablishmentService,
+            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+              careWorkersCashLoyaltyForFirstTwoYears: cashLoyalty,
+            }),
+            deps: [HttpClient],
+          },
+        ],
+      },
+    );
+
+    const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    return {
+      component,
+      fixture,
+      getByText,
+      getAllByText,
+      getByLabelText,
+      getByTestId,
+      queryByTestId,
+      establishmentService,
+      establishmentServiceSpy,
+      routerSpy,
+    };
+  }
+
+  it('should render a StaffBenefitCashLoyaltyComponent', async () => {
+    const { component } = await setup();
+    expect(component).toBeTruthy();
+  });
+
+  it('should render the headings', async () => {
+    const { getByText } = await setup();
+    const heading = 'Do you pay care workers a cash loyalty bonus within their first 2 years of employment?';
+    const helpText = 'We only want to know about bonuses given for staying in a role, not for things like performance.';
+
+    expect(getByText(heading)).toBeTruthy;
+    expect(getByText(helpText)).toBeTruthy;
+  });
+
+  it('should display text boxes when Yes is selected', async () => {
+    const { component, fixture, getByTestId, getByLabelText } = await setup();
+
+    const YesRadio = getByTestId('cashLoyaltyRadio-conditional');
+
+    fireEvent.click(YesRadio);
+    fixture.detectChanges();
+
+    expect(YesRadio).toHaveClass('govuk-radios__conditional--hidden');
+  });
+
+  it('should prefill the input if the establishment has a cash loyalty value', async () => {
+    const cashLoyalty = '999';
+    const { component, fixture } = await setup(true, cashLoyalty);
+
+    const input = fixture.nativeElement.querySelector('input[id="cashAmount"]');
+
+    expect(input.value).toEqual('999');
+    expect(component.form.value).toEqual({ cashAmount: '999', cashLoyalty: 'Yes' });
+  });
+
+  it('should pre select the first radio button if the establishment has a cash loyalty value of Yes', async () => {
+    const cashLoyalty = 'Yes';
+    const { component, fixture } = await setup(true, cashLoyalty);
+
+    const radioButton = fixture.nativeElement.querySelector('input[id="cashLoyalty-0"]');
+    expect(radioButton.checked).toBeTruthy();
+    expect(component.form.value).toEqual({ cashLoyalty: 'Yes' });
+  });
+
+  it(`should pre select the second radio button if the establishment has a cash loyalty value of  "Don't know"`, async () => {
+    const cashLoyalty = `Don't know`;
+    const { component, fixture } = await setup(true, cashLoyalty);
+
+    const radioButton = fixture.nativeElement.querySelector('input[id="cashLoyalty-2"]');
+
+    expect(radioButton.checked).toBeTruthy();
+    expect(component.form.value).toEqual({ cashLoyalty: `Don't know` });
+  });
+
+  it(`should pre select the second radio button if the establishment has a cash loyalty value of No`, async () => {
+    const cashLoyalty = 'No';
+    const { component, fixture } = await setup(true, cashLoyalty);
+
+    const radioButton = fixture.nativeElement.querySelector('input[id="cashLoyalty-1"]');
+
+    expect(radioButton.checked).toBeTruthy();
+    expect(component.form.value).toEqual({ cashLoyalty: 'No' });
+  });
+});

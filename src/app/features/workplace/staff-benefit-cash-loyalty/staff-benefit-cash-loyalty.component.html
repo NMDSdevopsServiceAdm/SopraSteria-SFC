@@ -24,10 +24,10 @@
             <ng-container *ngFor="let option of cashLoyaltyRequiredOptions; let i = index">
               <div class="govuk-radios__item">
                 <input
-                  aria-controls="grantLetter-conditional-1"
+                  aria-controls="cashLoyalty-conditional-1"
                   class="govuk-radios__input"
                   [formControlName]="'cashLoyalty'"
-                  id="cashLoyalty"
+                  id="cashLoyalty-{{ i }}"
                   name="cashLoyalty"
                   type="radio"
                   [value]="option.value"
@@ -42,11 +42,11 @@
                 *ngIf="option.value === 'Yes'"
                 class="govuk-radios__conditional"
                 [class.govuk-radios__conditional--hidden]="!showTextBox"
-                data-testid="grantLetterRadio-conditional"
+                data-testid="cashLoyaltyRadio-conditional"
               >
                 <div class="govuk-form-group" *ngIf="this.form.get('cashAmount')">
                   <label class="govuk-label" for="amountSpent">Amount (optional)</label>
-                  <span id="amountSpent-hint" class="govuk-hint">For example, 299.9</span>
+                  <span id="amountSpent-hint" class="govuk-hint">For example, 299.99</span>
                   <span
                     *ngIf="submitted && this.form.get('cashAmount').invalid"
                     id="cashAmount-error"
@@ -69,9 +69,7 @@
                     <div class="govuk-input__prefix">£</div>
                     <input
                       class="govuk-input govuk-!-width-one-third"
-                      [class.govuk-input--error]="
-                        submitted && submittedWithAddtionalFields && form.get('cashAmount').invalid
-                      "
+                      [class.govuk-input--error]="submitted && form.get('cashAmount').invalid"
                       id="cashAmount"
                       formControlName="cashAmount"
                       name="cashAmount"
