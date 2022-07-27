@@ -62,6 +62,8 @@ export class LastBulkUploadComponent implements OnInit {
         console.log(response);
         const filename = FileUtil.getFileName(response);
         const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+        console.log('blob and filename: ', response.body, filename);
+
         saveAs(blob, filename);
       });
   }
