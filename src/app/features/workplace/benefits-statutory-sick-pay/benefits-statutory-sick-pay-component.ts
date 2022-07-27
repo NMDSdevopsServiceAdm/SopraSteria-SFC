@@ -44,9 +44,10 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
 
   protected init(): void {
     this.setupForm();
+    this.prefill();
     this.setPreviousRoute();
     this.inStaffRecruitmentAndBenefitsFlow = this.establishmentService.inStaffRecruitmentFlow;
-    this.prefill();
+
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-pension'];
     this.section = this.inStaffRecruitmentAndBenefitsFlow ? `Statutory 'sick pay'` : 'Staff benefits';
   }
@@ -65,9 +66,9 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
   }
 
   private prefill(): void {
-    if (this.establishment.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness) {
+    if (this.establishment.sickPay) {
       this.form.patchValue({
-        statutorySickPay: this.establishment.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
+        statutorySickPay: this.establishment.sickPay,
       });
     }
   }
