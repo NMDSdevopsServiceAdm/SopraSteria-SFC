@@ -39,6 +39,7 @@ import { SelectPrimaryUserComponent } from './select-primary-user/select-primary
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
+import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from './start/start.component';
@@ -291,6 +292,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Confirm Staff Recruitment',
+        },
+      },
+      {
+        path: 'staff-benefit-holiday-leave',
+        component: StaffBenefitHolidayLeaveComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Staff Benefit Holiday Leave',
         },
       },
       {
