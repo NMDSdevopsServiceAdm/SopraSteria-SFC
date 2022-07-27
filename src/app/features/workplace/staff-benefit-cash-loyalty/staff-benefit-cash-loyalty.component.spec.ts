@@ -218,4 +218,42 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
     });
   });
+
+  describe('progress bar', () => {
+    it('should render the section, the question but not the progress bar when not in the flow', async () => {
+      const { getByText, getByTestId, queryByTestId, fixture, component } = await setup();
+      component.inStaffRecruitmentFlow = false;
+      fixture.detectChanges();
+
+      expect(getByTestId('section-heading')).toBeTruthy();
+      expect(
+        getByText('Do you pay care workers a cash loyalty bonus within their first 2 years of employment?'),
+      ).toBeTruthy();
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+      expect(queryByTestId('progress-bar-2')).toBeFalsy();
+      expect(queryByTestId('progress-bar-3')).toBeFalsy();
+    });
+
+    it('should render the progress bar when in the flow', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.return = null;
+      component.inStaffRecruitmentFlow = true;
+
+      fixture.detectChanges();
+
+      expect(getByTestId('progress-bar-2')).toBeTruthy();
+      expect(getByTestId('progress-bar-3')).toBeTruthy();
+    });
+
+    it('should render the workplace progress bar when in the workplace flow', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.return = null;
+      component.inStaffRecruitmentFlow = false;
+      fixture.detectChanges();
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+  });
 });
