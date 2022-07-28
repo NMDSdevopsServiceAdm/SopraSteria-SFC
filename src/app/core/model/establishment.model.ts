@@ -149,8 +149,8 @@ export interface Establishment {
   showAddWorkplaceDetailsBanner?: boolean;
   careWorkersLeaveDaysPerYear?: string;
   careWorkersCashLoyaltyForFirstTwoYears?: string;
-  doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent?: string;
-  doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness?: string;
+  pensionContribution?: string;
+  sickPay?: string;
 }
 
 export interface UpdateJobsRequest {

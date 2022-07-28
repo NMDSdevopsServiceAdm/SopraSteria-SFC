@@ -743,17 +743,17 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'CareWorkersCashLoyaltyForFirstTwoYears',
       },
-      doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent: {
+      pensionContribution: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Yes', 'No', "Don't know"],
-        field: 'DoCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent',
+        field: 'PensionContribution',
       },
-      doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness: {
+      sickPay: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Yes', 'No', "Don't know"],
-        field: 'DoCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness',
+        field: 'SickPay',
       },
     },
     {

@@ -96,8 +96,8 @@ class Establishment extends EntityValidator {
     this._showAddWorkplaceDetailsBanner = null;
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
-    this._doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent = null;
-    this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness = null;
+    this._pensionContribution = null;
+    this._sickPay = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -382,12 +382,12 @@ class Establishment extends EntityValidator {
     return this._careWorkersCashLoyaltyForFirstTwoYears;
   }
 
-  get doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent() {
-    return this._doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent;
+  get pensionContribution() {
+    return this._pensionContribution;
   }
 
-  get doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness() {
-    return this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
+  get sickPay() {
+    return this._sickPay;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -600,14 +600,12 @@ class Establishment extends EntityValidator {
           this._careWorkersCashLoyaltyForFirstTwoYears = document.careWorkersCashLoyaltyForFirstTwoYears;
         }
 
-        if ('doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent' in document) {
-          this._doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent =
-            document.doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent;
+        if ('pensionContribution' in document) {
+          this._pensionContribution = document.pensionContribution;
         }
 
-        if ('doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness' in document) {
-          this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness =
-            document.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
+        if ('sickPay' in document) {
+          this._sickPay = document.sickPay;
         }
       }
 
@@ -865,9 +863,7 @@ class Establishment extends EntityValidator {
             this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
           wouldYouAcceptCareCertificatesFromPreviousEmployment:
             this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
-          careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
-          doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness:
-            this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
+          sickPay: this._sickPay,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1064,9 +1060,7 @@ class Establishment extends EntityValidator {
             wouldYouAcceptCareCertificatesFromPreviousEmployment:
               this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
             showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
-            careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
-            doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness:
-              this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness,
+            sickPay: this._sickPay,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1255,6 +1249,7 @@ class Establishment extends EntityValidator {
       }
       let parentDetails = {};
       const fetchDetails = await models.establishment.findOne(fetchQuery);
+
       if (fetchDetails && fetchDetails.id && Number.isInteger(fetchDetails.id)) {
         this._parentName = fetchDetails.NameValue;
         this._id = fetchDetails.id;
@@ -1375,9 +1370,8 @@ class Establishment extends EntityValidator {
           fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
-        this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
-        this._doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness =
-          fetchResults.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
+        this._sickPay = fetchResults.sickPay;
+
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1854,9 +1848,7 @@ class Establishment extends EntityValidator {
           this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
-        myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
-        myDefaultJSON.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness =
-          this.doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness;
+        myDefaultJSON.sickPay = this.sickPay;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
@@ -2227,6 +2219,7 @@ class Establishment extends EntityValidator {
         },
       };
       let parentsAndPostcodeDetails = await models.establishment.findAll(fetchQuery);
+
       if (parentsAndPostcodeDetails) {
         let parentPostcodeDetailsArr = [];
         for (let i = 0; i < parentsAndPostcodeDetails.length; i++) {
