@@ -11,7 +11,7 @@ import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-benefits-statutory-sick-pay',
-  templateUrl: './benefits-statutory-sick-pay-component.html',
+  templateUrl: './benefits-statutory-sick-pay.component.html',
 })
 export class BenefitsStatutorySickPayComponent extends Question implements OnInit, OnDestroy {
   public statuorySickPayOptions = [
@@ -53,7 +53,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-loyalty-bonus'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
   }
 
   private setupForm(): void {
@@ -83,9 +83,11 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
 
   protected updateEstablishment(props: any): void {
     const sickPayData = {
-      property: 'doCareWorkersGetPaidMoreThanSickPayWhenTheyCannotWorkBecauseOfIllness',
+      property: 'sickPay',
       value: props.statutorySickPay,
     };
+    console.log(props);
+
     this.subscriptions.add(
       this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, sickPayData).subscribe(
         (data) => this._onSuccess(data),
@@ -109,7 +111,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
 
   protected onSuccess(): void {
     this.updateEstablishmentService();
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-pension'];
+    // this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
   }
 
   ngOnDestroy(): void {
