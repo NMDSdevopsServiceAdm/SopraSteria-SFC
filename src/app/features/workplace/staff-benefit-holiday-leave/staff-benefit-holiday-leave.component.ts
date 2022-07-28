@@ -26,15 +26,30 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
 
   protected init(): void {
     this.setupForm();
+    this.prefill();
+    this.setPreviousRoute();
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
 
     this.section = this.inStaffRecruitmentFlow ? 'Holiday leave' : 'Staff benefits';
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment'];
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
       holidayLeave: null,
     });
+  }
+
+  private prefill(): void {
+    if (this.establishment.careWorkersLeaveDaysPerYear) {
+      this.form.patchValue({
+        holidayLeave: this.establishment.careWorkersLeaveDaysPerYear,
+      });
+    }
+  }
+
+  private setPreviousRoute(): void {
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
   }
 
   ngOnDestroy(): void {
