@@ -147,6 +147,7 @@ export interface Establishment {
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
   peopleInterviewedInTheLastFourWeeks?: string;
   showAddWorkplaceDetailsBanner?: boolean;
+  doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -174,6 +175,12 @@ export enum mandatoryTrainingJobOption {
 }
 
 export enum StaffBenefitEnum {
+  YES = 'Yes',
+  NO = 'NO',
+  DONT_KNOW = "Don't know",
+}
+
+export enum PensionsEnum {
   YES = 'Yes',
   NO = 'NO',
   DONT_KNOW = "Don't know",

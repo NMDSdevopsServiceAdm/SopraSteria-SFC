@@ -31,6 +31,7 @@ import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.componen
 import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { PensionsComponent } from './pensions/pensions.component';
 import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
@@ -309,6 +310,14 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Check Answers',
+        },
+      },
+      {
+        path: 'pensions',
+        component: PensionsComponent,
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Pensions',
         },
       },
       {

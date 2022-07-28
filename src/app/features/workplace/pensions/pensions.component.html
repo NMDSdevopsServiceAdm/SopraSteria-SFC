@@ -1,0 +1,74 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+></app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
+            <h1 class="govuk-fieldset__heading">
+              Do you contribute more than the minimum 3% into workplace pensions for your care workers?
+            </h1>
+          </legend>
+        </div>
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">
+              <label class="govuk-label"
+                >Workplace pensions are sometimes called 'automatic enrolment', 'occupational', 'works', 'company' or
+                'work-based' pensions.</label
+              >
+            </div>
+          </div>
+        </div>
+        <div class="gouvk-grid-row govuk-!-margin-bottom-3">
+          <div class="govuk-form-group">
+            <div class="govuk-radios">
+              <div class="govuk-radios__item" *ngFor="let option of pensionsOptions; let i = index">
+                <input
+                  class="govuk-radios__input"
+                  type="radio"
+                  id="pensionsOption-{{ i }}"
+                  name="pensionsOption"
+                  [formControlName]="'pensionsOption'"
+                  [value]="option.value"
+                />
+                <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+      <div *ngIf="!return && inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar-2"
+          [header]="'Recruitment'"
+          [sections]="recruitmentSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+        <app-progress-bar
+          data-testid="progress-bar-3"
+          [header]="'Staff benefits'"
+          [sections]="staffBenefitsSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"> </app-workplace-submit-button>
+</form>
