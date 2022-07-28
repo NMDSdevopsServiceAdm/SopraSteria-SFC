@@ -39,6 +39,7 @@ import { SelectPrimaryUserComponent } from './select-primary-user/select-primary
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
+import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartersComponent } from './starters/starters.component';
@@ -101,6 +102,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     RecruitmentAdvertisingCostComponent,
     NumberOfInterviewsComponent,
     ConfirmStaffRecruitmentComponent,
+    StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
   ],
   providers: [

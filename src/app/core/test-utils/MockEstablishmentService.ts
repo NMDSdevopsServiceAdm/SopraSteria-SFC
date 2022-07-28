@@ -48,6 +48,7 @@ export class MockEstablishmentService extends EstablishmentService {
     peopleInterviewedInTheLastFourWeeks: 'None',
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'No,never',
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
+    careWorkersCashLoyaltyForFirstTwoYears: 'No',
     sickPay: 'No',
   };
 
@@ -218,6 +219,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     peopleInterviewedInTheLastFourWeeks: 'None',
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'No,never',
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
+    careWorkersCashLoyaltyForFirstTwoYears: 'No',
     sickPay: 'No',
   };
 

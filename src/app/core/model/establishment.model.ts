@@ -147,6 +147,9 @@ export interface Establishment {
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
   peopleInterviewedInTheLastFourWeeks?: string;
   showAddWorkplaceDetailsBanner?: boolean;
+  careWorkersLeaveDaysPerYear?: string;
+  careWorkersCashLoyaltyForFirstTwoYears?: string;
+  pensionContribution?: string;
   sickPay?: string;
 }
 
