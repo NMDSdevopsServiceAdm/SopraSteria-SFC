@@ -39,16 +39,19 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group({
-      holidayLeave: [
-        null,
-        [
-          this.customValidator(this.numberCheckRegex, 'nonInteger'),
-          this.customValidator(this.positiveNumberCheckRegex, 'negativeNumber'),
-          this.customValidator(this.wholeNumberCheckRegex, 'nonWholeNumber'),
+    this.form = this.formBuilder.group(
+      {
+        holidayLeave: [
+          null,
+          [
+            this.customValidator(this.numberCheckRegex, 'nonInteger'),
+            this.customValidator(this.positiveNumberCheckRegex, 'negativeNumber'),
+            this.customValidator(this.wholeNumberCheckRegex, 'nonWholeNumber'),
+          ],
         ],
-      ],
-    });
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   private prefill(): void {
