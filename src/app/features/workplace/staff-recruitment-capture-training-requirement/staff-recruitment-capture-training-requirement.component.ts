@@ -85,11 +85,17 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   }
 
   protected updateEstablishment(props: any): void {
+    const trainingRequirementData = {
+      property: 'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
+      value: props.trainingRequired,
+    };
     this.subscriptions.add(
-      this.establishmentService.postStaffRecruitmentData(this.establishment.uid, props).subscribe(
-        (data) => this._onSuccess(data),
-        (error) => this.onError(error),
-      ),
+      this.establishmentService
+        .updateSingleEstablishmentField(this.establishment.uid, trainingRequirementData)
+        .subscribe(
+          (data) => this._onSuccess(data),
+          (error) => this.onError(error),
+        ),
     );
   }
 
