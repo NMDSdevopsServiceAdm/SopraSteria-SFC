@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -50,6 +51,54 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
     });
   }
 
+  private prefill(): void {
+    if (this.establishment.careWorkersLeaveDaysPerYear) {
+      this.form.patchValue({
+        holidayLeave: this.establishment.careWorkersLeaveDaysPerYear,
+      });
+    }
+  }
+
+  protected generateUpdateProps(): any {
+    const { holidayLeave } = this.form.value;
+    if (holidayLeave) {
+      return { holidayLeave };
+    }
+    return null;
+  }
+
+  protected updateEstablishment(props: any): void {
+    const holidayLeaveData = {
+      property: 'careWorkersLeaveDaysPerYear',
+      value: props.holidayLeave,
+    };
+
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, holidayLeaveData).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
+    );
+  }
+
+  protected updateEstablishmentService(): void {
+    this.establishmentService
+      .getEstablishment(this.establishmentService.establishmentId)
+      .pipe(
+        tap((workplace) => {
+          return (
+            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
+          );
+        }),
+      )
+      .subscribe();
+  }
+
+  protected onSuccess(): void {
+    this.updateEstablishmentService();
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment'];
+  }
+
   private customValidator(regexp: RegExp, error: string): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
       const { value } = control;
@@ -82,13 +131,6 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
         ],
       },
     ];
-  }
-  private prefill(): void {
-    if (this.establishment.careWorkersLeaveDaysPerYear) {
-      this.form.patchValue({
-        holidayLeave: this.establishment.careWorkersLeaveDaysPerYear,
-      });
-    }
   }
 
   private setPreviousRoute(): void {
