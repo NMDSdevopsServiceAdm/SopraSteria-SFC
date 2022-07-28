@@ -147,6 +147,7 @@ export interface Establishment {
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
   peopleInterviewedInTheLastFourWeeks?: string;
   showAddWorkplaceDetailsBanner?: boolean;
+  sickPay?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -175,7 +176,7 @@ export enum mandatoryTrainingJobOption {
 
 export enum StaffBenefitEnum {
   YES = 'Yes',
-  NO = 'NO',
+  NO = 'No',
   DONT_KNOW = "Don't know",
 }
 

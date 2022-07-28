@@ -156,8 +156,12 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
   }
 
   protected updateEstablishment(props: any): void {
+    const interviewData = {
+      property: 'peopleInterviewedInTheLastFourWeeks',
+      value: props.numberOfInterviews,
+    };
     this.subscriptions.add(
-      this.establishmentService.postStaffRecruitmentData(this.establishment.uid, props).subscribe(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, interviewData).subscribe(
         (data) => this._onSuccess(data),
         (error) => this.onError(error),
       ),
