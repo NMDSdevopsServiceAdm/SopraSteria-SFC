@@ -48,7 +48,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     this.setPreviousRoute();
     this.inStaffRecruitmentAndBenefitsFlow = this.establishmentService.inStaffRecruitmentFlow;
 
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-pension'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
     this.section = this.inStaffRecruitmentAndBenefitsFlow ? `Statutory 'sick pay'` : 'Staff benefits';
   }
 
@@ -86,7 +86,6 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
       property: 'sickPay',
       value: props.statutorySickPay,
     };
-    console.log(props);
 
     this.subscriptions.add(
       this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, sickPayData).subscribe(
@@ -111,7 +110,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
 
   protected onSuccess(): void {
     this.updateEstablishmentService();
-    // this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
   }
 
   ngOnDestroy(): void {
