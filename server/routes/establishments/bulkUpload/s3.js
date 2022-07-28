@@ -118,8 +118,6 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
 };
 
 const downloadContent = async (key, size, lastModified) => {
-  console.log('>>>>>>>>> in download s3 content');
-  console.log('>>>>>>>>> downloadContent key: ', key);
   try {
     const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
     return await s3
