@@ -40,6 +40,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public userDetails: UserDetails;
   protected actionType: string;
   public isCqcRegulated: boolean;
+  public typeOfEmployer: string;
 
   constructor(
     public registrationService: RegistrationService,

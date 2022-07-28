@@ -17,10 +17,10 @@ import { SelectMainServiceComponent } from '@features/create-account/workplace/s
 import { SelectWorkplaceAddressComponent } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/create-account/workplace/select-workplace/select-workplace.component';
 import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
+import { TypeOfEmployerComponent } from '@features/create-account/workplace/type-of-employer/type-of-employer.component';
 import { WorkplaceNameAddressComponent } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
-import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
 
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';

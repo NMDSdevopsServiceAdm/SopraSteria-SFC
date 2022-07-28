@@ -26,6 +26,7 @@ export abstract class WorkplaceInterfaceService {
   public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject(null);
   public manuallyEnteredWorkplaceName$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public useDifferentLocationIdOrPostcode$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public typeOfEmployer$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   constructor(protected http: HttpClient) {}
 
@@ -58,5 +59,6 @@ export abstract class WorkplaceInterfaceService {
     this.invalidPostcodeEntered$.next(null);
     this.manuallyEnteredWorkplaceName$.next(false);
     this.useDifferentLocationIdOrPostcode$.next(null);
+    this.typeOfEmployer$.next(null);
   }
 }
