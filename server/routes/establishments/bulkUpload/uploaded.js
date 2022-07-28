@@ -331,15 +331,12 @@ const uploadedPut = async (req, res) => {
 };
 
 const uploadedStarGet = async (req, res) => {
-  console.log('>>>>>>>>>>>>> in uploadedStarGet');
   const Key = req.params['0'];
   const elements = Key.split('/');
 
   try {
     const { downloadType } = req.query;
     const { data } = await S3.downloadContent(Key);
-    console.log('downloadType: ', downloadType);
-    console.log('data: ', data);
     let updatedData;
     switch (downloadType) {
       case 'Workplace':

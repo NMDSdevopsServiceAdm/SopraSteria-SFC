@@ -147,8 +147,6 @@ export class BulkUploadService {
 
   public getUploadedFileFromS3(workplaceUid: string, key: string, type: BulkUploadFileType): Observable<any> {
     const params = new HttpParams().set('downloadType', type);
-    console.log('In get uploaded file from S3');
-    console.log(key);
 
     return this.checkLockStatus(
       () => this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}/${key}`, { params }),
