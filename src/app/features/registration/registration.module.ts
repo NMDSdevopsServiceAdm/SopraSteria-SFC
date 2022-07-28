@@ -19,6 +19,7 @@ import { PagesModule } from '@features/pages/pages.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
+import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { FindWorkplaceAddressComponent } from '../create-account/workplace/find-workplace-address/find-workplace-address.component';
@@ -53,6 +54,7 @@ import { CreateAccountComponent } from './create-account/create-account.componen
     CouldNotFindWorkplaceAddressComponent,
     ConfirmDetailsComponent,
     AddTotalStaffComponent,
+    TypeOfEmployerComponent,
   ],
 })
 export class RegistrationModule {}
