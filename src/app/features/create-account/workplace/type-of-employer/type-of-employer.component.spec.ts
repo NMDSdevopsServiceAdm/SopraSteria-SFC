@@ -81,10 +81,16 @@ describe('TypeOfEmployerComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the page title with the establishment name in it', async () => {
-    const { component, getByText } = await setup();
-    const establishmentName = component.establishmentName;
-    expect(getByText(`What type of employer is ${establishmentName}?`)).toBeTruthy();
+  it('should show the page title and radio buttons', async () => {
+    const { getByText, getByLabelText } = await setup();
+
+    expect(getByText(`What type of employer is your workplace?`)).toBeTruthy();
+    expect(getByText('Workplace')).toBeTruthy();
+    expect(getByLabelText('Local authority (adult services)')).toBeTruthy();
+    expect(getByLabelText('Local authority (generic, other)')).toBeTruthy();
+    expect(getByLabelText('Private sector')).toBeTruthy();
+    expect(getByLabelText('Voluntary, charity, non-profit (not for profit)')).toBeTruthy();
+    expect(getByLabelText('Other')).toBeTruthy();
   });
 
   it('should show the continue button', async () => {

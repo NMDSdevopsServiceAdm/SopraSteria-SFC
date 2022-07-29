@@ -5,7 +5,8 @@
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
-          <h1 class="govuk-fieldset__heading">What type of employer is {{ establishmentName }}?</h1>
+          <span class="govuk-caption-l">{{ section }}</span>
+          <h1 class="govuk-fieldset__heading">What type of employer is your workplace?</h1>
         </legend>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <span
@@ -58,7 +59,7 @@
           </div>
         </div>
       </fieldset>
-      <button class="govuk-button" type="submit">Continue</button>
+      <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
     </form>
   </div>
 </div>

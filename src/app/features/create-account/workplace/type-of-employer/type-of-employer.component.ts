@@ -19,12 +19,11 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
   public formErrorsMap: ErrorDetails[];
   public submitted = false;
   public serverError: string;
-  public establishmentName: string;
-  // public isParent: boolean;
   public isRegulated: boolean;
   public returnToConfirmDetails: URLStructure;
   public showOtherInputField = false;
   private maxLength = 120;
+  public section = 'Workplace';
   public options = [
     { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
     { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
@@ -46,7 +45,6 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
     this.flow = this.route.snapshot.parent.url[0].path;
     this.isRegulated = this.registrationService.isRegulated();
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
-    this.establishmentName = this.registrationService.selectedLocationAddress$.value.locationName;
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefillForm();
