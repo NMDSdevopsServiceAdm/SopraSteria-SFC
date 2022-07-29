@@ -648,6 +648,133 @@
   </ng-container>
 
   <ng-container *ngIf="!workplace.showAddWorkplaceDetailsBanner">
+    <div class="govuk-summary-list__row" data-testid="staff-benefits-section">
+      <dt class="govuk-summary-list__key">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Staff benefits</h2>
+      </dt>
+      <dd class="govuk-summary-list__value"></dd>
+      <dd class="govuk-summary-list__actions"></dd>
+    </div>
+    <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
+      <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value
+          [wdfView]="wdfView"
+          [wdfValue]="workplace.wdf?.employerType"
+          [overallWdfEligibility]="overallWdfEligibility"
+        >
+          <ng-container
+            *ngIf="!workplace.careWorkersCashLoyaltyForFirstTwoYears; else careWorkersCashLoyaltyForFirstTwoYearsType"
+          >
+            -
+          </ng-container>
+          <ng-template #careWorkersCashLoyaltyForFirstTwoYearsType>
+            <ng-container
+              *ngIf="
+                workplace.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
+                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know';
+                then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
+                else careWorkersCashLoyaltyForFirstTwoYearsKnown
+              "
+            >
+            </ng-container>
+            <ng-template #careWorkersCashLoyaltyForFirstTwoYearsNotKnown>
+              {{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
+            </ng-template>
+            <ng-template #careWorkersCashLoyaltyForFirstTwoYearsKnown>
+              Yes, £{{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
+            </ng-template>
+          </ng-template>
+        </app-summary-record-value>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' loyalty bonus'"
+          [link]="['/workplace', workplace.uid, 'cash-loyalty']"
+          [hasData]="workplace.careWorkersCashLoyaltyForFirstTwoYears"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row" data-testid="offer-more-than-statutory-sick-pay">
+      <dt class="govuk-summary-list__key">Offer more than statutory 'sick pay'</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value
+          [wdfView]="wdfView"
+          [wdfValue]="workplace.wdf?.employerType"
+          [overallWdfEligibility]="overallWdfEligibility"
+        >
+          <ng-container *ngIf="!workplace.sickPay; else sickPayType"> - </ng-container>
+          <ng-template #sickPayType>
+            {{ workplace.sickPay }}
+          </ng-template>
+        </app-summary-record-value>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' statutory sick pay'"
+          [link]="['/workplace', workplace.uid, 'benefits-statutory-sick-pay']"
+          [hasData]="workplace.sickPay"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+
+    <!-- <div class="govuk-summary-list__row" data-testid="higher-pension-contributions">
+      <dt class="govuk-summary-list__key">Higher pension contributions</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value
+          [wdfView]="wdfView"
+          [wdfValue]="workplace.wdf?.employerType"
+          [overallWdfEligibility]="overallWdfEligibility"
+        >
+          <ng-container *ngIf="!workplace.higherPensionContribution; else higherPensionContributionType">
+            -
+          </ng-container>
+          <ng-template #higherPensionContributionType>
+            {{ workplace.higherPensionContribution }}
+          </ng-template>
+        </app-summary-record-value>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' higher pension contributions'"
+          [link]="['/workplace', workplace.uid, 'higher-pension-contributions']"
+          [hasData]="workplace.higherPensionContribution"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div> -->
+
+    <div class="govuk-summary-list__row" data-testid="number-of-days-leave">
+      <dt class="govuk-summary-list__key">Number of days leave</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value
+          [wdfView]="wdfView"
+          [wdfValue]="workplace.wdf?.employerType"
+          [overallWdfEligibility]="overallWdfEligibility"
+        >
+          <ng-container *ngIf="!workplace.careWorkersLeaveDaysPerYear; else careWorkersLeaveDaysPerYearType">
+            -
+          </ng-container>
+          <ng-template #careWorkersLeaveDaysPerYearType>
+            {{ workplace.careWorkersLeaveDaysPerYear }}
+          </ng-template>
+        </app-summary-record-value>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' holiday leave'"
+          [link]="['/workplace', workplace.uid, 'staff-benefit-holiday-leave']"
+          [hasData]="workplace.careWorkersLeaveDaysPerYear"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!workplace.showAddWorkplaceDetailsBanner">
     <div class="govuk-summary-list__row" data-testid="permissions-section">
       <dt class="govuk-summary-list__key">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Permissions</h2>
