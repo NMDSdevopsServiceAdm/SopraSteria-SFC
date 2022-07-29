@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EmployerType } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { EstablishmentExistsResponse } from '@core/model/registration.model';
 import { Service } from '@core/model/services.model';
@@ -26,7 +27,7 @@ export abstract class WorkplaceInterfaceService {
   public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject(null);
   public manuallyEnteredWorkplaceName$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public useDifferentLocationIdOrPostcode$: BehaviorSubject<boolean> = new BehaviorSubject(null);
-  public typeOfEmployer$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public typeOfEmployer$: BehaviorSubject<EmployerType> = new BehaviorSubject(null);
 
   constructor(protected http: HttpClient) {}
 

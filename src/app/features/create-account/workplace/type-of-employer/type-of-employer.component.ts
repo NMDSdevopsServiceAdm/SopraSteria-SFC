@@ -2,11 +2,10 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { RegistrationService } from '@core/services/registration.service';
 
 @Component({
   selector: 'app-type-of-employer',
@@ -20,31 +19,38 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
   public formErrorsMap: ErrorDetails[];
   public submitted = false;
   public serverError: string;
-  public establishment: Establishment;
-  public isParent: boolean;
-  private maxLength: 120;
+  public establishmentName: string;
+  // public isParent: boolean;
+  public isRegulated: boolean;
+  public returnToConfirmDetails: URLStructure;
+  public showOtherInputField = false;
+  private maxLength = 120;
   public options = [
     { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
-    { value: 'Local Authority (generic/other)', text: 'Local authority (generic/other)' },
+    { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
     { value: 'Private Sector', text: 'Private sector' },
-    { value: 'Voluntary / Charity', text: 'Voluntary or charity' },
+    { value: 'Voluntary / Charity', text: 'Voluntary, charity, non-profit (not for profit)' },
     { value: 'Other', text: 'Other' },
   ];
 
   constructor(
-    protected formBuilder: FormBuilder,
+    public formBuilder: FormBuilder,
     public backService: BackService,
-    protected router: Router,
-    protected route: ActivatedRoute,
-    protected errorSummaryService: ErrorSummaryService,
-    public workplaceInterfaceService: WorkplaceInterfaceService,
-    protected establishmentService: EstablishmentService,
+    public router: Router,
+    public route: ActivatedRoute,
+    public errorSummaryService: ErrorSummaryService,
+    public registrationService: RegistrationService,
   ) {}
 
   ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
+    this.isRegulated = this.registrationService.isRegulated();
+    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
+    this.establishmentName = this.registrationService.selectedLocationAddress$.value.locationName;
     this.setupForm();
-    this.establishment = this.establishmentService.primaryWorkplace;
+    this.setupFormErrorsMap();
+    this.prefillForm();
+    this.setBackLink();
   }
 
   public ngAfterViewInit(): void {
@@ -59,6 +65,47 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
       },
       { updateOn: 'submit' },
     );
+  }
+
+  public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
+      return;
+    }
+
+    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
+    this.backService.setBackLink({ url: [this.flow, route] });
+  }
+
+  private prefillForm(): void {
+    if (this.registrationService.typeOfEmployer$.value) {
+      this.form.setValue({
+        employerType: this.registrationService.typeOfEmployer$.value.value,
+        other: this.registrationService.typeOfEmployer$.value.other,
+      });
+    }
+  }
+
+  private getCQCRegulatedBackLink(): string {
+    if (this.registrationService.manuallyEnteredWorkplace$.value) {
+      return 'workplace-name-address';
+    }
+    if (this.registrationService.locationAddresses$.value.length == 1) {
+      return 'your-workplace';
+    }
+    if (this.registrationService.locationAddresses$.value.length > 1) {
+      return 'select-workplace';
+    }
+  }
+
+  private getNonCQCRegulatedBackLink(): string {
+    if (this.registrationService.manuallyEnteredWorkplace$.value) {
+      return 'workplace-name-address';
+    }
+    if (this.registrationService.manuallyEnteredWorkplaceName$.value) {
+      return 'workplace-name';
+    }
+    return 'select-workplace-address';
   }
 
   public setupFormErrorsMap(): void {
@@ -84,7 +131,35 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
     ];
   }
 
+  public getErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
   public onSubmit(): void {
-    console.log('submitted');
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (this.form.valid) {
+      this.generateUpdateProps();
+      this.router.navigate([this.flow, 'select-main-service']);
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
+    }
+  }
+
+  private generateUpdateProps(): void {
+    const { employerType, other } = this.form.value;
+
+    const employerTypeObject = {
+      value: employerType,
+      ...(employerType === 'Other' && { other }),
+    };
+
+    this.registrationService.typeOfEmployer$.next(employerTypeObject);
+  }
+
+  public onOtherSelect(radioValue: string): void {
+    this.showOtherInputField = radioValue === 'Other';
   }
 }
