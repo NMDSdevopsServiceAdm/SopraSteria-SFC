@@ -245,6 +245,18 @@ class WorkplaceCSVValidator {
   static get ACCEPT_CARE_CERT_ERROR() {
     return 2430;
   }
+  static get BENEFITS_ERROR() {
+    return 2440;
+  }
+  static get SICKPAY_ERROR() {
+    return 2450;
+  }
+  static get PENSION_ERROR() {
+    return 2460;
+  }
+  static get HOLIDAY_ERROR() {
+    return 2470;
+  }
 
   get id() {
     if (this._id === null) {
@@ -397,6 +409,22 @@ class WorkplaceCSVValidator {
 
   get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
     return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
+  }
+
+  get careWorkersLeaveDaysPerYear() {
+    return this._careWorkersLeaveDaysPerYear;
+  }
+
+  get careWorkersCashLoyaltyForFirstTwoYears() {
+    return this._careWorkersCashLoyaltyForFirstTwoYears;
+  }
+
+  get pensionContribution() {
+    return this._pensionContribution;
+  }
+
+  get sickPay() {
+    return this._sickPay;
   }
 
   _validateLocalisedId() {
@@ -1911,6 +1939,52 @@ class WorkplaceCSVValidator {
       return false;
     } else {
       this._moneySpentOnAdvertisingInTheLastFourWeeks = advertising;
+      return true;
+    }
+  }
+
+  _validateSickPay() {
+    const ALLOWED_VALUES = ['0', '1', ''];
+    const sickpay = this._currentLine.SICKPAY;
+
+    if (!ALLOWED_VALUES.includes(this._currentLine.SICKPAY) && sickpay.toLowerCase() !== 'unknown') {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: WorkplaceCSVValidator.SICKPAY_ERROR,
+        errType: 'SICKPAY_ERROR',
+        error: 'The code you have entered for SICKPAY is incorrect',
+        source: this._currentLine.SICKPAY,
+        column: 'SICKPAY',
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
+    } else {
+      const sickPayAsInt = parseInt(this._currentLine.SICKPAY, 10);
+
+      this._sickPay = Number.isNaN(sickPayAsInt) ? this._currentLine.SICKPAY : sickPayAsInt;
+      return true;
+    }
+  }
+
+  _validatePensionContribution() {
+    const ALLOWED_VALUES = ['1', '2', ''];
+    const pension = this._currentLine.PENSION;
+
+    if (!ALLOWED_VALUES.includes(this._currentLine.PENSION) && pension.toLowerCase() !== 'unknown') {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: WorkplaceCSVValidator.PENSION_ERROR,
+        errType: 'SICKPAY_ERROR',
+        error: 'The code you have entered for PENSION is incorrect',
+        source: this._currentLine.PENSION,
+        column: 'PENSION',
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
+    } else {
+      const pensionAsInt = parseInt(this._currentLine.PENSION, 10);
+
+      this._pensionContribution = Number.isNaN(pensionAsInt) ? this._currentLine.PENSION : pensionAsInt;
       return true;
     }
   }
