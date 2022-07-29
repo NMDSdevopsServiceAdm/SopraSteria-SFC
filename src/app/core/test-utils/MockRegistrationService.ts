@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { EmployerType } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { EstablishmentExistsResponse } from '@core/model/registration.model';
@@ -53,7 +54,11 @@ export class MockRegistrationService extends RegistrationService {
 
   public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject('ABC 123');
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
-  public totalStaff$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public totalStaff$: BehaviorSubject<any> = new BehaviorSubject('4');
+  public typeOfEmployer$: BehaviorSubject<EmployerType> = new BehaviorSubject({
+    value: 'Other',
+    other: 'other employer type',
+  });
 
   public getUsernameDuplicate(username: string): Observable<any> {
     return of({ status: username === 'duplicate' ? '1' : '0' });

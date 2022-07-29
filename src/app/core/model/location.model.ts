@@ -1,3 +1,5 @@
+import { EmployerType } from './establishment.model';
+
 export interface LocationAddress {
   addressLine1: string;
   addressLine2?: string;
@@ -11,6 +13,7 @@ export interface LocationAddress {
   postalCode: string;
   townCity: string;
   numberOfStaff?: string;
+  typeOfEmployer?: EmployerType;
 }
 
 export interface LocationSearchResponse {

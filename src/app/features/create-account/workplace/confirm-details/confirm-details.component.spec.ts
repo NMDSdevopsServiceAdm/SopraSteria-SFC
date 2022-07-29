@@ -178,7 +178,8 @@ describe('ConfirmDetailsComponent', () => {
         mainService: 'Name of service',
         mainServiceOther: 'Hello!',
         isRegulated: null,
-        numberOfStaff: null,
+        numberOfStaff: '4',
+        typeOfEmployer: { value: 'Other', other: 'other employer type' },
       });
     });
 
