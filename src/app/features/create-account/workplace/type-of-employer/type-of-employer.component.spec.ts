@@ -96,6 +96,22 @@ describe('TypeOfEmployerComponent', () => {
   it('should prefill the form when the value has previously be filled in', async () => {
     const { component, fixture } = await setup();
 
+    component.registrationService.typeOfEmployer$.next({ value: 'Private Sector' });
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    const form = component.form;
+    const radioBtn = fixture.nativeElement.querySelector('input[id="employerType-2"]');
+    const otherInputDiv = fixture.nativeElement.querySelector('div[id="conditional-employerType-conditional-1"]');
+
+    expect(radioBtn.checked).toBeTruthy();
+    expect(otherInputDiv.getAttribute('class')).toContain('hidden');
+    expect(form.value).toEqual({ employerType: 'Private Sector', other: null });
+  });
+
+  it('should prefill the form when the value has previously be filled in', async () => {
+    const { component, fixture } = await setup();
+
     component.registrationService.typeOfEmployer$.next({ value: 'Other', other: 'other employer type' });
     component.ngOnInit();
     fixture.detectChanges();
@@ -103,9 +119,11 @@ describe('TypeOfEmployerComponent', () => {
     const form = component.form;
     const otherRadioBtn = fixture.nativeElement.querySelector('input[id="employerType-4"]');
     const otherInput = fixture.nativeElement.querySelector('input[id="other"]');
+    const otherInputDiv = fixture.nativeElement.querySelector('div[id="conditional-employerType-conditional-1"]');
 
     expect(otherRadioBtn.checked).toBeTruthy();
     expect(otherInput.value).toEqual('other employer type');
+    expect(otherInputDiv.getAttribute('class')).not.toContain('hidden');
     expect(form.value).toEqual({ employerType: 'Other', other: 'other employer type' });
   });
 

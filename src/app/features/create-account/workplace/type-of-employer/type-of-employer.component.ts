@@ -79,9 +79,10 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
 
   private prefillForm(): void {
     if (this.registrationService.typeOfEmployer$.value) {
+      this.showOtherInputField = !!this.registrationService.typeOfEmployer$.value.other;
       this.form.setValue({
         employerType: this.registrationService.typeOfEmployer$.value.value,
-        other: this.registrationService.typeOfEmployer$.value.other,
+        other: this.showOtherInputField ? this.registrationService.typeOfEmployer$.value.other : null,
       });
     }
   }
