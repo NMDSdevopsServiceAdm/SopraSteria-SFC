@@ -259,6 +259,7 @@ export class EstablishmentService {
   }
 
   updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
+    console.log(data);
     return this.http.post<any>(`/api/establishment/${establishmentId}/updateSingleEstablishmentField`, data);
   }
 
@@ -366,14 +367,5 @@ export class EstablishmentService {
     return this.http
       .get<any>(`/api/establishment/${establishmentId}/childWorkplaces`, { params: queryParams || {} })
       .pipe(map((data) => data));
-  }
-
-  public updateRecruitmentJourneyExistingUser(establishmentId: string, data: any): Observable<any> {
-    return this.http.post<any>(
-      `/api/establishment/${establishmentId}/staffRecruitmentData/updateRecruitmentForExistingUser`,
-      {
-        recruitmentJourneyExistingUserBanner: data,
-      },
-    );
   }
 }
