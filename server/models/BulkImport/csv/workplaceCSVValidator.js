@@ -39,7 +39,7 @@ const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
-  'ADVERTISING,INTERVIEWS,REPEATTRAINING,ACCEPTCARECERT';
+  'ADVERTISING,INTERVIEWS,REPEATTRAINING,ACCEPTCARECERT,BENEFITS,SICKPAY,PENSION,HOLIDAY';
 
 class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
@@ -89,6 +89,10 @@ class WorkplaceCSVValidator {
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
+    this._careWorkersLeaveDaysPerYear = null;
+    this._careWorkersCashLoyaltyForFirstTwoYears = null;
+    this._pensionContribution = null;
+    this._sickPay = null;
 
     this._id = null;
     this._ignore = false;
