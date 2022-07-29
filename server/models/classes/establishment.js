@@ -864,6 +864,7 @@ class Establishment extends EntityValidator {
           wouldYouAcceptCareCertificatesFromPreviousEmployment:
             this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
           sickPay: this._sickPay,
+          careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1061,6 +1062,7 @@ class Establishment extends EntityValidator {
               this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
             showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
             sickPay: this._sickPay,
+            careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1371,6 +1373,7 @@ class Establishment extends EntityValidator {
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
         this._sickPay = fetchResults.sickPay;
+        this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1849,6 +1852,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
         myDefaultJSON.sickPay = this.sickPay;
+        myDefaultJSON.careWorkersLeaveDaysPerYear = this.careWorkersLeaveDaysPerYear;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
