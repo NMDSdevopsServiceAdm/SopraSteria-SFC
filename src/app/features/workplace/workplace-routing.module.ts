@@ -22,6 +22,7 @@ import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplace
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
+import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmStaffRecruitmentComponent } from './confirm-staff-recruitment/confirm-staff-recruitment.component';
@@ -40,6 +41,7 @@ import { SelectPrimaryUserComponent } from './select-primary-user/select-primary
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
+import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from './start/start.component';
@@ -301,6 +303,25 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Accept Previous Care Certificate',
+        },
+      },
+      {
+        path: 'cash-loyalty',
+        component: StaffBenefitCashLoyaltyComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Cash Loyalty',
+        },
+      },
+
+      {
+        path: 'benefits-statutory-sick-pay',
+        component: BenefitsStatutorySickPayComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Benefits Statutory Sick Pay',
         },
       },
       {

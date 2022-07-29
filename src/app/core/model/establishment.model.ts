@@ -148,6 +148,10 @@ export interface Establishment {
   peopleInterviewedInTheLastFourWeeks?: string;
   showAddWorkplaceDetailsBanner?: boolean;
   doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent?: string;
+  careWorkersLeaveDaysPerYear?: string;
+  careWorkersCashLoyaltyForFirstTwoYears?: string;
+  pensionContribution?: string;
+  sickPay?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -176,7 +180,7 @@ export enum mandatoryTrainingJobOption {
 
 export enum StaffBenefitEnum {
   YES = 'Yes',
-  NO = 'NO',
+  NO = 'No',
   DONT_KNOW = "Don't know",
 }
 

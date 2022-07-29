@@ -48,6 +48,8 @@ export class MockEstablishmentService extends EstablishmentService {
     peopleInterviewedInTheLastFourWeeks: 'None',
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'No,never',
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
+    careWorkersCashLoyaltyForFirstTwoYears: 'No',
+    sickPay: 'No',
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}) {
@@ -217,6 +219,8 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     peopleInterviewedInTheLastFourWeeks: 'None',
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'No,never',
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
+    careWorkersCashLoyaltyForFirstTwoYears: 'No',
+    sickPay: 'No',
   };
 
   public get returnTo(): URLStructure {
