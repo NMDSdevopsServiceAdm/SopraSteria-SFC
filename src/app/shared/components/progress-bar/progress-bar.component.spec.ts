@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
-import { queryByText, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { ProgressBarComponent } from './progress-bar.component';
 
@@ -162,9 +162,8 @@ describe('ProgressBarComponent', () => {
   });
 
   describe('Complete progress bar', () => {
-    //TODO needs fixing
-    xit('should show the completed icon next to all sections and have bold text', async () => {
-      const { getByText, getByTestId } = await setup('Section 1', true);
+    it('should show the completed icon next to all sections and have bold text', async () => {
+      const { getByText, getByTestId } = await setup('Section 6', true);
 
       const section1Text = getByText('Section 1');
       const section2Text = getByText('Section 2');

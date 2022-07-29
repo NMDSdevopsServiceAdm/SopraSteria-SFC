@@ -259,7 +259,6 @@ export class EstablishmentService {
   }
 
   updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
-    console.log(data);
     return this.http.post<any>(`/api/establishment/${establishmentId}/updateSingleEstablishmentField`, data);
   }
 
