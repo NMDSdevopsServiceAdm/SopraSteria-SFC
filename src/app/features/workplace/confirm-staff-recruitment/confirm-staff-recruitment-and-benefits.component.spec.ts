@@ -17,12 +17,12 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WorkplaceModule } from '../workplace.module';
-import { ConfirmStaffRecruitmentComponent } from './confirm-staff-recruitment.component';
+import { ConfirmStaffRecruitmentAndBenefitsComponent } from './confirm-staff-recruitment-and-benefits.component';
 
 describe('ConfirmStaffRecruitmentComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByTestId, queryByText } = await render(
-      ConfirmStaffRecruitmentComponent,
+      ConfirmStaffRecruitmentAndBenefitsComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
         providers: [

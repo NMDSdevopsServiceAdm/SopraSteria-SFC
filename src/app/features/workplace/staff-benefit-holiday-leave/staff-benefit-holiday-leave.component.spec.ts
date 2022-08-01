@@ -125,7 +125,7 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'confirm-staff-recruitment']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'confirm-staff-recruitment-and-benefits']);
     });
 
     it('should navigate to the next page when submitting from the flow', async () => {
@@ -135,7 +135,7 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'confirm-staff-recruitment']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'confirm-staff-recruitment-and-benefits']);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {

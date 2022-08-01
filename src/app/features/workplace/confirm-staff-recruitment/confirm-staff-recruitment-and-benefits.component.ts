@@ -10,9 +10,9 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-staff-recuritment',
-  templateUrl: './confirm-staff-recruitment.component.html',
+  templateUrl: './confirm-staff-recruitment-and-benefits.component.html',
 })
-export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
+export class ConfirmStaffRecruitmentAndBenefitsComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public flow = 'workplace';
   public canEditEstablishment: boolean;
@@ -49,7 +49,9 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
   }
 
   public setReturn(): void {
-    const staffRecruitmentReturnUrl = { url: ['/workplace', this.establishment.uid, 'confirm-staff-recruitment'] };
+    const staffRecruitmentReturnUrl = {
+      url: ['/workplace', this.establishment.uid, 'confirm-staff-recruitment-and-benefits'],
+    };
     this.establishmentService.setReturnTo(staffRecruitmentReturnUrl);
   }
 
