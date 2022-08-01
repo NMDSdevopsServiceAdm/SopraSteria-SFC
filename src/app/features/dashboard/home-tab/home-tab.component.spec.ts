@@ -17,7 +17,9 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import {
+  StaffMismatchBannerComponent,
+} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -262,14 +264,11 @@ describe('HomeTabComponent', () => {
       expect(recruitmentHeader).toBeFalsy();
     });
 
-    it('should update recruitmentJourneyExistingUserBanner column on updateRecruitmentJourneyExistingUser', async () => {
+    it('should call updateWorkerBanner in the establishment service with the updated recruitmentJourneyExistingUserBanner set to true', async () => {
       const { component } = await setup();
 
       const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
-      const recuritmentBannerSpy = spyOn(
-        establishmentService,
-        'updateRecruitmentJourneyExistingUser',
-      ).and.callThrough();
+      const recuritmentBannerSpy = spyOn(establishmentService, 'updateWorkplaceBanner').and.callThrough();
 
       component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
@@ -279,7 +278,11 @@ describe('HomeTabComponent', () => {
       const recuritmentLink = component.getByText('Answer our 4 new staff recruitment questions');
       fireEvent.click(recuritmentLink);
 
-      expect(recuritmentBannerSpy).toHaveBeenCalled();
+      const establishmentId = component.fixture.componentInstance.workplace.uid;
+      expect(recuritmentBannerSpy).toHaveBeenCalledWith(establishmentId, {
+        property: 'recruitmentJourneyExistingUserBanner',
+        value: true,
+      });
     });
   });
 

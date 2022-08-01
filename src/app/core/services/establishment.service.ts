@@ -12,7 +12,6 @@ import {
   LocalIdentifiersResponse,
   mandatoryTraining,
   setPermission,
-  StaffRecruitmentDataRequest,
   UpdateJobsRequest,
 } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
@@ -259,6 +258,10 @@ export class EstablishmentService {
     return this.http.post<BannerFlag>(`/api/establishment/${establishmentId}/updateEstablishmentBanner`, data);
   }
 
+  updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/updateSingleEstablishmentField`, data);
+  }
+
   updateLocalAuthorities(establishmentId, data) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }
@@ -359,28 +362,9 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/admin/remove-parent-status`, data);
   }
 
-  public postStaffRecruitmentData(establishmentId: string, data: StaffRecruitmentDataRequest): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/staffRecruitmentData`, {
-      staffRecruitmentData: data,
-    });
-  }
-
-  public getStaffRecruitmentData(establishmentId: string): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${establishmentId}/staffRecruitmentData`);
-  }
-
   public getChildWorkplaces(establishmentId: string, queryParams?: Params): Observable<GetChildWorkplacesResponse> {
     return this.http
       .get<any>(`/api/establishment/${establishmentId}/childWorkplaces`, { params: queryParams || {} })
       .pipe(map((data) => data));
-  }
-
-  public updateRecruitmentJourneyExistingUser(establishmentId: string, data: any): Observable<any> {
-    return this.http.post<any>(
-      `/api/establishment/${establishmentId}/staffRecruitmentData/updateRecruitmentForExistingUser`,
-      {
-        recruitmentJourneyExistingUserBanner: data,
-      },
-    );
   }
 }

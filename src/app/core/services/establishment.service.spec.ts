@@ -25,14 +25,22 @@ describe('EstablishmentService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('postStaffRecruitmentData', () => {
-    it('should call postStaffRecruitmentData for a given establishment with the correct data', () => {
-      service.postStaffRecruitmentData('establishmentId', { amountSpent: '100' }).subscribe();
+  describe('updateSingleEstablishmentField', () => {
+    it('should call updateSingleEstablishmentField for a given establishment with the correct data', () => {
+      service
+        .updateSingleEstablishmentField('establishmentId', {
+          property: 'exampleColumnName',
+          value: 'Yes, always',
+        })
+        .subscribe();
 
-      const req = http.expectOne('/api/establishment/establishmentId/staffRecruitmentData');
+      const req = http.expectOne('/api/establishment/establishmentId/updateSingleEstablishmentField');
 
       expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({ staffRecruitmentData: { amountSpent: '100' } });
+      expect(req.request.body).toEqual({
+        property: 'exampleColumnName',
+        value: 'Yes, always',
+      });
     });
   });
 
