@@ -58,7 +58,6 @@ export class ConfirmDetailsComponent implements OnInit {
     this.prefillForm();
     this.setupSubscriptions();
     this.setBackLink();
-    console.log(this.typeOfEmployer);
   }
 
   ngAfterViewInit() {

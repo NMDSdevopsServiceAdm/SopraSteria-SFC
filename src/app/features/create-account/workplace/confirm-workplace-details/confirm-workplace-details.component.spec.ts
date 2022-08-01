@@ -148,15 +148,29 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     expect(getByText(expectedMainService, { exact: false })).toBeTruthy();
   });
 
+  it('should show total staff details', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    const expectedTotalStaff = 4;
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTotalStaff, { exact: false })).toBeTruthy();
+  });
+
+  it('should show type of employer', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    const expectedTypeOfEmployer = 'Other, other employer type';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer, { exact: false })).toBeTruthy();
+  });
+
   describe('Change links', () => {
-    it('should always display two change links', async () => {
-      const { getAllByText } = await setup();
-
-      const changeLinks = getAllByText('Change');
-
-      expect(changeLinks.length).toEqual(3);
-    });
-
     it('should set the change link for location ID to `find-workplace` when CQC regulated with location ID', async () => {
       const { component, fixture, getByTestId } = await setup();
 
@@ -208,10 +222,34 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
-      const workplaceNameAddressSummaryList = within(getByTestId('mainService'));
-      const changeLink = workplaceNameAddressSummaryList.getByText('Change');
+      const mainServiceSummaryList = within(getByTestId('mainService'));
+      const changeLink = mainServiceSummaryList.getByText('Change');
 
       expect(changeLink.getAttribute('href')).toBe('/registration/select-main-service');
+    });
+
+    it('should set the change link for total staff to `add-total-staff`', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.setWorkplaceDetails();
+      fixture.detectChanges();
+
+      const totalStaffSummaryList = within(getByTestId('totalStaff'));
+      const changeLink = totalStaffSummaryList.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe('/registration/add-total-staff');
+    });
+
+    it('should set the change link for type of employer to `type-of-employer`', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.setWorkplaceDetails();
+      fixture.detectChanges();
+
+      const typeOfEmployerSummaryList = within(getByTestId('typeOfEmployer'));
+      const changeLink = typeOfEmployerSummaryList.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe('/registration/type-of-employer');
     });
   });
 });

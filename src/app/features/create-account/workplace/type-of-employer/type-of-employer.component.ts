@@ -141,10 +141,15 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       this.generateUpdateProps();
-      this.router.navigate([this.flow, 'select-main-service']);
+      this.navigateToNextPage();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  private navigateToNextPage(): void {
+    const url = this.returnToConfirmDetails ? 'confirm-details' : 'select-main-service';
+    this.router.navigate([this.flow, url]);
   }
 
   private generateUpdateProps(): void {

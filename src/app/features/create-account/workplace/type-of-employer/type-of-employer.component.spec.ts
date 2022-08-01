@@ -134,7 +134,7 @@ describe('TypeOfEmployerComponent', () => {
   });
 
   describe('submitting form', () => {
-    it('should navigate to select-main-service when the Local authority (adult services) radio button is selected and the continue button clicked', async () => {
+    it('should navigate to select-main-service when the Local authority (adult services) radio button is selected and the continue button clicked when in the flow', async () => {
       const { fixture, component, getByText, getByLabelText, routerSpy } = await setup();
 
       const radioButton = getByLabelText('Local authority (adult services)');
@@ -146,11 +146,26 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.form.value).toEqual({ employerType: 'Local Authority (adult services)', other: null });
       expect(component.registrationService.typeOfEmployer$.value).toEqual({
         value: 'Local Authority (adult services)',
       });
       expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
+    });
+
+    it('should navigate to confirm-details when the Local authority (adult services) radio button is selected and the continue button clicked when not in the flow', async () => {
+      const { fixture, component, getByText, getByLabelText, routerSpy } = await setup();
+
+      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+      const radioButton = getByLabelText('Local authority (adult services)');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
+
+      const submitButton = getByText('Continue');
+      fireEvent.click(submitButton);
+      fixture.detectChanges();
+
+      expect(component.form.valid).toBeTruthy();
+      expect(routerSpy).toHaveBeenCalledWith(['registration', 'confirm-details']);
     });
 
     it('should navigate to select-main-service when the Local authority (generic, other) radio button is selected and the continue button clicked', async () => {
@@ -165,7 +180,6 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.form.value).toEqual({ employerType: 'Local Authority (generic/other)', other: null });
       expect(component.registrationService.typeOfEmployer$.value).toEqual({ value: 'Local Authority (generic/other)' });
       expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
     });
@@ -182,7 +196,6 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.form.value).toEqual({ employerType: 'Private Sector', other: null });
       expect(component.registrationService.typeOfEmployer$.value).toEqual({ value: 'Private Sector' });
       expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
     });
@@ -199,7 +212,6 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.form.value).toEqual({ employerType: 'Voluntary / Charity', other: null });
       expect(component.registrationService.typeOfEmployer$.value).toEqual({ value: 'Voluntary / Charity' });
       expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
     });
@@ -216,7 +228,6 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.form.value).toEqual({ employerType: 'Other', other: null });
       expect(component.registrationService.typeOfEmployer$.value).toEqual({ value: 'Other', other: null });
       expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
     });
@@ -237,7 +248,6 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.form.value).toEqual({ employerType: 'Other', other: 'some employer type' });
       expect(component.registrationService.typeOfEmployer$.value).toEqual({
         value: 'Other',
         other: 'some employer type',

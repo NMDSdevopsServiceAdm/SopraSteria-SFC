@@ -54,11 +54,8 @@ export class MockRegistrationService extends RegistrationService {
 
   public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject('ABC 123');
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
-  public totalStaff$: BehaviorSubject<any> = new BehaviorSubject('4');
-  public typeOfEmployer$: BehaviorSubject<EmployerType> = new BehaviorSubject({
-    value: 'Other',
-    other: 'other employer type',
-  });
+  public totalStaff$: BehaviorSubject<any> = new BehaviorSubject(null);
+  public typeOfEmployer$: BehaviorSubject<EmployerType> = new BehaviorSubject(null);
 
   public getUsernameDuplicate(username: string): Observable<any> {
     return of({ status: username === 'duplicate' ? '1' : '0' });
@@ -83,4 +80,10 @@ export class MockRegistrationServiceWithMainService extends MockRegistrationServ
     other: true,
     otherName: 'Hello!',
   });
+
+  public typeOfEmployer$: BehaviorSubject<EmployerType> = new BehaviorSubject({
+    value: 'Other',
+    other: 'other employer type',
+  });
+  public totalStaff$: BehaviorSubject<any> = new BehaviorSubject('4');
 }

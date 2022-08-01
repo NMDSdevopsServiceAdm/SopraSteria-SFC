@@ -11,7 +11,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByTestId, queryByText, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject, of } from 'rxjs';
 
 import { ConfirmDetailsComponent } from './confirm-details.component';
