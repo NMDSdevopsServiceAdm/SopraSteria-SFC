@@ -37,23 +37,15 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.getEstablishmentData();
+    this.canEditEstablishment = this.permissionsService.can(this.establishment.uid, 'canEditEstablishment');
   }
 
   public getEstablishmentData(): void {
     this.establishmentService.establishment$.subscribe((establishment) => {
       this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-      this.setEstablishmentData(establishment);
+      this.establishment = establishment;
       this.setBackLink();
     });
-  }
-
-  public setEstablishmentData(establishment) {
-    this.establishment = establishment;
-    this.moneySpentOnAdvertisingInTheLastFourWeek = this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks;
-    this.peopleInterviewedInTheLastFourWeek = this.establishment.peopleInterviewedInTheLastFourWeeks;
-    this.doNewStartersRepeatTraining = this.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-    this.wouldYouAcceptPreviousCertificates = this.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-    this.canEditEstablishment = this.permissionsService.can(this.establishment.uid, 'canEditEstablishment');
   }
 
   public setReturn(): void {

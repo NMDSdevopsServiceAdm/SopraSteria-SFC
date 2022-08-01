@@ -112,7 +112,7 @@ describe('ConfirmStaffRecruitmentComponent', () => {
       it('should show the add link when moneySpentOnAdvertisingInTheLastFourWeek is null and set the link to `recruitment-advertising-cost`', async () => {
         const { component, fixture } = await setup();
 
-        component.moneySpentOnAdvertisingInTheLastFourWeek = null;
+        component.establishment.moneySpentOnAdvertisingInTheLastFourWeeks = null;
         fixture.detectChanges();
 
         const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
@@ -137,7 +137,7 @@ describe('ConfirmStaffRecruitmentComponent', () => {
       it('should show the add link when peopleInterviewedInTheLastFourWeeks is null and set the link to `number-of-interviews`', async () => {
         const { component, fixture } = await setup();
 
-        component.peopleInterviewedInTheLastFourWeek = null;
+        component.establishment.peopleInterviewedInTheLastFourWeeks = null;
         fixture.detectChanges();
         const peopleInterviewedInTheLastFourWeeks = within(document.body).queryByTestId('peopleInterviewed');
 
@@ -163,7 +163,7 @@ describe('ConfirmStaffRecruitmentComponent', () => {
       it('should show the add link when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is null and set the link to `staff-recruitment-capture-training-requirement`', async () => {
         const { component, fixture } = await setup();
 
-        component.doNewStartersRepeatTraining = null;
+        component.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
         fixture.detectChanges();
         const doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = within(document.body).queryByTestId(
           'repeatTraining',
@@ -191,7 +191,7 @@ describe('ConfirmStaffRecruitmentComponent', () => {
       it('should show the add link when wouldYouAcceptPreviousCertificates is null and set the link to `accept-previous-care-certificate`', async () => {
         const { component, fixture } = await setup();
 
-        component.wouldYouAcceptPreviousCertificates = null;
+        component.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
         fixture.detectChanges();
         const wouldYouAcceptCareCertificatesFromPreviousEmployment = within(document.body).queryByTestId(
           'acceptCareCertificate',
