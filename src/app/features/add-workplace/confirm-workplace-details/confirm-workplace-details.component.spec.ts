@@ -15,7 +15,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
 
-fdescribe('ConfirmWorkplaceDetailsComponent', () => {
+describe('ConfirmWorkplaceDetailsComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       ConfirmWorkplaceDetailsComponent,
