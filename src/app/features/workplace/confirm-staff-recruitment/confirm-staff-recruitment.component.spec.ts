@@ -3,35 +3,32 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { EligibilityIconComponent } from '@shared/components/eligibility-icon/eligibility-icon.component';
-import { InsetTextComponent } from '@shared/components/inset-text/inset-text.component';
-import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
-import { NumericAnswerPipe } from '@shared/pipes/numeric-answer.pipe';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByTestId, render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkplaceModule } from '../workplace.module';
 import { ConfirmStaffRecruitmentComponent } from './confirm-staff-recruitment.component';
 
 describe('ConfirmStaffRecruitmentComponent', () => {
-  const establishment = establishmentBuilder();
   const setup = async () => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByTestId } = await render(
+    const { fixture, getByText, getAllByText, getByTestId, queryByTestId, queryByText } = await render(
       ConfirmStaffRecruitmentComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
         providers: [
           WindowRef,
+          BackService,
+          AlertService,
           {
             provide: PermissionsService,
             useFactory: MockPermissionsService.factory(['canEditEstablishment']),
@@ -42,17 +39,8 @@ describe('ConfirmStaffRecruitmentComponent', () => {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,
           },
+          { provide: WorkerService, useClass: MockWorkerService },
         ],
-        declarations: [
-          ConfirmStaffRecruitmentComponent,
-          InsetTextComponent,
-          SummaryRecordValueComponent,
-          NumericAnswerPipe,
-          EligibilityIconComponent,
-        ],
-        componentProperties: {
-          establishment: establishment as Establishment,
-        },
       },
     );
 
@@ -78,6 +66,7 @@ describe('ConfirmStaffRecruitmentComponent', () => {
       getAllByText,
       getByTestId,
       queryByTestId,
+      queryByText,
       routerSpy,
       alertSpy,
       backServiceSpy,
@@ -89,158 +78,244 @@ describe('ConfirmStaffRecruitmentComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the title', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Staff recruitment')).toBeTruthy();
+  describe('Staff recruitment questions', () => {
+    it('should display all questions', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Advertising spend')).toBeTruthy();
+      expect(getByText('People interviewed')).toBeTruthy();
+      expect(getByText('Repeat training')).toBeTruthy();
+      expect(getByText('Accept Care Certificate')).toBeTruthy();
+    });
+
+    it('should prefill the form with the current data from the establishment service', async () => {
+      const { component } = await setup();
+
+      expect(component.establishment.moneySpentOnAdvertisingInTheLastFourWeeks).toBe('78');
+      expect(component.establishment.peopleInterviewedInTheLastFourWeeks).toBe('None');
+      expect(component.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment).toBe('No, never');
+      expect(component.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment).toBe('No, never');
+    });
+
+    describe('Change links staff recruitment', () => {
+      it('should show the change link when moneySpentOnAdvertisingInTheLastFourWeek is not null and set the link to `recruitment-advertising-cost`', async () => {
+        await setup();
+
+        const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
+
+        expect(advertisingspendLastFourWeek.innerHTML).toContain('Change');
+        expect(advertisingspendLastFourWeek.innerHTML).toContain(
+          `href="/workplace/mocked-uid/recruitment-advertising-cost"`,
+        );
+      });
+
+      it('should show the add link when moneySpentOnAdvertisingInTheLastFourWeek is null and set the link to `recruitment-advertising-cost`', async () => {
+        const { component, fixture } = await setup();
+
+        component.moneySpentOnAdvertisingInTheLastFourWeek = null;
+        fixture.detectChanges();
+
+        const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
+
+        expect(advertisingspendLastFourWeek.innerHTML).toContain('Add');
+        expect(advertisingspendLastFourWeek.innerHTML).toContain(
+          `href="/workplace/mocked-uid/recruitment-advertising-cost"`,
+        );
+      });
+
+      it('should show the change link when peopleInterviewedInTheLastFourWeeks is not null and set the link to `number-of-interviews`', async () => {
+        await setup();
+
+        const peopleInterviewedInTheLastFourWeeks = within(document.body).queryByTestId('peopleInterviewed');
+
+        expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain('Change');
+        expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain(
+          `href="/workplace/mocked-uid/number-of-interviews"`,
+        );
+      });
+
+      it('should show the add link when peopleInterviewedInTheLastFourWeeks is null and set the link to `number-of-interviews`', async () => {
+        const { component, fixture } = await setup();
+
+        component.peopleInterviewedInTheLastFourWeek = null;
+        fixture.detectChanges();
+        const peopleInterviewedInTheLastFourWeeks = within(document.body).queryByTestId('peopleInterviewed');
+
+        expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain('Add');
+        expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain(
+          `href="/workplace/mocked-uid/number-of-interviews"`,
+        );
+      });
+
+      it('should show the change link when doNewStartersRepeatTraining is not null and set the link to `staff-recruitment-capture-training-requirement`', async () => {
+        await setup();
+
+        const doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = within(document.body).queryByTestId(
+          'repeatTraining',
+        );
+
+        expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain('Change');
+        expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain(
+          `href="/workplace/mocked-uid/staff-recruitment-capture-training-requirement"`,
+        );
+      });
+
+      it('should show the add link when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is null and set the link to `staff-recruitment-capture-training-requirement`', async () => {
+        const { component, fixture } = await setup();
+
+        component.doNewStartersRepeatTraining = null;
+        fixture.detectChanges();
+        const doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = within(document.body).queryByTestId(
+          'repeatTraining',
+        );
+
+        expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain('Add');
+        expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain(
+          `href="/workplace/mocked-uid/staff-recruitment-capture-training-requirement"`,
+        );
+      });
+
+      it('should show the change link when wouldYouAcceptPreviousCertificates is not null and set the link to `accept-previous-care-certificate`', async () => {
+        await setup();
+
+        const wouldYouAcceptCareCertificatesFromPreviousEmployment = within(document.body).queryByTestId(
+          'acceptCareCertificate',
+        );
+
+        expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain('Change');
+        expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain(
+          `href="/workplace/mocked-uid/accept-previous-care-certificate"`,
+        );
+      });
+
+      it('should show the add link when wouldYouAcceptPreviousCertificates is null and set the link to `accept-previous-care-certificate`', async () => {
+        const { component, fixture } = await setup();
+
+        component.wouldYouAcceptPreviousCertificates = null;
+        fixture.detectChanges();
+        const wouldYouAcceptCareCertificatesFromPreviousEmployment = within(document.body).queryByTestId(
+          'acceptCareCertificate',
+        );
+
+        expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain('Add');
+        expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain(
+          `href="/workplace/mocked-uid/accept-previous-care-certificate"`,
+        );
+      });
+    });
   });
 
-  it('should display all questions', async () => {
-    const { getByText } = await setup();
+  xdescribe('Staff benefits questions', () => {
+    it('should display all questions', async () => {
+      const { getByText } = await setup();
 
-    expect(getByText('Advertising spend')).toBeTruthy();
-    expect(getByText('People interviewed')).toBeTruthy();
-    expect(getByText('Repeat training')).toBeTruthy();
-    expect(getByText('Accept Care Certificate')).toBeTruthy();
-  });
-
-  it('should prefill the form with the current data from the establishment service', async () => {
-    const { component } = await setup();
-    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = '123';
-    establishment.peopleInterviewedInTheLastFourWeeks = '42';
-
-    expect(component.establishment.moneySpentOnAdvertisingInTheLastFourWeeks).toBe('123');
-    expect(component.establishment.peopleInterviewedInTheLastFourWeeks).toBe('42');
-    expect(component.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment).toBe('Yes, always');
-    expect(component.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment).toBe('No, never');
-  });
-
-  describe('Change links', () => {
-    it('should show the change link when moneySpentOnAdvertisingInTheLastFourWeek is not null and set the link to `recruitment-advertising-cost`', async () => {
-      const { component, fixture } = await setup();
-
-      component.moneySpentOnAdvertisingInTheLastFourWeek = establishment.moneySpentOnAdvertisingInTheLastFourWeeks;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
-
-      expect(advertisingspendLastFourWeek.innerHTML).toContain('Change');
-      expect(advertisingspendLastFourWeek.innerHTML).toContain(
-        `href="/workplace/${establishment.uid}/recruitment-advertising-cost"`,
-      );
+      expect(getByText('Cash loyalty bonus')).toBeTruthy();
+      expect(getByText(`Offer more than statutory 'sick pay'`)).toBeTruthy();
+      //expect(getByText('Higher pension contributions')).toBeTruthy();
+      expect(getByText('Number of days leave')).toBeTruthy();
     });
 
-    it('should show the add link when moneySpentOnAdvertisingInTheLastFourWeek is null and set the link to `recruitment-advertising-cost`', async () => {
-      const { component, fixture } = await setup();
+    it('should prefill the form with the current data from the establishment service', async () => {
+      const { component } = await setup();
 
-      component.moneySpentOnAdvertisingInTheLastFourWeek = null;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
-
-      const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
-
-      expect(advertisingspendLastFourWeek.innerHTML).toContain('Add');
-      expect(advertisingspendLastFourWeek.innerHTML).toContain(
-        `href="/workplace/${establishment.uid}/recruitment-advertising-cost"`,
-      );
+      expect(component.establishment.careWorkersCashLoyaltyForFirstTwoYears).toBe('No');
+      expect(component.establishment.sickPay).toBe('No');
+      //expect(component.establishment.higherPensionContribution).toBe('Yes, always');
+      expect(component.establishment.careWorkersLeaveDaysPerYear).toBe('35');
     });
 
-    it('should show the change link when peopleInterviewedInTheLastFourWeeks is not null and set the link to `number-of-interviews`', async () => {
-      const { component, fixture } = await setup();
+    describe('change links benefits', () => {
+      it('should show the change link when careWorkersCashLoyaltyForFirstTwoYears is not null and set the link to `cash-loyalty`', async () => {
+        await setup();
 
-      component.peopleInterviewedInTheLastFourWeek = establishment.peopleInterviewedInTheLastFourWeeks;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
+        const careWorkersCashLoyaltyForFirstTwoYears = within(document.body).queryByTestId('cashLoyaltyBonusSpend');
 
-      const peopleInterviewedInTheLastFourWeeks = within(document.body).queryByTestId('peopleInterviewed');
+        expect(careWorkersCashLoyaltyForFirstTwoYears.innerHTML).toContain('Change');
+        expect(careWorkersCashLoyaltyForFirstTwoYears.innerHTML).toContain(`href="/workplace/mocked-uid/cash-loyalty"`);
+      });
 
-      expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain('Change');
-      expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain(
-        `href="/workplace/${establishment.uid}/number-of-interviews"`,
-      );
-    });
+      it('should show the add link when careWorkersCashLoyaltyForFirstTwoYears is null and set the link to `cash-loyalty`', async () => {
+        const { component, fixture } = await setup();
 
-    it('should show the add link when peopleInterviewedInTheLastFourWeeks is null and set the link to `number-of-interviews`', async () => {
-      const { component, fixture } = await setup();
+        component.establishment.careWorkersCashLoyaltyForFirstTwoYears = null;
+        fixture.detectChanges();
 
-      component.peopleInterviewedInTheLastFourWeek = null;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
+        const careWorkersCashLoyaltyForFirstTwoYears = within(document.body).queryByTestId('cashLoyaltyBonusSpend');
 
-      const peopleInterviewedInTheLastFourWeeks = within(document.body).queryByTestId('peopleInterviewed');
+        expect(careWorkersCashLoyaltyForFirstTwoYears.innerHTML).toContain('Add');
+        expect(careWorkersCashLoyaltyForFirstTwoYears.innerHTML).toContain(`href="/workplace/mocked-uid/cash-loyalty"`);
+      });
 
-      expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain('Add');
-      expect(peopleInterviewedInTheLastFourWeeks.innerHTML).toContain(
-        `href="/workplace/${establishment.uid}/number-of-interviews"`,
-      );
-    });
+      it('should show the change link when sickPay is not null and set the link to `benefits-statutory-sick-pay`', async () => {
+        await setup();
 
-    it('should show the change link when doNewStartersRepeatTraining is not null and set the link to `staff-recruitment-capture-training-requirement`', async () => {
-      const { component, fixture } = await setup();
+        const sickPay = within(document.body).queryByTestId('offerMoreThanStatutorySickPay');
 
-      component.doNewStartersRepeatTraining = establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
+        expect(sickPay.innerHTML).toContain('Change');
+        expect(sickPay.innerHTML).toContain(`href="/workplace/mocked-uid/benefits-statutory-sick-pay"`);
+      });
 
-      const doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = within(document.body).queryByTestId(
-        'repeatTraining',
-      );
+      it('should show the add link when sickPay is null and set the link to `benefits-statutory-sick-pay`', async () => {
+        const { component, fixture } = await setup();
 
-      expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain('Change');
-      expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain(
-        `href="/workplace/${establishment.uid}/staff-recruitment-capture-training-requirement"`,
-      );
-    });
+        component.establishment.sickPay = null;
+        fixture.detectChanges();
 
-    it('should show the add link when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is null and set the link to `staff-recruitment-capture-training-requirement`', async () => {
-      const { component, fixture } = await setup();
+        const sickPay = within(document.body).queryByTestId('offerMoreThanStatutorySickPay');
 
-      component.doNewStartersRepeatTraining = null;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
+        expect(sickPay.innerHTML).toContain('Add');
+        expect(sickPay.innerHTML).toContain(`href="/workplace/mocked-uid/benefits-statutory-sick-pay"`);
+      });
 
-      const doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = within(document.body).queryByTestId(
-        'repeatTraining',
-      );
+      xit('should show the change link when higherPensionContribution is not null and set the link to `higher-pension-contributions`', async () => {
+        await setup();
 
-      expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain('Add');
-      expect(doNewStartersRepeatMandatoryTrainingFromPreviousEmployment.innerHTML).toContain(
-        `href="/workplace/${establishment.uid}/staff-recruitment-capture-training-requirement"`,
-      );
-    });
+        const higherPensionContribution = within(document.body).queryByTestId('higherPensionContributions');
 
-    it('should show the change link when wouldYouAcceptPreviousCertificates is not null and set the link to `accept-previous-care-certificate`', async () => {
-      const { component, fixture } = await setup();
+        expect(higherPensionContribution.innerHTML).toContain('Change');
+        expect(higherPensionContribution.innerHTML).toContain(
+          `href="/workplace/mocked-uid/higher-pension-contributions"`,
+        );
+      });
 
-      component.wouldYouAcceptPreviousCertificates = establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
+      xit('should show the add link when higherPensionContribution is null and set the link to `higher-pension-contributions`', async () => {
+        const { component, fixture } = await setup();
 
-      const wouldYouAcceptCareCertificatesFromPreviousEmployment = within(document.body).queryByTestId(
-        'acceptCareCertificate',
-      );
+        // component.establishment.higherPensionContribution = null;
+        fixture.detectChanges();
 
-      expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain('Change');
-      expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain(
-        `href="/workplace/${establishment.uid}/accept-previous-care-certificate"`,
-      );
-    });
+        const higherPensionContribution = within(document.body).queryByTestId('higherPensionContributions');
 
-    it('should show the add link when wouldYouAcceptPreviousCertificates is null and set the link to `accept-previous-care-certificate`', async () => {
-      const { component, fixture } = await setup();
+        expect(higherPensionContribution.innerHTML).toContain('Add');
+        expect(higherPensionContribution.innerHTML).toContain(
+          `href="/workplace/mocked-uid/higher-pension-contributions"`,
+        );
+      });
 
-      component.wouldYouAcceptPreviousCertificates = null;
-      component.canEditEstablishment = true;
-      fixture.detectChanges();
+      it('should show the change link when careWorkersLeaveDaysPerYear is not null and set the link to `staff-benefit-holiday-leave`', async () => {
+        await setup();
 
-      const wouldYouAcceptCareCertificatesFromPreviousEmployment = within(document.body).queryByTestId(
-        'acceptCareCertificate',
-      );
+        const careWorkersLeaveDaysPerYear = within(document.body).queryByTestId('numberOfDaysLeave');
 
-      expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain('Add');
-      expect(wouldYouAcceptCareCertificatesFromPreviousEmployment.innerHTML).toContain(
-        `href="/workplace/${establishment.uid}/accept-previous-care-certificate"`,
-      );
+        expect(careWorkersLeaveDaysPerYear.innerHTML).toContain('Change');
+        expect(careWorkersLeaveDaysPerYear.innerHTML).toContain(
+          `href="/workplace/mocked-uid/staff-benefit-holiday-leave"`,
+        );
+      });
+
+      it('should show the add link when careWorkersLeaveDaysPerYear is null and set the link to `staff-benefit-holiday-leave`', async () => {
+        const { component, fixture } = await setup();
+
+        component.establishment.careWorkersLeaveDaysPerYear = null;
+        fixture.detectChanges();
+
+        const careWorkersLeaveDaysPerYear = within(document.body).queryByTestId('numberOfDaysLeave');
+
+        expect(careWorkersLeaveDaysPerYear.innerHTML).toContain('Add');
+        expect(careWorkersLeaveDaysPerYear.innerHTML).toContain(
+          `href="/workplace/mocked-uid/staff-benefit-holiday-leave"`,
+        );
+      });
     });
   });
 

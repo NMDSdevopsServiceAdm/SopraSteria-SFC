@@ -40,7 +40,7 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
   }
 
   public getEstablishmentData(): void {
-    this.establishmentService.getEstablishment(this.establishmentService.establishmentId).subscribe((establishment) => {
+    this.establishmentService.establishment$.subscribe((establishment) => {
       this.primaryWorkplace = this.establishmentService.primaryWorkplace;
       this.setEstablishmentData(establishment);
       this.setBackLink();
