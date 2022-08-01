@@ -1943,6 +1943,27 @@ class WorkplaceCSVValidator {
     }
   }
 
+  _validateBenefits() {
+    const benefitsRegex = /^\d*(\.\d{1,2})?$/;
+    const benefits = this._currentLine.BENEFITS;
+
+    if (!benefitsRegex.test(benefits) && benefits.toLowerCase() !== 'unknown') {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: WorkplaceCSVValidator.BENEFITS_ERROR,
+        errType: 'BENEFITS_ERROR',
+        error: "The code you entered for BENEFITS should be a number in pounds and pence or the value 'unknown'",
+        source: benefits,
+        column: 'BENEFITS',
+        name: this.currentLine.LOCALESTID,
+      });
+      return false;
+    } else {
+      this._careWorkersCashLoyaltyForFirstTwoYears = benefits;
+      return true;
+    }
+  }
+
   _validateSickPay() {
     const ALLOWED_VALUES = ['0', '1', ''];
     const sickpay = this._currentLine.SICKPAY;
@@ -1967,7 +1988,7 @@ class WorkplaceCSVValidator {
   }
 
   _validatePensionContribution() {
-    const ALLOWED_VALUES = ['1', '2', ''];
+    const ALLOWED_VALUES = ['0', '1', ''];
     const pension = this._currentLine.PENSION;
 
     if (!ALLOWED_VALUES.includes(this._currentLine.PENSION) && pension.toLowerCase() !== 'unknown') {
@@ -1985,6 +2006,27 @@ class WorkplaceCSVValidator {
       const pensionAsInt = parseInt(this._currentLine.PENSION, 10);
 
       this._pensionContribution = Number.isNaN(pensionAsInt) ? this._currentLine.PENSION : pensionAsInt;
+      return true;
+    }
+  }
+
+  _validateHoliday() {
+    const holidayRegex = /^[0-9]*$/;
+    const holiday = this._currentLine.HOLIDAY;
+
+    if (!holidayRegex.test(holiday)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: WorkplaceCSVValidator.HOLIDAY_ERROR,
+        errType: 'HOLIDAY_ERROR',
+        error: 'The code you entered for HOLIDAY should be a whole number',
+        source: holiday,
+        column: 'HOLIDAY',
+        name: this.currentLine.LOCALESTID,
+      });
+      return false;
+    } else {
+      this._careWorkersLeaveDaysPerYear = holiday;
       return true;
     }
   }
@@ -2661,6 +2703,10 @@ class WorkplaceCSVValidator {
       this._validateInterviews();
       this._validateRepeatTraining();
       this._validateAcceptCareCertificate();
+      this._validateHoliday();
+      this._validateBenefits();
+      this._validateSickPay();
+      this._validatePensionContribution();
       // this._validateNoChange(); // Not working, disabled for LA Window
     }
     return this.validationErrors.length === 0;
