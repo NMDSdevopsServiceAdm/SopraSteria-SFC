@@ -51,6 +51,7 @@ export class MockEstablishmentService extends EstablishmentService {
     careWorkersCashLoyaltyForFirstTwoYears: 'No',
     sickPay: 'No',
     pensionContribution: 'No',
+    careWorkersLeaveDaysPerYear: '35',
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}) {
@@ -223,6 +224,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     careWorkersCashLoyaltyForFirstTwoYears: 'No',
     sickPay: 'No',
     pensionContribution: 'No',
+    careWorkersLeaveDaysPerYear: '35',
   };
 
   public get returnTo(): URLStructure {

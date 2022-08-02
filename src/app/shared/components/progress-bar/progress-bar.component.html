@@ -34,8 +34,7 @@
         <span
           class="govuk-!-font-size-16"
           [ngClass]="
-            completeProgressBar ||
-            (currentSectionIndex > i && 'govuk-!-font-weight-bold') ||
+            ((currentSectionIndex > i || completeProgressBar) && 'govuk-!-font-weight-bold') ||
             (currentSectionIndex < i && 'asc-colour-grey')
           "
         >
