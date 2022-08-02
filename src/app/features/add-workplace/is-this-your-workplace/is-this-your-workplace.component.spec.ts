@@ -190,7 +190,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(workplaceSpy).toHaveBeenCalledWith('1-2123313123');
   });
 
-  it('should navigate to the select-main-serice url when selecting yes and the establishment does not already exist in the service', async () => {
+  it('should navigate to the type-of-employer url when selecting yes and the establishment does not already exist in the service', async () => {
     const { component, spy, workplaceService } = await setup();
 
     spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
@@ -201,7 +201,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'type-of-employer']);
   });
 
   it('should navigate to the confirm-workplace-details page when selecting yes if returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {

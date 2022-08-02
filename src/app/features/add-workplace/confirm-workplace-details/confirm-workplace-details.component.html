@@ -19,10 +19,17 @@
       ></app-summary-list>
 
       <app-summary-list
-        [wrapBorder]="true"
+        [topBorder]="true"
         [summaryList]="totalStaff"
         (setReturn)="onSetReturn()"
         data-testid="totalStaff"
+      ></app-summary-list>
+
+      <app-summary-list
+        [wrapBorder]="true"
+        [summaryList]="typeOfEmployer"
+        (setReturn)="onSetReturn()"
+        data-testid="typeOfEmployer"
       ></app-summary-list>
     </div>
 

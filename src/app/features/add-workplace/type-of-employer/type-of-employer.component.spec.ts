@@ -5,8 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { RegistrationService } from '@core/services/registration.service';
-import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
+import { WorkplaceService } from '@core/services/workplace.service';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -30,8 +30,8 @@ describe('TypeOfEmployerComponent', () => {
         providers: [
           BackService,
           {
-            provide: RegistrationService,
-            useClass: MockRegistrationService,
+            provide: WorkplaceService,
+            useClass: MockWorkplaceService,
           },
           {
             provide: ActivatedRoute,
@@ -40,7 +40,7 @@ describe('TypeOfEmployerComponent', () => {
                 parent: {
                   url: [
                     {
-                      path: 'registration',
+                      path: 'add-workplace',
                     },
                   ],
                 },
@@ -84,7 +84,7 @@ describe('TypeOfEmployerComponent', () => {
   it('should show the page title and radio buttons', async () => {
     const { getByText, getByLabelText } = await setup();
 
-    expect(getByText(`What type of employer is your workplace?`)).toBeTruthy();
+    expect(getByText(`What type of employer are they?`)).toBeTruthy();
     expect(getByText('Workplace')).toBeTruthy();
     expect(getByLabelText('Local authority (adult services)')).toBeTruthy();
     expect(getByLabelText('Local authority (generic, other)')).toBeTruthy();
@@ -102,7 +102,7 @@ describe('TypeOfEmployerComponent', () => {
   it('should prefill the form when the value has previously be filled in', async () => {
     const { component, fixture } = await setup();
 
-    component.registrationService.typeOfEmployer$.next({ value: 'Private Sector' });
+    component.workplaceService.typeOfEmployer$.next({ value: 'Private Sector' });
     component.ngOnInit();
     fixture.detectChanges();
 
@@ -118,7 +118,7 @@ describe('TypeOfEmployerComponent', () => {
   it('should prefill the form when the value has previously be filled in', async () => {
     const { component, fixture } = await setup();
 
-    component.registrationService.typeOfEmployer$.next({ value: 'Other', other: 'other employer type' });
+    component.workplaceService.typeOfEmployer$.next({ value: 'Other', other: 'other employer type' });
     component.ngOnInit();
     fixture.detectChanges();
 
@@ -146,16 +146,16 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.registrationService.typeOfEmployer$.value).toEqual({
+      expect(component.workplaceService.typeOfEmployer$.value).toEqual({
         value: 'Local Authority (adult services)',
       });
-      expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
+      expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
     });
 
-    it('should navigate to confirm-details when the Local authority (adult services) radio button is selected and the continue button clicked when not in the flow', async () => {
+    it('should navigate to confirm-workplace-details when the Local authority (adult services) radio button is selected and the continue button clicked when not in the flow', async () => {
       const { fixture, component, getByText, getByLabelText, routerSpy } = await setup();
 
-      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
       const radioButton = getByLabelText('Local authority (adult services)');
       fireEvent.click(radioButton);
       fixture.detectChanges();
@@ -165,7 +165,7 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(routerSpy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+      expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
     });
 
     it('should navigate to select-main-service when the Local authority (generic, other) radio button is selected and the continue button clicked', async () => {
@@ -180,8 +180,8 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.registrationService.typeOfEmployer$.value).toEqual({ value: 'Local Authority (generic/other)' });
-      expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
+      expect(component.workplaceService.typeOfEmployer$.value).toEqual({ value: 'Local Authority (generic/other)' });
+      expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
     });
 
     it('should navigate to select-main-service when the Private sector radio button is selected and the continue button clicked', async () => {
@@ -196,8 +196,8 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.registrationService.typeOfEmployer$.value).toEqual({ value: 'Private Sector' });
-      expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
+      expect(component.workplaceService.typeOfEmployer$.value).toEqual({ value: 'Private Sector' });
+      expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
     });
 
     it('should navigate to select-main-service when the Voluntary, charity, non-profit (not for profit) radio button is selected and the continue button clicked', async () => {
@@ -212,8 +212,8 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.registrationService.typeOfEmployer$.value).toEqual({ value: 'Voluntary / Charity' });
-      expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
+      expect(component.workplaceService.typeOfEmployer$.value).toEqual({ value: 'Voluntary / Charity' });
+      expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
     });
 
     it('should navigate to select-main-service when the Other radio button is selected and the continue button clicked', async () => {
@@ -228,8 +228,8 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.registrationService.typeOfEmployer$.value).toEqual({ value: 'Other', other: null });
-      expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
+      expect(component.workplaceService.typeOfEmployer$.value).toEqual({ value: 'Other', other: null });
+      expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
     });
 
     it('should navigate to select-main-service when the Other radio button is selected, the optional input filled out and the continue button clickedt', async () => {
@@ -248,11 +248,11 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(component.registrationService.typeOfEmployer$.value).toEqual({
+      expect(component.workplaceService.typeOfEmployer$.value).toEqual({
         value: 'Other',
         other: 'some employer type',
       });
-      expect(routerSpy).toHaveBeenCalledWith(['registration', 'select-main-service']);
+      expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
     });
   });
 
@@ -295,24 +295,24 @@ describe('TypeOfEmployerComponent', () => {
       const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.registrationService.isRegulated$.next(true);
-      component.registrationService.manuallyEnteredWorkplace$.next(true);
+      component.workplaceService.isRegulated$.next(true);
+      component.workplaceService.manuallyEnteredWorkplace$.next(true);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-name-address'],
+        url: ['add-workplace', 'workplace-name-address'],
       });
     });
 
-    it('should set back link to your-workplace when is regulated and there is one address in locationAddresses in registration service', async () => {
+    it('should set back link to your-workplace when is regulated and there is one address in locationAddresses in workplace service', async () => {
       const { component } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = true;
-      component.registrationService.manuallyEnteredWorkplace$.next(false);
-      component.registrationService.locationAddresses$.next([
+      component.workplaceService.manuallyEnteredWorkplace$.next(false);
+      component.workplaceService.locationAddresses$.next([
         {
           postalCode: 'ABC 123',
           addressLine1: '1 Street',
@@ -326,17 +326,17 @@ describe('TypeOfEmployerComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'your-workplace'],
+        url: ['add-workplace', 'your-workplace'],
       });
     });
 
-    it('should set back link to select-workplace when is regulated and there is more than one address in locationAddresses in registration service', async () => {
+    it('should set back link to select-workplace when is regulated and there is more than one address in locationAddresses in workplace service', async () => {
       const { component } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = true;
-      component.registrationService.manuallyEnteredWorkplace$.next(false);
-      component.registrationService.locationAddresses$.next([
+      component.workplaceService.manuallyEnteredWorkplace$.next(false);
+      component.workplaceService.locationAddresses$.next([
         {
           postalCode: 'ABC 123',
           addressLine1: '1 Street',
@@ -358,7 +358,7 @@ describe('TypeOfEmployerComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'select-workplace'],
+        url: ['add-workplace', 'select-workplace'],
       });
     });
 
@@ -367,13 +367,13 @@ describe('TypeOfEmployerComponent', () => {
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
-      component.registrationService.manuallyEnteredWorkplace$.next(true);
+      component.workplaceService.manuallyEnteredWorkplace$.next(true);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-name-address'],
+        url: ['add-workplace', 'workplace-name-address'],
       });
     });
 
@@ -382,14 +382,14 @@ describe('TypeOfEmployerComponent', () => {
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
-      component.registrationService.manuallyEnteredWorkplace$.next(false);
-      component.registrationService.manuallyEnteredWorkplaceName$.next(false);
+      component.workplaceService.manuallyEnteredWorkplace$.next(false);
+      component.workplaceService.manuallyEnteredWorkplaceName$.next(false);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'select-workplace-address'],
+        url: ['add-workplace', 'select-workplace-address'],
       });
     });
 
@@ -398,29 +398,29 @@ describe('TypeOfEmployerComponent', () => {
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
       component.isRegulated = false;
-      component.registrationService.manuallyEnteredWorkplace$.next(false);
-      component.registrationService.manuallyEnteredWorkplaceName$.next(true);
+      component.workplaceService.manuallyEnteredWorkplace$.next(false);
+      component.workplaceService.manuallyEnteredWorkplaceName$.next(true);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-name'],
+        url: ['add-workplace', 'workplace-name'],
       });
     });
 
-    it('should set back link to confirm-details when returnToConfirmDetails is not null', async () => {
+    it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null', async () => {
       const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
-      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'confirm-details'],
+        url: ['add-workplace', 'confirm-workplace-details'],
       });
     });
   });

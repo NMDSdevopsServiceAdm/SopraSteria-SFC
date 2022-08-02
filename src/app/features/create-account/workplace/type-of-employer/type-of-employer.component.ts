@@ -31,6 +31,7 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
     { value: 'Voluntary / Charity', text: 'Voluntary, charity, non-profit (not for profit)' },
     { value: 'Other', text: 'Other' },
   ];
+  public question = 'What type of employer is your workplace?';
 
   constructor(
     public formBuilder: FormBuilder,

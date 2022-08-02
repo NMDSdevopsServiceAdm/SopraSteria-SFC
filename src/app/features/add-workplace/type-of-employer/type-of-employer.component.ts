@@ -5,7 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
   selector: 'app-type-of-employer',
@@ -31,6 +31,7 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
     { value: 'Voluntary / Charity', text: 'Voluntary, charity, non-profit (not for profit)' },
     { value: 'Other', text: 'Other' },
   ];
+  public question = 'What type of employer are they?';
 
   constructor(
     public formBuilder: FormBuilder,
@@ -38,13 +39,13 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
     public router: Router,
     public route: ActivatedRoute,
     public errorSummaryService: ErrorSummaryService,
-    public registrationService: RegistrationService,
+    public workplaceService: WorkplaceService,
   ) {}
 
   ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
-    this.isRegulated = this.registrationService.isRegulated();
-    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
+    this.isRegulated = this.workplaceService.isRegulated();
+    this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefillForm();
@@ -67,7 +68,7 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
 
   public setBackLink(): void {
     if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
+      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
       return;
     }
 
@@ -76,32 +77,32 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
   }
 
   private prefillForm(): void {
-    if (this.registrationService.typeOfEmployer$.value) {
-      this.showOtherInputField = !!this.registrationService.typeOfEmployer$.value.other;
+    if (this.workplaceService.typeOfEmployer$.value) {
+      this.showOtherInputField = !!this.workplaceService.typeOfEmployer$.value.other;
       this.form.setValue({
-        employerType: this.registrationService.typeOfEmployer$.value.value,
-        other: this.showOtherInputField ? this.registrationService.typeOfEmployer$.value.other : null,
+        employerType: this.workplaceService.typeOfEmployer$.value.value,
+        other: this.showOtherInputField ? this.workplaceService.typeOfEmployer$.value.other : null,
       });
     }
   }
 
   private getCQCRegulatedBackLink(): string {
-    if (this.registrationService.manuallyEnteredWorkplace$.value) {
+    if (this.workplaceService.manuallyEnteredWorkplace$.value) {
       return 'workplace-name-address';
     }
-    if (this.registrationService.locationAddresses$.value.length == 1) {
+    if (this.workplaceService.locationAddresses$.value.length == 1) {
       return 'your-workplace';
     }
-    if (this.registrationService.locationAddresses$.value.length > 1) {
+    if (this.workplaceService.locationAddresses$.value.length > 1) {
       return 'select-workplace';
     }
   }
 
   private getNonCQCRegulatedBackLink(): string {
-    if (this.registrationService.manuallyEnteredWorkplace$.value) {
+    if (this.workplaceService.manuallyEnteredWorkplace$.value) {
       return 'workplace-name-address';
     }
-    if (this.registrationService.manuallyEnteredWorkplaceName$.value) {
+    if (this.workplaceService.manuallyEnteredWorkplaceName$.value) {
       return 'workplace-name';
     }
     return 'select-workplace-address';
@@ -148,7 +149,7 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
   }
 
   private navigateToNextPage(): void {
-    const url = this.returnToConfirmDetails ? 'confirm-details' : 'select-main-service';
+    const url = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
     this.router.navigate([this.flow, url]);
   }
 
@@ -160,7 +161,7 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
       ...(employerType === 'Other' && { other }),
     };
 
-    this.registrationService.typeOfEmployer$.next(employerTypeObject);
+    this.workplaceService.typeOfEmployer$.next(employerTypeObject);
   }
 
   public onOtherSelect(radioValue: string): void {
