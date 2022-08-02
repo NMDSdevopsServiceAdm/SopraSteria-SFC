@@ -147,10 +147,9 @@ export interface Establishment {
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
   peopleInterviewedInTheLastFourWeeks?: string;
   showAddWorkplaceDetailsBanner?: boolean;
-  doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent?: string;
+  pensionContribution?: string;
   careWorkersLeaveDaysPerYear?: string;
   careWorkersCashLoyaltyForFirstTwoYears?: string;
-  pensionContribution?: string;
   sickPay?: string;
 }
 
@@ -186,7 +185,7 @@ export enum StaffBenefitEnum {
 
 export enum PensionsEnum {
   YES = 'Yes',
-  NO = 'NO',
+  NO = 'No',
   DONT_KNOW = "Don't know",
 }
 

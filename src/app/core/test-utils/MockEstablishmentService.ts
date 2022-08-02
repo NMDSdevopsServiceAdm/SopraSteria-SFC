@@ -50,6 +50,7 @@ export class MockEstablishmentService extends EstablishmentService {
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
     careWorkersCashLoyaltyForFirstTwoYears: 'No',
     sickPay: 'No',
+    pensionContribution: 'No',
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}) {
@@ -221,6 +222,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
     careWorkersCashLoyaltyForFirstTwoYears: 'No',
     sickPay: 'No',
+    pensionContribution: 'No',
   };
 
   public get returnTo(): URLStructure {

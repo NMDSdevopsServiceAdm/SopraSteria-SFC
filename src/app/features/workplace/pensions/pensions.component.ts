@@ -55,7 +55,7 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
     this.previousRoute = this.inStaffRecruitmentFlow
       ? ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay']
       : ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, ''];
+    // this.skipRoute = ['/workplace', `${this.establishment.uid}`, ''];
   }
 
   private setupForm(): void {
@@ -68,9 +68,9 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
   }
 
   private prefill(): void {
-    if (this.establishment.doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent) {
+    if (this.establishment.pensionContribution) {
       this.form.patchValue({
-        pension: this.establishment.doCareWorkersGetMoreWorkplacePensionContributionThanTheMinimumThreePercent,
+        pension: this.establishment.pensionContribution,
       });
     }
   }
@@ -85,8 +85,8 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
 
   protected updateEstablishment(props: any): void {
     const pensionData = {
-      property: 'pension',
-      value: props.statutorySickPay,
+      property: 'pensionContribution',
+      value: props.pension,
     };
 
     this.subscriptions.add(
@@ -112,6 +112,6 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
 
   protected onSuccess(): void {
     this.updateEstablishmentService();
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
   }
 }
