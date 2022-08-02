@@ -89,10 +89,10 @@ class WorkplaceCSVValidator {
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
-    this._careWorkersLeaveDaysPerYear = null;
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
-    this._pensionContribution = null;
     this._sickPay = null;
+    this._pensionContribution = null;
+    this._careWorkersLeaveDaysPerYear = null;
 
     this._id = null;
     this._ignore = false;
@@ -245,16 +245,16 @@ class WorkplaceCSVValidator {
   static get ACCEPT_CARE_CERT_ERROR() {
     return 2430;
   }
-  static get BENEFITS_ERROR() {
+  static get BENEFITS_WARNING() {
     return 2440;
   }
-  static get SICKPAY_ERROR() {
+  static get SICKPAY_WARNING() {
     return 2450;
   }
-  static get PENSION_ERROR() {
+  static get PENSION_WARNING() {
     return 2460;
   }
-  static get HOLIDAY_ERROR() {
+  static get HOLIDAY_WARNING() {
     return 2470;
   }
 
@@ -1947,88 +1947,110 @@ class WorkplaceCSVValidator {
     const benefitsRegex = /^\d*(\.\d{1,2})?$/;
     const benefits = this._currentLine.BENEFITS;
 
+    const localValidationErrors = [];
     if (!benefitsRegex.test(benefits) && benefits.toLowerCase() !== 'unknown') {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.BENEFITS_ERROR,
-        errType: 'BENEFITS_ERROR',
-        error: "The code you entered for BENEFITS should be a number in pounds and pence or the value 'unknown'",
+        warnCode: WorkplaceCSVValidator.BENEFITS_WARNING,
+        warnType: 'BENEFITS_WARNING',
+        warning:
+          "The code you entered for BENEFITS should be a number in pounds and pence or the value ,'yes','no' or 'unknown'",
         source: benefits,
         column: 'BENEFITS',
         name: this.currentLine.LOCALESTID,
       });
-      return false;
     } else {
       this._careWorkersCashLoyaltyForFirstTwoYears = benefits;
       return true;
     }
+
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
+      return false;
+    }
+    return true;
   }
 
   _validateSickPay() {
     const ALLOWED_VALUES = ['0', '1', ''];
     const sickpay = this._currentLine.SICKPAY;
 
+    const localValidationErrors = [];
     if (!ALLOWED_VALUES.includes(this._currentLine.SICKPAY) && sickpay.toLowerCase() !== 'unknown') {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.SICKPAY_ERROR,
-        errType: 'SICKPAY_ERROR',
-        error: 'The code you have entered for SICKPAY is incorrect',
+        warnCode: WorkplaceCSVValidator.SICKPAY_WARNING,
+        warnType: 'SICKPAY_WARNING',
+        warning: 'The code you have entered for SICKPAY is incorrect',
         source: this._currentLine.SICKPAY,
         column: 'SICKPAY',
         name: this._currentLine.LOCALESTID,
       });
-      return false;
     } else {
       const sickPayAsInt = parseInt(this._currentLine.SICKPAY, 10);
 
       this._sickPay = Number.isNaN(sickPayAsInt) ? this._currentLine.SICKPAY : sickPayAsInt;
       return true;
     }
-  }
-
-  _validatePensionContribution() {
-    const ALLOWED_VALUES = ['0', '1', ''];
-    const pension = this._currentLine.PENSION;
-
-    if (!ALLOWED_VALUES.includes(this._currentLine.PENSION) && pension.toLowerCase() !== 'unknown') {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.PENSION_ERROR,
-        errType: 'SICKPAY_ERROR',
-        error: 'The code you have entered for PENSION is incorrect',
-        source: this._currentLine.PENSION,
-        column: 'PENSION',
-        name: this._currentLine.LOCALESTID,
-      });
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
       return false;
-    } else {
-      const pensionAsInt = parseInt(this._currentLine.PENSION, 10);
-
-      this._pensionContribution = Number.isNaN(pensionAsInt) ? this._currentLine.PENSION : pensionAsInt;
-      return true;
     }
+    return true;
   }
 
   _validateHoliday() {
     const holidayRegex = /^[0-9]*$/;
     const holiday = this._currentLine.HOLIDAY;
 
+    const localValidationErrors = [];
     if (!holidayRegex.test(holiday)) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.HOLIDAY_ERROR,
-        errType: 'HOLIDAY_ERROR',
-        error: 'The code you entered for HOLIDAY should be a whole number',
-        source: holiday,
+        warnCode: WorkplaceCSVValidator.HOLIDAY_WARNING,
+        warnType: 'HOLIDAY_WARNING',
+        warning: 'The code you have entered for HOLIDAY is incorrect',
+        source: this._currentLine.HOLIDAY,
         column: 'HOLIDAY',
-        name: this.currentLine.LOCALESTID,
+        name: this._currentLine.LOCALESTID,
       });
-      return false;
     } else {
       this._careWorkersLeaveDaysPerYear = holiday;
       return true;
     }
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
+      return false;
+    }
+    return true;
+  }
+
+  _validatePensionContribution() {
+    const ALLOWED_VALUES = ['0', '1', ''];
+    const pension = this._currentLine.PENSION;
+
+    const localValidationErrors = [];
+    if (!ALLOWED_VALUES.includes(this._currentLine.PENSION) && pension.toLowerCase() !== 'unknown') {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: WorkplaceCSVValidator.PENSION_WARNING,
+        warnType: 'PENSION_WARNING',
+        warning: 'The code you have entered for PENSION is incorrect',
+        source: this._currentLine.PENSION,
+        column: 'PENSION',
+        name: this._currentLine.LOCALESTID,
+      });
+    } else {
+      const pensionAsInt = parseInt(this._currentLine.PENSION, 10);
+
+      this._pensionContribution = Number.isNaN(pensionAsInt) ? this._currentLine.PENSION : pensionAsInt;
+      return true;
+    }
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
+      return false;
+    }
+    return true;
   }
 
   _validateNoChange() {
@@ -2703,10 +2725,11 @@ class WorkplaceCSVValidator {
       this._validateInterviews();
       this._validateRepeatTraining();
       this._validateAcceptCareCertificate();
-      this._validateHoliday();
-      this._validateBenefits();
       this._validateSickPay();
+      this._validateHoliday();
       this._validatePensionContribution();
+      this._validateBenefits();
+
       // this._validateNoChange(); // Not working, disabled for LA Window
     }
     return this.validationErrors.length === 0;
