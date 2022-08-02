@@ -63,7 +63,7 @@ describe('PensionsComponent', () => {
     expect(getByText(heading)).toBeTruthy;
   });
 
-  fit('should pre select the first radio button if the establishment has a pension value of Yes', async () => {
+  it('should pre select the first radio button if the establishment has a pension value of Yes', async () => {
     const pensionContribution = 'Yes';
     const { component, fixture } = await setup(true, pensionContribution);
 
@@ -73,7 +73,7 @@ describe('PensionsComponent', () => {
     expect(component.form.value).toEqual({ pension: 'Yes' });
   });
 
-  fit('should pre select the second radio button if the establishment has a pension value of No', async () => {
+  it('should pre select the second radio button if the establishment has a pension value of No', async () => {
     const pensionContribution = 'No';
     const { component, fixture } = await setup(true, pensionContribution);
 
