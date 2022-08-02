@@ -162,12 +162,16 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   it('should show type of employer', async () => {
     const { component, fixture, getByText } = await setup();
 
+    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
+    component.ngOnInit();
+    fixture.detectChanges();
     const expectedTypeOfEmployer = 'Other, other employer type';
 
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
     expect(getByText(expectedTypeOfEmployer, { exact: false })).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
   });
 
   describe('Change links', () => {

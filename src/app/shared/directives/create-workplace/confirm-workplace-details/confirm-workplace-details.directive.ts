@@ -4,6 +4,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { BackService } from '@core/services/back.service';
+import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -133,7 +134,13 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   public setTypeOfEmployer(): void {
     const keys = Object.keys(this.employerTypeObject);
 
-    const employerTypeArr = keys.map((key) => this.employerTypeObject[key]);
+    const employerTypeArr = keys.map((key) => {
+      if (key === 'value') {
+        return WorkplaceUtil.formatTypeOfEmployer(this.employerTypeObject[key]);
+      } else {
+        return this.employerTypeObject[key];
+      }
+    });
     this.employerType = employerTypeArr.join(', ');
   }
 

@@ -85,7 +85,6 @@ describe('TypeOfEmployerComponent', () => {
     const { getByText, getByLabelText } = await setup();
 
     expect(getByText(`What type of employer is your workplace?`)).toBeTruthy();
-    expect(getByText('Workplace')).toBeTruthy();
     expect(getByLabelText('Local authority (adult services)')).toBeTruthy();
     expect(getByLabelText('Local authority (generic, other)')).toBeTruthy();
     expect(getByLabelText('Private sector')).toBeTruthy();

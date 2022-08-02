@@ -11,6 +11,14 @@
         (setReturn)="onSetReturn()"
         data-testid="workplaceNameAddress"
       ></app-summary-list>
+
+      <app-summary-list
+        [wrapBorder]="true"
+        [summaryList]="typeOfEmployer"
+        (setReturn)="onSetReturn()"
+        data-testid="typeOfEmployer"
+      ></app-summary-list>
+
       <app-summary-list
         [topBorder]="true"
         [summaryList]="mainService"
@@ -23,13 +31,6 @@
         [summaryList]="totalStaff"
         (setReturn)="onSetReturn()"
         data-testid="totalStaff"
-      ></app-summary-list>
-
-      <app-summary-list
-        [wrapBorder]="true"
-        [summaryList]="typeOfEmployer"
-        (setReturn)="onSetReturn()"
-        data-testid="typeOfEmployer"
       ></app-summary-list>
     </div>
 

@@ -5,7 +5,6 @@
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
-          <span class="govuk-caption-l">{{ section }}</span>
           <h1 class="govuk-fieldset__heading">{{ question }}</h1>
         </legend>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">

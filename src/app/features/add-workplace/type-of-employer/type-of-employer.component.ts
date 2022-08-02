@@ -23,7 +23,6 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
   public returnToConfirmDetails: URLStructure;
   public showOtherInputField = false;
   private maxLength = 120;
-  public section = 'Workplace';
   public options = [
     { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
     { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
