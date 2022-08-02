@@ -55,7 +55,7 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
     this.previousRoute = this.inStaffRecruitmentFlow
       ? ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay']
       : ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
-    // this.skipRoute = ['/workplace', `${this.establishment.uid}`, ''];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
   }
 
   private setupForm(): void {
@@ -112,6 +112,6 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
 
   protected onSuccess(): void {
     this.updateEstablishmentService();
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
   }
 }

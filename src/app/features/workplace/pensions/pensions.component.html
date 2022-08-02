@@ -11,20 +11,16 @@
       <fieldset class="govuk-fieldset">
         <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
             <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
               Do you contribute more than the minimum 3% into workplace pensions for your care workers?
             </h1>
           </legend>
-        </div>
-        <div class="govuk-grid-row govuk-!-margin-bottom-6">
-          <div class="govuk-grid-column-two-thirds">
-            <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">
-              <label class="govuk-label"
-                >Workplace pensions are sometimes called 'automatic enrolment', 'occupational', 'works', 'company' or
-                'work-based' pensions.</label
-              >
-            </div>
+          <div class="govuk-!-margin-bottom-6">
+            <label class="govuk-label">
+              Workplace pensions are sometimes called 'automatic enrolment', 'occupational', 'works', 'company' or
+              'work-based' pensions.</label
+            >
           </div>
         </div>
         <div class="gouvk-grid-row govuk-!-margin-bottom-3">
@@ -60,6 +56,7 @@
           [header]="'Recruitment'"
           [sections]="recruitmentSections"
           [currentSection]="section"
+          [completeProgressBar]="true"
         ></app-progress-bar>
         <app-progress-bar
           data-testid="progress-bar-3"
