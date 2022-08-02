@@ -1218,9 +1218,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/cash-loyalty`);
         expect(
-          within(careWorkersCashLoyaltyRow).getByText(
-            `Yes, £${component.workplace.careWorkersCashLoyaltyForFirstTwoYears}`,
-          ),
+          within(careWorkersCashLoyaltyRow).getByText(`£${component.workplace.careWorkersCashLoyaltyForFirstTwoYears}`),
         ).toBeTruthy();
       });
     });

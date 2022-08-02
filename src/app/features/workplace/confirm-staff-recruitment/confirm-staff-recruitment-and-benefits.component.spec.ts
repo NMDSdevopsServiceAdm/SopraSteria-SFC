@@ -19,7 +19,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { WorkplaceModule } from '../workplace.module';
 import { ConfirmStaffRecruitmentAndBenefitsComponent } from './confirm-staff-recruitment-and-benefits.component';
 
-describe('ConfirmStaffRecruitmentComponent', () => {
+describe('ConfirmStaffRecruitmentAndBenefitsComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByTestId, queryByText } = await render(
       ConfirmStaffRecruitmentAndBenefitsComponent,

@@ -672,7 +672,8 @@
             <ng-container
               *ngIf="
                 workplace.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
-                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know';
+                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know' ||
+                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Yes';
                 then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
                 else careWorkersCashLoyaltyForFirstTwoYearsKnown
               "
@@ -682,7 +683,7 @@
               {{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
             </ng-template>
             <ng-template #careWorkersCashLoyaltyForFirstTwoYearsKnown>
-              Yes, £{{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
+              £{{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
             </ng-template>
           </ng-template>
         </app-summary-record-value>
