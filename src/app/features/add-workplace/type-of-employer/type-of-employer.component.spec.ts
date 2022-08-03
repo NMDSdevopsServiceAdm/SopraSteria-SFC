@@ -88,7 +88,7 @@ describe('TypeOfEmployerComponent', () => {
     expect(getByLabelText('Local authority (adult services)')).toBeTruthy();
     expect(getByLabelText('Local authority (generic, other)')).toBeTruthy();
     expect(getByLabelText('Private sector')).toBeTruthy();
-    expect(getByLabelText('Voluntary, charity, non-profit (not for profit)')).toBeTruthy();
+    expect(getByLabelText('Voluntary, charity, not for profit')).toBeTruthy();
     expect(getByLabelText('Other')).toBeTruthy();
   });
 
@@ -199,10 +199,10 @@ describe('TypeOfEmployerComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
     });
 
-    it('should navigate to select-main-service when the Voluntary, charity, non-profit (not for profit) radio button is selected and the continue button clicked', async () => {
+    it('should navigate to select-main-service when the Voluntary, charity, not for profit radio button is selected and the continue button clicked', async () => {
       const { fixture, component, getByText, getByLabelText, routerSpy } = await setup();
 
-      const radioButton = getByLabelText('Voluntary, charity, non-profit (not for profit)');
+      const radioButton = getByLabelText('Voluntary, charity, not for profit');
       fireEvent.click(radioButton);
       fixture.detectChanges();
 

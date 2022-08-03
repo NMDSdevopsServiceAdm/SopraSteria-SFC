@@ -4,7 +4,7 @@ export class WorkplaceUtil {
       { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
       { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
       { value: 'Private Sector', text: 'Private sector' },
-      { value: 'Voluntary / Charity', text: 'Voluntary, charity, non-profit (not for profit)' },
+      { value: 'Voluntary / Charity', text: 'Voluntary, charity, not for profit' },
       { value: 'Other', text: 'Other' },
     ];
 

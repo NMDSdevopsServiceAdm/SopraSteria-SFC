@@ -23,7 +23,7 @@ describe('WorkplaceUtil', () => {
     it('should return the correct value if passed Voluntary / Charity', () => {
       const typeOfEmployer = WorkplaceUtil.formatTypeOfEmployer('Voluntary / Charity');
 
-      expect(typeOfEmployer).toEqual('Voluntary, charity, non-profit (not for profit)');
+      expect(typeOfEmployer).toEqual('Voluntary, charity, not for profit');
     });
 
     it('should return the correct value if passed Other', () => {
