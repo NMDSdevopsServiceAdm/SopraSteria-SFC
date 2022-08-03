@@ -142,7 +142,7 @@ describe('PensionsComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-benefit-holiday-leave']);
     });
 
     it('should navigate to the next page when skipping from the flow', async () => {
@@ -152,7 +152,7 @@ describe('PensionsComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-benefit-holiday-leave']);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
