@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FLOAT_PATTERN } from '@core/constants/constants';
-import { jobOptionsEnum, PensionsEnum } from '@core/model/establishment.model';
+import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,15 +17,15 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
   public pensionsOptions = [
     {
       label: 'Yes',
-      value: PensionsEnum.YES,
+      value: StaffBenefitEnum.YES,
     },
     {
       label: 'No',
-      value: PensionsEnum.NO,
+      value: StaffBenefitEnum.NO,
     },
     {
-      label: "Don't know",
-      value: PensionsEnum.DONT_KNOW,
+      label: `Don't know`,
+      value: StaffBenefitEnum.DONT_KNOW,
     },
   ];
 

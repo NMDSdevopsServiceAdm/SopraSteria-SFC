@@ -135,25 +135,25 @@ describe('PensionsComponent', () => {
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
-    // it('should navigate to the next page when submitting from the flow', async () => {
-    //   const { fixture, getByText, routerSpy } = await setup(false);
+    it('should navigate to the next page when submitting from the flow', async () => {
+      const { fixture, getByText, routerSpy } = await setup(false);
 
-    //   const button = getByText('Save and continue');
-    //   fireEvent.click(button);
-    //   fixture.detectChanges();
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
 
-    //   expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'pensions']);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+    });
 
-    // it('should navigate to the next page when submitting from the flow', async () => {
-    //   const { component, fixture, getByText, routerSpy } = await setup(false);
+    it('should navigate to the next page when skipping from the flow', async () => {
+      const { component, fixture, getByText, routerSpy } = await setup(false);
 
-    //   const link = getByText('Skip this question');
-    //   fireEvent.click(link);
-    //   fixture.detectChanges();
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+      fixture.detectChanges();
 
-    //   expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'pensions']);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+    });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup();

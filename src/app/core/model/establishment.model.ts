@@ -183,12 +183,6 @@ export enum StaffBenefitEnum {
   DONT_KNOW = "Don't know",
 }
 
-export enum PensionsEnum {
-  YES = 'Yes',
-  NO = 'No',
-  DONT_KNOW = "Don't know",
-}
-
 export interface StaffRecruitmentDataRequest {
   amountSpent?: string;
   numberOfInterviews?: string;
