@@ -50,6 +50,7 @@ export class MockEstablishmentService extends EstablishmentService {
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No, never',
     careWorkersCashLoyaltyForFirstTwoYears: 'No',
     sickPay: 'No',
+    pensionContribution: 'No',
     careWorkersLeaveDaysPerYear: '35',
   };
 
@@ -222,6 +223,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
     careWorkersCashLoyaltyForFirstTwoYears: 'No',
     sickPay: 'No',
+    pensionContribution: 'No',
     careWorkersLeaveDaysPerYear: '35',
   };
 
