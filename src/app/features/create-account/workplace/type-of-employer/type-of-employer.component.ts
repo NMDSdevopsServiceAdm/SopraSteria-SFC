@@ -1,68 +1,32 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
+import { TypeOfEmployerDirective } from '@shared/directives/create-workplace/type-of-employer/type-of-employer.directive';
 
 @Component({
   selector: 'app-type-of-employer',
   templateUrl: '../../../../shared/directives/create-workplace/type-of-employer/type-of-employer.component.html',
 })
-export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
-  @ViewChild('formEl') formEl: ElementRef;
-
-  private flow: string;
-  public form: FormGroup;
-  public formErrorsMap: ErrorDetails[];
-  public submitted = false;
-  public serverError: string;
-  public isRegulated: boolean;
-  public returnToConfirmDetails: URLStructure;
-  public showOtherInputField = false;
-  private maxLength = 120;
-  public options = [
-    { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
-    { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
-    { value: 'Private Sector', text: 'Private sector' },
-    { value: 'Voluntary / Charity', text: 'Voluntary, charity, not for profit' },
-    { value: 'Other', text: 'Other' },
-  ];
+export class TypeOfEmployerComponent extends TypeOfEmployerDirective {
   public question = 'What type of employer is your workplace?';
 
   constructor(
-    public formBuilder: FormBuilder,
+    protected formBuilder: FormBuilder,
     public backService: BackService,
-    public router: Router,
-    public route: ActivatedRoute,
-    public errorSummaryService: ErrorSummaryService,
+    protected router: Router,
+    protected route: ActivatedRoute,
+    protected errorSummaryService: ErrorSummaryService,
     public registrationService: RegistrationService,
-  ) {}
+  ) {
+    super(formBuilder, backService, router, route, errorSummaryService, registrationService);
+  }
 
-  ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
+  protected init(): void {
     this.isRegulated = this.registrationService.isRegulated();
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
-    this.setupForm();
-    this.setupFormErrorsMap();
-    this.prefillForm();
-    this.setBackLink();
-  }
-
-  public ngAfterViewInit(): void {
-    this.errorSummaryService.formEl$.next(this.formEl);
-  }
-
-  private setupForm(): void {
-    this.form = this.formBuilder.group(
-      {
-        employerType: ['', Validators.required],
-        other: [null, Validators.maxLength(this.maxLength)],
-      },
-      { updateOn: 'submit' },
-    );
   }
 
   public setBackLink(): void {
@@ -75,95 +39,8 @@ export class TypeOfEmployerComponent implements OnInit, AfterViewInit {
     this.backService.setBackLink({ url: [this.flow, route] });
   }
 
-  private prefillForm(): void {
-    if (this.registrationService.typeOfEmployer$.value) {
-      this.showOtherInputField = !!this.registrationService.typeOfEmployer$.value.other;
-      this.form.setValue({
-        employerType: this.registrationService.typeOfEmployer$.value.value,
-        other: this.showOtherInputField ? this.registrationService.typeOfEmployer$.value.other : null,
-      });
-    }
-  }
-
-  private getCQCRegulatedBackLink(): string {
-    if (this.registrationService.manuallyEnteredWorkplace$.value) {
-      return 'workplace-name-address';
-    }
-    if (this.registrationService.locationAddresses$.value.length == 1) {
-      return 'your-workplace';
-    }
-    if (this.registrationService.locationAddresses$.value.length > 1) {
-      return 'select-workplace';
-    }
-  }
-
-  private getNonCQCRegulatedBackLink(): string {
-    if (this.registrationService.manuallyEnteredWorkplace$.value) {
-      return 'workplace-name-address';
-    }
-    if (this.registrationService.manuallyEnteredWorkplaceName$.value) {
-      return 'workplace-name';
-    }
-    return 'select-workplace-address';
-  }
-
-  public setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'employerType',
-        type: [
-          {
-            name: 'required',
-            message: 'Select the type of employer',
-          },
-        ],
-      },
-      {
-        item: 'other',
-        type: [
-          {
-            name: 'maxlength',
-            message: `Other Employer type must be ${this.maxLength} characters or less`,
-          },
-        ],
-      },
-    ];
-  }
-
-  public getErrorMessage(item: string): string {
-    const errorType = Object.keys(this.form.get(item).errors)[0];
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  public onSubmit(): void {
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (this.form.valid) {
-      this.generateUpdateProps();
-      this.navigateToNextPage();
-    } else {
-      this.errorSummaryService.scrollToErrorSummary();
-    }
-  }
-
-  private navigateToNextPage(): void {
+  protected navigateToNextPage(): void {
     const url = this.returnToConfirmDetails ? 'confirm-details' : 'select-main-service';
     this.router.navigate([this.flow, url]);
-  }
-
-  private generateUpdateProps(): void {
-    const { employerType, other } = this.form.value;
-
-    const employerTypeObject = {
-      value: employerType,
-      ...(employerType === 'Other' && { other }),
-    };
-
-    this.registrationService.typeOfEmployer$.next(employerTypeObject);
-  }
-
-  public onOtherSelect(radioValue: string): void {
-    this.showOtherInputField = radioValue === 'Other';
   }
 }
