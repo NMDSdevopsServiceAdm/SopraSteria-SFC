@@ -1945,7 +1945,7 @@ class WorkplaceCSVValidator {
 
   _validateBenefits() {
     const benefitsRegex = /^\d*(\.\d{1,2})?$/;
-    const benefits = this._currentLine.BENEFITS;
+    const benefits = this._currentLine.BENEFITS.split(';').join('');
 
     const localValidationErrors = [];
     if (!benefitsRegex.test(benefits) && benefits.toLowerCase() !== 'unknown') {
@@ -1960,7 +1960,7 @@ class WorkplaceCSVValidator {
         name: this.currentLine.LOCALESTID,
       });
     } else {
-      this._careWorkersCashLoyaltyForFirstTwoYears = benefits;
+      this._careWorkersCashLoyaltyForFirstTwoYears = this._currentLine.BENEFITS;
       return true;
     }
 
@@ -2601,6 +2601,37 @@ class WorkplaceCSVValidator {
     });
   }
 
+  _transformCashLoyaltyForFirstTwoYears() {
+    const YES = '1';
+    const NO = '0';
+    const DONT_KNOW = 'unknown';
+
+    const benefit = this._careWorkersCashLoyaltyForFirstTwoYears;
+
+    if (benefit.includes(';')) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
+    } else if (benefit === YES) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+    } else if (benefit === NO) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
+    } else if (benefit === DONT_KNOW) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+    }
+  }
+
+  _transformPensionAndSickPay() {
+    const mapping = {
+      0: 'No',
+      1: 'Yes',
+      unknown: "Don't know",
+      '': null,
+    };
+    const sickPay = this._sickPay;
+    this._sickPay = mapping[sickPay];
+    const pension = this._pensionContribution;
+    this._pensionContribution = mapping[pension];
+  }
+
   preValidate(headers) {
     return this._validateHeaders(headers);
   }
@@ -2807,6 +2838,8 @@ class WorkplaceCSVValidator {
       status = !this._transformAllVacanciesStartersLeavers() ? false : status;
       status = !this._transformAdvertisingAndInterviews() ? false : status;
       status = !this._transformRepeatTrainingAndAcceptCareCert() ? false : status;
+      status = !this._transformCashLoyaltyForFirstTwoYears() ? false : status;
+      status = !this._transformPensionAndSickPay() ? false : status;
       return status;
     } else {
       return true;
@@ -2936,6 +2969,10 @@ class WorkplaceCSVValidator {
       moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
       peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
       wouldYouAcceptCareCertificatesFromPreviousEmployment: this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
+      careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
+      sickPay: this._sickPay,
+      pensionContribution: this._pensionContribution,
+      careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
     };
 
     if (this._allServices) {
