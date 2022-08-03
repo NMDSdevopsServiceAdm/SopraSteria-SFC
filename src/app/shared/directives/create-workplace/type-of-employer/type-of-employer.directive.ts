@@ -40,6 +40,7 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
+    this.init();
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefillForm();
