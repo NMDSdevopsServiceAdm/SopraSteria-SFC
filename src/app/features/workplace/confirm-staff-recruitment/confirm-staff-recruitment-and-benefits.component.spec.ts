@@ -205,13 +205,13 @@ describe('ConfirmStaffRecruitmentAndBenefitsComponent', () => {
     });
   });
 
-  xdescribe('Staff benefits questions', () => {
+  describe('Staff benefits questions', () => {
     it('should display all questions', async () => {
       const { getByText } = await setup();
 
       expect(getByText('Cash loyalty bonus')).toBeTruthy();
       expect(getByText(`Offer more than statutory 'sick pay'`)).toBeTruthy();
-      //expect(getByText('Higher pension contributions')).toBeTruthy();
+      expect(getByText('Higher pension contributions')).toBeTruthy();
       expect(getByText('Number of days leave')).toBeTruthy();
     });
 
@@ -220,7 +220,7 @@ describe('ConfirmStaffRecruitmentAndBenefitsComponent', () => {
 
       expect(component.establishment.careWorkersCashLoyaltyForFirstTwoYears).toBe('No');
       expect(component.establishment.sickPay).toBe('No');
-      //expect(component.establishment.higherPensionContribution).toBe('Yes, always');
+      expect(component.establishment.pensionContribution).toBe('No');
       expect(component.establishment.careWorkersLeaveDaysPerYear).toBe('35');
     });
 
@@ -267,29 +267,25 @@ describe('ConfirmStaffRecruitmentAndBenefitsComponent', () => {
         expect(sickPay.innerHTML).toContain(`href="/workplace/mocked-uid/benefits-statutory-sick-pay"`);
       });
 
-      xit('should show the change link when higherPensionContribution is not null and set the link to `higher-pension-contributions`', async () => {
+      it('should show the change link when higherPensionContribution is not null and set the link to `pensions`', async () => {
         await setup();
 
         const higherPensionContribution = within(document.body).queryByTestId('higherPensionContributions');
 
         expect(higherPensionContribution.innerHTML).toContain('Change');
-        expect(higherPensionContribution.innerHTML).toContain(
-          `href="/workplace/mocked-uid/higher-pension-contributions"`,
-        );
+        expect(higherPensionContribution.innerHTML).toContain(`href="/workplace/mocked-uid/pensions"`);
       });
 
-      xit('should show the add link when higherPensionContribution is null and set the link to `higher-pension-contributions`', async () => {
+      it('should show the add link when higherPensionContribution is null and set the link to `pensions`', async () => {
         const { component, fixture } = await setup();
 
-        // component.establishment.higherPensionContribution = null;
+        component.establishment.pensionContribution = null;
         fixture.detectChanges();
 
         const higherPensionContribution = within(document.body).queryByTestId('higherPensionContributions');
 
         expect(higherPensionContribution.innerHTML).toContain('Add');
-        expect(higherPensionContribution.innerHTML).toContain(
-          `href="/workplace/mocked-uid/higher-pension-contributions"`,
-        );
+        expect(higherPensionContribution.innerHTML).toContain(`href="/workplace/mocked-uid/pensions"`);
       });
 
       it('should show the change link when careWorkersLeaveDaysPerYear is not null and set the link to `staff-benefit-holiday-leave`', async () => {

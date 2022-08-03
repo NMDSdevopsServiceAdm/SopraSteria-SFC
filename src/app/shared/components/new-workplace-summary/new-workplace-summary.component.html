@@ -722,7 +722,7 @@
       </dd>
     </div>
 
-    <!-- <div class="govuk-summary-list__row" data-testid="higher-pension-contributions">
+    <div class="govuk-summary-list__row" data-testid="higher-pension-contributions">
       <dt class="govuk-summary-list__key">Higher pension contributions</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
@@ -730,23 +730,21 @@
           [wdfValue]="workplace.wdf?.employerType"
           [overallWdfEligibility]="overallWdfEligibility"
         >
-          <ng-container *ngIf="!workplace.higherPensionContribution; else higherPensionContributionType">
-            -
-          </ng-container>
-          <ng-template #higherPensionContributionType>
-            {{ workplace.higherPensionContribution }}
+          <ng-container *ngIf="!workplace.pensionContribution; else pensionContributionType"> - </ng-container>
+          <ng-template #pensionContributionType>
+            {{ workplace.pensionContribution }}
           </ng-template>
         </app-summary-record-value>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          [explanationText]="' higher pension contributions'"
-          [link]="['/workplace', workplace.uid, 'higher-pension-contributions']"
-          [hasData]="workplace.higherPensionContribution"
+          [explanationText]="' pension'"
+          [link]="['/workplace', workplace.uid, 'pensions']"
+          [hasData]="workplace.pensionContribution"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
       </dd>
-    </div> -->
+    </div>
 
     <div class="govuk-summary-list__row" data-testid="number-of-days-leave">
       <dt class="govuk-summary-list__key">Number of days leave</dt>

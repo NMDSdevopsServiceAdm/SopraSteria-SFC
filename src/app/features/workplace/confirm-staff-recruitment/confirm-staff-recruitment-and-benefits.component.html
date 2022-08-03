@@ -191,25 +191,23 @@
       </dd>
     </div>
 
-    <!-- <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Higher pension contributions</dt>
-        <dd class="govuk-summary-list__value">
-            <ng-container *ngIf="!establishment.higherPensionContribution; else higherPensionContributionType">
-              -
-            </ng-container>
-            <ng-template #higherPensionContributionType>
-              {{ establishment.higherPensionContribution }}
-            </ng-template>
-        </dd>
-        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="higherPensionContributions">
-          <app-summary-record-change
-            [explanationText]="' higher pension contributions'"
-            [link]="['/workplace', establishment.uid, 'higher-pension-contributions']"
-            [hasData]="establishment.higherPensionContribution"
-            (setReturnClicked)="this.setReturn()"
-          ></app-summary-record-change>
-        </dd>
-      </div> -->
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Higher pension contributions</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="!establishment.pensionContribution; else pensionContribution"> - </ng-container>
+        <ng-template #pensionContribution>
+          {{ establishment.pensionContribution }}
+        </ng-template>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="higherPensionContributions">
+        <app-summary-record-change
+          [explanationText]="' higher pension contributions'"
+          [link]="['/workplace', establishment.uid, 'pensions']"
+          [hasData]="establishment.pensionContribution"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
 
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">Number of days leave</dt>

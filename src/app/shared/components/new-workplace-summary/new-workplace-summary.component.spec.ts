@@ -1254,36 +1254,35 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
     });
 
-    xdescribe('higher pension contributions', () => {
-      it('should show dash and have Add information button on higher pension contributions row when higherPensionContribution is set to null (not answered)', async () => {
+    describe('higher pension contributions', () => {
+      it('should show dash and have Add information button on higher pension contributions row when pensionContribution is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.higherPensionContribution = null;
+        component.workplace.pensionContribution = null;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const higherPensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
-        const link = within(higherPensionContributionRow).queryByText('Add');
+        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
+        const link = within(pensionContributionRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/higher-pension-contributions`);
-        expect(within(higherPensionContributionRow).queryByText('-')).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/pensions`);
+        expect(within(pensionContributionRow).queryByText('-')).toBeTruthy();
       });
 
-      it('should show Change button on higher pension contributions row when higherPensionContribution has a value (answered)', async () => {
+      it('should show Change button on higher pension contributions row when pensionContribution has a value (answered)', async () => {
         const { component, fixture } = await setup();
 
+        component.workplace.pensionContribution = 'Yes';
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const higherPensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
-        const link = within(higherPensionContributionRow).queryByText('Change');
+        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
+        const link = within(pensionContributionRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/higher-pension-contributions`);
-        expect(
-          within(higherPensionContributionRow).getByText(component.workplace.higherPensionContribution),
-        ).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/pensions`);
+        expect(within(pensionContributionRow).getByText(component.workplace.pensionContribution)).toBeTruthy();
       });
     });
 
