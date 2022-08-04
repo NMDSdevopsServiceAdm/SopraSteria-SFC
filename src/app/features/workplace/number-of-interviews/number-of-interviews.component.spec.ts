@@ -311,6 +311,12 @@ describe('NumberOfInterviews', () => {
   });
 
   describe('errors', () => {
+    let errorMessage;
+
+    beforeEach(() => {
+      errorMessage = 'Number of people interviewed must be a positive whole number, like 7';
+    });
+
     it('should show an error if text is inputted into the number of people interviewed input', async () => {
       const { fixture, getByText, getByLabelText, getAllByText } = await setup();
 
@@ -321,7 +327,6 @@ describe('NumberOfInterviews', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Number of people interviewed must be a number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -335,7 +340,6 @@ describe('NumberOfInterviews', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Number of people interviewed must be a positive number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -349,7 +353,6 @@ describe('NumberOfInterviews', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Number of people interviewed must be a positive number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -363,7 +366,6 @@ describe('NumberOfInterviews', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Number of people interviewed must be a whole number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -377,7 +379,6 @@ describe('NumberOfInterviews', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Number of people interviewed must be a number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -391,7 +392,6 @@ describe('NumberOfInterviews', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Number of people interviewed must be a whole number, like 7';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
   });
