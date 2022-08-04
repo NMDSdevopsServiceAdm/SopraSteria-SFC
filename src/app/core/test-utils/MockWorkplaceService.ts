@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { EmployerType } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
@@ -84,9 +85,13 @@ export class MockWorkplaceServiceWithMainService extends MockWorkplaceService {
     otherName: 'Hello!',
   });
 
-  public typeOfEmployer$: BehaviorSubject<EmployerType> = new BehaviorSubject({
-    value: 'Other',
-    other: 'other employer type',
-  });
   public totalStaff$: BehaviorSubject<any> = new BehaviorSubject('4');
+
+  public static factory(typeOfEmployer: EmployerType = { value: 'Private Sector' }) {
+    return (http: HttpClient) => {
+      const service = new MockWorkplaceServiceWithMainService(http);
+      service.typeOfEmployer$.next(typeOfEmployer);
+      return service;
+    };
+  }
 }

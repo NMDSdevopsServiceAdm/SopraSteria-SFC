@@ -132,16 +132,11 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   }
 
   public setTypeOfEmployer(): void {
-    const keys = Object.keys(this.employerTypeObject);
-
-    const employerTypeArr = keys.map((key) => {
-      if (key === 'value') {
-        return WorkplaceUtil.formatTypeOfEmployer(this.employerTypeObject[key]);
-      } else {
-        return this.employerTypeObject[key];
-      }
-    });
-    this.employerType = employerTypeArr.join(', ');
+    if (this.employerTypeObject.value === 'Other' && this.employerTypeObject.other) {
+      this.employerType = this.employerTypeObject.other;
+    } else {
+      this.employerType = WorkplaceUtil.formatTypeOfEmployer(this.employerTypeObject.value);
+    }
   }
 
   private convertWorkplaceAddressToString(workplaceAddress: Array<string>): string {

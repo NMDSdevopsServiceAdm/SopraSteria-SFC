@@ -143,7 +143,7 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     const input = 'some employer type';
-    const employerTypeInput = getByLabelText('Other Employer Type');
+    const employerTypeInput = getByLabelText('Other employer type (optional)');
     userEvent.type(employerTypeInput, input);
 
     const submitButton = getByText('Save and continue');
@@ -176,7 +176,7 @@ describe('TypeOfEmployerComponent', () => {
 
     const longString =
       'ThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongString';
-    const employerTypeInput = getByLabelText('Other Employer Type');
+    const employerTypeInput = getByLabelText('Other employer type (optional)');
     userEvent.type(employerTypeInput, longString);
 
     const submitButton = getByText('Save and continue');

@@ -75,7 +75,7 @@ describe('TypeOfEmployerComponent', () => {
     };
   }
 
-  it('should render SelectMainServiceComponent', async () => {
+  it('should render TypeOfEmployerComponent', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
@@ -239,7 +239,7 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       const input = 'some employer type';
-      const employerTypeInput = getByLabelText('Other Employer Type');
+      const employerTypeInput = getByLabelText('Other employer type (optional)');
       userEvent.type(employerTypeInput, input);
 
       const submitButton = getByText('Continue');
@@ -277,7 +277,7 @@ describe('TypeOfEmployerComponent', () => {
 
       const longString =
         'ThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongString';
-      const employerTypeInput = getByLabelText('Other Employer Type');
+      const employerTypeInput = getByLabelText('Other employer type (optional)');
       userEvent.type(employerTypeInput, longString);
 
       const submitButton = getByText('Continue');

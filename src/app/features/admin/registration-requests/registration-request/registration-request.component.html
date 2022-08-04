@@ -94,10 +94,11 @@
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Employer type</dt>
         <dd class="govuk-summary-list__value">
-          <span>{{ registration.establishment.employerType.value }}</span>
-          <span *ngIf="registration.establishment.employerType.other"
-            >, {{ registration.establishment.employerType.other }}</span
-          >
+          <span>{{
+            registration.establishment.employerType?.other
+              ? registration.establishment.employerType.other
+              : registration.establishment.employerType.value
+          }}</span>
         </dd>
       </div>
     </dl>

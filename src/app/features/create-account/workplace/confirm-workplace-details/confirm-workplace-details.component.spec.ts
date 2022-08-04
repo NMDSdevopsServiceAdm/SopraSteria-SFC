@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EmployerType } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
@@ -14,7 +16,7 @@ import { render, within } from '@testing-library/angular';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
 
 describe('ConfirmWorkplaceDetailsComponent', () => {
-  async function setup() {
+  async function setup(typeOfEmployer: EmployerType = { value: 'Private Sector' }) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       ConfirmWorkplaceDetailsComponent,
       {
@@ -29,7 +31,8 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
         providers: [
           {
             provide: RegistrationService,
-            useClass: MockRegistrationServiceWithMainService,
+            useFactory: MockRegistrationServiceWithMainService.factory(typeOfEmployer),
+            deps: [HttpClient],
           },
           {
             provide: EstablishmentService,
@@ -159,18 +162,93 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     expect(getByText(expectedTotalStaff, { exact: false })).toBeTruthy();
   });
 
-  it('should show type of employer', async () => {
+  it('should show type of employer with correct text when Local authority (adult services) is selected', async () => {
+    const { component, fixture, getByText } = await setup({ value: 'Local Authority (adult services)' });
+
+    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'Local authority (adult services)';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Local authority (generic, other) is selected', async () => {
+    const { component, fixture, getByText } = await setup({ value: 'Local Authority (generic/other)' });
+
+    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'Local authority (generic, other)';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Private sector is selected', async () => {
     const { component, fixture, getByText } = await setup();
 
     const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
-    const expectedTypeOfEmployer = 'Other, other employer type';
+    const expectedTypeOfEmployer = 'Private sector';
 
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
-    expect(getByText(expectedTypeOfEmployer, { exact: false })).toBeTruthy();
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Voluntary, charity, not for profit is selected', async () => {
+    const { component, fixture, getByText } = await setup({ value: 'Voluntary / Charity' });
+
+    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'Voluntary, charity, not for profit';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Other is selected and no input', async () => {
+    const { component, fixture, getByText } = await setup({ value: 'Other' });
+
+    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'Other';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Other is selected and there is an input', async () => {
+    const { component, fixture, getByText } = await setup({ value: 'Other', other: 'other employer type' });
+
+    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'other employer type';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
     expect(setTypeOfEmployerSpy).toHaveBeenCalled();
   });
 

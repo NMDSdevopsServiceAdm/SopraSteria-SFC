@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -30,7 +31,8 @@ describe('ConfirmDetailsComponent', () => {
       providers: [
         {
           provide: RegistrationService,
-          useClass: MockRegistrationServiceWithMainService,
+          useFactory: MockRegistrationServiceWithMainService.factory(),
+          deps: [HttpClient],
         },
         {
           provide: UserService,
@@ -179,7 +181,7 @@ describe('ConfirmDetailsComponent', () => {
         mainServiceOther: 'Hello!',
         isRegulated: null,
         numberOfStaff: '4',
-        typeOfEmployer: { value: 'Other', other: 'other employer type' },
+        typeOfEmployer: { value: 'Private Sector' },
       });
     });
 
