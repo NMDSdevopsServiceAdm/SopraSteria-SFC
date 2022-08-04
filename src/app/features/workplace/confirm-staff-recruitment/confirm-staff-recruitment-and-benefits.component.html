@@ -1,0 +1,232 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-l" data-testid="section-heading">Summary</span>
+    <h1 class="govuk-heading-l">{{ establishment.name }}</h1>
+
+    <div class="govuk-button-group govuk__justify-content-space-between govuk-!-margin-top-7">
+      <p>Check your answers before you confirm them.</p>
+      <button class="govuk-button" type="button" (click)="onSuccess()">Confirm your answers</button>
+    </div>
+    <div class="govuk-summary-list__row" data-testid="staff-recruitment-section">
+      <dt class="govuk-summary-list__key">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Recruitment</h2>
+      </dt>
+      <dd class="govuk-summary-list__value"></dd>
+      <dd class="govuk-summary-list__actions"></dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Advertising spend</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container
+          *ngIf="
+            !establishment.moneySpentOnAdvertisingInTheLastFourWeeks;
+            else moneySpentOnAdvertisingInTheLastFourWeekType
+          "
+        >
+          -
+        </ng-container>
+        <ng-template #moneySpentOnAdvertisingInTheLastFourWeekType>
+          <ng-container
+            *ngIf="
+              establishment.moneySpentOnAdvertisingInTheLastFourWeeks == 'None' ||
+                establishment.moneySpentOnAdvertisingInTheLastFourWeeks == 'Don\'t know';
+              then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
+              else moneySpentOnAdvertisingInTheLastFourWeeksKnown
+            "
+          >
+          </ng-container>
+        </ng-template>
+        <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
+          {{ establishment.moneySpentOnAdvertisingInTheLastFourWeeks }}
+        </ng-template>
+        <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
+          £{{ this.formatMonetaryValue(establishment.moneySpentOnAdvertisingInTheLastFourWeeks) }}
+        </ng-template>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="advertisingSpend">
+        <app-summary-record-change
+          [explanationText]="' advertising spend'"
+          [link]="['/', this.flow, this.establishment.uid, 'recruitment-advertising-cost']"
+          [hasData]="establishment.moneySpentOnAdvertisingInTheLastFourWeeks"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">People interviewed</dt>
+
+      <dd class="govuk-summary-list__value asc__preline">
+        <ng-container
+          *ngIf="!establishment.peopleInterviewedInTheLastFourWeeks; else peopleInterviewedInTheLastFourWeekType"
+        >
+          -
+        </ng-container>
+        <ng-template #peopleInterviewedInTheLastFourWeekType>
+          {{ establishment.peopleInterviewedInTheLastFourWeeks }}
+        </ng-template>
+      </dd>
+
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="peopleInterviewed">
+        <app-summary-record-change
+          [explanationText]="' people interviewed'"
+          [link]="['/', this.flow, this.establishment.uid, 'number-of-interviews']"
+          [hasData]="establishment.peopleInterviewedInTheLastFourWeeks"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Repeat training</dt>
+
+      <dd class="govuk-summary-list__value asc__preline">
+        <ng-container
+          *ngIf="
+            !establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+            else doNewStartersRepeatTrainingType
+          "
+        >
+          -
+        </ng-container>
+        <ng-template #doNewStartersRepeatTrainingType>
+          {{ establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment }}
+        </ng-template>
+      </dd>
+
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="repeatTraining">
+        <app-summary-record-change
+          [explanationText]="' repeat training'"
+          [link]="['/', this.flow, this.establishment.uid, 'staff-recruitment-capture-training-requirement']"
+          [hasData]="establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Accept Care Certificate</dt>
+
+      <dd class="govuk-summary-list__value asc__preline">
+        <ng-container
+          *ngIf="
+            !establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment;
+            else wouldYouAcceptPreviousCertificatesType
+          "
+        >
+          -
+        </ng-container>
+        <ng-template #wouldYouAcceptPreviousCertificatesType>
+          {{ establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment }}
+        </ng-template>
+      </dd>
+
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="acceptCareCertificate">
+        <app-summary-record-change
+          [explanationText]="' accept care certificate'"
+          [link]="['/', this.flow, this.establishment.uid, 'accept-previous-care-certificate']"
+          [hasData]="establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row" data-testid="staff-benefits-section">
+      <dt class="govuk-summary-list__key">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Staff benefits</h2>
+      </dt>
+      <dd class="govuk-summary-list__value"></dd>
+      <dd class="govuk-summary-list__actions"></dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container
+          *ngIf="!establishment.careWorkersCashLoyaltyForFirstTwoYears; else careWorkersCashLoyaltyForFirstTwoYearsType"
+        >
+          -
+        </ng-container>
+        <ng-template #careWorkersCashLoyaltyForFirstTwoYearsType>
+          <ng-container
+            *ngIf="
+              establishment.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
+                establishment.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know' ||
+                establishment.careWorkersCashLoyaltyForFirstTwoYears == 'Yes';
+              then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
+              else careWorkersCashLoyaltyForFirstTwoYearsKnown
+            "
+          >
+          </ng-container>
+          <ng-template #careWorkersCashLoyaltyForFirstTwoYearsNotKnown>
+            {{ establishment.careWorkersCashLoyaltyForFirstTwoYears }}
+          </ng-template>
+          <ng-template #careWorkersCashLoyaltyForFirstTwoYearsKnown>
+            £{{ this.formatMonetaryValue(establishment.careWorkersCashLoyaltyForFirstTwoYears) }}
+          </ng-template>
+        </ng-template>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="cashLoyaltyBonusSpend">
+        <app-summary-record-change
+          [explanationText]="' loyalty bonus'"
+          [link]="['/workplace', establishment.uid, 'cash-loyalty']"
+          [hasData]="establishment.careWorkersCashLoyaltyForFirstTwoYears"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Offer more than statutory 'sick pay'</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="!establishment.sickPay; else sickPayType"> - </ng-container>
+        <ng-template #sickPayType>
+          {{ establishment.sickPay }}
+        </ng-template>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="offerMoreThanStatutorySickPay">
+        <app-summary-record-change
+          [explanationText]="' statutory sick pay'"
+          [link]="['/workplace', establishment.uid, 'benefits-statutory-sick-pay']"
+          [hasData]="establishment.sickPay"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Higher pension contributions</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="!establishment.pensionContribution; else pensionContribution"> - </ng-container>
+        <ng-template #pensionContribution>
+          {{ establishment.pensionContribution }}
+        </ng-template>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="higherPensionContributions">
+        <app-summary-record-change
+          [explanationText]="' higher pension contributions'"
+          [link]="['/workplace', establishment.uid, 'pensions']"
+          [hasData]="establishment.pensionContribution"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Number of days leave</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="!establishment.careWorkersLeaveDaysPerYear; else careWorkersLeaveDaysPerYearType">
+          -
+        </ng-container>
+        <ng-template #careWorkersLeaveDaysPerYearType>
+          {{ establishment.careWorkersLeaveDaysPerYear }}
+        </ng-template>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="numberOfDaysLeave">
+        <app-summary-record-change
+          [explanationText]="' holiday leave'"
+          [link]="['/workplace', establishment.uid, 'staff-benefit-holiday-leave']"
+          [hasData]="establishment.careWorkersLeaveDaysPerYear"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+  </div>
+</div>

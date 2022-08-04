@@ -152,6 +152,10 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     }
   }
 
+  public formatMonetaryValue(unformattedMoneyString): string {
+    return unformattedMoneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
   public filterAndSortOtherServices(services: Service[]): Service[] {
     return sortBy(
       services.filter((service) => service.name !== this.workplace.mainService.name),
