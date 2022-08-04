@@ -42,6 +42,10 @@ const validateAPIObject = (establishmentRow) => {
     moneySpentOnAdvertisingInTheLastFourWeeks: '101.30',
     peopleInterviewedInTheLastFourWeeks: '9',
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 2,
+    careWorkersCashLoyaltyForFirstTwoYears: '200',
+    sickPay: 0,
+    pensionContribution: 1,
+    careWorkersLeaveDaysPerYear: '35',
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
@@ -561,6 +565,52 @@ describe('Bulk Upload - Establishment CSV', () => {
 
         expect(apiObject.wouldYouAcceptCareCertificatesFromPreviousEmployment).to.equal(null);
       });
+    });
+  });
+
+  describe('benefit', () => {
+    it('should return the value when a number in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '200';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('200');
+    });
+
+    it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = 'unknown';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal("Don't know");
+    });
+
+    it("should return 'No' when 0 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '0';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('No');
+    });
+
+    it('should return null when empty in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('');
     });
   });
 
