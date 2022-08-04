@@ -1294,6 +1294,10 @@ module.exports = function (sequelize, DataTypes) {
         'peopleInterviewedInTheLastFourWeeks',
         'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
         'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        'careWorkersLeaveDaysPerYear',
+        'careWorkersCashLoyaltyForFirstTwoYears',
+        'sickPay',
+        'pensionContribution',
       ],
       where: {
         [Op.or]: [

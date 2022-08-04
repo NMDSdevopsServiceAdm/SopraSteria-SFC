@@ -3217,6 +3217,26 @@ class WorkplaceCSVValidator {
     columns.push(repeatTrainingAndCareCertMapping(entity.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment));
     columns.push(repeatTrainingAndCareCertMapping(entity.wouldYouAcceptCareCertificatesFromPreviousEmployment));
 
+    // Sick Pay, Pension Contribution,
+    const sickPayAndPensionMapping = (value) => {
+      if (value === "Don't know") {
+        return 'unknown';
+      } else if (value === 'No') {
+        return 0;
+      } else if (value === 'Yes') {
+        return 1;
+      } else if (!value) {
+        return '';
+      } else {
+        return value;
+      }
+    };
+
+    columns.push(sickPayAndPensionMapping(entity.careWorkersLeaveDaysPerYear));
+    columns.push(sickPayAndPensionMapping(entity.careWorkersCashLoyaltyForFirstTwoYears));
+    columns.push(sickPayAndPensionMapping(entity.sickPay));
+    columns.push(sickPayAndPensionMapping(entity.pensionContribution));
+
     return columns.join(',');
   }
 
