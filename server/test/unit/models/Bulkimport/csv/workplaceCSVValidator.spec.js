@@ -580,6 +580,17 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('200');
     });
 
+    it("should return 'Yes' when 1 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '1';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('Yes');
+    });
+
     it("should return \"Don't know\" when 'unknown' in CSV", async () => {
       const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = 'unknown';
@@ -611,6 +622,52 @@ describe('Bulk Upload - Establishment CSV', () => {
       const apiObject = establishment.toAPI();
 
       expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('');
+    });
+  });
+
+  describe('sickPay', () => {
+    it("should return 'Yes' when 1 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.SICKPAY = '1';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.sickPay).to.equal('Yes');
+    });
+
+    it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.SICKPAY = 'unknown';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.sickPay).to.equal("Don't know");
+    });
+
+    it("should return 'No' when 0 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.SICKPAY = '0';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.sickPay).to.equal('No');
+    });
+
+    it('should return null when empty in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.SICKPAY = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.sickPay).to.equal(null);
     });
   });
 
