@@ -1225,6 +1225,124 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
+    describe('benefit', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if a postive whole number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '200';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if a postive number (2 dp) is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '200.39';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 0 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 1 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'unknown' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'UNKNOWN' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = 'UNKNOWN';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return an warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2440,
+            warnType: 'BENEFITS_WARNING',
+            warning:
+              "The code you entered for BENEFITS should be a number in pounds and pence or the value 'yes','No' or 'unknown'",
+            source: 'asdf',
+            column: 'BENEFITS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2440,
+            warnType: 'BENEFITS_WARNING',
+            warning:
+              "The code you entered for BENEFITS should be a number in pounds and pence or the value 'yes','No' or 'unknown'",
+            source: '-1',
+            column: 'BENEFITS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '134.3457890';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2440,
+            warnType: 'BENEFITS_WARNING',
+            warning:
+              "The code you entered for BENEFITS should be a number in pounds and pence or the value 'yes','No' or 'unknown'",
+            source: '134.3457890',
+            column: 'BENEFITS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
     describe('shareWith', () => {
       it('should produce error if PERMCQC is a number which is not 0 or 1', async () => {
         const establishmentRow = buildEstablishmentCSV();
