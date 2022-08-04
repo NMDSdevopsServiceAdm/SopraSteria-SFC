@@ -34,6 +34,7 @@ module.exports = (
           parentUid: establishment.parentUid ? establishment.parentUid : undefined,
           parentName: establishment.parentName ? establishment.parentName : undefined,
           isFirstBulkUpload: establishment.lastBulkUploaded ? false : true,
+          employerTypeSet: establishment.employerType ? true : false,
         }
       : null,
     mainService: establishment
