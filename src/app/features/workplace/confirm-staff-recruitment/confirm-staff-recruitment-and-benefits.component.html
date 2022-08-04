@@ -40,7 +40,7 @@
           {{ establishment.moneySpentOnAdvertisingInTheLastFourWeeks }}
         </ng-template>
         <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
-          £{{ establishment.moneySpentOnAdvertisingInTheLastFourWeeks }}
+          £{{ this.formatMonetaryValue(establishment.moneySpentOnAdvertisingInTheLastFourWeeks) }}
         </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="advertisingSpend">
@@ -159,7 +159,7 @@
             {{ establishment.careWorkersCashLoyaltyForFirstTwoYears }}
           </ng-template>
           <ng-template #careWorkersCashLoyaltyForFirstTwoYearsKnown>
-            £{{ establishment.careWorkersCashLoyaltyForFirstTwoYears }}
+            £{{ this.formatMonetaryValue(establishment.careWorkersCashLoyaltyForFirstTwoYears) }}
           </ng-template>
         </ng-template>
       </dd>

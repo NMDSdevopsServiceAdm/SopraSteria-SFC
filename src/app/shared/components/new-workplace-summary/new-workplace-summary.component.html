@@ -541,7 +541,7 @@
               {{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
             </ng-template>
             <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
-              £{{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
+              £{{ this.formatMonetaryValue(workplace.moneySpentOnAdvertisingInTheLastFourWeeks) }}
             </ng-template>
           </ng-template>
         </app-summary-record-value>
@@ -683,7 +683,7 @@
               {{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
             </ng-template>
             <ng-template #careWorkersCashLoyaltyForFirstTwoYearsKnown>
-              £{{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
+              £{{ this.formatMonetaryValue(workplace.careWorkersCashLoyaltyForFirstTwoYears) }}
             </ng-template>
           </ng-template>
         </app-summary-record-value>

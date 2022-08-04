@@ -1070,7 +1070,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
         expect(
-          within(advertisingSpendRow).getByText(`£${component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks}`),
+          within(advertisingSpendRow).getByText(
+            `£${component.formatMonetaryValue(component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks)}`,
+          ),
         ).toBeTruthy();
       });
     });
@@ -1218,7 +1220,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/cash-loyalty`);
         expect(
-          within(careWorkersCashLoyaltyRow).getByText(`£${component.workplace.careWorkersCashLoyaltyForFirstTwoYears}`),
+          within(careWorkersCashLoyaltyRow).getByText(
+            `£${component.formatMonetaryValue(component.workplace.careWorkersCashLoyaltyForFirstTwoYears)}`,
+          ),
         ).toBeTruthy();
       });
     });

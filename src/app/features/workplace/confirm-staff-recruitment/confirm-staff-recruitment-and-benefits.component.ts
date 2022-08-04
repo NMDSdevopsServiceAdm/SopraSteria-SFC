@@ -69,6 +69,10 @@ export class ConfirmStaffRecruitmentAndBenefitsComponent implements OnInit, OnDe
     });
   }
 
+  public formatMonetaryValue(unformattedMoneyString): string {
+    return unformattedMoneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
