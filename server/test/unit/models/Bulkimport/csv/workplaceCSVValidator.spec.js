@@ -671,6 +671,76 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
   });
 
+  describe('Pension contribution', () => {
+    it("should return 'Yes' when 1 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.PENSION = '1';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.pensionContribution).to.equal('Yes');
+    });
+
+    it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.PENSION = 'unknown';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.pensionContribution).to.equal("Don't know");
+    });
+
+    it("should return 'No' when 0 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.PENSION = '0';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.pensionContribution).to.equal('No');
+    });
+
+    it('should return null when empty in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.PENSION = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.pensionContribution).to.equal(null);
+    });
+  });
+
+  describe('Holiday Leave', () => {
+    it('should return the value when a number in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.HOLIDAY = '35';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersLeaveDaysPerYear).to.equal('35');
+    });
+
+    it('should return empty when empty in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.HOLIDAY = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersLeaveDaysPerYear).to.equal('');
+    });
+  });
+
   describe('toJSON', () => {
     it('should return a correct JSON ', async () => {
       const establishmentRow = buildEstablishmentCSV();
