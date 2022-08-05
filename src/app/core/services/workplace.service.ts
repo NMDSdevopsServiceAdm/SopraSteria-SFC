@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { EmployerType } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { AddWorkplaceRequest, AddWorkplaceResponse } from '@core/model/workplace.model';
@@ -48,6 +49,7 @@ export class WorkplaceService extends WorkplaceInterfaceService {
     locationAddress: LocationAddress,
     service: Service,
     WorkplaceTotalStaff: string,
+    employerTypeObject: EmployerType,
   ): AddWorkplaceRequest {
     return {
       addressLine1: locationAddress.addressLine1,
@@ -61,6 +63,7 @@ export class WorkplaceService extends WorkplaceInterfaceService {
       postalCode: locationAddress.postalCode,
       townCity: locationAddress.townCity,
       totalStaff: WorkplaceTotalStaff,
+      typeOfEmployer: employerTypeObject,
     };
   }
 }

@@ -54,7 +54,11 @@ describe('getSingleRegistration', async () => {
       .withArgs('Status')
       .returns('PENDING')
       .withArgs('EstablishmentUID')
-      .returns('a131313dasd123325453bac');
+      .returns('a131313dasd123325453bac')
+      .withArgs('EmployerTypeValue')
+      .returns('Other')
+      .withArgs('EmployerTypeOtherValue')
+      .returns('other employer type');
 
     if (withLoginDetails) {
       addLoginDetailsToDummyData(dummyEstablishmentDetails);
@@ -70,8 +74,14 @@ describe('getSingleRegistration', async () => {
   };
 
   const addLoginDetailsToDummyData = (dummyEstablishmentDetails) => {
+    const login = {
+      get() {},
+    };
+    sinon.stub(login, 'get').withArgs('username').returns('bobtestuser');
+
     const dummyLoginDetails = {
       created: '20100101',
+      login,
       get() {},
     };
 
@@ -79,8 +89,6 @@ describe('getSingleRegistration', async () => {
       .stub(dummyLoginDetails, 'get')
       .withArgs('FullNameValue')
       .returns('Bob Bobby')
-      .withArgs('login.username')
-      .returns('bobtestuser')
       .withArgs('SecurityQuestionValue')
       .returns('What is your favourite colour?')
       .withArgs('SecurityQuestionAnswerValue')

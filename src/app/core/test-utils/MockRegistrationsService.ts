@@ -33,6 +33,7 @@ export const mockRegistration = {
     uid: 'uidForAddedWorkplace',
     reviewer: null,
     inReview: false,
+    employerType: { value: 'Other', other: 'other employer type' },
   },
 };
 
@@ -65,6 +66,7 @@ export const PendingRegistration = build('PendingRegistration', {
       uid: 'uidForAddedWorkplace',
       reviewer: null,
       inReview: false,
+      employerType: { value: 'Other', other: 'other employer type' },
     },
   },
 });
@@ -92,6 +94,7 @@ export const InProgressRegistration = (reviewer) => {
         uid: 'uidForAddedWorkplace',
         reviewer: reviewer,
         inReview: true,
+        employerType: { value: 'Other', other: 'other employer type' },
       },
     },
   });
@@ -120,6 +123,7 @@ export const RejectedRegistration = () => {
         uid: 'uidForAddedWorkplace',
         reviewer: null,
         inReview: false,
+        employerType: { value: 'Other', other: 'other employer type' },
       },
     },
   });

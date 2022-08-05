@@ -1,3 +1,5 @@
+import { EmployerType } from './establishment.model';
+
 export interface AddWorkplaceRequest {
   addressLine1: string;
   addressLine2?: string;
@@ -10,6 +12,7 @@ export interface AddWorkplaceRequest {
   postalCode: string;
   townCity: string;
   totalStaff?: string;
+  typeOfEmployer?: EmployerType;
 }
 export interface AddWorkplaceResponse {
   establishmentId: number;

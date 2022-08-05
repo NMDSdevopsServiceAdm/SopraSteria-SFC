@@ -35,7 +35,7 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
     this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
 
     this.section = this.inStaffRecruitmentFlow ? 'Holiday leave' : 'Staff benefits';
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment-and-benefits'];
   }
 
   private setupForm(): void {
@@ -99,7 +99,7 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
 
   protected onSuccess(): void {
     this.updateEstablishmentService();
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'confirm-staff-recruitment-and-benefits'];
   }
 
   private customValidator(regexp: RegExp, error: string): ValidatorFn {

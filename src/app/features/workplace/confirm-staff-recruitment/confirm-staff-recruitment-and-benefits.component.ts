@@ -10,9 +10,9 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-staff-recuritment',
-  templateUrl: './confirm-staff-recruitment.component.html',
+  templateUrl: './confirm-staff-recruitment-and-benefits.component.html',
 })
-export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
+export class ConfirmStaffRecruitmentAndBenefitsComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public flow = 'workplace';
   public canEditEstablishment: boolean;
@@ -37,27 +37,21 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.getEstablishmentData();
+    this.canEditEstablishment = this.permissionsService.can(this.establishment.uid, 'canEditEstablishment');
   }
 
   public getEstablishmentData(): void {
-    this.establishmentService.getEstablishment(this.establishmentService.establishmentId).subscribe((establishment) => {
+    this.establishmentService.establishment$.subscribe((establishment) => {
       this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-      this.setEstablishmentData(establishment);
+      this.establishment = establishment;
       this.setBackLink();
     });
   }
 
-  public setEstablishmentData(establishment) {
-    this.establishment = establishment;
-    this.moneySpentOnAdvertisingInTheLastFourWeek = this.establishment.moneySpentOnAdvertisingInTheLastFourWeeks;
-    this.peopleInterviewedInTheLastFourWeek = this.establishment.peopleInterviewedInTheLastFourWeeks;
-    this.doNewStartersRepeatTraining = this.establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-    this.wouldYouAcceptPreviousCertificates = this.establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-    this.canEditEstablishment = this.permissionsService.can(this.establishment.uid, 'canEditEstablishment');
-  }
-
   public setReturn(): void {
-    const staffRecruitmentReturnUrl = { url: ['/workplace', this.establishment.uid, 'confirm-staff-recruitment'] };
+    const staffRecruitmentReturnUrl = {
+      url: ['/workplace', this.establishment.uid, 'confirm-staff-recruitment-and-benefits'],
+    };
     this.establishmentService.setReturnTo(staffRecruitmentReturnUrl);
   }
 
@@ -73,6 +67,10 @@ export class ConfirmStaffRecruitmentComponent implements OnInit, OnDestroy {
       type: 'success',
       message: `Your answers have been saved with your 'Workplace' information`,
     });
+  }
+
+  public formatMonetaryValue(unformattedMoneyString): string {
+    return unformattedMoneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   ngOnDestroy(): void {

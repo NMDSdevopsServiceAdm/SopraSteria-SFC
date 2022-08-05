@@ -114,7 +114,7 @@ describe('SelectMainServiceComponent', () => {
     expect(cqcText).toBeNull();
   });
 
-  it("should see 'Select your main service' when is not a parent", async () => {
+  it(`should see 'Select your main service' when is not a parent`, async () => {
     const { component, fixture, queryByText } = await setup();
 
     component.isParent = false;
@@ -202,136 +202,16 @@ describe('SelectMainServiceComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set back link to workplace-name-address when is regulated and address entered manually', async () => {
+    it('should set back link to type-of-employer', async () => {
       const { component, fixture } = await setup();
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.registrationService.isRegulated$.next(true);
-      component.registrationService.manuallyEnteredWorkplace$.next(true);
 
       component.setBackLink();
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-name-address'],
-      });
-    });
-
-    it('should set back link to your-workplace when is regulated and there is one address in locationAddresses in registration service', async () => {
-      const { component } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.isRegulated = true;
-      component.registrationService.manuallyEnteredWorkplace$.next(false);
-      component.registrationService.locationAddresses$.next([
-        {
-          postalCode: 'ABC 123',
-          addressLine1: '1 Street',
-          county: 'Greater Manchester',
-          locationName: 'Name',
-          townCity: 'Manchester',
-          locationId: '123',
-        },
-      ]);
-
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'your-workplace'],
-      });
-    });
-
-    it('should set back link to select-workplace when is regulated and there is more than one address in locationAddresses in registration service', async () => {
-      const { component } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.isRegulated = true;
-      component.registrationService.manuallyEnteredWorkplace$.next(false);
-      component.registrationService.locationAddresses$.next([
-        {
-          postalCode: 'ABC 123',
-          addressLine1: '1 Street',
-          county: 'Greater Manchester',
-          locationName: 'Name',
-          townCity: 'Manchester',
-          locationId: '123',
-        },
-        {
-          postalCode: 'ABC 123',
-          addressLine1: '2 Street',
-          county: 'Greater Manchester',
-          locationName: 'Test Care Home',
-          townCity: 'Manchester',
-          locationId: '12345',
-        },
-      ]);
-
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'select-workplace'],
-      });
-    });
-
-    it('should set back link to workplace-name-address when is not regulated and address entered manually', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.isRegulated = false;
-      component.registrationService.manuallyEnteredWorkplace$.next(true);
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-name-address'],
-      });
-    });
-
-    it('should set back link to select-workplace-address when is not regulated, address was not entered manually and nameEnteredManually set to false', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.isRegulated = false;
-      component.registrationService.manuallyEnteredWorkplace$.next(false);
-      component.registrationService.manuallyEnteredWorkplaceName$.next(false);
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'select-workplace-address'],
-      });
-    });
-
-    it('should set back link to workplace-name when is not regulated, address was not entered manually and nameEnteredManually set to true', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-      component.isRegulated = false;
-      component.registrationService.manuallyEnteredWorkplace$.next(false);
-      component.registrationService.manuallyEnteredWorkplaceName$.next(true);
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-name'],
-      });
-    });
-
-    it('should set back link to confirm-details when returnToConfirmDetails is not null', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'confirm-details'],
+        url: ['registration', 'type-of-employer'],
       });
     });
   });

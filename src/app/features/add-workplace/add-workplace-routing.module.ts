@@ -17,6 +17,7 @@ import { AddTotalStaffComponent } from './add-total-staff/add-total-staff.compon
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address/could-not-find-workplace-address.component';
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
 import { StartComponent } from './start/start.component';
+import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { WorkplaceAddedThankYouComponent } from './workplace-added-thank-you/workplace-added-thank-you.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
@@ -66,6 +67,12 @@ const routes: Routes = [
     path: 'confirm-workplace-details',
     component: ConfirmWorkplaceDetailsComponent,
     data: { title: 'Confirm Workplace Details' },
+    canActivate: [AddWorkplaceInProgressGuard],
+  },
+  {
+    path: 'type-of-employer',
+    component: TypeOfEmployerComponent,
+    data: { title: 'Type of Employer' },
     canActivate: [AddWorkplaceInProgressGuard],
   },
   {
