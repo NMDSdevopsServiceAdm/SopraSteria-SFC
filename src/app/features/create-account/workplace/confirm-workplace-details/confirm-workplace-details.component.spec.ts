@@ -47,6 +47,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     );
 
     const component = fixture.componentInstance;
+    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
 
     return {
       fixture,
@@ -55,6 +56,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       queryByText,
       getByText,
       getByTestId,
+      setTypeOfEmployerSpy,
     };
   }
 
@@ -163,9 +165,10 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   it('should show type of employer with correct text when Local authority (adult services) is selected', async () => {
-    const { component, fixture, getByText } = await setup({ value: 'Local Authority (adult services)' });
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({
+      value: 'Local Authority (adult services)',
+    });
 
-    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
     const expectedTypeOfEmployer = 'Local authority (adult services)';
@@ -178,9 +181,10 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   it('should show type of employer with correct text when Local authority (generic, other) is selected', async () => {
-    const { component, fixture, getByText } = await setup({ value: 'Local Authority (generic/other)' });
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({
+      value: 'Local Authority (generic/other)',
+    });
 
-    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
     const expectedTypeOfEmployer = 'Local authority (generic, other)';
@@ -193,9 +197,8 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   it('should show type of employer with correct text when Private sector is selected', async () => {
-    const { component, fixture, getByText } = await setup();
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup();
 
-    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
     const expectedTypeOfEmployer = 'Private sector';
@@ -208,9 +211,8 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   it('should show type of employer with correct text when Voluntary, charity, not for profit is selected', async () => {
-    const { component, fixture, getByText } = await setup({ value: 'Voluntary / Charity' });
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({ value: 'Voluntary / Charity' });
 
-    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
     const expectedTypeOfEmployer = 'Voluntary, charity, not for profit';
@@ -223,9 +225,8 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   it('should show type of employer with correct text when Other is selected and no input', async () => {
-    const { component, fixture, getByText } = await setup({ value: 'Other' });
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({ value: 'Other' });
 
-    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
     const expectedTypeOfEmployer = 'Other';
@@ -238,9 +239,11 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   it('should show type of employer with correct text when Other is selected and there is an input', async () => {
-    const { component, fixture, getByText } = await setup({ value: 'Other', other: 'other employer type' });
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({
+      value: 'Other',
+      other: 'other employer type',
+    });
 
-    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
     const expectedTypeOfEmployer = 'other employer type';

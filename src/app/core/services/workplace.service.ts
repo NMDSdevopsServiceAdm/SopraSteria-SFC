@@ -35,8 +35,6 @@ export class WorkplaceService extends WorkplaceInterfaceService {
   }
 
   public addWorkplace(establishmentuid: string, request: AddWorkplaceRequest): Observable<AddWorkplaceResponse> {
-    console.log('**** add Workplace request ****');
-    console.log(request);
     return this.http.post<AddWorkplaceResponse>(`/api/establishment/${establishmentuid}`, request);
   }
 
