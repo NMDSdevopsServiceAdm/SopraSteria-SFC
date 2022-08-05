@@ -9,6 +9,11 @@ export interface MainService {
   otherName?: string;
 }
 
+export interface EmployerType {
+  value: string;
+  other?: string;
+}
+
 export interface ServiceUser {
   id: number;
   group: string;
@@ -104,7 +109,7 @@ export interface Establishment {
   mainService: MainService;
   employerType: {
     value: string;
-    other: string;
+    other?: string;
   };
   numberOfStaff: number;
   totalWorkers: number;

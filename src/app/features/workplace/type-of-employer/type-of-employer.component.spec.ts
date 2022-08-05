@@ -71,10 +71,10 @@ describe('TypeOfEmployerComponent', () => {
     });
   });
 
-  it('should submit the form with the correct value when the Local authority (generic/other) radio button is selected and the form is submitted', async () => {
+  it('should submit the form with the correct value when the Local authority (generic, other) radio button is selected and the form is submitted', async () => {
     const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
-    const radioButton = getByLabelText('Local authority (generic/other)');
+    const radioButton = getByLabelText('Local authority (generic, other)');
     fireEvent.click(radioButton);
     fixture.detectChanges();
 
@@ -103,10 +103,10 @@ describe('TypeOfEmployerComponent', () => {
     });
   });
 
-  it('should submit the form with the correct value when the Voluntary or charity radio button is selected and the form is submitted', async () => {
+  it('should submit the form with the correct value when the Voluntary, charity, not for profit radio button is selected and the form is submitted', async () => {
     const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
-    const radioButton = getByLabelText('Voluntary or charity');
+    const radioButton = getByLabelText('Voluntary, charity, not for profit');
     fireEvent.click(radioButton);
     fixture.detectChanges();
 
@@ -143,7 +143,7 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     const input = 'some employer type';
-    const employerTypeInput = getByLabelText('Other Employer Type');
+    const employerTypeInput = getByLabelText('Other employer type (optional)');
     userEvent.type(employerTypeInput, input);
 
     const submitButton = getByText('Save and continue');
@@ -176,7 +176,7 @@ describe('TypeOfEmployerComponent', () => {
 
     const longString =
       'ThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongString';
-    const employerTypeInput = getByLabelText('Other Employer Type');
+    const employerTypeInput = getByLabelText('Other employer type (optional)');
     userEvent.type(employerTypeInput, longString);
 
     const submitButton = getByText('Save and continue');

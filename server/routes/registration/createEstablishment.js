@@ -58,6 +58,7 @@ const loadEstablishmentData = async (newEstablishment, establishmentData) => {
     ustatus: establishmentData.ustatus,
     expiresSoonAlertDate: establishmentData.expiresSoonAlertDate,
     numberOfStaff: establishmentData.numberOfStaff,
+    employerType: establishmentData.typeOfEmployer,
   });
 
   return newEstablishment;

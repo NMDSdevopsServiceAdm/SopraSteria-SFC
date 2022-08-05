@@ -3,6 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { EmployerType } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
@@ -40,6 +41,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public userDetails: UserDetails;
   protected actionType: string;
   public isCqcRegulated: boolean;
+  public typeOfEmployer: EmployerType;
 
   constructor(
     public registrationService: RegistrationService,
@@ -74,12 +76,13 @@ export class ConfirmDetailsComponent implements OnInit {
       this.registrationService.loginCredentials$,
       this.registrationService.securityDetails$,
       this.registrationService.totalStaff$,
+      this.registrationService.typeOfEmployer$,
     ]);
     const userSubscriptions = combineLatest([this.userService.userDetails$]);
     const subscriptions = combineLatest([registrationSubscriptions, userSubscriptions]).pipe(
       map(
         ([
-          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, totalStaff],
+          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, totalStaff, typeOfEmployer],
           [userDetails],
         ]) => {
           return {
@@ -90,19 +93,21 @@ export class ConfirmDetailsComponent implements OnInit {
             loginCredentials,
             securityDetails,
             totalStaff,
+            typeOfEmployer,
           };
         },
       ),
     );
     this.subscriptions.add(
       subscriptions.subscribe((res) => {
+        this.userDetails = res.userDetails;
         this.isCqcRegulated = res.isCqcRegulated;
         this.locationAddress = res.locationAddress;
         this.service = res.service;
         this.loginCredentials = res.loginCredentials;
         this.securityDetails = res.securityDetails;
         this.totalStaff = res.totalStaff;
-        this.userDetails = res.userDetails;
+        this.typeOfEmployer = res.typeOfEmployer;
       }),
     );
   }
@@ -127,6 +132,7 @@ export class ConfirmDetailsComponent implements OnInit {
         mainServiceOther: this.service.otherName ? this.service.otherName : null,
         isRegulated: this.isCqcRegulated,
         numberOfStaff: this.totalStaff,
+        typeOfEmployer: this.typeOfEmployer,
       },
       user: {
         ...this.userDetails,

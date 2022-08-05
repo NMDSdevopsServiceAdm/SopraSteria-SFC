@@ -145,6 +145,24 @@ describe('RejectedRegistrationRequestComponent', () => {
     expect(getByText(mainService, { exact: false })).toBeTruthy();
   });
 
+  it('should display the employer type from the other field if present in type of employer object', async () => {
+    const { getByText, component } = await setup();
+
+    const employerTypeOtherValue = component.registration.establishment.employerType.other;
+
+    expect(getByText(employerTypeOtherValue)).toBeTruthy();
+  });
+
+  it('should display the employer type without other value if it is not in the employerType object', async () => {
+    const { getByText, component, fixture } = await setup();
+
+    component.registration.establishment.employerType.value = 'Private sector';
+    component.registration.establishment.employerType.other = null;
+    fixture.detectChanges();
+
+    expect(getByText('Private sector')).toBeTruthy();
+  });
+
   describe('Notes component', () => {
     it('should show a textbox', async () => {
       const { getByTestId, queryByText } = await setup();

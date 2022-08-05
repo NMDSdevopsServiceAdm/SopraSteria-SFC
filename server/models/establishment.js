@@ -1164,6 +1164,8 @@ module.exports = function (sequelize, DataTypes) {
         'EstablishmentUID',
         'Reviewer',
         'InReview',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
       ],
       where: {
         uid,

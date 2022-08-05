@@ -112,6 +112,7 @@ const addEstablishment = async (req, res) => {
     MainServiceOther: req.body.mainServiceOther,
     IsRegulated: req.body.isRegulated,
     NumberOfStaff: req.body.totalStaff,
+    TypeOfEmployer: req.body.typeOfEmployer,
   };
 
   try {
@@ -179,6 +180,7 @@ const addEstablishment = async (req, res) => {
         },
         ustatus: 'PENDING',
         numberOfStaff: establishmentData.NumberOfStaff,
+        employerType: establishmentData.TypeOfEmployer,
       });
 
       // no Establishment properties on registration
