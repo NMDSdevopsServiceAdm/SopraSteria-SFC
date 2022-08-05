@@ -51,17 +51,8 @@
                       </div>
                     </ng-container>
                     <ng-template #hiddenJobRoleError
-                      ><div *ngIf="!emptyForm && vacancy.get('total').invalid">&nbsp;</div>
-                      <div
-                        *ngIf="
-                          !emptyForm &&
-                          vacancy.get('total').invalid &&
-                          (vacancy.get('total').errors.min || vacancy.get('total').errors.max)
-                        "
-                      >
-                        &nbsp;
-                      </div></ng-template
-                    >
+                      ><div *ngIf="!emptyForm && vacancy.get('total').invalid">&nbsp; <br />&nbsp;</div>
+                    </ng-template>
                   </span>
                   <select
                     class="govuk-select govuk-!-width-full"
@@ -152,6 +143,10 @@
           </div>
         </div>
       </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
       <div *ngIf="!return" class="govuk-util__float-right">
@@ -163,6 +158,4 @@
       </div>
     </div>
   </div>
-
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
 </form>

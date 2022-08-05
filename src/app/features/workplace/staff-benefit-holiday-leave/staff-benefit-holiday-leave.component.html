@@ -9,20 +9,21 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
-        <div class="govuk-form-group govuk-!-margin-bottom-0">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">
-              <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
-              How many days leave do your full-time care workers get each year?
-            </h1>
-          </legend>
-          <div class="govuk-!-margin-bottom-6">
-            <label class="govuk-label" for="holidayLeave">Number of days</label>
-            <p class="govuk-hint">
-              Include bank holidays in the total. For example, 20 days annual leave plus 8 days bank holidays would be
-              28 days in total.
-            </p>
-          </div>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
+            How many days leave do your full-time care workers get each year?
+          </h1>
+        </legend>
+        <div class="govuk-!-margin-bottom-6">
+          <label class="govuk-label" for="holidayLeave">Number of days</label>
+          <p class="govuk-hint">
+            Include bank holidays in the total. For example, 20 days annual leave plus 8 days bank holidays would be 28
+            days in total.
+          </p>
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">
           <span
             *ngIf="submitted && this.form.get('holidayLeave').invalid"
             id="holidayLeave-error"
@@ -61,6 +62,8 @@
           </div>
         </div>
       </fieldset>
+      <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)">
+      </app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
       <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
@@ -88,5 +91,4 @@
       </div>
     </div>
   </div>
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"> </app-workplace-submit-button>
 </form>

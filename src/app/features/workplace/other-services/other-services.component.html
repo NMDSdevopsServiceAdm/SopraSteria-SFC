@@ -8,19 +8,17 @@
 <form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-        <fieldset class="govuk-fieldset" aria-describedby="otherJobRoles-hint">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">
-              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-              Do you provide any other services?
-            </h1>
-          </legend>
-          <div class="govuk-!-margin-bottom-7">
-            <p>
-              You selected '{{ establishment.mainService.name }}' as your main service when you created your account.
-            </p>
-          </div>
+      <fieldset class="govuk-fieldset" aria-describedby="otherJobRoles-hint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+            Do you provide any other services?
+          </h1>
+        </legend>
+        <div class="govuk-!-margin-bottom-7">
+          <p>You selected '{{ establishment.mainService.name }}' as your main service when you created your account.</p>
+        </div>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
               <input
@@ -130,8 +128,10 @@
               <label class="govuk-label govuk-radios__label" for="otherServices-No"> No </label>
             </div>
           </div>
-        </fieldset>
-      </div>
+        </div>
+      </fieldset>
+      <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)">
+      </app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
       <div *ngIf="!return" class="govuk-util__float-right">
@@ -143,5 +143,4 @@
       </div>
     </div>
   </div>
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"> </app-workplace-submit-button>
 </form>
