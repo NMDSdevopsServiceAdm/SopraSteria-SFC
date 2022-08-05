@@ -109,7 +109,7 @@ export interface Establishment {
   mainService: MainService;
   employerType: {
     value: string;
-    other: string;
+    other?: string;
   };
   numberOfStaff: number;
   totalWorkers: number;

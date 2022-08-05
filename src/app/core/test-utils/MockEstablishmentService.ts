@@ -118,7 +118,7 @@ export class MockEstablishmentService extends EstablishmentService {
       dataOwner: undefined,
       dataOwnershipRequested: '',
       dataPermissions: undefined,
-      employerType: { other: '', value: 'Private Sector' },
+      employerType: { value: 'Private Sector' },
       id: 0,
       isRegulated: false,
       leavers: undefined,
