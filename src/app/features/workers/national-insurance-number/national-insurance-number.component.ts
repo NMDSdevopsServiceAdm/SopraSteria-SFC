@@ -19,7 +19,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -36,6 +36,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('date-of-birth');
+    //TODO will need to be a dynamic return now
     this.previous = this.getRoutePath('flu-jab');
   }
 
@@ -60,7 +61,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
       ? {
           nationalInsuranceNumber: nationalInsuranceNumber.value.toUpperCase(),
         }
-      : {nationalInsuranceNumber: null};
+      : { nationalInsuranceNumber: null };
   }
 
   ninValidator(control: AbstractControl) {
