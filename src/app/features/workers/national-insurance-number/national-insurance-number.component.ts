@@ -36,8 +36,9 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('date-of-birth');
-    //TODO will need to be a dynamic return now
-    this.previous = this.getRoutePath('flu-jab');
+    this.previous = this.workerService.hasJobRole(this.worker, 27)
+      ? this.getRoutePath('mental-health-professional')
+      : this.getRoutePath('other-job-roles');
   }
 
   public setupFormErrorsMap(): void {

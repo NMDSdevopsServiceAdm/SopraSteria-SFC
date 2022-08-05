@@ -45,7 +45,6 @@ const nurseSpecialismProperty = require('./properties/nurseSpecialismProperty').
 const nurseSpecialismsProperty = require('./properties/nurseSpecialismsProperty').WorkerNurseSpecialismsProperty;
 const localIdentifierProperty = require('./properties/localIdentifierProperty').LocalIdentifierProperty;
 const establishmentFkProperty = require('./properties/establishmentFkProperty').EstablishmentFkProperty;
-const fluJabProperty = require('./properties/fluJabProperty').WorkerFluJabProperty;
 const longTermAbsenceProperty = require('./properties/longTermAbsenceProperty').LongTermAbsenceProperty;
 
 class WorkerPropertyManager {
@@ -87,7 +86,6 @@ class WorkerPropertyManager {
     this._thisManager.registerProperty(nurseSpecialismsProperty);
     this._thisManager.registerProperty(localIdentifierProperty);
     this._thisManager.registerProperty(establishmentFkProperty);
-    this._thisManager.registerProperty(fluJabProperty);
     this._thisManager.registerProperty(longTermAbsenceProperty);
   }
 
