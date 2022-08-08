@@ -17,9 +17,7 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import {
-  StaffMismatchBannerComponent,
-} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -241,14 +239,14 @@ describe('HomeTabComponent', () => {
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
   });
 
-  describe('Staff recruitment is difficult', async () => {
+  describe('Staff recruitment banner', async () => {
     it('displays staff-recruitment-start link  when has employer type and banner value is false', async () => {
       const { component } = await setup();
 
       component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
       component.fixture.detectChanges();
-      const recruitmentHeader = component.getByText('Staff recruitment is difficult');
+      const recruitmentHeader = component.getByText(`We've added some questions to ASC-WDS`);
 
       expect(recruitmentHeader).toBeTruthy();
     });
@@ -259,7 +257,7 @@ describe('HomeTabComponent', () => {
       component.fixture.componentInstance.workplace.employerType = null;
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = true;
       component.fixture.detectChanges();
-      const recruitmentHeader = component.queryByText('Staff recruitment is difficult');
+      const recruitmentHeader = component.queryByText(`We've added some questions to ASC-WDS`);
 
       expect(recruitmentHeader).toBeFalsy();
     });
@@ -275,7 +273,7 @@ describe('HomeTabComponent', () => {
       component.fixture.componentInstance.canEditEstablishment = true;
 
       component.fixture.detectChanges();
-      const recuritmentLink = component.getByText('Answer our 4 new staff recruitment questions');
+      const recuritmentLink = component.getByText('Answer our staff recruitment and retention questions');
       fireEvent.click(recuritmentLink);
 
       const establishmentId = component.fixture.componentInstance.workplace.uid;
