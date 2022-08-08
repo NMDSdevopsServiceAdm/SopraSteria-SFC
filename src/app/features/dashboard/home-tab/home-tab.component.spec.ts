@@ -262,11 +262,11 @@ describe('HomeTabComponent', () => {
       expect(recruitmentHeader).toBeFalsy();
     });
 
-    it('should call updateWorkerBanner in the establishment service with the updated recruitmentJourneyExistingUserBanner set to true', async () => {
+    it('should call updateSingleEstablishmentField in the establishment service with the updated recruitmentJourneyExistingUserBanner set to true', async () => {
       const { component } = await setup();
 
       const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
-      const recuritmentBannerSpy = spyOn(establishmentService, 'updateWorkplaceBanner').and.callThrough();
+      const recuritmentBannerSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
 
       component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
