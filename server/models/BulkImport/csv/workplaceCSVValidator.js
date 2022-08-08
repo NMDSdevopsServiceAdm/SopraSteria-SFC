@@ -1954,7 +1954,7 @@ class WorkplaceCSVValidator {
         warnCode: WorkplaceCSVValidator.BENEFITS_WARNING,
         warnType: 'BENEFITS_WARNING',
         warning:
-          "The code you entered for BENEFITS should be a number in pounds and pence or the value ,'yes','no' or 'unknown'",
+          "The code you entered for BENEFITS should be a number in pounds and pence or the value 'yes','No' or 'unknown'",
         source: benefits,
         column: 'BENEFITS',
         name: this.currentLine.LOCALESTID,
