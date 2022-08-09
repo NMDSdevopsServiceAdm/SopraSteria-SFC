@@ -11,7 +11,7 @@ import userEvent from '@testing-library/user-event';
 
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
-fdescribe('TypeOfEmployerComponent', () => {
+describe('TypeOfEmployerComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(TypeOfEmployerComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
