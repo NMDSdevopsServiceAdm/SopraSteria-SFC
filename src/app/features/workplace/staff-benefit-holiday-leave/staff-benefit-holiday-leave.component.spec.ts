@@ -118,9 +118,10 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('should navigate to the next page when submitting from the flow', async () => {
-      const { fixture, getByText, routerSpy } = await setup(false);
+    it('should navigate to the confirm staff recruitment page when submitting from the flow and in staff recruitment flow', async () => {
+      const { component, fixture, getByText, routerSpy } = await setup(false);
 
+      component.inStaffRecruitmentFlow = true;
       const button = getByText('Save and continue');
       fireEvent.click(button);
       fixture.detectChanges();
@@ -128,14 +129,14 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'confirm-staff-recruitment-and-benefits']);
     });
 
-    it('should navigate to the next page when submitting from the flow', async () => {
+    it('should navigate to the sharing page when submitting from the workplace flow and not in staff recruitment flow', async () => {
       const { component, fixture, getByText, routerSpy } = await setup(false);
 
-      const link = getByText('Skip this question');
-      fireEvent.click(link);
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'confirm-staff-recruitment-and-benefits']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'sharing-data']);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {

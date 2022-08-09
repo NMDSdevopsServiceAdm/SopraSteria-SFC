@@ -331,13 +331,13 @@ describe('ConfirmStaffRecruitmentAndBenefitsComponent', () => {
   });
 
   describe('Back link', () => {
-    it(`should set the back link to the 'accept-previous-care-certificate' if user is not primary user`, async () => {
+    it(`should set the back link to the 'staff-benefit-holiday-leave' if user is not primary user`, async () => {
       const { component, backServiceSpy } = await setup();
 
       component.setBackLink();
 
       expect(backServiceSpy).toHaveBeenCalledWith({
-        url: ['workplace', component.establishment.uid, 'accept-previous-care-certificate'],
+        url: ['workplace', component.establishment.uid, 'staff-benefit-holiday-leave'],
       });
     });
   });

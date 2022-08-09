@@ -40,7 +40,7 @@ export class DataSharingComponent extends Question {
       });
     }
 
-    this.previousRoute = ['/workplace', this.establishment.uid, 'accept-previous-care-certificate'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-benefit-holiday-leave'];
     this.skipRoute = ['/workplace', this.establishment.uid, 'check-answers'];
   }
 
