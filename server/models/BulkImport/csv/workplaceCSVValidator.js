@@ -1953,14 +1953,14 @@ class WorkplaceCSVValidator {
         lineNumber: this._lineNumber,
         warnCode: WorkplaceCSVValidator.BENEFITS_WARNING,
         warnType: 'BENEFITS_WARNING',
-        warning:
-          "The code you entered for BENEFITS should be a number in pounds and pence or the value 'yes','No' or 'unknown'",
+        warning: 'The code you have entered for BENEFITS is incorrect and will be ignored',
         source: benefits,
         column: 'BENEFITS',
         name: this.currentLine.LOCALESTID,
       });
     } else {
       this._careWorkersCashLoyaltyForFirstTwoYears = this._currentLine.BENEFITS;
+
       return true;
     }
 
@@ -1981,7 +1981,7 @@ class WorkplaceCSVValidator {
         lineNumber: this._lineNumber,
         warnCode: WorkplaceCSVValidator.SICKPAY_WARNING,
         warnType: 'SICKPAY_WARNING',
-        warning: 'The code you have entered for SICKPAY is incorrect',
+        warning: 'The code you have entered for SICKPAY is incorrect and will be ignored',
         source: this._currentLine.SICKPAY,
         column: 'SICKPAY',
         name: this._currentLine.LOCALESTID,
@@ -2009,7 +2009,7 @@ class WorkplaceCSVValidator {
         lineNumber: this._lineNumber,
         warnCode: WorkplaceCSVValidator.HOLIDAY_WARNING,
         warnType: 'HOLIDAY_WARNING',
-        warning: 'The code you have entered for HOLIDAY is incorrect',
+        warning: 'The code you have entered for HOLIDAY is incorrect and will be ignored',
         source: this._currentLine.HOLIDAY,
         column: 'HOLIDAY',
         name: this._currentLine.LOCALESTID,
@@ -2035,7 +2035,7 @@ class WorkplaceCSVValidator {
         lineNumber: this._lineNumber,
         warnCode: WorkplaceCSVValidator.PENSION_WARNING,
         warnType: 'PENSION_WARNING',
-        warning: 'The code you have entered for PENSION is incorrect',
+        warning: 'The code you have entered for PENSION is incorrect and will be ignored',
         source: this._currentLine.PENSION,
         column: 'PENSION',
         name: this._currentLine.LOCALESTID,
@@ -2608,14 +2608,16 @@ class WorkplaceCSVValidator {
 
     const benefit = this._careWorkersCashLoyaltyForFirstTwoYears;
 
-    if (benefit.includes(';')) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
-    } else if (benefit === YES) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-    } else if (benefit === NO) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
-    } else if (benefit === DONT_KNOW) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+    if (!benefit === null) {
+      if (benefit.includes(';')) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
+      } else if (benefit === YES) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+      } else if (benefit === NO) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
+      } else if (benefit === DONT_KNOW) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+      }
     }
   }
 
@@ -3217,6 +3219,29 @@ class WorkplaceCSVValidator {
     columns.push(repeatTrainingAndCareCertMapping(entity.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment));
     columns.push(repeatTrainingAndCareCertMapping(entity.wouldYouAcceptCareCertificatesFromPreviousEmployment));
 
+    // cash Loyalty
+    const cashLoyaltyMapping = (value) => {
+      if (value === "Don't know") {
+        return 'unknown';
+      } else if (value === 'No') {
+        return 0;
+      } else if (value === 'Yes') {
+        return 1;
+      } else if (!value) {
+        return '';
+      } else {
+        return value;
+      }
+    };
+    const whenValue = '1;';
+    columns.push(
+      cashLoyaltyMapping(
+        Number(entity.careWorkersCashLoyaltyForFirstTwoYears)
+          ? whenValue.concat(entity.careWorkersCashLoyaltyForFirstTwoYears)
+          : entity.careWorkersCashLoyaltyForFirstTwoYears,
+      ),
+    );
+
     // Sick Pay, Pension Contribution,
     const sickPayAndPensionMapping = (value) => {
       if (value === "Don't know") {
@@ -3232,10 +3257,9 @@ class WorkplaceCSVValidator {
       }
     };
 
-    columns.push(sickPayAndPensionMapping(entity.careWorkersLeaveDaysPerYear));
-    columns.push(sickPayAndPensionMapping(entity.careWorkersCashLoyaltyForFirstTwoYears));
     columns.push(sickPayAndPensionMapping(entity.sickPay));
     columns.push(sickPayAndPensionMapping(entity.pensionContribution));
+    columns.push(sickPayAndPensionMapping(entity.careWorkersLeaveDaysPerYear));
 
     return columns.join(',');
   }
