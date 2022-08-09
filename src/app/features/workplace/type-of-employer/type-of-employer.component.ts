@@ -20,6 +20,7 @@ export class TypeOfEmployerComponent extends Question {
     { value: 'Other', text: 'Other' },
   ];
   public maxLength = 120;
+  public showSkipButton = true;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -40,15 +41,24 @@ export class TypeOfEmployerComponent extends Question {
   }
 
   protected init(): void {
+
+    console.log(this.establishmentService.employerTypeSet);
+    if(this.establishmentService.employerTypeSet === false)
+    {
+      this.hideBackLink = true;
+      this.showSkipButton = false;
+      this.nextRoute = ['/workplace', 'dashboard']
+    }
+
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
+
     if (this.establishment.employerType) {
       this.form.patchValue({
         employerType: this.establishment.employerType.value,
         other: this.establishment.employerType.other,
       });
     }
-
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
   }
 
   protected setupFormErrorsMap(): void {

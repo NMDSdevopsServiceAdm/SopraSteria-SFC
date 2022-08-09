@@ -141,8 +141,8 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
               this.router.navigate(['/migrated-user-terms-and-conditions']);
             }
-            console.log(response.body.establishment.employerType);
             if (response.body.establishment.employerTypeSet === false) {
+              this.establishmentService.employerTypeSet = false;
               this.router.navigate(['workplace', `${response.body.establishment.uid}`, 'type-of-employer']);
             }
             if (response.body.registrationSurveyCompleted === false) {

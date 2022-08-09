@@ -77,6 +77,7 @@ export class EstablishmentService {
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
+  public employerTypeSet: boolean = null;
   private _inStaffRecruitmentFlow: boolean;
 
   constructor(private http: HttpClient) {}
