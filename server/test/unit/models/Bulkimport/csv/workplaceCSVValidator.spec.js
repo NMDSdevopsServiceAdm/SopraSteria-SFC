@@ -1293,8 +1293,7 @@ describe('Bulk Upload - Establishment CSV', () => {
             lineNumber: establishment.lineNumber,
             warnCode: 2440,
             warnType: 'BENEFITS_WARNING',
-            warning:
-              "The code you entered for BENEFITS should be a number in pounds and pence or the value 'yes','No' or 'unknown'",
+            warning: 'The code you have entered for BENEFITS is incorrect and will be ignored',
             source: 'asdf',
             column: 'BENEFITS',
             name: establishmentRow.LOCALESTID,
@@ -1313,8 +1312,7 @@ describe('Bulk Upload - Establishment CSV', () => {
             lineNumber: establishment.lineNumber,
             warnCode: 2440,
             warnType: 'BENEFITS_WARNING',
-            warning:
-              "The code you entered for BENEFITS should be a number in pounds and pence or the value 'yes','No' or 'unknown'",
+            warning: 'The code you have entered for BENEFITS is incorrect and will be ignored',
             source: '-1',
             column: 'BENEFITS',
             name: establishmentRow.LOCALESTID,
@@ -1333,10 +1331,282 @@ describe('Bulk Upload - Establishment CSV', () => {
             lineNumber: establishment.lineNumber,
             warnCode: 2440,
             warnType: 'BENEFITS_WARNING',
-            warning:
-              "The code you entered for BENEFITS should be a number in pounds and pence or the value 'yes','No' or 'unknown'",
+            warning: 'The code you have entered for BENEFITS is incorrect and will be ignored',
             source: '134.3457890',
             column: 'BENEFITS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('sickPay', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 0 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 1 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'unknown' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'UNKNOWN' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = 'UNKNOWN';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return an warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2450,
+            warnType: 'SICKPAY_WARNING',
+            warning: 'The code you have entered for SICKPAY is incorrect and will be ignored',
+            source: 'asdf',
+            column: 'SICKPAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2450,
+            warnType: 'SICKPAY_WARNING',
+            warning: 'The code you have entered for SICKPAY is incorrect and will be ignored',
+            source: '-1',
+            column: 'SICKPAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a decimal number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '134.3457890';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2450,
+            warnType: 'SICKPAY_WARNING',
+            warning: 'The code you have entered for SICKPAY is incorrect and will be ignored',
+            source: '134.3457890',
+            column: 'SICKPAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('pension', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 0 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 1 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'unknown' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'UNKNOWN' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = 'UNKNOWN';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return an warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2460,
+            warnType: 'PENSION_WARNING',
+            warning: 'The code you have entered for PENSION is incorrect and will be ignored',
+            source: 'asdf',
+            column: 'PENSION',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2460,
+            warnType: 'PENSION_WARNING',
+            warning: 'The code you have entered for PENSION is incorrect and will be ignored',
+            source: '-1',
+            column: 'PENSION',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a decimal number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = '134.3457890';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2460,
+            warnType: 'PENSION_WARNING',
+            warning: 'The code you have entered for PENSION is incorrect and will be ignored',
+            source: '134.3457890',
+            column: 'PENSION',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('holiday', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if a postive whole number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = '200';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return an warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2470,
+            warnType: 'HOLIDAY_WARNING',
+            warning: 'The code you have entered for HOLIDAY is incorrect and will be ignored',
+            source: 'asdf',
+            column: 'HOLIDAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2470,
+            warnType: 'HOLIDAY_WARNING',
+            warning: 'The code you have entered for HOLIDAY is incorrect and will be ignored',
+            source: '-1',
+            column: 'HOLIDAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a decimal number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = '134.3457890';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2470,
+            warnType: 'HOLIDAY_WARNING',
+            warning: 'The code you have entered for HOLIDAY is incorrect and will be ignored',
+            source: '134.3457890',
+            column: 'HOLIDAY',
             name: establishmentRow.LOCALESTID,
           },
         ]);
