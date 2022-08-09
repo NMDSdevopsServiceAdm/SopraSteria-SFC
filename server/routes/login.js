@@ -97,6 +97,7 @@ router.post('/', async (req, res) => {
                       'parentId',
                       'lastBulkUploaded',
                       'eightWeeksFromFirstLogin',
+                      'EmployerTypeValue',
                     ],
                     include: [
                       {

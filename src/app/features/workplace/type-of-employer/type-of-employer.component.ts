@@ -23,7 +23,7 @@ export class TypeOfEmployerComponent extends Question {
   public maxLength = 120;
   public showSkipButton = true;
   public sectionHeading: string;
-  public callToAction: string = undefined;
+  public callToAction = 'Save and continue';
 
   constructor(
     protected formBuilder: FormBuilder,

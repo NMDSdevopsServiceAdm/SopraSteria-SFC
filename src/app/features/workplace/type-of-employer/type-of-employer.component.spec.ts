@@ -11,7 +11,7 @@ import userEvent from '@testing-library/user-event';
 
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
-describe('TypeOfEmployerComponent', () => {
+fdescribe('TypeOfEmployerComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(TypeOfEmployerComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -46,7 +46,7 @@ describe('TypeOfEmployerComponent', () => {
   it('should show the page title with the establishment name in it', async () => {
     const { component, getByText } = await setup();
     const establishmentName = component.establishment.name;
-    expect(getByText(`What type of employer is ${establishmentName}?`)).toBeTruthy();
+    expect(getByText(`What type of employer are you?`)).toBeTruthy();
   });
 
   it('should show the save and continue button when there is not a return value', async () => {
