@@ -44,8 +44,6 @@ export class TypeOfEmployerComponent extends Question {
   }
 
   protected init(): void {
-    console.log(this.establishmentService.employerTypeSet);
-
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
 
