@@ -19,7 +19,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -36,7 +36,9 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('date-of-birth');
-    this.previous = this.getRoutePath('flu-jab');
+    this.previous = this.workerService.hasJobRole(this.worker, 27)
+      ? this.getRoutePath('mental-health-professional')
+      : this.getRoutePath('other-job-roles');
   }
 
   public setupFormErrorsMap(): void {
@@ -60,7 +62,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
       ? {
           nationalInsuranceNumber: nationalInsuranceNumber.value.toUpperCase(),
         }
-      : {nationalInsuranceNumber: null};
+      : { nationalInsuranceNumber: null };
   }
 
   ninValidator(control: AbstractControl) {

@@ -1328,7 +1328,6 @@ module.exports = function (sequelize, DataTypes) {
             'uid',
             'LocalIdentifierValue',
             'NameOrIdValue',
-            'FluJabValue',
             'NationalInsuranceNumberValue',
             'PostcodeValue',
             'DateOfBirthValue',

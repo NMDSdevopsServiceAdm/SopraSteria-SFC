@@ -17,7 +17,6 @@ export interface Worker {
     jobs: JobRole[];
   };
   mainJobStartDate?: string;
-  fluJab?: string;
   nationalInsuranceNumber?: string;
   dateOfBirth?: string;
   postcode?: string;

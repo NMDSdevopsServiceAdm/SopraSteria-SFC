@@ -23,7 +23,6 @@ import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.com
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
-import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
@@ -135,11 +134,6 @@ const routes: Routes = [
         path: 'mental-health-professional',
         component: MentalHealthProfessionalComponent,
         data: { title: 'Mental Health Professional' },
-      },
-      {
-        path: 'flu-jab',
-        component: FluJabComponent,
-        data: { title: 'Flu Vaccination' },
       },
       {
         path: 'national-insurance-number',
