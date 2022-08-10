@@ -47,7 +47,7 @@ export class TypeOfEmployerComponent extends Question {
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
 
-    if (this.establishmentService.employerTypeSet === false) {
+    if (this.establishmentService.employerTypeHasValue === false) {
       this.sectionHeading = this.establishment.name;
       this.callToAction = 'Continue to homepage';
       this.hideBackLink = true;

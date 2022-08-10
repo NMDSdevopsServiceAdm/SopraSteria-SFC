@@ -143,7 +143,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
             if (response.body.establishment.employerTypeSet === false) {
-              this.establishmentService.employerTypeSet = false;
+              this.establishmentService.setEmployerTypeHasValue(false);
               this.router.navigate(['workplace', `${response.body.establishment.uid}`, 'type-of-employer']);
             }
             if (response.body.registrationSurveyCompleted === false) {
