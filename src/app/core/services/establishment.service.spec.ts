@@ -43,17 +43,4 @@ describe('EstablishmentService', () => {
       });
     });
   });
-
-  describe('updateWorkplaceBanner', () => {
-    it('should call updateWorkplaceBanner for a given establishment with the correct data', () => {
-      service
-        .updateWorkplaceBanner('establishmentId', { property: 'showAddWorkplaceDetailsBanner', value: false })
-        .subscribe();
-
-      const req = http.expectOne('/api/establishment/establishmentId/updateEstablishmentBanner');
-
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({ property: 'showAddWorkplaceDetailsBanner', value: false });
-    });
-  });
 });

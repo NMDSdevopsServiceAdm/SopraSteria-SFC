@@ -4,7 +4,6 @@ import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
   allMandatoryTrainingCategories,
-  BannerFlag,
   CancelOwnerShip,
   ChangeOwner,
   Establishment,
@@ -252,10 +251,6 @@ export class EstablishmentService {
 
   updateDataSharing(establishmentId, data: ShareWithRequest): Observable<any> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
-  }
-
-  updateWorkplaceBanner(establishmentId: string, data: BannerFlag): Observable<BannerFlag> {
-    return this.http.post<BannerFlag>(`/api/establishment/${establishmentId}/updateEstablishmentBanner`, data);
   }
 
   updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
