@@ -2608,15 +2608,15 @@ class WorkplaceCSVValidator {
 
     const benefit = this._careWorkersCashLoyaltyForFirstTwoYears;
 
-    if (!benefit === null) {
+    if (benefit === YES) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+    } else if (benefit === NO) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
+    } else if (benefit === DONT_KNOW) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+    } else if (Number(benefit)) {
       if (benefit.includes(';')) {
         this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
-      } else if (benefit === YES) {
-        this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-      } else if (benefit === NO) {
-        this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
-      } else if (benefit === DONT_KNOW) {
-        this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
       }
     }
   }
@@ -3242,8 +3242,8 @@ class WorkplaceCSVValidator {
       ),
     );
 
-    // Sick Pay, Pension Contribution,
-    const sickPayAndPensionMapping = (value) => {
+    // Sick Pay, Pension Contribution,Holiday
+    const sickPayHolidayAndPensionMapping = (value) => {
       if (value === "Don't know") {
         return 'unknown';
       } else if (value === 'No') {
@@ -3257,9 +3257,9 @@ class WorkplaceCSVValidator {
       }
     };
 
-    columns.push(sickPayAndPensionMapping(entity.sickPay));
-    columns.push(sickPayAndPensionMapping(entity.pensionContribution));
-    columns.push(sickPayAndPensionMapping(entity.careWorkersLeaveDaysPerYear));
+    columns.push(sickPayHolidayAndPensionMapping(entity.sickPay));
+    columns.push(sickPayHolidayAndPensionMapping(entity.pensionContribution));
+    columns.push(sickPayHolidayAndPensionMapping(entity.careWorkersLeaveDaysPerYear));
 
     return columns.join(',');
   }

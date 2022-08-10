@@ -2466,4 +2466,78 @@ describe('Bulk Upload - Establishment CSV', () => {
     expect(csvAsArray[31]).to.include(4);
     expect(csvAsArray[32]).to.include(4);
   });
+
+  it('should leave the BENEFITS, SICKPAY and  PENSION columns blank if there values are null', async () => {
+    const establishment = apiEstablishmentBuilder();
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.equal('');
+    expect(csvAsArray[34]).to.equal('');
+    expect(csvAsArray[35]).to.equal('');
+  });
+
+  it("should include 0 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'No'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.careWorkersCashLoyaltyForFirstTwoYears = 'No';
+    establishment.sickPay = 'No';
+    establishment.pensionContribution = 'No';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.include(0);
+    expect(csvAsArray[34]).to.include(0);
+    expect(csvAsArray[35]).to.include(0);
+  });
+
+  it("should include 'unknown' in the BENEFITS ,SICKPAY and PENSION columns if there values are \"Don't know\"", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+    establishment.sickPay = "Don't know";
+    establishment.pensionContribution = "Don't know";
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.include('unknown');
+    expect(csvAsArray[34]).to.include('unknown');
+    expect(csvAsArray[35]).to.include('unknown');
+  });
+
+  it("should include 1 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'Yes'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+    establishment.sickPay = 'Yes';
+    establishment.pensionContribution = 'Yes';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.include('1');
+    expect(csvAsArray[34]).to.include('1');
+    expect(csvAsArray[35]).to.include('1');
+  });
+
+  it('should include a value in the  columns BENEFITS and  HOLIDAY if it they have  values', async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.careWorkersCashLoyaltyForFirstTwoYears = '200';
+    establishment.careWorkersLeaveDaysPerYear = '35';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.include('200');
+    expect(csvAsArray[36]).to.include('35');
+  });
+
+  it('should leave the  HOLIDAY column blank if its value  is null', async () => {
+    const establishment = apiEstablishmentBuilder();
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[36]).to.equal('');
+  });
 });

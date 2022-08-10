@@ -28,5 +28,9 @@ module.exports.apiEstablishmentBuilder = build('Establishment', {
     peopleInterviewedInTheLastFourWeeks: null,
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: null,
     wouldYouAcceptCareCertificatesFromPreviousEmployment: null,
+    careWorkersCashLoyaltyForFirstTwoYears: null,
+    sickPay: null,
+    pensionContribution: null,
+    careWorkersLeaveDaysPerYear: null,
   },
 });
