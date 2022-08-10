@@ -12,8 +12,9 @@ import { Observable, of } from 'rxjs';
 export class MockAuthService extends AuthService {
   private _isAuthenticated = false;
   private _isAdmin = false;
+  private _employerTypeSet = true;
 
-  public static factory(isAuthenticated = false, isAdmin = false) {
+  public static factory(isAuthenticated = false, isAdmin = false, employerTypeSet = true) {
     return (
       httpClient: HttpClient,
       router: Router,
@@ -32,6 +33,7 @@ export class MockAuthService extends AuthService {
       );
       service._isAuthenticated = isAuthenticated;
       service._isAdmin = isAdmin;
+      service._employerTypeSet = employerTypeSet;
       return service;
     };
   }
@@ -83,6 +85,10 @@ export class MockAuthService extends AuthService {
       body: {
         role: this._isAdmin ? 'Admin' : 'Edit',
         agreedUpdatedTerms: true,
+        establishment: {
+          employerTypeSet: this._employerTypeSet,
+          uid: 'mockuid'
+        }
       },
     });
   }

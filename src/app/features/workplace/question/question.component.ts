@@ -23,6 +23,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public nextRoute: string[];
   public back: URLStructure;
   public skipRoute: string[];
+  public hideBackLink: boolean;
 
   public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
@@ -53,7 +54,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
         if (!this.initiated) {
           this._init();
 
-          this.setBackLink();
+          if(!this.hideBackLink) {
+            this.setBackLink();
+          }
         }
       }),
     );

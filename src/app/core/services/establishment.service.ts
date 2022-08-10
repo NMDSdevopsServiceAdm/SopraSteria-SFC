@@ -76,6 +76,7 @@ export class EstablishmentService {
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
+  private _employerTypeHasValue: boolean = null;
   private _inStaffRecruitmentFlow: boolean;
 
   constructor(private http: HttpClient) {}
@@ -88,6 +89,14 @@ export class EstablishmentService {
 
   public get primaryWorkplace(): Establishment {
     return this._primaryWorkplace$.value;
+  }
+
+  public get employerTypeHasValue(): boolean {
+    return this._employerTypeHasValue;
+  }
+
+  public setEmployerTypeHasValue(hasValue: boolean) {
+    this._employerTypeHasValue = hasValue;
   }
 
   public setPrimaryWorkplace(workplace: Establishment) {

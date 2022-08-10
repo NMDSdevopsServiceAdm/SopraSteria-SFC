@@ -6,7 +6,8 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
-            <h1 class="govuk-fieldset__heading">What type of employer is {{ establishment.name }}?</h1>
+            <span class="govuk-caption-l" data-testid="section-heading">{{ sectionHeading }}</span>
+            <h1 class="govuk-fieldset__heading">What type of employer are you?</h1>
           </legend>
           <span
             *ngIf="submitted && form.get('employerType').invalid"
@@ -59,5 +60,10 @@
     </div>
   </div>
 
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
+  <app-workplace-submit-button
+    [return]="!!return"
+    (clicked)="setSubmitAction($event)"
+    [recordSummary]="showSkipButton"
+    [callToAction]="callToAction"
+  ></app-workplace-submit-button>
 </form>
