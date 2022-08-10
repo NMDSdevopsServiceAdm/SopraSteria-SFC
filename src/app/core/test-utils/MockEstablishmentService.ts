@@ -16,7 +16,6 @@ interface EmployerTypeRequest {
   };
 }
 
-
 @Injectable()
 export class MockEstablishmentService extends EstablishmentService {
   public shareWith: any = { cqc: null, localAuthorities: null };
@@ -100,10 +99,6 @@ export class MockEstablishmentService extends EstablishmentService {
     return this.establishmentObj;
   }
 
-  public get inStaffRecruitmentFlow(): boolean {
-    return false;
-  }
-
   public get returnTo(): URLStructure {
     if (this.returnToUrl) {
       return {
@@ -153,10 +148,9 @@ export class MockEstablishmentService extends EstablishmentService {
     };
   }
 
-  public updateTypeOfEmployer (establishmentId, data: EmployerTypeRequest): Observable<any> {
+  public updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest): Observable<any> {
     return of('');
   }
-
 
   public getExpiresSoonAlertDates(): Observable<string> {
     return of('90');
@@ -199,7 +193,6 @@ export class MockEstablishmentServiceWithoutReturn extends MockEstablishmentServ
 }
 @Injectable()
 export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmentService {
-
   public establishmentObj = {
     address: 'mock establishment address',
     capacities: [],
@@ -241,14 +234,12 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     careWorkersLeaveDaysPerYear: '35',
   };
 
-  public static factory(employerTypeHasValue=true) {
-    return (
-      httpClient: HttpClient,
-    ) => {
+  public static factory(employerTypeHasValue = true) {
+    return (httpClient: HttpClient) => {
       const service = new MockEstablishmentServiceWithNoEmployerType(httpClient);
       service.setEmployerTypeHasValue(employerTypeHasValue);
       return service;
-    }
+    };
   }
 
   public get returnTo(): URLStructure {

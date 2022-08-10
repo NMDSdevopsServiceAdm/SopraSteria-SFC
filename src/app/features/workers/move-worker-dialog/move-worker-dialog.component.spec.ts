@@ -5,6 +5,7 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -19,7 +20,7 @@ import { render } from '@testing-library/angular';
 import { MoveWorkerDialogComponent } from './move-worker-dialog.component';
 
 describe('MoveWorkerDialog', () => {
-  async function setup(isAdmin = true, subsidiaries = 2) {
+  async function setup(role = Roles.Admin, subsidiaries = 2) {
     const component = await render(MoveWorkerDialogComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -28,7 +29,7 @@ describe('MoveWorkerDialog', () => {
         FormBuilder,
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          useFactory: MockUserService.factory(subsidiaries, role),
           deps: [HttpClient],
         },
         AlertService,

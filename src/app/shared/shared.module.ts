@@ -91,13 +91,17 @@ import {
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
+import { UserFormComponent } from './components/user-form/user-form.component';
+import { UserTableComponent } from './components/users-table/user.table.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
 import {
   WdfStaffMismatchMessageComponent,
 } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
-import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component';
+import {
+  WorkplaceContinueCancelButtonComponent,
+} from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
@@ -139,7 +143,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     FileValueAccessorDirective,
     BulkUploadFileTypePipePipe,
     SanitizeVideoUrlPipe,
-    WhyCollectingFluJabComponent,
     InsetTextComponent,
     MessagesComponent,
     NumericAnswerPipe,
@@ -207,11 +210,13 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
+    UserTableComponent,
+    UserFormComponent,
+    WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
     NewWorkplaceSummaryComponent,
   ],
   exports: [
-    SummaryRecordChangeComponent,
     AlertComponent,
     AutoSuggestComponent,
     BackLinkComponent,
@@ -229,7 +234,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     EmploymentComponent,
     ErrorSummaryComponent,
     FileValueAccessorDirective,
-    WhyCollectingFluJabComponent,
     InsetTextComponent,
     MessagesComponent,
     NumericAnswerPipe,
@@ -296,6 +300,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
+    UserTableComponent,
+    UserFormComponent,
+    WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
     NewWorkplaceSummaryComponent,
   ],

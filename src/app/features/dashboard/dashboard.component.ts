@@ -57,7 +57,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
-    this.establishmentService.setInStaffRecruitmentFlow(false);
 
     if (this.workplace) {
       this.getPermissions();
@@ -73,6 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.setWorkersAndTrainingAlert();
       }
       this.setShowSecondUserBanner();
+      this.getEstablishmentUsers();
     }
 
     this.showBanner && this.showStaffRecordBanner();
@@ -115,6 +115,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
         }),
     );
+  }
+
+  private getEstablishmentUsers(): void {
+    this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
+      this.userService.updateUsers(users);
+    });
   }
 
   private getShowCQCDetailsBanner(): void {

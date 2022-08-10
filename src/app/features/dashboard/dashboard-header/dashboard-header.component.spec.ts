@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
@@ -31,6 +32,7 @@ const MockWindow = {
 
 describe('DashboardHeaderComponent', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
+    const role = isAdmin ? Roles.Admin : Roles.Edit;
     const component = await render(DashboardHeaderComponent, {
       imports: [
         SharedModule,
@@ -51,7 +53,7 @@ describe('DashboardHeaderComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, isAdmin),
+          useFactory: MockUserService.factory(subsidiaries, role),
           deps: [HttpClient],
         },
         {

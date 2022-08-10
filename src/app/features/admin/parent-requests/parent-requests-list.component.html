@@ -2,5 +2,7 @@
   <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-5">
     <h2 class="govuk-heading-m">Parent requests</h2>
   </div>
-  <app-approvals-table [pendingApprovals]="parentRequests" [routerLinkUrl]="'parent-requests'"></app-approvals-table>
+  <div class="govuk-grid-column-full">
+    <app-approvals-table [pendingApprovals]="parentRequests" [routerLinkUrl]="'parent-requests'"></app-approvals-table>
+  </div>
 </div>

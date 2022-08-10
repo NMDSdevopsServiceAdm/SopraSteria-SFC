@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+const { query } = require('express');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -1393,7 +1394,6 @@ module.exports = function (sequelize, DataTypes) {
             'uid',
             'LocalIdentifierValue',
             'NameOrIdValue',
-            'FluJabValue',
             'NationalInsuranceNumberValue',
             'PostcodeValue',
             'DateOfBirthValue',
@@ -2173,19 +2173,6 @@ module.exports = function (sequelize, DataTypes) {
     } catch (error) {
       console.log({ error });
     }
-  };
-
-  Establishment.updatRecuritmentBannerForExistingUser = async function (establishmentId, data) {
-    return await this.update(
-      {
-        recruitmentJourneyExistingUserBanner: data,
-      },
-      {
-        where: {
-          id: establishmentId,
-        },
-      },
-    );
   };
 
   return Establishment;

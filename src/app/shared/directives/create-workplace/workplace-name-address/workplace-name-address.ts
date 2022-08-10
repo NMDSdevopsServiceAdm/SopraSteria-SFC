@@ -14,7 +14,6 @@ import { Subscription } from 'rxjs';
 @Directive()
 export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-
   public isWorkPlaceUpdate: boolean;
   public form: FormGroup;
   public formControlsMap: any[];

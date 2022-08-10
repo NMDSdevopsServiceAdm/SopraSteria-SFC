@@ -133,7 +133,6 @@ export class EstablishmentService {
   public resetState() {
     this._establishmentId = null;
     this._establishment$.next(null);
-    this._inStaffRecruitmentFlow = false;
     this.setPrimaryWorkplace(null);
     this.setCheckCQCDetailsBanner(false);
   }

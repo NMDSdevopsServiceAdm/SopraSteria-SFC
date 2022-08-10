@@ -105,7 +105,14 @@
       </div>
     </div>
   </div>
-  <div class="govuk-grid-row">
+  <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
+    <app-workplace-submit-button
+      [return]="!!return"
+      (clicked)="setSubmitAction($event)"
+      [isExistingStaffRecord]="false"
+    ></app-workplace-submit-button>
+  </ng-container>
+  <ng-template #workplaceAdd>
     <app-submit-exit-buttons [cta]="callToActionLabel"></app-submit-exit-buttons>
-  </div>
+  </ng-template>
 </form>

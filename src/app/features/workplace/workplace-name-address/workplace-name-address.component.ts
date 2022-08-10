@@ -34,6 +34,16 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     this.setLocationAddress();
   }
 
+  public setSubmitAction(payload: { action: string; save: boolean }): void {
+    if (!payload.save) {
+      this.navigate();
+    }
+  }
+
+  protected navigate(): void {
+    this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
+  }
+
   protected setFlow(): void {
     this.flow = `workplace/${this.establishmentService.establishmentId}`;
   }

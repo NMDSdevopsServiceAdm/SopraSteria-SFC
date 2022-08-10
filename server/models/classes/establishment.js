@@ -87,7 +87,6 @@ class Establishment extends EntityValidator {
     this._lastBulkUploaded = null;
     this._eightWeeksFromFirstLogin = null;
     this._showSharingPermissionsBanner = null;
-    this._recruitmentJourneyExistingUserBanner = null;
     this._expiresSoonAlertDate = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
@@ -268,10 +267,6 @@ class Establishment extends EntityValidator {
 
   get showSharingPermissionsBanner() {
     return this._showSharingPermissionsBanner;
-  }
-
-  get recruitmentJourneyExistingUserBanner() {
-    return this._recruitmentJourneyExistingUserBanner;
   }
 
   get reasonsForLeaving() {
@@ -560,10 +555,6 @@ class Establishment extends EntityValidator {
 
         if ('showSharingPermissionsBanner' in document) {
           this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
-        }
-
-        if (document.recruitmentJourneyExistingUserBanner) {
-          this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
         }
 
         if (document.expiresSoonAlertDate) {
@@ -868,7 +859,6 @@ class Establishment extends EntityValidator {
           sickPay: this._sickPay,
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
-          careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1092,6 +1082,7 @@ class Establishment extends EntityValidator {
             // the value in lastWdfEligibility as that field is audited
             updateDocument.establishmentWdfEligibility = null;
           }
+
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
             returning: true,
@@ -1329,7 +1320,6 @@ class Establishment extends EntityValidator {
       }
 
       const fetchResults = await models.establishment.findOne(fetchQuery);
-
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
         this._isNew = false;
@@ -1384,7 +1374,6 @@ class Establishment extends EntityValidator {
         this._pensionContribution = fetchResults.pensionContribution;
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
-
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1870,10 +1859,6 @@ class Establishment extends EntityValidator {
 
       if (this.showSharingPermissionsBanner !== null) {
         myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
-      }
-
-      if (this.recruitmentJourneyExistingUserBanner !== null) {
-        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
       }
 
       if (this._ustatus) {

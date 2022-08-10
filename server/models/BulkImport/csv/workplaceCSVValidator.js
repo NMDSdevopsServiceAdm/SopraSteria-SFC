@@ -181,9 +181,11 @@ class WorkplaceCSVValidator {
   static get LEAVERS_ERROR() {
     return 1320;
   }
+
   static get REASONS_FOR_LEAVING_ERROR() {
     return 1360;
   }
+
   static get MAIN_SERVICE_WARNING() {
     return 2000;
   }
@@ -2928,6 +2930,7 @@ class WorkplaceCSVValidator {
       isCQCRegulated: this._regType === 2,
     };
 
+    // interim solution for reasons for leaving
     if (this._reasonsForLeaving && Array.isArray(this._reasonsForLeaving)) {
       fixedProperties.reasonsForLeaving = this._reasonsForLeaving
         .map((thisReason) => `${thisReason.id}:${thisReason.count}`)
@@ -2976,7 +2979,6 @@ class WorkplaceCSVValidator {
       pensionContribution: this._pensionContribution,
       careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
     };
-
     if (this._allServices) {
       if (this._allServices.length === 1) {
         changeProperties.services.value = null;

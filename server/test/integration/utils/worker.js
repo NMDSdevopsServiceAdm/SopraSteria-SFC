@@ -26,7 +26,6 @@ module.exports.apiWorkerBuilder = build('Worker', {
     id: sequence(),
     LocalIdentifierValue: fake((f) => f.lorem.words(1)),
     NameOrIdValue: fake((f) => f.name.findName().replace(/,+/, '')),
-    FluJabValue: oneOf('Yes', 'No', "Don't know"),
     NationalInsuranceNumberValue: 'AB123456C',
     PostcodeValue: fake((f) => f.address.zipCode('??# #??')),
     DateOfBirthValue: fake((f) => f.helpers.replaceSymbolWithNumber('####-##-##')),
