@@ -93,7 +93,7 @@ class Establishment extends EntityValidator {
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
-    this._showAddWorkplaceDetailsBanner = null;
+    this._showAddWorkplaceDetailsBanner = false;
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._pensionContribution = null;
@@ -863,6 +863,8 @@ class Establishment extends EntityValidator {
             this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
           wouldYouAcceptCareCertificatesFromPreviousEmployment:
             this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
+          showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
+          careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
           sickPay: this._sickPay,
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
@@ -1063,6 +1065,7 @@ class Establishment extends EntityValidator {
             wouldYouAcceptCareCertificatesFromPreviousEmployment:
               this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
             showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
+            careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
             sickPay: this._sickPay,
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
@@ -1376,6 +1379,7 @@ class Establishment extends EntityValidator {
           fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
+        this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
         this._sickPay = fetchResults.sickPay;
         this._pensionContribution = fetchResults.pensionContribution;
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
@@ -1857,6 +1861,7 @@ class Establishment extends EntityValidator {
           this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
+        myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.sickPay = this.sickPay;
         myDefaultJSON.pensionContribution = this.pensionContribution;
         myDefaultJSON.careWorkersLeaveDaysPerYear = this.careWorkersLeaveDaysPerYear;

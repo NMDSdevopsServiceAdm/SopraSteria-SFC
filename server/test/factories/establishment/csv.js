@@ -35,5 +35,9 @@ module.exports = build('EstablishmentCSV', {
     INTERVIEWS: '9',
     REPEATTRAINING: '1',
     ACCEPTCARECERT: '2',
+    BENEFITS: '200',
+    SICKPAY: '0',
+    PENSION: '1',
+    HOLIDAY: '35',
   },
 });
