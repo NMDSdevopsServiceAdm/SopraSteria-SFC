@@ -6,7 +6,6 @@ import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-check-answers',
@@ -25,15 +24,16 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.getEstablishmentData();
+  }
+  public getEstablishmentData(): void {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
+      this.establishmentService.establishment$.subscribe((establishment) => {
         this.establishment = establishment;
-
         this.summaryReturnUrl = { url: ['/workplace', establishment.uid, 'check-answers'] };
+        this.setBackLink();
       }),
     );
-
-    this.setBackLink();
   }
 
   public setBackLink(): void {
