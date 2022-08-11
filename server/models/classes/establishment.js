@@ -92,12 +92,12 @@ class Establishment extends EntityValidator {
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
-    this._showAddWorkplaceDetailsBanner = false;
+    this._showAddWorkplaceDetailsBanner = true;
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._pensionContribution = null;
     this._sickPay = null;
-    this._recruitmentJourneyExistingUserBanner = null;
+    this._recruitmentJourneyExistingUserBanner = false;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
