@@ -8,10 +8,13 @@
 
 <form #formEl *ngIf="renderForm" (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
+    <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">Who are your service users?</h1>
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+            Who are your service users?
+          </h1>
         </legend>
         <p>Select all that apply.</p>
         <div class="govuk-form-group" *ngFor="let group of serviceUserGroups">
@@ -78,11 +81,16 @@
         </div>
       </fieldset>
     </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
 
-  <app-workplace-submit-button
-    [return]="!!return"
-    [isExistingStaffRecord]="false"
-    (clicked)="setSubmitAction($event)"
-  ></app-workplace-submit-button>
+  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
 </form>

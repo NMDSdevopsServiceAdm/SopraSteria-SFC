@@ -13,14 +13,14 @@ import { render } from '@testing-library/angular';
 import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
-  async function setup(isAdmin = false) {
+  async function setup(isAdmin = false, employerTypeSet = true) {
     const { fixture, getByText, queryByText, getByTestId } = await render(LoginComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         FeatureFlagsService,
         {
           provide: AuthService,
-          useFactory: MockAuthService.factory(true, isAdmin),
+          useFactory: MockAuthService.factory(true, isAdmin, employerTypeSet),
         },
         {
           provide: UserService,
@@ -91,5 +91,22 @@ describe('LoginComponent', () => {
     expect(component.form.valid).toBeTruthy();
     expect(authSpy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledWith(['/sfcadmin']);
+  });
+
+  it('should send you to type-of-employer on login where employer type not set', async () => {
+    const { component, fixture, spy, authSpy } = await setup(false, false);
+
+    component.form.markAsDirty();
+    component.form.get('username').setValue('1');
+    component.form.get('username').markAsDirty();
+    component.form.get('password').setValue('1');
+    component.form.get('password').markAsDirty();
+
+    component.onSubmit();
+
+    fixture.detectChanges();
+    expect(component.form.valid).toBeTruthy();
+    expect(authSpy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith(['workplace', `mockuid`, 'type-of-employer']);
   });
 });

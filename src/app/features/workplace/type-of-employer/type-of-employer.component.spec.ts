@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithNoEmployerType } from '@core/test-utils/MockEstablishmentService';
@@ -12,14 +12,14 @@ import userEvent from '@testing-library/user-event';
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
 describe('TypeOfEmployerComponent', () => {
-  async function setup() {
+  async function setup(employerTypeHasValue = true) {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(TypeOfEmployerComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentServiceWithNoEmployerType,
+          useFactory: MockEstablishmentServiceWithNoEmployerType.factory(employerTypeHasValue),
         },
       ],
     });
@@ -28,6 +28,9 @@ describe('TypeOfEmployerComponent', () => {
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'updateTypeOfEmployer').and.callThrough();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
       fixture,
@@ -35,6 +38,8 @@ describe('TypeOfEmployerComponent', () => {
       getAllByText,
       getByLabelText,
       establishmentServiceSpy,
+      establishmentService,
+      routerSpy,
     };
   }
 
@@ -46,7 +51,7 @@ describe('TypeOfEmployerComponent', () => {
   it('should show the page title with the establishment name in it', async () => {
     const { component, getByText } = await setup();
     const establishmentName = component.establishment.name;
-    expect(getByText(`What type of employer is ${establishmentName}?`)).toBeTruthy();
+    expect(getByText(`What type of employer are you?`)).toBeTruthy();
   });
 
   it('should show the save and continue button when there is not a return value', async () => {
@@ -71,10 +76,10 @@ describe('TypeOfEmployerComponent', () => {
     });
   });
 
-  it('should submit the form with the correct value when the Local authority (generic/other) radio button is selected and the form is submitted', async () => {
+  it('should submit the form with the correct value when the Local authority (generic, other) radio button is selected and the form is submitted', async () => {
     const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
-    const radioButton = getByLabelText('Local authority (generic/other)');
+    const radioButton = getByLabelText('Local authority (generic, other)');
     fireEvent.click(radioButton);
     fixture.detectChanges();
 
@@ -103,10 +108,10 @@ describe('TypeOfEmployerComponent', () => {
     });
   });
 
-  it('should submit the form with the correct value when the Voluntary or charity radio button is selected and the form is submitted', async () => {
+  it('should submit the form with the correct value when the Voluntary, charity, not for profit radio button is selected and the form is submitted', async () => {
     const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
-    const radioButton = getByLabelText('Voluntary or charity');
+    const radioButton = getByLabelText('Voluntary, charity, not for profit');
     fireEvent.click(radioButton);
     fixture.detectChanges();
 
@@ -143,7 +148,7 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     const input = 'some employer type';
-    const employerTypeInput = getByLabelText('Other Employer Type');
+    const employerTypeInput = getByLabelText('Other employer type (optional)');
     userEvent.type(employerTypeInput, input);
 
     const submitButton = getByText('Save and continue');
@@ -176,7 +181,7 @@ describe('TypeOfEmployerComponent', () => {
 
     const longString =
       'ThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongString';
-    const employerTypeInput = getByLabelText('Other Employer Type');
+    const employerTypeInput = getByLabelText('Other employer type (optional)');
     userEvent.type(employerTypeInput, longString);
 
     const submitButton = getByText('Save and continue');
@@ -185,5 +190,17 @@ describe('TypeOfEmployerComponent', () => {
 
     const errorMessages = getAllByText('Other Employer type must be 120 characters or less');
     expect(errorMessages.length).toEqual(2);
+  });
+
+  it('should navigate back to dashboard when navigated to from login', async () => {
+    const { fixture, getByText, getByLabelText, establishmentServiceSpy, routerSpy} = await setup(false);
+
+    const radioButton = getByLabelText('Voluntary, charity, not for profit');
+    fireEvent.click(radioButton);
+    const submitButton = getByText('Continue to homepage');
+    fireEvent.click(submitButton);
+    fixture.detectChanges();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
   });
 });

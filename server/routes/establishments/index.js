@@ -32,10 +32,10 @@ const LocationDetails = require('./locationdetails');
 const MandatoryTraining = require('./mandatoryTraining');
 const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
-const SharingPermissionsBanner = require('./sharingPermissionsBanner');
 const ExpiresSoonAlertDates = require('./expiresSoonAlertDates');
 const WdfClaims = require('./wdfClaims');
 const ChildWorkplaces = require('./childWorkplaces');
+const UpdateSingleEstablishmentField = require('./updateSingleEstablishmentField');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -86,10 +86,10 @@ router.use('/:id/locationDetails', LocationDetails);
 router.use('/:id/mandatoryTraining', MandatoryTraining);
 router.use('/:id/workers', Workers);
 router.use('/:id/benchmarks', Benchmarks);
-router.use('/:id/updateSharingPermissionsBanner', SharingPermissionsBanner);
 router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
 router.use('/:id/wdfClaims', WdfClaims);
 router.use('/:id/childWorkplaces', ChildWorkplaces);
+router.use('/:id/updateSingleEstablishmentField', UpdateSingleEstablishmentField);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {
@@ -110,6 +110,7 @@ const addEstablishment = async (req, res) => {
     MainServiceOther: req.body.mainServiceOther,
     IsRegulated: req.body.isRegulated,
     NumberOfStaff: req.body.totalStaff,
+    TypeOfEmployer: req.body.typeOfEmployer,
   };
 
   try {
@@ -177,6 +178,7 @@ const addEstablishment = async (req, res) => {
         },
         ustatus: 'PENDING',
         numberOfStaff: establishmentData.NumberOfStaff,
+        employerType: establishmentData.TypeOfEmployer,
       });
 
       // no Establishment properties on registration

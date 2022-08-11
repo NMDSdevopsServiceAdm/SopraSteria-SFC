@@ -6,9 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  SelectMainServiceDirective,
-} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
   selector: 'app-select-main-service',
@@ -68,29 +66,6 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
       return;
     }
 
-    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
-    this.backService.setBackLink({ url: [this.flow, route] });
-  }
-
-  private getCQCRegulatedBackLink(): string {
-    if (this.registrationService.manuallyEnteredWorkplace$.value) {
-      return 'workplace-name-address';
-    }
-    if (this.registrationService.locationAddresses$.value.length == 1) {
-      return 'your-workplace';
-    }
-    if (this.registrationService.locationAddresses$.value.length > 1) {
-      return 'select-workplace';
-    }
-  }
-
-  private getNonCQCRegulatedBackLink(): string {
-    if (this.registrationService.manuallyEnteredWorkplace$.value) {
-      return 'workplace-name-address';
-    }
-    if (this.registrationService.manuallyEnteredWorkplaceName$.value) {
-      return 'workplace-name';
-    }
-    return 'select-workplace-address';
+    this.backService.setBackLink({ url: [this.flow, 'type-of-employer'] });
   }
 }

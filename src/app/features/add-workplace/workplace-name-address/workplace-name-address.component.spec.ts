@@ -133,7 +133,7 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate to select-main-service page on success', async () => {
+    it('should navigate to type-of-employer page on success', async () => {
       const { component, fixture, getByText, spy } = await setup();
       const form = component.form;
 
@@ -149,7 +149,7 @@ describe('WorkplaceNameAddressComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'type-of-employer']);
     });
 
     it('should navigate to confirm-workplace-details page on success if returnToConfirmDetails is not null', async () => {

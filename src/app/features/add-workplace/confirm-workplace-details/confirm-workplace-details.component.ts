@@ -38,6 +38,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     this.locationAddress = this.workplaceService.selectedLocationAddress$.value;
     this.workplace = this.workplaceService.selectedWorkplaceService$.value;
     this.WorkplaceTotalStaff = this.workplaceService.totalStaff$.value;
+    this.employerTypeObject = this.workplaceService.typeOfEmployer$.value;
   }
 
   public setBackLink(): void {
@@ -58,6 +59,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
             this.locationAddress,
             this.workplace,
             this.WorkplaceTotalStaff,
+            this.employerTypeObject,
           ),
         )
         .subscribe(
@@ -76,7 +78,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
 
   public onSetReturn(): void {
     this.workplaceService.setReturnTo({
-      url: [`${this.flow}/confirm-details`],
+      url: [`${this.flow}/confirm-workplace-details`],
     });
   }
 

@@ -38,7 +38,8 @@ function isPerm(worker) {
 const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
-  'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS';
+  'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
+  'ADVERTISING,INTERVIEWS,REPEATTRAINING,ACCEPTCARECERT,BENEFITS,SICKPAY,PENSION,HOLIDAY';
 
 class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
@@ -84,6 +85,14 @@ class WorkplaceCSVValidator {
     this._starters = null;
     this._leavers = null;
     this._reasonsForLeaving = null;
+    this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
+    this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
+    this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
+    this._peopleInterviewedInTheLastFourWeeks = null;
+    this._careWorkersCashLoyaltyForFirstTwoYears = null;
+    this._sickPay = null;
+    this._pensionContribution = null;
+    this._careWorkersLeaveDaysPerYear = null;
 
     this._id = null;
     this._ignore = false;
@@ -226,6 +235,30 @@ class WorkplaceCSVValidator {
   static get REASONS_FOR_LEAVING_WARNING() {
     return 2360;
   }
+  static get ADVERTISING_ERROR() {
+    return 2400;
+  }
+  static get INTERVIEWS_ERROR() {
+    return 2410;
+  }
+  static get REPEAT_TRAINING_ERROR() {
+    return 2420;
+  }
+  static get ACCEPT_CARE_CERT_ERROR() {
+    return 2430;
+  }
+  static get BENEFITS_WARNING() {
+    return 2440;
+  }
+  static get SICKPAY_WARNING() {
+    return 2450;
+  }
+  static get PENSION_WARNING() {
+    return 2460;
+  }
+  static get HOLIDAY_WARNING() {
+    return 2470;
+  }
 
   get id() {
     if (this._id === null) {
@@ -362,6 +395,38 @@ class WorkplaceCSVValidator {
 
   get reasonsForLeaving() {
     return this._reasonsForLeaving;
+  }
+
+  get doNewStartersRepeatMandatoryTrainingFromPreviousEmployment() {
+    return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+  }
+
+  get moneySpentOnAdvertisingInTheLastFourWeeks() {
+    return this._moneySpentOnAdvertisingInTheLastFourWeeks;
+  }
+
+  get peopleInterviewedInTheLastFourWeeks() {
+    return this._peopleInterviewedInTheLastFourWeeks;
+  }
+
+  get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
+    return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
+  }
+
+  get careWorkersLeaveDaysPerYear() {
+    return this._careWorkersLeaveDaysPerYear;
+  }
+
+  get careWorkersCashLoyaltyForFirstTwoYears() {
+    return this._careWorkersCashLoyaltyForFirstTwoYears;
+  }
+
+  get pensionContribution() {
+    return this._pensionContribution;
+  }
+
+  get sickPay() {
+    return this._sickPay;
   }
 
   _validateLocalisedId() {
@@ -1790,6 +1855,206 @@ class WorkplaceCSVValidator {
     return true;
   }
 
+  _validateRepeatTraining() {
+    const ALLOWED_VALUES = ['1', '2', '3', '4', ''];
+
+    if (!ALLOWED_VALUES.includes(this._currentLine.REPEATTRAINING)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: WorkplaceCSVValidator.REPEAT_TRAINING_ERROR,
+        errType: 'REPEAT_TRAINING_ERROR',
+        error: 'The code you have entered for REPEATTRAINING is incorrect',
+        source: this._currentLine.REPEATTRAINING,
+        column: 'REPEATTRAINING',
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
+    } else {
+      const repeatTrainingAsInt = parseInt(this._currentLine.REPEATTRAINING, 10);
+
+      this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = Number.isNaN(repeatTrainingAsInt)
+        ? this._currentLine.REPEATTRAINING
+        : repeatTrainingAsInt;
+      return true;
+    }
+  }
+
+  _validateAcceptCareCertificate() {
+    const ALLOWED_VALUES = ['1', '2', '3', '4', ''];
+
+    if (!ALLOWED_VALUES.includes(this._currentLine.ACCEPTCARECERT)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: WorkplaceCSVValidator.ACCEPT_CARE_CERT_ERROR,
+        errType: 'ACCEPT_CARE_CERT_ERROR',
+        error: 'The code you have entered for ACCEPTCARECERT is incorrect',
+        source: this._currentLine.ACCEPTCARECERT,
+        column: 'ACCEPTCARECERT',
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
+    } else {
+      const acceptCareCertAsInt = parseInt(this._currentLine.ACCEPTCARECERT, 10);
+
+      this._wouldYouAcceptCareCertificatesFromPreviousEmployment = Number.isNaN(acceptCareCertAsInt)
+        ? this._currentLine.ACCEPTCARECERT
+        : acceptCareCertAsInt;
+      return true;
+    }
+  }
+
+  _validateInterviews() {
+    const interviewsRegex = /^[0-9]*$/;
+    const interviews = this._currentLine.INTERVIEWS;
+
+    if (!interviewsRegex.test(interviews) && interviews.toLowerCase() !== 'unknown') {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: WorkplaceCSVValidator.INTERVIEWS_ERROR,
+        errType: 'INTERVIEWS_ERROR',
+        error: "The code you entered for INTERVIEWS should be a whole number or the value 'unknown'",
+        source: interviews,
+        column: 'INTERVIEWS',
+        name: this.currentLine.LOCALESTID,
+      });
+      return false;
+    } else {
+      this._peopleInterviewedInTheLastFourWeeks = interviews;
+      return true;
+    }
+  }
+
+  _validateAdvertising() {
+    const advertisingRegex = /^\d*(\.\d{1,2})?$/;
+    const advertising = this._currentLine.ADVERTISING;
+
+    if (!advertisingRegex.test(advertising) && advertising.toLowerCase() !== 'unknown') {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: WorkplaceCSVValidator.ADVERTISING_ERROR,
+        errType: 'ADVERTISING_ERROR',
+        error: "The code you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown'",
+        source: advertising,
+        column: 'ADVERTISING',
+        name: this.currentLine.LOCALESTID,
+      });
+      return false;
+    } else {
+      this._moneySpentOnAdvertisingInTheLastFourWeeks = advertising;
+      return true;
+    }
+  }
+
+  _validateBenefits() {
+    const benefitsRegex = /^\d*(\.\d{1,2})?$/;
+    const benefits = this._currentLine.BENEFITS.split(';').join('');
+
+    const localValidationErrors = [];
+    if (!benefitsRegex.test(benefits) && benefits.toLowerCase() !== 'unknown') {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: WorkplaceCSVValidator.BENEFITS_WARNING,
+        warnType: 'BENEFITS_WARNING',
+        warning: 'The code you have entered for BENEFITS is incorrect and will be ignored',
+        source: benefits,
+        column: 'BENEFITS',
+        name: this.currentLine.LOCALESTID,
+      });
+    } else {
+      this._careWorkersCashLoyaltyForFirstTwoYears = this._currentLine.BENEFITS;
+
+      return true;
+    }
+
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
+      return false;
+    }
+    return true;
+  }
+
+  _validateSickPay() {
+    const ALLOWED_VALUES = ['0', '1', ''];
+    const sickpay = this._currentLine.SICKPAY;
+
+    const localValidationErrors = [];
+    if (!ALLOWED_VALUES.includes(this._currentLine.SICKPAY) && sickpay.toLowerCase() !== 'unknown') {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: WorkplaceCSVValidator.SICKPAY_WARNING,
+        warnType: 'SICKPAY_WARNING',
+        warning: 'The code you have entered for SICKPAY is incorrect and will be ignored',
+        source: this._currentLine.SICKPAY,
+        column: 'SICKPAY',
+        name: this._currentLine.LOCALESTID,
+      });
+    } else {
+      const sickPayAsInt = parseInt(this._currentLine.SICKPAY, 10);
+
+      this._sickPay = Number.isNaN(sickPayAsInt) ? this._currentLine.SICKPAY : sickPayAsInt;
+      return true;
+    }
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
+      return false;
+    }
+    return true;
+  }
+
+  _validateHoliday() {
+    const holidayRegex = /^[0-9]*$/;
+    const holiday = this._currentLine.HOLIDAY;
+
+    const localValidationErrors = [];
+    if (!holidayRegex.test(holiday)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: WorkplaceCSVValidator.HOLIDAY_WARNING,
+        warnType: 'HOLIDAY_WARNING',
+        warning: 'The code you have entered for HOLIDAY is incorrect and will be ignored',
+        source: this._currentLine.HOLIDAY,
+        column: 'HOLIDAY',
+        name: this._currentLine.LOCALESTID,
+      });
+    } else {
+      this._careWorkersLeaveDaysPerYear = holiday;
+      return true;
+    }
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
+      return false;
+    }
+    return true;
+  }
+
+  _validatePensionContribution() {
+    const ALLOWED_VALUES = ['0', '1', ''];
+    const pension = this._currentLine.PENSION;
+
+    const localValidationErrors = [];
+    if (!ALLOWED_VALUES.includes(this._currentLine.PENSION) && pension.toLowerCase() !== 'unknown') {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: WorkplaceCSVValidator.PENSION_WARNING,
+        warnType: 'PENSION_WARNING',
+        warning: 'The code you have entered for PENSION is incorrect and will be ignored',
+        source: this._currentLine.PENSION,
+        column: 'PENSION',
+        name: this._currentLine.LOCALESTID,
+      });
+    } else {
+      const pensionAsInt = parseInt(this._currentLine.PENSION, 10);
+
+      this._pensionContribution = Number.isNaN(pensionAsInt) ? this._currentLine.PENSION : pensionAsInt;
+      return true;
+    }
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
+      return false;
+    }
+    return true;
+  }
+
   _validateNoChange() {
     let localValidationErrors = [];
     var thisEstablishment = this._allCurrentEstablishments.find(
@@ -2302,6 +2567,75 @@ class WorkplaceCSVValidator {
     }
   }
 
+  _transformRepeatTrainingAndAcceptCareCert() {
+    const mapping = {
+      1: 'Yes, always',
+      2: 'Yes, very often',
+      3: 'Yes, but not very often',
+      4: 'No, never',
+      '': null,
+    };
+    const repeatTraining = this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+    this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = mapping[repeatTraining];
+    const acceptCareCert = this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
+    this._wouldYouAcceptCareCertificatesFromPreviousEmployment = mapping[acceptCareCert];
+  }
+
+  _transformAdvertisingAndInterviews() {
+    const DONT_KNOW = 'unknown';
+    const NONE = '0';
+
+    const interview = this._peopleInterviewedInTheLastFourWeeks;
+    const advertising = this._moneySpentOnAdvertisingInTheLastFourWeeks;
+    const interviewAndAdvertisingArr = [
+      { name: '_peopleInterviewedInTheLastFourWeeks', value: interview },
+      { name: '_moneySpentOnAdvertisingInTheLastFourWeeks', value: advertising },
+    ];
+
+    interviewAndAdvertisingArr.forEach((property) => {
+      if (!property.value) {
+        this[property.name] = null;
+      } else if (property.value.toLowerCase() === DONT_KNOW) {
+        this[property.name] = "Don't know";
+      } else if (property.value === NONE) {
+        this[property.name] = 'None';
+      }
+    });
+  }
+
+  _transformCashLoyaltyForFirstTwoYears() {
+    const YES = '1';
+    const NO = '0';
+    const DONT_KNOW = 'unknown';
+
+    const benefit = this._careWorkersCashLoyaltyForFirstTwoYears;
+
+    if (benefit === YES) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+    } else if (benefit === NO) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
+    } else if (benefit === DONT_KNOW) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+    } else if (Number(benefit)) {
+      if (benefit.includes(';')) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
+      }
+    }
+  }
+
+  _transformPensionAndSickPay() {
+    const mapping = {
+      0: 'No',
+      1: 'Yes',
+      unknown: "Don't know",
+      '': null,
+    };
+    const sickPay = this._sickPay;
+    this._sickPay = mapping[sickPay];
+    const pension = this._pensionContribution;
+    this._pensionContribution = mapping[pension];
+  }
+
   preValidate(headers) {
     return this._validateHeaders(headers);
   }
@@ -2422,6 +2756,14 @@ class WorkplaceCSVValidator {
       this._validateJobRoleTotals();
 
       this._validateReasonsForLeaving();
+      this._validateAdvertising();
+      this._validateInterviews();
+      this._validateRepeatTraining();
+      this._validateAcceptCareCertificate();
+      this._validateSickPay();
+      this._validateHoliday();
+      this._validatePensionContribution();
+      this._validateBenefits();
 
       // this._validateNoChange(); // Not working, disabled for LA Window
     }
@@ -2498,7 +2840,10 @@ class WorkplaceCSVValidator {
       status = !this._transformAllCapacities() ? false : status;
       status = !this._transformAllUtilisation() ? false : status;
       status = !this._transformAllVacanciesStartersLeavers() ? false : status;
-
+      status = !this._transformAdvertisingAndInterviews() ? false : status;
+      status = !this._transformRepeatTrainingAndAcceptCareCert() ? false : status;
+      status = !this._transformCashLoyaltyForFirstTwoYears() ? false : status;
+      status = !this._transformPensionAndSickPay() ? false : status;
       return status;
     } else {
       return true;
@@ -2624,6 +2969,15 @@ class WorkplaceCSVValidator {
       vacancies: this._vacancies,
       starters: this._starters,
       leavers: this._leavers,
+      doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
+        this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
+      moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
+      peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
+      wouldYouAcceptCareCertificatesFromPreviousEmployment: this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
+      careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
+      sickPay: this._sickPay,
+      pensionContribution: this._pensionContribution,
+      careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
     };
     if (this._allServices) {
       if (this._allServices.length === 1) {
@@ -2832,6 +3186,82 @@ class WorkplaceCSVValidator {
       columns.push('');
       columns.push('');
     }
+
+    // Advertising, interviews,
+    const advertisingAndInterviewsMapping = (value) => {
+      if (value === "Don't know") {
+        return 'unknown';
+      } else if (value === 'None') {
+        return 0;
+      } else if (!value) {
+        return '';
+      } else {
+        return value;
+      }
+    };
+
+    columns.push(advertisingAndInterviewsMapping(entity.moneySpentOnAdvertisingInTheLastFourWeeks));
+    columns.push(advertisingAndInterviewsMapping(entity.peopleInterviewedInTheLastFourWeeks));
+
+    // RepeatTraining and AcceptCareCertifiicate
+    const repeatTrainingAndCareCertMapping = (value) => {
+      if (value === 'Yes, always') {
+        return 1;
+      } else if (value === 'Yes, very often') {
+        return 2;
+      } else if (value === 'Yes, but not very often') {
+        return 3;
+      } else if (value === 'No, never') {
+        return 4;
+      } else if (!value) {
+        return '';
+      }
+    };
+
+    columns.push(repeatTrainingAndCareCertMapping(entity.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment));
+    columns.push(repeatTrainingAndCareCertMapping(entity.wouldYouAcceptCareCertificatesFromPreviousEmployment));
+
+    // cash Loyalty
+    const cashLoyaltyMapping = (value) => {
+      if (value === "Don't know") {
+        return 'unknown';
+      } else if (value === 'No') {
+        return 0;
+      } else if (value === 'Yes') {
+        return 1;
+      } else if (!value) {
+        return '';
+      } else {
+        return value;
+      }
+    };
+    const whenValue = '1;';
+    columns.push(
+      cashLoyaltyMapping(
+        Number(entity.careWorkersCashLoyaltyForFirstTwoYears)
+          ? whenValue.concat(entity.careWorkersCashLoyaltyForFirstTwoYears)
+          : entity.careWorkersCashLoyaltyForFirstTwoYears,
+      ),
+    );
+
+    // Sick Pay, Pension Contribution,Holiday
+    const sickPayHolidayAndPensionMapping = (value) => {
+      if (value === "Don't know") {
+        return 'unknown';
+      } else if (value === 'No') {
+        return 0;
+      } else if (value === 'Yes') {
+        return 1;
+      } else if (!value) {
+        return '';
+      } else {
+        return value;
+      }
+    };
+
+    columns.push(sickPayHolidayAndPensionMapping(entity.sickPay));
+    columns.push(sickPayHolidayAndPensionMapping(entity.pensionContribution));
+    columns.push(sickPayHolidayAndPensionMapping(entity.careWorkersLeaveDaysPerYear));
 
     return columns.join(',');
   }

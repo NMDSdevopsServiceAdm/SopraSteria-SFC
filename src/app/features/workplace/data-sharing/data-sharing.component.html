@@ -7,6 +7,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
+    <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
     <h1 class="govuk-heading-l">Share your data</h1>
     <div *ngIf="establishment.isRegulated">
       <p>We'd like to share your data with the Care Quality Commission (CQC) and local authorities.</p>
@@ -63,6 +64,15 @@
       </ul>
       <p>Local authorities cannot identify workers from the data that is shared with them.</p>
     </app-details>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <div *ngIf="!return" class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar"
+        [sections]="workplaceFlowSections"
+        [currentSection]="section"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>
 
@@ -146,7 +156,5 @@
       </div>
     </div>
   </div>
-
-  <app-workplace-submit-button [return]="!!return" [isExistingStaffRecord]="false" (clicked)="setSubmitAction($event)">
-  </app-workplace-submit-button>
+  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
 </form>

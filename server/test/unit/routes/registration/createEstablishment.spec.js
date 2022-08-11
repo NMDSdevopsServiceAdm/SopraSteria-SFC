@@ -98,6 +98,7 @@ describe('createEstablishment', () => {
         ustatus: 'PENDING',
         expiresSoonAlertDate: 90,
         numberOfStaff: 4,
+        typeOfEmployer: { value: 'Private Sector', other: null },
       };
     });
 
@@ -131,6 +132,12 @@ describe('createEstablishment', () => {
 
       expect(newEstablishment.numberOfStaff).to.equal(establishmentData.numberOfStaff);
     });
+
+    it('should set employer type as typeOfEmployer passed in', async () => {
+      await loadEstablishmentData(newEstablishment, establishmentData);
+
+      expect(newEstablishment.employerType).to.deep.equal(establishmentData.typeOfEmployer);
+    });
   });
 
   describe('saveEstablishmentToDatabase', async () => {
@@ -145,6 +152,7 @@ describe('createEstablishment', () => {
         ustatus: 'PENDING',
         expiresSoonAlertDate: 90,
         numberOfStaff: 4,
+        typeOfEmployer: { value: 'Private Sector', other: null },
       };
 
       saveStub = sinon.stub(newEstablishment, 'save').callsFake(() => {

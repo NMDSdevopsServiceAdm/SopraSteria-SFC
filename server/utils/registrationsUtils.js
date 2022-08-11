@@ -1,6 +1,5 @@
 const config = require('../config/config');
 const moment = require('moment-timezone');
-const get = require('lodash/get');
 
 module.exports.convertWorkplaceAndUserDetails = (workplace) => {
   const convertedWorkplace = {
@@ -27,6 +26,10 @@ module.exports.convertWorkplaceAndUserDetails = (workplace) => {
       uid: workplace.get('EstablishmentUID'),
       reviewer: workplace.get('Reviewer'),
       inReview: workplace.get('InReview'),
+      employerType: {
+        value: workplace.get('EmployerTypeValue'),
+        other: workplace.get('EmployerTypeOtherValue'),
+      },
     },
   };
 
@@ -42,7 +45,7 @@ module.exports.convertWorkplaceAndUserDetails = (workplace) => {
 const convertUserDetails = (user) => {
   return {
     name: user.get('FullNameValue'),
-    username: get(user, 'login.username'),
+    username: user.login.get('username'),
     securityQuestion: user.get('SecurityQuestionValue'),
     securityQuestionAnswer: user.get('SecurityQuestionAnswerValue'),
     email: user.get('EmailValue'),

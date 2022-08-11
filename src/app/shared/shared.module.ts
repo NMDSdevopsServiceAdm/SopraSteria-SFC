@@ -36,11 +36,13 @@ import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-r
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
+import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/new-workplace-summary.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
+import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { ProgressComponent } from './components/progress/progress.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
@@ -187,6 +189,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     UserTableComponent,
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
+    ProgressBarComponent,
+    NewWorkplaceSummaryComponent,
   ],
   exports: [
     AlertComponent,
@@ -275,6 +279,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     UserTableComponent,
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
+    ProgressBarComponent,
+    NewWorkplaceSummaryComponent,
+    SummaryRecordChangeComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

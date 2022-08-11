@@ -13,6 +13,7 @@ import { Question } from '@features/workplace/question/question.component';
   templateUrl: './starters.component.html',
 })
 export class StartersComponent extends Question {
+  public section = 'Vacancies and turnover';
   public total = 0;
   public jobs: Job[] = [];
   public startersKnownOptions = [
@@ -93,6 +94,8 @@ export class StartersComponent extends Question {
         this.addErrorLinkFunctionality();
       }),
     );
+
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'leavers'];
   }
 
   private setupForm(): void {

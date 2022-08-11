@@ -35,7 +35,8 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
     this.getShowCQCDetailsBanner();
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.updateWorkplaceAlert =
-      !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+      this.workplace.showAddWorkplaceDetailsBanner &&
+      this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
   }
 
   private getShowCQCDetailsBanner(): void {

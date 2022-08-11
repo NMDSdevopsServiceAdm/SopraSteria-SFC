@@ -17,13 +17,14 @@ export class ServicesCapacityComponent extends Question {
   public capacityErrorMsg = 'The capacity must be between 1 and 999';
   public intPattern = INT_PATTERN.toString();
   public ready = false;
+  public section = 'Services';
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
@@ -40,7 +41,7 @@ export class ServicesCapacityComponent extends Question {
 
   protected init(): void {
     this.subscriptions.add(
-      this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(capacities => {
+      this.establishmentService.getCapacity(this.establishment.uid, true).subscribe((capacities) => {
         this.capacities = capacities.allServiceCapacities;
 
         if (this.capacities.length === 0) {
@@ -52,14 +53,14 @@ export class ServicesCapacityComponent extends Question {
           const questions = service.questions;
           const id = this.generateFormGroupName(service.service);
 
-          questions.forEach(question => {
+          questions.forEach((question) => {
             group.addControl(
               this.generateFormControlName(question),
               new FormControl(question.answer, [
                 Validators.min(1),
                 Validators.max(999),
                 Validators.pattern(this.intPattern),
-              ])
+              ]),
             );
 
             this.formErrorsMap.push({
@@ -98,11 +99,12 @@ export class ServicesCapacityComponent extends Question {
         });
 
         this.ready = true;
-      })
+      }),
     );
 
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
   }
 
   protected setupServerErrorsMap(): void {
@@ -116,7 +118,7 @@ export class ServicesCapacityComponent extends Question {
 
   protected generateUpdateProps() {
     const capacities = [];
-    Object.keys(this.form.controls).map(groupKey => {
+    Object.keys(this.form.controls).map((groupKey) => {
       Object.entries(this.form.get(groupKey).value).reduce((res, [key, value]) => {
         if (value) {
           const parsedValue = typeof value === 'string' ? parseInt(value, 10) : value;
@@ -133,15 +135,16 @@ export class ServicesCapacityComponent extends Question {
 
   protected updateEstablishment(props): void {
     this.subscriptions.add(
-      this.establishmentService
-        .updateCapacity(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateCapacity(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 
   protected capacityUtilisationValidator(group: FormGroup): ValidationErrors {
     const controls = [];
-    Object.keys(group.controls).forEach(key => {
+    Object.keys(group.controls).forEach((key) => {
       controls.push(group.get(key));
     });
 
