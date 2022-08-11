@@ -112,7 +112,7 @@ describe('ConfirmStaffRecruitmentAndBenefitsComponent', () => {
       it('should show the add link when moneySpentOnAdvertisingInTheLastFourWeek is null and set the link to `recruitment-advertising-cost`', async () => {
         const { component, fixture } = await setup();
 
-        component.establishment.moneySpentOnAdvertisingInTheLastFourWeeks = null;
+        component.establishment.moneySpentOnAdvertisingInTheLastFourWeeks = undefined;
         fixture.detectChanges();
 
         const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
@@ -244,6 +244,20 @@ describe('ConfirmStaffRecruitmentAndBenefitsComponent', () => {
 
         expect(careWorkersCashLoyaltyForFirstTwoYears.innerHTML).toContain('Add');
         expect(careWorkersCashLoyaltyForFirstTwoYears.innerHTML).toContain(`href="/workplace/mocked-uid/cash-loyalty"`);
+      });
+
+      it('should show the add link when moneySpentOnAdvertisingInTheLastFourWeek is null and set the link to `recruitment-advertising-cost`', async () => {
+        const { component, fixture } = await setup();
+
+        component.establishment.moneySpentOnAdvertisingInTheLastFourWeeks = null;
+        fixture.detectChanges();
+
+        const advertisingspendLastFourWeek = within(document.body).queryByTestId('advertisingSpend');
+
+        expect(advertisingspendLastFourWeek.innerHTML).toContain('Add');
+        expect(advertisingspendLastFourWeek.innerHTML).toContain(
+          `href="/workplace/mocked-uid/recruitment-advertising-cost"`,
+        );
       });
 
       it('should show the change link when sickPay is not null and set the link to `benefits-statutory-sick-pay`', async () => {

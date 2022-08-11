@@ -91,6 +91,10 @@ export class MockEstablishmentService extends EstablishmentService {
     return of(null);
   }
 
+  public get inStaffRecruitmentFlow(): boolean {
+    return false;
+  }
+
   public getAllServices(): Observable<ServiceGroup[]> {
     return of([{ category: 'any', value: null, services: [{ id: 123, name: 'Mock Service' }] }]);
   }
