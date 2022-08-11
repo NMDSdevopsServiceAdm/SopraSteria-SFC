@@ -213,7 +213,7 @@ describe('LeaversComponent', () => {
       });
     });
 
-    it('should navigate to the check-answers page when submitting from the flow', async () => {
+    it('should navigate to the recruitment-advertising-cost page when submitting from the flow', async () => {
       const { component, fixture, getByText, routerSpy } = await setup(false);
 
       component.form.get('leaversKnown').setValue('None');
@@ -222,7 +222,7 @@ describe('LeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'recruitment-advertising-cost']);
     });
 
     it('should navigate to the next page when clicking Skip this question link', async () => {

@@ -97,6 +97,7 @@ class Establishment extends EntityValidator {
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._pensionContribution = null;
     this._sickPay = null;
+    this._recruitmentJourneyExistingUserBanner = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -385,6 +386,10 @@ class Establishment extends EntityValidator {
     return this._sickPay;
   }
 
+  get recruitmentJourneyExistingUserBanner() {
+    return this._recruitmentJourneyExistingUserBanner;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -597,6 +602,10 @@ class Establishment extends EntityValidator {
 
         if ('sickPay' in document) {
           this._sickPay = document.sickPay;
+        }
+
+        if ('recruitmentJourneyExistingUserBanner' in document) {
+          this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
         }
       }
 
@@ -859,6 +868,7 @@ class Establishment extends EntityValidator {
           sickPay: this._sickPay,
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
+          recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1059,7 +1069,7 @@ class Establishment extends EntityValidator {
             sickPay: this._sickPay,
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
-            careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
+            recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
           };
 
           // Every time the establishment is saved, need to calculate
