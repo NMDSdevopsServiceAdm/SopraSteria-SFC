@@ -14,6 +14,8 @@ const runValidator = async (thisLine, currentLineNumber, existingWorker, mapping
   lineValidator.validate();
   lineValidator.transform();
 
+  console.log('>>>>>');
+
   const thisWorkerAsAPI = lineValidator.toAPI();
   const thisWorkerQualificationsAsAPI = lineValidator.toQualificationAPI();
   const thisWorkerAsJSON = lineValidator.toJSON(true);
