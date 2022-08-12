@@ -21,7 +21,7 @@ class WorkerCsvValidator {
     this._key = null;
     this._establishmentKey = null;
 
-    console.log('LOG to cause Intentional conflict to check if Lambda will update');
+    console.log('console log to cause Intentional conflict to check if Lambda will update');
     this._NINumber = null;
     this._postCode = null;
     this._DOB = null;
