@@ -43,31 +43,6 @@
         <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()"> Change </a>
       </dd>
     </div>
-    <div class="govuk-summary-list__row" data-testid="employerType">
-      <dt class="govuk-summary-list__key">Employer type</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
-            -
-          </ng-container>
-          <ng-template #employertype>
-            {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' employer type'"
-          [link]="['/workplace', workplace.uid, 'type-of-employer']"
-          [hasData]="workplace.employerType?.other || workplace.employerType?.value"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
     <div class="govuk-summary-list__row" data-testid="numberOfStaff">
       <dt
         class="govuk-summary-list__key"
@@ -134,6 +109,31 @@
           [explanationText]="' total number of staff'"
           [link]="['/workplace', workplace.uid, 'total-staff']"
           [hasData]="isNumber(workplace.numberOfStaff)"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+    <div class="govuk-summary-list__row" data-testid="employerType">
+      <dt class="govuk-summary-list__key">Employer type</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value
+          [wdfView]="wdfView"
+          [wdfValue]="workplace.wdf?.employerType"
+          [overallWdfEligibility]="overallWdfEligibility"
+        >
+          <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
+            -
+          </ng-container>
+          <ng-template #employertype>
+            {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
+          </ng-template>
+        </app-summary-record-value>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' employer type'"
+          [link]="['/workplace', workplace.uid, 'type-of-employer']"
+          [hasData]="workplace.employerType?.other || workplace.employerType?.value"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
       </dd>
@@ -717,7 +717,7 @@
     </div>
 
     <div class="govuk-summary-list__row" data-testid="offer-more-than-statutory-sick-pay">
-      <dt class="govuk-summary-list__key">Offer more than statutory 'sick pay'</dt>
+      <dt class="govuk-summary-list__key">Offer more than Statutory Sick Pay</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
           [wdfView]="wdfView"
