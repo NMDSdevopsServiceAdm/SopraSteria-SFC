@@ -12,7 +12,11 @@
           Confirm workplace details
         </button>
       </div>
-      <app-new-workplace-summary [workplace]="establishment" [return]="summaryReturnUrl"></app-new-workplace-summary>
+      <app-new-workplace-summary
+        [workplace]="establishment"
+        [return]="summaryReturnUrl"
+        [removeServiceSectionMargin]="true"
+      ></app-new-workplace-summary>
     </div>
   </div>
 </ng-container>

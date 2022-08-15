@@ -11,7 +11,7 @@
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
         <div
-          class="govuk-form-group govuk-!-margin-bottom-0"
+          class="govuk-form-group govuk-!-margin-bottom-2"
           [class.govuk-form-group--error]="submitted && emptyForm && this.form.invalid"
         >
           <div class="govuk-grid-row">
@@ -133,6 +133,10 @@
           </div>
         </div>
       </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
       <div *ngIf="!return" class="govuk-util__float-right">
@@ -144,5 +148,4 @@
       </div>
     </div>
   </div>
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
 </form>

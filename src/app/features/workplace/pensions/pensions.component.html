@@ -9,24 +9,22 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
-        <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">
-              <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
-              Do you contribute more than the minimum 3% into workplace pensions for your care workers?
-            </h1>
-          </legend>
-          <div class="govuk-!-margin-bottom-6">
-            <label class="govuk-label">
-              Workplace pensions are sometimes called 'automatic enrolment', 'occupational', 'works', 'company' or
-              'work-based' pensions.</label
-            >
-          </div>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
+            Do you contribute more than the minimum 3% into workplace pensions for your care workers?
+          </h1>
+        </legend>
+        <div class="govuk-!-margin-bottom-6">
+          <p>
+            Workplace pensions are sometimes called 'automatic enrolment', 'occupational', 'works', 'company' or
+            'work-based' pensions.
+          </p>
         </div>
-        <div class="gouvk-grid-row govuk-!-margin-bottom-3">
-          <div class="govuk-form-group">
-            <div class="govuk-radios">
-              <div class="govuk-radios__item" *ngFor="let option of pensionsOptions; let i = index">
+        <div class="govuk-form-group">
+          <div class="govuk-radios govuk-!-margin-bottom-4">
+            <ng-container *ngFor="let option of pensionsOptions; let i = index">
+              <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
                   type="radio"
@@ -37,10 +35,12 @@
                 />
                 <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
               </div>
-            </div>
+            </ng-container>
           </div>
         </div>
       </fieldset>
+      <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)">
+      </app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
       <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
@@ -67,5 +67,4 @@
       </div>
     </div>
   </div>
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"> </app-workplace-submit-button>
 </form>
