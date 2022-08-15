@@ -9,15 +9,13 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
-        <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <span class="govuk-caption-l" data-testid="section-heading">Recruitment</span>
-            <h1 class="govuk-fieldset__heading">
-              How much money have you spent on advertising for staff in the last 4 weeks?
-            </h1>
-          </legend>
-        </div>
-        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l" data-testid="section-heading">Recruitment</span>
+          <h1 class="govuk-fieldset__heading">
+            How much money have you spent on advertising for staff in the last 4 weeks?
+          </h1>
+        </legend>
+        <div class="govuk-grid-row govuk-!-margin-bottom-4">
           <div class="govuk-grid-column-two-thirds">
             <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">
               <label class="govuk-label" for="amountSpent">Amount spent</label>
@@ -66,12 +64,16 @@
                   [formControlName]="'amountSpentKnown'"
                   [value]="option.value"
                 />
-                <label for="amountSpentKnown-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
+                <label for="amountSpentKnown-{{ i }}" class="govuk-label govuk-radios__label govuk-!-padding-right-0">{{
+                  option.label
+                }}</label>
               </div>
             </div>
           </div>
         </div>
       </fieldset>
+      <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)">
+      </app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
       <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
@@ -97,5 +99,4 @@
       </div>
     </div>
   </div>
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"> </app-workplace-submit-button>
 </form>

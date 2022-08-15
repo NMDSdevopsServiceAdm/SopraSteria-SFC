@@ -23,7 +23,7 @@ import { NewWorkplaceSummaryComponent } from './new-workplace-summary.component'
 
 describe('NewWorkplaceSummaryComponent', () => {
   const setup = async (shareWith = null) => {
-    const { fixture, getByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
+    const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(NewWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
       declarations: [],
       providers: [
@@ -48,11 +48,12 @@ describe('NewWorkplaceSummaryComponent', () => {
       componentProperties: {
         wdfView: true,
         workplace: shareWith ? establishmentWithShareWith(shareWith) : (establishmentWithWdfBuilder() as Establishment),
+        removeServiceSectionMargin: false,
       },
     });
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getByTestId, queryByTestId };
+    return { component, fixture, getByText, getByTestId, queryByTestId, rerender };
   };
 
   it('should render a NewWorkplaceSummaryComponent', async () => {
@@ -93,6 +94,16 @@ describe('NewWorkplaceSummaryComponent', () => {
     expect(getByTestId('recruitment-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
     expect(getByTestId('staff-benefits-section')).toBeTruthy();
+  });
+
+  it('should render the services section with top margin when removeServiceSectionMargin is false, and without margin when true', async () => {
+    const { rerender, getByText } = await setup();
+
+    const serviceHeading = getByText('Services');
+    expect(serviceHeading.getAttribute('class')).toContain('govuk-!-margin-top-5');
+
+    rerender({ removeServiceSectionMargin: true });
+    expect(serviceHeading.getAttribute('class')).not.toContain('govuk-!-margin-top-5');
   });
 
   it('should render the workplace and services section when the workplace details flow has not been completed', async () => {

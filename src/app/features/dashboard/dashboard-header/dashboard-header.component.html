@@ -10,7 +10,7 @@
 
     <div *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'">
       <button
-        class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
+        class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0"
         (click)="onDeleteWorkplace($event)"
       >
         <img src="/assets/images/bin.svg" alt="" />
