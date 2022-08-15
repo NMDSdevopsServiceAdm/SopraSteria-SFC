@@ -68,7 +68,6 @@ describe('PensionsComponent', () => {
     const { component, fixture } = await setup(true, pensionContribution);
 
     const radioButton = fixture.nativeElement.querySelector('input[id="pensionsOption-0"]');
-    console.log(component.form.value);
     expect(radioButton.checked).toBeTruthy();
     expect(component.form.value).toEqual({ pension: 'Yes' });
   });
@@ -78,8 +77,6 @@ describe('PensionsComponent', () => {
     const { component, fixture } = await setup(true, pensionContribution);
 
     const radioButton = fixture.nativeElement.querySelector('input[id="pensionsOption-1"]');
-    console.log(radioButton.checked);
-    console.log(component.form.value);
     expect(radioButton.checked).toBeTruthy();
     expect(component.form.value).toEqual({ pension: 'No' });
   });
