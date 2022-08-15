@@ -193,7 +193,7 @@ describe('TypeOfEmployerComponent', () => {
   });
 
   it('should navigate back to dashboard when navigated to from login', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy, routerSpy} = await setup(false);
+    const { fixture, getByText, getByLabelText, establishmentServiceSpy, routerSpy } = await setup(false);
 
     const radioButton = getByLabelText('Voluntary, charity, not for profit');
     fireEvent.click(radioButton);
@@ -201,6 +201,6 @@ describe('TypeOfEmployerComponent', () => {
     fireEvent.click(submitButton);
     fixture.detectChanges();
 
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+    expect(routerSpy).toHaveBeenCalledWith(['/first-login-wizard']);
   });
 });
