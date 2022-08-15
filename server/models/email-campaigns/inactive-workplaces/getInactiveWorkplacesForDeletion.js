@@ -41,6 +41,7 @@ const getInactiveWorkplacesForDeletion = async () => {
 		  AND s."LastLogin" > :twentyFourLastMonths
 		  AND s."LastUpdated" > :twentyFourLastMonths
 	  )
+
   )
       `,
     {
