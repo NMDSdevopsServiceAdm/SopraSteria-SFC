@@ -63,7 +63,6 @@ describe('NursingCategoryComponent', () => {
       const { getByText } = await setup();
 
       expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
     });
   });
 });
