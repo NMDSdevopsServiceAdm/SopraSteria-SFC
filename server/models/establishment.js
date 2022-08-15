@@ -2098,18 +2098,21 @@ module.exports = function (sequelize, DataTypes) {
     WHERE
       e."LastLogin" <= :twentyFourLastMonths
       AND e."LastUpdated" <= :twentyFourLastMonths
-      AND ("IsParent" = false OR
-    NOT EXISTS(
-      SELECT
-        "EstablishmentID"
-      FROM
-        cqc."EstablishmentLastActivity" s
-      WHERE
-        e."EstablishmentID" = s."ParentID"
-        AND s."LastLogin" > :twentyFourLastMonths
-        AND s."LastUpdated" > :twentyFourLastMonths
-      )
-    )
+      AND NOT EXISTS
+      (
+         SELECT s."EstablishmentID" AS EstablishmentID
+            FROM cqc."EstablishmentLastActivity" s
+            WHERE  s."IsParent" = true AND EXISTS
+          (
+             SELECT c."EstablishmentID"
+              FROM cqc."EstablishmentLastActivity" c
+                WHERE s."EstablishmentID" = c."ParentID"
+                 AND c."LastLogin" > :twentyFourLastMonths
+                 AND c."LastUpdated" > :twentyFourLastMonths
+              AND c."IsParent"= false
+            ) AND s."EstablishmentID"  =  e."EstablishmentID"
+     )
+
     and e."EstablishmentID" IN(:establishmentIds)
         `,
       {
