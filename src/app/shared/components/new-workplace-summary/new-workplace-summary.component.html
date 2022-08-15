@@ -1,6 +1,6 @@
 <dl
   *ngIf="workplace"
-  class="govuk-summary-list"
+  class="govuk-summary-list govuk-summary-list--medium"
   [ngClass]="{
     'govuk-summary-list--contains-warnings': !wdfView && (showTotalStaffWarning || staffMismatchWarning()),
     'asc-summary-list--wide-value': wdfView && showTotalStaffWarning
@@ -152,7 +152,12 @@
   <ng-container>
     <div class="govuk-summary-list__row" data-testid="services-section">
       <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Services</h2>
+        <h2
+          class="govuk-heading-m govuk-!-margin-bottom-2"
+          [ngClass]="{ 'govuk-!-margin-top-5': !removeServiceSectionMargin }"
+        >
+          Services
+        </h2>
       </dt>
       <dd class="govuk-summary-list__value"></dd>
       <dd class="govuk-summary-list__actions"></dd>
