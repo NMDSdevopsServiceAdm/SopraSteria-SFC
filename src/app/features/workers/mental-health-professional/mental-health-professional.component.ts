@@ -20,7 +20,7 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
@@ -40,7 +40,7 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
       });
     }
 
-    this.next = this.getRoutePath('flu-jab');
+    this.next = this.getRoutePath('national-insurance-number');
     this.previous = this.workerService.hasJobRole(this.worker, 23)
       ? this.getRoutePath('nursing-specialism')
       : this.getRoutePath('other-job-roles');

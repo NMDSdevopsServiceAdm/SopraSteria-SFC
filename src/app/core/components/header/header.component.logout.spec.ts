@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HeaderComponent } from '@core/components/header/header.component';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -21,6 +22,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, RenderResult } from '@testing-library/angular';
 
 async function renderHeaderComponent(isAdmin: boolean) {
+  const role = isAdmin ? Roles.Admin : Roles.Edit;
   component = await render(TestRootComponent, {
     imports: [
       FormsModule,
@@ -37,7 +39,7 @@ async function renderHeaderComponent(isAdmin: boolean) {
     providers: [
       {
         provide: UserService,
-        useFactory: MockUserService.factory(0, isAdmin),
+        useFactory: MockUserService.factory(0, role),
         deps: [HttpClient],
       },
       {

@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -11,7 +12,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByTestId, queryByText, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject, of } from 'rxjs';
 
 import { ConfirmDetailsComponent } from './confirm-details.component';
@@ -30,7 +31,8 @@ describe('ConfirmDetailsComponent', () => {
       providers: [
         {
           provide: RegistrationService,
-          useClass: MockRegistrationServiceWithMainService,
+          useFactory: MockRegistrationServiceWithMainService.factory(),
+          deps: [HttpClient],
         },
         {
           provide: UserService,
@@ -178,7 +180,8 @@ describe('ConfirmDetailsComponent', () => {
         mainService: 'Name of service',
         mainServiceOther: 'Hello!',
         isRegulated: null,
-        numberOfStaff: null,
+        numberOfStaff: '4',
+        typeOfEmployer: { value: 'Private Sector' },
       });
     });
 

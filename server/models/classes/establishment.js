@@ -87,17 +87,17 @@ class Establishment extends EntityValidator {
     this._lastBulkUploaded = null;
     this._eightWeeksFromFirstLogin = null;
     this._showSharingPermissionsBanner = null;
-    this._recruitmentJourneyExistingUserBanner = null;
     this._expiresSoonAlertDate = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
     this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._peopleInterviewedInTheLastFourWeeks = null;
-    this._showAddWorkplaceDetailsBanner = null;
+    this._showAddWorkplaceDetailsBanner = true;
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._pensionContribution = null;
     this._sickPay = null;
+    this._recruitmentJourneyExistingUserBanner = false;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -270,10 +270,6 @@ class Establishment extends EntityValidator {
     return this._showSharingPermissionsBanner;
   }
 
-  get recruitmentJourneyExistingUserBanner() {
-    return this._recruitmentJourneyExistingUserBanner;
-  }
-
   get reasonsForLeaving() {
     return this._reasonsForLeaving;
   }
@@ -388,6 +384,10 @@ class Establishment extends EntityValidator {
 
   get sickPay() {
     return this._sickPay;
+  }
+
+  get recruitmentJourneyExistingUserBanner() {
+    return this._recruitmentJourneyExistingUserBanner;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -562,10 +562,6 @@ class Establishment extends EntityValidator {
           this._showSharingPermissionsBanner = document.showSharingPermissionsBanner;
         }
 
-        if (document.recruitmentJourneyExistingUserBanner) {
-          this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
-        }
-
         if (document.expiresSoonAlertDate) {
           this._expiresSoonAlertDate = document.expiresSoonAlertDate;
         }
@@ -606,6 +602,10 @@ class Establishment extends EntityValidator {
 
         if ('sickPay' in document) {
           this._sickPay = document.sickPay;
+        }
+
+        if ('recruitmentJourneyExistingUserBanner' in document) {
+          this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
         }
       }
 
@@ -863,10 +863,12 @@ class Establishment extends EntityValidator {
             this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
           wouldYouAcceptCareCertificatesFromPreviousEmployment:
             this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
+          showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
+          careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
           sickPay: this._sickPay,
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
-          careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
+          recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1063,10 +1065,11 @@ class Establishment extends EntityValidator {
             wouldYouAcceptCareCertificatesFromPreviousEmployment:
               this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
             showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
+            careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
             sickPay: this._sickPay,
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
-            careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
+            recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1089,6 +1092,7 @@ class Establishment extends EntityValidator {
             // the value in lastWdfEligibility as that field is audited
             updateDocument.establishmentWdfEligibility = null;
           }
+
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
             returning: true,
@@ -1326,7 +1330,6 @@ class Establishment extends EntityValidator {
       }
 
       const fetchResults = await models.establishment.findOne(fetchQuery);
-
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
         this._isNew = false;
@@ -1376,11 +1379,11 @@ class Establishment extends EntityValidator {
           fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
+        this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
         this._sickPay = fetchResults.sickPay;
         this._pensionContribution = fetchResults.pensionContribution;
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
-
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1857,6 +1860,7 @@ class Establishment extends EntityValidator {
           this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
+        myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.sickPay = this.sickPay;
         myDefaultJSON.pensionContribution = this.pensionContribution;
         myDefaultJSON.careWorkersLeaveDaysPerYear = this.careWorkersLeaveDaysPerYear;
@@ -1865,10 +1869,6 @@ class Establishment extends EntityValidator {
 
       if (this.showSharingPermissionsBanner !== null) {
         myDefaultJSON.showSharingPermissionsBanner = this.showSharingPermissionsBanner;
-      }
-
-      if (this.recruitmentJourneyExistingUserBanner !== null) {
-        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
       }
 
       if (this._ustatus) {

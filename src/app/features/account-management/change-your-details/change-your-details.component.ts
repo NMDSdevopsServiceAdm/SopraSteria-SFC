@@ -37,7 +37,6 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
     this.breadcrumbService.show(JourneyType.ACCOUNT);
     this.setupSubscriptions();
     this.return = { url: ['/account-management'] };
-
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
   }
 
@@ -57,8 +56,28 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
   }
 
   private changeUserDetails(userDetails: UserDetails): void {
+    if (this.userDetails.role.includes('Admin')) {
+      this.updateAdminUser(userDetails);
+    } else {
+      this.updateUser(userDetails);
+    }
+  }
+
+  private updateUser(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.primaryWorkplace.uid, this.userDetails.uid, userDetails).subscribe(
+        (data) => {
+          this.userService.loggedInUser = { ...this.userDetails, ...data };
+          this.router.navigate(['/account-management']);
+        },
+        (error: HttpErrorResponse) => this.onError(error),
+      ),
+    );
+  }
+
+  private updateAdminUser(userDetails: UserDetails): void {
+    this.subscriptions.add(
+      this.userService.updateAdminUserDetails(this.userDetails.uid, userDetails).subscribe(
         (data) => {
           this.userService.loggedInUser = { ...this.userDetails, ...data };
           this.router.navigate(['/account-management']);

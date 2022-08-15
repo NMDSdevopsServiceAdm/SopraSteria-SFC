@@ -129,16 +129,16 @@ export class NumberOfInterviewsComponent extends Question implements OnInit, OnD
         type: [
           {
             name: 'nonInteger',
-            message: 'Number of people interviewed must be a number, like 7',
+            message: 'Number of people interviewed must be a positive whole number, like 7',
           },
           {
             name: 'nonWholeNumber',
-            message: 'Number of people interviewed must be a whole number, like 7',
+            message: 'Number of people interviewed must be a positive whole number, like 7',
           },
 
           {
             name: 'negativeNumber',
-            message: 'Number of people interviewed must be a positive number, like 7',
+            message: 'Number of people interviewed must be a positive whole number, like 7',
           },
         ],
       },

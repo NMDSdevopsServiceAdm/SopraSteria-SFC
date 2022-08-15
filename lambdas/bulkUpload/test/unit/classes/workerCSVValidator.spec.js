@@ -25,7 +25,6 @@ const buildWorkerCsv = build('WorkerCSV', {
     MAINJOBROLE: '4',
     MAINJRDESC: '',
     NATIONALITY: '826',
-    FLUVAC: '',
     NINUMBER: 'JA622112A',
     NMCREG: '',
     NONSCQUAL: '2',
@@ -101,61 +100,6 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator.validationErrors.map((err) => err.warning)).not.to.include(
           'DAYSSICK in the last 12 months has not changed please check this is correct',
         );
-      });
-    });
-
-    describe('flu jab', () => {
-      const codesToTest = ['1', '2', '999'];
-      codesToTest.forEach((code) => {
-        it('should not emit an warning if FLUVAC is not ' + code, async () => {
-          const validator = new WorkerCsvValidator(
-            buildWorkerCsv({
-              overrides: {
-                STATUS: 'NEW',
-                FLUVAC: code,
-              },
-            }),
-            2,
-            null,
-            mappings,
-          );
-
-          await validator.validate();
-          const validationErrors = validator._validationErrors;
-
-          expect(validationErrors.length).to.equal(0);
-        });
-      });
-
-      it('should emit an warning if FLUVAC is not in 1, 2, 999, null', async () => {
-        const validator = new WorkerCsvValidator(
-          buildWorkerCsv({
-            overrides: {
-              STATUS: 'NEW',
-              FLUVAC: '8',
-            },
-          }),
-          2,
-          null,
-          mappings,
-        );
-
-        await validator.validate();
-        const validationErrors = validator._validationErrors;
-
-        expect(validationErrors.length).to.equal(1);
-        expect(validationErrors).to.deep.equal([
-          {
-            worker: '3',
-            name: 'MARMA',
-            lineNumber: 2,
-            warnCode: 3055,
-            warnType: 'WORKER_FLUVAC_WARNING',
-            warning: 'FLUVAC the code you have selected has not been recognised and will be ignored',
-            source: '8',
-            column: 'FLUVAC',
-          },
-        ]);
       });
     });
 

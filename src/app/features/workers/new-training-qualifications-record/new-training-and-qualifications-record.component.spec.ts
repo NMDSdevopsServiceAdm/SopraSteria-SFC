@@ -29,7 +29,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
   yesterday.setDate(yesterday.getDate() - 1);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  activeDate.setDate(activeDate.getDate() + 93);
+  activeDate.setDate(activeDate.getDate() + 93); // 3 months in the future
 
   async function setup(
     otherJob = false,

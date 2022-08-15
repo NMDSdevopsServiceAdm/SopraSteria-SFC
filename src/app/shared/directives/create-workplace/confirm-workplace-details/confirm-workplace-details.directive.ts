@@ -1,8 +1,10 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { EmployerType } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { BackService } from '@core/services/back.service';
+import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -12,8 +14,11 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   public workplace: Service;
   public workplaceNameAndAddress: SummaryList[];
   public mainService: SummaryList[];
+  public typeOfEmployer: SummaryList[];
   public nameAndAddress: string;
   public WorkplaceTotalStaff: string;
+  public employerType: string;
+  public employerTypeObject: EmployerType;
   public totalStaff: SummaryList[];
   protected subscriptions: Subscription = new Subscription();
 
@@ -22,6 +27,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.init();
     this.setNameAndAddress();
+    this.setTypeOfEmployer();
     this.setWorkplaceDetails();
   }
 
@@ -55,6 +61,14 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
         label: 'Number of staff',
         data: this.WorkplaceTotalStaff,
         route: { url: [this.flow, 'add-total-staff'] },
+      },
+    ];
+
+    this.typeOfEmployer = [
+      {
+        label: 'Employer type',
+        data: this.employerType,
+        route: { url: [this.flow, 'type-of-employer'] },
       },
     ];
   }
@@ -115,6 +129,14 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
     }
 
     this.nameAndAddress = this.convertWorkplaceAddressToString(workplaceAddress);
+  }
+
+  public setTypeOfEmployer(): void {
+    if (this.employerTypeObject.value === 'Other' && this.employerTypeObject.other) {
+      this.employerType = this.employerTypeObject.other;
+    } else {
+      this.employerType = WorkplaceUtil.formatTypeOfEmployer(this.employerTypeObject.value);
+    }
   }
 
   private convertWorkplaceAddressToString(workplaceAddress: Array<string>): string {

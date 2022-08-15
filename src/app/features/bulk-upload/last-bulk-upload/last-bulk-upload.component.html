@@ -34,7 +34,7 @@
                 <a
                   [attr.data-testid]="'link-' + file.data.filename"
                   href="/bulk-upload/download/{{ encodeUrl(file.data.filename) }}"
-                  (click)="downloadFile($event, file.data.key)"
+                  (click)="downloadFile($event, file.data.key, file.data.fileType)"
                 >
                   {{ file.data.fileType | bulkUploadFileTypePipe }}
                 </a>

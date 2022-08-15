@@ -40,7 +40,7 @@ export class DataSharingComponent extends Question {
       });
     }
 
-    this.previousRoute = ['/workplace', this.establishment.uid, 'accept-previous-care-certificate'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-benefit-holiday-leave'];
     this.skipRoute = ['/workplace', this.establishment.uid, 'check-answers'];
   }
 
@@ -88,7 +88,7 @@ export class DataSharingComponent extends Question {
   protected removeSharingPermissionsBanner(completeFunction): void {
     const data = { property: 'showSharingPermissionsBanner', value: false };
     this.subscriptions.add(
-      this.establishmentService.updateWorkplaceBanner(this.establishment.uid, data).subscribe(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe(
         (data) => {
           this.establishmentService.setState({ ...this.establishment, ...data });
           completeFunction();

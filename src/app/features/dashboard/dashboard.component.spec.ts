@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
@@ -64,7 +65,7 @@ describe('DashboardComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(0, true),
+          useFactory: MockUserService.factory(0, Roles.Admin),
           deps: [HttpClient],
         },
         {
@@ -123,6 +124,7 @@ describe('DashboardComponent', () => {
 
   it('should render a DashboardComponent', async () => {
     const { component } = await setup();
+
     expect(component).toBeTruthy();
   });
 

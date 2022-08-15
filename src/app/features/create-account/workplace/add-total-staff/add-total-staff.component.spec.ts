@@ -113,7 +113,6 @@ describe('AddTotalStaffComponent', () => {
     fireEvent.click(continueButton);
 
     expect(form.invalid).toBeTruthy();
-
     expect(component.getAllByText(errorMessage).length).toBe(2);
   });
 

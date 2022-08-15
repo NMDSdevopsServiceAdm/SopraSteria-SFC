@@ -6,6 +6,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -54,6 +55,10 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
           }
         });
       }
+    }
+
+    if (this._workplace.employerType) {
+      this._workplace.employerType.value = WorkplaceUtil.formatTypeOfEmployer(this._workplace.employerType.value);
     }
   }
 
@@ -113,7 +118,6 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   ngOnInit(): void {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-
     this.checkAnswersPage = this.return?.url.includes('check-answers');
 
     this.setTotalStaffWarning();

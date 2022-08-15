@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+const { query } = require('express');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -1164,6 +1165,8 @@ module.exports = function (sequelize, DataTypes) {
         'EstablishmentUID',
         'Reviewer',
         'InReview',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
       ],
       where: {
         uid,
@@ -1294,6 +1297,10 @@ module.exports = function (sequelize, DataTypes) {
         'peopleInterviewedInTheLastFourWeeks',
         'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
         'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        'careWorkersLeaveDaysPerYear',
+        'careWorkersCashLoyaltyForFirstTwoYears',
+        'sickPay',
+        'pensionContribution',
       ],
       where: {
         [Op.or]: [
@@ -1387,7 +1394,6 @@ module.exports = function (sequelize, DataTypes) {
             'uid',
             'LocalIdentifierValue',
             'NameOrIdValue',
-            'FluJabValue',
             'NationalInsuranceNumberValue',
             'PostcodeValue',
             'DateOfBirthValue',
@@ -2167,19 +2173,6 @@ module.exports = function (sequelize, DataTypes) {
     } catch (error) {
       console.log({ error });
     }
-  };
-
-  Establishment.updatRecuritmentBannerForExistingUser = async function (establishmentId, data) {
-    return await this.update(
-      {
-        recruitmentJourneyExistingUserBanner: data,
-      },
-      {
-        where: {
-          id: establishmentId,
-        },
-      },
-    );
   };
 
   return Establishment;

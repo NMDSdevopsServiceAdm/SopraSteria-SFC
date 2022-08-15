@@ -12,6 +12,13 @@
 
       <app-summary-list
         [topBorder]="true"
+        [summaryList]="typeOfEmployer"
+        (setReturn)="onSetReturn()"
+        data-testid="typeOfEmployer"
+      ></app-summary-list>
+
+      <app-summary-list
+        [topBorder]="true"
         [summaryList]="mainService"
         (setReturn)="onSetReturn()"
         data-testid="mainService"

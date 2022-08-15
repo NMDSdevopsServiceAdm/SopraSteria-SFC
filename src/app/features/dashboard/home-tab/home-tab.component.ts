@@ -107,6 +107,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     this.user = this.userService.loggedInUser;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.recruitmentJourneyExistingUserBanner = this.primaryWorkplace.recruitmentJourneyExistingUserBanner;
+
     this.addWorkplaceDetailsBanner = this.primaryWorkplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();
 
@@ -404,13 +405,13 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     return new Date(dateString);
   }
 
-  public setRecuritmentBannerToTrue(event: Event) {
+  public setRecuritmentBannerToTrue(event: Event): void {
     event.preventDefault();
+    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
     if (this.canEditEstablishment) {
-      const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
       this.subscriptions.add(
         this.establishmentService
-          .updateWorkplaceBanner(this.workplace.uid, data)
+          .updateSingleEstablishmentField(this.workplace.uid, data)
           .subscribe(() => this.router.navigate(['/workplace', this.workplace.uid, 'staff-recruitment-start'])),
       );
     }

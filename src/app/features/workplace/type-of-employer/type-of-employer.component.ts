@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { StringChain } from 'lodash';
 
 import { Question } from '../question/question.component';
 
@@ -14,12 +15,15 @@ import { Question } from '../question/question.component';
 export class TypeOfEmployerComponent extends Question {
   public options = [
     { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
-    { value: 'Local Authority (generic/other)', text: 'Local authority (generic/other)' },
+    { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
     { value: 'Private Sector', text: 'Private sector' },
-    { value: 'Voluntary / Charity', text: 'Voluntary or charity' },
+    { value: 'Voluntary / Charity', text: 'Voluntary, charity, not for profit' },
     { value: 'Other', text: 'Other' },
   ];
   public maxLength = 120;
+  public showSkipButton = true;
+  public sectionHeading: string;
+  public callToAction = 'Save and continue';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -40,15 +44,23 @@ export class TypeOfEmployerComponent extends Question {
   }
 
   protected init(): void {
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
+
+    if (this.establishmentService.employerTypeHasValue === false) {
+      this.sectionHeading = this.establishment.name;
+      this.callToAction = 'Continue to homepage';
+      this.hideBackLink = true;
+      this.showSkipButton = false;
+      this.nextRoute = ['/dashboard'];
+    }
+
     if (this.establishment.employerType) {
       this.form.patchValue({
         employerType: this.establishment.employerType.value,
         other: this.establishment.employerType.other,
       });
     }
-
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
   }
 
   protected setupFormErrorsMap(): void {

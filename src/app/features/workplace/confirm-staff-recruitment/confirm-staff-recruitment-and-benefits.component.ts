@@ -22,6 +22,7 @@ export class ConfirmStaffRecruitmentAndBenefitsComponent implements OnInit, OnDe
   public peopleInterviewedInTheLastFourWeek: string;
   public doNewStartersRepeatTraining: string;
   public wouldYouAcceptPreviousCertificates: string;
+  public inStaffRecruitmentFlow: boolean;
 
   @Input() public topBorder?: boolean;
   @Input() public wrapBorder?: boolean;
@@ -38,6 +39,7 @@ export class ConfirmStaffRecruitmentAndBenefitsComponent implements OnInit, OnDe
   public ngOnInit(): void {
     this.getEstablishmentData();
     this.canEditEstablishment = this.permissionsService.can(this.establishment.uid, 'canEditEstablishment');
+    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
   }
 
   public getEstablishmentData(): void {
@@ -56,7 +58,7 @@ export class ConfirmStaffRecruitmentAndBenefitsComponent implements OnInit, OnDe
   }
 
   public setBackLink(): void {
-    const backLinkUrl = 'accept-previous-care-certificate';
+    const backLinkUrl = 'staff-benefit-holiday-leave';
     this.backService.setBackLink({ url: [this.flow, this.establishment.uid, backLinkUrl] });
   }
 

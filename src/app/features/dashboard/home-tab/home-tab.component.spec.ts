@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
@@ -69,7 +70,7 @@ describe('HomeTabComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(1, true),
+          useFactory: MockUserService.factory(1, Roles.Admin),
           deps: [HttpClient],
         },
         {
@@ -241,14 +242,14 @@ describe('HomeTabComponent', () => {
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
   });
 
-  describe('Staff recruitment is difficult', async () => {
+  describe('Staff recruitment banner', async () => {
     it('displays staff-recruitment-start link  when has employer type and banner value is false', async () => {
       const { component } = await setup();
 
       component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
       component.fixture.detectChanges();
-      const recruitmentHeader = component.getByText('Staff recruitment is difficult');
+      const recruitmentHeader = component.getByText(`We've added some questions to ASC-WDS`);
 
       expect(recruitmentHeader).toBeTruthy();
     });
@@ -259,23 +260,23 @@ describe('HomeTabComponent', () => {
       component.fixture.componentInstance.workplace.employerType = null;
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = true;
       component.fixture.detectChanges();
-      const recruitmentHeader = component.queryByText('Staff recruitment is difficult');
+      const recruitmentHeader = component.queryByText(`We've added some questions to ASC-WDS`);
 
       expect(recruitmentHeader).toBeFalsy();
     });
 
-    it('should call updateWorkerBanner in the establishment service with the updated recruitmentJourneyExistingUserBanner set to true', async () => {
+    it('should call updateSingleEstablishmentField in the establishment service with the updated recruitmentJourneyExistingUserBanner set to true', async () => {
       const { component } = await setup();
 
       const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
-      const recuritmentBannerSpy = spyOn(establishmentService, 'updateWorkplaceBanner').and.callThrough();
+      const recuritmentBannerSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
 
       component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
       component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
       component.fixture.componentInstance.canEditEstablishment = true;
 
       component.fixture.detectChanges();
-      const recuritmentLink = component.getByText('Answer our 4 new staff recruitment questions');
+      const recuritmentLink = component.getByText('Answer our staff recruitment and retention questions');
       fireEvent.click(recuritmentLink);
 
       const establishmentId = component.fixture.componentInstance.workplace.uid;

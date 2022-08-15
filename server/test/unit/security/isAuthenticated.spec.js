@@ -7,7 +7,12 @@ const config = require('../../../config/config');
 const models = require('../../../models');
 const jwt = require('jsonwebtoken');
 
-const { getTokenSecret, authorisedEstablishmentPermissionCheck } = require('../../../utils/security/isAuthenticated');
+const {
+  getTokenSecret,
+  authorisedEstablishmentPermissionCheck,
+  isAdmin,
+  isAdminManager,
+} = require('../../../utils/security/isAuthenticated');
 
 describe('isAuthenticated', () => {
   describe('getTokenSecret', () => {
@@ -792,6 +797,294 @@ describe('isAuthenticated', () => {
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
       expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      expect(next.calledOnce).to.be.true;
+    });
+  });
+
+  describe('isAdmin', () => {
+    let jwtStub;
+    let claimReturn;
+
+    beforeEach(() => {
+      jwtStub = sinon.stub(jwt, 'verify');
+
+      claimReturn = {
+        aud: config.get('jwt.aud.login'),
+        iss: config.get('jwt.iss'),
+        EstblishmentId: null,
+        EstablishmentUID: null,
+        sub: 'anySub',
+        userUid: 'someUid',
+        parentId: 123,
+        isParent: false,
+        role: 'Admin',
+      };
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns a 401 if no token is available', async () => {
+      const req = httpMocks.createRequest({ headers: {} });
+      const res = httpMocks.createResponse();
+
+      await isAdmin(req, res, sinon.fake());
+      expect(res.statusCode).to.equal(401);
+    });
+
+    it('returns a 403 with error message if token is malformed', async () => {
+      jwtStub.callsArgWith(2, 'Error', {});
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'foo',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdmin(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal('Invalid Token');
+    });
+
+    it('returns a 403 with error message if claim audience does not match', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, aud: 'not-the-one' });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdmin(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal('Invalid Token');
+    });
+
+    it('returns a 403 with error message if claim issue does not match', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, iss: 'not-the-one' });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdmin(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal('Invalid Token');
+    });
+
+    it('returns a 403 with error message if claim role is not an Admin', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, role: 'Read' });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdmin(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal(`You're not admin`);
+    });
+
+    it('returns a 401 with error message if there is not a token', async () => {
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: '',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdmin(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(401);
+      expect(data).to.equal('Requires authorisation');
+    });
+
+    it('follows success path if the claim role is an Admin', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      await isAdmin(req, res, next);
+
+      expect(next.calledOnce).to.be.true;
+    });
+
+    it('follows success path if the claim role is an AdminManager', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, role: 'AdminManager' });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      await isAdmin(req, res, next);
+
+      expect(next.calledOnce).to.be.true;
+    });
+  });
+
+  describe('isAdminManager', () => {
+    let jwtStub;
+    let claimReturn;
+
+    beforeEach(() => {
+      jwtStub = sinon.stub(jwt, 'verify');
+
+      claimReturn = {
+        aud: config.get('jwt.aud.login'),
+        iss: config.get('jwt.iss'),
+        EstblishmentId: null,
+        EstablishmentUID: null,
+        sub: 'anySub',
+        userUid: 'someUid',
+        parentId: 123,
+        isParent: false,
+        role: 'AdminManager',
+      };
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns a 401 if no token is available', async () => {
+      const req = httpMocks.createRequest({ headers: {} });
+      const res = httpMocks.createResponse();
+
+      await isAdminManager(req, res, sinon.fake());
+      expect(res.statusCode).to.equal(401);
+    });
+
+    it('returns a 403 with error message if token is malformed', async () => {
+      jwtStub.callsArgWith(2, 'Error', {});
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'foo',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdminManager(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal('Invalid Token');
+    });
+
+    it('returns a 403 with error message if claim audience does not match', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, aud: 'not-the-one' });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdminManager(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal('Invalid Token');
+    });
+
+    it('returns a 403 with error message if claim issue does not match', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, iss: 'not-the-one' });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdminManager(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal('Invalid Token');
+    });
+
+    it('returns a 403 with error message if claim role is not an Admin Manager', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, role: 'Read' });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdminManager(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal(`You're not an admin manager`);
+    });
+
+    it('returns a 403 with error message if claim role is not an Admin Manager', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, role: 'Admin' });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdminManager(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(403);
+      expect(data).to.equal(`You're not an admin manager`);
+    });
+
+    it('returns a 401 with error message if there is not a token', async () => {
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: '',
+        },
+      });
+      const res = httpMocks.createResponse();
+
+      await isAdminManager(req, res, sinon.fake());
+
+      const data = res._getData();
+      expect(res.statusCode).to.equal(401);
+      expect(data).to.equal('Requires authorisation');
+    });
+
+    it('follows success path if the claim role is an AdminManager', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn });
+      const req = httpMocks.createRequest({
+        headers: {
+          authorization: 'arealjwt',
+        },
+      });
+
+      const res = httpMocks.createResponse();
+      const next = sinon.fake();
+
+      await isAdminManager(req, res, next);
+
       expect(next.calledOnce).to.be.true;
     });
   });

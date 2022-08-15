@@ -42,7 +42,7 @@ describe('SelectPrimaryUserComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(0, false),
+          useFactory: MockUserService.factory(),
           deps: [HttpClient],
         },
         {

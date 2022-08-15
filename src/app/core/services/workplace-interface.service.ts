@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EmployerType } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { EstablishmentExistsResponse } from '@core/model/registration.model';
 import { Service } from '@core/model/services.model';
@@ -19,13 +20,14 @@ export abstract class WorkplaceInterfaceService {
   public manuallyEnteredWorkplace$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public searchMethod$: BehaviorSubject<string> = new BehaviorSubject(null);
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
-  public totalStaff$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public totalStaff$: BehaviorSubject<any> = new BehaviorSubject(null);
   public postcode$: BehaviorSubject<string> = new BehaviorSubject(null);
   public workplaceNotFound$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public returnTo$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
   public invalidPostcodeEntered$: BehaviorSubject<string> = new BehaviorSubject(null);
   public manuallyEnteredWorkplaceName$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public useDifferentLocationIdOrPostcode$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public typeOfEmployer$: BehaviorSubject<EmployerType> = new BehaviorSubject(null);
 
   constructor(protected http: HttpClient) {}
 
@@ -58,5 +60,6 @@ export abstract class WorkplaceInterfaceService {
     this.invalidPostcodeEntered$.next(null);
     this.manuallyEnteredWorkplaceName$.next(false);
     this.useDifferentLocationIdOrPostcode$.next(null);
+    this.typeOfEmployer$.next(null);
   }
 }

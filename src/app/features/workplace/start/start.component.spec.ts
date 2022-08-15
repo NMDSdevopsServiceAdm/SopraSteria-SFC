@@ -45,11 +45,14 @@ describe('StartComponent (workplace)', () => {
     expect(continueButton.getAttribute('href')).toBe('/workplace/' + workplaceUid + '/other-services');
   });
 
-  it('should call the updateWorkplaceBanner when clicking the Continue button', async () => {
+  it('should call the updateSingleEstablishmentField when clicking the Continue button', async () => {
     const { component, fixture, getByText } = await setup();
 
     const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
-    const updateWorkplaceBannerSpy = spyOn(establishmentService, 'updateWorkplaceBanner').and.callThrough();
+    const updateSingleEstablishmentFieldSpy = spyOn(
+      establishmentService,
+      'updateSingleEstablishmentField',
+    ).and.callThrough();
 
     const workplaceUid = component.establishment.uid;
     const continueButton = getByText('Continue');
@@ -57,7 +60,7 @@ describe('StartComponent (workplace)', () => {
     fixture.detectChanges();
 
     const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
-    expect(updateWorkplaceBannerSpy).toHaveBeenCalledWith(workplaceUid, data);
+    expect(updateSingleEstablishmentFieldSpy).toHaveBeenCalledWith(workplaceUid, data);
   });
 
   it('should set the back link to the dashboard home fragment when no navigatedFromFragment state is passed', async () => {

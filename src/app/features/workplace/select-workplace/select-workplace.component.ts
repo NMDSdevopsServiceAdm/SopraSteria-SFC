@@ -31,6 +31,16 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.isCQCLocationUpdate = true;
   }
 
+  public setSubmitAction(payload: { action: string; save: boolean }): void {
+    if (!payload.save) {
+      this.navigate();
+    }
+  }
+
+  protected navigate(): void {
+    this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
+  }
+
   protected setBackLink(): void {
     this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
   }
