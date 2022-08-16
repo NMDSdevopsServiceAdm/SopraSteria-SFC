@@ -580,6 +580,17 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('200');
     });
 
+    it("should return 'Yes' when 1; in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '1;';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('Yes');
+    });
+
     it("should return 'Yes' when 1 in CSV", async () => {
       const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '1';
@@ -1261,6 +1272,13 @@ describe('Bulk Upload - Establishment CSV', () => {
       it('should validate and pass if 1 is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+      it('should validate and pass if 1; is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '1;';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
         expect(establishment.validationErrors).to.deep.equal([]);
@@ -2516,6 +2534,7 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csvAsArray = csv.split(',');
 
     expect(csvAsArray[33]).to.include('1');
+    expect(csvAsArray[33]).to.include('1;');
     expect(csvAsArray[34]).to.include('1');
     expect(csvAsArray[35]).to.include('1');
   });
