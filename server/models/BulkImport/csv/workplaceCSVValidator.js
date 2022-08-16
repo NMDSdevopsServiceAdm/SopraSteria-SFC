@@ -235,16 +235,16 @@ class WorkplaceCSVValidator {
   static get REASONS_FOR_LEAVING_WARNING() {
     return 2360;
   }
-  static get ADVERTISING_ERROR() {
+  static get ADVERTISING_WARNING() {
     return 2400;
   }
-  static get INTERVIEWS_ERROR() {
+  static get INTERVIEWS_WARNING() {
     return 2410;
   }
-  static get REPEAT_TRAINING_ERROR() {
+  static get REPEAT_TRAINING_WARNING() {
     return 2420;
   }
-  static get ACCEPT_CARE_CERT_ERROR() {
+  static get ACCEPT_CARE_CERT_WARNING() {
     return 2430;
   }
   static get BENEFITS_WARNING() {
@@ -1861,9 +1861,9 @@ class WorkplaceCSVValidator {
     if (!ALLOWED_VALUES.includes(this._currentLine.REPEATTRAINING)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.REPEAT_TRAINING_ERROR,
-        errType: 'REPEAT_TRAINING_ERROR',
-        error: 'The code you have entered for REPEATTRAINING is incorrect',
+        warnCode: WorkplaceCSVValidator.REPEAT_TRAINING_WARNING,
+        warnType: 'REPEAT_TRAINING_WARNING',
+        warning: 'The code you have entered for REPEATTRAINING is incorrect and will be ignored',
         source: this._currentLine.REPEATTRAINING,
         column: 'REPEATTRAINING',
         name: this._currentLine.LOCALESTID,
@@ -1885,9 +1885,9 @@ class WorkplaceCSVValidator {
     if (!ALLOWED_VALUES.includes(this._currentLine.ACCEPTCARECERT)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ACCEPT_CARE_CERT_ERROR,
-        errType: 'ACCEPT_CARE_CERT_ERROR',
-        error: 'The code you have entered for ACCEPTCARECERT is incorrect',
+        warnCode: WorkplaceCSVValidator.ACCEPT_CARE_CERT_WARNING,
+        warnType: 'ACCEPT_CARE_CERT_WARNING',
+        warning: 'The code you have entered for ACCEPTCARECERT is incorrect and will be ignored',
         source: this._currentLine.ACCEPTCARECERT,
         column: 'ACCEPTCARECERT',
         name: this._currentLine.LOCALESTID,
@@ -1910,9 +1910,10 @@ class WorkplaceCSVValidator {
     if (!interviewsRegex.test(interviews) && interviews.toLowerCase() !== 'unknown') {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.INTERVIEWS_ERROR,
-        errType: 'INTERVIEWS_ERROR',
-        error: "The code you entered for INTERVIEWS should be a whole number or the value 'unknown'",
+        warnCode: WorkplaceCSVValidator.INTERVIEWS_WARNING,
+        warnType: 'INTERVIEWS_WARNING',
+        warning:
+          "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
         source: interviews,
         column: 'INTERVIEWS',
         name: this.currentLine.LOCALESTID,
@@ -1931,9 +1932,10 @@ class WorkplaceCSVValidator {
     if (!advertisingRegex.test(advertising) && advertising.toLowerCase() !== 'unknown') {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADVERTISING_ERROR,
-        errType: 'ADVERTISING_ERROR',
-        error: "The code you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown'",
+        warnCode: WorkplaceCSVValidator.ADVERTISING_WARNING,
+        warnType: 'ADVERTISING_WARNING',
+        warning:
+          "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
         source: advertising,
         column: 'ADVERTISING',
         name: this.currentLine.LOCALESTID,
@@ -2773,6 +2775,7 @@ class WorkplaceCSVValidator {
   // Adds items to csvEstablishmentSchemaErrors if validations that depend on
   // worker totals give errors or warnings
   async crossValidate(csvEstablishmentSchemaErrors, myJSONWorkers) {
+    console.log('************ workplaceCSVValidator.js/crossValidate ***************');
     // if establishment isn't being added or updated then exit early
     if (!['NEW', 'UPDATE', 'NOCHANGE'].includes(this._status)) {
       return;
