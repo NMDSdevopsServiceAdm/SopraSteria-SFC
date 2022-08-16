@@ -177,28 +177,23 @@
         </dd>
       </div>
 
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Offer more than statutory 'sick pay'</dt>
-        <dd class="govuk-summary-list__value">
-          <ng-container *ngIf="!establishment.sickPay; else sickPayType"> - </ng-container>
-          <ng-template #sickPayType>
-            {{ establishment.sickPay }}
-          </ng-template>
-        </dd>
-        <dd
-          *ngIf="canEditEstablishment"
-          class="govuk-summary-list__actions"
-          data-testid="offerMoreThanStatutorySickPay"
-        >
-          <app-summary-record-change
-            [explanationText]="' statutory sick pay'"
-            [link]="['/workplace', establishment.uid, 'benefits-statutory-sick-pay']"
-            [hasData]="establishment.sickPay"
-            (setReturnClicked)="this.setReturn()"
-          ></app-summary-record-change>
-        </dd>
-      </div>
-
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Offer more than Statutory Sick Pay</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="!establishment.sickPay; else sickPayType"> - </ng-container>
+        <ng-template #sickPayType>
+          {{ establishment.sickPay }}
+        </ng-template>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions" data-testid="offerMoreThanStatutorySickPay">
+        <app-summary-record-change
+          [explanationText]="' statutory sick pay'"
+          [link]="['/workplace', establishment.uid, 'benefits-statutory-sick-pay']"
+          [hasData]="establishment.sickPay"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Higher pension contributions</dt>
         <dd class="govuk-summary-list__value">

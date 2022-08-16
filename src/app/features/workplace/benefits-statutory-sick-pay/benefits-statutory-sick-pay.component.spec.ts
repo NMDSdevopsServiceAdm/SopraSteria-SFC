@@ -58,7 +58,7 @@ describe('BenefitsStatutorySickPayComponent', () => {
 
   it('should render the headings', async () => {
     const { getByText } = await setup();
-    const heading = `Do you pay your care workers more than statutory 'sick pay' if they cannot work because of illness?`;
+    const heading = `Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?`;
 
     expect(getByText(heading)).toBeTruthy;
   });
