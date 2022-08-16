@@ -2605,6 +2605,7 @@ class WorkplaceCSVValidator {
 
   _transformCashLoyaltyForFirstTwoYears() {
     const YES = '1';
+    const YES_COMMA = '1;';
     const NO = '0';
     const DONT_KNOW = 'unknown';
 
@@ -2612,14 +2613,14 @@ class WorkplaceCSVValidator {
 
     if (benefit === YES) {
       this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+    } else if (benefit === YES_COMMA) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
     } else if (benefit === NO) {
       this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
     } else if (benefit === DONT_KNOW) {
       this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
-    } else if (Number(benefit)) {
-      if (benefit.includes(';')) {
-        this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
-      }
+    } else if (benefit.includes(';')) {
+      this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
     }
   }
 
@@ -3228,7 +3229,7 @@ class WorkplaceCSVValidator {
       } else if (value === 'No') {
         return 0;
       } else if (value === 'Yes') {
-        return 1;
+        return '1;';
       } else if (!value) {
         return '';
       } else {
