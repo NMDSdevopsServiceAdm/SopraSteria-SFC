@@ -25,6 +25,8 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   public returnToWorkplaceNotFound: boolean;
   public returnToConfirmDetails: URLStructure;
   public postcodeOrLocationId: string;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
 
   constructor(
     protected router: Router,
@@ -38,6 +40,8 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
+    this.workplaceSections = this.route.snapshot.data.workplaceSections;
+    this.userAccountSections = this.route.snapshot.data.userAccountSections;
     this.returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
     this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
     this.postcodeOrLocationId = this.workplaceInterfaceService.postcodeOrLocationId$.value;
