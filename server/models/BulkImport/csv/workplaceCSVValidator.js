@@ -2775,7 +2775,6 @@ class WorkplaceCSVValidator {
   // Adds items to csvEstablishmentSchemaErrors if validations that depend on
   // worker totals give errors or warnings
   async crossValidate(csvEstablishmentSchemaErrors, myJSONWorkers) {
-    console.log('************ workplaceCSVValidator.js/crossValidate ***************');
     // if establishment isn't being added or updated then exit early
     if (!['NEW', 'UPDATE', 'NOCHANGE'].includes(this._status)) {
       return;
