@@ -53,4 +53,10 @@
       <button class="govuk-button" type="submit">Continue</button>
     </form>
   </div>
+  <div class="govuk-grid-column-one-third-from-desktop">
+    <div *ngif="!return" class="govuk-util_float-right">
+      <app-progress-bar data-testid="progress-bar" [sections]="'workplaceFlowSections" [currentSection]="section">
+      </app-progress-bar>
+    </div>
+  </div>
 </div>
