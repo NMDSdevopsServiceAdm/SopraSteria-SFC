@@ -49,7 +49,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     this.inStaffRecruitmentAndBenefitsFlow = this.establishmentService.inStaffRecruitmentFlow;
 
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
-    this.section = this.inStaffRecruitmentAndBenefitsFlow ? `Statutory 'sick pay'` : 'Staff benefits';
+    this.section = this.inStaffRecruitmentAndBenefitsFlow ? 'Statutory Sick Pay' : 'Staff benefits';
   }
 
   private setPreviousRoute(): void {

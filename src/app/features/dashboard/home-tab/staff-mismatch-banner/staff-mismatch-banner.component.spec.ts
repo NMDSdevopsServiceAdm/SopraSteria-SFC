@@ -71,7 +71,6 @@ describe('StaffMismatchBannerComponent', () => {
     // Act
     component.fixture.componentInstance.workerCount = 10;
     component.fixture.componentInstance.numberOfStaff = 0;
-    console.log(component.fixture.componentInstance.workerCount);
     component.fixture.componentInstance.recalculate();
     component.fixture.detectChanges();
 

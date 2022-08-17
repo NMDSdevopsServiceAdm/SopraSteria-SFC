@@ -33,7 +33,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public submitAction: { action: string; save: boolean } = null;
   public workplaceFlowSections = ['Services', 'Vacancies and turnover', 'Recruitment', 'Staff benefits', 'Permissions'];
   public recruitmentSections = ['Advertising spend', 'People interviewed', 'Training', 'Care Certificates'];
-  public staffBenefitsSections = ['Loyalty bonus', `Statutory 'sick pay'`, 'Pensions', 'Holiday leave'];
+  public staffBenefitsSections = ['Loyalty bonus', 'Statutory Sick Pay', 'Pensions', 'Holiday leave'];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -54,7 +54,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
         if (!this.initiated) {
           this._init();
 
-          if(!this.hideBackLink) {
+          if (!this.hideBackLink) {
             this.setBackLink();
           }
         }

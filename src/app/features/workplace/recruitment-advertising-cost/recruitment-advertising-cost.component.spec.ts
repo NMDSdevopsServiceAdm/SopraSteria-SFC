@@ -315,7 +315,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Enter the amount spent as a positive number, like 100 or 150.99';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -329,7 +329,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Enter the amount spent as a positive number, like 100 or 150.99';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -343,7 +343,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Enter the amount spent as a positive number, like 100 or 150.99';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -357,7 +357,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Enter the amount spent as a positive number, like 100 or 150.99';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -371,7 +371,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must be a positive number, like 132 or 150.40';
+      const errorMessage = 'Enter the amount spent as a positive number, like 100 or 150.99';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
 
@@ -385,7 +385,7 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      const errorMessage = 'Amount spent must only include pence, like 132.00 or 150.40';
+      const errorMessage = 'Amount spent can only have 1 or 2 digits after the decimal point when you include pence';
       expect(getAllByText(errorMessage).length).toEqual(2);
     });
   });

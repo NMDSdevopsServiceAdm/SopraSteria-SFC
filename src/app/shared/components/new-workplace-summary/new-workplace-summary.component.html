@@ -1,6 +1,6 @@
 <dl
   *ngIf="workplace"
-  class="govuk-summary-list"
+  class="govuk-summary-list govuk-summary-list--medium"
   [ngClass]="{
     'govuk-summary-list--contains-warnings': !wdfView && (showTotalStaffWarning || staffMismatchWarning()),
     'asc-summary-list--wide-value': wdfView && showTotalStaffWarning
@@ -41,31 +41,6 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()"> Change </a>
-      </dd>
-    </div>
-    <div class="govuk-summary-list__row" data-testid="employerType">
-      <dt class="govuk-summary-list__key">Employer type</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
-            -
-          </ng-container>
-          <ng-template #employertype>
-            {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' employer type'"
-          [link]="['/workplace', workplace.uid, 'type-of-employer']"
-          [hasData]="workplace.employerType?.other || workplace.employerType?.value"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
       </dd>
     </div>
     <div class="govuk-summary-list__row" data-testid="numberOfStaff">
@@ -138,6 +113,31 @@
         ></app-summary-record-change>
       </dd>
     </div>
+    <div class="govuk-summary-list__row" data-testid="employerType">
+      <dt class="govuk-summary-list__key">Employer type</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value
+          [wdfView]="wdfView"
+          [wdfValue]="workplace.wdf?.employerType"
+          [overallWdfEligibility]="overallWdfEligibility"
+        >
+          <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
+            -
+          </ng-container>
+          <ng-template #employertype>
+            {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
+          </ng-template>
+        </app-summary-record-value>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' employer type'"
+          [link]="['/workplace', workplace.uid, 'type-of-employer']"
+          [hasData]="workplace.employerType?.other || workplace.employerType?.value"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
     <ng-container
       *ngIf="
         staffMismatchWarning() &&
@@ -170,7 +170,12 @@
   <ng-container>
     <div class="govuk-summary-list__row" data-testid="services-section">
       <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Services</h2>
+        <h2
+          class="govuk-heading-m govuk-!-margin-bottom-2"
+          [ngClass]="{ 'govuk-!-margin-top-5': !removeServiceSectionMargin }"
+        >
+          Services
+        </h2>
       </dt>
       <dd class="govuk-summary-list__value"></dd>
       <dd class="govuk-summary-list__actions"></dd>
@@ -717,7 +722,7 @@
     </div>
 
     <div class="govuk-summary-list__row" data-testid="offer-more-than-statutory-sick-pay">
-      <dt class="govuk-summary-list__key">Offer more than statutory 'sick pay'</dt>
+      <dt class="govuk-summary-list__key">Offer more than Statutory Sick Pay</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
           [wdfView]="wdfView"

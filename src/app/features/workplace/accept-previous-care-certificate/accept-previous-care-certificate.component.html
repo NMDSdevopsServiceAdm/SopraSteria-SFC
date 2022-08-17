@@ -2,32 +2,39 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
-        <div class="govuk-form-group govuk-!-margin-bottom-0">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">
-              <span class="govuk-caption-l" data-testid="section-heading">Recruitment</span>
-              Would you accept a Care Certificate from a worker's previous employer?
-            </h1>
-          </legend>
-        </div>
-        <div class="gouvk-grid-row govuk-!-margin-bottom-3">
-          <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let option of previousCareCertificateOptions; let i = index">
-              <input
-                class="govuk-radios__input"
-                id="acceptCareCertificatesFromPreviousEmployment-{{ i }}"
-                name="acceptCareCertificatesFromPreviousEmployment"
-                [formControlName]="'acceptCareCertificatesFromPreviousEmployment'"
-                type="radio"
-                [value]="option.value"
-              />
-              <label class="govuk-label govuk-radios__label" for="acceptCareCertificatesFromPreviousEmployment-{{ i }}">
-                {{ option.label }}
-              </label>
-            </div>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">Recruitment</span>
+            Would you accept a Care Certificate from a worker's previous employer?
+          </h1>
+        </legend>
+        <div class="govuk-form-group">
+          <div class="govuk-radios govuk-!-margin-bottom-4">
+            <ng-container *ngFor="let option of previousCareCertificateOptions; let i = index">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  id="acceptCareCertificatesFromPreviousEmployment-{{ i }}"
+                  name="acceptCareCertificatesFromPreviousEmployment"
+                  [formControlName]="'acceptCareCertificatesFromPreviousEmployment'"
+                  type="radio"
+                  [value]="option.value"
+                />
+                <label
+                  class="govuk-label govuk-radios__label"
+                  for="acceptCareCertificatesFromPreviousEmployment-{{ i }}"
+                >
+                  {{ option.label }}
+                </label>
+              </div>
+            </ng-container>
           </div>
         </div>
       </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
       <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
@@ -53,5 +60,4 @@
       </div>
     </div>
   </div>
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
 </form>

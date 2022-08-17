@@ -11,6 +11,7 @@ export class WorkplaceSubmitButtonComponent {
   @Input() recordSummary = true;
   @Input() canExit = false;
   @Input() exitText = 'Cancel';
+  @Input() reducedMargin = false;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
   onLinkClick(event: Event, action: string, save: boolean): void {

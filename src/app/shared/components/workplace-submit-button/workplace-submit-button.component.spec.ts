@@ -14,12 +14,23 @@ describe('WorkplaceSubmitButtonComponent', () => {
         recordSummary: true,
         canExit: false,
         exitText: 'Cancel',
+        reducedMargin: false,
       },
     });
 
   it('should create', async () => {
     const component = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the button component without conditional margin class if reduced margin by default and with conditional margin if reducedMargin is set to true', async () => {
+    const { rerender, getByTestId } = await setup();
+
+    const container = getByTestId('button-container');
+    expect(container.getAttribute('class')).not.toContain('govuk-!-margin-top-2');
+
+    rerender({ reducedMargin: true });
+    expect(container.getAttribute('class')).toContain('govuk-!-margin-top-2');
   });
 
   describe('return is false', () => {

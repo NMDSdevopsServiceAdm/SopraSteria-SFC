@@ -11,7 +11,7 @@
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
         <div
-          class="govuk-form-group govuk-!-margin-bottom-0"
+          class="govuk-form-group govuk-!-margin-bottom-2"
           [class.govuk-form-group--error]="submitted && emptyForm && this.form.invalid"
         >
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -53,16 +53,7 @@
                       </div>
                     </ng-container>
                     <ng-template #hiddenJobRoleError>
-                      <div *ngIf="!emptyForm && leaver.get('total').invalid">&nbsp;</div>
-                      <div
-                        *ngIf="
-                          !emptyForm &&
-                          leaver.get('total').invalid &&
-                          (leaver.get('total').errors.min || leaver.get('total').errors.max)
-                        "
-                      >
-                        &nbsp;
-                      </div>
+                      <div *ngIf="!emptyForm && leaver.get('total').invalid">&nbsp; <br />&nbsp;</div>
                     </ng-template>
                   </span>
                   <select
@@ -151,6 +142,10 @@
           </div>
         </div>
       </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
       <div *ngIf="!return" class="govuk-util__float-right">
@@ -162,6 +157,4 @@
       </div>
     </div>
   </div>
-
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
 </form>
