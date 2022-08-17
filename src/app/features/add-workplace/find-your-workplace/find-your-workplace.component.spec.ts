@@ -76,18 +76,17 @@ describe('FindYourWorkplaceComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the workplace and user account progress bars', async () => {
+  it('should render the workplace progress bar but not the user progress bar', async () => {
     const { component } = await setup();
 
     expect(component.getByTestId('progress-bar-1')).toBeTruthy();
-    expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
-  it('should not render the progress bars when accessed from outside the flow', async () => {
+  it('should not render the progress bar when accessed from outside the flow', async () => {
     const { component } = await setup(false);
 
     expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
-    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should prefill the form if postcodeOrLocationId is already set in the service', async () => {
@@ -109,7 +108,7 @@ describe('FindYourWorkplaceComponent', () => {
 
   it('should show add-workplace flow hint message', async () => {
     const { component } = await setup();
-    const hint = `We'll use its CQC location ID or workplace postcode to find the workplace in the Care Quality Commision database.`;
+    const hint = `We'll use their CQC location ID or workplace postcode to find the workplace in the Care Quality Commision database.`;
     expect(component.getByText(hint)).toBeTruthy();
   });
 

@@ -18,7 +18,7 @@
         </legend>
 
         <p>
-          We'll use {{ flow === 'registration' ? 'your' : 'its' }} CQC location ID or workplace postcode to find
+          We'll use {{ flow === 'registration' ? 'your' : 'their' }} CQC location ID or workplace postcode to find
           {{ flow === 'registration' ? 'your' : 'the' }} workplace in the Care Quality Commision database.
         </p>
 
@@ -54,6 +54,7 @@
         [currentSection]="'Find workplace'"
       ></app-progress-bar>
       <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
