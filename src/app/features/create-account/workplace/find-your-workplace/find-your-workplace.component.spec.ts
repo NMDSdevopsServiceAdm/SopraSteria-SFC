@@ -16,7 +16,7 @@ import { BehaviorSubject, throwError } from 'rxjs';
 import { FindYourWorkplaceComponent } from './find-your-workplace.component';
 
 describe('FindYourWorkplaceComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(FindYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -36,20 +36,9 @@ describe('FindYourWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
-              },
-              data: {
-                workplaceSections: [
-                  'CQC regulated',
-                  'Find workplace',
-                  'Confirm workplace',
-                  'Employer type',
-                  'Main service',
-                  'Number of staff',
-                ],
-                userAccountSections: ['User details', 'Username and password', 'Security question'],
               },
             },
           },
@@ -84,6 +73,13 @@ describe('FindYourWorkplaceComponent', () => {
 
     expect(component.getByTestId('progress-bar-1')).toBeTruthy();
     expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should prefill the form if postcodeOrLocationId is already set in the service', async () => {
@@ -293,14 +289,14 @@ describe('FindYourWorkplaceComponent', () => {
     });
 
     it('should set the back link to `confirm-details` when returnToConfirmDetails is not null', async () => {
-      const { component } = await setup();
+      const { component } = await setup(false);
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
       component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
       component.fixture.componentInstance.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'confirm-details'],
+        url: ['registration/confirm-details'],
       });
     });
   });

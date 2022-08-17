@@ -92,7 +92,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Name',
         data: this.locationAddress.locationName,
-        route: { url: [this.flow, 'find-workplace'] },
+        route: { url: [this.flow, 'confirm-details', 'find-workplace'] },
       },
       {
         label: 'Address',
