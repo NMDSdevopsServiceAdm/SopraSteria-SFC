@@ -580,6 +580,17 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('200');
     });
 
+    it("should return 'Yes' when 1; in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '1;';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('Yes');
+    });
+
     it("should return 'Yes' when 1 in CSV", async () => {
       const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '1';
@@ -908,7 +919,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(establishment.validationErrors).to.deep.equal([]);
       });
 
-      it('should validate and return an error if an invalid string is input', async () => {
+      it('should validate and return a warning if an invalid string is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = 'asdf';
 
@@ -917,9 +928,10 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2400,
-            errType: 'ADVERTISING_ERROR',
-            error: "The code you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown'",
+            warnCode: 2400,
+            warnType: 'ADVERTISING_WARNING',
+            warning:
+              "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
             source: 'asdf',
             column: 'ADVERTISING',
             name: establishmentRow.LOCALESTID,
@@ -927,7 +939,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         ]);
       });
 
-      it('should validate and return an error if a negative number is input', async () => {
+      it('should validate and return a warning if a negative number is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '-1';
 
@@ -936,9 +948,10 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2400,
-            errType: 'ADVERTISING_ERROR',
-            error: "The code you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown'",
+            warnCode: 2400,
+            warnType: 'ADVERTISING_WARNING',
+            warning:
+              "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
             source: '-1',
             column: 'ADVERTISING',
             name: establishmentRow.LOCALESTID,
@@ -946,7 +959,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         ]);
       });
 
-      it('should validate and return an error if a decimal number with more than 2 dp is input', async () => {
+      it('should validate and return a warning if a decimal number with more than 2 dp is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '134.3457890';
 
@@ -955,9 +968,10 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2400,
-            errType: 'ADVERTISING_ERROR',
-            error: "The code you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown'",
+            warnCode: 2400,
+            warnType: 'ADVERTISING_WARNING',
+            warning:
+              "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
             source: '134.3457890',
             column: 'ADVERTISING',
             name: establishmentRow.LOCALESTID,
@@ -1007,7 +1021,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(establishment.validationErrors).to.deep.equal([]);
       });
 
-      it('should validate and return an error if an invalid string is input', async () => {
+      it('should validate and return a warning if an invalid string is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = 'asdf';
 
@@ -1016,9 +1030,10 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2410,
-            errType: 'INTERVIEWS_ERROR',
-            error: "The code you entered for INTERVIEWS should be a whole number or the value 'unknown'",
+            warnCode: 2410,
+            warnType: 'INTERVIEWS_WARNING',
+            warning:
+              "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
             source: 'asdf',
             column: 'INTERVIEWS',
             name: establishmentRow.LOCALESTID,
@@ -1026,7 +1041,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         ]);
       });
 
-      it('should validate and return an error if a negative number is input', async () => {
+      it('should validate and return a warning if a negative number is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '-1';
 
@@ -1035,9 +1050,10 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2410,
-            errType: 'INTERVIEWS_ERROR',
-            error: "The code you entered for INTERVIEWS should be a whole number or the value 'unknown'",
+            warnCode: 2410,
+            warnType: 'INTERVIEWS_WARNING',
+            warning:
+              "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
             source: '-1',
             column: 'INTERVIEWS',
             name: establishmentRow.LOCALESTID,
@@ -1045,7 +1061,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         ]);
       });
 
-      it('should validate and return an error if a decimal number input', async () => {
+      it('should validate and return a warning if a decimal number input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '134.3';
 
@@ -1054,9 +1070,10 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2410,
-            errType: 'INTERVIEWS_ERROR',
-            error: "The code you entered for INTERVIEWS should be a whole number or the value 'unknown'",
+            warnCode: 2410,
+            warnType: 'INTERVIEWS_WARNING',
+            warning:
+              "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
             source: '134.3',
             column: 'INTERVIEWS',
             name: establishmentRow.LOCALESTID,
@@ -1106,7 +1123,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(establishment.validationErrors).to.deep.equal([]);
       });
 
-      it('should validate and return an error if a number outside of the allowed values is input', async () => {
+      it('should validate and return a warning if a number outside of the allowed values is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '5';
 
@@ -1115,9 +1132,9 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2420,
-            errType: 'REPEAT_TRAINING_ERROR',
-            error: 'The code you have entered for REPEATTRAINING is incorrect',
+            warnCode: 2420,
+            warnType: 'REPEAT_TRAINING_WARNING',
+            warning: 'The code you have entered for REPEATTRAINING is incorrect and will be ignored',
             source: '5',
             column: 'REPEATTRAINING',
             name: establishmentRow.LOCALESTID,
@@ -1125,7 +1142,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         ]);
       });
 
-      it('should validate and return an error if an invalid string is input', async () => {
+      it('should validate and return a warning if an invalid string is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = 'asdf';
 
@@ -1134,9 +1151,9 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2420,
-            errType: 'REPEAT_TRAINING_ERROR',
-            error: 'The code you have entered for REPEATTRAINING is incorrect',
+            warnCode: 2420,
+            warnType: 'REPEAT_TRAINING_WARNING',
+            warning: 'The code you have entered for REPEATTRAINING is incorrect and will be ignored',
             source: 'asdf',
             column: 'REPEATTRAINING',
             name: establishmentRow.LOCALESTID,
@@ -1186,7 +1203,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(establishment.validationErrors).to.deep.equal([]);
       });
 
-      it('should validate and return an error if a number outside of the allowed values is input', async () => {
+      it('should validate and return a warning if a number outside of the allowed values is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '5';
 
@@ -1195,9 +1212,9 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2430,
-            errType: 'ACCEPT_CARE_CERT_ERROR',
-            error: 'The code you have entered for ACCEPTCARECERT is incorrect',
+            warnCode: 2430,
+            warnType: 'ACCEPT_CARE_CERT_WARNING',
+            warning: 'The code you have entered for ACCEPTCARECERT is incorrect and will be ignored',
             source: '5',
             column: 'ACCEPTCARECERT',
             name: establishmentRow.LOCALESTID,
@@ -1205,7 +1222,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         ]);
       });
 
-      it('should validate and return an error if an invalid string is input', async () => {
+      it('should validate and return a warning if an invalid string is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = 'asdf';
 
@@ -1214,9 +1231,9 @@ describe('Bulk Upload - Establishment CSV', () => {
           {
             origin: 'Establishments',
             lineNumber: establishment.lineNumber,
-            errCode: 2430,
-            errType: 'ACCEPT_CARE_CERT_ERROR',
-            error: 'The code you have entered for ACCEPTCARECERT is incorrect',
+            warnCode: 2430,
+            warnType: 'ACCEPT_CARE_CERT_WARNING',
+            warning: 'The code you have entered for ACCEPTCARECERT is incorrect and will be ignored',
             source: 'asdf',
             column: 'ACCEPTCARECERT',
             name: establishmentRow.LOCALESTID,
@@ -1261,6 +1278,13 @@ describe('Bulk Upload - Establishment CSV', () => {
       it('should validate and pass if 1 is input', async () => {
         const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+      it('should validate and pass if 1; is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '1;';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
         expect(establishment.validationErrors).to.deep.equal([]);
@@ -2516,6 +2540,7 @@ describe('Bulk Upload - Establishment CSV', () => {
     const csvAsArray = csv.split(',');
 
     expect(csvAsArray[33]).to.include('1');
+    expect(csvAsArray[33]).to.include('1;');
     expect(csvAsArray[34]).to.include('1');
     expect(csvAsArray[35]).to.include('1');
   });

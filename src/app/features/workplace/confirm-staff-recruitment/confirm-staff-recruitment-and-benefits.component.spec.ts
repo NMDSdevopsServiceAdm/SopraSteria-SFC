@@ -210,7 +210,7 @@ describe('ConfirmStaffRecruitmentAndBenefitsComponent', () => {
       const { getByText } = await setup();
 
       expect(getByText('Cash loyalty bonus')).toBeTruthy();
-      expect(getByText(`Offer more than statutory 'sick pay'`)).toBeTruthy();
+      expect(getByText('Offer more than Statutory Sick Pay')).toBeTruthy();
       expect(getByText('Higher pension contributions')).toBeTruthy();
       expect(getByText('Number of days leave')).toBeTruthy();
     });

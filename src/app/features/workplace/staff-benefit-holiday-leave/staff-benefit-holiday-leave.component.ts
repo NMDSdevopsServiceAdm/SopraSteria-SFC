@@ -124,16 +124,16 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
         type: [
           {
             name: 'nonInteger',
-            message: 'Number of days must be a number, like 7',
+            message: 'Number of days must be a positive whole number, like 20',
           },
           {
             name: 'nonWholeNumber',
-            message: 'Number of days must be a whole number, like 7',
+            message: 'Number of days must be a positive whole number, like 20',
           },
 
           {
             name: 'negativeNumber',
-            message: 'Number of days must be a positive number, like 7',
+            message: 'Number of days must be a positive whole number, like 20',
           },
         ],
       },

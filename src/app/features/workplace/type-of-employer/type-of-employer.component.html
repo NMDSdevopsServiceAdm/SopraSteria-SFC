@@ -3,12 +3,12 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
-            <span class="govuk-caption-l" data-testid="section-heading">{{ sectionHeading }}</span>
-            <h1 class="govuk-fieldset__heading">What type of employer are you?</h1>
-          </legend>
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+          <span class="govuk-caption-l" data-testid="section-heading">{{ sectionHeading }}</span>
+          <h1 class="govuk-fieldset__heading">What type of employer are you?</h1>
+        </legend>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <span
             *ngIf="submitted && form.get('employerType').invalid"
             id="employerType-error"
@@ -55,11 +55,10 @@
               </div>
             </ng-container>
           </div>
-        </fieldset>
-      </div>
+        </div>
+      </fieldset>
     </div>
   </div>
-
   <app-workplace-submit-button
     [return]="!!return"
     (clicked)="setSubmitAction($event)"

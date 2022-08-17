@@ -32,6 +32,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   public now: Date = new Date();
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
+  @Input() removeServiceSectionMargin = false;
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() workerCount: number;

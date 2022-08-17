@@ -52,7 +52,7 @@ export class TypeOfEmployerComponent extends Question {
       this.callToAction = 'Continue to homepage';
       this.hideBackLink = true;
       this.showSkipButton = false;
-      this.nextRoute = ['/dashboard'];
+      this.nextRoute = ['/first-login-wizard'];
     }
 
     if (this.establishment.employerType) {

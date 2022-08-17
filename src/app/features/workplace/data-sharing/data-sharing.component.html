@@ -79,13 +79,13 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row govuk-!-margin-top-4">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
-          <div *ngIf="establishment.isRegulated">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with the CQC?</h2>
-            </legend>
-            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6">
+      <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
+        <div *ngIf="establishment.isRegulated">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with the CQC?</h2>
+          </legend>
+          <div class="govuk-form-group">
+            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6 govuk-!-margin-bottom-4">
               <div class="govuk-radios__item">
                 <input
                   aria-controls="cqc-conditional-1"
@@ -116,12 +116,14 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <div>
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with local authorities?</h2>
-            </legend>
-            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6">
+        <div>
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with local authorities?</h2>
+          </legend>
+          <div class="govuk-form-group">
+            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6 govuk-!-margin-bottom-4">
               <div class="govuk-radios__item">
                 <input
                   aria-controls="localAuthorities-conditional-1"
@@ -152,9 +154,12 @@
               </div>
             </div>
           </div>
-        </fieldset>
-      </div>
+        </div>
+      </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
     </div>
   </div>
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
 </form>

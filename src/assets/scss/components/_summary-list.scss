@@ -48,6 +48,15 @@
   font-weight: bold;
 }
 
+.govuk-summary-list--medium {
+  .govuk-summary-list__key {
+    width: 45%;
+  }
+  .govuk-summary-list__value {
+    width: 55%;
+  }
+}
+
 .govuk-summary-list--wide {
   .govuk-summary-list__key {
     width: 70%;
@@ -70,7 +79,7 @@
 
 .govuk-summary-list--contains-warnings {
   .govuk-summary-list__key {
-    width: 30%;
+    width: 35%;
     vertical-align: top;
   }
   .govuk-summary-list__value {
@@ -78,7 +87,7 @@
     vertical-align: top;
   }
   .govuk-summary-list__actions {
-    width: 30%;
+    width: 25%;
     vertical-align: top;
   }
 
@@ -123,7 +132,7 @@
     .govuk-summary-list__value {
       white-space: nowrap;
       p {
-        left: -73%;
+        left: -85%;
         width: 100%;
         position: relative;
       }

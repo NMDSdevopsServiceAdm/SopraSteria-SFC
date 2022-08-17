@@ -59,7 +59,6 @@ export class LastBulkUploadComponent implements OnInit {
       .getUploadedFileFromS3(this.establishmentService.primaryWorkplace.uid, key, type)
       .pipe(take(1))
       .subscribe((response) => {
-        console.log(response);
         const filename = FileUtil.getFileName(response);
         const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
         saveAs(blob, filename);

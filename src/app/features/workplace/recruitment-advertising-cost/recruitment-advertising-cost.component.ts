@@ -117,11 +117,11 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
         type: [
           {
             name: 'greaterThanTwoDecimalPlaces',
-            message: 'Amount spent must only include pence, like 132.00 or 150.40',
+            message: 'Amount spent can only have 1 or 2 digits after the decimal point when you include pence',
           },
           {
             name: 'pattern',
-            message: 'Amount spent must be a positive number, like 132 or 150.40',
+            message: 'Enter the amount spent as a positive number, like 100 or 150.99',
           },
         ],
       },
