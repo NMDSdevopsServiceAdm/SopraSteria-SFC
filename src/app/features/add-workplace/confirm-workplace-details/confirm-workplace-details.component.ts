@@ -76,34 +76,6 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     );
   }
 
-  protected setCqcRegulatedWithLocationIdWorkplaceDetails(): void {
-    this.workplaceNameAndAddress = [
-      {
-        label: 'CQC location ID',
-        data: this.locationAddress.locationId,
-        route: { url: [this.flow, 'confirm-workplace-details', 'find-workplace'] },
-      },
-      {
-        label: 'Name and address',
-        data: this.nameAndAddress,
-      },
-    ];
-  }
-
-  protected setCqcRegulatedWithoutLocationIdWorkplaceDetails(): void {
-    this.workplaceNameAndAddress = [
-      {
-        label: 'Name',
-        data: this.locationAddress.locationName,
-        route: { url: [this.flow, 'confirm-workplace-details', 'find-workplace'] },
-      },
-      {
-        label: 'Address',
-        data: this.nameAndAddress,
-      },
-    ];
-  }
-
   public onSetReturn(): void {
     this.workplaceService.setReturnTo({
       url: [`${this.flow}/confirm-workplace-details`],
