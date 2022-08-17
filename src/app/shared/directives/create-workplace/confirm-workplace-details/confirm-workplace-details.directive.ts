@@ -74,11 +74,13 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   }
 
   protected setCqcRegulatedWithLocationIdWorkplaceDetails(): void {
+    const confirmDetails = this.flow.includes('add-workplace') ? 'confirm-workplace-details' : 'confirm-details';
+
     this.workplaceNameAndAddress = [
       {
         label: 'CQC location ID',
         data: this.locationAddress.locationId,
-        route: { url: [this.flow, 'find-workplace'] },
+        route: { url: [this.flow, confirmDetails, 'find-workplace'] },
       },
       {
         label: 'Name and address',
@@ -88,11 +90,13 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   }
 
   protected setCqcRegulatedWithoutLocationIdWorkplaceDetails(): void {
+    const confirmDetails = this.flow.includes('add-workplace') ? 'confirm-workplace-details' : 'confirm-details';
+
     this.workplaceNameAndAddress = [
       {
         label: 'Name',
         data: this.locationAddress.locationName,
-        route: { url: [this.flow, 'find-workplace'] },
+        route: { url: [this.flow, confirmDetails, 'find-workplace'] },
       },
       {
         label: 'Address',

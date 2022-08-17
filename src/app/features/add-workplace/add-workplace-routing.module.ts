@@ -65,9 +65,38 @@ const routes: Routes = [
   },
   {
     path: 'confirm-workplace-details',
-    component: ConfirmWorkplaceDetailsComponent,
-    data: { title: 'Confirm Workplace Details' },
-    canActivate: [AddWorkplaceInProgressGuard],
+    children: [
+      {
+        path: '',
+        component: ConfirmWorkplaceDetailsComponent,
+        data: { title: 'Confirm Workplace Details' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'find-workplace',
+        component: FindYourWorkplaceComponent,
+        data: { title: 'Find your workplace' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'your-workplace',
+        component: IsThisYourWorkplaceComponent,
+        data: { title: 'Is this your workplace?' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'workplace-not-found',
+        component: WorkplaceNotFoundComponent,
+        data: { title: 'Could not find your workplace' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'select-workplace',
+        component: SelectWorkplaceComponent,
+        data: { title: 'Select Workplace' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+    ],
   },
   {
     path: 'type-of-employer',

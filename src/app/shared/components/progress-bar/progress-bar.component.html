@@ -1,6 +1,6 @@
 <div
-  class="asc-progress-bar govuk-!-margin-right-2 govuk-!-margin-top-1"
-  [ngClass]="{ 'govuk-!-margin-bottom-4': header === 'Recruitment' }"
+  class="asc-progress-bar govuk-!-margin-right-2 govuk-!-margin-top-2"
+  [ngClass]="{ 'govuk-!-margin-bottom-4': header === 'Recruitment' || header === 'Workplace' }"
 >
   <div *ngIf="header">
     <h4 class="govuk-!-margin-bottom-2 govuk-!-margin-top-1">{{ header }}</h4>

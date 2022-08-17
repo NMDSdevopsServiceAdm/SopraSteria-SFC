@@ -7,6 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import isNull from 'lodash/isNull';
 import { Subscription } from 'rxjs';
 
@@ -31,9 +32,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected subscriptions: Subscription = new Subscription();
   protected initiated = false;
   public submitAction: { action: string; save: boolean } = null;
-  public workplaceFlowSections = ['Services', 'Vacancies and turnover', 'Recruitment', 'Staff benefits', 'Permissions'];
-  public recruitmentSections = ['Advertising spend', 'People interviewed', 'Training', 'Care Certificates'];
-  public staffBenefitsSections = ['Loyalty bonus', 'Statutory Sick Pay', 'Pensions', 'Holiday leave'];
+  public workplaceFlowSections: string[] = ProgressBarUtil.workplaceFlowProgressBarSections();
+  public recruitmentSections: string[] = ProgressBarUtil.recruitmentMiniFlowProgressBarSections();
+  public staffBenefitsSections: string[] = ProgressBarUtil.staffBenefitsMiniFlowProgressBarSections();
 
   constructor(
     protected formBuilder: FormBuilder,
