@@ -24,7 +24,12 @@ export class FindYourWorkplaceComponent extends FindYourWorkplaceDirective {
     super(router, backService, errorSummaryService, route, formBuilder, workplaceService, locationService);
   }
 
+  protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
+  }
+
   protected navigateToConfirmDetails(): void {
-    this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+    this.backService.setBackLink({ url: [this.flow] });
   }
 }

@@ -316,7 +316,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/find-workplace');
     });
 
     it('should set the change link for workplace address to `find-workplace` when location ID is null and workplace is CQC regulated', async () => {
@@ -331,7 +331,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/find-workplace');
     });
 
     it('should set the change link for workplace address to `workplace-name-address` when workplace is not CQC regulated', async () => {
