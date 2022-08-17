@@ -45,7 +45,7 @@
       <button class="govuk-button govuk-!-margin-top-4" type="submit" data-testid="button">Find workplace</button>
     </form>
   </div>
-  <div class="govuk-grid-column-one-third">
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
     <div class="govuk-util__float-right">
       <app-progress-bar
         data-testid="progress-bar-1"

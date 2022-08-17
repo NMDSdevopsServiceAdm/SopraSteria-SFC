@@ -9,6 +9,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -27,6 +28,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   public postcodeOrLocationId: string;
   public workplaceSections: string[];
   public userAccountSections: string[];
+  public insideFlow: boolean;
 
   constructor(
     protected router: Router,
@@ -39,9 +41,11 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   ) {}
 
   public ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
-    this.workplaceSections = this.route.snapshot.data.workplaceSections;
-    this.userAccountSections = this.route.snapshot.data.userAccountSections;
+    // this.flow = this.route.snapshot.parent.url[0].path;
+    // this.insideFlow = this.flow === 'registration';
+    this.init();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
     this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
     this.postcodeOrLocationId = this.workplaceInterfaceService.postcodeOrLocationId$.value;
@@ -50,6 +54,8 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     this.prefillForm();
     this.setBackLink();
   }
+
+  protected init(): void {}
 
   public ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
