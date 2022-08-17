@@ -1275,7 +1275,7 @@ class WorkerCsvValidator {
   }
 
   _validateApprentice() {
-    const apprenticeValues = [1, 2, 999];
+    const apprenticeValues = [1, 2, 999, 314, 315];
     const myApprentice = parseInt(this._currentLine.APPRENTICE, 10);
 
     // optional
@@ -1302,6 +1302,12 @@ class WorkerCsvValidator {
             break;
           case 999:
             this._apprentice = "Don't know";
+            break;
+          case 314:
+            this._apprentice = 'Think ahead';
+            break;
+          case 315:
+            this._apprentice = 'Social worker integrated Degree';
             break;
         }
         return true;
