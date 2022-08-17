@@ -5,7 +5,9 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { FindYourWorkplaceDirective } from '@shared/directives/create-workplace/find-your-workplace/find-your-workplace.directive';
+import {
+  FindYourWorkplaceDirective,
+} from '@shared/directives/create-workplace/find-your-workplace/find-your-workplace.directive';
 
 @Component({
   selector: 'app-find-your-workplace',
@@ -24,7 +26,12 @@ export class FindYourWorkplaceComponent extends FindYourWorkplaceDirective {
     super(router, backService, errorSummaryService, route, formBuilder, registrationService, locationService);
   }
 
+  protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
+  }
+
   protected navigateToConfirmDetails(): void {
-    this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
+    this.backService.setBackLink({ url: [this.flow] });
   }
 }

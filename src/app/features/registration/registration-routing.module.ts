@@ -3,27 +3,45 @@ import { RouterModule, Routes } from '@angular/router';
 import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { RegisterGuard } from '@core/guards/register/register.guard';
 import { PageResolver } from '@core/resolvers/page.resolver';
-import { ConfirmAccountDetailsComponent } from '@features/create-account/user/confirm-account-details/confirm-account-details.component';
-import { SecurityQuestionComponent } from '@features/create-account/user/create-security-question/create-security-question.component';
+import {
+  ConfirmAccountDetailsComponent,
+} from '@features/create-account/user/confirm-account-details/confirm-account-details.component';
+import {
+  SecurityQuestionComponent,
+} from '@features/create-account/user/create-security-question/create-security-question.component';
 import { UsernamePasswordComponent } from '@features/create-account/user/username-password/username-password.component';
 import { YourDetailsComponent } from '@features/create-account/user/your-details/your-details.component';
 import { AddTotalStaffComponent } from '@features/create-account/workplace/add-total-staff/add-total-staff.component';
 import { ConfirmDetailsComponent } from '@features/create-account/workplace/confirm-details/confirm-details.component';
-import { ConfirmWorkplaceDetailsComponent } from '@features/create-account/workplace/confirm-workplace-details/confirm-workplace-details.component';
-import { CouldNotFindWorkplaceAddressComponent } from '@features/create-account/workplace/could-not-find-workplace-address/could-not-find-workplace-address.component';
-import { FindWorkplaceAddressComponent } from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
+import {
+  ConfirmWorkplaceDetailsComponent,
+} from '@features/create-account/workplace/confirm-workplace-details/confirm-workplace-details.component';
+import {
+  CouldNotFindWorkplaceAddressComponent,
+} from '@features/create-account/workplace/could-not-find-workplace-address/could-not-find-workplace-address.component';
+import {
+  FindWorkplaceAddressComponent,
+} from '@features/create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { NameOfWorkplaceComponent } from '@features/create-account/workplace/name-of-workplace/name-of-workplace.component';
-import { SelectMainServiceComponent } from '@features/create-account/workplace/select-main-service/select-main-service.component';
-import { SelectWorkplaceAddressComponent } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
+import {
+  SelectMainServiceComponent,
+} from '@features/create-account/workplace/select-main-service/select-main-service.component';
+import {
+  SelectWorkplaceAddressComponent,
+} from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/create-account/workplace/select-workplace/select-workplace.component';
 import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
 import { TypeOfEmployerComponent } from '@features/create-account/workplace/type-of-employer/type-of-employer.component';
-import { WorkplaceNameAddressComponent } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
+import {
+  WorkplaceNameAddressComponent,
+} from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
-import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
+import {
+  IsThisYourWorkplaceComponent,
+} from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { RegulatedByCqcComponent } from '../create-account/workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { WorkplaceNotFoundComponent } from '../create-account/workplace/workplace-not-found/workplace-not-found.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
@@ -119,9 +137,38 @@ const routes: Routes = [
   },
   {
     path: 'confirm-details',
-    component: ConfirmDetailsComponent,
-    canActivate: [RegisterGuard],
-    data: { title: 'Confirm Details' },
+    children: [
+      {
+        path: '',
+        component: ConfirmDetailsComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Confirm Details' },
+      },
+      {
+        path: 'find-workplace',
+        component: FindYourWorkplaceComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Find your workplace' },
+      },
+      {
+        path: 'your-workplace',
+        component: IsThisYourWorkplaceComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Is this your workplace?' },
+      },
+      {
+        path: 'workplace-not-found',
+        component: WorkplaceNotFoundComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Could not find your workplace' },
+      },
+      {
+        path: 'select-workplace',
+        component: SelectWorkplaceComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Select Workplace' },
+      },
+    ],
   },
   {
     path: 'complete',
