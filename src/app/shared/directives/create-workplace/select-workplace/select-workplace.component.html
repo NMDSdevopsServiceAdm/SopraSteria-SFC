@@ -5,13 +5,18 @@
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">{{ title }}</h1>
+          <span class="govuk-caption-l">Workplace</span>
+          <h1 *ngIf="isParent" class="govuk-fieldset__heading">
+            Select the workplace you want<br />
+            to add?
+          </h1>
+          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Is this your workplace?</h1>
         </legend>
         <ng-container *ngIf="!isCQCLocationUpdate">
           <div class="govuk-!-margin-bottom-5">
             <p>
               Postcode entered: <strong>{{ enteredPostcode }}</strong>
-              <a [routerLink]="[flow, 'find-workplace']" class="govuk-!-margin-left-9">Change</a>
+              <a routerLink="/{{ flow }}/find-workplace" class="govuk-!-margin-left-9">Change</a>
             </p>
           </div>
         </ng-container>
@@ -50,13 +55,30 @@
       </ng-container>
 
       <ng-template #CQCLocationAdd>
-        <p class="govuk-!-margin-bottom-7">
-          <a [routerLink]="[flow, 'workplace-name-address']" role="button" draggable="false">
+        <p class="govuk-!-margin-bottom-7 govuk-!-margin-top-2">
+          <a routerLink="/{{ flow }}/workplace-name-address" role="button" draggable="false">
             Workplace is not displayed or is not correct
           </a>
         </p>
-        <button class="govuk-button" type="submit">Continue</button>
+        <button class="govuk-button govuk-!-margin-top-2" type="submit">Continue</button>
       </ng-template>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="!isParent"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

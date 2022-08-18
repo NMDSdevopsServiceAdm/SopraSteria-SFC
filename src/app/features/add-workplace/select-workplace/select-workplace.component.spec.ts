@@ -13,38 +13,41 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
 describe('SelectWorkplaceComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(SelectWorkplaceComponent, {
-      imports: [
-        SharedModule,
-        RegistrationModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        {
-          provide: WorkplaceService,
-          useClass: MockWorkplaceService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              parent: {
-                url: [
-                  {
-                    path: 'add-workplace',
-                  },
-                ],
+  async function setup(addWorkplaceFlow = true) {
+    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
+      SelectWorkplaceComponent,
+      {
+        imports: [
+          SharedModule,
+          RegistrationModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          {
+            provide: WorkplaceService,
+            useClass: MockWorkplaceService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                parent: {
+                  url: [
+                    {
+                      path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
+                    },
+                  ],
+                },
               },
             },
           },
-        },
-        FormBuilder,
-      ],
-    });
+          FormBuilder,
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -62,6 +65,8 @@ describe('SelectWorkplaceComponent', () => {
       getAllByText,
       queryByText,
       getByText,
+      getByTestId,
+      queryByTestId,
       workplaceService,
     };
   }
@@ -77,6 +82,19 @@ describe('SelectWorkplaceComponent', () => {
     const retrievedPostcode = 'ABC 123';
 
     expect(getAllByText(retrievedPostcode, { exact: false }).length).toBe(3);
+  });
+
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { queryByTestId } = await setup(false);
+
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
   });
 
   it('should show the names and towns/cities of the companies listed', async () => {
@@ -172,11 +190,11 @@ describe('SelectWorkplaceComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'type-of-employer']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'type-of-employer']);
     });
 
     it('should navigate to the confirm-workplace-details page when returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {
-      const { component, getByText, fixture, spy } = await setup();
+      const { component, getByText, fixture, spy } = await setup(false);
 
       component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
       component.setNextRoute();
@@ -188,7 +206,7 @@ describe('SelectWorkplaceComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-workplace-details']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace/confirm-workplace-details']);
     });
 
     it('should navigate to the problem-with-the-service url when there is a problem with the checkIfEstablishmentExists call', async () => {
