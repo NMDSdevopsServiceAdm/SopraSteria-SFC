@@ -63,18 +63,7 @@ const routes: Routes = [
       {
         path: 'registration',
         loadChildren: () => import('@features/registration/registration.module').then((m) => m.RegistrationModule),
-        data: {
-          title: 'Registration',
-          workplaceSections: [
-            'CQC regulated',
-            'Find workplace',
-            'Confirm workplace',
-            'Employer type',
-            'Main service',
-            'Number of staff',
-          ],
-          userAccountSections: ['User details', 'Username and password', 'Security question'],
-        },
+        data: { title: 'Registration' },
       },
       {
         path: 'activate-account',

@@ -41,8 +41,6 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   ) {}
 
   public ngOnInit(): void {
-    // this.flow = this.route.snapshot.parent.url[0].path;
-    // this.insideFlow = this.flow === 'registration';
     this.init();
     this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
