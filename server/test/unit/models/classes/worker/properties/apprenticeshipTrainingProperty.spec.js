@@ -4,7 +4,7 @@ const apprenticeshipTrainingPropertyClass =
   require('../../../../../../models/classes/worker/properties/apprenticeshipTrainingProperty').WorkerApprenticeshipTrainingProperty;
 const values = ['Yes', 'No', "Don't know", 'Think ahead', 'Social worker integrated Degree', null];
 
-describe.only('apprenticeshipTraining Property', () => {
+describe('apprenticeshipTraining Property', () => {
   it('should allow null', () => {
     const apprenticeshipTrainingProperty = new apprenticeshipTrainingPropertyClass();
 
