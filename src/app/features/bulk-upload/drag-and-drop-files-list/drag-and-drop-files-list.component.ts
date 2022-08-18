@@ -162,6 +162,8 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
           if (hasProp(response, 'message')) {
             this.bulkUploadService.serverError$.next(response.message);
           } else {
+            this.removeRecruitmentJourneyBanner();
+            this.removeWorkplaceJourneyBanner();
             this.updateEstablishmentService();
           }
         },
@@ -183,6 +185,24 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         this.router.navigate(['/dashboard']);
         this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
       });
+  }
+
+  private removeRecruitmentJourneyBanner(): void {
+    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
+    this.subscriptions.add(
+      this.establishmentService
+        .updateSingleEstablishmentField(this.establishmentService.establishment.uid, data)
+        .subscribe(),
+    );
+  }
+
+  private removeWorkplaceJourneyBanner(): void {
+    const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
+    this.subscriptions.add(
+      this.establishmentService
+        .updateSingleEstablishmentField(this.establishmentService.establishment.uid, data)
+        .subscribe(),
+    );
   }
 
   public getValidationError(file: ValidatedFile): ErrorDefinition {
