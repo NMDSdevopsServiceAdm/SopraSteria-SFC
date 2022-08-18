@@ -164,36 +164,12 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
           } else {
             this.removeRecruitmentJourneyBanner();
             this.removeWorkplaceJourneyBanner();
-            this.updateEstablishmentService();
           }
         },
         (response) => {
           this.onValidateError(response);
         },
       );
-  }
-
-  private updateEstablishmentService(): void {
-    this.establishmentService
-      .getEstablishment(this.establishmentService.primaryWorkplace.uid)
-      .pipe(
-        tap((workplace) => {
-          return this.establishmentService.setPrimaryWorkplace(workplace);
-        }),
-      )
-      .subscribe(() => {
-        this.router.navigate(['/dashboard']);
-        this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
-      });
-  }
-
-  private removeRecruitmentJourneyBanner(): void {
-    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
-    this.subscriptions.add(
-      this.establishmentService
-        .updateSingleEstablishmentField(this.establishmentService.establishment.uid, data)
-        .subscribe(),
-    );
   }
 
   private removeWorkplaceJourneyBanner(): void {
@@ -203,6 +179,33 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         .updateSingleEstablishmentField(this.establishmentService.establishment.uid, data)
         .subscribe(),
     );
+  }
+
+  private removeRecruitmentJourneyBanner(): void {
+    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
+    this.subscriptions.add(
+      this.establishmentService
+        .updateSingleEstablishmentField(this.establishmentService.establishment.uid, data)
+        .subscribe(() => {
+          this.updateEstablishmentService();
+        }),
+    );
+  }
+
+  private updateEstablishmentService(): void {
+    this.establishmentService
+      .getEstablishment(this.establishmentService.primaryWorkplace.uid)
+      .pipe(
+        tap((workplace) => {
+          return (
+            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
+          );
+        }),
+      )
+      .subscribe(() => {
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
+      });
   }
 
   public getValidationError(file: ValidatedFile): ErrorDefinition {
