@@ -92,8 +92,9 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   }
 
   public setBackLink(): void {
-    const urlPage = this.flow === 'registration' ? 'create-account' : 'start';
-    this.backService.setBackLink({ url: [`/${this.flow}`, urlPage] });
+    // const urlPage = this.flow === 'registration' ? 'create-account' : 'start';
+    // this.backService.setBackLink({ url: [`/${this.flow}`, urlPage] });
+    this.backService.showBackLink();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

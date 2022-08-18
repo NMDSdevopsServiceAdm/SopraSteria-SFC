@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 })
 export class BackLinkComponent implements OnInit, OnDestroy {
   public back: URLStructure = null;
+  public showBackLink = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(private backService: BackService, private location: Location) {}
@@ -20,10 +21,17 @@ export class BackLinkComponent implements OnInit, OnDestroy {
         this.back = back;
       }),
     );
+
+    this.subscriptions.add(
+      this.backService.backLink$.subscribe((show) => {
+        this.showBackLink = show;
+      }),
+    );
   }
 
   public goBack(event: Event): void {
     event.preventDefault();
+    console.log('***** go back *****');
     this.location.back();
   }
 

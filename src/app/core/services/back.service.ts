@@ -10,7 +10,9 @@ import * as parse from 'url-parse';
 })
 export class BackService {
   private readonly _back$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
+  private readonly _backLink$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public readonly back$: Observable<URLStructure> = this._back$.asObservable();
+  public readonly backLink$: Observable<boolean> = this._backLink$.asObservable();
 
   constructor(private router: Router) {
     this.router.events
@@ -32,5 +34,13 @@ export class BackService {
 
   public setBackLink(back: URLStructure): void {
     this.back = back;
+  }
+
+  private set backLink(show: boolean) {
+    this._backLink$.next(show);
+  }
+
+  public showBackLink(): void {
+    this.backLink = true;
   }
 }
