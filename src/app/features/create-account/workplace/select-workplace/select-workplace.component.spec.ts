@@ -13,37 +13,40 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
 describe('SelectWorkplaceComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(SelectWorkplaceComponent, {
-      imports: [
-        SharedModule,
-        RegistrationModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              parent: {
-                url: [
-                  {
-                    path: 'registration',
-                  },
-                ],
+  async function setup(registrationFlow = true) {
+    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
+      SelectWorkplaceComponent,
+      {
+        imports: [
+          SharedModule,
+          RegistrationModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          {
+            provide: RegistrationService,
+            useClass: MockRegistrationService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                parent: {
+                  url: [
+                    {
+                      path: registrationFlow ? 'registration' : 'confirm-details',
+                    },
+                  ],
+                },
               },
             },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -61,6 +64,8 @@ describe('SelectWorkplaceComponent', () => {
       getAllByText,
       queryByText,
       getByText,
+      getByTestId,
+      queryByTestId,
       registrationService,
     };
   }
@@ -68,6 +73,20 @@ describe('SelectWorkplaceComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace progress bar and the user progress bar', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { queryByTestId } = await setup(false);
+
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should display postcode retrieved from registration service at top and in each workplace address(2)', async () => {
@@ -79,12 +98,13 @@ describe('SelectWorkplaceComponent', () => {
   });
 
   it('should show the names and towns/cities of the companies listed', async () => {
-    const { queryByText, getAllByText } = await setup();
+    const { component, queryByText, getAllByText } = await setup();
 
-    const firstLocationName = 'Name';
+    const firstLocationName = 'Workplace Name';
     const secondLocationName = 'Test Care Home';
     const townCity = 'Manchester';
 
+    console.log(component.locationAddresses);
     expect(queryByText(firstLocationName, { exact: false })).toBeTruthy();
     expect(queryByText(secondLocationName, { exact: false })).toBeTruthy();
     expect(getAllByText(townCity, { exact: false }).length).toBe(2);
@@ -161,8 +181,8 @@ describe('SelectWorkplaceComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'cannot-create-account'], {
-        state: { returnTo: '/registration/select-workplace' },
+      expect(spy).toHaveBeenCalledWith(['registration', 'cannot-create-account'], {
+        state: { returnTo: 'registration/select-workplace' },
       });
     });
 
@@ -175,11 +195,11 @@ describe('SelectWorkplaceComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'type-of-employer']);
+      expect(spy).toHaveBeenCalledWith(['registration', 'type-of-employer']);
     });
 
     it('should navigate to the confirm-details page in registration flow when returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {
-      const { component, getByText, fixture, spy } = await setup();
+      const { component, getByText, fixture, spy } = await setup(false);
 
       component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
       component.setNextRoute();
@@ -191,7 +211,7 @@ describe('SelectWorkplaceComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'confirm-details']);
+      expect(spy).toHaveBeenCalledWith(['registration/confirm-details']);
     });
 
     it('should navigate to the problem-with-the-service url when there is a problem with the checkIfEstablishmentExists call', async () => {

@@ -23,12 +23,9 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected init(): void {
-    this.flow = '/registration';
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.prefillForm();
-  }
-
-  public setNextRoute(): void {
-    this.nextRoute = this.returnToConfirmDetails ? 'confirm-details' : 'type-of-employer';
   }
 }

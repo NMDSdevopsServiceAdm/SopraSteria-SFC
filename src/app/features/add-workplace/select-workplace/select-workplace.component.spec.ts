@@ -166,19 +166,20 @@ describe('SelectWorkplaceComponent', () => {
       expect(workplaceSpy).toHaveBeenCalledWith(locationId);
     });
 
-    it('should call the establishmentExistsCheck when selecting workplace', async () => {
-      const { component, fixture, getByText, workplaceService } = await setup();
+    it('should navigate to the cannot-create-account url when selecting the workplace, if the establishment already exists in the service', async () => {
+      const { fixture, getByText, spy, workplaceService } = await setup();
 
-      const workplaceSpy = spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
+      spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: true }));
 
-      const locationId = component.locationAddresses[0].locationId;
       const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(workplaceSpy).toHaveBeenCalledWith(locationId);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'cannot-create-account'], {
+        state: { returnTo: 'add-workplace/select-workplace' },
+      });
     });
 
     it('should navigate to the type-of-employer url in add-workplace flow when workplace selected and the establishment does not already exists in the service', async () => {

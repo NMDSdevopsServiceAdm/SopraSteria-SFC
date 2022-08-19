@@ -24,7 +24,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
 
   protected init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
-    this.flow = this.insideFlow ? 'add-workplace' : `add-workplace/confirm-workplace-details`;
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
     this.isParent = true;
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
     this.prefillForm();
