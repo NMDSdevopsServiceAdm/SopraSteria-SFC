@@ -9,6 +9,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
 @Directive()
 export class AddTotalStaffDirective implements OnInit, AfterViewInit {
@@ -26,6 +27,9 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   public returnToConfirmDetails: URLStructure;
   public workplace: Establishment;
   public appDetailTitle = '';
+  public workplaceSections: string[];
+  public userAccountSections: string[];
+  public insideFlow: boolean;
 
   constructor(
     protected router: Router,
@@ -42,6 +46,9 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
 
   public ngOnInit(): void {
     this.flow = this.route.snapshot.parent.url[0].path;
+    this.init();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
     this.setBackLink();
     this.setupFormErrors();
@@ -51,6 +58,9 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     this.isParent = this.workplace?.isParent;
     this.appDetailTitle = `Not sure how many members of staff ${this.isParent ? 'the' : 'your'} workplace has?`;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected init(): void {}
 
   public ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
@@ -76,6 +86,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected navigateToNextPage(): void {}
 
   private setupFormErrors(): void {
@@ -86,5 +97,5 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected setBackLink(): void {}
+  // protected setBackLink(): void {}
 }

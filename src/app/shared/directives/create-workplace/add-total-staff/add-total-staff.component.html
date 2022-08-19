@@ -4,6 +4,7 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Workplace</span>
           <h1 class="govuk-fieldset__heading">
             How many members of staff does {{ isParent ? 'the' : 'your' }} workplace have?
           </h1>
@@ -35,7 +36,24 @@
           />
         </div>
       </fieldset>
-      <button class="govuk-button" type="submit">Continue</button>
+      <button class="govuk-button govuk-!-margin-top-3" type="submit">Continue</button>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Number of staff'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="''"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

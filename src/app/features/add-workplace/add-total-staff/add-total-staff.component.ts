@@ -36,7 +36,8 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
   }
 
   protected init(): void {
-    this.flow = 'add-workplace';
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/add-total-staff';
   }
 
   protected navigateToNextPage(): void {

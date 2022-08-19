@@ -35,7 +35,10 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
     );
   }
 
-  protected init(): void {}
+  protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/add-total-staff';
+  }
 
   protected navigateToNextPage(): void {
     const url = this.returnToConfirmDetails ? 'confirm-details' : 'add-user-details';
