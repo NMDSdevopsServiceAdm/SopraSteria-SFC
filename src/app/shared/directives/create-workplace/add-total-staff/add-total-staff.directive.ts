@@ -97,5 +97,6 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  // protected setBackLink(): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected setBackLink(): void {}
 }
