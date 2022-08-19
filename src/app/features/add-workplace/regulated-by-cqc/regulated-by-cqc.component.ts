@@ -22,6 +22,12 @@ export class RegulatedByCqcComponent extends NewRegulatedByCqcDirective {
     super(formBuilder, errorSummaryService, workplaceService, backService, route, router);
   }
 
+  protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    console.log(this.insideFlow);
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
+  }
+
   protected setFlowToInProgress(): void {
     this.workplaceService.addWorkplaceInProgress$.next(true);
   }

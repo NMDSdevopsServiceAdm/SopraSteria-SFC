@@ -29,9 +29,9 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    this.init();
     this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
-    this.flow = this.route.snapshot.parent.url[0].path;
     this.isCqcRegulated = this.workplaceInterfaceService.isCqcRegulated$.value;
     this.setupForm();
     this.setupFormErrorsMap();
@@ -48,6 +48,8 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
       regulatedByCQC: [null, { validators: Validators.required, updateOn: 'submit' }],
     });
   }
+
+  protected init(): void {}
 
   protected setupFormErrorsMap(): void {
     const flowWording = this.flow === 'registration' ? 'you provide' : 'it provides';
