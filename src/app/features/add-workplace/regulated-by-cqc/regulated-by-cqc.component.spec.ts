@@ -148,7 +148,7 @@ describe('RegulatedByCqcComponent', () => {
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'confirm-details'],
+        url: ['/registration', 'create-account'],
       });
     });
   });
