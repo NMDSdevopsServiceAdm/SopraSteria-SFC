@@ -12,7 +12,7 @@ import { AddWorkplaceModule } from '../add-workplace.module';
 import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
 describe('RegulatedByCqcComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(RegulatedByCqcComponent, {
       imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -28,7 +28,7 @@ describe('RegulatedByCqcComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'add-workplace',
+                    path: registrationFlow ? 'registration' : 'add-workplace',
                   },
                 ],
               },
@@ -53,6 +53,20 @@ describe('RegulatedByCqcComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the registration progress bars', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.queryByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should navigate to the find workplace page when selecting yes', async () => {
