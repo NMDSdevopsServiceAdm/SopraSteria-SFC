@@ -4,7 +4,6 @@ const workerHeaders = [
   'CHGUNIQUEWRKID',
   'STATUS',
   'DISPLAYID',
-  'FLUVAC',
   'NINUMBER',
   'POSTCODE',
   'DOB',

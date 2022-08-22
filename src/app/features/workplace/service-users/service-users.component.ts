@@ -20,6 +20,7 @@ export class ServiceUsersComponent extends Question {
   public allUserServices: ServiceForUser[] = [];
   public renderForm = false;
   private otherMaxLength = 120;
+  public section = 'Services';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -45,7 +46,7 @@ export class ServiceUsersComponent extends Question {
       }),
     );
 
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         (response) => {
@@ -58,6 +59,7 @@ export class ServiceUsersComponent extends Question {
         (error) => this.onError(error),
       ),
     );
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
   }
 
   private addFormControls(): void {

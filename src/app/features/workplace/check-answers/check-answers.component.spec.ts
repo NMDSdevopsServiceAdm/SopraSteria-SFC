@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Alert } from '@core/model/alert.model';
 import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -29,6 +30,7 @@ describe('CheckAnswersComponent', () => {
         RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
       ],
       providers: [
+        BackService,
         AlertService,
         WindowRef,
         {
@@ -95,5 +97,15 @@ describe('CheckAnswersComponent', () => {
       type: 'success',
       message: `You've confirmed the workplace details that you added`,
     } as Alert);
+  });
+
+  describe('setBackLink', () => {
+    it('should set the back link to the url for data-sharing question', async () => {
+      const { component } = await setup();
+      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({ url: ['/workplace', component.establishment.uid, 'sharing-data'] });
+    });
   });
 });

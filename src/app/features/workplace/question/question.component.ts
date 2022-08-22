@@ -22,6 +22,8 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public previousRoute: string[];
   public nextRoute: string[];
   public back: URLStructure;
+  public skipRoute: string[];
+  public hideBackLink: boolean;
 
   public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
@@ -29,6 +31,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected subscriptions: Subscription = new Subscription();
   protected initiated = false;
   public submitAction: { action: string; save: boolean } = null;
+  public workplaceFlowSections = ['Services', 'Vacancies and turnover', 'Recruitment', 'Staff benefits', 'Permissions'];
+  public recruitmentSections = ['Advertising spend', 'People interviewed', 'Training', 'Care Certificates'];
+  public staffBenefitsSections = ['Loyalty bonus', 'Statutory Sick Pay', 'Pensions', 'Holiday leave'];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -49,7 +54,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
         if (!this.initiated) {
           this._init();
 
-          this.setBackLink();
+          if (!this.hideBackLink) {
+            this.setBackLink();
+          }
         }
       }),
     );
@@ -94,6 +101,10 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
       case 'summary':
         this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
+        break;
+
+      case 'skip':
+        this.router.navigate(this.skipRoute);
         break;
 
       case 'exit':

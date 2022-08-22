@@ -700,6 +700,62 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'IsNationalOrg',
       },
+      peopleInterviewedInTheLastFourWeeks: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"PeopleInterviewedInTheLastFourWeeks"',
+      },
+      moneySpentOnAdvertisingInTheLastFourWeeks: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"MoneySpentOnAdvertisingInTheLastFourWeeks"',
+      },
+      doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
+        field: '"DoNewStartersRepeatMandatoryTrainingFromPreviousEmployment"',
+      },
+      wouldYouAcceptCareCertificatesFromPreviousEmployment: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
+        field: '"WouldYouAcceptCareCertificatesFromPreviousEmployment"',
+      },
+      recruitmentJourneyExistingUserBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'RecruitmentJourneyExistingUserBanner',
+      },
+      showAddWorkplaceDetailsBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+        field: 'ShowAddWorkplaceDetailsBanner',
+      },
+      careWorkersLeaveDaysPerYear: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'CareWorkersLeaveDaysPerYear',
+      },
+      careWorkersCashLoyaltyForFirstTwoYears: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'CareWorkersCashLoyaltyForFirstTwoYears',
+      },
+      pensionContribution: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'PensionContribution',
+      },
+      sickPay: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'SickPay',
+      },
     },
     {
       defaultScope: {
@@ -1109,6 +1165,8 @@ module.exports = function (sequelize, DataTypes) {
         'EstablishmentUID',
         'Reviewer',
         'InReview',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
       ],
       where: {
         uid,
@@ -1235,6 +1293,14 @@ module.exports = function (sequelize, DataTypes) {
         'StartersValue',
         'LeaversValue',
         'reasonsForLeaving',
+        'moneySpentOnAdvertisingInTheLastFourWeeks',
+        'peopleInterviewedInTheLastFourWeeks',
+        'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
+        'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        'careWorkersLeaveDaysPerYear',
+        'careWorkersCashLoyaltyForFirstTwoYears',
+        'sickPay',
+        'pensionContribution',
       ],
       where: {
         [Op.or]: [
@@ -1328,7 +1394,6 @@ module.exports = function (sequelize, DataTypes) {
             'uid',
             'LocalIdentifierValue',
             'NameOrIdValue',
-            'FluJabValue',
             'NationalInsuranceNumberValue',
             'PostcodeValue',
             'DateOfBirthValue',

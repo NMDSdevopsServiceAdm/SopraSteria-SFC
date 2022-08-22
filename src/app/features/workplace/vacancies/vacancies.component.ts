@@ -30,6 +30,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   public emptyForm = true;
   private minVacancies = 1;
   private maxVacancies = 999;
+  public section = 'Vacancies and turnover';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -57,7 +58,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   protected init(): void {
     this.jobs = this.route.snapshot.data.jobs;
     this.setupForm();
-    this.previousRoute = ['/workplace', this.establishment.uid, 'sharing-data'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
     this.prefill();
     this.subscriptions.add(
       this.form.get('vacanciesKnown').valueChanges.subscribe((value) => {
@@ -89,6 +90,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         this.addErrorLinkFunctionality();
       }),
     );
+
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
   }
 
   private setupForm(): void {

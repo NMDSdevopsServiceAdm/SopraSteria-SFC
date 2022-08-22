@@ -68,7 +68,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       this.setEnteredNameIntoFlowService();
-      this.router.navigate([this.flow, 'select-main-service']);
+      this.router.navigate([this.flow, 'type-of-employer']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

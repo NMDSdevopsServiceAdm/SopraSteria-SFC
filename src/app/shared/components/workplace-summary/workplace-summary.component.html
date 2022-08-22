@@ -440,7 +440,6 @@
             !workplace.wdf?.starters.updatedSinceEffectiveDate
           )
         "
-        [changeLink]="getRoutePath('starters')"
         [explanationText]="' new starters'"
         [link]="['/workplace', workplace.uid, 'starters']"
         [hasData]="workplace.starters?.length"
@@ -450,7 +449,7 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Staff leavers</dt>
+    <dt class="govuk-summary-list__key">Leavers</dt>
     <dd class="govuk-summary-list__value">
       <app-summary-record-value
         [wdfView]="wdfView"
@@ -487,7 +486,7 @@
         *ngIf="
           !(wdfView && workplace.wdf?.leavers.isEligible === 'Yes' && !workplace.wdf?.leavers.updatedSinceEffectiveDate)
         "
-        [explanationText]="' staff leavers'"
+        [explanationText]="' leavers'"
         [link]="['/workplace', workplace.uid, 'leavers']"
         [hasData]="workplace.leavers?.length"
         (setReturnClicked)="this.setReturn()"

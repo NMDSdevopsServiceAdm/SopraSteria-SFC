@@ -1,0 +1,93 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+></app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
+            How many days leave do your full-time care workers get each year?
+          </h1>
+        </legend>
+        <div>
+          <label class="govuk-label" for="holidayLeave">Number of days</label>
+          <p class="govuk-hint">
+            Include bank holidays in the total. For example, 20 days annual leave plus 8 bank holidays would be 28 days in total.
+          </p>
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">
+          <span
+            *ngIf="submitted && this.form.get('holidayLeave').invalid"
+            id="holidayLeave-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span>
+            <span *ngIf="this.form.get('holidayLeave').errors.nonInteger">
+              {{ getFormErrorMessage('holidayLeave', 'nonInteger') }}
+            </span>
+            <span
+              *ngIf="
+                this.form.get('holidayLeave').errors.negativeNumber && !this.form.get('holidayLeave').errors.nonInteger
+              "
+            >
+              {{ getFormErrorMessage('holidayLeave', 'negativeNumber') }}
+            </span>
+            <span
+              *ngIf="
+                this.form.get('holidayLeave').errors.nonWholeNumber &&
+                !this.form.get('holidayLeave').errors.negativeNumber &&
+                !this.form.get('holidayLeave').errors.nonInteger
+              "
+            >
+              {{ getFormErrorMessage('holidayLeave', 'nonWholeNumber') }}
+            </span>
+          </span>
+          <div class="govuk-input__wrapper">
+            <input
+              class="govuk-input govuk-input--width-5"
+              [formControlName]="'holidayLeave'"
+              id="holidayLeave"
+              name="holidayLeave"
+              [class.govuk-input--error]="this.submitted && this.form.get('holidayLeave').invalid"
+              type="text"
+            />
+          </div>
+        </div>
+      </fieldset>
+      <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)">
+      </app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="sections"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+      <div *ngIf="!return && inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar-2"
+          [header]="'Recruitment'"
+          [sections]="recruitmentSections"
+          [completeProgressBar]="'true'"
+          [currentSection]="section"
+        ></app-progress-bar>
+        <app-progress-bar
+          data-testid="progress-bar-3"
+          [header]="'Staff benefits'"
+          [sections]="staffBenefitsSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+</form>

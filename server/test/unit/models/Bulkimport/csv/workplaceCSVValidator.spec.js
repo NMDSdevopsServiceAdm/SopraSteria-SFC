@@ -38,6 +38,14 @@ const validateAPIObject = (establishmentRow) => {
     leavers: [999, 0, 0],
     shareWith: { cqc: true, localAuthorities: true },
     capacities: [0, 0, 0, 0],
+    doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 1,
+    moneySpentOnAdvertisingInTheLastFourWeeks: '101.30',
+    peopleInterviewedInTheLastFourWeeks: '9',
+    wouldYouAcceptCareCertificatesFromPreviousEmployment: 2,
+    careWorkersCashLoyaltyForFirstTwoYears: '200',
+    sickPay: 0,
+    pensionContribution: 1,
+    careWorkersLeaveDaysPerYear: '35',
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
@@ -350,6 +358,398 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(apiObject.shareWith).to.deep.equal(expectedShareWith);
       });
     });
+
+    describe('advertising', () => {
+      it('should return the value when a number in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = '120.29';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.moneySpentOnAdvertisingInTheLastFourWeeks).to.equal('120.29');
+      });
+
+      it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.moneySpentOnAdvertisingInTheLastFourWeeks).to.equal("Don't know");
+      });
+
+      it("should return 'None' when 0 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.moneySpentOnAdvertisingInTheLastFourWeeks).to.equal('None');
+      });
+
+      it('should return null when empty in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.moneySpentOnAdvertisingInTheLastFourWeeks).to.equal(null);
+      });
+    });
+
+    describe('interviews', () => {
+      it('should return the value when a number in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = '120';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.peopleInterviewedInTheLastFourWeeks).to.equal('120');
+      });
+
+      it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.peopleInterviewedInTheLastFourWeeks).to.equal("Don't know");
+      });
+
+      it("should return 'None' when 0 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.peopleInterviewedInTheLastFourWeeks).to.equal('None');
+      });
+
+      it('should return null when empty in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.peopleInterviewedInTheLastFourWeeks).to.equal(null);
+      });
+    });
+
+    describe('repeatTraining', () => {
+      it("should return 'Yes, always' when 1 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment).to.equal('Yes, always');
+      });
+
+      it("should return 'Yes, very often' when 2 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '2';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment).to.equal('Yes, very often');
+      });
+
+      it("should return 'Yes, but not very often' when 3 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '3';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment).to.equal(
+          'Yes, but not very often',
+        );
+      });
+
+      it("should return 'No, never' when 4 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '4';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment).to.equal('No, never');
+      });
+
+      it('should return null when empty in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment).to.equal(null);
+      });
+    });
+
+    describe('acceptCareCert', () => {
+      it("should return 'Yes, always' when 1 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.wouldYouAcceptCareCertificatesFromPreviousEmployment).to.equal('Yes, always');
+      });
+
+      it("should return 'Yes, very often' when 2 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '2';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.wouldYouAcceptCareCertificatesFromPreviousEmployment).to.equal('Yes, very often');
+      });
+
+      it("should return 'Yes, but not very often' when 3 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '3';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.wouldYouAcceptCareCertificatesFromPreviousEmployment).to.equal('Yes, but not very often');
+      });
+
+      it("should return 'No, never' when 4 in CSV", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '4';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.wouldYouAcceptCareCertificatesFromPreviousEmployment).to.equal('No, never');
+      });
+
+      it('should return null when empty in CSV', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.wouldYouAcceptCareCertificatesFromPreviousEmployment).to.equal(null);
+      });
+    });
+  });
+
+  describe('benefit', () => {
+    it('should return the value when a number in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '200';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('200');
+    });
+
+    it("should return 'Yes' when 1; in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '1;';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('Yes');
+    });
+
+    it("should return 'Yes' when 1 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '1';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('Yes');
+    });
+
+    it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = 'unknown';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal("Don't know");
+    });
+
+    it("should return 'No' when 0 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '0';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('No');
+    });
+
+    it('should return null when empty in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.BENEFITS = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('');
+    });
+  });
+
+  describe('sickPay', () => {
+    it("should return 'Yes' when 1 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.SICKPAY = '1';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.sickPay).to.equal('Yes');
+    });
+
+    it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.SICKPAY = 'unknown';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.sickPay).to.equal("Don't know");
+    });
+
+    it("should return 'No' when 0 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.SICKPAY = '0';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.sickPay).to.equal('No');
+    });
+
+    it('should return null when empty in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.SICKPAY = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.sickPay).to.equal(null);
+    });
+  });
+
+  describe('Pension contribution', () => {
+    it("should return 'Yes' when 1 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.PENSION = '1';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.pensionContribution).to.equal('Yes');
+    });
+
+    it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.PENSION = 'unknown';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.pensionContribution).to.equal("Don't know");
+    });
+
+    it("should return 'No' when 0 in CSV", async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.PENSION = '0';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.pensionContribution).to.equal('No');
+    });
+
+    it('should return null when empty in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.PENSION = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.pensionContribution).to.equal(null);
+    });
+  });
+
+  describe('Holiday Leave', () => {
+    it('should return the value when a number in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.HOLIDAY = '35';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersLeaveDaysPerYear).to.equal('35');
+    });
+
+    it('should return empty when empty in CSV', async () => {
+      const establishmentRow = buildEstablishmentCSV();
+      establishmentRow.HOLIDAY = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkersLeaveDaysPerYear).to.equal('');
+    });
   });
 
   describe('toJSON', () => {
@@ -468,6 +868,773 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       expect(establishment.validationErrors).to.deep.equal([]);
+    });
+
+    describe('advertising', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if a postive whole number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = '11';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if a postive number (2 dp) is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = '11.39';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 0 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'unknown' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'UNKNOWN' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = 'UNKNOWN';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return a warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2400,
+            warnType: 'ADVERTISING_WARNING',
+            warning:
+              "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
+            source: 'asdf',
+            column: 'ADVERTISING',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return a warning if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2400,
+            warnType: 'ADVERTISING_WARNING',
+            warning:
+              "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
+            source: '-1',
+            column: 'ADVERTISING',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return a warning if a decimal number with more than 2 dp is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ADVERTISING = '134.3457890';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2400,
+            warnType: 'ADVERTISING_WARNING',
+            warning:
+              "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
+            source: '134.3457890',
+            column: 'ADVERTISING',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('interviews', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if a postive whole number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = '11';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 0 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'unknown' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'UNKNOWN' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = 'UNKNOWN';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return a warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2410,
+            warnType: 'INTERVIEWS_WARNING',
+            warning:
+              "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
+            source: 'asdf',
+            column: 'INTERVIEWS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return a warning if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2410,
+            warnType: 'INTERVIEWS_WARNING',
+            warning:
+              "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
+            source: '-1',
+            column: 'INTERVIEWS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return a warning if a decimal number input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.INTERVIEWS = '134.3';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2410,
+            warnType: 'INTERVIEWS_WARNING',
+            warning:
+              "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
+            source: '134.3',
+            column: 'INTERVIEWS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('repeatTraining', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 1 input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 2 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '2';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 3 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '3';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 4 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '4';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return a warning if a number outside of the allowed values is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = '5';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2420,
+            warnType: 'REPEAT_TRAINING_WARNING',
+            warning: 'The code you have entered for REPEATTRAINING is incorrect and will be ignored',
+            source: '5',
+            column: 'REPEATTRAINING',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return a warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.REPEATTRAINING = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2420,
+            warnType: 'REPEAT_TRAINING_WARNING',
+            warning: 'The code you have entered for REPEATTRAINING is incorrect and will be ignored',
+            source: 'asdf',
+            column: 'REPEATTRAINING',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('acceptCareCertificate', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 1 input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 2 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '2';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 3 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '3';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 4 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '4';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return a warning if a number outside of the allowed values is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = '5';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2430,
+            warnType: 'ACCEPT_CARE_CERT_WARNING',
+            warning: 'The code you have entered for ACCEPTCARECERT is incorrect and will be ignored',
+            source: '5',
+            column: 'ACCEPTCARECERT',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return a warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.ACCEPTCARECERT = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2430,
+            warnType: 'ACCEPT_CARE_CERT_WARNING',
+            warning: 'The code you have entered for ACCEPTCARECERT is incorrect and will be ignored',
+            source: 'asdf',
+            column: 'ACCEPTCARECERT',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('benefit', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if a postive whole number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '200';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if a postive number (2 dp) is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '200.39';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 0 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 1 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+      it('should validate and pass if 1; is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '1;';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'unknown' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'UNKNOWN' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = 'UNKNOWN';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return an warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2440,
+            warnType: 'BENEFITS_WARNING',
+            warning: 'The code you have entered for BENEFITS is incorrect and will be ignored',
+            source: 'asdf',
+            column: 'BENEFITS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2440,
+            warnType: 'BENEFITS_WARNING',
+            warning: 'The code you have entered for BENEFITS is incorrect and will be ignored',
+            source: '-1',
+            column: 'BENEFITS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.BENEFITS = '134.3457890';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2440,
+            warnType: 'BENEFITS_WARNING',
+            warning: 'The code you have entered for BENEFITS is incorrect and will be ignored',
+            source: '134.3457890',
+            column: 'BENEFITS',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('sickPay', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 0 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 1 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'unknown' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'UNKNOWN' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = 'UNKNOWN';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return an warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2450,
+            warnType: 'SICKPAY_WARNING',
+            warning: 'The code you have entered for SICKPAY is incorrect and will be ignored',
+            source: 'asdf',
+            column: 'SICKPAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2450,
+            warnType: 'SICKPAY_WARNING',
+            warning: 'The code you have entered for SICKPAY is incorrect and will be ignored',
+            source: '-1',
+            column: 'SICKPAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a decimal number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '134.3457890';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2450,
+            warnType: 'SICKPAY_WARNING',
+            warning: 'The code you have entered for SICKPAY is incorrect and will be ignored',
+            source: '134.3457890',
+            column: 'SICKPAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('pension', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.SICKPAY = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 0 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if 1 is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'unknown' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it("should validate and pass if 'UNKNOWN' is input", async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = 'UNKNOWN';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return an warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2460,
+            warnType: 'PENSION_WARNING',
+            warning: 'The code you have entered for PENSION is incorrect and will be ignored',
+            source: 'asdf',
+            column: 'PENSION',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2460,
+            warnType: 'PENSION_WARNING',
+            warning: 'The code you have entered for PENSION is incorrect and will be ignored',
+            source: '-1',
+            column: 'PENSION',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a decimal number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.PENSION = '134.3457890';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2460,
+            warnType: 'PENSION_WARNING',
+            warning: 'The code you have entered for PENSION is incorrect and will be ignored',
+            source: '134.3457890',
+            column: 'PENSION',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('holiday', () => {
+      it('should validate and pass if there is no input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and pass if a postive whole number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = '200';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      it('should validate and return an warning if an invalid string is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = 'asdf';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2470,
+            warnType: 'HOLIDAY_WARNING',
+            warning: 'The code you have entered for HOLIDAY is incorrect and will be ignored',
+            source: 'asdf',
+            column: 'HOLIDAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a negative number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = '-1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2470,
+            warnType: 'HOLIDAY_WARNING',
+            warning: 'The code you have entered for HOLIDAY is incorrect and will be ignored',
+            source: '-1',
+            column: 'HOLIDAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should validate and return an error if a decimal number is input', async () => {
+        const establishmentRow = buildEstablishmentCSV();
+        establishmentRow.HOLIDAY = '134.3457890';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2470,
+            warnType: 'HOLIDAY_WARNING',
+            warning: 'The code you have entered for HOLIDAY is incorrect and will be ignored',
+            source: '134.3457890',
+            column: 'HOLIDAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
     });
 
     describe('shareWith', () => {
@@ -1218,5 +2385,184 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(csvAsArray[28]).to.include('Hello');
       expect(csvAsArray[28]).to.include('Test');
     });
+  });
+
+  it('should leave the ADVERTISING and INTERVIEW columns blank if there values are null', async () => {
+    const establishment = apiEstablishmentBuilder();
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[29]).to.equal('');
+    expect(csvAsArray[30]).to.equal('');
+  });
+
+  it("should include 0 in the ADVERTISING and INTERVIEW columns if there values are 'None'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = 'None';
+    establishment.peopleInterviewedInTheLastFourWeeks = 'None';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[29]).to.include(0);
+    expect(csvAsArray[30]).to.include(0);
+  });
+
+  it("should include 'unknown' in the ADVERTISING and INTERVIEW columns if there values are \"Don't know\"", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = "Don't know";
+    establishment.peopleInterviewedInTheLastFourWeeks = "Don't know";
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[29]).to.include('unknown');
+    expect(csvAsArray[30]).to.include('unknown');
+  });
+
+  it('should include a value in the ADVERTISING and INTERVIEW columns if they have values', async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = '125.34';
+    establishment.peopleInterviewedInTheLastFourWeeks = '54';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[29]).to.include('125.34');
+    expect(csvAsArray[30]).to.include('54');
+  });
+
+  it('should leave the REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are null', async () => {
+    const establishment = apiEstablishmentBuilder();
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[31]).to.equal('');
+    expect(csvAsArray[32]).to.equal('');
+  });
+
+  it("should include '1' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, always'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, always';
+    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, always';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[31]).to.include(1);
+    expect(csvAsArray[32]).to.include(1);
+  });
+
+  it("should include '2' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, very often'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, very often';
+    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, very often';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[31]).to.include(2);
+    expect(csvAsArray[32]).to.include(2);
+  });
+
+  it("should include '3' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, but not very often'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, but not very often';
+    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, but not very often';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[31]).to.include(3);
+    expect(csvAsArray[32]).to.include(3);
+  });
+
+  it("should include '4' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'No, never'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'No, never';
+    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'No, never';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[31]).to.include(4);
+    expect(csvAsArray[32]).to.include(4);
+  });
+
+  it('should leave the BENEFITS, SICKPAY and  PENSION columns blank if there values are null', async () => {
+    const establishment = apiEstablishmentBuilder();
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.equal('');
+    expect(csvAsArray[34]).to.equal('');
+    expect(csvAsArray[35]).to.equal('');
+  });
+
+  it("should include 0 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'No'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.careWorkersCashLoyaltyForFirstTwoYears = 'No';
+    establishment.sickPay = 'No';
+    establishment.pensionContribution = 'No';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.include(0);
+    expect(csvAsArray[34]).to.include(0);
+    expect(csvAsArray[35]).to.include(0);
+  });
+
+  it("should include 'unknown' in the BENEFITS ,SICKPAY and PENSION columns if there values are \"Don't know\"", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+    establishment.sickPay = "Don't know";
+    establishment.pensionContribution = "Don't know";
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.include('unknown');
+    expect(csvAsArray[34]).to.include('unknown');
+    expect(csvAsArray[35]).to.include('unknown');
+  });
+
+  it("should include 1 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'Yes'", async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+    establishment.sickPay = 'Yes';
+    establishment.pensionContribution = 'Yes';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.include('1');
+    expect(csvAsArray[33]).to.include('1;');
+    expect(csvAsArray[34]).to.include('1');
+    expect(csvAsArray[35]).to.include('1');
+  });
+
+  it('should include a value in the  columns BENEFITS and  HOLIDAY if it they have  values', async () => {
+    const establishment = apiEstablishmentBuilder();
+    establishment.careWorkersCashLoyaltyForFirstTwoYears = '200';
+    establishment.careWorkersLeaveDaysPerYear = '35';
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[33]).to.include('200');
+    expect(csvAsArray[36]).to.include('35');
+  });
+
+  it('should leave the  HOLIDAY column blank if its value  is null', async () => {
+    const establishment = apiEstablishmentBuilder();
+
+    const csv = WorkplaceCSVValidator.toCSV(establishment);
+    const csvAsArray = csv.split(',');
+
+    expect(csvAsArray[36]).to.equal('');
   });
 });

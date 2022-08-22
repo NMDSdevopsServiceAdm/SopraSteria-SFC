@@ -19,16 +19,26 @@ import { UserAccountViewComponent } from '@features/workplace/user-account-view/
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { SharedModule } from '@shared/shared.module';
 
+import {
+  AcceptPreviousCareCertificateComponent,
+} from './accept-previous-care-certificate/accept-previous-care-certificate.component';
+import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
+import {
+  ConfirmStaffRecruitmentAndBenefitsComponent,
+} from './confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
+import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { PensionsComponent } from './pensions/pensions.component';
+import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
@@ -36,6 +46,12 @@ import { SelectPrimaryUserComponent } from './select-primary-user/select-primary
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
+import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
+import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
+import {
+  StaffRecruitmentCaptureTrainingRequirementComponent,
+} from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartersComponent } from './starters/starters.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
@@ -68,6 +84,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ServicesCapacityComponent,
     ServiceUsersComponent,
     StartComponent,
+    StaffRecruitmentStartComponent,
     StartersComponent,
     TypeOfEmployerComponent,
     UserAccountDeleteDialogComponent,
@@ -92,6 +109,15 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     SelectPrimaryUserDeleteComponent,
     ChangeExpiresSoonAlertsComponent,
     UsersComponent,
+    StaffRecruitmentCaptureTrainingRequirementComponent,
+    AcceptPreviousCareCertificateComponent,
+    RecruitmentAdvertisingCostComponent,
+    NumberOfInterviewsComponent,
+    ConfirmStaffRecruitmentAndBenefitsComponent,
+    StaffBenefitHolidayLeaveComponent,
+    StaffBenefitCashLoyaltyComponent,
+    BenefitsStatutorySickPayComponent,
+    PensionsComponent,
   ],
   providers: [
     DialogService,

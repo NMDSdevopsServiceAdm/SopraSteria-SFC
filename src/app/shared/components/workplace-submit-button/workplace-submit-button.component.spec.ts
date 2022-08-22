@@ -14,7 +14,7 @@ describe('WorkplaceSubmitButtonComponent', () => {
         recordSummary: true,
         canExit: false,
         exitText: 'Cancel',
-        isExistingStaffRecord: true,
+        reducedMargin: false,
       },
     });
 
@@ -23,23 +23,22 @@ describe('WorkplaceSubmitButtonComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the button component without conditional margin class if reduced margin by default and with conditional margin if reducedMargin is set to true', async () => {
+    const { rerender, getByTestId } = await setup();
+
+    const container = getByTestId('button-container');
+    expect(container.getAttribute('class')).not.toContain('govuk-!-margin-top-2');
+
+    rerender({ reducedMargin: true });
+    expect(container.getAttribute('class')).toContain('govuk-!-margin-top-2');
+  });
+
   describe('return is false', () => {
-    it(`should render the 'Save and continue' button and 'View this staff record' link when in staff flow`, async () => {
+    it(`should render the 'Save and continue' button and 'Skip this question' link`, async () => {
       const { getByText, queryByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('View this staff record')).toBeTruthy();
-      expect(queryByText('Cancel')).toBeFalsy();
-    });
-
-    it(`should render the 'Save and continue' button and 'View workplace details' link when in workplace flow`, async () => {
-      const { fixture, getByText, queryByText } = await setup();
-
-      fixture.componentInstance.isExistingStaffRecord = false;
-      fixture.detectChanges();
-
-      expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('View workplace details')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
       expect(queryByText('Cancel')).toBeFalsy();
     });
 
@@ -54,7 +53,7 @@ describe('WorkplaceSubmitButtonComponent', () => {
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
       expect(queryByText('View this staff record')).toBeFalsy();
-      expect(queryByText('View workplace details')).toBeFalsy();
+      expect(queryByText('Skip this question')).toBeFalsy();
     });
 
     it('should render the correct cta button and cancel text with a fallback', async () => {
@@ -104,14 +103,14 @@ describe('WorkplaceSubmitButtonComponent', () => {
     expect(spy).toHaveBeenCalledWith({ action: 'continue', save: true });
   });
 
-  it(`should emit 'summary' event on button click`, async () => {
+  it(`should emit 'skip' event on button click`, async () => {
     const { fixture, getByText } = await setup();
 
     const spy = spyOn(fixture.componentInstance.clicked, 'emit');
     expect(spy).not.toHaveBeenCalled();
 
-    fireEvent.click(getByText('View this staff record'));
-    expect(spy).toHaveBeenCalledWith({ action: 'summary', save: false });
+    fireEvent.click(getByText('Skip this question'));
+    expect(spy).toHaveBeenCalledWith({ action: 'skip', save: false });
   });
 
   it(`should emit the 'exit' event on button click`, async () => {

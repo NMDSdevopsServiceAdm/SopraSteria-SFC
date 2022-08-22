@@ -7,6 +7,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
+    <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
     <h1 class="govuk-heading-l">Share your data</h1>
     <div *ngIf="establishment.isRegulated">
       <p>We'd like to share your data with the Care Quality Commission (CQC) and local authorities.</p>
@@ -64,18 +65,27 @@
       <p>Local authorities cannot identify workers from the data that is shared with them.</p>
     </app-details>
   </div>
+  <div class="govuk-grid-column-one-third">
+    <div *ngIf="!return" class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar"
+        [sections]="workplaceFlowSections"
+        [currentSection]="section"
+      ></app-progress-bar>
+    </div>
+  </div>
 </div>
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row govuk-!-margin-top-4">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
-          <div *ngIf="establishment.isRegulated">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with the CQC?</h2>
-            </legend>
-            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6">
+      <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
+        <div *ngIf="establishment.isRegulated">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with the CQC?</h2>
+          </legend>
+          <div class="govuk-form-group">
+            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6 govuk-!-margin-bottom-4">
               <div class="govuk-radios__item">
                 <input
                   aria-controls="cqc-conditional-1"
@@ -106,12 +116,14 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <div>
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with local authorities?</h2>
-            </legend>
-            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6">
+        <div>
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">Do you agree to us sharing your data with local authorities?</h2>
+          </legend>
+          <div class="govuk-form-group">
+            <div class="govuk-radios govuk-radios--conditional govuk-!-margin-top-6 govuk-!-margin-bottom-4">
               <div class="govuk-radios__item">
                 <input
                   aria-controls="localAuthorities-conditional-1"
@@ -142,11 +154,12 @@
               </div>
             </div>
           </div>
-        </fieldset>
-      </div>
+        </div>
+      </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
     </div>
   </div>
-
-  <app-workplace-submit-button [return]="!!return" [isExistingStaffRecord]="false" (clicked)="setSubmitAction($event)">
-  </app-workplace-submit-button>
 </form>

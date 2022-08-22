@@ -9,6 +9,13 @@ import { Observable, of } from 'rxjs';
 
 import { subsid1, subsid2, subsid3 } from './MockUserService';
 
+interface EmployerTypeRequest {
+  employerType: {
+    value: string;
+    other?: string;
+  };
+}
+
 @Injectable()
 export class MockEstablishmentService extends EstablishmentService {
   public shareWith: any = { cqc: null, localAuthorities: null };
@@ -20,7 +27,7 @@ export class MockEstablishmentService extends EstablishmentService {
     dataOwner: undefined,
     dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
     dataPermissions: undefined,
-    employerType: { other: 'mock employerType other', value: 'mock employerType value' },
+    employerType: { other: 'other employer type', value: 'Other' },
     id: 0,
     isRegulated: false,
     leavers: undefined,
@@ -44,6 +51,14 @@ export class MockEstablishmentService extends EstablishmentService {
     updatedBy: 'mock establishment updatedBy',
     vacancies: undefined,
     showSharingPermissionsBanner: false,
+    moneySpentOnAdvertisingInTheLastFourWeeks: '78',
+    peopleInterviewedInTheLastFourWeeks: 'None',
+    doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'No, never',
+    wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No, never',
+    careWorkersCashLoyaltyForFirstTwoYears: 'No',
+    sickPay: 'No',
+    pensionContribution: 'No',
+    careWorkersLeaveDaysPerYear: '35',
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}) {
@@ -74,6 +89,10 @@ export class MockEstablishmentService extends EstablishmentService {
 
   public updateWorkplace(workplaceUid: string, data): Observable<any> {
     return of(null);
+  }
+
+  public get inStaffRecruitmentFlow(): boolean {
+    return false;
   }
 
   public getAllServices(): Observable<ServiceGroup[]> {
@@ -107,7 +126,7 @@ export class MockEstablishmentService extends EstablishmentService {
       dataOwner: undefined,
       dataOwnershipRequested: '',
       dataPermissions: undefined,
-      employerType: { other: '', value: '' },
+      employerType: { value: 'Private Sector' },
       id: 0,
       isRegulated: false,
       leavers: undefined,
@@ -131,6 +150,10 @@ export class MockEstablishmentService extends EstablishmentService {
       updatedBy: '',
       vacancies: undefined,
     };
+  }
+
+  public updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest): Observable<any> {
+    return of('');
   }
 
   public getExpiresSoonAlertDates(): Observable<string> {
@@ -205,7 +228,23 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     updatedBy: 'mock establishment updatedBy',
     vacancies: undefined,
     showSharingPermissionsBanner: false,
+    moneySpentOnAdvertisingInTheLastFourWeeks: '78',
+    peopleInterviewedInTheLastFourWeeks: 'None',
+    doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'No,never',
+    wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No,never',
+    careWorkersCashLoyaltyForFirstTwoYears: 'No',
+    sickPay: 'No',
+    pensionContribution: 'No',
+    careWorkersLeaveDaysPerYear: '35',
   };
+
+  public static factory(employerTypeHasValue = true) {
+    return (httpClient: HttpClient) => {
+      const service = new MockEstablishmentServiceWithNoEmployerType(httpClient);
+      service.setEmployerTypeHasValue(employerTypeHasValue);
+      return service;
+    };
+  }
 
   public get returnTo(): URLStructure {
     return;

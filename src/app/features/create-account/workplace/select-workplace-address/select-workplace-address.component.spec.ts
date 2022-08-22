@@ -158,7 +158,7 @@ describe('SelectWorkplaceAddressComponent', () => {
       expect(notDisplayedButton.getAttribute('href')).toBe('/registration/workplace-name-address');
     });
 
-    it('should navigate to select-main-service url in registration flow when workplace with name selected and Continue clicked', async () => {
+    it('should navigate to type-of-employer url in registration flow when workplace with name selected and Continue clicked', async () => {
       const { component, spy, getByText, fixture } = await setup();
       const form = component.form;
       const continueButton = getByText('Continue');
@@ -171,7 +171,7 @@ describe('SelectWorkplaceAddressComponent', () => {
 
       expect(form.valid).toBeTruthy();
 
-      expect(spy).toHaveBeenCalledWith(['/registration/select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/registration/type-of-employer']);
     });
 
     it('should navigate to the confirm-details page in registration flow when workplace selected, Continue clicked and returnToConfirmDetails is not null', async () => {

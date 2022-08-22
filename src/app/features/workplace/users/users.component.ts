@@ -17,7 +17,7 @@ import { orderBy } from 'lodash';
 export class UsersComponent implements OnInit {
   public workplace: Establishment;
   public showSecondUserBanner: boolean;
-  public users: UserDetails[] = [];
+  public users: UserDetails[];
   public canAddUser: boolean;
   public canViewUser: boolean;
   public userPermissionsTypes: UserPermissionsType[];

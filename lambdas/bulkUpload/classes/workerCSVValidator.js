@@ -21,7 +21,7 @@ class WorkerCsvValidator {
     this._key = null;
     this._establishmentKey = null;
 
-    this._fluVac = null;
+    console.log('console log to cause Intentional conflict to check if Lambda will update');
     this._NINumber = null;
     this._postCode = null;
     this._DOB = null;
@@ -204,9 +204,7 @@ class WorkerCsvValidator {
   static get DISPLAY_ID_WARNING() {
     return 3050;
   }
-  static get FLUVAC_WARNING() {
-    return 3055;
-  }
+
   static get NINUMBER_WARNING() {
     return 3060;
   }
@@ -393,10 +391,6 @@ class WorkerCsvValidator {
 
   get dislpayID() {
     return this._displayId;
-  }
-
-  get fluVac() {
-    return this._fluVac;
   }
 
   get niNumber() {
@@ -741,30 +735,6 @@ class WorkerCsvValidator {
     } else {
       this._displayId = myDisplayId;
       return true;
-    }
-  }
-
-  _validateFluVac() {
-    const myFluVac = parseInt(this._currentLine.FLUVAC, 10);
-    const fluVacValues = [1, 2, 999];
-
-    if (this._currentLine.FLUVAC.length > 0) {
-      if (isNaN(myFluVac) || !fluVacValues.includes(myFluVac)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.FLUVAC_WARNING,
-          warnType: 'WORKER_FLUVAC_WARNING',
-          warning: 'FLUVAC the code you have selected has not been recognised and will be ignored',
-          source: this._currentLine.FLUVAC,
-          column: 'FLUVAC',
-        });
-        return false;
-      } else {
-        this._fluVac = myFluVac;
-        return true;
-      }
     }
   }
 
@@ -1306,7 +1276,7 @@ class WorkerCsvValidator {
   }
 
   _validateApprentice() {
-    const apprenticeValues = [1, 2, 999];
+    const apprenticeValues = [1, 2, 999, 314, 315];
     const myApprentice = parseInt(this._currentLine.APPRENTICE, 10);
 
     // optional
@@ -1333,6 +1303,12 @@ class WorkerCsvValidator {
             break;
           case 999:
             this._apprentice = "Don't know";
+            break;
+          case 314:
+            this._apprentice = 'Think ahead';
+            break;
+          case 315:
+            this._apprentice = 'Social worker integrated Degree';
             break;
         }
         return true;
@@ -2828,7 +2804,6 @@ class WorkerCsvValidator {
     // only continue to process validation, if the status is not UNCHECKED, DELETED OR UNCHANGED
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateContractType() ? false : status;
-      status = !this._validateFluVac() ? false : status;
       status = !this._validateNINumber() ? false : status;
       status = !this._validatePostCode() ? false : status;
       status = !this._validateDOB() ? false : status;
@@ -2908,7 +2883,6 @@ class WorkerCsvValidator {
       uniqueWorkerId: this._uniqueWorkerId,
       changeUniqueWorker: this._changeUniqueWorkerId ? this._changeUniqueWorkerId : undefined,
       displayId: this._displayId,
-      fluJab: this._fluVac ? this.fluVac : undefined,
       niNumber: this._NINumber ? this._NINumber : undefined,
       postcode: this._postCode ? this._postCode : undefined,
       dateOfBirth: this._DOB ? this._DOB.format('DD/MM/YYYY') : undefined,
@@ -3050,20 +3024,6 @@ class WorkerCsvValidator {
 
     if (this._nursingSpecialist) {
       changeProperties.nurseSpecialisms = this.BUDI.mapNurseSpecialismsToDb(this._nursingSpecialist);
-    }
-
-    if (this._fluVac) {
-      switch (this._fluVac) {
-        case 1:
-          changeProperties.fluJab = 'Yes';
-          break;
-        case 2:
-          changeProperties.fluJab = 'No';
-          break;
-        case 999:
-          changeProperties.fluJab = "Don't know";
-          break;
-      }
     }
 
     if (this._startInsect) {

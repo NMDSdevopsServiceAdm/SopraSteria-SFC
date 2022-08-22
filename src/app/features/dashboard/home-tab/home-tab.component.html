@@ -1,7 +1,24 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
+    <ng-container *ngIf="workplace && !recruitmentJourneyExistingUserBanner && !addWorkplaceDetailsBanner">
+      <app-inset-text *ngIf="workplace.employerType" [color]="'todo'" class="govuk-!-margin-bottom-2">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-s">We've added some questions to ASC-WDS</h2>
+            <p>
+              Skills for Care are working with the Department of Health and Social Care to help them better understand
+              how difficult it is to recruit and keep people working in the adult social care sector
+            </p>
+            <a href="#" (click)="canEditEstablishment && setRecuritmentBannerToTrue($event)">
+              Answer our staff recruitment and retention questions
+            </a>
+          </div>
+        </div>
+      </app-inset-text>
+    </ng-container>
+
     <ng-container *ngIf="workplace && canEditEstablishment">
-      <app-inset-text *ngIf="!workplace.employerType" [color]="'todo'">
+      <app-inset-text *ngIf="addWorkplaceDetailsBanner" [color]="'todo'">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
             <a [routerLink]="['/workplace', workplace?.uid, 'start']">Start to add more details about your workplace</a>
@@ -25,6 +42,7 @@
         [numberOfStaff]="workplace.numberOfStaff"
       ></app-staff-mismatch-banner>
     </ng-container>
+
     <div *ngIf="workplace">
       <div>
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">

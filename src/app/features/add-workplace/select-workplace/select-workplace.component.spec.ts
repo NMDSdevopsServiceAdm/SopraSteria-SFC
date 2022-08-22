@@ -163,7 +163,7 @@ describe('SelectWorkplaceComponent', () => {
       expect(workplaceSpy).toHaveBeenCalledWith(locationId);
     });
 
-    it('should navigate to the select-main-service url in add-workplace flow when workplace selected and the establishment does not already exists in the service', async () => {
+    it('should navigate to the type-of-employer url in add-workplace flow when workplace selected and the establishment does not already exists in the service', async () => {
       const { getByText, fixture, spy } = await setup();
 
       const firstWorkplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
@@ -172,7 +172,7 @@ describe('SelectWorkplaceComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'type-of-employer']);
     });
 
     it('should navigate to the confirm-workplace-details page when returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {

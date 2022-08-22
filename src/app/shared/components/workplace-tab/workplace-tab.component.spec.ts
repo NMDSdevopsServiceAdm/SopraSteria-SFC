@@ -1,61 +1,49 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { WorkplaceTabComponent } from './workplace-tab.component';
 
 describe('WorkplaceTabComponent', () => {
-  let component: WorkplaceTabComponent;
-  let fixture: ComponentFixture<WorkplaceTabComponent>;
+  const setup = async () => {
+    const { fixture } = await render(WorkplaceTabComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+      ],
+      componentProperties: {
+        workplace: Establishment,
+      },
+    });
+    const component = fixture.componentInstance;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          SharedModule,
-          RouterTestingModule.withRoutes([
-            { path: 'workplace/4698f4a4-ab82-4906-8b0e-3f4972375927/sharing-data', component: DataSharingComponent },
-          ]),
-          HttpClientTestingModule,
-        ],
-        providers: [
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(),
-            deps: [HttpClient, Router, UserService],
-          },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-        ],
-      }).compileComponents();
-    }),
-  );
+    return { component, fixture };
+  };
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(WorkplaceTabComponent);
-    component = fixture.componentInstance;
-    component.workplace = Establishment;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
+  it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
   it('should display the Check CQC Details banner', async () => {
+    const { component, fixture } = await setup();
     component.showCQCDetailsBanner = true;
     fixture.detectChanges();
 
@@ -65,6 +53,7 @@ describe('WorkplaceTabComponent', () => {
   });
 
   it('should not display the Check CQC Details banner', async () => {
+    const { component, fixture } = await setup();
     component.showCQCDetailsBanner = false;
     fixture.detectChanges();
 
@@ -74,6 +63,7 @@ describe('WorkplaceTabComponent', () => {
   });
 
   it('should display the Sharing Permissions banner', async () => {
+    const { component, fixture } = await setup();
     component.showSharingPermissionsBanner = true;
     fixture.detectChanges();
 
@@ -83,6 +73,7 @@ describe('WorkplaceTabComponent', () => {
   });
 
   it('should not display the Sharing Permissions banner', async () => {
+    const { component, fixture } = await setup();
     component.showSharingPermissionsBanner = false;
     fixture.detectChanges();
 
@@ -92,6 +83,7 @@ describe('WorkplaceTabComponent', () => {
   });
 
   it('should navigate to the sharing data page whent the link in the permissions banner is clicked', async () => {
+    const { component, fixture } = await setup();
     const routerSpy = spyOn(component.router, 'navigate');
     component.showSharingPermissionsBanner = true;
     fixture.detectChanges();
@@ -103,6 +95,7 @@ describe('WorkplaceTabComponent', () => {
   });
 
   it('should set the return url in the establishment service to the dashboard if the permission page is accessed from dashboard', async () => {
+    const { component, fixture } = await setup();
     const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
     component.showSharingPermissionsBanner = true;
     fixture.detectChanges();
@@ -114,6 +107,7 @@ describe('WorkplaceTabComponent', () => {
   });
 
   it('should set the return url in the establishment service to the workplace dashboard if the permissions page is accessed from sub establishment', async () => {
+    const { component, fixture } = await setup();
     const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
     component.showSharingPermissionsBanner = true;
     component.route.snapshot.params = { establishmentuid: component.workplace.uid };

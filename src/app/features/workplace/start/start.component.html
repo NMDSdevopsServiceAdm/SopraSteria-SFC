@@ -1,18 +1,74 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Add more details about your workplace</h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8 govuk__nowrap">Add more details about your workplace</h1>
+
+    <p class="govuk-details__text">
+      We'll ask you a maximum of 16 questions. If necessary, you can skip questions and answer them later in the
+      Workplace section of ASC-WDS.
+    </p>
+
     <p>We would like to know:</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>what type of employer you are (for example, local authority)</li>
-      <li>whether you provide any other services</li>
-      <li>the capacity of the services that you provide</li>
-      <li>who uses your service</li>
-      <li>whether we can share your data</li>
-      <li>whether you have any current staff vacancies</li>
-      <li>whether you've had new starters or leavers in the last 12 months</li>
+      <li><p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">whether you provide any other services?</p></li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
+          the capacity of the services that you provide (if applicable)?
+        </p>
+      </li>
+      <li><p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">who uses your services?</p></li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">whether you have any current staff vacancies?</p>
+      </li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
+          whether you've had new starters or leavers in the last 12 months?
+        </p>
+      </li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
+          how much money is being spent on advertising for staff?
+        </p>
+      </li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
+          how many people are being interviewed for care worker roles?
+        </p>
+      </li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0 govuk__nowrap">
+          whether new care workers have to repeat training done with previous employers?
+        </p>
+      </li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0 govuk__nowrap">
+          whether Care Certificates are transferable from workplace to workplace?
+        </p>
+      </li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0 govuk__nowrap">
+          whether a cash loyalty bonus is paid within the first 2 years of employment?
+        </p>
+      </li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
+          whether care workers are paid more than Statutory Sick Pay?
+        </p>
+      </li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
+          whether more than 3% is contributed towards care worker pensions?
+        </p>
+      </li>
+      <li>
+        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
+          how many days holiday leave full-time care workers get?
+        </p>
+      </li>
+      <li><p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">whether we can share your data?</p></li>
     </ul>
     <a
-      [routerLink]="['/workplace', establishment.uid, 'type-of-employer']"
+      [routerLink]="['/workplace', establishment.uid, 'other-services']"
+      (click)="removeAddDetailsBanner($event)"
       role="button"
       draggable="false"
       class="govuk-button govuk-!-margin-top-5"

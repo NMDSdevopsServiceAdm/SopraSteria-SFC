@@ -100,10 +100,10 @@ describe('HomeTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('displays add workplace info text when no employer type', async () => {
+  it('displays add workplace info text when addWorkplaceDetailBanner is true', async () => {
     // Arrange
     const { component } = await setup();
-    component.fixture.componentInstance.workplace.employerType = null;
+    component.fixture.componentInstance.addWorkplaceDetailsBanner = true;
     component.fixture.detectChanges();
     // Act
     const link = component.getByText('Start to add more details about your workplace');
@@ -115,11 +115,11 @@ describe('HomeTabComponent', () => {
     );
   });
 
-  it('does not display add workplace info text when employer type is provided', async () => {
+  it('does not display add workplace info text when addWorkplaceDetailBanner is false', async () => {
     // Arrange
     const { component } = await setup();
 
-    component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
+    component.fixture.componentInstance.addWorkplaceDetailsBanner = false;
     component.fixture.detectChanges();
     // Act
     const link = component.queryByText('Start to add more details about your workplace');
@@ -240,6 +240,51 @@ describe('HomeTabComponent', () => {
     component.fixture.detectChanges();
 
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
+  });
+
+  describe('Staff recruitment banner', async () => {
+    it('displays staff-recruitment-start link  when has employer type and banner value is false', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
+      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
+      component.fixture.detectChanges();
+      const recruitmentHeader = component.getByText(`We've added some questions to ASC-WDS`);
+
+      expect(recruitmentHeader).toBeTruthy();
+    });
+
+    it('shouldnt displays staff-recruitment-start banner  when  employer type is null and banner value is true', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.workplace.employerType = null;
+      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = true;
+      component.fixture.detectChanges();
+      const recruitmentHeader = component.queryByText(`We've added some questions to ASC-WDS`);
+
+      expect(recruitmentHeader).toBeFalsy();
+    });
+
+    it('should call updateSingleEstablishmentField in the establishment service with the updated recruitmentJourneyExistingUserBanner set to true', async () => {
+      const { component } = await setup();
+
+      const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
+      const recuritmentBannerSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
+
+      component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
+      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
+      component.fixture.componentInstance.canEditEstablishment = true;
+
+      component.fixture.detectChanges();
+      const recuritmentLink = component.getByText('Answer our staff recruitment and retention questions');
+      fireEvent.click(recuritmentLink);
+
+      const establishmentId = component.fixture.componentInstance.workplace.uid;
+      expect(recuritmentBannerSpy).toHaveBeenCalledWith(establishmentId, {
+        property: 'recruitmentJourneyExistingUserBanner',
+        value: true,
+      });
+    });
   });
 
   describe('View the ASC-WDS Benefits Bundle', async () => {
