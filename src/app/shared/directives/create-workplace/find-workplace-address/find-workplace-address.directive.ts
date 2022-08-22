@@ -56,8 +56,6 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setFlow(): void {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected init(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
