@@ -9,14 +9,22 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction((transaction) => {
       return Promise.all([
-        queryInterface.removeColumn(table, 'PeopleInterviewedInTheLastFourWeeks', {
-          transaction,
-        }),
-        queryInterface.removeColumn(table, 'MoneySpentOnAdvertisingInTheLastFourWeeks', { transaction }),
-        queryInterface.removeColumn(table, 'DoNewStartersRepeatMandatoryTrainingFromPreviousEmployment', {
-          transaction,
-        }),
-        queryInterface.removeColumn(table, 'WouldYouAcceptCareCertificatesFromPreviousEmployment', { transaction }),
+        queryInterface.sequelize.query(
+          'ALTER TABLE cqc."Establishment" DROP COLUMN IF EXISTS "PeopleInterviewedInTheLastFourWeeks";',
+          { transaction },
+        ),
+        queryInterface.sequelize.query(
+          'ALTER TABLE cqc."Establishment" DROP COLUMN IF EXISTS "MoneySpentOnAdvertisingInTheLastFourWeeks";',
+          { transaction },
+        ),
+        queryInterface.sequelize.query(
+          'ALTER TABLE cqc."Establishment" DROP COLUMN IF EXISTS "DoNewStartersRepeatMandatoryTrainingFromPreviousEmployment";',
+          { transaction },
+        ),
+        queryInterface.sequelize.query(
+          'ALTER TABLE cqc."Establishment" DROP COLUMN IF EXISTS "WouldYouAcceptCareCertificatesFromPreviousEmployment";',
+          { transaction },
+        ),
         queryInterface.sequelize.query(
           'DROP TYPE IF EXISTS cqc."enum_Establishment_WouldYouAcceptCareCertificatesFromPreviousEm";',
           {
