@@ -24,8 +24,7 @@ export class RegulatedByCqcComponent extends NewRegulatedByCqcDirective {
 
   protected init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
-    console.log(this.insideFlow);
-    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-workplace-details';
   }
 
   protected setFlowToInProgress(): void {

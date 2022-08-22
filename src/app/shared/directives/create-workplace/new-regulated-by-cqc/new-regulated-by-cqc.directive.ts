@@ -100,7 +100,7 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   }
 
   public setBackLink(): void {
-    const urlPage = this.flow === 'registration' ? 'create-account' : 'start';
+    const urlPage = this.flow === 'registration' ? 'confirm-details' : 'start';
     this.backService.setBackLink({ url: [`/${this.flow}`, urlPage] });
   }
 

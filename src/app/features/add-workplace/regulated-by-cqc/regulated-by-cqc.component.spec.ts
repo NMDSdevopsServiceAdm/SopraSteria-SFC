@@ -12,7 +12,7 @@ import { AddWorkplaceModule } from '../add-workplace.module';
 import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
 describe('RegulatedByCqcComponent', () => {
-  async function setup(registrationFlow = true) {
+  async function setup(registrationFlow = false) {
     const component = await render(RegulatedByCqcComponent, {
       imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -28,7 +28,7 @@ describe('RegulatedByCqcComponent', () => {
               parent: {
                 url: [
                   {
-                    path: registrationFlow ? 'registration' : 'add-workplace',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -56,39 +56,39 @@ describe('RegulatedByCqcComponent', () => {
   });
 
   it('should render the registration progress bars', async () => {
-    const { component } = await setup();
+    const { component } = await setup(true);
 
     expect(component.getByTestId('progress-bar-1')).toBeTruthy();
     expect(component.queryByTestId('progress-bar-2')).toBeTruthy();
   });
 
   it('should not render the progress bar when accessed from outside the flow', async () => {
-    const { component } = await setup(false);
+    const { component } = await setup();
 
     expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
     expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should navigate to the find workplace page when selecting yes', async () => {
-    const { component, spy } = await setup();
+    const { component, spy } = await setup(true);
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
     fireEvent.click(yesRadioButton);
 
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace']);
+    expect(spy).toHaveBeenCalledWith(['/registration', 'find-workplace']);
   });
 
   it('should navigate to the find-workplace-address page when selecting no', async () => {
-    const { component, spy } = await setup();
+    const { component, spy } = await setup(true);
     const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
     fireEvent.click(noRadioButton);
 
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace-address']);
+    expect(spy).toHaveBeenCalledWith(['/registration', 'find-workplace-address']);
   });
 
   it('should display an error message when not selecting anything', async () => {
@@ -141,14 +141,14 @@ describe('RegulatedByCqcComponent', () => {
 
   describe('setBackLink()', () => {
     it('should set the correct back link when in the parent flow', async () => {
-      const { component } = await setup();
+      const { component } = await setup(true);
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
       component.fixture.componentInstance.setBackLink();
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'start'],
+        url: ['/registration', 'confirm-details'],
       });
     });
   });
