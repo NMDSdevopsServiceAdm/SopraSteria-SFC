@@ -8,6 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { Subscription } from 'rxjs';
 
@@ -21,6 +22,8 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public submitted = false;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
 
   constructor(
     public backService: BackService,
@@ -33,7 +36,8 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
 
   ngOnInit(): void {
     this.setFlow();
-
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
@@ -52,6 +56,8 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected setFlow(): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected init(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
