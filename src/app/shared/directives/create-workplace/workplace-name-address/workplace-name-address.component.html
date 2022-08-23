@@ -2,6 +2,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
+    <span class="govuk-caption-l">Workplace</span>
     <h1 *ngIf="isWorkPlaceUpdate" class="govuk-heading-l">Workplace details</h1>
     <h1 *ngIf="!isWorkPlaceUpdate" class="govuk-heading-l">{{ title }}</h1>
 
@@ -39,5 +40,22 @@
         <button class="govuk-button" type="submit">Continue</button>
       </ng-template>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Find workplace'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Find workplace'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>
