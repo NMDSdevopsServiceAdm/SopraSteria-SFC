@@ -53,6 +53,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
     this.setBackLink();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
 
   public ngAfterViewInit(): void {
