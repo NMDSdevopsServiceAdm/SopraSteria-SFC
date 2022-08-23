@@ -19,11 +19,11 @@ import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
 import { establishmentWithShareWith, establishmentWithWdfBuilder } from '../../../../../server/test/factories/models';
-import { NewWorkplaceSummaryComponent } from './new-workplace-summary.component';
+import { WorkplaceSummaryComponent } from './workplace-summary.component';
 
-describe('NewWorkplaceSummaryComponent', () => {
+describe('WorkplaceSummaryComponent', () => {
   const setup = async (shareWith = null) => {
-    const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(NewWorkplaceSummaryComponent, {
+    const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
       declarations: [],
       providers: [
@@ -56,7 +56,7 @@ describe('NewWorkplaceSummaryComponent', () => {
     return { component, fixture, getByText, getByTestId, queryByTestId, rerender };
   };
 
-  it('should render a NewWorkplaceSummaryComponent', async () => {
+  it('should render a WorkplaceSummaryComponent', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();

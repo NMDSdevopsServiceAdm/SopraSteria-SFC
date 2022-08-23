@@ -11,11 +11,11 @@ import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-new-workplace-summary',
-  templateUrl: './new-workplace-summary.component.html',
+  selector: 'app-workplace-summary',
+  templateUrl: './workplace-summary.component.html',
   providers: [I18nPluralPipe],
 })
-export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
+export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   private _workplace: any;
   protected subscriptions: Subscription = new Subscription();
   public hasCapacity: boolean;
