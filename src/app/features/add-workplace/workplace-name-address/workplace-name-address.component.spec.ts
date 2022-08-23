@@ -149,7 +149,7 @@ describe('WorkplaceNameAddressComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'type-of-employer']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'type-of-employer']);
     });
 
     it('should navigate to confirm-workplace-details page on success if returnToConfirmDetails is not null', async () => {
@@ -169,7 +169,7 @@ describe('WorkplaceNameAddressComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-workplace-details']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
     });
   });
 
@@ -200,7 +200,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'confirm-workplace-details'],
+          url: ['add-workplace', 'confirm-workplace-details'],
         });
       });
     });
@@ -218,7 +218,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'workplace-not-found'],
+          url: ['add-workplace', 'workplace-not-found'],
         });
       });
     });
@@ -236,7 +236,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'workplace-address-not-found'],
+          url: ['add-workplace', 'workplace-address-not-found'],
         });
       });
     });
@@ -254,7 +254,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'select-workplace'],
+          url: ['add-workplace', 'select-workplace'],
         });
       });
     });
@@ -272,7 +272,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'select-workplace-address'],
+          url: ['add-workplace', 'select-workplace-address'],
         });
       });
     });

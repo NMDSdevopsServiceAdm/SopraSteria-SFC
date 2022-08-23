@@ -149,7 +149,7 @@ describe('WorkplaceNameAddressComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/registration', 'type-of-employer']);
+      expect(spy).toHaveBeenCalledWith(['registration', 'type-of-employer']);
     });
 
     it('should navigate to confirm-details page on success if returnToConfirmDetails is not null', async () => {
@@ -169,7 +169,7 @@ describe('WorkplaceNameAddressComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/registration', 'confirm-details']);
+      expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
     });
   });
 
@@ -353,7 +353,7 @@ describe('WorkplaceNameAddressComponent', () => {
 
       fixture.whenStable().then(() => {
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/registration', 'confirm-details'],
+          url: ['registration', 'confirm-details'],
         });
       });
     });
@@ -371,7 +371,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/registration', 'workplace-not-found'],
+          url: ['registration', 'workplace-not-found'],
         });
       });
     });
@@ -389,7 +389,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/registration', 'workplace-address-not-found'],
+          url: ['registration', 'workplace-address-not-found'],
         });
       });
     });
@@ -406,7 +406,7 @@ describe('WorkplaceNameAddressComponent', () => {
 
       fixture.whenStable().then(() => {
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/registration', 'select-workplace'],
+          url: ['registration', 'select-workplace'],
         });
       });
     });
@@ -422,7 +422,7 @@ describe('WorkplaceNameAddressComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'select-workplace-address'],
+        url: ['registration', 'select-workplace-address'],
       });
     });
   });
