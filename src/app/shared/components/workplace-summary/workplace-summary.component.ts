@@ -6,7 +6,8 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import sortBy from 'lodash/sortBy';
+import { WorkplaceUtil } from '@core/utils/workplace-util';
+import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -27,8 +28,11 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   public canViewListOfWorkers = false;
   public confirmedFields: Array<string> = [];
   public showTotalStaffWarning: boolean;
+  public checkAnswersPage: boolean;
+  public now: Date = new Date();
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
+  @Input() removeServiceSectionMargin = false;
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() workerCount: number;
@@ -51,6 +55,10 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
           }
         });
       }
+    }
+
+    if (this._workplace.employerType) {
+      this._workplace.employerType.value = WorkplaceUtil.formatTypeOfEmployer(this._workplace.employerType.value);
     }
   }
 
@@ -110,6 +118,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit(): void {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+    this.checkAnswersPage = this.return?.url.includes('check-answers');
 
     this.setTotalStaffWarning();
     if (this.canEditEstablishment && this.wdfView) {
@@ -146,6 +155,10 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
         (this.workplace.numberOfStaff > 0 || this.workerCount > 0) &&
         this.workplace.numberOfStaff !== this.workerCount;
     }
+  }
+
+  public formatMonetaryValue(unformattedMoneyString): string {
+    return unformattedMoneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   public filterAndSortOtherServices(services: Service[]): Service[] {
@@ -193,6 +206,10 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
         }
       }),
     );
+  }
+
+  public convertToDate(dateString: string): Date {
+    return new Date(dateString);
   }
 
   public updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {
