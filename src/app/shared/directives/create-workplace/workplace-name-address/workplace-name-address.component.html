@@ -29,16 +29,18 @@
           </div>
         </ng-container>
       </fieldset>
-      <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
-        <app-workplace-submit-button
-          [return]="!!return"
-          (clicked)="setSubmitAction($event)"
-          [isExistingStaffRecord]="false"
-        ></app-workplace-submit-button>
-      </ng-container>
-      <ng-template #workplaceAdd>
-        <button class="govuk-button" type="submit">Continue</button>
-      </ng-template>
+      <div class="govuk-!-margin-top-4">
+        <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
+          <app-workplace-submit-button
+            [return]="!!return"
+            (clicked)="setSubmitAction($event)"
+            [isExistingStaffRecord]="false"
+          ></app-workplace-submit-button>
+        </ng-container>
+        <ng-template #workplaceAdd>
+          <button class="govuk-button" data-testid="button" type="submit">Continue</button>
+        </ng-template>
+      </div>
     </form>
   </div>
   <div class="govuk-grid-column-one-third">

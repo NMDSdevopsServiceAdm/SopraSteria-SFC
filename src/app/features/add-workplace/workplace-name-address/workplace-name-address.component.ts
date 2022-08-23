@@ -24,12 +24,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
     this.setServiceVariables();
     this.setupPreFillForm();
-  }
-
-  protected setFlow(): void {
-    this.flow = '/add-workplace';
   }
 
   protected setTitle(): void {
