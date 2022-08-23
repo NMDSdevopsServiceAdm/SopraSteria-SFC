@@ -9,9 +9,10 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction((transaction) => {
       return Promise.all([
-        queryInterface.removeColumn(table, 'RecruitmentJourneyExistingUserBanner', {
-          transaction,
-        }),
+        queryInterface.sequelize.query(
+          'ALTER TABLE cqc."Establishment" DROP COLUMN IF EXISTS "RecruitmentJourneyExistingUserBanner";',
+          { transaction },
+        ),
 
         queryInterface.addColumn(
           table,
