@@ -162,34 +162,13 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
           if (hasProp(response, 'message')) {
             this.bulkUploadService.serverError$.next(response.message);
           } else {
-            this.removeRecruitmentJourneyBanner();
-            this.removeWorkplaceJourneyBanner();
+            this.updateEstablishmentService();
           }
         },
         (response) => {
           this.onValidateError(response);
         },
       );
-  }
-
-  private removeWorkplaceJourneyBanner(): void {
-    const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
-    this.subscriptions.add(
-      this.establishmentService
-        .updateSingleEstablishmentField(this.establishmentService.establishment.uid, data)
-        .subscribe(),
-    );
-  }
-
-  private removeRecruitmentJourneyBanner(): void {
-    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
-    this.subscriptions.add(
-      this.establishmentService
-        .updateSingleEstablishmentField(this.establishmentService.establishment.uid, data)
-        .subscribe(() => {
-          this.updateEstablishmentService();
-        }),
-    );
   }
 
   private updateEstablishmentService(): void {

@@ -1772,7 +1772,7 @@ class WorkplaceCSVValidator {
 
     // all counts must be integers and greater than/equal to zero
     const MIN_COUNT = 0;
-    const MAX_COUNT = 999999999;
+    const MAX_COUNT = 999;
 
     if (
       !vacancies.every(
