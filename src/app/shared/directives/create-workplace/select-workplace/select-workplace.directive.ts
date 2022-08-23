@@ -48,9 +48,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.init();
     this.setupFormErrorsMap();
     this.setupSubscription();
-    this.enteredPostcode = this.locationAddresses[0].postalCode;
+
     this.setBackLink();
     this.setNextRoute();
+    console.log(this.locationAddresses);
   }
 
   ngAfterViewInit(): void {
@@ -102,9 +103,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
 
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.workplaceInterfaceService.locationAddresses$.subscribe(
-        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
-      ),
+      this.workplaceInterfaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
+        this.enteredPostcode = locationAddresses[0].postalCode;
+        this.locationAddresses = locationAddresses;
+      }),
     );
   }
 

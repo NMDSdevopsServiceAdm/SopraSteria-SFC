@@ -10,7 +10,7 @@
             Select the workplace you want<br />
             to add
           </h1>
-          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Select your workplace</h1>
+          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Select your workplace address</h1>
         </legend>
         <ng-container *ngIf="!isCQCLocationUpdate">
           <div class="govuk-!-margin-bottom-5">
@@ -35,7 +35,7 @@
                 [formControlName]="'workplace'"
               />
               <label class="govuk-label govuk-radios__label" for="workplace-{{ i }}">
-                {{ item.locationName }} - {{ item.townCity }} {{ item.postalCode }}
+                {{ item.locationName }}, {{ item.townCity }}, {{ item.postalCode }}
               </label>
             </div>
           </div>
