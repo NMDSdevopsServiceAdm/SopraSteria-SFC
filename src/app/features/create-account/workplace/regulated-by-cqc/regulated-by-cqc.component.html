@@ -63,6 +63,7 @@
         [currentSection]="'CQC regulated'"
       ></app-progress-bar>
       <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"

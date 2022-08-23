@@ -4,22 +4,23 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
-
+import { ReactiveFormsModule } from '@angular/forms';
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
-describe('RegulatedByCqcComponent', () => {
-  async function setup(registrationFlow = false) {
+fdescribe('RegulatedByCqcComponent', () => {
+  async function setup(addWorkplaceFlow = true) {
     const component = await render(RegulatedByCqcComponent, {
-      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
-          provide: RegistrationService,
-          useClass: RegistrationService,
-          deps: [HttpClient],
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         {
           provide: ActivatedRoute,
@@ -28,7 +29,7 @@ describe('RegulatedByCqcComponent', () => {
               parent: {
                 url: [
                   {
-                    path: registrationFlow ? 'registration' : 'confirm-details',
+                    path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
                   },
                 ],
               },
@@ -55,40 +56,39 @@ describe('RegulatedByCqcComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the registration progress bars', async () => {
-    const { component } = await setup(true);
-
-    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
-    expect(component.queryByTestId('progress-bar-2')).toBeTruthy();
-  });
-
-  it('should not render the progress bar when accessed from outside the flow', async () => {
+  it('should render the workplace progress bar but not the user progress bar', async () => {
     const { component } = await setup();
 
-    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
     expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+  });
+
   it('should navigate to the find workplace page when selecting yes', async () => {
-    const { component, spy } = await setup(true);
+    const { component, spy } = await setup();
     const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
     fireEvent.click(yesRadioButton);
 
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['/registration', 'find-workplace']);
+    expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace']);
   });
 
   it('should navigate to the find-workplace-address page when selecting no', async () => {
-    const { component, spy } = await setup(true);
+    const { component, spy } = await setup();
     const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
     fireEvent.click(noRadioButton);
 
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['/registration', 'find-workplace-address']);
+    expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace-address']);
   });
 
   it('should display an error message when not selecting anything', async () => {
@@ -141,14 +141,14 @@ describe('RegulatedByCqcComponent', () => {
 
   describe('setBackLink()', () => {
     it('should set the correct back link when in the parent flow', async () => {
-      const { component } = await setup(true);
+      const { component } = await setup();
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
       component.fixture.componentInstance.setBackLink();
       component.fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'create-account'],
+        url: ['/add-workplace', 'start'],
       });
     });
   });

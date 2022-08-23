@@ -25,7 +25,6 @@ import { SharedModule } from '@shared/shared.module';
 import { FindWorkplaceAddressComponent } from '../create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
-import { RegulatedByCqcComponent } from '../create-account/workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 
@@ -47,7 +46,6 @@ import { CreateAccountComponent } from './create-account/create-account.componen
     CreateAccountComponent,
     FindYourWorkplaceComponent,
     IsThisYourWorkplaceComponent,
-    RegulatedByCqcComponent,
     WorkplaceNotFoundComponent,
     NameOfWorkplaceComponent,
     UsernamePasswordComponent,
