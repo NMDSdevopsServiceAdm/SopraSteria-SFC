@@ -20,7 +20,7 @@
     [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
     [title]="'Workplace'"
   >
-    <app-workplace-summary
+    <app-new-workplace-summary
       *ngIf="workplace"
       [workplace]="workplace"
       [workerCount]="workerCount"
@@ -28,7 +28,7 @@
       [wdfView]="true"
       [overallWdfEligibility]="wdfEligibilityStatus.overall"
       (allFieldsConfirmed)="getWdfReport()"
-    ></app-workplace-summary>
+    ></app-new-workplace-summary>
   </app-tab>
   <app-tab
     *ngIf="canViewWorker"
