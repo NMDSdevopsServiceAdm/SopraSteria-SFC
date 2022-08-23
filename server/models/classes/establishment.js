@@ -1064,12 +1064,12 @@ class Establishment extends EntityValidator {
               this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
             wouldYouAcceptCareCertificatesFromPreviousEmployment:
               this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
-            showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
+            showAddWorkplaceDetailsBanner: bulkUploaded ? false : this._showAddWorkplaceDetailsBanner,
             careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
             sickPay: this._sickPay,
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
-            recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
+            recruitmentJourneyExistingUserBanner: bulkUploaded ? true : this._recruitmentJourneyExistingUserBanner,
           };
 
           // Every time the establishment is saved, need to calculate
