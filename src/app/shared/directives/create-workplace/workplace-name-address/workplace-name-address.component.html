@@ -49,14 +49,14 @@
         data-testid="progress-bar-1"
         [header]="'Workplace'"
         [sections]="workplaceSections"
-        [currentSection]="'Find workplace'"
+        [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
       <app-progress-bar
         *ngIf="this.flow.includes('registration')"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
-        [currentSection]="'Find workplace'"
+        [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
     </div>
   </div>
