@@ -79,7 +79,6 @@ import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatc
 import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
-import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
@@ -149,7 +148,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceSummaryComponent,
     WorkplaceTabComponent,
     OrderOtherPipe,
     LongDatePipe,
@@ -238,7 +236,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceSummaryComponent,
     WorkplaceTabComponent,
     OrderOtherPipe,
     TrainingLinkPanelComponent,
