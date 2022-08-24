@@ -79,9 +79,7 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
 
     this.subscriptions.add(
       this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, holidayLeaveData).subscribe(
-        (data) => {
-          return this._onSuccess(data.data);
-        },
+        (data) => this._onSuccess(data.data),
         (error) => this.onError(error),
       ),
     );
