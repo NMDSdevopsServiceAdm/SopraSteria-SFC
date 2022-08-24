@@ -69,7 +69,6 @@ describe('RegulatedByCqcComponent', () => {
   it('should navigate to the find-workplace-address page when selecting no', async () => {
     const { component, spy } = await setup();
     const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
-    console.log(noRadioButton);
     fireEvent.click(noRadioButton);
 
     const continueButton = component.getByText('Continue');
