@@ -1,7 +1,7 @@
 // the apprenticeship training property is an enumeration
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
-const APPRENTICESHIP_TYPE = ['Yes', 'No', "Don't know", 'Think ahead', 'Social worker integrated Degree'];
+const APPRENTICESHIP_TYPE = ['Yes', 'No', "Don't know"];
 exports.WorkerApprenticeshipTrainingProperty = class WorkerApprenticeshipTrainingProperty extends (
   ChangePropertyPrototype
 ) {
