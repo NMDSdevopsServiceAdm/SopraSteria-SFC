@@ -30,7 +30,6 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.init();
-    console.log(this.flow);
     this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.isCqcRegulated = this.workplaceInterfaceService.isCqcRegulated$.value;
@@ -82,7 +81,6 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   }
 
   public onSubmit(): void {
-    console.log('1');
     const regulatedByCQC = this.form.get('regulatedByCQC');
 
     this.submitted = true;
@@ -90,15 +88,10 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
     this.workplaceInterfaceService.isCqcRegulated$.next(regulatedByCQC.value === 'yes');
     this.setFlowToInProgress();
 
-    console.log('*****');
-    console.log(this.form);
     if (this.form.valid) {
-      console.log('form valid');
-      console.log(this.flow);
       if (regulatedByCQC.value === 'yes') {
       this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {
-        console.log('should navigate here');
         this.router.navigate([`/${this.flow}`, 'find-workplace-address']);
       }
     } else {
