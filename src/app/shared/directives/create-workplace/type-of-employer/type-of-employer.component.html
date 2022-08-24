@@ -5,6 +5,7 @@
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+          <span class="govuk-caption-l">Workplace</span>
           <h1 class="govuk-fieldset__heading">{{ question }}</h1>
         </legend>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
@@ -57,7 +58,24 @@
           </div>
         </div>
       </fieldset>
-      <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
+      <button class="govuk-button govuk-!-margin-top-4" type="submit">Continue</button>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Employer type'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Employer type'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

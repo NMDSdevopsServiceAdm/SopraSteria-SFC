@@ -68,7 +68,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Employer type',
         data: this.employerType,
-        route: { url: [this.flow, 'type-of-employer'] },
+        route: { url: [this.flow, 'confirm-workplace-details', 'type-of-employer'] },
       },
     ];
   }

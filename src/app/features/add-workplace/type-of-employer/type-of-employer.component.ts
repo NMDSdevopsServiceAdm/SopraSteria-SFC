@@ -27,6 +27,8 @@ export class TypeOfEmployerComponent extends TypeOfEmployerDirective {
   protected init(): void {
     this.isRegulated = this.workplaceService.isRegulated();
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
   }
 
   public setBackLink(): void {
