@@ -4,22 +4,23 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
-
+import { ReactiveFormsModule } from '@angular/forms';
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
 describe('RegulatedByCqcComponent', () => {
-  async function setup() {
+  async function setup(addWorkplaceFlow = true) {
     const component = await render(RegulatedByCqcComponent, {
-      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
-          provide: RegistrationService,
-          useClass: RegistrationService,
-          deps: [HttpClient],
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         {
           provide: ActivatedRoute,
@@ -28,7 +29,7 @@ describe('RegulatedByCqcComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'add-workplace',
+                    path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
                   },
                 ],
               },
@@ -53,6 +54,19 @@ describe('RegulatedByCqcComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
   });
 
   it('should navigate to the find workplace page when selecting yes', async () => {
