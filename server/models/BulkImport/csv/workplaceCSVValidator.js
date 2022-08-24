@@ -1951,9 +1951,8 @@ class WorkplaceCSVValidator {
     const benefitsRegex = /^\d*(\.\d{1,2})?$/;
     const benefits = this._currentLine.BENEFITS.split(';').join('');
 
-    const localValidationErrors = [];
     if (!benefitsRegex.test(benefits) && benefits.toLowerCase() !== 'unknown') {
-      localValidationErrors.push({
+      this._validationErrors.push({
         lineNumber: this._lineNumber,
         warnCode: WorkplaceCSVValidator.BENEFITS_WARNING,
         warnType: 'BENEFITS_WARNING',
@@ -1962,26 +1961,20 @@ class WorkplaceCSVValidator {
         column: 'BENEFITS',
         name: this.currentLine.LOCALESTID,
       });
+      return false;
     } else {
       this._careWorkersCashLoyaltyForFirstTwoYears = this._currentLine.BENEFITS;
 
       return true;
     }
-
-    if (localValidationErrors.length > 0) {
-      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
-      return false;
-    }
-    return true;
   }
 
   _validateSickPay() {
     const ALLOWED_VALUES = ['0', '1', ''];
     const sickpay = this._currentLine.SICKPAY;
 
-    const localValidationErrors = [];
     if (!ALLOWED_VALUES.includes(this._currentLine.SICKPAY) && sickpay.toLowerCase() !== 'unknown') {
-      localValidationErrors.push({
+      this._validationErrors.push({
         lineNumber: this._lineNumber,
         warnCode: WorkplaceCSVValidator.SICKPAY_WARNING,
         warnType: 'SICKPAY_WARNING',
@@ -1990,26 +1983,21 @@ class WorkplaceCSVValidator {
         column: 'SICKPAY',
         name: this._currentLine.LOCALESTID,
       });
+      return false;
     } else {
       const sickPayAsInt = parseInt(this._currentLine.SICKPAY, 10);
 
       this._sickPay = Number.isNaN(sickPayAsInt) ? this._currentLine.SICKPAY : sickPayAsInt;
       return true;
     }
-    if (localValidationErrors.length > 0) {
-      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
-      return false;
-    }
-    return true;
   }
 
   _validateHoliday() {
     const holidayRegex = /^[0-9]*$/;
     const holiday = this._currentLine.HOLIDAY;
 
-    const localValidationErrors = [];
     if (!holidayRegex.test(holiday)) {
-      localValidationErrors.push({
+      this._validationErrors.push({
         lineNumber: this._lineNumber,
         warnCode: WorkplaceCSVValidator.HOLIDAY_WARNING,
         warnType: 'HOLIDAY_WARNING',
@@ -2018,24 +2006,19 @@ class WorkplaceCSVValidator {
         column: 'HOLIDAY',
         name: this._currentLine.LOCALESTID,
       });
+      return false;
     } else {
       this._careWorkersLeaveDaysPerYear = holiday;
       return true;
     }
-    if (localValidationErrors.length > 0) {
-      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
-      return false;
-    }
-    return true;
   }
 
   _validatePensionContribution() {
     const ALLOWED_VALUES = ['0', '1', ''];
     const pension = this._currentLine.PENSION;
 
-    const localValidationErrors = [];
     if (!ALLOWED_VALUES.includes(this._currentLine.PENSION) && pension.toLowerCase() !== 'unknown') {
-      localValidationErrors.push({
+      this._validationErrors.push({
         lineNumber: this._lineNumber,
         warnCode: WorkplaceCSVValidator.PENSION_WARNING,
         warnType: 'PENSION_WARNING',
@@ -2044,17 +2027,13 @@ class WorkplaceCSVValidator {
         column: 'PENSION',
         name: this._currentLine.LOCALESTID,
       });
+      return false;
     } else {
       const pensionAsInt = parseInt(this._currentLine.PENSION, 10);
 
       this._pensionContribution = Number.isNaN(pensionAsInt) ? this._currentLine.PENSION : pensionAsInt;
       return true;
     }
-    if (localValidationErrors.length > 0) {
-      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
-      return false;
-    }
-    return true;
   }
 
   _validateNoChange() {
@@ -2613,16 +2592,18 @@ class WorkplaceCSVValidator {
 
     const benefit = this._careWorkersCashLoyaltyForFirstTwoYears;
 
-    if (benefit === YES) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-    } else if (benefit === YES_COMMA) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-    } else if (benefit === NO) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
-    } else if (benefit === DONT_KNOW) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
-    } else if (benefit.includes(';')) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
+    if (benefit !== null) {
+      if (benefit === YES) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+      } else if (benefit === YES_COMMA) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+      } else if (benefit === NO) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
+      } else if (benefit.toLowerCase() === DONT_KNOW) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+      } else if (benefit.includes(';')) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
+      }
     }
   }
 
@@ -2633,9 +2614,10 @@ class WorkplaceCSVValidator {
       unknown: "Don't know",
       '': null,
     };
-    const sickPay = this._sickPay;
+
+    const sickPay = this._sickPay && this._sickPay.toString().toLowerCase();
     this._sickPay = mapping[sickPay];
-    const pension = this._pensionContribution;
+    const pension = this._pensionContribution && this._pensionContribution.toString().toLowerCase();
     this._pensionContribution = mapping[pension];
   }
 
