@@ -1951,9 +1951,8 @@ class WorkplaceCSVValidator {
     const benefitsRegex = /^\d*(\.\d{1,2})?$/;
     const benefits = this._currentLine.BENEFITS.split(';').join('');
 
-    const localValidationErrors = [];
     if (!benefitsRegex.test(benefits) && benefits.toLowerCase() !== 'unknown') {
-      localValidationErrors.push({
+      this._validationErrors.push({
         lineNumber: this._lineNumber,
         warnCode: WorkplaceCSVValidator.BENEFITS_WARNING,
         warnType: 'BENEFITS_WARNING',
@@ -1962,17 +1961,12 @@ class WorkplaceCSVValidator {
         column: 'BENEFITS',
         name: this.currentLine.LOCALESTID,
       });
+      return false;
     } else {
       this._careWorkersCashLoyaltyForFirstTwoYears = this._currentLine.BENEFITS;
 
       return true;
     }
-
-    if (localValidationErrors.length > 0) {
-      localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
-      return false;
-    }
-    return true;
   }
 
   _validateSickPay() {
@@ -2613,16 +2607,18 @@ class WorkplaceCSVValidator {
 
     const benefit = this._careWorkersCashLoyaltyForFirstTwoYears;
 
-    if (benefit === YES) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-    } else if (benefit === YES_COMMA) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-    } else if (benefit === NO) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
-    } else if (benefit === DONT_KNOW) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
-    } else if (benefit.includes(';')) {
-      this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
+    if (benefit !== null) {
+      if (benefit === YES) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+      } else if (benefit === YES_COMMA) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+      } else if (benefit === NO) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
+      } else if (benefit.toLowerCase() === DONT_KNOW) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+      } else if (benefit.includes(';')) {
+        this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
+      }
     }
   }
 
