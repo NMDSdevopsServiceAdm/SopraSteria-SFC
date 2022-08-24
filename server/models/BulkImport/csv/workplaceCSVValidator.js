@@ -2615,9 +2615,9 @@ class WorkplaceCSVValidator {
       '': null,
     };
 
-    const sickPay = this._sickPay?.toString().toLowerCase();
+    const sickPay = this._sickPay && this._sickPay.toString().toLowerCase();
     this._sickPay = mapping[sickPay];
-    const pension = this._pensionContribution?.toString().toLowerCase();
+    const pension = this._pensionContribution && this._pensionContribution.toString().toLowerCase();
     this._pensionContribution = mapping[pension];
   }
 
