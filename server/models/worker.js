@@ -744,7 +744,7 @@ module.exports = function (sequelize, DataTypes) {
       ApprenticeshipTrainingValue: {
         type: DataTypes.ENUM,
         allowNull: true,
-        values: ['Yes', 'No', "Don't know", 'Think ahead', 'Social worker integrated Degree'],
+        values: ['Yes', 'No', "Don't know"],
         field: '"ApprenticeshipTrainingValue"',
       },
       ApprenticeshipTrainingSavedAt: {
