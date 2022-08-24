@@ -13,7 +13,7 @@ import { FindWorkplaceAddressComponent } from './find-workplace-address/find-wor
 import { FindYourWorkplaceComponent } from './find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace/is-this-your-workplace.component';
 import { NameOfWorkplaceComponent } from './name-of-workplace/name-of-workplace.component';
-import { RegulatedByCqcComponent } from '@features/create-account/workplace/regulated-by-cqc/regulated-by-cqc.component';
+import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';

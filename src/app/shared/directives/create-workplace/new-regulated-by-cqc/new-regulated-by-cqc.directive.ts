@@ -30,6 +30,7 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.init();
+    console.log(this.flow);
     this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.isCqcRegulated = this.workplaceInterfaceService.isCqcRegulated$.value;
@@ -93,8 +94,9 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
     console.log(this.form);
     if (this.form.valid) {
       console.log('form valid');
+      console.log(this.flow);
       if (regulatedByCQC.value === 'yes') {
-        this.router.navigate([`/${this.flow}`, 'find-workplace']);
+      this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {
         console.log('should navigate here');
         this.router.navigate([`/${this.flow}`, 'find-workplace-address']);

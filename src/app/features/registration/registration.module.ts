@@ -21,7 +21,7 @@ import { ChangeYourDetailsComponent } from '@features/registration/change-your-d
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 import { SharedModule } from '@shared/shared.module';
-
+import { RegulatedByCqcComponent } from '@features/create-account/workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { FindWorkplaceAddressComponent } from '../create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
@@ -53,6 +53,7 @@ import { CreateAccountComponent } from './create-account/create-account.componen
     ConfirmDetailsComponent,
     AddTotalStaffComponent,
     TypeOfEmployerComponent,
+    RegulatedByCqcComponent,
   ],
 })
 export class RegistrationModule {}

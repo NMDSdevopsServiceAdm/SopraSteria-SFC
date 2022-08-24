@@ -8,7 +8,7 @@ import { NewRegulatedByCqcDirective } from '@shared/directives/create-workplace/
 
 @Component({
   selector: 'app-regulated-by-cqc',
-  templateUrl: '../../create-account/workplace/regulated-by-cqc/regulated-by-cqc.component.html',
+  templateUrl: '../../../shared/directives/create-workplace/new-regulated-by-cqc/regulated-by-cqc.component.html',
 })
 export class RegulatedByCqcComponent extends NewRegulatedByCqcDirective {
   constructor(
@@ -25,7 +25,6 @@ export class RegulatedByCqcComponent extends NewRegulatedByCqcDirective {
   protected init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
     this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
-    console.log(this.flow);
   }
 
   protected setFlowToInProgress(): void {
