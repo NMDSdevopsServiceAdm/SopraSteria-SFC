@@ -28,6 +28,5 @@ export class CouldNotFindWorkplaceAddressComponent extends CouldNotFindWorkplace
   protected init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
     this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
-    console.log(this.flow);
   }
 }
