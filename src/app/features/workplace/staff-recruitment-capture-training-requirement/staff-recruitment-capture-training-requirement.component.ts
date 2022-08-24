@@ -5,7 +5,6 @@ import { staffRecruitmentOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -93,27 +92,13 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
       this.establishmentService
         .updateSingleEstablishmentField(this.establishment.uid, trainingRequirementData)
         .subscribe(
-          (data) => this._onSuccess(data),
+          (data) => this._onSuccess(data.data),
           (error) => this.onError(error),
         ),
     );
   }
 
-  protected updateEstablishmentService(): void {
-    this.establishmentService
-      .getEstablishment(this.establishmentService.establishmentId)
-      .pipe(
-        tap((workplace) => {
-          return (
-            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
-          );
-        }),
-      )
-      .subscribe();
-  }
-
   protected onSuccess(): void {
-    this.updateEstablishmentService();
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
   }
 
