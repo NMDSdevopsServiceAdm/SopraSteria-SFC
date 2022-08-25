@@ -43,7 +43,6 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
     this.init();
     this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
@@ -162,11 +161,6 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
         other: this.showOtherInputField ? this.workplaceInterfaceService.typeOfEmployer$.value.other : null,
       });
     }
-  }
-
-  public onClick(event: Event) {
-    event.preventDefault();
-    this.router.navigate([this.flow]);
   }
 
   protected onOtherSelect(radioValue: string): void {

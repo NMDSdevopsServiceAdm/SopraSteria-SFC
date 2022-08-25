@@ -106,10 +106,20 @@ describe('TypeOfEmployerComponent', () => {
     expect(getByLabelText('Other')).toBeTruthy();
   });
 
-  it('should show the continue button', async () => {
+  it('should show the continue button when inside the flow', async () => {
     const { getByText } = await setup();
 
     expect(getByText('Continue')).toBeTruthy();
+  });
+
+  it('should show the Save and return button and an exit link when inside the flow', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.insideFlow = false;
+    fixture.detectChanges();
+
+    expect(getByText('Save and return')).toBeTruthy();
+    expect(getByText('Exit')).toBeTruthy();
   });
 
   it('should prefill the form when the value has previously be filled in', async () => {
@@ -173,7 +183,7 @@ describe('TypeOfEmployerComponent', () => {
       fireEvent.click(radioButton);
       fixture.detectChanges();
 
-      const submitButton = getByText('Continue');
+      const submitButton = getByText('Save and return');
       fireEvent.click(submitButton);
       fixture.detectChanges();
 

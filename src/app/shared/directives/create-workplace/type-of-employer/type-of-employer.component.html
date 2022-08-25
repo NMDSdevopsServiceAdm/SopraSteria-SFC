@@ -58,16 +58,7 @@
           </div>
         </div>
       </fieldset>
-      <div class="govuk-button-group">
-        <ng-container *ngIf="insideFlow; else outsideFlow">
-          <button class="govuk-button" type="submit">Continue</button>
-        </ng-container>
-        <ng-template #outsideFlow>
-          <button class="govuk-button govuk-!-margin-right-9" type="submit">Save and return</button>
-          <span class="govuk-visually-hidden">or</span>
-          <a href="#" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onClick($event)">Exit</a>
-        </ng-template>
-      </div>
+      <app-registration-submit-buttons [insideFlow]="insideFlow" [returnRoute]="flow"></app-registration-submit-buttons>
     </form>
   </div>
   <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
