@@ -69,7 +69,16 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
 
   protected init(): void {}
   protected navigateToNextPage(): void {}
-  public setBackLink(): void {}
+
+  public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow] });
+      return;
+    }
+
+    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
+    this.backService.setBackLink({ url: [this.flow, route] });
+  }
 
   protected getCQCRegulatedBackLink(): string {
     if (this.workplaceInterfaceService.manuallyEnteredWorkplace$.value) {
@@ -127,7 +136,8 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       this.generateUpdateProps();
-      this.navigateToNextPage();
+      const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'select-main-service'];
+      this.router.navigate(url);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

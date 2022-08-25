@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
-fdescribe('TypeOfEmployerComponent', () => {
+describe('TypeOfEmployerComponent', () => {
   async function setup(addWorkplaceFlow = true) {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
       TypeOfEmployerComponent,
@@ -166,7 +166,7 @@ fdescribe('TypeOfEmployerComponent', () => {
     });
 
     it('should navigate to confirm-workplace-details when the Local authority (adult services) radio button is selected and the continue button clicked when not in the flow', async () => {
-      const { fixture, component, getByText, getByLabelText, routerSpy } = await setup();
+      const { fixture, component, getByText, getByLabelText, routerSpy } = await setup(false);
 
       component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
       const radioButton = getByLabelText('Local authority (adult services)');
@@ -178,7 +178,7 @@ fdescribe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
+      expect(routerSpy).toHaveBeenCalledWith(['add-workplace/confirm-workplace-details']);
     });
 
     it('should navigate to select-main-service when the Local authority (generic, other) radio button is selected and the continue button clicked', async () => {
@@ -423,7 +423,7 @@ fdescribe('TypeOfEmployerComponent', () => {
     });
 
     it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null', async () => {
-      const { component, fixture } = await setup();
+      const { component, fixture } = await setup(false);
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
@@ -433,7 +433,7 @@ fdescribe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'confirm-workplace-details'],
+        url: ['add-workplace/confirm-workplace-details'],
       });
     });
   });
