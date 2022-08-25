@@ -164,6 +164,11 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
     }
   }
 
+  public onClick(event: Event) {
+    event.preventDefault();
+    this.router.navigate([this.flow]);
+  }
+
   protected onOtherSelect(radioValue: string): void {
     this.showOtherInputField = radioValue === 'Other';
   }
