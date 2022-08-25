@@ -2410,7 +2410,6 @@ class WorkerCsvValidator {
 
       if (localValidationErrors.length > 0) {
         localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
-        return false;
       }
 
       return {
