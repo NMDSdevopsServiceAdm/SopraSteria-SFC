@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { StringChain } from 'lodash';
 
 import { Question } from '../question/question.component';
 
@@ -24,6 +23,7 @@ export class TypeOfEmployerComponent extends Question {
   public showSkipButton = true;
   public sectionHeading: string;
   public callToAction = 'Save and continue';
+  public dataOwner: any;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -52,7 +52,13 @@ export class TypeOfEmployerComponent extends Question {
       this.callToAction = 'Continue to homepage';
       this.hideBackLink = true;
       this.showSkipButton = false;
-      this.nextRoute = ['/first-login-wizard'];
+      this.establishmentService.getEstablishment(this.establishment.uid).subscribe((data) => {
+        this.dataOwner = this.establishment.dataOwner;
+
+        this.dataOwner === 'Workplace'
+          ? (this.nextRoute = ['/dashboard'])
+          : (this.nextRoute = ['/workplace', this.establishment.uid]);
+      });
     }
 
     if (this.establishment.employerType) {
