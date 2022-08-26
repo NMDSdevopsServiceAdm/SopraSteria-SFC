@@ -24,21 +24,16 @@
           <span *ngIf="submitted && form.invalid" id="workplace-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}
           </span>
-          <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let item of locationAddresses; let i = index">
-              <input
-                class="govuk-radios__input"
-                id="workplace-{{ i }}"
-                value="{{ item.locationId }}"
-                name="workplace"
-                type="radio"
-                [formControlName]="'workplace'"
-              />
-              <label class="govuk-label govuk-radios__label" for="workplace-{{ i }}">
-                {{ item.locationName }}, {{ item.townCity }}, {{ item.postalCode }}
-              </label>
-            </div>
-          </div>
+          <ng-container *ngIf="locationAddresses.length > 4; else radioButtonForm">
+            <app-select-workplace-dropdown-form></app-select-workplace-dropdown-form>
+          </ng-container>
+          <ng-template #radioButtonForm>
+            <app-select-workplace-radio-button-form
+              data-testid="radio-button-form"
+              [form]="form"
+              [locationAddresses]="locationAddresses"
+            ></app-select-workplace-radio-button-form>
+          </ng-template>
         </div>
       </fieldset>
       <ng-container *ngIf="isCQCLocationUpdate; else CQCLocationAdd">

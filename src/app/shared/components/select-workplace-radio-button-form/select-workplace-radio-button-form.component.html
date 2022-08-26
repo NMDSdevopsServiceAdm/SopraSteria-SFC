@@ -1,0 +1,15 @@
+<div class="govuk-radios" [formGroup]="form">
+  <div class="govuk-radios__item" *ngFor="let item of locationAddresses; let i = index">
+    <input
+      class="govuk-radios__input"
+      id="workplace-{{ i }}"
+      value="{{ item.locationId }}"
+      name="workplace"
+      type="radio"
+      [formControlName]="'workplace'"
+    />
+    <label class="govuk-label govuk-radios__label" for="workplace-{{ i }}">
+      {{ item.locationName }}, {{ item.townCity }}, {{ item.postalCode }}
+    </label>
+  </div>
+</div>

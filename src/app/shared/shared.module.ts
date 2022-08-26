@@ -48,6 +48,8 @@ import { RejectRequestDialogComponent } from './components/reject-request-dialog
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
+import { SelectWorkplaceDropdownFormComponent } from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
+import { SelectWorkplaceRadioButtonFormComponent } from './components/select-workplace-radio-button-form/select-workplace-radio-button-form.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
@@ -191,6 +193,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
     NewWorkplaceSummaryComponent,
+    SelectWorkplaceRadioButtonFormComponent,
+    SelectWorkplaceDropdownFormComponent,
   ],
   exports: [
     AlertComponent,
@@ -282,6 +286,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ProgressBarComponent,
     NewWorkplaceSummaryComponent,
     SummaryRecordChangeComponent,
+    SelectWorkplaceRadioButtonFormComponent,
+    SelectWorkplaceDropdownFormComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

@@ -97,6 +97,13 @@ describe('SelectWorkplaceComponent', () => {
     expect(queryByTestId('progress-bar-1')).toBeFalsy();
   });
 
+  it('should render the radio button form if there are less than 5 location addresses for a given postcode', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('radio-button-form')).toBeTruthy();
+    expect(queryByTestId('dropdown-form')).toBeFalsy();
+  });
+
   it('should show the names and towns/cities of the companies listed', async () => {
     const { queryByText, getAllByText } = await setup();
 
