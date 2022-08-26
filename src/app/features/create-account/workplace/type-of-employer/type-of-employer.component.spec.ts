@@ -144,14 +144,14 @@ describe('TypeOfEmployerComponent', () => {
     expect(getByText('Continue')).toBeTruthy();
   });
 
-  it('should show the Save and return button and an exit link when inside the flow', async () => {
+  it('should show the Save and return button and a cancel link when inside the flow', async () => {
     const { component, fixture, getByText } = await setup();
 
     component.insideFlow = false;
     fixture.detectChanges();
 
     expect(getByText('Save and return')).toBeTruthy();
-    expect(getByText('Exit')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
   it('should prefill the form when the value has previously be filled in', async () => {

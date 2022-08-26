@@ -119,7 +119,7 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     expect(getByText('Save and return')).toBeTruthy();
-    expect(getByText('Exit')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
   it('should prefill the form when the value has previously be filled in', async () => {

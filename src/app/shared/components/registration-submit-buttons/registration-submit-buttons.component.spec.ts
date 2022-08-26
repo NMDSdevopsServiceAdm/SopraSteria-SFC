@@ -32,17 +32,17 @@ describe('RegistrationSubmitButtonsComponent', () => {
     expect(getByText('Continue')).toBeTruthy();
   });
 
-  it('should render a Save and return button and an exit link when inside flow is false', async () => {
+  it('should render a Save and return button and an cancel link when inside flow is false', async () => {
     const { getByText } = await setup(false);
 
     expect(getByText('Save and return')).toBeTruthy();
-    expect(getByText('Exit')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
   it('should render the exit link with the correct url', async () => {
     const { getByText } = await setup(false);
 
-    const exitLink = getByText('Exit');
+    const exitLink = getByText('Cancel');
     expect(exitLink.getAttribute('href')).toEqual('/add-workplace/confirm-workplace-details');
   });
 });
