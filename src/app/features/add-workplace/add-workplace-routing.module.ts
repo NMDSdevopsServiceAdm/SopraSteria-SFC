@@ -96,6 +96,12 @@ const routes: Routes = [
         data: { title: 'Select Workplace' },
         canActivate: [AddWorkplaceInProgressGuard],
       },
+      {
+        path: 'workplace-name-address',
+        component: WorkplaceNameAddressComponent,
+        data: { title: 'Workplace name and address?' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
     ],
   },
   {

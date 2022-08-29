@@ -106,6 +106,8 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   }
 
   protected setNonCqcRegulatedWorkplaceDetails(): void {
+    const confirmDetails = this.flow.includes('add-workplace') ? 'confirm-workplace-details' : 'confirm-details';
+
     this.workplaceNameAndAddress = [
       {
         label: 'Name',
