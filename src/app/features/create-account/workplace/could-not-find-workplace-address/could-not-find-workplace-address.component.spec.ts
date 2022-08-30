@@ -7,9 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { RegistrationModule } from '@features/registration/registration.module';
-import {
-  CouldNotFindWorkplaceAddressDirective,
-} from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
+import { CouldNotFindWorkplaceAddressDirective } from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
@@ -17,8 +15,8 @@ import { BehaviorSubject } from 'rxjs';
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address.component';
 
 describe('CouldNotFindWorkplaceAddressComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getByTestId } = await render(CouldNotFindWorkplaceAddressComponent, {
+  async function setup(registrationFlow = true) {
+    const { fixture, getByText, getByTestId, queryByTestId } = await render(CouldNotFindWorkplaceAddressComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -42,7 +40,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
               parent: {
                 url: [
                   {
-                    path: '/registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -65,12 +63,27 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       spy,
       getByText,
       getByTestId,
+      queryByTestId,
     };
   }
 
   it('should render a CouldNotFindWorkplaceAddressComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace and user account progress bars', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { queryByTestId } = await setup(false);
+
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should display invalid postcode retrieved from registration service', async () => {
@@ -162,7 +175,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'find-workplace-address']);
+      expect(spy).toHaveBeenCalledWith(['registration', 'find-workplace-address']);
     });
 
     it('should navigate to the workplace name and address page when selecting no', async () => {
@@ -173,7 +186,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/registration', 'workplace-name-address']);
+      expect(spy).toHaveBeenCalledWith(['registration', 'workplace-name-address']);
     });
   });
 
@@ -186,7 +199,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'find-workplace-address'],
+        url: ['registration', 'find-workplace-address'],
       });
     });
   });

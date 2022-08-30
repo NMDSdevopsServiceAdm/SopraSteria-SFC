@@ -48,6 +48,8 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       this.setNonCqcRegulatedWorkplaceDetails();
     }
 
+    const confirmDetailsUrl = this.flow.includes('registration') ? 'confirm-details' : 'confirm-workplace-details';
+
     this.mainService = [
       {
         label: 'Main service',
@@ -68,7 +70,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Employer type',
         data: this.employerType,
-        route: { url: [this.flow, 'type-of-employer'] },
+        route: { url: [this.flow, confirmDetailsUrl, 'type-of-employer'] },
       },
     ];
   }

@@ -23,7 +23,7 @@ describe('ProgressBarComponent', () => {
     return { component, fixture, getByText, getByTestId, queryByTestId, queryByText };
   };
 
-  it('should render a User Account Summary Workplace Component', async () => {
+  it('should render a ProgressBarComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });

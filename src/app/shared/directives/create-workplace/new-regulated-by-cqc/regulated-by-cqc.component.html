@@ -5,11 +5,12 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Workplace</span>
           <h1 class="govuk-fieldset__heading">
-            Is the main service it provides regulated by the Care Quality Commission?
+            Is the main service you provide regulated by the Care Quality Commission?
           </h1>
         </legend>
-        <app-details [title]="'Not sure if its main service is regulated?'">
+        <app-details [title]="'Not sure if your main service is regulated?'">
           <p>
             Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> or email
             <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
@@ -50,7 +51,24 @@
         </div>
       </fieldset>
 
-      <button class="govuk-button" type="submit">Continue</button>
+      <button class="govuk-button govuk-!-margin-top-4" type="submit">Continue</button>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'CQC regulated'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'CQC regulated'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

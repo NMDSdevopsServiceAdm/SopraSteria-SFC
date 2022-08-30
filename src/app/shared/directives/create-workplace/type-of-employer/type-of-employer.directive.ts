@@ -7,6 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
 @Directive()
 export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
@@ -28,6 +29,9 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
     { value: 'Voluntary / Charity', text: 'Voluntary, charity, not for profit' },
     { value: 'Other', text: 'Other' },
   ];
+  public workplaceSections: string[];
+  public userAccountSections: string[];
+  public insideFlow: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -39,8 +43,9 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
     this.init();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefillForm();
@@ -63,7 +68,16 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
 
   protected init(): void {}
   protected navigateToNextPage(): void {}
-  public setBackLink(): void {}
+
+  public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow] });
+      return;
+    }
+
+    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
+    this.backService.setBackLink({ url: [this.flow, route] });
+  }
 
   protected getCQCRegulatedBackLink(): string {
     if (this.workplaceInterfaceService.manuallyEnteredWorkplace$.value) {
@@ -121,7 +135,8 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       this.generateUpdateProps();
-      this.navigateToNextPage();
+      const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'select-main-service'];
+      this.router.navigate(url);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
