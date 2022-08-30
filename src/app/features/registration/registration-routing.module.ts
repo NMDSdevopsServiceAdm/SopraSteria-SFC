@@ -167,6 +167,12 @@ const routes: Routes = [
         component: CannotCreateAccountComponent,
         data: { title: 'Cannot create account', flow: 'registration' },
       },
+      {
+        path: 'select-workplace-address',
+        component: SelectWorkplaceAddressComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Select Workplace Address' },
+      },
     ],
   },
   {

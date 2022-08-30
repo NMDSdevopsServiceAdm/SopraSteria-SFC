@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -18,16 +18,14 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, registrationService);
+    super(backService, errorSummaryService, formBuilder, router, route, registrationService);
   }
 
-  protected setFlow(): void {
-    this.flow = '/registration';
-  }
-
-  protected setTitle(): void {
-    this.title = 'Select your workplace address';
+  protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'regiastration/confirm-details';
   }
 
   protected setErrorMessage(): void {
