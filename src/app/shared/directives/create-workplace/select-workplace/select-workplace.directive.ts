@@ -78,7 +78,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   protected setupForm(): void {
     this.form = this.formBuilder.group({
       workplace: [
-        null,
+        '',
         {
           validators: [Validators.required],
           updateOn: 'submit',
