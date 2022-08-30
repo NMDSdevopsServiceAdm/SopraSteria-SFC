@@ -27,20 +27,15 @@ export class TypeOfEmployerComponent extends TypeOfEmployerDirective {
   protected init(): void {
     this.isRegulated = this.registrationService.isRegulated();
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
-  }
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
 
-  public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
-      return;
+    if (
+      this.registrationService.manuallyEnteredWorkplaceName$.value ||
+      this.registrationService.manuallyEnteredWorkplace$.value
+    ) {
+      const workplaceName = this.registrationService.selectedLocationAddress$.value.locationName;
+      this.question = `What type of employer is ${workplaceName}`;
     }
-
-    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
-    this.backService.setBackLink({ url: [this.flow, route] });
-  }
-
-  protected navigateToNextPage(): void {
-    const url = this.returnToConfirmDetails ? 'confirm-details' : 'select-main-service';
-    this.router.navigate([this.flow, url]);
   }
 }

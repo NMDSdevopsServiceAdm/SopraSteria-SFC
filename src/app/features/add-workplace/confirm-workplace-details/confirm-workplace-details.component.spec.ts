@@ -382,7 +382,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const typeOfEmployerSummaryList = within(getByTestId('typeOfEmployer'));
       const changeLink = typeOfEmployerSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/type-of-employer');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/type-of-employer');
     });
   });
 });

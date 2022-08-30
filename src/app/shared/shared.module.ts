@@ -44,6 +44,7 @@ import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { ProgressComponent } from './components/progress/progress.component';
+import { RegistrationSubmitButtonsComponent } from './components/registration-submit-buttons/registration-submit-buttons.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
@@ -191,6 +192,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
     NewWorkplaceSummaryComponent,
+    RegistrationSubmitButtonsComponent,
   ],
   exports: [
     AlertComponent,
@@ -282,6 +284,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ProgressBarComponent,
     NewWorkplaceSummaryComponent,
     SummaryRecordChangeComponent,
+    RegistrationSubmitButtonsComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

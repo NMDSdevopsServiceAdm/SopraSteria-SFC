@@ -43,8 +43,4 @@ export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
       },
     ];
   }
-
-  protected getNextRoute(): string {
-    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'type-of-employer';
-  }
 }

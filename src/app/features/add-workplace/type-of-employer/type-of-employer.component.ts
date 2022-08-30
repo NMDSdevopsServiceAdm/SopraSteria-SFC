@@ -27,20 +27,7 @@ export class TypeOfEmployerComponent extends TypeOfEmployerDirective {
   protected init(): void {
     this.isRegulated = this.workplaceService.isRegulated();
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
-  }
-
-  public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
-      return;
-    }
-
-    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
-    this.backService.setBackLink({ url: [this.flow, route] });
-  }
-
-  protected navigateToNextPage(): void {
-    const url = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
-    this.router.navigate([this.flow, url]);
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
   }
 }

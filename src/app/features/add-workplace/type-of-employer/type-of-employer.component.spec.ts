@@ -15,8 +15,8 @@ import userEvent from '@testing-library/user-event';
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
 describe('TypeOfEmployerComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId } = await render(
+  async function setup(addWorkplaceFlow = true) {
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
       TypeOfEmployerComponent,
       {
         imports: [
@@ -40,7 +40,7 @@ describe('TypeOfEmployerComponent', () => {
                 parent: {
                   url: [
                     {
-                      path: 'add-workplace',
+                      path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
                     },
                   ],
                 },
@@ -72,6 +72,7 @@ describe('TypeOfEmployerComponent', () => {
       getByText,
       getByLabelText,
       getByTestId,
+      queryByTestId,
     };
   }
 
@@ -79,6 +80,19 @@ describe('TypeOfEmployerComponent', () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { queryByTestId } = await setup(false);
+
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
   });
 
   it('should show the page title and radio buttons', async () => {
@@ -96,6 +110,16 @@ describe('TypeOfEmployerComponent', () => {
     const { getByText } = await setup();
 
     expect(getByText('Continue')).toBeTruthy();
+  });
+
+  it('should show the Save and return button and an exit link when inside the flow', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.insideFlow = false;
+    fixture.detectChanges();
+
+    expect(getByText('Save and return')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
   it('should prefill the form when the value has previously be filled in', async () => {
@@ -152,19 +176,19 @@ describe('TypeOfEmployerComponent', () => {
     });
 
     it('should navigate to confirm-workplace-details when the Local authority (adult services) radio button is selected and the continue button clicked when not in the flow', async () => {
-      const { fixture, component, getByText, getByLabelText, routerSpy } = await setup();
+      const { fixture, component, getByText, getByLabelText, routerSpy } = await setup(false);
 
       component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
       const radioButton = getByLabelText('Local authority (adult services)');
       fireEvent.click(radioButton);
       fixture.detectChanges();
 
-      const submitButton = getByText('Continue');
+      const submitButton = getByText('Save and return');
       fireEvent.click(submitButton);
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(routerSpy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
+      expect(routerSpy).toHaveBeenCalledWith(['add-workplace/confirm-workplace-details']);
     });
 
     it('should navigate to select-main-service when the Local authority (generic, other) radio button is selected and the continue button clicked', async () => {
@@ -409,7 +433,7 @@ describe('TypeOfEmployerComponent', () => {
     });
 
     it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null', async () => {
-      const { component, fixture } = await setup();
+      const { component, fixture } = await setup(false);
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
@@ -419,7 +443,7 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'confirm-workplace-details'],
+        url: ['add-workplace/confirm-workplace-details'],
       });
     });
   });

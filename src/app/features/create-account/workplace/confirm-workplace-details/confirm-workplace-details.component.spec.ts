@@ -334,7 +334,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const typeOfEmployerSummaryList = within(getByTestId('typeOfEmployer'));
       const changeLink = typeOfEmployerSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/registration/type-of-employer');
+      expect(changeLink.getAttribute('href')).toBe('/registration/confirm-details/type-of-employer');
     });
   });
 });
