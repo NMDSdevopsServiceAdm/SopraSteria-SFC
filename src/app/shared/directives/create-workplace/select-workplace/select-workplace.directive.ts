@@ -8,6 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
+import { compact } from 'lodash';
 import filter from 'lodash/filter';
 import { Subscription } from 'rxjs';
 
@@ -51,7 +52,6 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
 
     this.setBackLink();
     this.setNextRoute();
-    console.log(this.locationAddresses);
   }
 
   ngAfterViewInit(): void {
@@ -152,6 +152,27 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
         () => this.router.navigate(['/problem-with-the-service']),
       ),
     );
+  }
+
+  public onLocationChange(locationId: string): void {
+    // const selectedAddress = this.locationAddresses[index];
+    const selectedAddress = this.locationAddresses.find((location) => location.locationId === locationId);
+    // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
+    const selectedAddressCopy = Object.assign({}, selectedAddress);
+
+    this.workplaceInterfaceService.selectedLocationAddress$.next(selectedAddressCopy);
+  }
+
+  public getLocationName(location: LocationAddress): string {
+    const address = [
+      location.locationName,
+      location.addressLine1,
+      location.addressLine2,
+      location.addressLine3,
+      location.townCity,
+      location.postalCode,
+    ];
+    return compact(address).join(', ');
   }
 
   /**

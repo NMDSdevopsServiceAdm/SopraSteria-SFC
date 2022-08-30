@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,7 +14,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
 describe('SelectWorkplaceComponent', () => {
-  async function setup(addWorkplaceFlow = true) {
+  async function setup(addWorkplaceFlow = true, manyLocationAddresses = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       SelectWorkplaceComponent,
       {
@@ -28,7 +29,8 @@ describe('SelectWorkplaceComponent', () => {
         providers: [
           {
             provide: WorkplaceService,
-            useClass: MockWorkplaceService,
+            useFactory: MockWorkplaceService.factory({ value: 'Private Sector' }, manyLocationAddresses),
+            deps: [HttpClient],
           },
           {
             provide: ActivatedRoute,
@@ -104,7 +106,14 @@ describe('SelectWorkplaceComponent', () => {
     expect(queryByTestId('dropdown-form')).toBeFalsy();
   });
 
-  it('should show the names and towns/cities of the companies listed', async () => {
+  it('should render the dropdown form if there are 5 or more location addresses for a given postcode', async () => {
+    const { getByTestId, queryByTestId } = await setup(true, true);
+
+    expect(getByTestId('dropdown-form')).toBeTruthy();
+    expect(queryByTestId('radio-button-form')).toBeFalsy();
+  });
+
+  it('should show the names and towns/cities of the companies listed if radio button form showing', async () => {
     const { queryByText, getAllByText } = await setup();
 
     const firstLocationName = 'Name';

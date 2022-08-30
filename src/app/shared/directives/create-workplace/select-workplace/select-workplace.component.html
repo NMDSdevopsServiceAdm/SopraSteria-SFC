@@ -25,7 +25,13 @@
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}
           </span>
           <ng-container *ngIf="locationAddresses.length > 4; else radioButtonForm">
-            <app-select-workplace-dropdown-form></app-select-workplace-dropdown-form>
+            <app-select-workplace-dropdown-form
+              data-testid="dropdown-form"
+              [submitted]="submitted"
+              [form]="form"
+              [locationAddresses]="locationAddresses"
+              (clicked)="onLocationChange($event)"
+            ></app-select-workplace-dropdown-form>
           </ng-container>
           <ng-template #radioButtonForm>
             <app-select-workplace-radio-button-form

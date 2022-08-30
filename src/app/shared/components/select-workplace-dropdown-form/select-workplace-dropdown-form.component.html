@@ -1,14 +1,14 @@
 <div [formGroup]="form">
   <select
     class="govuk-select"
-    [class.govuk-select--error]="submitted && getAddress.errors"
-    [formControlName]="'address'"
-    id="address"
-    name="address"
+    [class.govuk-select--error]="submitted && form.get('workplace').errors"
+    [formControlName]="'workplace'"
+    id="workplace"
+    name="workplace"
     (change)="onLocationChange($event.target.value)"
   >
     <option [value]="''" selected disabled>{{ locationAddresses.length }} addresses found</option>
-    <option *ngFor="let location of locationAddresses; let i = index" [value]="i">
+    <option *ngFor="let location of locationAddresses; let i = index" [value]="location.locationId">
       {{ getLocationName(location) }}
     </option>
   </select>

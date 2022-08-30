@@ -7,7 +7,6 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
-import compact from 'lodash/compact';
 import isEqual from 'lodash/isEqual';
 import { Subscription } from 'rxjs';
 
@@ -155,17 +154,17 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     }
   }
 
-  public getLocationName(location: LocationAddress): string {
-    const address = [
-      location.locationName,
-      location.addressLine1,
-      location.addressLine2,
-      location.addressLine3,
-      location.townCity,
-      location.postalCode,
-    ];
-    return compact(address).join(', ');
-  }
+  // public getLocationName(location: LocationAddress): string {
+  //   const address = [
+  //     location.locationName,
+  //     location.addressLine1,
+  //     location.addressLine2,
+  //     location.addressLine3,
+  //     location.townCity,
+  //     location.postalCode,
+  //   ];
+  //   return compact(address).join(', ');
+  // }
 
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
