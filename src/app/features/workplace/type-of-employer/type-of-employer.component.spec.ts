@@ -208,7 +208,7 @@ describe('TypeOfEmployerComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
   });
 
-  it('should navigate back to dashboard when navigated to from login', async () => {
+  it('should navigate back to dashboard when navigated to sub from employer type question', async () => {
     const { fixture, getByText, getByLabelText, routerSpy, component } = await setup(false, 'parent');
 
     const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
