@@ -134,13 +134,12 @@ describe('SelectWorkplaceComponent', () => {
   });
 
   it('should show the names and towns/cities of the companies listed', async () => {
-    const { component, queryByText, getAllByText } = await setup();
+    const { queryByText, getAllByText } = await setup();
 
     const firstLocationName = 'Workplace Name';
     const secondLocationName = 'Test Care Home';
     const townCity = 'Manchester';
 
-    console.log(component.locationAddresses);
     expect(queryByText(firstLocationName, { exact: false })).toBeTruthy();
     expect(queryByText(secondLocationName, { exact: false })).toBeTruthy();
     expect(getAllByText(townCity, { exact: false }).length).toBe(2);
@@ -184,7 +183,7 @@ describe('SelectWorkplaceComponent', () => {
 
       const form = component.form;
       expect(form.valid).toBeFalsy();
-      expect(form.value.workplace).toBe(null);
+      expect(form.value.workplace).toBe('');
     });
   });
 
@@ -274,7 +273,7 @@ describe('SelectWorkplaceComponent', () => {
     it('should navigate to workplace-name-address url in registration flow when workplace not displayed button clicked', async () => {
       const { getByText } = await setup();
 
-      const notDisplayedButton = getByText('Workplace is not displayed or is not correct');
+      const notDisplayedButton = getByText(`Enter workplace details manually if they're not displayed or not correct`);
       expect(notDisplayedButton.getAttribute('href')).toBe('/registration/workplace-name-address');
     });
   });
