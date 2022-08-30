@@ -39,7 +39,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected setConfirmDetailsBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
+    this.backService.setBackLink({ url: [this.flow] });
   }
 
   protected getNextRoute(): string {

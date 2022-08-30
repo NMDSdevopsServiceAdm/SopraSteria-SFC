@@ -306,8 +306,8 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   protected setSelectedLocationAddress(): void {
     this.workplaceInterfaceService.selectedLocationAddress$.next(this.getLocationAddress());
     this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(true);
-    const url = this.getNextRoute();
-    this.router.navigate([this.flow, url]);
+    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'type-of-employer'];
+    this.router.navigate(url);
   }
 
   protected getNextRoute(): void {}
