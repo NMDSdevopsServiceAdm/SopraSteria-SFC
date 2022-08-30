@@ -38,7 +38,10 @@
           ></app-workplace-submit-button>
         </ng-container>
         <ng-template #workplaceAdd>
-          <button class="govuk-button" data-testid="button" type="submit">Continue</button>
+          <app-registration-submit-buttons
+            [insideFlow]="insideFlow"
+            [returnRoute]="flow"
+          ></app-registration-submit-buttons>
         </ng-template>
       </div>
     </form>
