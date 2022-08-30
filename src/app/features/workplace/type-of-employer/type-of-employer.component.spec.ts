@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -12,14 +12,14 @@ import userEvent from '@testing-library/user-event';
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
 describe('TypeOfEmployerComponent', () => {
-  async function setup(employerTypeHasValue = true) {
+  async function setup(employerTypeHasValue = true, owner: string = 'Workplace') {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(TypeOfEmployerComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceWithNoEmployerType.factory(employerTypeHasValue),
+          useFactory: MockEstablishmentServiceWithNoEmployerType.factory(employerTypeHasValue, owner),
         },
       ],
     });
@@ -193,14 +193,35 @@ describe('TypeOfEmployerComponent', () => {
   });
 
   it('should navigate back to dashboard when navigated to from login', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy, routerSpy } = await setup(false);
+    const { fixture, getByText, getByLabelText, routerSpy, component } = await setup(false);
+
+    const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
+    spyOn(establishmentService, 'getEstablishment').and.callThrough();
 
     const radioButton = getByLabelText('Voluntary, charity, not for profit');
     fireEvent.click(radioButton);
     const submitButton = getByText('Continue to homepage');
     fireEvent.click(submitButton);
+    component.establishment.dataOwner;
+
+    fixture.detectChanges();
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+  });
+
+  it('should navigate back to dashboard when navigated to sub from employer type question', async () => {
+    const { fixture, getByText, getByLabelText, routerSpy, component } = await setup(false, 'parent');
+
+    const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
+    spyOn(establishmentService, 'getEstablishment').and.callThrough();
+
+    const radioButton = getByLabelText('Private sector');
+    fireEvent.click(radioButton);
+    const submitButton = getByText('Continue to homepage');
+    fireEvent.click(submitButton);
+    component.establishment.dataOwner;
+
     fixture.detectChanges();
 
-    expect(routerSpy).toHaveBeenCalledWith(['/first-login-wizard']);
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid']);
   });
 });

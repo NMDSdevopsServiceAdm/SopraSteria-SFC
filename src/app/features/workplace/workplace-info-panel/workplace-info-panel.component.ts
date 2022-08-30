@@ -134,6 +134,19 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     });
   }
 
+  public setEmployerType(event: Event): void {
+    event.preventDefault();
+
+    this.establishmentService.getEstablishment(this.workplace.uid).subscribe((data) => {
+      if (data.employerType == null) {
+        this.establishmentService.setEmployerTypeHasValue(false);
+        this.router.navigate(['/workplace', this.workplace.uid, 'type-of-employer']);
+      } else {
+        this.router.navigate(['/workplace', this.workplace.uid]);
+      }
+    });
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
