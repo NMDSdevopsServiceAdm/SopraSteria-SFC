@@ -97,7 +97,7 @@ export class MockWorkplaceService extends WorkplaceService {
 
   public static factory(typeOfEmployer: EmployerType = { value: 'Private Sector' }, manyLocationAddresses = false) {
     return (http: HttpClient) => {
-      const service = new MockWorkplaceServiceWithMainService(http);
+      const service = new MockWorkplaceService(http);
       service.typeOfEmployer$.next(typeOfEmployer);
       manyLocationAddresses && service.locationAddresses$.next(moreThanFourLocationAddresses);
       return service;

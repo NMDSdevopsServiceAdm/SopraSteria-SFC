@@ -61,7 +61,10 @@
             Workplace is not displayed or is not correct
           </a>
         </p>
-        <button class="govuk-button govuk-!-margin-top-2" type="submit">Continue</button>
+        <app-registration-submit-buttons
+          [insideFlow]="insideFlow"
+          [returnRoute]="flow"
+        ></app-registration-submit-buttons>
       </ng-template>
     </form>
   </div>

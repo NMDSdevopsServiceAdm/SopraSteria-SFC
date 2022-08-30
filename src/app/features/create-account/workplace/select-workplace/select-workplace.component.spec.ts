@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,7 +14,7 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
 describe('SelectWorkplaceComponent', () => {
-  async function setup(registrationFlow = true) {
+  async function setup(registrationFlow = true, manyLocationAddresses = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       SelectWorkplaceComponent,
       {
@@ -28,7 +29,8 @@ describe('SelectWorkplaceComponent', () => {
         providers: [
           {
             provide: RegistrationService,
-            useClass: MockRegistrationService,
+            useFactory: MockRegistrationService.factory({ value: 'Private Sector' }, manyLocationAddresses),
+            deps: [HttpClient],
           },
           {
             provide: ActivatedRoute,
@@ -87,6 +89,40 @@ describe('SelectWorkplaceComponent', () => {
 
     expect(queryByTestId('progress-bar-1')).toBeFalsy();
     expect(queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should render the radio button form if there are less than 5 location addresses for a given postcode', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('radio-button-form')).toBeTruthy();
+    expect(queryByTestId('dropdown-form')).toBeFalsy();
+  });
+
+  it('should render the dropdown form if there are 5 or more location addresses for a given postcode', async () => {
+    const { getByTestId, queryByTestId } = await setup(true, true);
+
+    expect(getByTestId('dropdown-form')).toBeTruthy();
+    expect(queryByTestId('radio-button-form')).toBeFalsy();
+  });
+
+  it('should show the continue button', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Continue')).toBeTruthy();
+  });
+
+  it('should show the Save and return button and an exit link when inside the flow', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.insideFlow = false;
+    component.flow = 'registration/confirm-details';
+    fixture.detectChanges();
+
+    const cancelLink = getByText('Cancel');
+
+    expect(getByText('Save and return')).toBeTruthy();
+    expect(cancelLink).toBeTruthy();
+    expect(cancelLink.getAttribute('href')).toEqual('/registration/confirm-details');
   });
 
   it('should display postcode retrieved from registration service at top and in each workplace address(2)', async () => {
@@ -208,7 +244,7 @@ describe('SelectWorkplaceComponent', () => {
       const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
       fireEvent.click(workplaceRadioButton);
 
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('Save and return');
       fireEvent.click(continueButton);
 
       expect(spy).toHaveBeenCalledWith(['registration/confirm-details']);

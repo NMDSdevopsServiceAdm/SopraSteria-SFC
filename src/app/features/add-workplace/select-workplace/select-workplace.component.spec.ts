@@ -113,6 +113,26 @@ describe('SelectWorkplaceComponent', () => {
     expect(queryByTestId('radio-button-form')).toBeFalsy();
   });
 
+  it('should show the continue button', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Continue')).toBeTruthy();
+  });
+
+  it('should show the Save and return button and an exit link when inside the flow', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.insideFlow = false;
+    component.flow = 'add-workplace/confirm-workplace-details';
+    fixture.detectChanges();
+
+    const cancelLink = getByText('Cancel');
+
+    expect(getByText('Save and return')).toBeTruthy();
+    expect(cancelLink).toBeTruthy();
+    expect(cancelLink.getAttribute('href')).toEqual('/add-workplace/confirm-workplace-details');
+  });
+
   it('should show the names and towns/cities of the companies listed if radio button form showing', async () => {
     const { queryByText, getAllByText } = await setup();
 
@@ -220,7 +240,7 @@ describe('SelectWorkplaceComponent', () => {
       const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
       fireEvent.click(workplaceRadioButton);
 
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('Save and return');
       fireEvent.click(continueButton);
 
       expect(spy).toHaveBeenCalledWith(['add-workplace/confirm-workplace-details']);
