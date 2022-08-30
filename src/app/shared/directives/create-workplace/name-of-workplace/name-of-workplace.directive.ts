@@ -35,7 +35,6 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
     this.init();
     this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
