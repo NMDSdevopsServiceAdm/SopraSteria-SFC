@@ -57,9 +57,10 @@
 
       <ng-template #CQCLocationAdd>
         <p class="govuk-!-margin-bottom-7 govuk-!-margin-top-2">
-          <a routerLink="/{{ flow }}/workplace-name-address" role="button" draggable="false">
-            Enter workplace details manually if they're not displayed or not correct
-          </a>
+          <a routerLink="/{{ flow }}/workplace-name-address" role="button" draggable="false"
+            >Enter workplace details manually</a
+          >
+          if they're not displayed or not correct.
         </p>
         <app-registration-submit-buttons
           [insideFlow]="insideFlow"

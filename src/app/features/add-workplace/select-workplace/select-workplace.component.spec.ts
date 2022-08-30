@@ -271,7 +271,7 @@ describe('SelectWorkplaceComponent', () => {
     it('should navigate to workplace-name-address url in add-workplace flow when workplace not displayed button clicked', async () => {
       const { getByText } = await setup();
 
-      const notDisplayedButton = getByText(`Enter workplace details manually if they're not displayed or not correct`);
+      const notDisplayedButton = getByText(`Enter workplace details manually`);
       expect(notDisplayedButton.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
     });
   });
