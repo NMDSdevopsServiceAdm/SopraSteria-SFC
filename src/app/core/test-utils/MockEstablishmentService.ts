@@ -201,7 +201,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     address: 'mock establishment address',
     capacities: [],
     created: undefined,
-    dataOwner: undefined,
+    dataOwner: 'Workplace',
     dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
     dataPermissions: undefined,
     employerType: undefined,
@@ -238,14 +238,19 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     careWorkersLeaveDaysPerYear: '35',
   };
 
-  public static factory(employerTypeHasValue = true) {
+  public static factory(employerTypeHasValue = true, dataOwner: any = 'Workplace') {
     return (httpClient: HttpClient) => {
       const service = new MockEstablishmentServiceWithNoEmployerType(httpClient);
       service.setEmployerTypeHasValue(employerTypeHasValue);
+      service.establishmentObj.dataOwner = dataOwner;
+
       return service;
     };
   }
 
+  public getEstablishment(workplaceUid: string, wdf: boolean = false): Observable<any> {
+    return of(this.establishmentObj as Establishment);
+  }
   public get returnTo(): URLStructure {
     return;
   }
