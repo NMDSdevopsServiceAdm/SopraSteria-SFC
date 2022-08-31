@@ -104,6 +104,23 @@
         </fieldset>
       </div>
     </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [header]="'Workplace'"
+          [sections]="workplaceSections"
+          [currentSection]="'Main service'"
+        ></app-progress-bar>
+        <app-progress-bar
+          *ngIf="this.flow.includes('registration')"
+          data-testid="progress-bar-2"
+          [header]="'User account'"
+          [sections]="userAccountSections"
+          [currentSection]="'Main service'"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
   <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
     <app-workplace-submit-button
