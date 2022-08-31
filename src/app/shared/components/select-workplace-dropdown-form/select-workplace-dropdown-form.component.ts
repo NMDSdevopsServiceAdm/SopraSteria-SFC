@@ -11,9 +11,9 @@ export class SelectWorkplaceDropdownFormComponent {
   @Input() form: FormGroup;
   @Input() submitted: boolean;
   @Input() locationAddresses: LocationAddress[];
-  @Output() clicked = new EventEmitter<string>();
+  @Output() clicked = new EventEmitter<number>();
 
-  public onLocationChange(value: string): void {
+  public onLocationChange(value: number): void {
     this.clicked.emit(value);
   }
 

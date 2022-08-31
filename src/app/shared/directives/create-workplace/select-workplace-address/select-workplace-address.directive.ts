@@ -41,7 +41,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
-  get getAddress(): AbstractControl {
+  get getWorkplace(): AbstractControl {
     return this.form.get('workplace');
   }
 
@@ -102,12 +102,12 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
 
   protected setTitle(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
-  public onLocationChange(index): void {
+  public onLocationChange(index: number): void {
     const selectedAddress = this.locationAddresses[index];
     // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
     const selectedAddressCopy = Object.assign({}, selectedAddress);
 
-    this.workplaceInterfaceService.selectedLocationAddress$.next(selectedAddressCopy);
+    this.selectedLocationAddress = selectedAddressCopy;
   }
 
   protected setLocationAddresses(): void {
@@ -146,10 +146,15 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
+      this.save();
       this.navigateToNextRoute(this.selectedLocationAddress.locationName);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  protected save(): void {
+    this.workplaceInterfaceService.selectedLocationAddress$.next(this.selectedLocationAddress);
   }
 
   protected navigateToNextRoute(locationName: string): void {

@@ -8,7 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
-import { compact } from 'lodash';
+import { compact, isEqual } from 'lodash';
 import filter from 'lodash/filter';
 import { Subscription } from 'rxjs';
 
@@ -23,6 +23,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public isCQCLocationUpdate: boolean;
   public enteredPostcode: string;
   public returnToConfirmDetails: URLStructure;
+  public selectedLocationAddress: LocationAddress;
   public title: string;
   protected subscriptions: Subscription = new Subscription();
   protected nextRoute: string;
@@ -48,8 +49,9 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.setupForm();
     this.init();
     this.setupFormErrorsMap();
-    this.setupSubscription();
-
+    this.setLocationAddresses();
+    this.setSelectedLocationAddress();
+    this.prefillForm();
     this.setBackLink();
     this.setNextRoute();
   }
@@ -101,7 +103,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     ];
   }
 
-  protected setupSubscription(): void {
+  protected setLocationAddresses(): void {
     this.subscriptions.add(
       this.workplaceInterfaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
         this.enteredPostcode = locationAddresses[0].postalCode;
@@ -110,16 +112,30 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     );
   }
 
+  protected setSelectedLocationAddress(): void {
+    this.subscriptions.add(
+      this.workplaceInterfaceService.selectedLocationAddress$.subscribe(
+        (locationAddress: LocationAddress) => (this.selectedLocationAddress = locationAddress),
+      ),
+    );
+  }
+
   public prefillForm(): void {
-    if (this.workplaceInterfaceService.selectedLocationAddress$.value) {
+    if (this.indexOfSelectedLocationAddress() >= 0) {
       this.form.patchValue({
-        workplace: this.workplaceInterfaceService.selectedLocationAddress$.value.locationId,
+        workplace: this.indexOfSelectedLocationAddress(),
       });
     }
   }
 
+  protected indexOfSelectedLocationAddress(): number {
+    return this.locationAddresses.findIndex((address) => {
+      return isEqual(address, this.selectedLocationAddress);
+    });
+  }
+
   protected getSelectedLocation(): LocationAddress {
-    const selectedLocationId: string = this.form.get('workplace').value;
+    const selectedLocationId = this.selectedLocationAddress.locationId;
     return filter(this.locationAddresses, ['locationId', selectedLocationId])[0];
   }
 
@@ -154,13 +170,12 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     );
   }
 
-  public onLocationChange(locationId: string): void {
-    // const selectedAddress = this.locationAddresses[index];
-    const selectedAddress = this.locationAddresses.find((location) => location.locationId === locationId);
+  public onLocationChange(index: number): void {
+    const selectedAddress = this.locationAddresses[index];
     // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
     const selectedAddressCopy = Object.assign({}, selectedAddress);
 
-    this.workplaceInterfaceService.selectedLocationAddress$.next(selectedAddressCopy);
+    this.selectedLocationAddress = selectedAddressCopy;
   }
 
   public getLocationName(location: LocationAddress): string {

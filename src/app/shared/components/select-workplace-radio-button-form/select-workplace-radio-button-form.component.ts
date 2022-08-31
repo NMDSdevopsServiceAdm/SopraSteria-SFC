@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { LocationAddress } from '@core/model/location.model';
 
@@ -9,4 +9,11 @@ import { LocationAddress } from '@core/model/location.model';
 export class SelectWorkplaceRadioButtonFormComponent {
   @Input() form: FormGroup;
   @Input() locationAddresses: LocationAddress[];
+  @Output() clicked = new EventEmitter<number>();
+
+  public onRadioSelect(value): void {
+    console.log('*** onRadioSelect ***');
+    console.log(value);
+    this.clicked.emit(value);
+  }
 }

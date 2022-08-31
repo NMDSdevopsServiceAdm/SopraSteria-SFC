@@ -3,10 +3,11 @@
     <input
       class="govuk-radios__input"
       id="workplace-{{ i }}"
-      value="{{ item.locationId }}"
+      value="{{ i }}"
       name="workplace"
       type="radio"
       [formControlName]="'workplace'"
+      (click)="onRadioSelect($event)"
     />
     <label class="govuk-label govuk-radios__label" for="workplace-{{ i }}">
       {{ item.locationName }}, {{ item.townCity }}, {{ item.postalCode }}

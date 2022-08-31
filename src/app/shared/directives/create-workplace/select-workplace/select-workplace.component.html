@@ -38,6 +38,7 @@
               data-testid="radio-button-form"
               [form]="form"
               [locationAddresses]="locationAddresses"
+              (clicked)="onLocationChange($event)"
             ></app-select-workplace-radio-button-form>
           </ng-template>
         </div>
