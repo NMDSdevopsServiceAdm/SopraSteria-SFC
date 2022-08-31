@@ -5,7 +5,6 @@
     [formControlName]="'workplace'"
     id="workplace"
     name="workplace"
-    (change)="onLocationChange($event.target.value)"
   >
     <option [value]="''" selected disabled>{{ locationAddresses.length }} addresses found</option>
     <option *ngFor="let location of locationAddresses; let i = index" [value]="i">

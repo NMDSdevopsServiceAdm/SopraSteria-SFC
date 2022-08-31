@@ -122,9 +122,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
 
   public prefillForm(): void {
     if (this.indexOfSelectedLocationAddress() >= 0) {
-      this.form.patchValue({
-        workplace: this.indexOfSelectedLocationAddress(),
+      this.form.setValue({
+        workplace: this.indexOfSelectedLocationAddress().toString(),
       });
+      console.log(this.form.value);
     }
   }
 
@@ -144,7 +145,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.save();
+      this.setSelectedAddress(this.form.get('workplace').value);
       this.checkIfEstablishmentExist();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
@@ -161,6 +162,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
               state: { returnTo: `${this.flow}/select-workplace` },
             });
           } else {
+            this.save();
             const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'type-of-employer'];
             this.router.navigate(url);
           }
@@ -170,12 +172,8 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     );
   }
 
-  public onLocationChange(index: number): void {
-    const selectedAddress = this.locationAddresses[index];
-    // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
-    const selectedAddressCopy = Object.assign({}, selectedAddress);
-
-    this.selectedLocationAddress = selectedAddressCopy;
+  protected setSelectedAddress(index: number): void {
+    this.selectedLocationAddress = this.locationAddresses[index];
   }
 
   public getLocationName(location: LocationAddress): string {

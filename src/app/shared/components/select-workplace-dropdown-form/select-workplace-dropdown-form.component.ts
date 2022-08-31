@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { LocationAddress } from '@core/model/location.model';
 import { compact } from 'lodash';
@@ -11,11 +11,6 @@ export class SelectWorkplaceDropdownFormComponent {
   @Input() form: FormGroup;
   @Input() submitted: boolean;
   @Input() locationAddresses: LocationAddress[];
-  @Output() clicked = new EventEmitter<number>();
-
-  public onLocationChange(value: number): void {
-    this.clicked.emit(value);
-  }
 
   public getLocationName(location: LocationAddress): string {
     const address = [
