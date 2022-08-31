@@ -12,38 +12,41 @@ import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
 
 describe('WorkplaceNameAddressComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(WorkplaceNameAddressComponent, {
-      imports: [
-        SharedModule,
-        WorkplaceModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              parent: {
-                url: [
-                  {
-                    path: 'registration',
-                  },
-                ],
+  async function setup(registrationFlow = true) {
+    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
+      WorkplaceNameAddressComponent,
+      {
+        imports: [
+          SharedModule,
+          WorkplaceModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          {
+            provide: RegistrationService,
+            useClass: MockRegistrationService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                parent: {
+                  url: [
+                    {
+                      path: registrationFlow ? 'registration' : 'confirm-details',
+                    },
+                  ],
+                },
               },
             },
           },
-        },
-        FormBuilder,
-      ],
-    });
+          FormBuilder,
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -60,6 +63,8 @@ describe('WorkplaceNameAddressComponent', () => {
       getAllByText,
       queryByText,
       getByText,
+      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -152,8 +157,24 @@ describe('WorkplaceNameAddressComponent', () => {
       expect(spy).toHaveBeenCalledWith(['registration', 'type-of-employer']);
     });
 
+    it('should show the continue button when inside the flow', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Continue')).toBeTruthy();
+    });
+
+    it('should show the Save and return button and a cancel link when inside the flow', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.insideFlow = false;
+      fixture.detectChanges();
+
+      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
+
     it('should navigate to confirm-details page on success if returnToConfirmDetails is not null', async () => {
-      const { component, fixture, getByText, spy } = await setup();
+      const { component, fixture, getByText, spy } = await setup(false);
       const form = component.form;
 
       form.controls['workplaceName'].setValue('Workplace');
@@ -165,11 +186,11 @@ describe('WorkplaceNameAddressComponent', () => {
       component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
       fixture.detectChanges();
 
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('Save and return');
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+      expect(spy).toHaveBeenCalledWith(['registration/confirm-details']);
     });
   });
 
@@ -343,7 +364,7 @@ describe('WorkplaceNameAddressComponent', () => {
 
   describe('setBackLink', () => {
     it('should set the back link to `confirm-details` when returnToConfirmDetails is not null', async () => {
-      const { component, fixture } = await setup();
+      const { component, fixture } = await setup(false);
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
       component.registrationService.returnTo$.next({ url: ['registration', 'confirm-details'] });
@@ -353,7 +374,7 @@ describe('WorkplaceNameAddressComponent', () => {
 
       fixture.whenStable().then(() => {
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['registration', 'confirm-details'],
+          url: ['registration/confirm-details'],
         });
       });
     });
@@ -424,6 +445,21 @@ describe('WorkplaceNameAddressComponent', () => {
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['registration', 'select-workplace-address'],
       });
+    });
+  });
+  describe('progressBar', () => {
+    it('should render the workplace and user account progress bars', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('progress-bar-1')).toBeTruthy();
+      expect(getByTestId('progress-bar-2')).toBeTruthy();
+    });
+
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(queryByTestId('progress-bar-2')).toBeFalsy();
     });
   });
 });
