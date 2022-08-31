@@ -19,6 +19,7 @@ import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.reso
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
+import { TailoredSeminarsComponent } from '@features/benefits-bundle/benefit-tailored-seminars/benefit-tailored-seminars.component';
 import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
 import { BenefitsELearningComponent } from '@features/benefits-bundle/benefits-elearning/benefits-elearning.component';
 import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
@@ -207,6 +208,14 @@ const routes: Routes = [
             path: 'elearning-discounts',
             component: BenefitsELearningComponent,
             data: { title: 'eLearning Modules' },
+            resolve: {
+              pages: PageResolver,
+            },
+          },
+          {
+            path: 'tailored-seminars',
+            component: TailoredSeminarsComponent,
+            data: { title: 'tailored Seminars' },
             resolve: {
               pages: PageResolver,
             },
