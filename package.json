@@ -87,7 +87,7 @@
     "jszip": "^3.6.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
-    "moment-timezone": "^0.5.33",
+    "moment-timezone": "^0.5.35",
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
     "ngx-dropzone": "^2.3.0",
