@@ -101,13 +101,13 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
 
   protected setTitle(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
-  public onLocationChange(index: number): void {
-    const selectedAddress = this.locationAddresses[index];
-    // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
-    const selectedAddressCopy = Object.assign({}, selectedAddress);
+  // public onLocationChange(index: number): void {
+  //   const selectedAddress = this.locationAddresses[index];
+  //   // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
+  //   const selectedAddressCopy = Object.assign({}, selectedAddress);
 
-    this.selectedLocationAddress = selectedAddressCopy;
-  }
+  //   this.selectedLocationAddress = selectedAddressCopy;
+  // }
 
   protected setLocationAddresses(): void {
     this.subscriptions.add(
