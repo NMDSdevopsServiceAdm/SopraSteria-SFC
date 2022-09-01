@@ -7,6 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 
 @Directive()
@@ -20,7 +21,10 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
   public isParent: boolean;
   public postcodeOrLocationId: string;
   protected searchMethod: string;
-  protected flow: string;
+  public flow: string;
+  public insideFlow: boolean;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
 
   constructor(
     protected establishmentService: EstablishmentService,
@@ -33,9 +37,10 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.isParent = this.workplace?.isParent;
+    this.init();
     this.sanitizePostcode();
     this.setBackLink();
     this.setupForm();
@@ -43,6 +48,9 @@ export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
     this.prefillForm();
     this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.next(null);
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected init(): void {}
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);

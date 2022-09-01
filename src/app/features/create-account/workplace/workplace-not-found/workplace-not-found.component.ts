@@ -24,4 +24,9 @@ export class WorkplaceNotFoundComponent extends NewWorkplaceNotFoundDirective {
   ) {
     super(establishmentService, formBuilder, backService, errorSummaryService, registrationService, router, route);
   }
+
+  protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
+  }
 }
