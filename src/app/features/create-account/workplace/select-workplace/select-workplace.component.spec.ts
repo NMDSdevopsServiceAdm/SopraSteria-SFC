@@ -134,8 +134,11 @@ describe('SelectWorkplaceComponent', () => {
   });
 
   it('should show the names and towns/cities of the companies listed', async () => {
-    const { queryByText, getAllByText } = await setup();
+    const { component, fixture, queryByText, getAllByText } = await setup();
 
+    component.locationAddresses[0].locationName = 'Workplace Name';
+    component.locationAddresses[1].locationName = 'Test Care Home';
+    fixture.detectChanges();
     const firstLocationName = 'Workplace Name';
     const secondLocationName = 'Test Care Home';
     const townCity = 'Manchester';
@@ -168,11 +171,12 @@ describe('SelectWorkplaceComponent', () => {
       const { component, fixture } = await setup();
 
       component.registrationService.selectedLocationAddress$.value.locationId = '123';
+      const index = component.locationAddresses.findIndex((address) => (address.locationId = '123')).toString();
       fixture.detectChanges();
 
       const form = component.form;
       expect(form.valid).toBeTruthy();
-      expect(form.value.workplace).toBe('123');
+      expect(form.value.workplace).toBe(index);
     });
 
     it('should not prefill the form with selected workplace if it does not exists', async () => {
@@ -196,7 +200,7 @@ describe('SelectWorkplaceComponent', () => {
       );
 
       const locationId = component.locationAddresses[0].locationId;
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Continue');
@@ -210,7 +214,7 @@ describe('SelectWorkplaceComponent', () => {
 
       spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: true }));
 
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Continue');
@@ -224,7 +228,7 @@ describe('SelectWorkplaceComponent', () => {
     it('should navigate to the type-of-employer url in registration flow when workplace selected and the establishment does not already exist in the service', async () => {
       const { getByText, fixture, spy } = await setup();
 
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Continue');
@@ -240,7 +244,7 @@ describe('SelectWorkplaceComponent', () => {
       component.setNextRoute();
       fixture.detectChanges();
 
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Save and return');
@@ -254,7 +258,7 @@ describe('SelectWorkplaceComponent', () => {
 
       spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(throwError('error'));
 
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="123"]`);
+      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Continue');

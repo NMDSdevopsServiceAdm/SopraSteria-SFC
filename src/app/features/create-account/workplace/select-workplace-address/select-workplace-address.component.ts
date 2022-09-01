@@ -28,6 +28,10 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
     this.flow = this.insideFlow ? 'registration' : 'regiastration/confirm-details';
   }
 
+  protected setTitle(): void {
+    this.title = 'Select your workplace address';
+  }
+
   protected setErrorMessage(): void {
     this.errorMessage = `Select your workplace address if it's listed`;
   }

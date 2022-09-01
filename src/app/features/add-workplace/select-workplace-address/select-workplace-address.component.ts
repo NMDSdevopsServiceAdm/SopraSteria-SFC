@@ -26,6 +26,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
   protected init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
     this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
+    this.isParent = true;
   }
 
   protected setTitle(): void {

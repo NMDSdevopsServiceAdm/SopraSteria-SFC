@@ -5,8 +5,7 @@
     <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 *ngIf="isParent" class="govuk-fieldset__heading">Select the workplace address</h1>
-          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Select your workplace address</h1>
+          <h1 class="govuk-fieldset__heading">{{ title }}</h1>
         </legend>
 
         <div class="govuk-!-margin-bottom-5">
@@ -39,19 +38,6 @@
               [locationAddresses]="locationAddresses"
             ></app-select-workplace-radio-button-form>
           </ng-template>
-          <!-- <select
-            class="govuk-select"
-            [class.govuk-select--error]="submitted && getAddress.errors"
-            [formControlName]="'workplace'"
-            id="workplace"
-            name="workplace"
-            (change)="onLocationChange($event.target.value)"
-          >
-            <option [value]="''" selected disabled>{{ locationAddresses.length }} addresses found</option>
-            <option *ngFor="let location of locationAddresses; let i = index" [value]="i">
-              {{ getLocationName(location) }}
-            </option>
-          </select> -->
         </div>
 
         <p class="govuk-!-margin-top-2">

@@ -27,7 +27,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
     this.isParent = true;
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
-    this.prefillForm();
   }
 
   protected setErrorMessage(): void {

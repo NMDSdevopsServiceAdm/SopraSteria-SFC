@@ -30,7 +30,6 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public userAccountSections: string[];
   public insideFlow: boolean;
   public isParent = false;
-  public isCQCLocationUpdate = false;
 
   constructor(
     protected backService: BackService,
