@@ -11,7 +11,7 @@ import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 
 @Directive()
-export class NewWorkplaceNotFoundDirective implements OnInit, AfterViewInit {
+export class WorkplaceNotFoundDirective implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
