@@ -9,7 +9,9 @@
       [formControlName]="'workplace'"
     />
     <label class="govuk-label govuk-radios__label" for="workplace-{{ i }}">
-      {{ item.locationName }}, {{ item.townCity }}, {{ item.postalCode }}
+      {{ item.locationName ? (item.locationName | titlecase) : (item.addressLine1 | titlecase) }},
+      {{ item.townCity | titlecase }},
+      {{ item.postalCode }}
     </label>
   </div>
 </div>

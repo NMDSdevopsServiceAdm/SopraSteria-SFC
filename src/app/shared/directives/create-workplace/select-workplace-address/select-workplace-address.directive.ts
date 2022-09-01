@@ -130,7 +130,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   protected prefillForm(): void {
     if (this.indexOfSelectedLocationAddress() >= 0) {
       this.form.patchValue({
-        workplace: this.indexOfSelectedLocationAddress(),
+        workplace: this.indexOfSelectedLocationAddress().toString(),
       });
     }
   }
@@ -146,11 +146,16 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
+      this.setSelectedAddress(this.form.get('workplace').value);
       this.save();
       this.navigateToNextRoute(this.selectedLocationAddress.locationName);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  private setSelectedAddress(index: number): void {
+    this.selectedLocationAddress = this.locationAddresses[index];
   }
 
   protected save(): void {

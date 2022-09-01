@@ -125,7 +125,6 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
       this.form.setValue({
         workplace: this.indexOfSelectedLocationAddress().toString(),
       });
-      console.log(this.form.value);
     }
   }
 
@@ -172,7 +171,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     );
   }
 
-  protected setSelectedAddress(index: number): void {
+  private setSelectedAddress(index: number): void {
     this.selectedLocationAddress = this.locationAddresses[index];
   }
 
