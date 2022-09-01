@@ -122,6 +122,11 @@ const routes: Routes = [
         data: { title: 'Type of Employer' },
         canActivate: [AddWorkplaceInProgressGuard],
       },
+      {
+        path: 'cannot-create-account',
+        component: CannotCreateAccountComponent,
+        data: { title: 'Cannot create account', flow: 'add-workplace' },
+      },
     ],
   },
   {

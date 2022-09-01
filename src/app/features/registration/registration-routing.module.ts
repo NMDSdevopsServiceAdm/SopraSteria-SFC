@@ -180,6 +180,17 @@ const routes: Routes = [
         canActivate: [RegisterGuard],
         data: { title: 'Type of Employer' },
       },
+      {
+        path: 'cannot-create-account',
+        component: CannotCreateAccountComponent,
+        data: { title: 'Cannot create account', flow: 'registration' },
+      },
+      {
+        path: 'select-workplace-address',
+        component: SelectWorkplaceAddressComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Select Workplace Address' },
+      },
     ],
   },
   {
