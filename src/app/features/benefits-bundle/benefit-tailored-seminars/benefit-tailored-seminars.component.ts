@@ -12,6 +12,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class TailoredSeminarsComponent implements OnInit {
   public pages: Page;
   public workplaceName: string;
+  public workplaceID: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -22,6 +23,7 @@ export class TailoredSeminarsComponent implements OnInit {
   ngOnInit(): void {
     this.pages = this.route.snapshot.data.pages?.data[0];
     this.workplaceName = this.establishmentService.primaryWorkplace.name;
+    this.workplaceID = this.establishmentService.primaryWorkplace.nmdsId;
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
   }
 }
