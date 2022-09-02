@@ -12,6 +12,7 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l">Workplace</span>
             <h1 class="govuk-fieldset__heading">Select {{ isParent ? 'its' : 'your' }} main service</h1>
           </legend>
           <div *ngIf="displayIntro">
@@ -101,6 +102,18 @@
               </ng-container>
             </div>
           </fieldset>
+          <div class="govuk-!-margin-top-7">
+            <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
+              <app-workplace-submit-button
+                [return]="!!return"
+                (clicked)="setSubmitAction($event)"
+                [isExistingStaffRecord]="false"
+              ></app-workplace-submit-button>
+            </ng-container>
+            <ng-template #workplaceAdd>
+              <app-submit-exit-buttons [cta]="callToActionLabel"></app-submit-exit-buttons>
+            </ng-template>
+          </div>
         </fieldset>
       </div>
     </div>
@@ -122,14 +135,4 @@
       </div>
     </div>
   </div>
-  <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
-    <app-workplace-submit-button
-      [return]="!!return"
-      (clicked)="setSubmitAction($event)"
-      [isExistingStaffRecord]="false"
-    ></app-workplace-submit-button>
-  </ng-container>
-  <ng-template #workplaceAdd>
-    <app-submit-exit-buttons [cta]="callToActionLabel"></app-submit-exit-buttons>
-  </ng-template>
 </form>
