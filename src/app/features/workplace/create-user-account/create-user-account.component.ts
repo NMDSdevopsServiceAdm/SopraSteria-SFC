@@ -33,7 +33,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   constructor(
     private breadcrumbService: BreadcrumbService,
     private createAccountService: CreateAccountService,
-    private route: ActivatedRoute,
+    protected route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private featureFlagsService: FeatureFlagsService,
     protected backService: BackService,
@@ -42,7 +42,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     protected router: Router,
     private userService: UserService,
   ) {
-    super(backService, errorSummaryService, fb, router);
+    super(backService, errorSummaryService, fb, router, route);
   }
 
   protected init(): void {

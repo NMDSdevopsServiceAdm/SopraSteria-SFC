@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Roles } from '@core/model/roles.enum';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
@@ -31,8 +31,9 @@ export class AddAdminUserComponent extends AccountDetailsDirective {
     protected router: Router,
     private adminUsersService: AdminUsersService,
     private alertService: AlertService,
+    protected route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, fb, router);
+    super(backService, errorSummaryService, fb, router, route);
   }
 
   protected init(): void {
