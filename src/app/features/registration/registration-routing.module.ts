@@ -191,6 +191,12 @@ const routes: Routes = [
         canActivate: [RegisterGuard],
         data: { title: 'Select Workplace Address' },
       },
+      {
+        path: 'add-user-details',
+        component: YourDetailsComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Add your user details' },
+      },
     ],
   },
   {

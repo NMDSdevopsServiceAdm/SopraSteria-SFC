@@ -51,20 +51,20 @@
       <button class="govuk-button govuk-!-margin-top-2" type="submit">{{ callToActionLabel }}</button>
     </form>
   </div>
-  <div class="govuk-grid-column-one-third">
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
     <div class="govuk-util__float-right">
       <app-progress-bar
         data-testid="progress-bar-1"
         [header]="'Workplace'"
         [sections]="workplaceSections"
-        [currentSection]="'Confirm workplace'"
+        [completeProgressBar]="'true'"
       ></app-progress-bar>
       <app-progress-bar
         *ngIf="this.flow.includes('registration')"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
-        [currentSection]="'Confirm workplace'"
+        [currentSection]="'User details'"
       ></app-progress-bar>
     </div>
   </div>

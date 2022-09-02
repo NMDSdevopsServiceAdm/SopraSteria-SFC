@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { UserService } from '@core/services/user.service';
@@ -12,7 +12,7 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { YourDetailsComponent } from './your-details.component';
 
 describe('YourDetailsComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(YourDetailsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -20,6 +20,20 @@ describe('YourDetailsComponent', () => {
         {
           provide: UserService,
           useClass: MockUserServiceWithNoUserDetails,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: registrationFlow ? 'registration' : 'confirm-details',
+                  },
+                ],
+              },
+            },
+          },
         },
       ],
     });
