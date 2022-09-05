@@ -47,8 +47,7 @@
           </div>
         </ng-container>
       </fieldset>
-
-      <button class="govuk-button govuk-!-margin-top-2" type="submit">{{ callToActionLabel }}</button>
+      <app-registration-submit-buttons [insideFlow]="insideFlow" [returnRoute]="flow"></app-registration-submit-buttons>
     </form>
   </div>
   <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
