@@ -175,7 +175,7 @@ describe('ConfirmAccountDetailsComponent', () => {
       const securityInfoSummaryList = within(getByTestId('securityInfo'));
       const changeLink = securityInfoSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/registration/create-security-question');
+      expect(changeLink.getAttribute('href')).toBe('/registration/confirm-details/create-security-question');
     });
   });
 });
