@@ -64,7 +64,7 @@ describe('ThankYouComponent', () => {
   it(`should display the reveal`, async () => {
     const { component } = await setup();
 
-    expect(component.getByText('Contact us if you have any questions.')).toBeTruthy();
+    expect(component.getByText('Contact us if you have any questions')).toBeTruthy();
   });
 
   it('should reset registration service', async () => {
