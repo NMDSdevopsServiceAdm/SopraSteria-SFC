@@ -14,7 +14,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { NameOfWorkplaceComponent } from './name-of-workplace.component';
 
 describe('NameOfWorkplaceComponent', () => {
-  async function setup() {
+  async function setup(addWorkplaceFlow = true) {
     const primaryWorkplace = { isParent: true };
     const component = await render(NameOfWorkplaceComponent, {
       imports: [
@@ -42,7 +42,7 @@ describe('NameOfWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'add-workplace',
+                    path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
                   },
                 ],
               },
@@ -67,6 +67,20 @@ describe('NameOfWorkplaceComponent', () => {
   it('should render a NameOfWorkplaceComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should render the correct heading when in the parent journey', async () => {

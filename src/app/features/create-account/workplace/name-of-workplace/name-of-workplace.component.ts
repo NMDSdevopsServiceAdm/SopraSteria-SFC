@@ -24,6 +24,11 @@ export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
     super(formBuilder, backService, router, route, errorSummaryService, registrationService, establishmentService);
   }
 
+  protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
+  }
+
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {

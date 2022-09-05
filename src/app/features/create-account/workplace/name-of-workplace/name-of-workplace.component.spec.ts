@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { NameOfWorkplaceComponent } from './name-of-workplace.component';
 
 describe('NameOfWorkplaceComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(NameOfWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -33,7 +33,7 @@ describe('NameOfWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -58,6 +58,20 @@ describe('NameOfWorkplaceComponent', () => {
   it('should render a NameOfWorkplaceComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace and user account progress bars', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should render the correct heading when in the registration journey', async () => {

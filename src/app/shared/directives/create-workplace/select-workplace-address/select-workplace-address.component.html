@@ -5,42 +5,67 @@
     <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Workplace</span>
           <h1 class="govuk-fieldset__heading">{{ title }}</h1>
         </legend>
 
         <div class="govuk-!-margin-bottom-5">
           <p>
             Postcode entered: <strong>{{ enteredPostcode }}</strong>
-            <a [routerLink]="[flow, 'find-workplace-address']" class="govuk-!-margin-left-9"
+            <a routerLink="/{{ flow }}/find-workplace-address" class="govuk-!-margin-left-9"
               >Change<span class="govuk-visually-hidden"> postcode</span>
             </a>
           </p>
         </div>
 
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress.errors">
-          <span *ngIf="submitted && getAddress.errors" id="address-error" class="govuk-error-message">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getWorkplace.errors">
+          <span *ngIf="submitted && getWorkplace.errors" id="workplace-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
-            {{ getFormErrorMessage('address', 'required') }}
+            {{ getFormErrorMessage('workplace', 'required') }}
           </span>
-          <select
-            class="govuk-select"
-            [class.govuk-select--error]="submitted && getAddress.errors"
-            [formControlName]="'address'"
-            id="address"
-            name="address"
-            (change)="onLocationChange($event.target.value)"
-          >
-            <option [value]="''" selected disabled>{{ locationAddresses.length }} addresses found</option>
-            <option *ngFor="let location of locationAddresses; let i = index" [value]="i">
-              {{ getLocationName(location) }}
-            </option>
-          </select>
+          <ng-container *ngIf="locationAddresses.length > 4; else radioButtonForm">
+            <app-select-workplace-dropdown-form
+              data-testid="dropdown-form"
+              [submitted]="submitted"
+              [form]="form"
+              [locationAddresses]="locationAddresses"
+              (clicked)="onLocationChange($event)"
+            ></app-select-workplace-dropdown-form>
+          </ng-container>
+          <ng-template #radioButtonForm>
+            <app-select-workplace-radio-button-form
+              data-testid="radio-button-form"
+              [form]="form"
+              [locationAddresses]="locationAddresses"
+            ></app-select-workplace-radio-button-form>
+          </ng-template>
         </div>
 
-        <p><a [routerLink]="[flow, 'workplace-name-address']">Workplace address is not listed or is not correct</a></p>
+        <p class="govuk-!-margin-top-2">
+          <a routerLink="/{{ flow }}/workplace-name-address" role="button" draggable="false"
+            >Enter workplace details manually</a
+          >
+          if they're not displayed or not correct.
+        </p>
       </fieldset>
-
-      <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
+      <app-registration-submit-buttons [insideFlow]="insideFlow" [returnRoute]="flow"></app-registration-submit-buttons>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="!isParent"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

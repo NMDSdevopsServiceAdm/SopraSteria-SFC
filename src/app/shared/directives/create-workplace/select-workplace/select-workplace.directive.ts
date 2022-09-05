@@ -1,12 +1,14 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
+import { compact, isEqual } from 'lodash';
 import filter from 'lodash/filter';
 import { Subscription } from 'rxjs';
 
@@ -21,27 +23,35 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   public isCQCLocationUpdate: boolean;
   public enteredPostcode: string;
   public returnToConfirmDetails: URLStructure;
+  public selectedLocationAddress: LocationAddress;
   public title: string;
   protected subscriptions: Subscription = new Subscription();
   protected nextRoute: string;
   protected errorMessage: string;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
+  public insideFlow: boolean;
+  public isParent = false;
 
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
   ngOnInit(): void {
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setErrorMessage();
     this.setupForm();
     this.init();
     this.setupFormErrorsMap();
-    this.setupSubscription();
-    this.setTitle();
-    this.enteredPostcode = this.locationAddresses[0].postalCode;
+    this.setLocationAddresses();
+    this.setSelectedLocationAddress();
+    this.prefillForm();
     this.setBackLink();
     this.setNextRoute();
   }
@@ -65,16 +75,12 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.errorMessage = `Select your workplace if it's displayed`;
   }
 
-  protected setTitle(): void {
-    this.title = 'Select your workplace';
-  }
-
   public setNextRoute(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
       workplace: [
-        null,
+        '',
         {
           validators: [Validators.required],
           updateOn: 'submit',
@@ -97,24 +103,39 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     ];
   }
 
-  protected setupSubscription(): void {
+  protected setLocationAddresses(): void {
     this.subscriptions.add(
-      this.workplaceInterfaceService.locationAddresses$.subscribe(
-        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses),
+      this.workplaceInterfaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
+        this.enteredPostcode = locationAddresses[0].postalCode;
+        this.locationAddresses = locationAddresses;
+      }),
+    );
+  }
+
+  protected setSelectedLocationAddress(): void {
+    this.subscriptions.add(
+      this.workplaceInterfaceService.selectedLocationAddress$.subscribe(
+        (locationAddress: LocationAddress) => (this.selectedLocationAddress = locationAddress),
       ),
     );
   }
 
   public prefillForm(): void {
-    if (this.workplaceInterfaceService.selectedLocationAddress$.value) {
-      this.form.patchValue({
-        workplace: this.workplaceInterfaceService.selectedLocationAddress$.value.locationId,
+    if (this.indexOfSelectedLocationAddress() >= 0) {
+      this.form.setValue({
+        workplace: this.indexOfSelectedLocationAddress().toString(),
       });
     }
   }
 
+  protected indexOfSelectedLocationAddress(): number {
+    return this.locationAddresses.findIndex((address) => {
+      return isEqual(address, this.selectedLocationAddress);
+    });
+  }
+
   protected getSelectedLocation(): LocationAddress {
-    const selectedLocationId: string = this.form.get('workplace').value;
+    const selectedLocationId = this.selectedLocationAddress.locationId;
     return filter(this.locationAddresses, ['locationId', selectedLocationId])[0];
   }
 
@@ -123,7 +144,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.save();
+      this.setSelectedAddress(this.form.get('workplace').value);
       this.checkIfEstablishmentExist();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
@@ -140,12 +161,30 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
               state: { returnTo: `${this.flow}/select-workplace` },
             });
           } else {
-            this.router.navigate([this.flow, this.nextRoute]);
+            this.save();
+            const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'type-of-employer'];
+            this.router.navigate(url);
           }
         },
         () => this.router.navigate(['/problem-with-the-service']),
       ),
     );
+  }
+
+  private setSelectedAddress(index: number): void {
+    this.selectedLocationAddress = this.locationAddresses[index];
+  }
+
+  public getLocationName(location: LocationAddress): string {
+    const address = [
+      location.locationName,
+      location.addressLine1,
+      location.addressLine2,
+      location.addressLine3,
+      location.townCity,
+      location.postalCode,
+    ];
+    return compact(address).join(', ');
   }
 
   /**

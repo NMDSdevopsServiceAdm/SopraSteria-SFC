@@ -5,6 +5,7 @@
     <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Workplace</span>
           <h1 class="govuk-fieldset__heading">We could not find {{ isParent ? 'the' : 'your' }} workplace address</h1>
         </legend>
         <p>
@@ -55,5 +56,22 @@
       </fieldset>
       <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Find workplace'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Find workplace'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

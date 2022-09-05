@@ -70,6 +70,13 @@ describe('FindWorkplaceAddressComponent', () => {
     expect(getAddressesByPostCode).not.toHaveBeenCalled();
   });
 
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
   it('should display an error when Find address button is clicked without a postcode', async () => {
     const { component } = await setup();
 

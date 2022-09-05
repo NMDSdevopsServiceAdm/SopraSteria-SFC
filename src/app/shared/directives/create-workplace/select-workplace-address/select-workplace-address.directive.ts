@@ -1,13 +1,14 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
-import compact from 'lodash/compact';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
+import { compact } from 'lodash';
 import isEqual from 'lodash/isEqual';
 import { Subscription } from 'rxjs';
 
@@ -25,38 +26,46 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   public title: string;
   protected subscriptions: Subscription = new Subscription();
   protected errorMessage: string;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
+  public insideFlow: boolean;
+  public isParent = false;
 
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
   ) {}
 
-  get getAddress(): AbstractControl {
-    return this.form.get('address');
+  get getWorkplace(): AbstractControl {
+    return this.form.get('workplace');
   }
 
   ngOnInit(): void {
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setErrorMessage();
     this.setupForm();
+    this.init();
     this.setupFormErrorsMap();
-    this.setFlow();
+    this.setLocationAddresses();
     this.setTitle();
     this.setReturnToConfirmDetails();
-    this.setLocationAddresses();
     this.setSelectedLocationAddress();
     this.prefillForm();
     this.setBackLink();
     this.resetServiceVariables();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected init(): void {}
+
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
-
-  protected setFlow(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
   protected setBackLink(): void {
     this.backService.setBackLink({ url: [this.flow, 'find-workplace-address'] });
@@ -64,7 +73,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      address: [
+      workplace: [
         '',
         {
           validators: [Validators.required],
@@ -77,7 +86,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'address',
+        item: 'workplace',
         type: [
           {
             name: 'required',
@@ -92,13 +101,13 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
 
   protected setTitle(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
-  public onLocationChange(index): void {
-    const selectedAddress = this.locationAddresses[index];
-    // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
-    const selectedAddressCopy = Object.assign({}, selectedAddress);
+  // public onLocationChange(index: number): void {
+  //   const selectedAddress = this.locationAddresses[index];
+  //   // make copy of selectedAddress to avoid name getting added to address in locationAddresses array when name added on workplace-name page
+  //   const selectedAddressCopy = Object.assign({}, selectedAddress);
 
-    this.workplaceInterfaceService.selectedLocationAddress$.next(selectedAddressCopy);
-  }
+  //   this.selectedLocationAddress = selectedAddressCopy;
+  // }
 
   protected setLocationAddresses(): void {
     this.subscriptions.add(
@@ -120,7 +129,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   protected prefillForm(): void {
     if (this.indexOfSelectedLocationAddress() >= 0) {
       this.form.patchValue({
-        address: this.indexOfSelectedLocationAddress(),
+        workplace: this.indexOfSelectedLocationAddress().toString(),
       });
     }
   }
@@ -136,10 +145,20 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
+      this.setSelectedAddress(this.form.get('workplace').value);
+      this.save();
       this.navigateToNextRoute(this.selectedLocationAddress.locationName);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  private setSelectedAddress(index: number): void {
+    this.selectedLocationAddress = this.locationAddresses[index];
+  }
+
+  protected save(): void {
+    this.workplaceInterfaceService.selectedLocationAddress$.next(this.selectedLocationAddress);
   }
 
   protected navigateToNextRoute(locationName: string): void {

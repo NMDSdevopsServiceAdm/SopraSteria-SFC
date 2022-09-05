@@ -346,7 +346,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/workplace-name-address');
     });
 
     it('should set the change link for main service to `select-main-service`', async () => {
@@ -382,7 +382,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const typeOfEmployerSummaryList = within(getByTestId('typeOfEmployer'));
       const changeLink = typeOfEmployerSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/type-of-employer');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/type-of-employer');
     });
   });
 });

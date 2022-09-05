@@ -48,6 +48,8 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       this.setNonCqcRegulatedWorkplaceDetails();
     }
 
+    const confirmDetailsUrl = this.flow.includes('registration') ? 'confirm-details' : 'confirm-workplace-details';
+
     this.mainService = [
       {
         label: 'Main service',
@@ -68,7 +70,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Employer type',
         data: this.employerType,
-        route: { url: [this.flow, 'type-of-employer'] },
+        route: { url: [this.flow, confirmDetailsUrl, 'type-of-employer'] },
       },
     ];
   }
@@ -106,11 +108,13 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   }
 
   protected setNonCqcRegulatedWorkplaceDetails(): void {
+    const confirmDetailsUrl = this.flow.includes('registration') ? 'confirm-details' : 'confirm-workplace-details';
+
     this.workplaceNameAndAddress = [
       {
         label: 'Name',
         data: this.locationAddress.locationName,
-        route: { url: [this.flow, 'workplace-name-address'] },
+        route: { url: [this.flow, confirmDetailsUrl, 'workplace-name-address'] },
       },
       {
         label: 'Address',
