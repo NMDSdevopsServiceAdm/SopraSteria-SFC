@@ -36,19 +36,20 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
   }
 
   protected init(): void {
+    this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
     this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
     this.setBackLink();
   }
 
   protected navigateToNextPage(): void {
-    const url = this.returnToConfirmDetails ? 'confirm-details' : 'add-user-details';
-    this.router.navigate([this.flow, url]);
+    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-user-details'];
+    this.router.navigate(url);
   }
 
   public setBackLink(): void {
     if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
+      this.backService.setBackLink({ url: [this.flow] });
       return;
     }
 

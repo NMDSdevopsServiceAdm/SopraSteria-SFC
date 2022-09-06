@@ -46,10 +46,8 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
 
   public ngOnInit(): void {
     this.init();
-    this.flow = this.route.snapshot.parent.url[0].path;
     this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
-    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
     this.setupFormErrors();
     this.workplaceTotalStaff = this.workplaceInterfaceService.totalStaff$.value;
     this.prefillForm();
@@ -60,6 +58,9 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected init(): void {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected navigateToNextPage(): void {}
 
   public ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
@@ -84,9 +85,6 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected navigateToNextPage(): void {}
 
   private setupFormErrors(): void {
     this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();

@@ -36,18 +36,20 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
   }
 
   protected init(): void {
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
-    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/add-total-staff';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
     this.setBackLink();
   }
 
   protected navigateToNextPage(): void {
-    this.router.navigate([this.flow, 'confirm-workplace-details']);
+    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'confirm-workplace-details'];
+    this.router.navigate(url);
   }
 
   public setBackLink(): void {
     if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+      this.backService.setBackLink({ url: [this.flow] });
       return;
     }
 
