@@ -163,6 +163,12 @@ const routes: Routes = [
         data: { title: 'Type of Employer' },
       },
       {
+        path: 'add-total-staff',
+        component: AddTotalStaffComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Add Total Staff' },
+      },
+      {
         path: 'cannot-create-account',
         component: CannotCreateAccountComponent,
         data: { title: 'Cannot create account', flow: 'registration' },

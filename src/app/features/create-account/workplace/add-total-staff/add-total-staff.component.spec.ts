@@ -14,7 +14,7 @@ import { BehaviorSubject } from 'rxjs';
 import { AddTotalStaffComponent } from './add-total-staff.component';
 
 describe('AddTotalStaffComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(AddTotalStaffComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -34,7 +34,7 @@ describe('AddTotalStaffComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -152,6 +152,43 @@ describe('AddTotalStaffComponent', () => {
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['registration', 'select-main-service'],
       });
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render the workplace and user account progress bars', async () => {
+      const { component } = await setup();
+
+      expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+      expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+    });
+
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { component } = await setup(false);
+
+      expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+    });
+  });
+
+  describe('buttons', () => {
+    it('should show the continue button when inside the flow', async () => {
+      const { component } = await setup();
+
+      expect(component.getByText('Continue')).toBeTruthy();
+    });
+
+    it('should show the Save and return button and a cancel link when inside the flow', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.insideFlow = false;
+      component.fixture.componentInstance.flow = 'add-total-staff';
+      component.fixture.detectChanges();
+      const cancelLink = component.getByText('Cancel');
+
+      expect(component.getByText('Save and return')).toBeTruthy();
+      expect(cancelLink).toBeTruthy();
+      expect(cancelLink.getAttribute('href')).toEqual('/add-total-staff');
     });
   });
 });

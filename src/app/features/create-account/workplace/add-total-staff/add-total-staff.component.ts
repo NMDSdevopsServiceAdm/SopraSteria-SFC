@@ -37,7 +37,8 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
 
   protected init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
-    this.flow = this.insideFlow ? 'registration' : 'registration/add-total-staff';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
+    this.setBackLink();
   }
 
   protected navigateToNextPage(): void {
@@ -45,8 +46,12 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
     this.router.navigate([this.flow, url]);
   }
 
-  protected setBackLink(): void {
-    const url = this.return ? 'confirm-details' : 'select-main-service';
-    this.backService.setBackLink({ url: ['registration', url] });
+  public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
+      return;
+    }
+
+    this.backService.setBackLink({ url: [this.flow, 'select-main-service'] });
   }
 }

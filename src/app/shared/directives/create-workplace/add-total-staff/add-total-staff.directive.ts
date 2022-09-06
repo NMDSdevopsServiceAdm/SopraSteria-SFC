@@ -45,12 +45,11 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   }
 
   public ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
     this.init();
+    this.flow = this.route.snapshot.parent.url[0].path;
     this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
-    this.setBackLink();
     this.setupFormErrors();
     this.workplaceTotalStaff = this.workplaceInterfaceService.totalStaff$.value;
     this.prefillForm();
@@ -96,7 +95,4 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected setBackLink(): void {}
 }

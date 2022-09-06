@@ -36,7 +36,7 @@
           />
         </div>
       </fieldset>
-      <button class="govuk-button govuk-!-margin-top-3" type="submit">Continue</button>
+      <app-registration-submit-buttons [insideFlow]="insideFlow" [returnRoute]="flow"></app-registration-submit-buttons>
     </form>
   </div>
   <div class="govuk-grid-column-one-third" *ngIf="insideFlow">

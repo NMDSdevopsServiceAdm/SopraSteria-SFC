@@ -38,13 +38,19 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
   protected init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
     this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/add-total-staff';
+    this.setBackLink();
   }
 
   protected navigateToNextPage(): void {
     this.router.navigate([this.flow, 'confirm-workplace-details']);
   }
 
-  protected setBackLink(): void {
+  public setBackLink(): void {
+    if (this.returnToConfirmDetails) {
+      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+      return;
+    }
+
     this.backService.setBackLink({ url: [this.flow, 'select-main-service'] });
   }
 }
