@@ -21,6 +21,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
 
   public callToActionLabel: string;
   public form: FormGroup;
+  public flow: string;
   public insideFlow: boolean;
   public serverError: string;
   public submitted = false;

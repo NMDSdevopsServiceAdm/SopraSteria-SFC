@@ -81,7 +81,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       {
         label: 'Username',
         data: this.loginCredentials.username,
-        route: { url: ['/registration/username-password'] },
+        route: { url: ['/registration/confirm-details/username-password'] },
       },
       {
         label: 'Password',

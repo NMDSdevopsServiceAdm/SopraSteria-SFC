@@ -174,6 +174,12 @@ const routes: Routes = [
         data: { title: 'Select Workplace Address' },
       },
       {
+        path: 'username-password',
+        component: UsernamePasswordComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Create your username and password' },
+      },
+      {
         path: 'create-security-question',
         component: SecurityQuestionComponent,
         canActivate: [RegisterGuard],

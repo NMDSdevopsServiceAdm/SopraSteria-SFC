@@ -25,6 +25,7 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
 
   protected init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
     this.return = this.registrationService.returnTo$.value;
     this.setBackLink();
   }

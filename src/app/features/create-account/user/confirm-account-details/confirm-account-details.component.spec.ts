@@ -166,7 +166,7 @@ describe('ConfirmAccountDetailsComponent', () => {
       const loginInfoSummaryList = within(getByTestId('loginInfo'));
       const changeLink = loginInfoSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/registration/username-password');
+      expect(changeLink.getAttribute('href')).toBe('/registration/confirm-details/username-password');
     });
 
     it('should set the change link for security info to `username-password`', async () => {
