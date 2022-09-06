@@ -14,7 +14,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { ConfirmAccountDetailsComponent } from './confirm-account-details.component';
 
 describe('ConfirmAccountDetailsComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = 'registration') {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       ConfirmAccountDetailsComponent,
       {
@@ -42,7 +42,7 @@ describe('ConfirmAccountDetailsComponent', () => {
                 parent: {
                   url: [
                     {
-                      path: 'registration',
+                      path: registrationFlow ? 'confirm-details' : 'add-user-details',
                     },
                   ],
                 },
@@ -157,7 +157,7 @@ describe('ConfirmAccountDetailsComponent', () => {
       const userInfoSummaryList = within(getByTestId('userInfo'));
       const changeLink = userInfoSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/registration/add-user-details');
+      expect(changeLink.getAttribute('href')).toBe('/registration/confirm-details/add-user-details');
     });
 
     it('should set the change link for login info to `username-password`', async () => {

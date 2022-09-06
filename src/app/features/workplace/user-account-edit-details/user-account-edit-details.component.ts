@@ -20,14 +20,14 @@ export class UserAccountEditDetailsComponent extends AccountDetailsDirective {
 
   constructor(
     private breadcrumbService: BreadcrumbService,
-    private route: ActivatedRoute,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
     protected userService: UserService,
   ) {
-    super(backService, errorSummaryService, fb, router);
+    super(backService, errorSummaryService, fb, router, route);
   }
 
   protected init() {

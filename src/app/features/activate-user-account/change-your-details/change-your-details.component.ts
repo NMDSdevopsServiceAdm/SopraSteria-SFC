@@ -17,13 +17,13 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
 
   constructor(
     private createAccountService: CreateAccountService,
-    private route: ActivatedRoute,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, fb, router);
+    super(backService, errorSummaryService, fb, router, route);
   }
 
   protected init() {

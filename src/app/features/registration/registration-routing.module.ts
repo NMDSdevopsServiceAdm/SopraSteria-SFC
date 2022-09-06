@@ -179,6 +179,12 @@ const routes: Routes = [
         canActivate: [RegisterGuard],
         data: { title: 'Create your security question' },
       },
+      {
+        path: 'add-user-details',
+        component: YourDetailsComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Add your user details' },
+      },
     ],
   },
   {

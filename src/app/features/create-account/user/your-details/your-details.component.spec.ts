@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { UserService } from '@core/services/user.service';
@@ -12,7 +12,7 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { YourDetailsComponent } from './your-details.component';
 
 describe('YourDetailsComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(YourDetailsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -20,6 +20,20 @@ describe('YourDetailsComponent', () => {
         {
           provide: UserService,
           useClass: MockUserServiceWithNoUserDetails,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: registrationFlow ? 'registration' : 'confirm-details',
+                  },
+                ],
+              },
+            },
+          },
         },
       ],
     });
@@ -283,6 +297,24 @@ describe('YourDetailsComponent', () => {
     expect(form.valid).toBeTruthy();
     expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
   });
+  it('should show the continue button when inside the flow', async () => {
+    const { component } = await setup();
+
+    expect(component.getByText('Continue')).toBeTruthy();
+  });
+
+  it('should show the Save and return button and a cancel link when outside the flow', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.insideFlow = false;
+    component.fixture.componentInstance.flow = 'registration/confirm-details';
+    component.fixture.detectChanges();
+    const cancelLink = component.getByText('Cancel');
+
+    expect(component.getByText('Save and return')).toBeTruthy();
+    expect(cancelLink).toBeTruthy();
+    expect(cancelLink.getAttribute('href')).toEqual('/registration/confirm-details');
+  });
 
   describe('setBackLink()', () => {
     it('should set the back link to select-main-service if return url is null', async () => {
@@ -308,6 +340,22 @@ describe('YourDetailsComponent', () => {
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['registration', 'confirm-details'],
       });
+    });
+  });
+
+  describe('progressBar', () => {
+    it('should render the workplace and user account progress bars', async () => {
+      const { component } = await setup();
+
+      expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+      expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+    });
+
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { component } = await setup(false);
+
+      expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
     });
   });
 });

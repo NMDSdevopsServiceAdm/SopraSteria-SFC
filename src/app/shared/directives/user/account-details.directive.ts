@@ -2,13 +2,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EMAIL_PATTERN, PHONE_PATTERN } from '@core/constants/constants';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -41,12 +42,17 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
   protected back: URLStructure;
   public formErrorsMap: Array<ErrorDetails>;
   protected subscriptions: Subscription = new Subscription();
+  public workplaceSections: string[];
+  public userAccountSections: string[];
+  public insideFlow: boolean;
+  public flow: string;
 
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -67,6 +73,8 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
     this.setupServerErrorsMap();
     this.init();
     this.setBackLink();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
   }
 
   ngAfterViewInit(): void {

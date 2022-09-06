@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RegistrationPayload } from '@core/model/registration.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -15,6 +15,7 @@ import { combineLatest } from 'rxjs';
   templateUrl: './confirm-account-details.component.html',
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirective {
+  public flow: any;
   constructor(
     private backService: BackService,
     private registrationService: RegistrationService,
@@ -22,11 +23,14 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     private userService: UserService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
+    protected route: ActivatedRoute,
   ) {
-    super(errorSummaryService, formBuilder);
+    super(errorSummaryService, formBuilder, route);
   }
 
   protected init(): void {
+    this.flow = this.route.snapshot.parent.url[0].path;
+
     this.resetReturnTo();
     this.setupSubscriptions();
     this.setBackLink();
@@ -61,7 +65,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       {
         label: 'Full name',
         data: this.userDetails.fullname,
-        route: { url: ['/registration/add-user-details'] },
+        route: { url: ['/registration', this.flow, 'add-user-details'] },
       },
       {
         label: 'Job title',

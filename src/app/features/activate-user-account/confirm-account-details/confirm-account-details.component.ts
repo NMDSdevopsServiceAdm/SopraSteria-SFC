@@ -18,14 +18,14 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
   private activationToken: string;
 
   constructor(
-    private route: ActivatedRoute,
+    protected route: ActivatedRoute,
     private backService: BackService,
     private createAccountService: CreateAccountService,
     private router: Router,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
   ) {
-    super(errorSummaryService, formBuilder);
+    super(errorSummaryService, formBuilder, route);
   }
 
   protected init() {
