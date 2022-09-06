@@ -2,8 +2,9 @@ import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
   BENEFITS_BUNDLE = '/benefits-bundle',
-  BENEFITS_TRAINING_DISCOUNTS = '/training-discounts',
-  ELEARNING_DISCOUNTS = '/elearning-discounts',
+  BENEFITS_TRAINING_DISCOUNTS = '/benefits-bundle/training-discounts',
+  ELEARNING_DISCOUNTS = '/benefits-bundle/elearning-discounts',
+  TAILORED_SEMINARS = '/benefits-bundle/tailored-seminars',
 }
 
 export const benefitsBundleJourney: JourneyRoute = {
@@ -19,6 +20,10 @@ export const benefitsBundleJourney: JourneyRoute = {
         {
           title: 'eLearning modules',
           path: Path.ELEARNING_DISCOUNTS,
+        },
+        {
+          title: 'Tailored seminars',
+          path: Path.TAILORED_SEMINARS,
         },
       ],
     },

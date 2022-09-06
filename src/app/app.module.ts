@@ -36,6 +36,7 @@ import { TrainingService } from '@core/services/training.service';
 import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { TailoredSeminarsComponent } from '@features/benefits-bundle/benefit-tailored-seminars/benefit-tailored-seminars.component';
 import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
 import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
@@ -96,6 +97,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     BenefitAccordionComponent,
     BenefitsTrainingDiscountsComponent,
     BenefitsELearningComponent,
+    TailoredSeminarsComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

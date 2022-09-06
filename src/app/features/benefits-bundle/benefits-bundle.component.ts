@@ -16,19 +16,19 @@ export class BenefitsBundleComponent implements OnInit {
   public endorsedProvidersLinkFlag: boolean;
   public benefits = [
     {
+      title: 'Discounts from Skills for Care’s endorsed training providers',
+      open: false,
+    },
+    {
+      title: '10% off Skills for Care’s eLearning modules',
+      open: false,
+    },
+    {
       title: '10% off all publications in the Skills for Care bookshop',
       open: false,
     },
     {
-      title: '10% off values-based interviewing seminars',
-      open: false,
-    },
-    {
-      title: '10% off valuable conversations online seminars',
-      open: false,
-    },
-    {
-      title: `10% off Skills for Care's eLearning modules`,
+      title: '10% off tailored seminars from Skills for Care',
       open: false,
     },
     {
@@ -47,21 +47,6 @@ export class BenefitsBundleComponent implements OnInit {
     this.workplaceName = this.establishmentService.primaryWorkplace.name;
     this.workplaceId = this.establishmentService.primaryWorkplace.nmdsId;
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
-
-    this.endorsedProvidersLinkFlag = await this.featureFlagsService.configCatClient.getValueAsync(
-      'endorsedProvidersLink',
-      false,
-    );
-    this.addEndorsedProvidersLink();
-  }
-
-  private addEndorsedProvidersLink(): void {
-    if (this.endorsedProvidersLinkFlag) {
-      this.benefits.push({
-        title: "Discounts from Skills for Care's endorsed training providers",
-        open: false,
-      });
-    }
   }
 
   public toggleAll(event: Event): void {

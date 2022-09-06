@@ -82,12 +82,11 @@ describe('BenefitsBundleComponent', () => {
 
       fixture.detectChanges();
 
-      expect(getByText(`Discounts from Skills for Care's endorsed training providers`)).toBeTruthy();
+      expect(getByText(`Discounts from Skills for Care’s endorsed training providers`)).toBeTruthy();
+      expect(getByText(`10% off Skills for Care’s eLearning modules`)).toBeTruthy();
       expect(getByText('10% off all publications in the Skills for Care bookshop')).toBeTruthy();
-      expect(getByText('10% off values-based interviewing seminars')).toBeTruthy();
-      expect(getByText('10% off valuable conversations online seminars')).toBeTruthy();
+      expect(getByText('10% off tailored seminars from Skills for Care')).toBeTruthy();
       expect(getByText('5 of our top FREE digital downloads')).toBeTruthy();
-      expect(getByText(`10% off Skills for Care's eLearning modules`)).toBeTruthy();
     });
 
     describe('Open all/Close all', () => {
@@ -166,12 +165,10 @@ describe('BenefitsBundleComponent', () => {
         const { getByText, fixture } = await setup();
 
         fixture.detectChanges();
-
-        fireEvent.click(getByText("Discounts from Skills for Care's endorsed training providers"));
+        fireEvent.click(getByText(`Discounts from Skills for Care’s endorsed training providers`));
+        fireEvent.click(getByText(`10% off Skills for Care’s eLearning modules`));
         fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
-        fireEvent.click(getByText('10% off values-based interviewing seminars'));
-        fireEvent.click(getByText('10% off valuable conversations online seminars'));
-        fireEvent.click(getByText(`10% off Skills for Care's eLearning modules`));
+        fireEvent.click(getByText('10% off tailored seminars from Skills for Care'));
         fireEvent.click(getByText('5 of our top FREE digital downloads'));
 
         fixture.detectChanges();
@@ -200,28 +197,6 @@ describe('BenefitsBundleComponent', () => {
       const link = getByText('Visit the Skills for Care bookshop');
 
       expect(link.getAttribute('href')).toBe('https://bookshop.skillsforcare.org.uk/Shop');
-      expect(link.getAttribute('target')).toBe('_blank');
-    });
-
-    it('should display the interviewing seminar link in the interviewing content', async () => {
-      const { getByText } = await setup();
-
-      const link = getByText('Read more about values-based interviewing');
-
-      expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Recruitment-retention/Values-based-recruitment-and-retention/Values-based-interviewing-seminar.aspx',
-      );
-      expect(link.getAttribute('target')).toBe('_blank');
-    });
-
-    it('should display the valuable conversations seminar link in the valuable conversations content', async () => {
-      const { getByText } = await setup();
-
-      const link = getByText('Read more about valuable conversations');
-
-      expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Recruitment-retention/Values-based-recruitment-and-retention/Valuable-conversations-online-seminar.aspx',
-      );
       expect(link.getAttribute('target')).toBe('_blank');
     });
 
