@@ -97,7 +97,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
-        route: { url: ['/registration/create-security-question'] },
+        route: { url: ['/registration/confirm-details/create-security-question'] },
       },
       {
         label: 'Answer',

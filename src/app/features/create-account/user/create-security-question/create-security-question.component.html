@@ -5,6 +5,7 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">User account</span>
           <h1 class="govuk-fieldset__heading">Create and answer your security question</h1>
         </legend>
 
@@ -36,8 +37,23 @@
           </div>
         </ng-container>
       </fieldset>
-
-      <button type="submit" class="govuk-button">Continue</button>
+      <app-registration-submit-buttons [insideFlow]="insideFlow" [returnRoute]="flow"></app-registration-submit-buttons>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [completeProgressBar]="true"
+      ></app-progress-bar>
+      <app-progress-bar
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Security question'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

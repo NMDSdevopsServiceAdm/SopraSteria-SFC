@@ -1,14 +1,18 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <app-panel [title]="'Thank you'"> Your account is now being checked by Skills for Care </app-panel>
-    <h2 class="govuk-heading-m">What happens next?</h2>
+    <div class="govuk-panel govuk-panel--confirmation govuk-util__align-left govuk-!-padding-6">
+      <h6 class="govuk-panel__title govuk-!-font-size-36 govuk-!-margin-bottom-2">Thank you</h6>
+      <span class="govuk-panel__body govuk-!-font-size-19">Your account is now being checked by Skills for Care</span>
+    </div>
+    <h2 class="govuk-!-margin-top-7">What happens next?</h2>
     <p>Skills for Care will check your account details and contact you by email or telephone as soon as possible.</p>
     <p>You will not be able to sign into your account until Skills for Care validate it.</p>
-    <p>
-      <a [routerLink]="['/contact-us']" target="_blank">
-        Contact us<span class="govuk-visually-hidden">, (opens in a new window)</span>
-      </a>
-      if you have any questions.
-    </p>
+
+    <app-details [title]="'Contact us if you have any questions'">
+      <p>
+        Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> or email
+        <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
+      </p>
+    </app-details>
   </div>
 </div>

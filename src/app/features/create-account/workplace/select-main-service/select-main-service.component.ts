@@ -28,7 +28,8 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected init(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
     this.isRegulated = this.registrationService.isRegulated();
     this.isParent = false;
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
