@@ -26,10 +26,11 @@
                 class="govuk-error-message"
               >
                 <span class="govuk-visually-hidden">Error:</span>
-                <span *ngIf="this.form.get('amountSpent').errors.pattern">
+                <span class="govuk__nowrap" *ngIf="this.form.get('amountSpent').errors.pattern">
                   {{ getFormErrorMessage('amountSpent', 'pattern') }}
                 </span>
                 <span
+                  class="govuk__nowrap"
                   *ngIf="
                     this.form.get('amountSpent').errors.greaterThanTwoDecimalPlaces &&
                     !this.form.get('amountSpent').errors.pattern

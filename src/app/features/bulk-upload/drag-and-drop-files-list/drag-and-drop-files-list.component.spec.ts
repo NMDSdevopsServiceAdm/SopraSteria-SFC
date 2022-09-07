@@ -175,11 +175,16 @@ describe('DragAndDropFilesListComponent', () => {
     expect(validationMsg.innerHTML).toContain('You need to select your workplace and staff files.');
   });
 
-  it('calls complete in the bulk upload service with the correct uid, and then updates the establishment service', async () => {
+  it('calls complete in the bulk upload service with the correct uid, and then updates the dashboard banners', async () => {
     const { component, fixture, getByText, bulkUploadService, establishmentService } = await setup();
 
     const bulkUploadCompleteSpy = spyOn(bulkUploadService, 'complete').and.callFake(() => of({}));
-    const establishmentGetEstablishmentSpy = spyOn(establishmentService, 'getEstablishment').and.callThrough();
+    const removeRecruitmentJourneyBannerSpy = spyOn(
+      establishmentService,
+      'updateSingleEstablishmentField',
+    ).and.callThrough();
+
+    const fakeRemoveRecruitmentJourneyBannerData = { property: 'recruitmentJourneyExistingUserBanner', value: true };
 
     const dummyFiles = [WorkerFile, TrainingFile, EstablishmentFile];
     component.uploadedFiles = dummyFiles as ValidatedFile[];
@@ -190,7 +195,10 @@ describe('DragAndDropFilesListComponent', () => {
     fireEvent.click(button);
 
     expect(bulkUploadCompleteSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de');
-    expect(establishmentGetEstablishmentSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de');
+    expect(removeRecruitmentJourneyBannerSpy).toHaveBeenCalledWith(
+      'mocked-uid',
+      fakeRemoveRecruitmentJourneyBannerData,
+    );
   });
 
   describe('DownloadContent', () => {

@@ -162,7 +162,8 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
           if (hasProp(response, 'message')) {
             this.bulkUploadService.serverError$.next(response.message);
           } else {
-            this.updateEstablishmentService();
+            this.removeRecruitmentJourneyBanner();
+            this.removeWorkplaceJourneyBanner();
           }
         },
         (response) => {
@@ -171,12 +172,34 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       );
   }
 
+  private removeWorkplaceJourneyBanner(): void {
+    const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
+    this.subscriptions.add(
+      this.establishmentService
+        .updateSingleEstablishmentField(this.establishmentService.establishment.uid, data)
+        .subscribe(),
+    );
+  }
+
+  private removeRecruitmentJourneyBanner(): void {
+    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
+    this.subscriptions.add(
+      this.establishmentService
+        .updateSingleEstablishmentField(this.establishmentService.establishment.uid, data)
+        .subscribe(() => {
+          this.updateEstablishmentService();
+        }),
+    );
+  }
+
   private updateEstablishmentService(): void {
     this.establishmentService
       .getEstablishment(this.establishmentService.primaryWorkplace.uid)
       .pipe(
         tap((workplace) => {
-          return this.establishmentService.setPrimaryWorkplace(workplace);
+          return (
+            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
+          );
         }),
       )
       .subscribe(() => {

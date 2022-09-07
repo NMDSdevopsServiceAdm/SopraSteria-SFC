@@ -27,10 +27,11 @@
                 class="govuk-error-message"
               >
                 <span class="govuk-visually-hidden">Error:</span>
-                <span *ngIf="this.form.get('numberOfInterviews').errors.nonInteger">
+                <span class="govuk__nowrap" *ngIf="this.form.get('numberOfInterviews').errors.nonInteger">
                   {{ getFormErrorMessage('numberOfInterviews', 'nonInteger') }}
                 </span>
                 <span
+                  class="govuk__nowrap"
                   *ngIf="
                     this.form.get('numberOfInterviews').errors.negativeNumber &&
                     !this.form.get('numberOfInterviews').errors.nonInteger
@@ -39,6 +40,7 @@
                   {{ getFormErrorMessage('numberOfInterviews', 'negativeNumber') }}
                 </span>
                 <span
+                  class="govuk__nowrap"
                   *ngIf="
                     this.form.get('numberOfInterviews').errors.nonWholeNumber &&
                     !this.form.get('numberOfInterviews').errors.negativeNumber &&
