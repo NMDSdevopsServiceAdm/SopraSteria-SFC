@@ -15,7 +15,7 @@ import { BehaviorSubject } from 'rxjs';
 import { AddTotalStaffComponent } from './add-total-staff.component';
 
 describe('AddTotalStaffComponent', () => {
-  async function setup() {
+  async function setup(addWorkplaceFlow = true) {
     const component = await render(AddTotalStaffComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -36,7 +36,7 @@ describe('AddTotalStaffComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'add-workplace',
+                    path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
                   },
                 ],
               },
@@ -87,7 +87,7 @@ describe('AddTotalStaffComponent', () => {
 
     const reveal = component.fixture.componentInstance.appDetailTitle;
     const revealContent = component.getByText(
-      'You can enter an estimate to save time, but remember to update this number in ASC-WDS once your account has been validated by Skills for Care.',
+      'You can enter an estimate to save time, but remember to update this number in ASC-WDS once this account has been validated by Skills for Care.',
       { exact: false },
     );
 
@@ -113,6 +113,43 @@ describe('AddTotalStaffComponent', () => {
     component.fixture.detectChanges();
 
     expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
+  });
+
+  describe('progress bar', () => {
+    it('should render the workplace but not the user account progress bar', async () => {
+      const { component } = await setup();
+
+      expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+      expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+    });
+
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { component } = await setup(false);
+
+      expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+    });
+  });
+
+  describe('buttons', () => {
+    it('should show the continue button when inside the flow', async () => {
+      const { component } = await setup();
+
+      expect(component.getByText('Continue')).toBeTruthy();
+    });
+
+    it('should show the Save and return button and a cancel link when inside the flow', async () => {
+      const { component } = await setup();
+
+      component.fixture.componentInstance.insideFlow = false;
+      component.fixture.componentInstance.flow = 'add-total-staff';
+      component.fixture.detectChanges();
+      const cancelLink = component.getByText('Cancel');
+
+      expect(component.getByText('Save and return')).toBeTruthy();
+      expect(cancelLink).toBeTruthy();
+      expect(cancelLink.getAttribute('href')).toEqual('/add-total-staff');
+    });
   });
 
   describe('setBackLink()', () => {

@@ -4,6 +4,7 @@
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Workplace</span>
           <h1 class="govuk-fieldset__heading">
             How many members of staff does {{ isParent ? 'the' : 'your' }} workplace have?
           </h1>
@@ -14,7 +15,7 @@
         </p>
         <app-details [title]="appDetailTitle">
           <p>
-            You can enter an estimate to save time, but remember to update this number in ASC-WDS once your account has
+            You can enter an estimate to save time, but remember to update this number in ASC-WDS once this account has
             been validated by Skills for Care.
           </p>
         </app-details>
@@ -25,7 +26,7 @@
           </span>
 
           <input
-            class="govuk-input govuk-input--width-4"
+            class="govuk-input govuk-input--width-5"
             formControlName="totalStaff"
             id="totalStaff"
             name="totalStaff"
@@ -35,7 +36,24 @@
           />
         </div>
       </fieldset>
-      <button class="govuk-button" type="submit">Continue</button>
+      <app-registration-submit-buttons [insideFlow]="insideFlow" [returnRoute]="flow"></app-registration-submit-buttons>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Number of staff'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="''"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

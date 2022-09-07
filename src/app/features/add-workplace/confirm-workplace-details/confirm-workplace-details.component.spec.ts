@@ -370,7 +370,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const totalStaffSummaryList = within(getByTestId('totalStaff'));
       const changeLink = totalStaffSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/add-total-staff');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/add-total-staff');
     });
 
     it('should set the change link for type of employer to `type-of-employer`', async () => {
