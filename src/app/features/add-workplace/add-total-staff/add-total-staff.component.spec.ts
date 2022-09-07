@@ -87,7 +87,7 @@ describe('AddTotalStaffComponent', () => {
 
     const reveal = component.fixture.componentInstance.appDetailTitle;
     const revealContent = component.getByText(
-      'You can enter an estimate to save time, but remember to update this number in ASC-WDS once your account has been validated by Skills for Care.',
+      'You can enter an estimate to save time, but remember to update this number in ASC-WDS once this account has been validated by Skills for Care.',
       { exact: false },
     );
 
