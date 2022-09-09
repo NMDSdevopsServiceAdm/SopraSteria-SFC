@@ -1,0 +1,14 @@
+<div [formGroup]="form">
+  <select
+    class="govuk-select"
+    [class.govuk-select--error]="submitted && form.get('workplace').errors"
+    [formControlName]="'workplace'"
+    id="workplace"
+    name="workplace"
+  >
+    <option [value]="''" selected disabled>{{ locationAddresses.length }} addresses found</option>
+    <option *ngFor="let location of locationAddresses; let i = index" [value]="i">
+      {{ getLocationName(location) }}
+    </option>
+  </select>
+</div>

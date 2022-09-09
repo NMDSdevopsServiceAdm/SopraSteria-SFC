@@ -25,6 +25,11 @@ export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
     super(errorSummaryService, establishmentService, backService, route, router, workplaceService, formBuilder);
   }
 
+  protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
+  }
+
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -37,9 +42,5 @@ export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
         ],
       },
     ];
-  }
-
-  protected getNextRoute(): string {
-    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'type-of-employer';
   }
 }

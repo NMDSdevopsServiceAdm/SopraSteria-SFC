@@ -51,6 +51,13 @@ describe('FindWorkplaceAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.queryByTestId('progress-bar-2')).toBeTruthy();
+  });
+
   it('should not lookup postcode when the form is empty', async () => {
     const { component, locationService } = await setup();
     const findAddressButton = component.getByText('Find address');

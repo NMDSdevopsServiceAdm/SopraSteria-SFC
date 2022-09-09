@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
@@ -18,7 +18,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import { ConfirmDetailsComponent } from './confirm-details.component';
 
 describe('ConfirmDetailsComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const { fixture, getByText, getByTestId, getAllByText, queryByText } = await render(ConfirmDetailsComponent, {
       imports: [
         SharedModule,
@@ -39,6 +39,20 @@ describe('ConfirmDetailsComponent', () => {
           useClass: MockUserService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: registrationFlow ? 'registration' : 'confirm-details',
+                  },
+                ],
+              },
+            },
+          },
+        },
       ],
     });
 

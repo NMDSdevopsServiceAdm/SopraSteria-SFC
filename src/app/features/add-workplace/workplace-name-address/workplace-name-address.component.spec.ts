@@ -12,38 +12,41 @@ import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
 
 describe('WorkplaceNameAddressComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(WorkplaceNameAddressComponent, {
-      imports: [
-        SharedModule,
-        WorkplaceModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        {
-          provide: WorkplaceService,
-          useClass: MockWorkplaceService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              parent: {
-                url: [
-                  {
-                    path: 'add-workplace',
-                  },
-                ],
+  async function setup(addWorkplaceFlow = true) {
+    const { fixture, getByText, getAllByText, queryByText, queryByTestId, getByTestId } = await render(
+      WorkplaceNameAddressComponent,
+      {
+        imports: [
+          SharedModule,
+          WorkplaceModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          {
+            provide: WorkplaceService,
+            useClass: MockWorkplaceService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                parent: {
+                  url: [
+                    {
+                      path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
+                    },
+                  ],
+                },
               },
             },
           },
-        },
-        FormBuilder,
-      ],
-    });
+          FormBuilder,
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -60,6 +63,8 @@ describe('WorkplaceNameAddressComponent', () => {
       getAllByText,
       queryByText,
       getByText,
+      queryByTestId,
+      getByTestId,
     };
   }
 
@@ -149,11 +154,21 @@ describe('WorkplaceNameAddressComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'type-of-employer']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'type-of-employer']);
+    });
+
+    it('should show the Save and return button and an exit link when inside the flow', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.insideFlow = false;
+      fixture.detectChanges();
+
+      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
     });
 
     it('should navigate to confirm-workplace-details page on success if returnToConfirmDetails is not null', async () => {
-      const { component, fixture, getByText, spy } = await setup();
+      const { component, fixture, getByText, spy } = await setup(false);
       const form = component.form;
 
       form.controls['workplaceName'].setValue('Workplace');
@@ -165,11 +180,11 @@ describe('WorkplaceNameAddressComponent', () => {
       component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
       fixture.detectChanges();
 
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('Save and return');
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'confirm-workplace-details']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace/confirm-workplace-details']);
     });
   });
 
@@ -189,7 +204,7 @@ describe('WorkplaceNameAddressComponent', () => {
 
   describe('setBackLink', () => {
     it('should set the back link to `confirm-workplace-details` when returnToConfirmDetails is not null', async () => {
-      const { component, fixture } = await setup();
+      const { component, fixture } = await setup(false);
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
       component.workplaceService.returnTo$.next({ url: ['add-workplace', 'confirm-details'] });
@@ -200,7 +215,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'confirm-workplace-details'],
+          url: ['add-workplace/confirm-workplace-details'],
         });
       });
     });
@@ -218,7 +233,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'workplace-not-found'],
+          url: ['add-workplace', 'workplace-not-found'],
         });
       });
     });
@@ -236,7 +251,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'workplace-address-not-found'],
+          url: ['add-workplace', 'workplace-address-not-found'],
         });
       });
     });
@@ -254,7 +269,7 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'select-workplace'],
+          url: ['add-workplace', 'select-workplace'],
         });
       });
     });
@@ -272,9 +287,23 @@ describe('WorkplaceNameAddressComponent', () => {
         component.setBackLink();
 
         expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/add-workplace', 'select-workplace-address'],
+          url: ['add-workplace', 'select-workplace-address'],
         });
       });
+    });
+  });
+  describe('progressBar', () => {
+    it('should render the workplace progress bar but not the user progress bar', async () => {
+      const { getByTestId, queryByTestId } = await setup();
+
+      expect(getByTestId('progress-bar-1')).toBeTruthy();
+      expect(queryByTestId('progress-bar-2')).toBeFalsy();
+    });
+
+    it('should not render the progress bar when accessed from outside the flow', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('progress-bar-1')).toBeFalsy();
     });
   });
 });

@@ -35,10 +35,10 @@ export class EditAdminUserComponent extends AccountDetailsDirective {
     protected router: Router,
     private adminUsersService: AdminUsersService,
     private alertService: AlertService,
-    private route: ActivatedRoute,
     private userService: UserService,
+    protected route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, fb, router);
+    super(backService, errorSummaryService, fb, router, route);
   }
 
   protected init(): void {

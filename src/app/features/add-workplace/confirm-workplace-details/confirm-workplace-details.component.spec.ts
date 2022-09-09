@@ -316,7 +316,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/find-workplace');
     });
 
     it('should set the change link for workplace address to `find-workplace` when location ID is null and workplace is CQC regulated', async () => {
@@ -331,7 +331,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/find-workplace');
     });
 
     it('should set the change link for workplace address to `workplace-name-address` when workplace is not CQC regulated', async () => {
@@ -346,7 +346,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/workplace-name-address');
     });
 
     it('should set the change link for main service to `select-main-service`', async () => {
@@ -358,7 +358,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const mainServiceSummaryList = within(getByTestId('mainService'));
       const changeLink = mainServiceSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toEqual('/add-workplace/select-main-service');
+      expect(changeLink.getAttribute('href')).toEqual('/add-workplace/confirm-workplace-details/select-main-service');
     });
 
     it('should set the change link for total staff to `add-total-staff`', async () => {
@@ -370,7 +370,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const totalStaffSummaryList = within(getByTestId('totalStaff'));
       const changeLink = totalStaffSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/add-total-staff');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/add-total-staff');
     });
 
     it('should set the change link for type of employer to `type-of-employer`', async () => {
@@ -382,7 +382,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const typeOfEmployerSummaryList = within(getByTestId('typeOfEmployer'));
       const changeLink = typeOfEmployerSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/type-of-employer');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/type-of-employer');
     });
   });
 });

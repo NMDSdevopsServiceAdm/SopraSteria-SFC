@@ -17,14 +17,14 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
 
   constructor(
     private createAccountService: CreateAccountService,
-    private route: ActivatedRoute,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, registrationService, router);
+    super(backService, errorSummaryService, formBuilder, registrationService, route, router);
   }
 
   protected init(): void {

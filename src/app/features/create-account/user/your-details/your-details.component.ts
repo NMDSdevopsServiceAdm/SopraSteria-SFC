@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -20,8 +20,9 @@ export class YourDetailsComponent extends AccountDetailsDirective {
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, fb, router);
+    super(backService, errorSummaryService, fb, router, route);
   }
 
   public setBackLink(): void {
@@ -29,6 +30,8 @@ export class YourDetailsComponent extends AccountDetailsDirective {
     this.backService.setBackLink({ url: ['registration', url] });
   }
   protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
     this.return = this.registrationService.returnTo$.value;
     this.prefillFormIfUserDetailsExist();
   }

@@ -9,6 +9,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import filter from 'lodash/filter';
 import { Subscription } from 'rxjs';
 
@@ -17,7 +18,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   @ViewChild('formEl') formEl: ElementRef;
   public isWorkPlaceUpdate: boolean;
   protected allServices: Array<Service> = [];
-  protected flow: string;
+  public flow: string;
   protected otherServiceMaxLength = 120;
   protected selectedMainService: Service;
   protected serverErrorsMap: Array<ErrorDefinition>;
@@ -29,6 +30,9 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   public submitted = false;
   public returnToConfirmDetails: URLStructure;
   public isParent: boolean;
+  public insideFlow: boolean;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
 
   constructor(
     protected backService: BackService,
@@ -40,6 +44,8 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
 
   ngOnInit(): void {
     this.init();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();

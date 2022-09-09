@@ -5,7 +5,11 @@
     <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 *ngIf="isParent" class="govuk-fieldset__heading">Is this the workplace you want to add?</h1>
+          <span class="govuk-caption-l">Workplace</span>
+          <h1 *ngIf="isParent" class="govuk-fieldset__heading">
+            Is this the workplace you want <br />
+            to add?
+          </h1>
           <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Is this your workplace?</h1>
         </legend>
         <div *ngIf="locationData">
@@ -62,16 +66,33 @@
             </div>
           </div>
         </div>
-        <div class="govuk-!-margin-top-8">
+        <div class="govuk-!-margin-top-6">
           <app-details [title]="revealTitle">
             <p>
-              Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> or email
+              Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> or <br />email
               <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
             </p>
           </app-details>
         </div>
       </fieldset>
-      <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
+      <button class="govuk-button govuk-!-margin-top-3" type="submit">Continue</button>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

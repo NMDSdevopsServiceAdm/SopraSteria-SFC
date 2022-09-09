@@ -3,6 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -15,8 +16,8 @@ import userEvent from '@testing-library/user-event';
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
 describe('TypeOfEmployerComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId } = await render(
+  async function setup(registrationFlow = true) {
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
       TypeOfEmployerComponent,
       {
         imports: [
@@ -40,7 +41,7 @@ describe('TypeOfEmployerComponent', () => {
                 parent: {
                   url: [
                     {
-                      path: 'registration',
+                      path: registrationFlow ? 'registration' : 'confirm-details',
                     },
                   ],
                 },
@@ -72,6 +73,7 @@ describe('TypeOfEmployerComponent', () => {
       getByText,
       getByLabelText,
       getByTestId,
+      queryByTestId,
     };
   }
 
@@ -79,6 +81,50 @@ describe('TypeOfEmployerComponent', () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
+  });
+
+  it('should render the default question when the workplace has not been manually entered', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('What type of employer is your workplace?')).toBeTruthy();
+  });
+
+  it('should render the question with the workplace name when the workplace name has been manually entered', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.registrationService.manuallyEnteredWorkplaceName$.next(true);
+    component.registrationService.selectedLocationAddress$.next({ locationName: 'Care Home 1' } as LocationAddress);
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(getByText('What type of employer is Care Home 1')).toBeTruthy();
+  });
+
+  it('should render the question with the workplace name when the workplace has been manually entered', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.registrationService.manuallyEnteredWorkplace$.next(true);
+    component.registrationService.selectedLocationAddress$.next({ locationName: 'Care Home 2' } as LocationAddress);
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(getByText('What type of employer is Care Home 2')).toBeTruthy();
+  });
+
+  it('should render the workplace and user account progress bars', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { queryByTestId } = await setup(false);
+
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should show the page title and radio buttons', async () => {
@@ -92,10 +138,20 @@ describe('TypeOfEmployerComponent', () => {
     expect(getByLabelText('Other')).toBeTruthy();
   });
 
-  it('should show the continue button', async () => {
+  it('should show the continue button when inside the flow', async () => {
     const { getByText } = await setup();
 
     expect(getByText('Continue')).toBeTruthy();
+  });
+
+  it('should show the Save and return button and a cancel link when inside the flow', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.insideFlow = false;
+    fixture.detectChanges();
+
+    expect(getByText('Save and return')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
   it('should prefill the form when the value has previously be filled in', async () => {
@@ -152,19 +208,19 @@ describe('TypeOfEmployerComponent', () => {
     });
 
     it('should navigate to confirm-details when the Local authority (adult services) radio button is selected and the continue button clicked when not in the flow', async () => {
-      const { fixture, component, getByText, getByLabelText, routerSpy } = await setup();
+      const { fixture, component, getByText, getByLabelText, routerSpy } = await setup(false);
 
       component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
       const radioButton = getByLabelText('Local authority (adult services)');
       fireEvent.click(radioButton);
       fixture.detectChanges();
 
-      const submitButton = getByText('Continue');
+      const submitButton = getByText('Save and return');
       fireEvent.click(submitButton);
       fixture.detectChanges();
 
       expect(component.form.valid).toBeTruthy();
-      expect(routerSpy).toHaveBeenCalledWith(['registration', 'confirm-details']);
+      expect(routerSpy).toHaveBeenCalledWith(['registration/confirm-details']);
     });
 
     it('should navigate to select-main-service when the Local authority (generic, other) radio button is selected and the continue button clicked', async () => {
@@ -409,7 +465,7 @@ describe('TypeOfEmployerComponent', () => {
     });
 
     it('should set back link to confirm-details when returnToConfirmDetails is not null', async () => {
-      const { component, fixture } = await setup();
+      const { component, fixture } = await setup(false);
 
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
@@ -419,7 +475,7 @@ describe('TypeOfEmployerComponent', () => {
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'confirm-details'],
+        url: ['registration/confirm-details'],
       });
     });
   });

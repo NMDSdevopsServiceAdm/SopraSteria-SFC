@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -17,12 +17,15 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
+    protected route: ActivatedRoute,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, registrationService, router);
+    super(backService, errorSummaryService, formBuilder, registrationService, route, router);
   }
 
   protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
     this.return = this.registrationService.returnTo$.value;
     this.setBackLink();
   }
