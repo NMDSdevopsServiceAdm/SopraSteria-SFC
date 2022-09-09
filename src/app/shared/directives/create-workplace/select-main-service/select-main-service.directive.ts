@@ -18,7 +18,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   @ViewChild('formEl') formEl: ElementRef;
   public isWorkPlaceUpdate: boolean;
   protected allServices: Array<Service> = [];
-  protected flow: string;
+  public flow: string;
   protected otherServiceMaxLength = 120;
   protected selectedMainService: Service;
   protected serverErrorsMap: Array<ErrorDefinition>;

@@ -57,13 +57,13 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    const url = this.returnToConfirmDetails ? 'confirm-details' : 'add-total-staff';
-    this.router.navigate([this.flow, url]);
+    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
+    this.router.navigate(url);
   }
 
   public setBackLink(): void {
     if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow, 'confirm-details'] });
+      this.backService.setBackLink({ url: [this.flow] });
       return;
     }
 

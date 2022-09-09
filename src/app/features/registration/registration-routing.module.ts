@@ -163,6 +163,12 @@ const routes: Routes = [
         data: { title: 'Type of Employer' },
       },
       {
+        path: 'select-main-service',
+        component: SelectMainServiceComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Select Main Service' },
+      },
+      {
         path: 'add-total-staff',
         component: AddTotalStaffComponent,
         canActivate: [RegisterGuard],
