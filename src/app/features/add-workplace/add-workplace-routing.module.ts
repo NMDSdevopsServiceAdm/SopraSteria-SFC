@@ -109,6 +109,12 @@ const routes: Routes = [
         canActivate: [AddWorkplaceInProgressGuard],
       },
       {
+        path: 'select-main-service',
+        component: SelectMainServiceComponent,
+        data: { title: 'Select Main Service' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
         path: 'add-total-staff',
         component: AddTotalStaffComponent,
         data: { title: 'Add Total Staff' },

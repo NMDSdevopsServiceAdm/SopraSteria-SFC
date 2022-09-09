@@ -54,7 +54,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Main service',
         data: this.workplace.name,
-        route: { url: [this.flow, 'select-main-service'] },
+        route: { url: [this.flow, confirmDetailsUrl, 'select-main-service'] },
       },
     ];
 

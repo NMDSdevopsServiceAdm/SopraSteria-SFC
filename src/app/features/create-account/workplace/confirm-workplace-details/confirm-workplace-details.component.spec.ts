@@ -310,7 +310,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const mainServiceSummaryList = within(getByTestId('mainService'));
       const changeLink = mainServiceSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/registration/select-main-service');
+      expect(changeLink.getAttribute('href')).toBe('/registration/confirm-details/select-main-service');
     });
 
     it('should set the change link for total staff to `add-total-staff`', async () => {
