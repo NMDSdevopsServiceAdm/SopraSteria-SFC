@@ -29,7 +29,9 @@
                 <h2 class="govuk-fieldset__heading">{{ capacity.service }}</h2>
               </legend>
               <span
-                *ngIf="submitted && form.get(groupName).invalid"
+                *ngIf="
+                  submitted && form.get(groupName).invalid && this.capacityUtilisationValidator(form.get(groupName))
+                "
                 id="{{ groupName }}-error"
                 class="govuk-error-message"
               >
