@@ -14,29 +14,15 @@ import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  BecomeAParentCancelDialogComponent,
-} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import {
-  ChangeDataOwnerDialogComponent,
-} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import {
-  LinkToParentCancelDialogComponent,
-} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
-import {
-  LinkToParentRemoveDialogComponent,
-} from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
-import {
-  OwnershipChangeMessageDialogComponent,
-} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import {
-  SetDataPermissionDialogComponent,
-} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
@@ -122,7 +108,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.establishmentService.establishment$.pipe(take(1)).subscribe((workplace) => {
           this.isLocalAuthority =
-            this.workplace.employerType && this.workplace.employerType.value.startsWith('Local Authority');
+            this.workplace.employerType &&
+            this.workplace.employerType.value.toLowerCase().startsWith('local authority');
 
           this.canRunLocalAuthorityReport =
             this.workplace.isParent &&
