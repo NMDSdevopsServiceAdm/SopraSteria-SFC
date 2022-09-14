@@ -16,7 +16,6 @@ export class ServicesCapacityComponent extends Question {
   public capacities: [];
   public capacityErrorMsg = 'The capacity must be between 1 and 999';
   public intPattern = INT_PATTERN.toString();
-  public ready = false;
   public section = 'Services';
 
   constructor(
@@ -54,16 +53,19 @@ export class ServicesCapacityComponent extends Question {
           const id = this.generateFormGroupName(service.service);
 
           questions.forEach((question) => {
+            const formControlName = this.generateFormControlName(question);
             group.addControl(
-              this.generateFormControlName(question),
+              formControlName,
               new FormControl(question.answer, {
                 validators: [Validators.min(1), Validators.max(999), Validators.pattern(this.intPattern)],
                 updateOn: 'submit',
               }),
             );
 
+            // #Adultresidential-Otheradultresidentialcareservices-2_7-error
+
             this.formErrorsMap.push({
-              item: `${id}.${this.generateFormControlName(question)}`,
+              item: `${id}.${formControlName}`,
               type: [
                 {
                   name: 'min',
@@ -96,8 +98,6 @@ export class ServicesCapacityComponent extends Question {
 
           this.form.addControl(id, group);
         });
-
-        this.ready = true;
       }),
     );
 
