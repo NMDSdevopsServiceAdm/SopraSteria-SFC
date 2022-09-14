@@ -2353,6 +2353,17 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(csvAsArray[column]).to.deep.equal('');
       });
 
+      it(`should show 0 if there are no jobs and if "None" is the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
+        const column = 24 + index;
+        const establishment = apiEstablishmentBuilder();
+        establishment[`${slv}Value`] = 'None';
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[column]).to.deep.equal('0');
+      });
+
       it(`should show 0 for each job if "None" the value of ${slv} in ${slv.toUpperCase()} column`, async () => {
         const column = 24 + index;
         const establishment = apiEstablishmentBuilder();

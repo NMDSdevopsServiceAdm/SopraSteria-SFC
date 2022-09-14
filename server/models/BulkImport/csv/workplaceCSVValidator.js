@@ -3143,7 +3143,7 @@ class WorkplaceCSVValidator {
       } else if (value === null) {
         return '';
       } else if (value === 'None') {
-        return uniqueJobs.map(() => 0).join(';');
+        return uniqueJobs.length > 0 ? uniqueJobs.map(() => 0).join(';') : 0;
       } else {
         return counts.join(';');
       }

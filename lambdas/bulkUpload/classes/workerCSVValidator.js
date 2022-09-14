@@ -741,7 +741,7 @@ class WorkerCsvValidator {
     const myNINumber = this._currentLine.NINUMBER;
     const niRegex = /^\s*[a-zA-Z]{2}(?:\s*\d\s*){6}[a-zA-Z]?\s*$/;
 
-    if (myNINumber.length > 0) {
+    if (myNINumber) {
       if (myNINumber.length > 0 && !niRegex.test(myNINumber)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -759,6 +759,7 @@ class WorkerCsvValidator {
         return true;
       }
     }
+    return true;
   }
 
   _validatePostCode() {
