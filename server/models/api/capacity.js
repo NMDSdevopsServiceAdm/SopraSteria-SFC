@@ -49,7 +49,7 @@ exports.serviceCapacitiesByCategoryJSON = (givenServiceCapacities) => {
 
   if (givenServiceCapacities && Array.isArray(givenServiceCapacities)) {
     givenServiceCapacities.forEach((thisService) => {
-      const mapKey = `${thisService.service.category} : ${thisService.service.name}`;
+      const mapKey = `${thisService.service.category}: ${thisService.service.name}`;
 
       let thisCategoryGroup = serviceGroupsMap.get(mapKey);
       if (!thisCategoryGroup) {
