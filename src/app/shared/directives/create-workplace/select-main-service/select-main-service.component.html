@@ -11,15 +11,15 @@
     <div class="govuk-grid-column-two-thirds">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
         <span class="govuk-caption-l">Workplace</span>
-        <h1 class="govuk-fieldset__heading">Select {{ isParent ? 'its' : 'your' }} main service</h1>
+        <h1 class="govuk-fieldset__heading">Select {{ isParent ? 'their' : 'your' }} main service</h1>
       </legend>
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+      <div class="govuk-form-group govuk-!-margin-bottom-8" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <div *ngIf="displayIntro">
             <ng-container *ngIf="isRegulated">
               <ng-container *ngIf="isParent; else notParent">
                 <p>
-                  Because you said the main service it provides is regulated by the Care Quality Commission (CQC),
+                  Because you said the main service they provide is regulated by the Care Quality Commission (CQC),
                   Skills for Care will need to check your selection matches the CQC database.
                 </p>
               </ng-container>

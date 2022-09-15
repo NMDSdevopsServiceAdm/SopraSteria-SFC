@@ -7,13 +7,13 @@
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">Workplace</span>
           <h1 class="govuk-fieldset__heading">
-            Is the main service you provide regulated by the Care Quality Commission?
+            {{title}} regulated by the Care Quality Commission?
           </h1>
         </legend>
         <app-details [title]="'Not sure if your main service is regulated?'">
           <p>
-            Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> or email
-            <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
+            Call the ASC-WDS Support Team on <strong>0113 241 0969</strong>
+          <br> or email <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
           </p>
         </app-details>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
