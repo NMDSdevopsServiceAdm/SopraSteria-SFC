@@ -14,9 +14,8 @@ import { Question } from '../question/question.component';
 })
 export class ServicesCapacityComponent extends Question {
   public capacities: [];
-  public capacityErrorMsg = 'The capacity must be between 1 and 999';
+  public capacityErrorMsg = 'Number must be between 1 and 999';
   public intPattern = INT_PATTERN.toString();
-  public ready = false;
   public section = 'Services';
 
   constructor(
@@ -32,7 +31,7 @@ export class ServicesCapacityComponent extends Question {
   }
 
   public generateFormGroupName(str: string): string {
-    return str.replace(/^[^a-z]+|[^\w:.-]+/gi, '');
+    return str.replace(/^[^a-z]+|[^\w.-]+/gi, '');
   }
 
   public generateFormControlName(question): string {
@@ -43,7 +42,6 @@ export class ServicesCapacityComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe((capacities) => {
         this.capacities = capacities.allServiceCapacities;
-
         if (this.capacities.length === 0) {
           this.router.navigate(['/workplace', this.establishment.uid, 'other-services'], { replaceUrl: true });
         }
@@ -54,17 +52,29 @@ export class ServicesCapacityComponent extends Question {
           const id = this.generateFormGroupName(service.service);
 
           questions.forEach((question) => {
+            const formControlName = this.generateFormControlName(question);
             group.addControl(
-              this.generateFormControlName(question),
-              new FormControl(question.answer, [
-                Validators.min(1),
-                Validators.max(999),
-                Validators.pattern(this.intPattern),
-              ]),
+              formControlName,
+              new FormControl(question.answer, {
+                validators: [Validators.min(1), Validators.max(999), Validators.pattern(this.intPattern)],
+                updateOn: 'submit',
+              }),
             );
 
+            let patternErrorMsg;
+
+            if (question.question.includes('beds')) {
+              patternErrorMsg = question.seq === 1 ? 'Beds you have' : 'Beds being used';
+            } else if (question.question.includes('places')) {
+              patternErrorMsg = question.seq === 1 ? 'Places you have' : 'Places being used';
+            } else if (question.question.includes('people receiving care')) {
+              patternErrorMsg = 'People receiving care';
+            } else {
+              patternErrorMsg = 'People using the service';
+            }
+
             this.formErrorsMap.push({
-              item: `${id}.${this.generateFormControlName(question)}`,
+              item: `${id}.${formControlName}`,
               type: [
                 {
                   name: 'min',
@@ -76,7 +86,7 @@ export class ServicesCapacityComponent extends Question {
                 },
                 {
                   name: 'pattern',
-                  message: 'Capacity must be rounded to the nearest number',
+                  message: `${patternErrorMsg} must be a whole number`,
                 },
               ],
             });
@@ -84,12 +94,15 @@ export class ServicesCapacityComponent extends Question {
 
           if (Object.keys(group.controls).length > 1) {
             group.setValidators(this.capacityUtilisationValidator);
+            const overCapacityErrorMsg = questions.some((question) => question.question.includes('beds'))
+              ? 'beds'
+              : 'places';
             this.formErrorsMap.push({
               item: id,
               type: [
                 {
                   name: 'overcapacity',
-                  message: 'Utilisation must be lower than Capacity provided',
+                  message: `Number cannot be more than the ${overCapacityErrorMsg} you have`,
                 },
               ],
             });
@@ -97,8 +110,6 @@ export class ServicesCapacityComponent extends Question {
 
           this.form.addControl(id, group);
         });
-
-        this.ready = true;
       }),
     );
 
