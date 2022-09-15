@@ -14,7 +14,7 @@ import { Question } from '../question/question.component';
 })
 export class ServicesCapacityComponent extends Question {
   public capacities: [];
-  public capacityErrorMsg = 'The capacity must be between 1 and 999';
+  public capacityErrorMsg = 'Number must be between 1 and 999';
   public intPattern = INT_PATTERN.toString();
   public section = 'Services';
 
@@ -42,7 +42,6 @@ export class ServicesCapacityComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe((capacities) => {
         this.capacities = capacities.allServiceCapacities;
-
         if (this.capacities.length === 0) {
           this.router.navigate(['/workplace', this.establishment.uid, 'other-services'], { replaceUrl: true });
         }
@@ -62,7 +61,17 @@ export class ServicesCapacityComponent extends Question {
               }),
             );
 
-            // #Adultresidential-Otheradultresidentialcareservices-2_7-error
+            let patternErrorMsg;
+
+            if (question.question.includes('beds')) {
+              patternErrorMsg = question.seq === 1 ? 'Beds you have' : 'Beds being used';
+            } else if (question.question.includes('places')) {
+              patternErrorMsg = question.seq === 1 ? 'Places you have' : 'Places being used';
+            } else if (question.question.includes('people receiving care')) {
+              patternErrorMsg = 'People receiving care';
+            } else {
+              patternErrorMsg = 'People using the service';
+            }
 
             this.formErrorsMap.push({
               item: `${id}.${formControlName}`,
@@ -77,7 +86,7 @@ export class ServicesCapacityComponent extends Question {
                 },
                 {
                   name: 'pattern',
-                  message: 'Capacity must be rounded to the nearest number',
+                  message: `${patternErrorMsg} must be a whole number`,
                 },
               ],
             });
@@ -85,12 +94,15 @@ export class ServicesCapacityComponent extends Question {
 
           if (Object.keys(group.controls).length > 1) {
             group.setValidators(this.capacityUtilisationValidator);
+            const overCapacityErrorMsg = questions.some((question) => question.question.includes('beds'))
+              ? 'beds'
+              : 'places';
             this.formErrorsMap.push({
               item: id,
               type: [
                 {
                   name: 'overcapacity',
-                  message: 'Utilisation must be lower than Capacity provided',
+                  message: `Number cannot be more than the ${overCapacityErrorMsg} you have`,
                 },
               ],
             });
