@@ -31,7 +31,7 @@ export class ServicesCapacityComponent extends Question {
   }
 
   public generateFormGroupName(str: string): string {
-    return str.replace(/^[^a-z]+|[^\w:.-]+/gi, '');
+    return str.replace(/^[^a-z]+|[^\w.-]+/gi, '');
   }
 
   public generateFormControlName(question): string {
@@ -49,6 +49,7 @@ export class ServicesCapacityComponent extends Question {
         capacities.allServiceCapacities.forEach((service, i) => {
           const group = this.formBuilder.group({});
           const questions = service.questions;
+
           const id = this.generateFormGroupName(service.service);
 
           questions.forEach((question) => {
