@@ -127,7 +127,7 @@ describe('SelectMainServiceComponent', () => {
     component.isRegulated = false;
     fixture.detectChanges();
 
-    expect(queryByText('Select its main service')).toBeTruthy();
+    expect(queryByText('Select their main service')).toBeTruthy();
   });
 
   it('should show add-workplace error message when nothing has been selected', async () => {

@@ -12,7 +12,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkplaceServiceWithMainService } from '@core/test-utils/MockWorkplaceService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { fireEvent, getByTestId, render, within } from '@testing-library/angular';
 
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
@@ -142,7 +142,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   it('should show workplace details', async () => {
-    const { component, fixture, getByText } = await setup();
+    const { component, fixture, getByText, getByTestId } = await setup();
 
     const expectedLocationName = 'Workplace Name';
     const expectedAddressLine1 = '1 Street';
@@ -155,13 +155,15 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
-    expect(getByText(expectedLocationName, { exact: false })).toBeTruthy();
-    expect(getByText(expectedAddressLine1, { exact: false })).toBeTruthy();
-    expect(getByText(expectedAddressLine2, { exact: false })).toBeTruthy();
-    expect(getByText(expectedAddressLine3, { exact: false })).toBeTruthy();
-    expect(getByText(expectedTownCity, { exact: false })).toBeTruthy();
-    expect(getByText(expectedPostalCode, { exact: false })).toBeTruthy();
-    expect(getByText(expectedCounty, { exact: false })).toBeTruthy();
+    const addressField = getByTestId('workplaceNameAddress');
+
+    expect(within(addressField).getByText(expectedLocationName, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedAddressLine1, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedAddressLine2, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedAddressLine3, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedTownCity, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedPostalCode, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedCounty, { exact: false })).toBeTruthy();
   });
 
   it('should show main service details', async () => {
