@@ -49,7 +49,6 @@ export class ServicesCapacityComponent extends Question {
         capacities.allServiceCapacities.forEach((service, i) => {
           const group = this.formBuilder.group({});
           const questions = service.questions;
-
           const id = this.generateFormGroupName(service.service);
 
           questions.forEach((question) => {
