@@ -2124,7 +2124,7 @@ class Establishment extends EntityValidator {
       // we're only interested in the main service capacities
       const mainServiceCapacities = capacitiesProperty
         .toJSON(false, false)
-        .allServiceCapacities.filter((thisCapacity) => /^Main Service - /.test(thisCapacity.service));
+        .allServiceCapacities.filter((thisCapacity) => /^Main Service: /.test(thisCapacity.service));
 
       if (mainServiceCapacities.length === 0) {
         capacitiesEligible = 'Not relevant';

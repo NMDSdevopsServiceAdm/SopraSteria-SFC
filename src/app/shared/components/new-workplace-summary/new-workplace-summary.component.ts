@@ -93,23 +93,27 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     private workerService: WorkerService,
     private cqcStatusChangeService: CqcStatusChangeService,
   ) {
-    this.pluralMap['How many beds do you currently have?'] = {
+    this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
       other: '# beds available',
     };
-    this.pluralMap['How many of those beds are currently used?'] = {
+    this.pluralMap['How many of those beds are being used?'] = {
       '=1': '# bed used',
       other: '# beds used',
     };
-    this.pluralMap['How many places do you currently have?'] = {
+    this.pluralMap['How many places do you have at the moment?'] = {
       '=1': '# place',
       other: '# places',
     };
-    this.pluralMap['Number of people receiving care on the completion date'] = {
+    this.pluralMap['Number of people receiving care at the moment'] = {
       '=1': '# person receiving care',
       other: '# people receiving care',
     };
-    this.pluralMap['Number of people using the service on the completion date'] = {
+    this.pluralMap['Number of people using the service at the moment'] = {
+      '=1': '# person using the service',
+      other: '# people using the service',
+    };
+    this.pluralMap['Number of those places that are being used'] = {
       '=1': '# person using the service',
       other: '# people using the service',
     };
