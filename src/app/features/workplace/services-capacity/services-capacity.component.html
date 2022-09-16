@@ -5,7 +5,7 @@
   [serverError]="serverError"
 ></app-error-summary>
 
-<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="ready">
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
@@ -29,7 +29,9 @@
                 <h2 class="govuk-fieldset__heading">{{ capacity.service }}</h2>
               </legend>
               <span
-                *ngIf="submitted && form.get(groupName).invalid"
+                *ngIf="
+                  submitted && form.get(groupName).invalid && this.capacityUtilisationValidator(form.get(groupName))
+                "
                 id="{{ groupName }}-error"
                 class="govuk-error-message"
               >
