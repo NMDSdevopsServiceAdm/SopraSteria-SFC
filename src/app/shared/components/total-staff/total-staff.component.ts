@@ -15,17 +15,14 @@ export class TotalStaffComponent implements OnInit {
   @Input() formErrorsMap: Array<ErrorDetails>;
   @Input() submitted: boolean;
   @Input() errorSummaryService: ErrorSummaryService;
-  @Input() serverError = false;
+
   private subscriptions: Subscription = new Subscription();
 
   constructor(protected establishmentService: EstablishmentService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.subscriptions.add(
       this.establishmentService.getStaff(this.establishmentUid).subscribe((staff) => {
-        console.log('****');
-        console.log(staff);
-
         this.form.patchValue({ totalStaff: staff });
       }),
     );

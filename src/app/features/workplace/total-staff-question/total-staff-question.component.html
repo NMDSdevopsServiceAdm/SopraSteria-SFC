@@ -1,8 +1,8 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <app-total-staff
         [establishmentUid]="establishment.uid"
         [form]="form"
@@ -11,8 +11,11 @@
         [errorSummaryService]="errorSummaryService"
       >
       </app-total-staff>
-    </div>
-  </div>
 
-  <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
-</form>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
+    </form>
+  </div>
+</div>

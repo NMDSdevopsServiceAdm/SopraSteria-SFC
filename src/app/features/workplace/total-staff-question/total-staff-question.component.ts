@@ -32,6 +32,11 @@ export class TotalStaffQuestionComponent extends Question {
 
   public setupFormErrorsMap(): void {
     this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();
+    if (this.establishment.isParent) {
+      this.formErrorsMap[0].type.find((error) => {
+        error.name === 'required' && (error.message = 'Enter how many members of staff your workplace has');
+      });
+    }
   }
 
   protected init(): void {
