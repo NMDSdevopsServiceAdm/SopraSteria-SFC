@@ -18,6 +18,7 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   public workplaceSections: string[];
   public userAccountSections: string[];
   public insideFlow: boolean;
+  public title: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -47,6 +48,9 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group({
       regulatedByCQC: [null, { validators: Validators.required, updateOn: 'submit' }],
     });
+
+    this.title = this.flow === 'registration' ? 'Is the main service you provide'
+      : 'Is their main service';
   }
 
   protected init(): void {}
