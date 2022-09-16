@@ -7,9 +7,16 @@
 </app-error-summary>
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-l">Check your details before you submit them</h1>
+  <div class="govuk-grid-column-full-from-desktop">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">
+      <span class="govuk-caption-l">Summary</span>
+      {{ workplaceName }}
+    </h1>
   </div>
+</div>
+
+<div class="govuk-!-margin-bottom-7">
+  <p>Check your details before you submit them.</p>
 </div>
 
 <app-confirm-workplace-details></app-confirm-workplace-details>
