@@ -27,7 +27,7 @@ export class TotalStaffQuestionComponent extends Question {
     private totalStaffFormService: TotalStaffFormService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
-    this.form = totalStaffFormService.createForm(formBuilder);
+    this.form = totalStaffFormService.createForm(formBuilder, true);
   }
 
   public setupFormErrorsMap(): void {
