@@ -1,4 +1,8 @@
-<div class="govuk-button-group govuk__align-items-unset">
+<div
+  class="govuk-button-group govuk__align-items-unset"
+  data-testid="button-container"
+  [ngClass]="{ 'govuk-!-margin-top-4': marginTop4 }"
+>
   <div>
     <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
       Continue
