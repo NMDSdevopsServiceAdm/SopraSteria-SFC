@@ -29,13 +29,5 @@ export class TypeOfEmployerComponent extends TypeOfEmployerDirective {
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
     this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
-
-    if (
-      this.registrationService.manuallyEnteredWorkplaceName$.value ||
-      this.registrationService.manuallyEnteredWorkplace$.value
-    ) {
-      const workplaceName = this.registrationService.selectedLocationAddress$.value.locationName;
-      this.question = `What type of employer is ${workplaceName}`;
-    }
   }
 }
