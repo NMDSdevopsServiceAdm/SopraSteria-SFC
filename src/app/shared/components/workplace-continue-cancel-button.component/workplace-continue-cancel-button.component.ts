@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-workplace-continue-cancel-button',
   templateUrl: './workplace-continue-cancel-button.component.html',
 })
 export class WorkplaceContinueCancelButtonComponent {
+  @Input() marginTop4 = false;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
   onLinkClick(event: Event, action: string, save: boolean): void {
