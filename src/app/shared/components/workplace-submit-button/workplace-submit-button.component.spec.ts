@@ -36,8 +36,6 @@ describe('WorkplaceSubmitButtonComponent', () => {
     const { rerender, getByTestId } = await setup();
 
     const container = getByTestId('button-container');
-    expect(container.getAttribute('class')).not.toContain('govuk-!-margin-top-2');
-
     rerender({ marginTop2: true });
     expect(container.getAttribute('class')).toContain('govuk-!-margin-top-2');
   });
