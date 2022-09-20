@@ -51,7 +51,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
     event.preventDefault();
     const urlArr = this.router.url.split('/');
     const url = urlArr.slice(0, urlArr.length - 1).join('/');
-    this.router.navigate([url, 'main-job-start-date'], {
+    this.router.navigate([url, 'date-of-birth'], {
       state: {
         navigatedFrom: 'mandatory-details',
       },
