@@ -66,6 +66,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
       this.showTextBox = true;
       this.addControl();
       this.addValidationToControl();
+      this.addErrorLinkFunctionality();
     } else if (answer) {
       this.showTextBox = false;
       const { cashAmount } = this.form.controls;
@@ -97,7 +98,8 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   public addValidationToControl() {
     this.form
       .get('cashAmount')
-      .addValidators([Validators.pattern(FLOAT_PATTERN), this.greaterThanTwoDecimalPlacesValidator()]);
+      .setValidators([Validators.pattern(FLOAT_PATTERN), this.greaterThanTwoDecimalPlacesValidator()]);
+    this.form.get('cashAmount').updateValueAndValidity();
   }
 
   private greaterThanTwoDecimalPlacesValidator(): ValidatorFn {
@@ -171,6 +173,12 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
         ],
       },
     ];
+  }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
   }
 
   ngOnDestroy(): void {
