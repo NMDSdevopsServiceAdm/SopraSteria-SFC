@@ -4,7 +4,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceSubmitButtonComponent } from './workplace-submit-button.component';
 
-fdescribe('WorkplaceSubmitButtonComponent', () => {
+describe('WorkplaceSubmitButtonComponent', () => {
   const setup = async (shouldReturn = false) =>
     render(WorkplaceSubmitButtonComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
@@ -14,7 +14,7 @@ fdescribe('WorkplaceSubmitButtonComponent', () => {
         recordSummary: true,
         canExit: false,
         exitText: 'Cancel',
-        reducedMargin: false,
+        marginTop2: false,
         marginTop4: false,
       },
     });
@@ -24,13 +24,21 @@ fdescribe('WorkplaceSubmitButtonComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the button component without conditional margin class if reduced margin by default and with conditional margin if reducedMargin is set to true', async () => {
+  it('should render the button without conditional margin class by default', async () => {
+    const { getByTestId } = await setup();
+
+    const container = getByTestId('button-container');
+    expect(container.getAttribute('class')).not.toContain('govuk-!-margin-top-2');
+    expect(container.getAttribute('class')).not.toContain('govuk-!-margin-top-4');
+  });
+
+  it('should render the button with a margin top of 2 if marginTop2 is set to true', async () => {
     const { rerender, getByTestId } = await setup();
 
     const container = getByTestId('button-container');
     expect(container.getAttribute('class')).not.toContain('govuk-!-margin-top-2');
 
-    rerender({ reducedMargin: true });
+    rerender({ marginTop2: true });
     expect(container.getAttribute('class')).toContain('govuk-!-margin-top-2');
   });
 
