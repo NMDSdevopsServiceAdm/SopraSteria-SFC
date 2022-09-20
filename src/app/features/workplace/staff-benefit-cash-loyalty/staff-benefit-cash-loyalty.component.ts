@@ -71,7 +71,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
       const { cashAmount } = this.form.controls;
       if (cashAmount) {
         this.form.get('cashAmount').clearValidators();
-        // this.form.get('cashAmount').updateValueAndValidity();
+        this.form.get('cashAmount').updateValueAndValidity();
       }
     }
   }

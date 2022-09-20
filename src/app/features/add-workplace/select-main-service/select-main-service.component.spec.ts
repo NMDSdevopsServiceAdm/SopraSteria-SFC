@@ -81,6 +81,12 @@ describe('SelectMainServiceComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the subheading of Workplace', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('subheading').innerText).toEqual('Workplace');
+  });
+
   it('should render the workplace progress bar but not the user progress bar', async () => {
     const { getByTestId, queryByTestId } = await setup();
 
