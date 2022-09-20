@@ -32,7 +32,9 @@ import { MentalHealthProfessionalComponent } from './mental-health-professional/
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
-import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
+import {
+  NewTrainingAndQualificationsRecordComponent,
+} from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -41,7 +43,9 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
+import {
+  SocialCareQualificationLevelComponent,
+} from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
@@ -87,9 +91,244 @@ const routes: Routes = [
     },
     children: [
       {
-        path: '',
-        component: StaffRecordComponent,
-        data: { title: 'Staff Record' },
+        path: 'staff-record-summary',
+        children: [
+          {
+            path: '',
+            component: StaffRecordComponent,
+            data: { title: 'Staff Record' },
+          },
+          {
+            path: 'create-staff-record',
+            canActivate: [CheckPermissionsGuard],
+            component: StaffDetailsComponent,
+            data: {
+              permissions: ['canAddWorker'],
+              title: 'Add a Staff Record',
+            },
+          },
+          {
+            path: 'staff-details',
+            component: StaffDetailsComponent,
+            data: { title: 'Staff Details' },
+          },
+          {
+            path: 'mandatory-details',
+            component: MandatoryDetailsComponent,
+            data: { title: 'Staff Record' },
+          },
+          {
+            path: 'main-job-start-date',
+            component: MainJobStartDateComponent,
+            data: { title: 'Main Job Role Start Date' },
+          },
+          {
+            path: 'select-record-type',
+            canActivate: [CheckPermissionsGuard],
+            component: SelectRecordTypeComponent,
+            data: {
+              permissions: ['canAddWorker'],
+              title: 'Select Record Type',
+            },
+          },
+          {
+            path: 'other-job-roles',
+            component: OtherJobRolesComponent,
+            data: { title: 'Other Job Roles' },
+          },
+          {
+            path: 'nursing-category',
+            component: NursingCategoryComponent,
+            data: { title: 'Nursing Category' },
+          },
+          {
+            path: 'nursing-specialism',
+            component: NursingSpecialismComponent,
+            data: { title: 'Nursing Specialism' },
+          },
+          {
+            path: 'mental-health-professional',
+            component: MentalHealthProfessionalComponent,
+            data: { title: 'Mental Health Professional' },
+          },
+          {
+            path: 'national-insurance-number',
+            component: NationalInsuranceNumberComponent,
+            data: { title: 'National Insurance Number' },
+          },
+          {
+            path: 'date-of-birth',
+            component: DateOfBirthComponent,
+            data: { title: 'Date of Birth' },
+          },
+          {
+            path: 'home-postcode',
+            component: HomePostcodeComponent,
+            data: { title: 'Home Postcode' },
+          },
+          {
+            path: 'gender',
+            component: GenderComponent,
+            data: { title: 'Gender' },
+          },
+          {
+            path: 'disability',
+            component: DisabilityComponent,
+            data: { title: 'Disability' },
+          },
+          {
+            path: 'ethnicity',
+            component: EthnicityComponent,
+            data: { title: 'Ethnicity' },
+          },
+          {
+            path: 'nationality',
+            component: NationalityComponent,
+            data: { title: 'Nationality' },
+          },
+          {
+            path: 'british-citizenship',
+            component: BritishCitizenshipComponent,
+            data: { title: 'British Citizenship' },
+          },
+          {
+            path: 'country-of-birth',
+            component: CountryOfBirthComponent,
+            data: { title: 'Country of Birth' },
+          },
+          {
+            path: 'year-arrived-uk',
+            component: YearArrivedUkComponent,
+            data: { title: 'Year Arrived in the UK' },
+          },
+          {
+            path: 'recruited-from',
+            component: RecruitedFromComponent,
+            data: { title: 'Recruited From' },
+          },
+          {
+            path: 'adult-social-care-started',
+            component: AdultSocialCareStartedComponent,
+            data: { title: 'Adult Social Care Started' },
+          },
+          {
+            path: 'days-of-sickness',
+            component: DaysOfSicknessComponent,
+            data: { title: 'Days of Sickness' },
+          },
+          {
+            path: 'contract-with-zero-hours',
+            component: ContractWithZeroHoursComponent,
+            data: { title: 'Contract with Zero Hours' },
+          },
+          {
+            path: 'average-weekly-hours',
+            component: AverageWeeklyHoursComponent,
+            data: { title: 'Average Weekly Hours' },
+          },
+          {
+            path: 'weekly-contracted-hours',
+            component: WeeklyContractedHoursComponent,
+            data: { title: 'Weekly Contracted Hours' },
+          },
+          {
+            path: 'salary',
+            component: SalaryComponent,
+            data: { title: 'Salary' },
+          },
+          {
+            path: 'care-certificate',
+            component: CareCertificateComponent,
+            data: { title: 'Care Certificate' },
+          },
+          {
+            path: 'apprenticeship-training',
+            component: ApprenticeshipTrainingComponent,
+            data: { title: 'Apprenticeship Training' },
+          },
+          {
+            path: 'social-care-qualification',
+            component: SocialCareQualificationComponent,
+            data: { title: 'Social Care Qualification' },
+          },
+          {
+            path: 'social-care-qualification-level',
+            component: SocialCareQualificationLevelComponent,
+            data: { title: 'Highest Social Care Qualification Level' },
+          },
+          {
+            path: 'other-qualifications',
+            component: OtherQualificationsComponent,
+            data: { title: 'Other Qualifications' },
+          },
+          {
+            path: 'other-qualifications-level',
+            component: OtherQualificationsLevelComponent,
+            data: { title: 'Highest Level of Other Qualifications' },
+          },
+          {
+            path: 'add-qualification',
+            component: AddEditQualificationComponent,
+            data: { title: 'Add Qualification' },
+          },
+          {
+            path: 'qualification/:qualificationId',
+            children: [
+              {
+                path: '',
+                component: AddEditQualificationComponent,
+                data: { title: 'Qualification' },
+              },
+              {
+                path: 'delete',
+                component: DeleteRecordComponent,
+                data: { title: 'Delete Qualification' },
+                resolve: {
+                  qualificationRecord: QualificationResolver,
+                },
+              },
+            ],
+          },
+          {
+            path: 'add-training',
+            component: AddEditTrainingComponent,
+            data: { title: 'Add Training' },
+          },
+          {
+            path: 'training/:trainingRecordId',
+            children: [
+              {
+                path: '',
+                component: AddEditTrainingComponent,
+                data: { title: 'Training' },
+              },
+              {
+                path: 'delete',
+                component: DeleteRecordComponent,
+                data: { title: 'Delete Training' },
+                resolve: {
+                  trainingRecord: TrainingRecordResolver,
+                },
+              },
+            ],
+          },
+          {
+            path: 'training',
+            component: NewTrainingAndQualificationsRecordComponent,
+            resolve: {
+              worker: WorkerResolver,
+              trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
+              expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
+            },
+            data: { title: 'Training and qualification record' },
+          },
+          {
+            path: 'long-term-absence',
+            component: LongTermAbsenceComponent,
+            resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
+            data: { title: 'Flag long term absence' },
+          },
+        ],
       },
       {
         path: 'staff-details',
