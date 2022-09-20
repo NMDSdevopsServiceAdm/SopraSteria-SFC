@@ -25,7 +25,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
       value: StaffBenefitEnum.NO,
     },
     {
-      label: "Don't know",
+      label: `Don't know`,
       value: StaffBenefitEnum.DONT_KNOW,
     },
   ];
@@ -70,7 +70,8 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
       this.showTextBox = false;
       const { cashAmount } = this.form.controls;
       if (cashAmount) {
-        this.form.removeControl('cashAmount');
+        this.form.get('cashAmount').clearValidators();
+        // this.form.get('cashAmount').updateValueAndValidity();
       }
     }
   }
@@ -112,7 +113,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
 
   protected generateUpdateProps(): any {
     const { cashLoyalty, cashAmount } = this.form.value;
-    if (cashAmount) {
+    if (cashLoyalty === 'Yes' && cashAmount) {
       return cashAmount;
     }
     if (cashLoyalty) {
