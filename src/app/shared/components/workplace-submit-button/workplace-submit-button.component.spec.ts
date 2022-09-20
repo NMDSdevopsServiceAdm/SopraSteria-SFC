@@ -4,7 +4,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceSubmitButtonComponent } from './workplace-submit-button.component';
 
-describe('WorkplaceSubmitButtonComponent', () => {
+fdescribe('WorkplaceSubmitButtonComponent', () => {
   const setup = async (shouldReturn = false) =>
     render(WorkplaceSubmitButtonComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
@@ -15,6 +15,7 @@ describe('WorkplaceSubmitButtonComponent', () => {
         canExit: false,
         exitText: 'Cancel',
         reducedMargin: false,
+        marginTop4: false,
       },
     });
 
@@ -31,6 +32,14 @@ describe('WorkplaceSubmitButtonComponent', () => {
 
     rerender({ reducedMargin: true });
     expect(container.getAttribute('class')).toContain('govuk-!-margin-top-2');
+  });
+
+  it('should render the button with a margin top of 4 if marginTop4 is set to true', async () => {
+    const { rerender, getByTestId } = await setup();
+
+    const container = getByTestId('button-container');
+    rerender({ marginTop4: true });
+    expect(container.getAttribute('class')).toContain('govuk-!-margin-top-4');
   });
 
   describe('return is false', () => {
