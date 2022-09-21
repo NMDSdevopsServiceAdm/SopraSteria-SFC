@@ -231,6 +231,25 @@ describe('ServicesCapacityComponent', () => {
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
+
+      it('should render only the min error message if first input has 0 and the second input has a number', async () => {
+        const { component, fixture, getByText, getByLabelText, getAllByText, queryAllByText } = await setup();
+
+        const capacities: any[] = component.capacities;
+        const questions: string = capacities[0]['questions'];
+        const firstInput = getByLabelText(questions[0]['question']);
+        const secondInput = getByLabelText(questions[1]['question']);
+
+        userEvent.type(firstInput, '0');
+        userEvent.type(secondInput, '5');
+        userEvent.click(getByText('Save and return'));
+        fixture.detectChanges();
+
+        const errorMessage = getAllByText('Number must be between 1 and 999');
+        expect(errorMessage).toBeTruthy();
+        expect(errorMessage.length).toEqual(2);
+        expect(queryAllByText('Number cannot be more than the places you have').length).toEqual(0);
+      });
     });
 
     describe(`questions including the word 'bed'`, () => {
@@ -363,6 +382,25 @@ describe('ServicesCapacityComponent', () => {
         const errorMessage = getAllByText('Enter how many beds you have');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
+      });
+
+      it('should render only the min error message if first input has 0 and the second input has a number', async () => {
+        const { component, fixture, getByText, getByLabelText, getAllByText, queryAllByText } = await setup();
+
+        const capacities: any[] = component.capacities;
+        const questions: string = capacities[0]['questions'];
+        const firstInput = getByLabelText(questions[0]['question']);
+        const secondInput = getByLabelText(questions[1]['question']);
+
+        userEvent.type(firstInput, '0');
+        userEvent.type(secondInput, '5');
+        userEvent.click(getByText('Save and return'));
+        fixture.detectChanges();
+
+        const errorMessage = getAllByText('Number must be between 1 and 999');
+        expect(errorMessage).toBeTruthy();
+        expect(errorMessage.length).toEqual(2);
+        expect(queryAllByText('Number cannot be more than the beds you have').length).toEqual(0);
       });
     });
 

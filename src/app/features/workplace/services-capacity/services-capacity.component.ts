@@ -166,7 +166,7 @@ export class ServicesCapacityComponent extends Question {
     });
 
     if (controls[1] && !controls[0].value && controls[1].value) {
-      return { required: true };
+      return controls[0].value === 0 ? null : { required: true };
     }
 
     return null;
