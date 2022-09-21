@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
 @Component({
   selector: 'app-mandatory-details',
@@ -18,6 +19,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public primaryWorkplace: Establishment;
   public subscriptions: Subscription = new Subscription();
+  public staffRecordSections: ProgressBarUtil;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -30,6 +32,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
+    this.staffRecordSections = ProgressBarUtil.staffRecordMiniFlowProgressBarSections();
 
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
