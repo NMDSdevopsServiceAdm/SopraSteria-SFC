@@ -19,7 +19,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public contractsAvailable: Array<string> = [];
   public jobsAvailable: Job[] = [];
   public showInputTextforOtherRole: boolean;
-  public submitTitle = 'Save staff record';
+  public submitTitle = 'Save this staff record';
   public canReturn = false;
   public canExit = true;
   public editFlow: boolean;
@@ -46,6 +46,8 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'staff-record';
+    this.flow = this.insideFlow ? 'staff-record' : 'staff-record/staff-record-summary';
     this.contractsAvailable = Object.values(Contracts);
     this.editFlow = !!this.worker;
     this.subscriptions.add(
