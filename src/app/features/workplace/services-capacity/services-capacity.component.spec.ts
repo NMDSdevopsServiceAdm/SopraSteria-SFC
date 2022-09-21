@@ -18,27 +18,33 @@ import userEvent from '@testing-library/user-event';
 
 import { ServicesCapacityComponent } from './services-capacity.component';
 
-describe('ServicesCapacityComponent', () => {
+fdescribe('ServicesCapacityComponent', () => {
   const setup = async (returnUrl = true) => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
-      ServicesCapacityComponent,
-      {
-        imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
-        providers: [
-          { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl),
-            deps: [HttpClient],
-          },
-          FormBuilder,
-          ErrorSummaryService,
-          SubmitButtonComponent,
-          QuestionComponent,
-        ],
-      },
-    );
+    const {
+      fixture,
+      getByText,
+      getAllByText,
+      getByTestId,
+      queryByText,
+      queryAllByText,
+      queryByTestId,
+      getByLabelText,
+    } = await render(ServicesCapacityComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      providers: [
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl),
+          deps: [HttpClient],
+        },
+        FormBuilder,
+        ErrorSummaryService,
+        SubmitButtonComponent,
+        QuestionComponent,
+      ],
+    });
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -52,6 +58,7 @@ describe('ServicesCapacityComponent', () => {
       getByTestId,
       queryByText,
       queryByTestId,
+      queryAllByText,
       getByLabelText,
       routerSpy,
     };
@@ -105,25 +112,26 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = getAllByText('Places you have must be a whole number');
+        const errorMessage = getAllByText('Number of places you have must be a whole number');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
 
       it('should render the correct error message if a number less than 1 is inputted for the question that is first in the sequence', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup();
+        const { component, fixture, getByText, getByLabelText, getAllByText, queryAllByText } = await setup();
 
         const capacities: any[] = component.capacities;
         const question: string = capacities[0]['questions'][0];
         const input = getByLabelText(question['question']);
 
-        userEvent.type(input, '0');
+        userEvent.type(input, '-1');
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         const errorMessage = getAllByText('Number must be between 1 and 999');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
+        expect(queryAllByText('Number cannot be more than the places you have').length).toEqual(0);
       });
 
       it('should render the correct error message if a number greater than 999 is inputted for the question that is first in the sequence', async () => {
@@ -153,7 +161,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = getAllByText('Places being used must be a whole number');
+        const errorMessage = getAllByText('Number of places being used must be a whole number');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
@@ -207,6 +215,22 @@ describe('ServicesCapacityComponent', () => {
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
+
+      it('should render the correct error message if the number of places being used has a number but the places they have is blank', async () => {
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup();
+
+        const capacities: any[] = component.capacities;
+        const questions: string = capacities[0]['questions'];
+        const secondInput = getByLabelText(questions[1]['question']);
+
+        userEvent.type(secondInput, '5');
+        userEvent.click(getByText('Save and return'));
+        fixture.detectChanges();
+
+        const errorMessage = getAllByText('Enter how many places they have at the moment');
+        expect(errorMessage).toBeTruthy();
+        expect(errorMessage.length).toEqual(2);
+      });
     });
 
     describe(`questions including the word 'bed'`, () => {
@@ -221,25 +245,26 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = getAllByText('Beds you have must be a whole number');
+        const errorMessage = getAllByText('Number of beds you have must be a whole number');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
 
       it('should render the correct error message if a number less than 1 is inputted for the question that is first in the sequence', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup();
+        const { component, fixture, getByText, getByLabelText, getAllByText, queryAllByText } = await setup();
 
         const capacities: any[] = component.capacities;
         const question: string = capacities[1]['questions'][0];
         const input = getByLabelText(question['question']);
 
-        userEvent.type(input, '0');
+        userEvent.type(input, '-1');
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         const errorMessage = getAllByText('Number must be between 1 and 999');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
+        expect(queryAllByText('Number cannot be more than the places you have').length).toEqual(0);
       });
 
       it('should render the correct error message if a number greater than 999 is inputted for the question that is first in the sequence', async () => {
@@ -269,7 +294,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = getAllByText('Beds being used must be a whole number');
+        const errorMessage = getAllByText('Number of beds being used must be a whole number');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
@@ -323,6 +348,22 @@ describe('ServicesCapacityComponent', () => {
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
+
+      fit('should render the correct error message if the number of beds being used has a number but the beds they have is blank', async () => {
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup();
+
+        const capacities: any[] = component.capacities;
+        const questions: string = capacities[1]['questions'];
+        const secondInput = getByLabelText(questions[1]['question']);
+
+        userEvent.type(secondInput, '5');
+        userEvent.click(getByText('Save and return'));
+        fixture.detectChanges();
+
+        const errorMessage = getAllByText('Enter how many beds you have');
+        expect(errorMessage).toBeTruthy();
+        expect(errorMessage.length).toEqual(2);
+      });
     });
 
     describe(`question including the words 'people receiving care'`, () => {
@@ -337,7 +378,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = getAllByText('People receiving care must be a whole number');
+        const errorMessage = getAllByText('Number of people receiving care must be a whole number');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
@@ -387,7 +428,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = getAllByText('People using the service must be a whole number');
+        const errorMessage = getAllByText('Number of people using the service must be a whole number');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
