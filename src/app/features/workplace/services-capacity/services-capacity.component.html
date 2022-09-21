@@ -28,16 +28,6 @@
               <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
                 <h2 class="govuk-fieldset__heading">{{ capacity.service }}</h2>
               </legend>
-              <!-- <span
-                *ngIf="
-                  submitted && form.get(groupName).invalid && this.capacityUtilisationValidator(form.get(groupName))
-                "
-                id="{{ groupName }}-error"
-                class="govuk-error-message"
-              >
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ getFormErrorMessage(groupName, 'overcapacity') }}
-              </span> -->
               <ng-container *ngFor="let question of capacity.questions; let idx = index">
                 <div
                   class="govuk-form-group"
@@ -55,14 +45,32 @@
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFirstErrorMessage(groupName + '.' + controlName) }}
                   </span>
-                  <!-- <span
-                    *ngIf="submitted && form.get(groupName).get(controlName).invalid"
-                    id="{{ groupName }}-{{ controlName }}-error"
+                  <span
+                    *ngIf="
+                      submitted &&
+                      form.get(groupName).invalid &&
+                      this.requiredValidator(form.get(groupName)) &&
+                      idx === 0
+                    "
+                    id="{{ groupName }}-error"
                     class="govuk-error-message"
                   >
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage(groupName + '.' + controlName, 'required') }}
-                  </span> -->
+                    {{ getFormErrorMessage(groupName, 'required') }}
+                  </span>
+                  <span
+                    *ngIf="
+                      submitted &&
+                      form.get(groupName).invalid &&
+                      this.capacityUtilisationValidator(form.get(groupName)) &&
+                      idx === 1
+                    "
+                    id="{{ groupName }}-error"
+                    class="govuk-error-message"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage(groupName, 'overcapacity') }}
+                  </span>
                   <input
                     class="govuk-input govuk-input--width-4"
                     [class.govuk-input--error]="submitted && form.get(groupName).get(controlName).invalid"

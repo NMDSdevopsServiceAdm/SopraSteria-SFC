@@ -18,7 +18,7 @@ import userEvent from '@testing-library/user-event';
 
 import { ServicesCapacityComponent } from './services-capacity.component';
 
-fdescribe('ServicesCapacityComponent', () => {
+describe('ServicesCapacityComponent', () => {
   const setup = async (returnUrl = true) => {
     const {
       fixture,
@@ -227,7 +227,7 @@ fdescribe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = getAllByText('Enter how many places they have at the moment');
+        const errorMessage = getAllByText('Enter how many places you have at the moment');
         expect(errorMessage).toBeTruthy();
         expect(errorMessage.length).toEqual(2);
       });
@@ -349,7 +349,7 @@ fdescribe('ServicesCapacityComponent', () => {
         expect(errorMessage.length).toEqual(2);
       });
 
-      fit('should render the correct error message if the number of beds being used has a number but the beds they have is blank', async () => {
+      it('should render the correct error message if the number of beds being used has a number but the beds they have is blank', async () => {
         const { component, fixture, getByText, getByLabelText, getAllByText } = await setup();
 
         const capacities: any[] = component.capacities;
