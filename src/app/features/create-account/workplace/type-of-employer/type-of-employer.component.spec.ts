@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -87,30 +86,6 @@ describe('TypeOfEmployerComponent', () => {
     const { getByText } = await setup();
 
     expect(getByText('What type of employer is your workplace?')).toBeTruthy();
-  });
-
-  it('should render the question with the workplace name when the workplace name has been manually entered', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.registrationService.manuallyEnteredWorkplaceName$.next(true);
-    component.registrationService.selectedLocationAddress$.next({ locationName: 'Care Home 1' } as LocationAddress);
-
-    component.ngOnInit();
-    fixture.detectChanges();
-
-    expect(getByText('What type of employer is Care Home 1')).toBeTruthy();
-  });
-
-  it('should render the question with the workplace name when the workplace has been manually entered', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.registrationService.manuallyEnteredWorkplace$.next(true);
-    component.registrationService.selectedLocationAddress$.next({ locationName: 'Care Home 2' } as LocationAddress);
-
-    component.ngOnInit();
-    fixture.detectChanges();
-
-    expect(getByText('What type of employer is Care Home 2')).toBeTruthy();
   });
 
   it('should render the workplace and user account progress bars', async () => {
