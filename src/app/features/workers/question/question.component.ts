@@ -106,6 +106,10 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(this.getRoutePath(''));
         break;
 
+      case 'skip':
+        this.router.navigate(this.next);
+        break;
+
       case 'exit':
         const url =
           this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
@@ -122,7 +126,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     if (name) {
       return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
     } else {
-      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
     }
   }
 
