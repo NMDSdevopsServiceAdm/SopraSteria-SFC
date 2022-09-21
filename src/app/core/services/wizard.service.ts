@@ -22,7 +22,7 @@ export class WizardService {
     };
     params = params.set('sort', 'order');
     params = params.set('fields', 'content,title,image,video');
-    params = params.set('filter', JSON.stringify(benchmarkFilter));
+    params = params.set('_filter', JSON.stringify(benchmarkFilter));
 
     return this.http.get<Wizard>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
