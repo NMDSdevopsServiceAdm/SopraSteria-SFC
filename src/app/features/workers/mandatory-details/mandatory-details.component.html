@@ -1,5 +1,5 @@
 <ng-container *ngIf="worker">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
+  <div class="govuk-grid-column-two-thirds-from-desktop govuk-!-padding-left-0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -9,7 +9,7 @@
       </div>
     </div>
     <app-basic-record data-testid="summary" [workplace]="workplace" [worker]="worker"></app-basic-record>
-    <div class="govuk-!-margin-top-6">
+    <div class="govuk-!-margin-top-8">
       <button
         data-testid="add-details-button"
         class="govuk-button govuk-!-margin-right-9"
@@ -34,6 +34,7 @@
         data-testid="progress-bar-1"
         [sections]="staffRecordSections"
         [currentSection]="'Mandatory information'"
+        [currentSectionComplete]="true"
       ></app-progress-bar>
     </div>
   </div>
