@@ -45,7 +45,15 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   }
 
   public setBackLink(): void {
-    const url = { url: ['/dashboard'], fragment: 'staff-records' };
+    const url = {
+      url: [
+        '/workplace',
+        this.establishmentService.establishment.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-details',
+      ],
+    };
     this.backService.setBackLink(url);
   }
 
