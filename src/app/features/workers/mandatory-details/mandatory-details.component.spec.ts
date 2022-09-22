@@ -108,16 +108,6 @@ describe('MandatoryDetailsComponent', () => {
     expect(container.getAllByText(expectedWorker.contract));
   });
 
-  it('should show have the title mandatory details on summary', async () => {
-    const { getByTestId, fixture } = await setup;
-
-    fixture.detectChanges();
-
-    const container = within(getByTestId('summary'));
-
-    expect(container.getAllByText('Mandatory details'));
-  });
-
   it('should take you to the staff-details page when change link is clicked', async () => {
     const { fixture, getByText } = await setup;
 
