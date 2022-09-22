@@ -95,6 +95,12 @@ describe('MandatoryDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  fit('should render the progress bar', async () => {
+    const { queryByTestId } = await setup;
+
+    expect(queryByTestId('progress-bar-1')).toBeTruthy();
+  });
+
   it('should show Worker information in summary list', async () => {
     const { getByTestId, fixture } = await setup;
 
