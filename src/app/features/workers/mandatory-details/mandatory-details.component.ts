@@ -9,6 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
+import { BackService } from '@core/services/back.service';
 
 @Component({
   selector: 'app-mandatory-details',
@@ -22,7 +23,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   public staffRecordSections: ProgressBarUtil;
 
   constructor(
-    private breadcrumbService: BreadcrumbService,
+    private backService: BackService,
     private route: ActivatedRoute,
     private workerService: WorkerService,
     private router: Router,
@@ -40,8 +41,12 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
       }),
     );
 
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
-    this.breadcrumbService.show(journey);
+    this.setBackLink();
+  }
+
+  public setBackLink(): void {
+    const url = { url: ['/dashboard'], fragment: 'staff-records' };
+    this.backService.setBackLink(url);
   }
 
   navigateToDashboard(event: Event): void {
