@@ -8,6 +8,7 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import isNull from 'lodash/isNull';
 import { Subscription } from 'rxjs';
 
@@ -31,6 +32,10 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected subscriptions: Subscription = new Subscription();
   protected initiated = false;
 
+  public staffRecordSections: string[];
+  public insideFlow: boolean;
+  public flow: string;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -44,6 +49,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.return = this.workerService.returnTo;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
+    this.staffRecordSections = ProgressBarUtil.staffRecordProgressBarSections();
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
         this.worker = worker;
