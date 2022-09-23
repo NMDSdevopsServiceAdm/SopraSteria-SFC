@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
@@ -18,7 +18,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import { ConfirmDetailsComponent } from './confirm-details.component';
 
 describe('ConfirmDetailsComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const { fixture, getByText, getByTestId, getAllByText, queryByText } = await render(ConfirmDetailsComponent, {
       imports: [
         SharedModule,
@@ -39,6 +39,20 @@ describe('ConfirmDetailsComponent', () => {
           useClass: MockUserService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: registrationFlow ? 'registration' : 'confirm-details',
+                  },
+                ],
+              },
+            },
+          },
+        },
       ],
     });
 
@@ -74,7 +88,7 @@ describe('ConfirmDetailsComponent', () => {
 
   it('should have the title Check your details before you submit them', async () => {
     const { queryByText } = await setup();
-    const expectedTitle = 'Check your details before you submit them';
+    const expectedTitle = 'Check these details before you submit them';
 
     expect(queryByText(expectedTitle, { exact: false })).toBeTruthy();
   });
@@ -105,7 +119,7 @@ describe('ConfirmDetailsComponent', () => {
     component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(true);
     component.ngOnInit();
 
-    expect(component.form.valid).toBeTruthy();
+    expect(component.form.value.termsAndConditions).toEqual('check');
   });
 
   it('should not preselect the terms and conditions checkbox if it is set to false in the service', async () => {
@@ -114,7 +128,7 @@ describe('ConfirmDetailsComponent', () => {
     component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(false);
     component.ngOnInit();
 
-    expect(component.form.valid).toBeFalsy();
+    expect(component.form.value.termsAndConditions).toBeNull();
   });
 
   it('should update the value of termsAndConditionsCheckbox$ in the service when the checkbox is clicked', async () => {

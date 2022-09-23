@@ -14,42 +14,45 @@ import { AddWorkplaceModule } from '../add-workplace.module';
 import { SelectMainServiceComponent } from './select-main-service.component';
 
 describe('SelectMainServiceComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(SelectMainServiceComponent, {
-      imports: [
-        SharedModule,
-        AddWorkplaceModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        {
-          provide: WorkplaceService,
-          useClass: MockWorkplaceService,
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              parent: {
-                url: [
-                  {
-                    path: 'add-workplace',
-                  },
-                ],
+  async function setup(addWorkplaceFlow = true) {
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      SelectMainServiceComponent,
+      {
+        imports: [
+          SharedModule,
+          AddWorkplaceModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          {
+            provide: WorkplaceService,
+            useClass: MockWorkplaceService,
+          },
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                parent: {
+                  url: [
+                    {
+                      path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
+                    },
+                  ],
+                },
               },
             },
           },
-        },
-        FormBuilder,
-      ],
-    });
+          FormBuilder,
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -67,6 +70,8 @@ describe('SelectMainServiceComponent', () => {
       queryByText,
       getByText,
       getByLabelText,
+      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -74,6 +79,26 @@ describe('SelectMainServiceComponent', () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
+  });
+
+  it('should render the subheading of Workplace', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('subheading').innerText).toEqual('Workplace');
+  });
+
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { queryByTestId } = await setup(false);
+
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should show CQC text when following the CQC regulated flow', async () => {
@@ -108,7 +133,7 @@ describe('SelectMainServiceComponent', () => {
     component.isRegulated = false;
     fixture.detectChanges();
 
-    expect(queryByText('Select its main service')).toBeTruthy();
+    expect(queryByText('Select their main service')).toBeTruthy();
   });
 
   it('should show add-workplace error message when nothing has been selected', async () => {
@@ -154,19 +179,6 @@ describe('SelectMainServiceComponent', () => {
 
       expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['add-workplace', 'type-of-employer'],
-      });
-    });
-
-    it('should set back link to confirm-workplace-details when returnToConfirmDetails is not null', async () => {
-      const { component } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'confirm-workplace-details'],
       });
     });
   });

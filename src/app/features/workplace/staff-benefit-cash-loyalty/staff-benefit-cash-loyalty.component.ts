@@ -24,7 +24,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
       value: StaffBenefitEnum.NO,
     },
     {
-      label: "Don't know",
+      label: `Don't know`,
       value: StaffBenefitEnum.DONT_KNOW,
     },
   ];
@@ -65,11 +65,13 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
       this.showTextBox = true;
       this.addControl();
       this.addValidationToControl();
+      this.addErrorLinkFunctionality();
     } else if (answer) {
       this.showTextBox = false;
       const { cashAmount } = this.form.controls;
       if (cashAmount) {
-        this.form.removeControl('cashAmount');
+        this.form.get('cashAmount').clearValidators();
+        this.form.get('cashAmount').updateValueAndValidity();
       }
     }
   }
@@ -95,7 +97,8 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   public addValidationToControl() {
     this.form
       .get('cashAmount')
-      .addValidators([Validators.pattern(FLOAT_PATTERN), this.greaterThanTwoDecimalPlacesValidator()]);
+      .setValidators([Validators.pattern(FLOAT_PATTERN), this.greaterThanTwoDecimalPlacesValidator()]);
+    this.form.get('cashAmount').updateValueAndValidity();
   }
 
   private greaterThanTwoDecimalPlacesValidator(): ValidatorFn {
@@ -111,7 +114,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
 
   protected generateUpdateProps(): any {
     const { cashLoyalty, cashAmount } = this.form.value;
-    if (cashAmount) {
+    if (cashLoyalty === 'Yes' && cashAmount) {
       return cashAmount;
     }
     if (cashLoyalty) {
@@ -155,6 +158,12 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
         ],
       },
     ];
+  }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
   }
 
   ngOnDestroy(): void {

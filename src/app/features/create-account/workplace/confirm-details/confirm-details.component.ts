@@ -29,7 +29,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
-  protected termsAndConditionsCheckbox: boolean;
+  public termsAndConditionsCheckbox: boolean;
   protected service: Service;
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
@@ -42,6 +42,7 @@ export class ConfirmDetailsComponent implements OnInit {
   protected actionType: string;
   public isCqcRegulated: boolean;
   public typeOfEmployer: EmployerType;
+  public workplaceName: string;
 
   constructor(
     public registrationService: RegistrationService,
@@ -58,6 +59,8 @@ export class ConfirmDetailsComponent implements OnInit {
     this.prefillForm();
     this.setupSubscriptions();
     this.setBackLink();
+    this.termsAndConditionsCheckbox = false;
+    this.workplaceName = this.locationAddress.locationName;
   }
 
   ngAfterViewInit() {
@@ -158,7 +161,7 @@ export class ConfirmDetailsComponent implements OnInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      termsAndConditions: [null, Validators.required],
+      termsAndConditions: [null, { validators: [Validators.required, Validators.requiredTrue], updateOn: 'submit' }],
     });
   }
 
@@ -184,9 +187,9 @@ export class ConfirmDetailsComponent implements OnInit {
       });
     }
   }
-
   public setTermsAndConditionsCheckbox() {
-    this.registrationService.termsAndConditionsCheckbox$.next(!this.termsAndConditionsCheckbox);
+    this.termsAndConditionsCheckbox = !this.form.get('termsAndConditions').value;
+    this.registrationService.termsAndConditionsCheckbox$.next(this.termsAndConditionsCheckbox);
   }
 
   public getFirstErrorMessage(item: string): string {

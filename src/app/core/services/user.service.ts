@@ -76,6 +76,10 @@ export class UserService {
     this._returnUrl$ = null;
   }
 
+  public resetUserDetails() {
+    this._userDetails$.next(null);
+  }
+
   // get agreedUpdatedTermsStatus
   public get agreedUpdatedTerms() {
     if (this._agreedUpdatedTermsStatus) {

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -19,10 +19,11 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private workplaceService: WorkplaceService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, workplaceService);
+    super(backService, errorSummaryService, formBuilder, router, route, workplaceService);
   }
 
   protected init(): void {

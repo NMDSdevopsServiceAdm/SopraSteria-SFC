@@ -187,6 +187,36 @@ export class MockEstablishmentService extends EstablishmentService {
       vacancies: 'None',
     } as Establishment);
   }
+
+  public getCapacity(establishmentId: any, all: boolean): Observable<any> {
+    return of({
+      allServiceCapacities: [
+        {
+          service: 'Main Service - Some kind of service',
+          questions: [
+            { question: 'How many places do you have at the moment?', questionId: 101, seq: 1 },
+            { question: 'Number of those places being used?', questionId: 107, seq: 2 },
+          ],
+        },
+        {
+          service: 'Adult - Residential care',
+          questions: [
+            { question: 'How many beds do you have?', questionId: 102, seq: 1 },
+            { question: 'How many of those beds are being used?', questionId: 105, seq: 2 },
+          ],
+        },
+        {
+          service: 'Domiciliary - Home services',
+          questions: [{ question: 'Number of people receiving care at the moment', questionId: 109, seq: 1 }],
+        },
+        {
+          service: 'Extra Care - Housing services',
+          questions: [{ question: 'Number of people using the service at the moment', questionId: 111, seq: 1 }],
+        },
+      ],
+      mainService: { id: 100, name: 'Some kind of service' },
+    });
+  }
 }
 
 @Injectable()

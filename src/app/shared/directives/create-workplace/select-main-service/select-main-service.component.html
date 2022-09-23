@@ -9,16 +9,17 @@
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <span class="govuk-caption-l" data-testid="subheading">{{ isWorkPlaceUpdate ? 'Services' : 'Workplace' }}</span>
+        <h1 class="govuk-fieldset__heading">Select {{ isParent ? 'their' : 'your' }} main service</h1>
+      </legend>
+      <div class="govuk-form-group govuk-!-margin-bottom-8" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">Select {{ isParent ? 'its' : 'your' }} main service</h1>
-          </legend>
           <div *ngIf="displayIntro">
             <ng-container *ngIf="isRegulated">
               <ng-container *ngIf="isParent; else notParent">
                 <p>
-                  Because you said the main service it provides is regulated by the Care Quality Commission (CQC),
+                  Because you said the main service they provide is regulated by the Care Quality Commission (CQC),
                   Skills for Care will need to check your selection matches the CQC database.
                 </p>
               </ng-container>
@@ -76,9 +77,7 @@
                   [attr.data-testid]="'workplaceServiceOther-' + service.id"
                 >
                   <div class="govuk-form-group govuk-!-margin-bottom-2">
-                    <label class="govuk-label" for="otherWorkplaceService-{{ service.id }}">
-                      Enter your other service
-                    </label>
+                    <label class="govuk-label" for="otherWorkplaceService-{{ service.id }}"> Service </label>
                     <span
                       id="otherWorkplaceService-error"
                       class="govuk-error-message"
@@ -103,16 +102,24 @@
           </fieldset>
         </fieldset>
       </div>
+      <app-registration-submit-buttons [insideFlow]="insideFlow" [returnRoute]="flow"></app-registration-submit-buttons>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [header]="'Workplace'"
+          [sections]="workplaceSections"
+          [currentSection]="'Main service'"
+        ></app-progress-bar>
+        <app-progress-bar
+          *ngIf="this.flow.includes('registration')"
+          data-testid="progress-bar-2"
+          [header]="'User account'"
+          [sections]="userAccountSections"
+          [currentSection]="'Main service'"
+        ></app-progress-bar>
+      </div>
     </div>
   </div>
-  <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
-    <app-workplace-submit-button
-      [return]="!!return"
-      (clicked)="setSubmitAction($event)"
-      [isExistingStaffRecord]="false"
-    ></app-workplace-submit-button>
-  </ng-container>
-  <ng-template #workplaceAdd>
-    <app-submit-exit-buttons [cta]="callToActionLabel"></app-submit-exit-buttons>
-  </ng-template>
 </form>

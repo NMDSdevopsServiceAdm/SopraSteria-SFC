@@ -7,14 +7,14 @@ import { RegistrationService } from '@core/services/registration.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
-
+import { ReactiveFormsModule } from '@angular/forms';
 import { RegistrationModule } from '../../../registration/registration.module';
 import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
 describe('RegulatedByCqcComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(RegulatedByCqcComponent, {
-      imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,
@@ -28,7 +28,7 @@ describe('RegulatedByCqcComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },

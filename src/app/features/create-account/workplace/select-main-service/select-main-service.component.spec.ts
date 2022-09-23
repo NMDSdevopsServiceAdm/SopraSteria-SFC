@@ -19,8 +19,8 @@ import { fireEvent, render } from '@testing-library/angular';
 import { SelectMainServiceComponent } from './select-main-service.component';
 
 describe('SelectMainServiceComponent', () => {
-  async function setup(mainServicePrefilled = false) {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId } = await render(
+  async function setup(mainServicePrefilled = false, registrationFlow = true) {
+    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
       SelectMainServiceComponent,
       {
         imports: [
@@ -51,7 +51,7 @@ describe('SelectMainServiceComponent', () => {
                 parent: {
                   url: [
                     {
-                      path: 'registration',
+                      path: registrationFlow ? 'registration' : 'confirm-details',
                     },
                   ],
                 },
@@ -80,6 +80,7 @@ describe('SelectMainServiceComponent', () => {
       getByText,
       getByLabelText,
       getByTestId,
+      queryByTestId,
     };
   }
 
@@ -87,6 +88,26 @@ describe('SelectMainServiceComponent', () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
+  });
+
+  it('should render the subheading of Workplace', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('subheading').innerText).toEqual('Workplace');
+  });
+
+  it('should render the workplace and user account progress bars', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { queryByTestId } = await setup(false, false);
+
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should show CQC text when following the CQC regulated flow', async () => {
@@ -154,23 +175,6 @@ describe('SelectMainServiceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['registration', 'add-total-staff']);
-  });
-
-  it('should submit and go to the registration/confirm-details url when option selected and returnToConfirmDetails is not null', async () => {
-    const { component, fixture, getByText, getByLabelText, spy } = await setup();
-
-    component.isParent = false;
-    component.isRegulated = true;
-    component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
-    fixture.detectChanges();
-
-    const radioButton = getByLabelText('Name');
-    fireEvent.click(radioButton);
-
-    const continueButton = getByText('Continue');
-    fireEvent.click(continueButton);
-
-    expect(spy).toHaveBeenCalledWith(['registration', 'confirm-details']);
   });
 
   it('should show the other input box when an other option is selected', async () => {

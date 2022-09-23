@@ -5,6 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
 @Directive()
 export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
@@ -14,6 +15,10 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   public submitted = false;
   protected flow: string;
   protected isCqcRegulated: boolean;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
+  public insideFlow: boolean;
+  public title: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -25,7 +30,9 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
+    this.init();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.isCqcRegulated = this.workplaceInterfaceService.isCqcRegulated$.value;
     this.setupForm();
     this.setupFormErrorsMap();
@@ -41,7 +48,12 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group({
       regulatedByCQC: [null, { validators: Validators.required, updateOn: 'submit' }],
     });
+
+    this.title = this.flow === 'registration' ? 'Is the main service you provide'
+      : 'Is their main service';
   }
+
+  protected init(): void {}
 
   protected setupFormErrorsMap(): void {
     const flowWording = this.flow === 'registration' ? 'you provide' : 'it provides';
@@ -82,7 +94,7 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
 
     if (this.form.valid) {
       if (regulatedByCQC.value === 'yes') {
-        this.router.navigate([`/${this.flow}`, 'find-workplace']);
+      this.router.navigate([`/${this.flow}`, 'find-workplace']);
       } else {
         this.router.navigate([`/${this.flow}`, 'find-workplace-address']);
       }

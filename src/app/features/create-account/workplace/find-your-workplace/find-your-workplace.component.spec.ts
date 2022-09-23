@@ -16,7 +16,7 @@ import { BehaviorSubject, throwError } from 'rxjs';
 import { FindYourWorkplaceComponent } from './find-your-workplace.component';
 
 describe('FindYourWorkplaceComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(FindYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -36,7 +36,7 @@ describe('FindYourWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -66,6 +66,20 @@ describe('FindYourWorkplaceComponent', () => {
   it('should render a FindYourWorkplaceComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace and user account progress bars', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should prefill the form if postcodeOrLocationId is already set in the service', async () => {
@@ -98,7 +112,7 @@ describe('FindYourWorkplaceComponent', () => {
       'getLocationByPostcodeOrLocationID',
     ).and.callThrough();
 
-    const findWorkplaceButton = component.getByText('Find workplace');
+    const findWorkplaceButton = component.getByTestId('button');
     fireEvent.click(findWorkplaceButton);
 
     expect(getLocationByPostcodeOrLocationID).not.toHaveBeenCalled();
@@ -114,7 +128,7 @@ describe('FindYourWorkplaceComponent', () => {
     const form = component.fixture.componentInstance.form;
     form.controls['postcodeOrLocationID'].setValue('http://localhost');
 
-    const findWorkplaceButton = component.getByText('Find workplace');
+    const findWorkplaceButton = component.getByTestId('button');
     fireEvent.click(findWorkplaceButton);
 
     expect(getLocationByPostcodeOrLocationID).not.toHaveBeenCalled();
@@ -127,7 +141,7 @@ describe('FindYourWorkplaceComponent', () => {
   it('should show registration version of error message if the input is empty on submit', async () => {
     const { component } = await setup();
 
-    const findWorkplaceButton = component.getByText('Find workplace');
+    const findWorkplaceButton = component.getByTestId('button');
     fireEvent.click(findWorkplaceButton);
 
     const form = component.fixture.componentInstance.form;
@@ -140,7 +154,7 @@ describe('FindYourWorkplaceComponent', () => {
   it('should submit the value if a postcode is inputted', async () => {
     const { component, locationService } = await setup();
     const form = component.fixture.componentInstance.form;
-    const findWorkplaceButton = component.getByText('Find workplace');
+    const findWorkplaceButton = component.getByTestId('button');
     const getLocationByPostcodeOrLocationID = spyOn(
       locationService,
       'getLocationByPostcodeOrLocationID',
@@ -159,7 +173,7 @@ describe('FindYourWorkplaceComponent', () => {
   it('should submit the value if a locationID is inputted', async () => {
     const { component, locationService } = await setup();
     const form = component.fixture.componentInstance.form;
-    const findWorkplaceButton = component.getByText('Find workplace');
+    const findWorkplaceButton = component.getByTestId('button');
     const getLocationByPostcodeOrLocationID = spyOn(
       locationService,
       'getLocationByPostcodeOrLocationID',
@@ -175,10 +189,10 @@ describe('FindYourWorkplaceComponent', () => {
     expect(getLocationByPostcodeOrLocationID).toHaveBeenCalledWith('1-123456789');
   });
 
-  it("should submit and go to your-workplace if there's only one address", async () => {
+  it('should submit and go to your-workplace if there is only one address', async () => {
     const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
-    const findWorkplaceButton = component.getByText('Find workplace');
+    const findWorkplaceButton = component.getByTestId('button');
 
     form.controls['postcodeOrLocationID'].setValue('LS1 1AA');
 
@@ -189,10 +203,10 @@ describe('FindYourWorkplaceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'your-workplace']);
   });
 
-  it("should submit and go to select-workplace if there's more than one address", async () => {
+  it('should submit and go to select-workplace if there is more than one address', async () => {
     const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
-    const findWorkplaceButton = component.getByText('Find workplace');
+    const findWorkplaceButton = component.getByTestId('button');
 
     form.controls['postcodeOrLocationID'].setValue('LS1 1AB');
 
@@ -203,10 +217,10 @@ describe('FindYourWorkplaceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'select-workplace']);
   });
 
-  it("should submit and go to workplace-not-found if there's no addresses", async () => {
+  it('should submit and go to workplace-not-found if there are no addresses', async () => {
     const { component, spy, locationService } = await setup();
     const form = component.fixture.componentInstance.form;
-    const findWorkplaceButton = component.getByText('Find workplace');
+    const findWorkplaceButton = component.getByTestId('button');
 
     form.controls['postcodeOrLocationID'].setValue('LS1 1AB');
 
@@ -225,10 +239,10 @@ describe('FindYourWorkplaceComponent', () => {
     expect(spy).toHaveBeenCalledWith(['registration', 'workplace-not-found']);
   });
 
-  it("should show error if server 500's", async () => {
+  it('should show error if server fails with 500 code', async () => {
     const { component, locationService } = await setup();
     const form = component.fixture.componentInstance.form;
-    const findWorkplaceButton = component.getByText('Find workplace');
+    const findWorkplaceButton = component.getByTestId('button');
 
     form.controls['postcodeOrLocationID'].setValue('LS1 1AB');
 
@@ -275,14 +289,14 @@ describe('FindYourWorkplaceComponent', () => {
     });
 
     it('should set the back link to `confirm-details` when returnToConfirmDetails is not null', async () => {
-      const { component } = await setup();
+      const { component } = await setup(false);
       const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
 
       component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
       component.fixture.componentInstance.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'confirm-details'],
+        url: ['registration/confirm-details'],
       });
     });
   });

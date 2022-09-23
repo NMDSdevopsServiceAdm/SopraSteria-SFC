@@ -11,6 +11,7 @@
     <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()" id="server-error" #formEl>
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Workplace</span>
           <h1 class="govuk-fieldset__heading">Find {{ flow === 'registration' ? 'your' : 'the' }} workplace address</h1>
         </legend>
 
@@ -32,7 +33,24 @@
           />
         </div>
       </fieldset>
-      <button type="submit" class="govuk-button">Find address</button>
+      <button type="submit" class="govuk-button govuk-!-margin-top-4" data-testid="button">Find address</button>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-!-margin-left-8">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Find workplace'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Find workplace'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

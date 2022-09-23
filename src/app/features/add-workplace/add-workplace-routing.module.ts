@@ -65,9 +65,67 @@ const routes: Routes = [
   },
   {
     path: 'confirm-workplace-details',
-    component: ConfirmWorkplaceDetailsComponent,
-    data: { title: 'Confirm Workplace Details' },
-    canActivate: [AddWorkplaceInProgressGuard],
+    children: [
+      {
+        path: '',
+        component: ConfirmWorkplaceDetailsComponent,
+        data: { title: 'Confirm Workplace Details' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'find-workplace',
+        component: FindYourWorkplaceComponent,
+        data: { title: 'Find your workplace' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'your-workplace',
+        component: IsThisYourWorkplaceComponent,
+        data: { title: 'Is this your workplace?' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'workplace-not-found',
+        component: WorkplaceNotFoundComponent,
+        data: { title: 'Could not find your workplace' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'select-workplace',
+        component: SelectWorkplaceComponent,
+        data: { title: 'Select Workplace' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'workplace-name-address',
+        component: WorkplaceNameAddressComponent,
+        data: { title: 'Workplace name and address?' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'type-of-employer',
+        component: TypeOfEmployerComponent,
+        data: { title: 'Type of Employer' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'select-main-service',
+        component: SelectMainServiceComponent,
+        data: { title: 'Select Main Service' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'add-total-staff',
+        component: AddTotalStaffComponent,
+        data: { title: 'Add Total Staff' },
+        canActivate: [AddWorkplaceInProgressGuard],
+      },
+      {
+        path: 'cannot-create-account',
+        component: CannotCreateAccountComponent,
+        data: { title: 'Cannot create account', flow: 'add-workplace' },
+      },
+    ],
   },
   {
     path: 'type-of-employer',

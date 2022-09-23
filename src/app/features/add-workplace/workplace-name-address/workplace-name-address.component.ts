@@ -24,12 +24,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
     this.setServiceVariables();
     this.setupPreFillForm();
-  }
-
-  protected setFlow(): void {
-    this.flow = '/add-workplace';
   }
 
   protected setTitle(): void {
@@ -41,7 +39,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected setConfirmDetailsBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+    this.backService.setBackLink({ url: [this.flow] });
   }
 
   protected getNextRoute(): string {

@@ -30,7 +30,8 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected init(): void {
-    this.flow = 'add-workplace';
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
     this.isRegulated = this.workplaceService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
@@ -73,13 +74,13 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    const url = this.returnToConfirmDetails ? 'confirm-workplace-details' : 'add-total-staff';
-    this.router.navigate([this.flow, url]);
+    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
+    this.router.navigate(url);
   }
 
   public setBackLink(): void {
     if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+      this.backService.setBackLink({ url: [this.flow] });
       return;
     }
 
