@@ -33,7 +33,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
-    this.staffRecordSections = ProgressBarUtil.staffRecordMiniFlowProgressBarSections();
+    this.staffRecordSections = ProgressBarUtil.staffRecordProgressBarSections();
 
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
