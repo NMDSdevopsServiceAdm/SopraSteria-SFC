@@ -6,7 +6,6 @@ import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { tap } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -25,7 +24,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
       value: StaffBenefitEnum.NO,
     },
     {
-      label: "Don't know",
+      label: `Don't know`,
       value: StaffBenefitEnum.DONT_KNOW,
     },
   ];
@@ -66,11 +65,13 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
       this.showTextBox = true;
       this.addControl();
       this.addValidationToControl();
+      this.addErrorLinkFunctionality();
     } else if (answer) {
       this.showTextBox = false;
       const { cashAmount } = this.form.controls;
       if (cashAmount) {
-        this.form.removeControl('cashAmount');
+        this.form.get('cashAmount').clearValidators();
+        this.form.get('cashAmount').updateValueAndValidity();
       }
     }
   }
@@ -96,7 +97,8 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   public addValidationToControl() {
     this.form
       .get('cashAmount')
-      .addValidators([Validators.pattern(FLOAT_PATTERN), this.greaterThanTwoDecimalPlacesValidator()]);
+      .setValidators([Validators.pattern(FLOAT_PATTERN), this.greaterThanTwoDecimalPlacesValidator()]);
+    this.form.get('cashAmount').updateValueAndValidity();
   }
 
   private greaterThanTwoDecimalPlacesValidator(): ValidatorFn {
@@ -112,7 +114,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
 
   protected generateUpdateProps(): any {
     const { cashLoyalty, cashAmount } = this.form.value;
-    if (cashAmount) {
+    if (cashLoyalty === 'Yes' && cashAmount) {
       return cashAmount;
     }
     if (cashLoyalty) {
@@ -130,27 +132,13 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
 
     this.subscriptions.add(
       this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, cashLoyaltyData).subscribe(
-        (data) => this._onSuccess(data),
+        (data) => this._onSuccess(data.data),
         (error) => this.onError(error),
       ),
     );
   }
 
-  protected updateEstablishmentService(): void {
-    this.establishmentService
-      .getEstablishment(this.establishmentService.establishmentId)
-      .pipe(
-        tap((workplace) => {
-          return (
-            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
-          );
-        }),
-      )
-      .subscribe();
-  }
-
   protected onSuccess(): void {
-    this.updateEstablishmentService();
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
   }
 
@@ -170,6 +158,12 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
         ],
       },
     ];
+  }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
   }
 
   ngOnDestroy(): void {

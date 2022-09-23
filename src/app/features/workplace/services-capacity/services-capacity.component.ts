@@ -46,7 +46,7 @@ export class ServicesCapacityComponent extends Question {
           this.router.navigate(['/workplace', this.establishment.uid, 'other-services'], { replaceUrl: true });
         }
 
-        capacities.allServiceCapacities.forEach((service, i) => {
+        capacities.allServiceCapacities.forEach((service, index) => {
           const group = this.formBuilder.group({});
           const questions = service.questions;
           const id = this.generateFormGroupName(service.service);
@@ -64,13 +64,13 @@ export class ServicesCapacityComponent extends Question {
             let patternErrorMsg;
 
             if (question.question.includes('beds')) {
-              patternErrorMsg = question.seq === 1 ? 'Beds you have' : 'Beds being used';
+              patternErrorMsg = question.seq === 1 ? 'beds you have' : 'beds being used';
             } else if (question.question.includes('places')) {
-              patternErrorMsg = question.seq === 1 ? 'Places you have' : 'Places being used';
+              patternErrorMsg = question.seq === 1 ? 'places you have' : 'places being used';
             } else if (question.question.includes('people receiving care')) {
-              patternErrorMsg = 'People receiving care';
+              patternErrorMsg = 'people receiving care';
             } else {
-              patternErrorMsg = 'People using the service';
+              patternErrorMsg = 'people using the service';
             }
 
             this.formErrorsMap.push({
@@ -86,17 +86,20 @@ export class ServicesCapacityComponent extends Question {
                 },
                 {
                   name: 'pattern',
-                  message: `${patternErrorMsg} must be a whole number`,
+                  message: `Number of ${patternErrorMsg} must be a whole number`,
                 },
               ],
             });
           });
 
           if (Object.keys(group.controls).length > 1) {
-            group.setValidators(this.capacityUtilisationValidator);
+            group.setValidators([this.capacityUtilisationValidator, this.requiredValidator]);
             const overCapacityErrorMsg = questions.some((question) => question.question.includes('beds'))
               ? 'beds'
               : 'places';
+            const requiredErrorMsg = questions.some((question) => question.question.includes('bed'))
+              ? 'beds you have'
+              : 'places you have at the moment';
             this.formErrorsMap.push({
               item: id,
               type: [
@@ -104,10 +107,13 @@ export class ServicesCapacityComponent extends Question {
                   name: 'overcapacity',
                   message: `Number cannot be more than the ${overCapacityErrorMsg} you have`,
                 },
+                {
+                  name: 'required',
+                  message: `Enter how many ${requiredErrorMsg}`,
+                },
               ],
             });
           }
-
           this.form.addControl(id, group);
         });
       }),
@@ -153,13 +159,27 @@ export class ServicesCapacityComponent extends Question {
     );
   }
 
-  protected capacityUtilisationValidator(group: FormGroup): ValidationErrors {
+  protected requiredValidator(group: FormGroup): ValidationErrors {
     const controls = [];
     Object.keys(group.controls).forEach((key) => {
       controls.push(group.get(key));
     });
 
-    if (controls[1] && controls[1].value > controls[0].value) {
+    if (controls[1] && !controls[0].value && controls[1].value) {
+      return controls[0].value === 0 ? null : { required: true };
+    }
+
+    return null;
+  }
+
+  protected capacityUtilisationValidator(group: FormGroup): ValidationErrors {
+    const controls = [];
+
+    Object.keys(group.controls).forEach((key) => {
+      controls.push(group.get(key));
+    });
+
+    if (controls[1] && controls[0].value && controls[1].value && controls[1].value > controls[0].value) {
       return { overcapacity: { max: controls[0].value, actual: controls[1].value } };
     }
 

@@ -21,7 +21,6 @@ export class TypeOfEmployerComponent extends Question {
   ];
   public maxLength = 120;
   public showSkipButton = true;
-  public sectionHeading: string;
   public callToAction = 'Save and continue';
   public dataOwner: any;
 
@@ -48,7 +47,6 @@ export class TypeOfEmployerComponent extends Question {
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
 
     if (this.establishmentService.employerTypeHasValue === false) {
-      this.sectionHeading = this.establishment.name;
       this.callToAction = 'Continue to homepage';
       this.hideBackLink = true;
       this.showSkipButton = false;

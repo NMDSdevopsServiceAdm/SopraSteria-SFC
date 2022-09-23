@@ -7,18 +7,25 @@ const models = require('../../models');
 const updateEstablishment = async (req, res) => {
   if (req.body.property) {
     try {
+      const where = {
+        id: req.establishmentId,
+      };
+
       const { property, value } = req.body;
       await models.establishment.update(
         {
           [property]: value,
         },
         {
-          where: {
-            id: req.establishmentId,
-          },
+          where,
         },
       );
-      return res.status(200).send();
+      const attributes = [property];
+      const data = await models.establishment.findOne({
+        attributes: attributes,
+        where,
+      });
+      return res.status(200).send({ data });
     } catch (err) {
       if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
         console.error('Establishment::share POST: ', err.message);

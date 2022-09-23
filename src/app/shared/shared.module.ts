@@ -44,7 +44,6 @@ import {
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
-import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/new-workplace-summary.component';
 import {
   OwnershipChangeMessageDialogComponent,
 } from './components/ownership-change-message/ownership-change-message-dialog.component';
@@ -182,7 +181,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceSummaryComponent,
     WorkplaceTabComponent,
     OrderOtherPipe,
     LongDatePipe,
@@ -223,7 +221,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    NewWorkplaceSummaryComponent,
+    WorkplaceSummaryComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
@@ -274,7 +272,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceSummaryComponent,
     WorkplaceTabComponent,
     OrderOtherPipe,
     TrainingLinkPanelComponent,
@@ -316,7 +313,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    NewWorkplaceSummaryComponent,
+    WorkplaceSummaryComponent,
     SummaryRecordChangeComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,

@@ -14,7 +14,8 @@ describe('WorkplaceSubmitButtonComponent', () => {
         recordSummary: true,
         canExit: false,
         exitText: 'Cancel',
-        reducedMargin: false,
+        marginTop2: false,
+        marginTop4: false,
       },
     });
 
@@ -23,14 +24,28 @@ describe('WorkplaceSubmitButtonComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the button component without conditional margin class if reduced margin by default and with conditional margin if reducedMargin is set to true', async () => {
-    const { rerender, getByTestId } = await setup();
+  it('should render the button without conditional margin class by default', async () => {
+    const { getByTestId } = await setup();
 
     const container = getByTestId('button-container');
     expect(container.getAttribute('class')).not.toContain('govuk-!-margin-top-2');
+    expect(container.getAttribute('class')).not.toContain('govuk-!-margin-top-4');
+  });
 
-    rerender({ reducedMargin: true });
+  it('should render the button with a margin top of 2 if marginTop2 is set to true', async () => {
+    const { rerender, getByTestId } = await setup();
+
+    const container = getByTestId('button-container');
+    rerender({ marginTop2: true });
     expect(container.getAttribute('class')).toContain('govuk-!-margin-top-2');
+  });
+
+  it('should render the button with a margin top of 4 if marginTop4 is set to true', async () => {
+    const { rerender, getByTestId } = await setup();
+
+    const container = getByTestId('button-container');
+    rerender({ marginTop4: true });
+    expect(container.getAttribute('class')).toContain('govuk-!-margin-top-4');
   });
 
   describe('return is false', () => {

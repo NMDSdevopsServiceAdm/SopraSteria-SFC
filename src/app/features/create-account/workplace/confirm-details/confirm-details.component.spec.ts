@@ -88,7 +88,7 @@ describe('ConfirmDetailsComponent', () => {
 
   it('should have the title Check your details before you submit them', async () => {
     const { queryByText } = await setup();
-    const expectedTitle = 'Check your details before you submit them';
+    const expectedTitle = 'Check these details before you submit them';
 
     expect(queryByText(expectedTitle, { exact: false })).toBeTruthy();
   });

@@ -203,14 +203,6 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
     case "Don't know":
       apprenticeship = 999;
       break;
-
-    case 'Think ahead':
-      apprenticeship = 314;
-      break;
-
-    case 'Social worker integrated Degree':
-      apprenticeship = 315;
-      break;
   }
   columns.push(apprenticeship);
 

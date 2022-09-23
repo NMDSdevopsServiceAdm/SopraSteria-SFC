@@ -6,6 +6,7 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <div class="govuk-caption-l">Services</div>
             <h1 class="govuk-fieldset__heading">
               Is your new main service regulated by the Care Quality Commission (CQC)?
             </h1>
@@ -44,5 +45,8 @@
       </div>
     </div>
   </div>
-  <app-workplace-continue-cancel-button (clicked)="setSubmitAction($event)"></app-workplace-continue-cancel-button>
+  <app-workplace-continue-cancel-button
+    (clicked)="setSubmitAction($event)"
+    [marginTop4]="true"
+  ></app-workplace-continue-cancel-button>
 </form>
