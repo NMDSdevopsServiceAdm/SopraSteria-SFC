@@ -110,7 +110,7 @@
                   [value]="false"
                   [formControlName]="'cqc'"
                 />
-                <label class="govuk-label govuk-radios__label govuk-!-margin-bottom-8" for="cqc-no">
+                <label class="govuk-label govuk-radios__label govuk-!-margin-bottom-4" for="cqc-no">
                   No, I do not agree to you sharing our data with the CQC
                 </label>
               </div>
@@ -159,6 +159,7 @@
       <app-workplace-submit-button
         [return]="!!return"
         (clicked)="setSubmitAction($event)"
+        [marginTop4]="true"
       ></app-workplace-submit-button>
     </div>
   </div>

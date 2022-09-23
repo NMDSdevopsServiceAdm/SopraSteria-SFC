@@ -88,7 +88,7 @@ describe('ConfirmDetailsComponent', () => {
 
   it('should have the title Check your details before you submit them', async () => {
     const { queryByText } = await setup();
-    const expectedTitle = 'Check your details before you submit them';
+    const expectedTitle = 'Check these details before you submit them';
 
     expect(queryByText(expectedTitle, { exact: false })).toBeTruthy();
   });
@@ -119,7 +119,7 @@ describe('ConfirmDetailsComponent', () => {
     component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(true);
     component.ngOnInit();
 
-    expect(component.form.valid).toBeTruthy();
+    expect(component.form.value.termsAndConditions).toEqual('check');
   });
 
   it('should not preselect the terms and conditions checkbox if it is set to false in the service', async () => {
@@ -128,7 +128,7 @@ describe('ConfirmDetailsComponent', () => {
     component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(false);
     component.ngOnInit();
 
-    expect(component.form.valid).toBeFalsy();
+    expect(component.form.value.termsAndConditions).toBeNull();
   });
 
   it('should update the value of termsAndConditionsCheckbox$ in the service when the checkbox is clicked', async () => {
