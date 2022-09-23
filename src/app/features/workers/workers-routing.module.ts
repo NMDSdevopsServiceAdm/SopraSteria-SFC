@@ -103,13 +103,6 @@ const routes: Routes = [
             path: 'mandatory-details',
             component: MandatoryDetailsComponent,
             data: { title: 'Staff Record' },
-            children: [
-              {
-                path: 'staff-details',
-                component: StaffDetailsComponent,
-                data: { title: 'Staff Details' },
-              },
-            ],
           },
           {
             path: 'main-job-start-date',
@@ -331,8 +324,18 @@ const routes: Routes = [
       },
       {
         path: 'mandatory-details',
-        component: MandatoryDetailsComponent,
-        data: { title: 'Staff Record' },
+        children: [
+          {
+            path: '',
+            component: MandatoryDetailsComponent,
+            data: { title: 'Staff Record' },
+          },
+          {
+            path: 'staff-details',
+            component: StaffDetailsComponent,
+            data: { title: 'Staff Details' },
+          },
+        ],
       },
       {
         path: 'main-job-start-date',
