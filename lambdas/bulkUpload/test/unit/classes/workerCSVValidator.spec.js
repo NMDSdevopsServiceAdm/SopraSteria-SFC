@@ -574,6 +574,239 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
+    describe('_validationQualificationRecords', () => {
+      it('should not emit a warning if the qualification year and ID are valid', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;2020',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(0);
+      });
+
+      it('should emit a error if the qualification ID not a number', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: 'qualification;2020',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The code you have entered for (QUALACH01) is incorrect',
+            source: 'qualification;2020',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit a warning if the year is null', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            warnType: 'QUAL_ACH01_ERROR',
+            warning: 'Year achieved for QUALACH01 is blank',
+            source: '314;',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit an error if the year is not a number', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;happy',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '314;happy',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit an error if the year is invalid', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;happy',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '314;happy',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit an error if the qualification year is over 100 years ago', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;1900',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '314;1900',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit an error if the qualification year is in the future', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;5000',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '314;5000',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit a warning if the qualification description is greater than 120 characters', async () => {
+        const longstring =
+          'thisisalongstringthisisalongstringthisisalongstringthisisalongstringthisisalongstringthisisalongstringthisisalongstringthis';
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;2015',
+              QUALACH01NOTES: longstring,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: WorkerCsvValidator.QUAL_ACH01_NOTES_ERROR,
+            warnType: 'QUAL_ACH01_NOTES_ERROR',
+            warning: 'The notes you have entered for (QUALACH01NOTES) are over 120 characters and will be ignored',
+            source: longstring,
+            column: 'QUALACH01NOTES',
+          },
+        ]);
+      });
+    });
+
     describe('_validateLocalId()', () => {
       it('should allow valid LOCALESTID', async () => {
         const validator = new WorkerCsvValidator(
