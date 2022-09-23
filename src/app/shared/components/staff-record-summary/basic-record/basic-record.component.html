@@ -45,7 +45,7 @@
       <app-summary-record-change
         *ngIf="wdfView && !(worker.wdf?.mainJob.isEligible === 'Yes' && !worker.wdf?.mainJob.updatedSinceEffectiveDate)"
         [explanationText]="' basic record details'"
-        [link]="getRoutePath('staff-details')"
+        [link]="getRoutePath('mandatory-details/staff-details')"
         [hasData]="true"
       ></app-summary-record-change>
     </dd>
