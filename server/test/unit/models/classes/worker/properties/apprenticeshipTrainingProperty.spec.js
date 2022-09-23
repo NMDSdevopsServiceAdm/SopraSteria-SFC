@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 
 const apprenticeshipTrainingPropertyClass =
   require('../../../../../../models/classes/worker/properties/apprenticeshipTrainingProperty').WorkerApprenticeshipTrainingProperty;
-const values = ['Yes', 'No', "Don't know", 'Think ahead', 'Social worker integrated Degree', null];
+const values = ['Yes', 'No', "Don't know", null];
 
 describe('apprenticeshipTraining Property', () => {
   it('should allow null', () => {

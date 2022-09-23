@@ -748,13 +748,14 @@ class Qualification extends EntityValidator {
       });
     }
 
+    const unavailableQualIds = [137, 138];
     // filter qualifications list by the given type
     const qualifications = await models.workerAvailableQualifications.findAll({
       attributes: ['id', 'seq', 'group', 'title', 'level', 'code', 'from', 'until'],
       where: {
         group: byType,
         id: {
-          [models.Sequelize.Op.notIn]: currentSetOfWorkerQuals,
+          [models.Sequelize.Op.notIn]: [...currentSetOfWorkerQuals, ...unavailableQualIds],
         },
       },
       order: [['seq', 'ASC']],
