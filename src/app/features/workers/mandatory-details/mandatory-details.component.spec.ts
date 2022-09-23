@@ -95,7 +95,7 @@ describe('MandatoryDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  fit('should render the progress bar', async () => {
+  it('should render the progress bar', async () => {
     const { queryByTestId } = await setup;
 
     expect(queryByTestId('progress-bar-1')).toBeTruthy();
