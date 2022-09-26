@@ -35,7 +35,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
       });
     }
 
-    this.next = this.getRoutePath('date-of-birth');
+    this.next = this.getRoutePath('home-postcode');
     this.previous = this.workerService.hasJobRole(this.worker, 27)
       ? this.getRoutePath('mental-health-professional')
       : this.getRoutePath('other-job-roles');
