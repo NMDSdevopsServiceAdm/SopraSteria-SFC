@@ -24,6 +24,8 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
+  public staffDetailsReturn;
+  public isPrimaryAccount: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -50,43 +52,9 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.flow = this.insideFlow ? 'staff-record' : 'staff-record/staff-record-summary';
     this.contractsAvailable = Object.values(Contracts);
     this.editFlow = !!this.worker;
-    this.subscriptions.add(
-      this.jobService.getJobs().subscribe((jobs) => {
-        if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
-          this.worker.otherJobs.jobs.map((otherjob) => {
-            jobs = jobs.filter((j) => j.id !== otherjob.jobId);
-          });
-        }
-        this.jobsAvailable = jobs;
-        if (this.worker) {
-          this.renderInEditMode();
-        }
-      }),
-    );
-
-    this.previous =
-      this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid
-        ? ['/dashboard']
-        : ['/workplace', this.workplace.uid];
-  }
-
-  renderInEditMode(): void {
-    this.form.patchValue({
-      nameOrId: this.worker.nameOrId,
-      mainJob: this.worker.mainJob.jobId,
-      otherJobRole: this.worker.mainJob.other,
-      contract: this.worker.contract,
-    });
-
-    this.selectedJobRole(this.worker.mainJob.jobId);
-
-    if (this.workerService.returnTo === null) {
-      const mandatoryDetailsURL = { url: this.getRoutePath('mandatory-details') };
-      this.workerService.setReturnTo(mandatoryDetailsURL);
-      this.return = mandatoryDetailsURL;
-    }
-
-    this.canReturn = true;
+    this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
+    this.getJobs();
+    this.setBackLinks();
   }
 
   public setupFormErrorsMap(): void {
@@ -130,6 +98,22 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     ];
   }
 
+  getJobs() {
+    this.subscriptions.add(
+      this.jobService.getJobs().subscribe((jobs) => {
+        if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
+          this.worker.otherJobs.jobs.map((otherjob) => {
+            jobs = jobs.filter((j) => j.id !== otherjob.jobId);
+          });
+        }
+        this.jobsAvailable = jobs;
+        if (this.worker) {
+          this.renderInEditMode();
+        }
+      }),
+    );
+  }
+
   generateUpdateProps() {
     const { nameOrId, contract, mainJob, otherJobRole } = this.form.controls;
 
@@ -159,33 +143,64 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
   }
 
-  protected navigate(): void {
-    const currentUrl = this.router.url;
-
-    if (!this.worker) {
-      return this.onCancel();
-    }
-
-    if (!this.next) {
-      this.next = this.getRoutePath('');
-    }
-
-    this.router.navigate(this.next).then(() => {
-      if (currentUrl.endsWith('create-staff-record')) {
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Staff record saved',
-        });
-      }
+  renderInEditMode(): void {
+    this.form.patchValue({
+      nameOrId: this.worker.nameOrId,
+      mainJob: this.worker.mainJob.jobId,
+      otherJobRole: this.worker.mainJob.other,
+      contract: this.worker.contract,
     });
+
+    this.selectedJobRole(this.worker.mainJob.jobId);
+    this.canReturn = true;
   }
 
-  onSuccess() {
-    const path = this.editFlow ? '' : 'mandatory-details';
-    this.next = this.getRoutePath(path);
+  setBackLinks(): void {
+    if (this.insideFlow && this.isPrimaryAccount) {
+      this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
+    } else if (this.insideFlow && !this.isPrimaryAccount) {
+      this.backService.setBackLink({ url: ['/workplace', this.workplace.uid], fragment: 'staff-records' });
+    } else if (!this.insideFlow && this.route.snapshot.parent.url[0].path !== 'mandatory-details') {
+      this.backService.setBackLink({ url: this.getRoutePath('staff-record-summary') });
+    } else {
+      this.backService.setBackLink({ url: this.getRoutePath('mandatory-details') });
+    }
   }
 
-  private onCancel(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+  public navigate(action: string): void {
+    switch (action) {
+      case 'continue':
+        if (this.flow === 'staff-record' && !this.editFlow) {
+          this.next = this.getRoutePath('mandatory-details');
+          this.router.navigate(this.next).then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: 'Staff record saved',
+            });
+          });
+        }
+
+        if (this.flow === 'staff-record/staff-record-summary') {
+          this.next = this.getRoutePath('staff-record-summary');
+          this.router.navigate(this.next);
+        }
+        break;
+
+      case 'exit':
+        if (this.isPrimaryAccount) {
+          this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+        } else {
+          this.router.navigate(['/workplace', this.workplace.uid], { fragment: 'staff-records' });
+        }
+        break;
+
+      case 'return':
+        if (this.route.snapshot.parent.url[0].path === 'mandatory-details') {
+          this.router.navigate(this.getRoutePath('mandatory-details'));
+        } else {
+          this.router.navigate(this.getRoutePath('staff-record-summary'));
+        }
+        break;
+    }
   }
 }
