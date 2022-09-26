@@ -84,6 +84,9 @@ describe('StaffDetailsComponent', () => {
           useValue: {
             snapshot: {
               url: [{ path: 1 }, { path: 2 }],
+              parent: {
+                url: [{ path: returnUrl ? 'staff-record' : 'staff-record/staff-record-summary' }],
+              },
             },
             parent: {
               snapshot: {
@@ -125,7 +128,7 @@ describe('StaffDetailsComponent', () => {
       component.fixture.componentInstance.canReturn = false;
       component.fixture.detectChanges();
 
-      expect(component.getByText('Save staff record')).toBeTruthy();
+      expect(component.getByText('Save this staff record')).toBeTruthy();
       expect(component.getByText('Cancel')).toBeTruthy();
     });
 
@@ -134,6 +137,20 @@ describe('StaffDetailsComponent', () => {
 
       expect(component.getByText('Save and return')).toBeTruthy();
       expect(component.getByText('Cancel')).toBeTruthy();
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render the workplace but not the user account progress bar', async () => {
+      const { component } = await setup();
+
+      expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    });
+
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { component } = await setup(false);
+
+      expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
     });
   });
 

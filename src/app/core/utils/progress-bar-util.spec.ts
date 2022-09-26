@@ -93,4 +93,23 @@ describe('ProgressBarUtil', () => {
       ]);
     });
   });
+
+  describe('staffRecordProgressBarSections', () => {
+    it('should return an array with a length of 4', () => {
+      const staffRecordProgressBarSections = ProgressBarUtil.staffRecordProgressBarSections();
+
+      expect(staffRecordProgressBarSections.length).toEqual(4);
+    });
+
+    it('should return the correct values', () => {
+      const staffRecordProgressBarSections = ProgressBarUtil.staffRecordProgressBarSections();
+
+      expect(staffRecordProgressBarSections).toEqual([
+        'Mandatory information',
+        'Personal details',
+        'Employment details',
+        'Training and qualifications',
+      ]);
+    });
+  });
 });

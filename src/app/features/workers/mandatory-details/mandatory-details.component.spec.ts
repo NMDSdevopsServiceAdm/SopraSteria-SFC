@@ -95,6 +95,12 @@ describe('MandatoryDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the progress bar', async () => {
+    const { queryByTestId } = await setup;
+
+    expect(queryByTestId('progress-bar-1')).toBeTruthy();
+  });
+
   it('should show Worker information in summary list', async () => {
     const { getByTestId, fixture } = await setup;
 
@@ -106,16 +112,6 @@ describe('MandatoryDetailsComponent', () => {
     expect(container.getAllByText(expectedWorker.nameOrId));
     expect(container.getAllByText(expectedWorker.mainJob.title));
     expect(container.getAllByText(expectedWorker.contract));
-  });
-
-  it('should show have the title mandatory details on summary', async () => {
-    const { getByTestId, fixture } = await setup;
-
-    fixture.detectChanges();
-
-    const container = within(getByTestId('summary'));
-
-    expect(container.getAllByText('Mandatory details'));
   });
 
   it('should take you to the staff-details page when change link is clicked', async () => {

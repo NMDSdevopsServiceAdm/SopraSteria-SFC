@@ -8,6 +8,8 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
+import { BackService } from '@core/services/back.service';
 
 @Component({
   selector: 'app-mandatory-details',
@@ -18,9 +20,10 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public primaryWorkplace: Establishment;
   public subscriptions: Subscription = new Subscription();
+  public staffRecordSections: ProgressBarUtil;
 
   constructor(
-    private breadcrumbService: BreadcrumbService,
+    private backService: BackService,
     private route: ActivatedRoute,
     private workerService: WorkerService,
     private router: Router,
@@ -30,6 +33,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
+    this.staffRecordSections = ProgressBarUtil.staffRecordProgressBarSections();
 
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
@@ -37,8 +41,20 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
       }),
     );
 
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
-    this.breadcrumbService.show(journey);
+    this.setBackLink();
+  }
+
+  public setBackLink(): void {
+    const url = {
+      url: [
+        '/workplace',
+        this.establishmentService.establishment.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-details',
+      ],
+    };
+    this.backService.setBackLink(url);
   }
 
   navigateToDashboard(event: Event): void {
