@@ -26,6 +26,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   private otherJobRoleCharacterLimit = 120;
   public staffDetailsReturn;
   public isPrimaryAccount: boolean;
+  public inMandatoryDetailsFlow: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -49,6 +50,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'staff-record';
+    this.inMandatoryDetailsFlow = this.route.snapshot.parent.url[0].path === 'mandatory-details';
     this.flow = this.insideFlow ? 'staff-record' : 'staff-record/staff-record-summary';
     this.contractsAvailable = Object.values(Contracts);
     this.editFlow = !!this.worker;
@@ -160,7 +162,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
     } else if (this.insideFlow && !this.isPrimaryAccount) {
       this.backService.setBackLink({ url: ['/workplace', this.workplace.uid], fragment: 'staff-records' });
-    } else if (!this.insideFlow && this.route.snapshot.parent.url[0].path !== 'mandatory-details') {
+    } else if (!this.insideFlow && !this.inMandatoryDetailsFlow) {
       this.backService.setBackLink({ url: this.getRoutePath('staff-record-summary') });
     } else {
       this.backService.setBackLink({ url: this.getRoutePath('mandatory-details') });
@@ -195,7 +197,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         break;
 
       case 'return':
-        if (this.route.snapshot.parent.url[0].path === 'mandatory-details') {
+        if (this.inMandatoryDetailsFlow) {
           this.router.navigate(this.getRoutePath('mandatory-details'));
         } else {
           this.router.navigate(this.getRoutePath('staff-record-summary'));
