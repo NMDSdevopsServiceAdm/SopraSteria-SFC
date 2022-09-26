@@ -8,6 +8,7 @@
         [class.govuk-form-group--error]="submitted && form.get('nationalInsuranceNumber').invalid"
       >
         <h1 class="govuk-label-wrapper">
+          <span class="govuk-caption-l">Personal details</span>
           <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="nationalInsuranceNumber">
             What's their National Insurance number?
           </label>
@@ -20,15 +21,28 @@
           <span class="govuk-visually-hidden">Error:</span>
           {{ getFormErrorMessage('nationalInsuranceNumber', 'validNin') }}
         </span>
-        <input
-          class="govuk-input govuk-input--width-10"
-          [class.govuk-input--error]="submitted && form.get('nationalInsuranceNumber').invalid"
-          [formControlName]="'nationalInsuranceNumber'"
-          id="nationalInsuranceNumber"
-          name="nationalInsuranceNumber"
-          type="text"
-          spellcheck="false"
-        />
+        <label class="govuk-label govuk-date-input__label" for="dob-year"> National Insurance Number </label>
+        <span class="govuk-caption-m govuk-!-margin-bottom-4">For example, 'QQ 12 34 56 C'</span>
+        <div>
+          <input
+            class="govuk-input govuk-input--width-10"
+            [class.govuk-input--error]="submitted && form.get('nationalInsuranceNumber').invalid"
+            [formControlName]="'nationalInsuranceNumber'"
+            id="nationalInsuranceNumber"
+            name="nationalInsuranceNumber"
+            type="text"
+            spellcheck="false"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third-from-desktop">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="'Personal details'"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
