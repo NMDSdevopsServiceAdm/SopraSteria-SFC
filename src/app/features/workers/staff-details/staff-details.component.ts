@@ -30,7 +30,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
-  public staffDetailsReturn;
   public isPrimaryAccount: boolean;
   public inMandatoryDetailsFlow: boolean;
 
