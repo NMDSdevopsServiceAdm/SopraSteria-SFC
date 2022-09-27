@@ -112,14 +112,6 @@
           </fieldset>
         </div>
       </fieldset>
-      <app-submit-button
-        [return]="canReturn"
-        [canExit]="canExit"
-        [recordSummary]="false"
-        [callToAction]="submitTitle"
-        [isExistingStaffRecord]="!!worker"
-        (clicked)="onSubmit($event)"
-      ></app-submit-button>
     </div>
   </form>
   <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
@@ -131,4 +123,12 @@
       ></app-progress-bar>
     </div>
   </div>
+  <app-submit-button
+    [return]="canReturn"
+    [canExit]="canExit"
+    [recordSummary]="false"
+    [callToAction]="submitTitle"
+    [isExistingStaffRecord]="!!worker"
+    (clicked)="onSubmit($event)"
+  ></app-submit-button>
 </div>
