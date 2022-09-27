@@ -67,6 +67,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
             : this.return;
 
           this.backService.setBackLink(this.back);
+          this._init();
         }
       }),
     );

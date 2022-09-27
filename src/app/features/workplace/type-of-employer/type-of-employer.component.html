@@ -1,11 +1,11 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
-          <span class="govuk-caption-l" data-testid="section-heading">{{ sectionHeading }}</span>
+          <span class="govuk-caption-l" data-testid="section-heading">Workplace</span>
           <h1 class="govuk-fieldset__heading">What type of employer are you?</h1>
         </legend>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
@@ -57,12 +57,14 @@
           </div>
         </div>
       </fieldset>
-    </div>
+
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+        [recordSummary]="showSkipButton"
+        [callToAction]="callToAction"
+        [marginTop4]="true"
+      ></app-workplace-submit-button>
+    </form>
   </div>
-  <app-workplace-submit-button
-    [return]="!!return"
-    (clicked)="setSubmitAction($event)"
-    [recordSummary]="showSkipButton"
-    [callToAction]="callToAction"
-  ></app-workplace-submit-button>
-</form>
+</div>

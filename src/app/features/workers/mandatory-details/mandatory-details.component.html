@@ -1,31 +1,41 @@
 <ng-container *ngIf="worker">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl">Staff record</h1>
+  <div class="govuk-grid-column-two-thirds-from-desktop govuk-!-padding-left-0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Mandatory information</span>
+          <h1 class="govuk-fieldset__heading">Add a staff record</h1>
+        </legend>
+      </div>
+    </div>
+    <app-basic-record data-testid="summary" [workplace]="workplace" [worker]="worker"></app-basic-record>
+    <div class="govuk-!-margin-top-8">
+      <button
+        data-testid="add-details-button"
+        class="govuk-button govuk-!-margin-right-9"
+        role="button"
+        draggable="false"
+        (click)="onSubmit($event)"
+      >
+        Add details to this record
+      </button>
+      <button
+        data-testid="view-all-workers-button"
+        class="govuk-button govuk-button--link"
+        (click)="navigateToDashboard($event)"
+      >
+        <span>View all staff records</span>
+      </button>
     </div>
   </div>
-  <app-basic-record
-    data-testid="summary"
-    [basicTitle]="'Mandatory details'"
-    [workplace]="workplace"
-    [worker]="worker"
-  ></app-basic-record>
-  <div class="govuk-!-margin-top-6">
-    <button
-      data-testid="add-details-button"
-      class="govuk-button govuk-!-margin-right-9"
-      role="button"
-      draggable="false"
-      (click)="onSubmit($event)"
-    >
-      Add details to this record
-    </button>
-    <button
-      data-testid="view-all-workers-button"
-      class="govuk-button govuk-button--link"
-      (click)="navigateToDashboard($event)"
-    >
-      <span>View all staff records</span>
-    </button>
+  <div class="govuk-grid-column-one-third-from-desktop">
+    <div class="govuk-!-margin-left-8">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [sections]="staffRecordSections"
+        [currentSection]="'Mandatory information'"
+        [currentSectionComplete]="true"
+      ></app-progress-bar>
+    </div>
   </div>
 </ng-container>

@@ -30,7 +30,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
   public canViewNinoDob: boolean;
-  public insideFlow: boolean;
+  public showPoolBankTag: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -41,6 +41,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.workplaceUid = this.workplace.uid;
+    this.showPoolBankTag = this.worker.contract === 'Pool/Bank' ? true : false;
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');

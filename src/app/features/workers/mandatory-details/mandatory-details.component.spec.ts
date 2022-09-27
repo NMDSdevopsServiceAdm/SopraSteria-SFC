@@ -26,7 +26,7 @@ import { MandatoryDetailsComponent } from './mandatory-details.component';
 describe('MandatoryDetailsComponent', () => {
   const setup = async (canEditWorker = true, primaryUid = 123) => {
     const permissions = canEditWorker ? ['canEditWorker'] : [];
-    const { fixture, getByText, queryByText, getByTestId } = await render(MandatoryDetailsComponent, {
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(MandatoryDetailsComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [
         InsetTextComponent,
@@ -82,6 +82,7 @@ describe('MandatoryDetailsComponent', () => {
       getByText,
       queryByText,
       getByTestId,
+      queryByTestId,
       routerSpy,
     };
   };
@@ -95,7 +96,13 @@ describe('MandatoryDetailsComponent', () => {
   it('should show have the title mandatory details on summary', async () => {
     const { getByText } = await setup();
 
-    expect(getByText('Mandatory details'));
+    expect(getByText('Mandatory information'));
+  });
+
+  it('should render the progress bar', async () => {
+    const { queryByTestId } = await setup();
+
+    expect(queryByTestId('progress-bar-1')).toBeTruthy();
   });
 
   it('should show Worker information in summary list', async () => {

@@ -1,10 +1,11 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-grid-row">
+<div class="govuk-grid-row">
+  <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <span class="govuk-caption-l">Mandatory information</span>
           <h1 class="govuk-fieldset__heading">{{ worker ? 'Edit' : 'Add' }} a staff record</h1>
         </legend>
         <div
@@ -101,24 +102,33 @@
                   id="contract-{{ idx }}"
                   name="contract"
                   type="radio"
-                  [value]="contract"
+                  [value]="contract.value"
                 />
                 <label class="govuk-label govuk-radios__label" for="contract-{{ idx }}">
-                  {{ contract }}
+                  {{ contract.tag }}
                 </label>
               </div>
             </div>
           </fieldset>
         </div>
       </fieldset>
+      <app-submit-button
+        [return]="canReturn"
+        [canExit]="canExit"
+        [recordSummary]="false"
+        [callToAction]="submitTitle"
+        [isExistingStaffRecord]="!!worker"
+        (clicked)="onSubmit($event)"
+      ></app-submit-button>
+    </div>
+  </form>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-!-margin-left-8">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [sections]="staffRecordSections"
+        [currentSection]="'Mandatory information'"
+      ></app-progress-bar>
     </div>
   </div>
-  <app-submit-button
-    [return]="canReturn"
-    [canExit]="canExit"
-    [recordSummary]="false"
-    [callToAction]="submitTitle"
-    [isExistingStaffRecord]="!!worker"
-    (clicked)="onSubmit($event)"
-  ></app-submit-button>
-</form>
+</div>

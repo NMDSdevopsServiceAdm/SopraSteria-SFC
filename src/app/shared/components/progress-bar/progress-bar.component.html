@@ -9,14 +9,14 @@
     <div class="govuk__flex">
       <div class="govuk-!-margin-right-3">
         <img
-          *ngIf="i < currentSectionIndex || completeProgressBar"
+          *ngIf="i < currentSectionIndex || completeProgressBar || (i == currentSectionIndex && currentSectionComplete)"
           [attr.data-testid]="'completed-' + i"
           class="govuk-util__vertical-align-top"
           src="/assets/images/progress-bar/done.svg"
           alt=""
         />
         <img
-          *ngIf="i === currentSectionIndex && !completeProgressBar"
+          *ngIf="i === currentSectionIndex && !completeProgressBar && !currentSectionComplete"
           [attr.data-testid]="'currentSection-' + i"
           class="govuk-util__vertical-align-top"
           src="/assets/images/progress-bar/doing.svg"

@@ -39,6 +39,21 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
 
       await updateEstablishment(req, res);
 
+      expect(res.statusCode).to.deep.equal(500);
+    });
+
+    it('should return 200 when the provided field has been find', async () => {
+      const body = {
+        property: 'exampleFieldName',
+        value: 'Yes',
+      };
+
+      await setup(body);
+
+      sinon.stub(models.establishment, 'findOne').returns(body);
+
+      await updateEstablishment(req, res);
+
       expect(res.statusCode).to.deep.equal(200);
     });
 
