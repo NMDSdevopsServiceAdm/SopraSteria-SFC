@@ -284,7 +284,7 @@ export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
 }
 
 @Injectable()
-export class MockWorkerServiceWithoutReturnUrl extends MockWorkerService {
+export class MockWorkerServiceWithoutReturnUrl extends MockWorkerServiceWithUpdateWorker {
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
       const service = new MockWorkerServiceWithoutReturnUrl(httpClient);
