@@ -123,12 +123,12 @@
       ></app-progress-bar>
     </div>
   </div>
-  <app-submit-button
-    [return]="canReturn"
-    [canExit]="canExit"
-    [recordSummary]="false"
-    [callToAction]="submitTitle"
-    [isExistingStaffRecord]="!!worker"
-    (clicked)="onSubmit($event)"
-  ></app-submit-button>
 </div>
+<app-submit-button
+  [return]="canReturn"
+  [canExit]="canExit"
+  [recordSummary]="false"
+  [callToAction]="submitTitle"
+  [isExistingStaffRecord]="!!worker"
+  (clicked)="onSubmit($event)"
+></app-submit-button>
