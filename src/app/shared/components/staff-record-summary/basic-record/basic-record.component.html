@@ -59,7 +59,10 @@
         [wdfValue]="worker.wdf?.contract"
         [overallWdfEligibility]="overallWdfEligibility"
       >
-        {{ worker.contract }}
+        <ng-container *ngIf="showPoolBankTag; else notPoolBankTag">Pool, Bank</ng-container>
+        <ng-template #notPoolBankTag>
+          {{ worker.contract }}
+        </ng-template>
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="

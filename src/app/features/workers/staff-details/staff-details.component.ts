@@ -16,7 +16,13 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './staff-details.component.html',
 })
 export class StaffDetailsComponent extends QuestionComponent implements OnInit, OnDestroy {
-  public contractsAvailable: Array<string> = [];
+  public contractsAvailable = [
+    { value: Contracts.Permanent, tag: 'Permanent' },
+    { value: Contracts.Temporary, tag: 'Temporary' },
+    { value: Contracts.Pool_Bank, tag: 'Pool, Bank' },
+    { value: Contracts.Agency, tag: 'Agency' },
+    { value: Contracts.Other, tag: 'Other' },
+  ];
   public jobsAvailable: Job[] = [];
   public showInputTextforOtherRole: boolean;
   public submitTitle = 'Save this staff record';
@@ -52,7 +58,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'staff-record';
     this.inMandatoryDetailsFlow = this.route.snapshot.parent.url[0].path === 'mandatory-details';
     this.flow = this.insideFlow ? 'staff-record' : 'staff-record/staff-record-summary';
-    this.contractsAvailable = Object.values(Contracts);
     this.editFlow = !!this.worker;
     this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
     this.getJobs();
