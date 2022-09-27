@@ -51,19 +51,19 @@ describe('DateOfBirthComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('submit buttons', () => {
-    it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
-      const { getByText } = await setup(false);
+  // describe('submit buttons', () => {
+  //   it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
+  //     const { getByText } = await setup(false);
 
-      expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('View this staff record')).toBeTruthy();
-    });
+  //     expect(getByText('Save and continue')).toBeTruthy();
+  //     expect(getByText('View this staff record')).toBeTruthy();
+  //   });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup();
+  //   it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
+  //     const { getByText } = await setup();
 
-      expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-  });
+  //     expect(getByText('Save and return')).toBeTruthy();
+  //     expect(getByText('Cancel')).toBeTruthy();
+  //   });
+  // });
 });
