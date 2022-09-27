@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { POSTCODE_PATTERN } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -19,9 +20,10 @@ export class HomePostcodeComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       postcode: [null, this.postcodeValidator],
@@ -60,7 +62,7 @@ export class HomePostcodeComponent extends QuestionComponent {
       ? {
           postcode: postcode.value,
         }
-      : {postcode: null};
+      : { postcode: null };
   }
 
   postcodeValidator(control: AbstractControl) {

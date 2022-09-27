@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -29,11 +30,13 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
   public canViewNinoDob: boolean;
+  public insideFlow: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
     public workerService: WorkerService,
     private wdfConfirmFieldsService: WdfConfirmFieldsService,
+    protected route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -41,14 +44,15 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
-
     if (this.canEditWorker && this.wdfView) {
       if (this.allRequiredFieldsUpdatedAndEligible()) {
         this.updateFieldsWhichDontRequireConfirmation();
       }
     } else {
-      console.log('**** staff record summary component ****');
-      const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
+      this.insideFlow = this.route.snapshot.parent.url[0].path === 'create-staff-record';
+      const staffRecordPath = this.insideFlow
+        ? ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'mandatory-details']
+        : ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'staff-record-summary'];
       const returnTo = { url: staffRecordPath };
       this.workerService.setReturnTo(returnTo);
     }

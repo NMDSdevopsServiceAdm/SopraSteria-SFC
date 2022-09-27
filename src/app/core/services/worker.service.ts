@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { Params } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
 import { LocalIdentifiersRequest, LocalIdentifiersResponse } from '@core/model/establishment.model';
@@ -68,6 +68,27 @@ export class WorkerService {
 
   public set alert(alert: Alert) {
     this._alert$.next(alert);
+  }
+
+  public setAddStaffRecordInProgress(value: boolean): void {
+    this.addStaffRecordInProgress$.next(value);
+    localStorage.setItem('addStaffRecordInProgress', value.toString());
+  }
+
+  public get addStaffRecordInProgress(): boolean {
+    if (this.addStaffRecordInProgress$.value) {
+      return this.addStaffRecordInProgress$.value;
+    }
+
+    const addStaffRecordInProgress = localStorage.getItem('addStaffRecordInProgress');
+
+    if (addStaffRecordInProgress) {
+      this.addStaffRecordInProgress$.next(JSON.parse(addStaffRecordInProgress));
+    } else if (isDevMode() && !this.addStaffRecordInProgress$.value) {
+      throw new TypeError('No value for addStaffRecordInProgress in local storage!');
+    }
+
+    return this.addStaffRecordInProgress$.value;
   }
 
   public hasJobRole(worker: Worker, id: number) {

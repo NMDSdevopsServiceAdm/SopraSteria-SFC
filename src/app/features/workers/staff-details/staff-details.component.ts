@@ -6,6 +6,7 @@ import { Job } from '@core/model/job.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -32,10 +33,11 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     public workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
     protected alertService: AlertService,
     private jobService: JobService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       nameOrId: [null, Validators.required],

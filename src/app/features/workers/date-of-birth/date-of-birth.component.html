@@ -30,7 +30,7 @@
         </div>
       </fieldset>
     </div>
-    <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
       <app-progress-bar
         data-testid="progress-bar"
         [sections]="staffRecordSections"

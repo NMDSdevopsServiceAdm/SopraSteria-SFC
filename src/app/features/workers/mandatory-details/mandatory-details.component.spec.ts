@@ -23,7 +23,7 @@ import userEvent from '@testing-library/user-event';
 
 import { MandatoryDetailsComponent } from './mandatory-details.component';
 
-fdescribe('MandatoryDetailsComponent', () => {
+describe('MandatoryDetailsComponent', () => {
   const setup = async (canEditWorker = true, primaryUid = 123) => {
     const permissions = canEditWorker ? ['canEditWorker'] : [];
     const { fixture, getByText, queryByText, getByTestId } = await render(MandatoryDetailsComponent, {
