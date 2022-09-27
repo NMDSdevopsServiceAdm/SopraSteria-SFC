@@ -114,7 +114,9 @@ describe('MandatoryDetailsComponent', () => {
     const worker = component.worker;
     const changeLink = getByText('Change');
 
-    expect(changeLink.getAttribute('href')).toBe(`/workplace/${123}/staff-record/${worker.uid}/staff-details`);
+    expect(changeLink.getAttribute('href')).toBe(
+      `/workplace/${123}/staff-record/${worker.uid}/staff-record-summary/staff-details`,
+    );
   });
 
   it('should not show the change link if the user does not have edit permissions', async () => {

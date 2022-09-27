@@ -20,8 +20,8 @@ describe('DateOfBirthComponent', () => {
           {
             provide: ActivatedRoute,
             useValue: {
-              snapshot: {
-                parent: {
+              parent: {
+                snapshot: {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
                     establishment: { uid: 'mocked-uid' },

@@ -236,7 +236,7 @@ describe('StaffDetailsComponent', () => {
     fireEvent.click(saveButton);
     component.fixture.detectChanges();
 
-    expect(spy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId]);
+    expect(spy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary']);
   });
 
   it('should go to mandatory-details url when adding a new staff record', async () => {

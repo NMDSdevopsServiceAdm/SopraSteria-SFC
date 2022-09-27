@@ -51,7 +51,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.return = this.workerService.returnTo;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+    this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary';
     this.staffRecordSections = ProgressBarUtil.staffRecordProgressBarSections();
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
@@ -100,7 +100,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected onSuccess() {}
 
   protected navigate(action): void {
-    console.log(action);
     switch (action) {
       case 'continue':
         this.router.navigate(this.next);

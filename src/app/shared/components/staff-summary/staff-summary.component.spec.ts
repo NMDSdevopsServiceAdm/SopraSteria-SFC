@@ -98,7 +98,7 @@ describe('StaffSummaryComponent', () => {
 
     workers.map((worker, index) => {
       expect(addMoreDetailsLinks[index].getAttribute('href')).toEqual(
-        `/workplace/${workplace.uid}/staff-record/${worker.uid}/staff-record-summary/date-of-birth`,
+        `/workplace/${workplace.uid}/staff-record/${worker.uid}/date-of-birth`,
       );
     });
   });

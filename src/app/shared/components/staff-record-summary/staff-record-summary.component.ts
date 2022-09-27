@@ -49,10 +49,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
         this.updateFieldsWhichDontRequireConfirmation();
       }
     } else {
-      this.insideFlow = this.route.snapshot.parent.url[0].path === 'create-staff-record';
-      const staffRecordPath = this.insideFlow
-        ? ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'mandatory-details']
-        : ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'staff-record-summary'];
+      const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
       const returnTo = { url: staffRecordPath };
       this.workerService.setReturnTo(returnTo);
     }

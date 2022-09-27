@@ -39,6 +39,7 @@ describe('StaffRecordComponent', () => {
                 data: {
                   establishment: workplace,
                 },
+                url: [{ path: '' }],
               },
             },
             snapshot: {},

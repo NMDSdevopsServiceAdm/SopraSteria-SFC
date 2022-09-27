@@ -68,8 +68,8 @@ const getNursingSpecialismComponent = async (worker, returnUrl = true) => {
             snapshot: {
               data: {
                 establishment: { uid: 'mocked-uid' },
-                primaryWorkplace: {},
               },
+              url: [{ path: '' }],
             },
           },
         },
