@@ -288,7 +288,7 @@ describe('NationalityComponent', () => {
   });
 
   describe('error messages', () => {
-    fit('returns an error if an incorrect country is inputted', async () => {
+    it('returns an error if an incorrect country is inputted', async () => {
       const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
 
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
