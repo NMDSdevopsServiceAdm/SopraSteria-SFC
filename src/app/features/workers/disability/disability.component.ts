@@ -13,7 +13,7 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './disability.component.html',
 })
 export class DisabilityComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', 'Undisclosed', `Don't know`];
+  public answersAvailable = ['Yes', 'No', 'They preferred not to say', `Don't know`];
 
   constructor(
     protected formBuilder: FormBuilder,
