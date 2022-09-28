@@ -11,7 +11,7 @@ import { HomePostcodeComponent } from './home-postcode.component';
 
 describe('HomePostcodeComponent', () => {
   async function setup(returnUrl = true) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(HomePostcodeComponent, {
+    const { fixture, getByText, getAllByText, getByLabelText, queryByTestId } = await render(HomePostcodeComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
@@ -43,12 +43,18 @@ describe('HomePostcodeComponent', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      queryByTestId,
     };
   }
 
   it('should render the HomePostcodeComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the progress bar', async () => {
+    const { queryByTestId } = await setup();
+    expect(queryByTestId('progress-bar-1')).toBeTruthy();
   });
 
   describe('submit buttons', () => {

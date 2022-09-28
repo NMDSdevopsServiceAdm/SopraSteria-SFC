@@ -50,6 +50,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
         this.updateFieldsWhichDontRequireConfirmation();
       }
     } else {
+      console.log('**** staff record summary component ****');
       const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
       const returnTo = { url: staffRecordPath };
       this.workerService.setReturnTo(returnTo);

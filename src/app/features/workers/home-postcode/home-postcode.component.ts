@@ -38,7 +38,7 @@ export class HomePostcodeComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('gender');
-    this.previous = this.getRoutePath('date-of-birth');
+    this.previous = this.getRoutePath('national-insurance-number');
   }
 
   public setupFormErrorsMap(): void {
