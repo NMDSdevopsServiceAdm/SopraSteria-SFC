@@ -31,11 +31,13 @@
       </fieldset>
     </div>
     <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
-      <app-progress-bar
-        data-testid="progress-bar"
-        [sections]="staffRecordSections"
-        [currentSection]="section"
-      ></app-progress-bar>
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
     </div>
   </div>
   <app-submit-button [return]="!insideFlow" (clicked)="onSubmit($event)"></app-submit-button>

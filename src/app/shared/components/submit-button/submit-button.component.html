@@ -16,8 +16,8 @@
         <a class="govuk-button govuk-button--link" (click)="onClick($event, 'exit', false)">{{ exitText }}</a>
       </div>
     </div>
-    <div>
-      <div *ngIf="recordSummary">
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="recordSummary" class="govuk-!-margin-left-7">
         <span class="govuk-visually-hidden">or</span>
         <a class="govuk-button govuk-button--link" (click)="onClick($event, 'summary', false)"
           >View this staff record</a

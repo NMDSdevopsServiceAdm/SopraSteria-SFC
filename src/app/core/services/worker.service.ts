@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, isDevMode } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
 import { LocalIdentifiersRequest, LocalIdentifiersResponse } from '@core/model/establishment.model';
@@ -84,8 +84,6 @@ export class WorkerService {
 
     if (addStaffRecordInProgress) {
       this.addStaffRecordInProgress$.next(JSON.parse(addStaffRecordInProgress));
-    } else if (isDevMode()) {
-      throw new TypeError('No value for addStaffRecordInProgress in local storage!');
     }
 
     return this.addStaffRecordInProgress$.value;
