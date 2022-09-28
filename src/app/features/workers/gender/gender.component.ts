@@ -13,7 +13,12 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './gender.component.html',
 })
 export class GenderComponent extends QuestionComponent {
-  public answersAvailable = ['Female', 'Male', 'Other', `Don't know`];
+  public answersAvailable = [
+    { value: 'Female', tag: 'Female' },
+    { value: 'Male', tag: 'Male' },
+    { value: 'Other', tag: 'Other' },
+    { value: `Don't know`, tag: 'I do not know' },
+  ];
   public section = 'Personal details';
   private disabilityPath: string[];
   private staffRecordSummaryPath: string[];
