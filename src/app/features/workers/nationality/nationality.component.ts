@@ -16,6 +16,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class NationalityComponent extends QuestionComponent {
   public availableNationalities: Nationality[];
+  public section = 'Personal details';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -67,6 +68,7 @@ export class NationalityComponent extends QuestionComponent {
     }
 
     this.previous = this.getRoutePath('ethnicity');
+    this.next = this.getRoutePath('british-citizenship');
   }
 
   setupFormErrorsMap(): void {
@@ -105,10 +107,9 @@ export class NationalityComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    this.next =
-      this.worker.nationality && this.worker.nationality.value === 'British'
-        ? this.getRoutePath('country-of-birth')
-        : this.getRoutePath('british-citizenship');
+    this.worker.nationality &&
+      this.worker.nationality.value === 'British' &&
+      (this.next = this.getRoutePath('country-of-birth'));
   }
 
   nationalityNameValidator() {

@@ -85,7 +85,7 @@ describe('DateOfBirthComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
+    it(`should show 'Save and continue' cta button and 'View this staff record' and 'Skip this question' link if in the flow`, async () => {
       const { getByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
@@ -148,7 +148,7 @@ describe('DateOfBirthComponent', () => {
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
+    it(`should show 'Save and return' cta button and 'Cancel' link if outside the flow`, async () => {
       const { getByText } = await setup(false);
 
       expect(getByText('Save and return')).toBeTruthy();
