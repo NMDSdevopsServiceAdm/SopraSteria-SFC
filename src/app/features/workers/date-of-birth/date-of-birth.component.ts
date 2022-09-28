@@ -19,6 +19,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
 
   private minDate = dayjs().subtract(100, 'years').add(1, 'days');
   private maxDate = dayjs().subtract(14, 'years');
+  public section = 'Personal details';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -40,7 +41,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     this.form.get('dob').setValidators([DateValidator.dateValid(), DateValidator.between(this.minDate, this.maxDate)]);
   }
 
-  init() {
+  init(): void {
     if (this.worker.dateOfBirth) {
       const date = dayjs(this.worker.dateOfBirth, DATE_PARSE_FORMAT);
       this.form.get('dob').patchValue({
@@ -50,11 +51,13 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
       });
     }
 
-    this.next = this.getRoutePath('home-postcode');
-    this.previous = this.getRoutePath('national-insurance-number');
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+
+    this.next = this.getRoutePath('national-insurance-number');
+    this.previous = this.getReturnPath();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
@@ -89,5 +92,15 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     }
 
     return { dateOfBirth: null };
+  }
+
+  private getReturnPath() {
+    if (this.workerService.addStaffRecordInProgress$.value) {
+      return this.getRoutePath('staff-details');
+    }
+    if (this.workplace.uid === this.primaryWorkplace.uid) {
+      return ['/dashboard'];
+    }
+    return [`/workplace/${this.workplace.uid}`];
   }
 }

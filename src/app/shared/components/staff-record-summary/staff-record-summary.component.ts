@@ -49,6 +49,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
         this.updateFieldsWhichDontRequireConfirmation();
       }
     } else {
+      console.log('**** staff record summary component ****');
       const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
       const returnTo = { url: staffRecordPath };
       this.workerService.setReturnTo(returnTo);
@@ -68,7 +69,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   }
 
   public getRoutePath(name: string): Array<string> {
-    return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];
+    return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'staff-record-summary', name];
   }
 
   public confirmField(dataField: string): void {

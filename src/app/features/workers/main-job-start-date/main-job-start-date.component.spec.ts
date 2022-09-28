@@ -163,7 +163,13 @@ describe('MainJobStartDateComponent', () => {
 
     userEvent.click(getByText('View this staff record'));
     expect(submitSpy).toHaveBeenCalledWith({ action: 'summary', save: false });
-    expect(navigateSpy).toHaveBeenCalledWith(['/workplace', 123, 'staff-record', fixture.componentInstance.worker.uid]);
+    expect(navigateSpy).toHaveBeenCalledWith([
+      '/workplace',
+      123,
+      'staff-record',
+      fixture.componentInstance.worker.uid,
+      'staff-record-summary',
+    ]);
     expect(workerServiceSpy).not.toHaveBeenCalled();
   });
 

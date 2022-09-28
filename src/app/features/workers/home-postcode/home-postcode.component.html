@@ -3,12 +3,18 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('postcode').invalid">
+      <div
+        class="govuk-form-group govuk-!-margin-bottom-4"
+        [class.govuk-form-group--error]="submitted && form.get('postcode').invalid"
+      >
         <h1 class="govuk-label-wrapper">
-          <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="postcode">
+          <span class="govuk-caption-l">Personal details</span>
+          <label class="govuk-label govuk-label--l govuk-!-margin-bottom-8" for="postcode">
             What's their home postcode?
           </label>
         </h1>
+        <label class="govuk-label govuk-date-input__label" for="dob-year"> Postcode </label>
+        <span class="govuk-caption-m govuk-!-margin-bottom-4">For example, 'LS1 2RP'</span>
         <span *ngIf="submitted && form.get('postcode').errors" id="postcode-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           {{ getFormErrorMessage('postcode', 'validPostcode') }}
@@ -21,6 +27,15 @@
           name="postcode"
           type="text"
         />
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third-from-desktop">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="'Personal details'"
+        ></app-progress-bar>
       </div>
     </div>
   </div>

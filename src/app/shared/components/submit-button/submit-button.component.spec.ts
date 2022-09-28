@@ -32,17 +32,6 @@ describe('SubmitButtonComponent', () => {
       expect(queryByText('Cancel')).toBeFalsy();
     });
 
-    it(`should render the 'Save and continue' button and 'View workplace details' link when in workplace flow`, async () => {
-      const { fixture, getByText, queryByText } = await setup();
-
-      fixture.componentInstance.isExistingStaffRecord = false;
-      fixture.detectChanges();
-
-      expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('View workplace details')).toBeTruthy();
-      expect(queryByText('Cancel')).toBeFalsy();
-    });
-
     it(`should render the 'Save and continue' button and 'Cancel' link when recordSummary is false, canExit is true`, async () => {
       const { fixture, getByText, queryByText } = await setup();
 

@@ -110,6 +110,12 @@ describe('OtherQualificationsLevelComponent', () => {
     const viewRecordLink = getByText('View this staff record');
     fireEvent.click(viewRecordLink);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceUid, 'staff-record', workerUid]);
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'staff-record',
+      workerUid,
+      'staff-record-summary',
+    ]);
   });
 });
