@@ -3,11 +3,15 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('gender').invalid">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">What's their gender identity?</h1>
-          </legend>
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+          <h1 class="govuk-fieldset__heading">What's their gender identity?</h1>
+        </legend>
+        <div
+          class="govuk-form-group govuk-!-margin-bottom-4"
+          [class.govuk-form-group--error]="submitted && form.get('gender').invalid"
+        >
           <div class="govuk-radios">
             <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
               <input
@@ -23,7 +27,16 @@
               </label>
             </div>
           </div>
-        </fieldset>
+        </div>
+      </fieldset>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
