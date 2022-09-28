@@ -1,23 +1,33 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { GenderComponent } from './gender.component';
 
 describe('GenderComponent', () => {
   async function setup(returnUrl = true) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(GenderComponent, {
+    const { fixture, getByText, getByLabelText, getByTestId, queryByTestId } = await render(GenderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FormBuilder,
         {
+          provide: WorkerService,
+          useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+        },
+        {
           provide: ActivatedRoute,
           useValue: {
+            snapshot: {
+              parent: {
+                url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
+              },
+            },
             parent: {
               snapshot: {
                 data: {
@@ -28,27 +38,41 @@ describe('GenderComponent', () => {
             },
           },
         },
-        {
-          provide: WorkerService,
-          useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
-        },
       ],
     });
 
+    const injector = getTestBed();
+
     const component = fixture.componentInstance;
+    const router = injector.inject(Router) as Router;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
       fixture,
+      routerSpy,
       getByText,
-      getAllByText,
       getByLabelText,
+      getByTestId,
+      queryByTestId,
     };
   }
 
   it('should render the GenderComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the GenderComponent heading and radio buttons', async () => {
+    const { getByText, getByLabelText, getByTestId } = await setup();
+
+    expect(getByText(`What's their gender identity?`)).toBeTruthy;
+    expect(getByTestId('section-heading')).toBeTruthy();
+    expect(getByLabelText('Female')).toBeTruthy();
+    expect(getByLabelText('Male')).toBeTruthy();
+    expect(getByLabelText('Other')).toBeTruthy();
+    expect(getByLabelText('I do not know')).toBeTruthy();
   });
 
   describe('submit buttons', () => {
@@ -64,6 +88,95 @@ describe('GenderComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render the workplace progress bar', async () => {
+      const { getByTestId } = await setup(false);
+
+      expect(getByTestId('progress-bar-1')).toBeTruthy();
+    });
+
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { queryByTestId } = await setup();
+
+      expect(queryByTestId('progress-bar-1')).toBeFalsy();
+    });
+  });
+
+  describe('navigation', () => {
+    it('should navigate to disability page when submitting from flow', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const saveButton = getByText('Save and continue');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save and continue')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'disability']);
+    });
+
+    it('should navigate to disability page when skipping the question in the flow', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Skip this question');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'disability']);
+    });
+
+    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Save and return');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Cancel');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
+      const { component } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      expect(component.return).toEqual({
+        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
+      });
     });
   });
 });
