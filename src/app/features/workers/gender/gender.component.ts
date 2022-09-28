@@ -25,6 +25,7 @@ export class GenderComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
