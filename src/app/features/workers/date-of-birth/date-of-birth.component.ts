@@ -99,7 +99,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     }
 
     if (this.insideFlow) {
-      return this.workplace.uid === this.primaryWorkplace.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
+      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
     }
     return this.getRoutePath('');
   }
