@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Job, JobRole } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -27,9 +28,10 @@ export class OtherJobRolesComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
     protected jobService: JobService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       selectedJobRoles: this.formBuilder.array([]),

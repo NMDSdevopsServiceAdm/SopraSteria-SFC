@@ -12,9 +12,11 @@ export class PrimaryWorkplaceResolver implements Resolve<any> {
     const workplaceUid = this.establishmentService.establishmentId;
     // This should include a permissions check, but it doesn't currently: this.permissionsService.can(workplaceUid, 'canViewEstablishment')
     if (workplaceUid) {
-      return this.establishmentService
-        .getEstablishment(workplaceUid)
-        .pipe(tap((workplace) => this.establishmentService.setPrimaryWorkplace(workplace)));
+      return this.establishmentService.getEstablishment(workplaceUid).pipe(
+        tap((workplace) => {
+          this.establishmentService.setPrimaryWorkplace(workplace);
+        }),
+      );
     }
 
     return of(null);

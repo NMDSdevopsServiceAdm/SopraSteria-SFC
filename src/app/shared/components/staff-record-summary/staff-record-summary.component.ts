@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -35,6 +36,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     public workerService: WorkerService,
     private wdfConfirmFieldsService: WdfConfirmFieldsService,
+    protected route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -43,7 +45,6 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
-
     if (this.canEditWorker && this.wdfView) {
       if (this.allRequiredFieldsUpdatedAndEligible()) {
         this.updateFieldsWhichDontRequireConfirmation();

@@ -22,8 +22,8 @@ describe('EthnicityComponent', () => {
               snapshot: {
                 data: {
                   establishment: { uid: 'mocked-uid' },
-                  primaryWorkplace: {},
                 },
+                url: [{ path: '' }],
               },
             },
           },

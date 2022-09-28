@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -24,8 +25,9 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     permissionsService: PermissionsService,
     workerService: WorkerService,
     wdfConfirmFieldsService: WdfConfirmFieldsService,
+    route: ActivatedRoute,
   ) {
-    super(permissionsService, workerService, wdfConfirmFieldsService);
+    super(permissionsService, workerService, wdfConfirmFieldsService, route);
   }
 
   isNumber(number: number) {
