@@ -55,8 +55,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.worker = worker;
 
         if (!this.initiated) {
-          this._init();
-
           this.back = this.return
             ? this.return
             : {
@@ -64,6 +62,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
                 ...(!this.workerService.addStaffRecordInProgress$.value && { fragment: 'staff-records' }),
               };
           this.backService.setBackLink(this.back);
+          this._init();
         }
       }),
     );
