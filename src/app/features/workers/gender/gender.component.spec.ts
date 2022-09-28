@@ -72,7 +72,7 @@ describe('GenderComponent', () => {
     expect(getByLabelText('Female')).toBeTruthy();
     expect(getByLabelText('Male')).toBeTruthy();
     expect(getByLabelText('Other')).toBeTruthy();
-    expect(getByLabelText(`Don't know`)).toBeTruthy();
+    expect(getByLabelText('I do not know')).toBeTruthy();
   });
 
   describe('submit buttons', () => {
@@ -93,9 +93,7 @@ describe('GenderComponent', () => {
 
   describe('progress bar', () => {
     it('should render the workplace progress bar', async () => {
-      const { component, getByTestId } = await setup(false);
-
-      console.log(component.route.snapshot.parent.url);
+      const { getByTestId } = await setup(false);
 
       expect(getByTestId('progress-bar-1')).toBeTruthy();
     });
@@ -143,10 +141,13 @@ describe('GenderComponent', () => {
       const skipButton = getByText('Save and return');
       fireEvent.click(skipButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(
-        ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-        { fragment: undefined, queryParams: undefined },
-      );
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
@@ -158,10 +159,13 @@ describe('GenderComponent', () => {
       const skipButton = getByText('Cancel');
       fireEvent.click(skipButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(
-        ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-        { fragment: undefined, queryParams: undefined },
-      );
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
     });
 
     it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
