@@ -6,7 +6,6 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import { serialize } from 'v8';
 
 import { NationalInsuranceNumberComponent } from './national-insurance-number.component';
 
@@ -27,8 +26,8 @@ describe('NationalInsuranceNumberComponent', () => {
                     establishment: { uid: 'mocked-uid' },
                     primaryWorkplace: {},
                   },
+                  url: [{ path: '' }],
                 },
-                url: [{ path: '' }],
               },
             },
           },
@@ -72,17 +71,16 @@ describe('NationalInsuranceNumberComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
-      const { component, fixture, getByText } = await setup(false);
-
-      component.insideFlow = true;
-      fixture.detectChanges();
+      const { getByText } = await setup(false);
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup();
+      const { component, fixture, getByText } = await setup();
+      component.insideFlow = false;
+      fixture.detectChanges();
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
