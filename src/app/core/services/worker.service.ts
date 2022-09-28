@@ -70,6 +70,25 @@ export class WorkerService {
     this._alert$.next(alert);
   }
 
+  public setAddStaffRecordInProgress(value: boolean): void {
+    this.addStaffRecordInProgress$.next(value);
+    localStorage.setItem('addStaffRecordInProgress', value.toString());
+  }
+
+  public get addStaffRecordInProgress(): boolean {
+    if (this.addStaffRecordInProgress$.value) {
+      return this.addStaffRecordInProgress$.value;
+    }
+
+    const addStaffRecordInProgress = localStorage.getItem('addStaffRecordInProgress');
+
+    if (addStaffRecordInProgress) {
+      this.addStaffRecordInProgress$.next(JSON.parse(addStaffRecordInProgress));
+    }
+
+    return this.addStaffRecordInProgress$.value;
+  }
+
   public hasJobRole(worker: Worker, id: number) {
     return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.jobs.some((j) => j.jobId === id));
   }

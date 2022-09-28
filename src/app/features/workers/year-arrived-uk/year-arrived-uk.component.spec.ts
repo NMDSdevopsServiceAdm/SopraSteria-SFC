@@ -22,8 +22,8 @@ describe('YearArrivedUkComponent', () => {
               snapshot: {
                 data: {
                   establishment: { uid: 'mocked-uid' },
-                  primaryWorkplace: {},
                 },
+                url: [{ path: '' }],
               },
             },
           },

@@ -5,6 +5,7 @@ import { FLOAT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -23,9 +24,10 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
 
@@ -44,7 +46,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
     }
 
     this.subscriptions.add(
-      this.form.get('hoursKnown').valueChanges.subscribe(value => {
+      this.form.get('hoursKnown').valueChanges.subscribe((value) => {
         this.form.get('hours').clearValidators();
 
         if (value === 'Yes') {
@@ -54,7 +56,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
         }
 
         this.form.get('hours').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.weeklyHoursContracted) {

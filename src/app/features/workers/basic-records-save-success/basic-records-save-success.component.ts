@@ -30,7 +30,7 @@ export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.workerService.setReturnTo(null);
-    this.workerService.addStaffRecordInProgress$.next(false);
+    // this.workerService.addStaffRecordInProgress$.next(false);
   }
 
   get returnTo() {

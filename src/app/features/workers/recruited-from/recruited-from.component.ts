@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { RecruitmentResponse, RecruitmentService } from '@core/services/recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -22,9 +23,10 @@ export class RecruitedFromComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private recruitmentService: RecruitmentService
+    protected establishmentService: EstablishmentService,
+    private recruitmentService: RecruitmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       recruitmentKnown: null,
@@ -34,7 +36,7 @@ export class RecruitedFromComponent extends QuestionComponent {
 
   init() {
     this.subscriptions.add(
-      this.form.get('recruitmentKnown').valueChanges.subscribe(val => {
+      this.form.get('recruitmentKnown').valueChanges.subscribe((val) => {
         this.form.get('recruitedFromId').clearValidators();
 
         if (val === 'Yes') {
@@ -42,11 +44,11 @@ export class RecruitedFromComponent extends QuestionComponent {
         }
 
         this.form.get('recruitedFromId').updateValueAndValidity();
-      })
+      }),
     );
 
     this.subscriptions.add(
-      this.recruitmentService.getRecruitedFrom().subscribe(res => (this.availableRecruitments = res))
+      this.recruitmentService.getRecruitedFrom().subscribe((res) => (this.availableRecruitments = res)),
     );
 
     if (this.worker.recruitedFrom) {

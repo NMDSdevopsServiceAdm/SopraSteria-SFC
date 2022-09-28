@@ -7,6 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import isNull from 'lodash/isNull';
@@ -43,24 +44,28 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
     this.return = this.workerService.returnTo;
     this.workplace = this.route.parent.snapshot.data.establishment;
-    this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary';
     this.staffRecordSections = ProgressBarUtil.staffRecordProgressBarSections();
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
         this.worker = worker;
 
         if (!this.initiated) {
-          this.back = this.return
-            ? this.return
-            : {
+          this._init();
+          this.back = this.previous
+            ? {
                 url: this.previous,
                 ...(!this.workerService.addStaffRecordInProgress$.value && { fragment: 'staff-records' }),
-              };
+              }
+            : this.return;
+
           this.backService.setBackLink(this.back);
           this._init();
         }
@@ -116,7 +121,14 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'return':
-        this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
+        this.router.navigate([
+          '/workplace',
+          this.workplace.uid,
+          'staff-record',
+          this.worker.uid,
+          'staff-record-summary',
+        ]);
+        // this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
         break;
     }
   }

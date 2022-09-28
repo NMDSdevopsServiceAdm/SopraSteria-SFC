@@ -53,6 +53,7 @@ describe('MainJobStartDateComponent', () => {
                     uid: 123,
                   },
                 },
+                url: [{ path: '' }],
               },
             },
           },
@@ -99,21 +100,27 @@ describe('MainJobStartDateComponent', () => {
   });
 
   it('renders "Save and continue" if clicking through from staff-records section of dashhboard', async () => {
-    const { getByText } = await setup('staff-records');
+    const { fixture, getByText } = await setup('staff-records');
+
+    fixture.componentInstance.return = null;
+    fixture.detectChanges();
 
     expect(getByText('Save and continue')).toBeTruthy();
     expect(getByText('View this staff record')).toBeTruthy();
   });
 
   it('renders "Save and continue" if clicking through from mandatory-details section page', async () => {
-    const { getByText } = await setup('mandatory-details');
+    const { fixture, getByText } = await setup('mandatory-details');
+
+    fixture.componentInstance.return = null;
+    fixture.detectChanges();
 
     expect(getByText('Save and continue')).toBeTruthy();
     expect(getByText('View this staff record')).toBeTruthy();
   });
 
   it('allows the user to complete the fields and update the form data - (return flow)', async () => {
-    const { getByRole, getByLabelText, fixture, submitSpy, workerServiceSpy } = await setup();
+    const { getByText, getByLabelText, fixture, submitSpy, workerServiceSpy } = await setup();
 
     const formData = fixture.componentInstance.form.value;
     expect(formData).toEqual({ mainJobStartDate: { day: null, month: null, year: null } });
@@ -122,7 +129,7 @@ describe('MainJobStartDateComponent', () => {
     userEvent.type(getByLabelText('Month'), '11');
     userEvent.type(getByLabelText('Year'), '1999');
 
-    userEvent.click(getByRole('button', { name: 'Save and return' }));
+    userEvent.click(getByText('Save and return'));
 
     const updatedFormData = fixture.componentInstance.form.value;
     expect(updatedFormData).toEqual({ mainJobStartDate: { day: 11, month: 11, year: 1999 } });
@@ -136,8 +143,9 @@ describe('MainJobStartDateComponent', () => {
   });
 
   it('allows the user to complete the fields and update the form data - (continue flow)', async () => {
-    const { getByRole, getByLabelText, fixture, submitSpy, workerServiceSpy } = await setup('staff-records');
-
+    const { getByText, getByLabelText, fixture, submitSpy, workerServiceSpy } = await setup('staff-records');
+    fixture.componentInstance.return = null;
+    fixture.detectChanges();
     const formData = fixture.componentInstance.form.value;
     expect(formData).toEqual({ mainJobStartDate: { day: null, month: null, year: null } });
 
@@ -145,7 +153,7 @@ describe('MainJobStartDateComponent', () => {
     userEvent.type(getByLabelText('Month'), '12');
     userEvent.type(getByLabelText('Year'), '2000');
 
-    userEvent.click(getByRole('button', { name: 'Save and continue' }));
+    userEvent.click(getByText('Save and continue'));
 
     const updatedFormData = fixture.componentInstance.form.value;
     expect(updatedFormData).toEqual({ mainJobStartDate: { day: 22, month: 12, year: 2000 } });
@@ -161,6 +169,9 @@ describe('MainJobStartDateComponent', () => {
   it('allows the user to view the staff record summary', async () => {
     const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup('staff-records');
 
+    fixture.componentInstance.return = null;
+    fixture.detectChanges();
+
     userEvent.click(getByText('View this staff record'));
     expect(submitSpy).toHaveBeenCalledWith({ action: 'summary', save: false });
     expect(navigateSpy).toHaveBeenCalledWith([
@@ -174,11 +185,17 @@ describe('MainJobStartDateComponent', () => {
   });
 
   it('allows the user to exit the flow', async () => {
-    const { getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup();
+    const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup();
 
     userEvent.click(getByText('Cancel'));
     expect(submitSpy).toHaveBeenCalledOnceWith({ action: 'return', save: false });
-    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+    expect(navigateSpy).toHaveBeenCalledWith([
+      '/workplace',
+      123,
+      'staff-record',
+      fixture.componentInstance.worker.uid,
+      'staff-record-summary',
+    ]);
     expect(workerServiceSpy).not.toHaveBeenCalled();
   });
 

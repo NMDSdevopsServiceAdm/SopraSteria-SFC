@@ -93,6 +93,12 @@ describe('MandatoryDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should show have the title mandatory details on summary', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Mandatory information'));
+  });
+
   it('should render the progress bar', async () => {
     const { queryByTestId } = await setup();
 
