@@ -45,7 +45,9 @@ export class NationalityComponent extends QuestionComponent {
         .getNationalities()
         .subscribe((nationalities) => (this.availableNationalities = nationalities)),
     );
+    console.log('**** available nationalities ****');
 
+    console.log(this.availableNationalities);
     this.subscriptions.add(
       this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
         this.form.get('nationalityName').clearValidators();
@@ -107,9 +109,8 @@ export class NationalityComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    this.worker.nationality &&
-      this.worker.nationality.value === 'British' &&
-      (this.next = this.getRoutePath('country-of-birth'));
+    const { nationalityKnown } = this.form.controls;
+    nationalityKnown.value === 'British' && (this.next = this.getRoutePath('country-of-birth'));
   }
 
   nationalityNameValidator() {

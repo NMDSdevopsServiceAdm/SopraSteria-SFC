@@ -182,7 +182,7 @@ describe('DateOfBirthComponent', () => {
       ]);
     });
 
-    it('return tot the staff record summary when cancel is clicked', async () => {
+    it('return to the staff record summary when cancel is clicked', async () => {
       const { fixture, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup(false);
 
       userEvent.click(getByText('Cancel'));
