@@ -36,6 +36,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public staffRecordSections: string[];
   public insideFlow: boolean;
   public flow: string;
+  public skipRoute: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
