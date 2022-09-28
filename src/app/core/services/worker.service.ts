@@ -84,7 +84,7 @@ export class WorkerService {
 
     if (addStaffRecordInProgress) {
       this.addStaffRecordInProgress$.next(JSON.parse(addStaffRecordInProgress));
-    } else if (isDevMode() && !this.addStaffRecordInProgress$.value) {
+    } else if (isDevMode()) {
       throw new TypeError('No value for addStaffRecordInProgress in local storage!');
     }
 
