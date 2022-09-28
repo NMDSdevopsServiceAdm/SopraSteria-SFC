@@ -45,9 +45,7 @@ export class NationalityComponent extends QuestionComponent {
         .getNationalities()
         .subscribe((nationalities) => (this.availableNationalities = nationalities)),
     );
-    console.log('**** available nationalities ****');
 
-    console.log(this.availableNationalities);
     this.subscriptions.add(
       this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
         this.form.get('nationalityName').clearValidators();
