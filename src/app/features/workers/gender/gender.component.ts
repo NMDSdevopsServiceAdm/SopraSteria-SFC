@@ -13,12 +13,19 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './gender.component.html',
 })
 export class GenderComponent extends QuestionComponent {
-  public answersAvailable = ['Female', 'Male', 'Other', `Don't know`];
+  public answersAvailable = [
+    { value: 'Female', tag: 'Female' },
+    { value: 'Male', tag: 'Male' },
+    { value: 'Other', tag: 'Other' },
+    { value: `Don't know`, tag: 'I do not know' },
+  ];
+  public section = 'Personal details';
+  private disabilityPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected route: ActivatedRoute,
+    public route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
@@ -32,19 +39,31 @@ export class GenderComponent extends QuestionComponent {
   }
 
   init() {
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     if (this.worker.gender) {
       this.form.patchValue({
         gender: this.worker.gender,
       });
     }
+    this.setUpPageRouting();
+  }
 
-    this.next = this.getRoutePath('disability');
-    this.previous = this.getRoutePath('home-postcode');
+  private setUpPageRouting() {
+    this.disabilityPath = this.getRoutePath('disability');
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+
+    if (this.insideFlow) {
+      this.backService.setBackLink({ url: this.getRoutePath('home-postcode') });
+      this.skipRoute = this.disabilityPath;
+      this.next = this.disabilityPath;
+    } else {
+      this.return = { url: this.staffRecordSummaryPath };
+      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+    }
   }
 
   generateUpdateProps() {
     const { gender } = this.form.controls;
-
     return gender.value
       ? {
           gender: gender.value,

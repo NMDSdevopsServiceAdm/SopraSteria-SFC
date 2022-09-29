@@ -26,6 +26,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public previous: string[];
   public next: string[];
   public back: URLStructure;
+  public skipRoute: string[];
 
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
@@ -36,7 +37,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public staffRecordSections: string[];
   public insideFlow: boolean;
   public flow: string;
-  public skipRoute: string[];
+  public staffRecordSummaryPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -59,7 +60,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.worker = worker;
 
         if (!this.initiated) {
-          this._init();
           this.back = this.previous
             ? {
                 url: this.previous,
