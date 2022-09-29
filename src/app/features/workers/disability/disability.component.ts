@@ -13,8 +13,6 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './disability.component.html',
 })
 export class DisabilityComponent extends QuestionComponent {
-  // public answersAvailable = ['Yes', 'No', 'They preferred not to say', 'I do not know'];
-
   public answersAvailable = [
     { value: 'Yes', tag: 'Yes' },
     { value: 'No', tag: 'No' },

@@ -31,7 +31,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   public canEditWorker: boolean;
   public canViewNinoDob: boolean;
   public showPoolBankTag: boolean;
-  public showDisability;
+  public showDisability: string;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -44,7 +44,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     this.workplaceUid = this.workplace.uid;
     this.showPoolBankTag = this.worker.contract === 'Pool/Bank' ? true : false;
     this.showDisability =
-      this.worker.disability === 'Undisclosed' ? 'They prefered not to say' : this.worker.disability;
+      this.worker.disability === 'Undisclosed' ? 'They preferred not to say' : this.worker.disability;
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');

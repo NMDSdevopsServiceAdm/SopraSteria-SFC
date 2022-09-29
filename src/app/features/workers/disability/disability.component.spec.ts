@@ -117,8 +117,8 @@ describe('DisabilityComponent', () => {
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const skipButton = getByText('Save and return');
-      fireEvent.click(skipButton);
+      const link = getByText('Save and return');
+      fireEvent.click(link);
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -135,8 +135,8 @@ describe('DisabilityComponent', () => {
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const skipButton = getByText('Cancel');
-      fireEvent.click(skipButton);
+      const link = getByText('Cancel');
+      fireEvent.click(link);
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
