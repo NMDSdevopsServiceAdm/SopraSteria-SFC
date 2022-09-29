@@ -21,7 +21,6 @@ export class GenderComponent extends QuestionComponent {
   ];
   public section = 'Personal details';
   private disabilityPath: string[];
-  private staffRecordSummaryPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
