@@ -60,11 +60,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
         countryOfBirthName: other ? other.country : null,
       });
     }
-
-    this.previous =
-      this.worker.nationality && this.worker.nationality.value === 'British'
-        ? this.getRoutePath('nationality')
-        : this.getRoutePath('british-citizenship');
+    this.setUpPageRouting();
   }
 
   setupFormErrorsMap(): void {
@@ -99,10 +95,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    this.next =
-      this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-        ? this.getRoutePath('recruited-from')
-        : this.getRoutePath('year-arrived-uk');
+    this.setUpPageRouting();
   }
 
   countryOfBirthNameValidator() {
@@ -134,5 +127,28 @@ export class CountryOfBirthComponent extends QuestionComponent {
     }
 
     return [];
+  }
+
+  private setUpPageRouting() {
+    this.next =
+      this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
+        ? this.getRoutePath('main-job-start-date')
+        : this.getRoutePath('year-arrived-uk');
+
+    this.previous =
+      this.worker.nationality && this.worker.nationality.value === 'British'
+        ? this.getRoutePath('nationality')
+        : this.getRoutePath('british-citizenship');
+
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+
+    if (this.insideFlow) {
+      this.backService.setBackLink({ url: this.previous });
+      this.skipRoute = this.next;
+      this.next = this.next;
+    } else {
+      this.return = { url: this.staffRecordSummaryPath };
+      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+    }
   }
 }
