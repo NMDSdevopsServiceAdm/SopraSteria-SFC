@@ -100,7 +100,7 @@ describe('BritishCitizenshipComponent', () => {
       expect(getByTestId('progress-bar-1')).toBeTruthy();
     });
 
-    xit('should not render the progress bars when accessed from outside the flow', async () => {
+    it('should not render the progress bars when accessed from outside the flow', async () => {
       const { queryByTestId } = await setup();
 
       expect(queryByTestId('progress-bar-1')).toBeFalsy();
