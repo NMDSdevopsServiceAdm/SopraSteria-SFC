@@ -22,13 +22,14 @@ export class EthnicityComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private ethnicityService: EthnicityService
+    private ethnicityService: EthnicityService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
-    this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe(res => (this.ethnicities = res.byGroup)));
+    this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe((res) => (this.ethnicities = res.byGroup)));
 
     this.form = this.formBuilder.group({
+      ethnicityGroup: null,
       ethnicity: null,
     });
   }
@@ -54,18 +55,19 @@ export class EthnicityComponent extends QuestionComponent {
           },
         }
       : {
-        ethnicity: {
-          ethnicityId: null,
-          ethnicity: null
-        }
-      };
+          ethnicity: {
+            ethnicityId: null,
+            ethnicity: null,
+          },
+        };
   }
 
   ethnicitiesUngrouped() {
     return this.ethnicities[''];
+    return this.ethnicities[''];
   }
 
   ethnicityGroups() {
-    return Object.keys(this.ethnicities).filter(e => e.length);
+    return Object.keys(this.ethnicities).filter((e) => e.length);
   }
 }

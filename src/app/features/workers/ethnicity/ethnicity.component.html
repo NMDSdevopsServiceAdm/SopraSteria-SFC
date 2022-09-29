@@ -9,6 +9,70 @@
             What's their ethnicity?
           </label>
         </h1>
+
+        <div class="govuk-radios govuk-radios--conditional">
+          <ng-container *ngFor="let group of ethnicityGroups(); let idx = index">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'ethnicityGroup'"
+                id="ethnicityGroup-{{ idx }}"
+                name="ethnicityGroup"
+                type="radio"
+                [value]="group"
+              />
+              <label class="govuk-label govuk-radios__label" for="ethnicityGroup-{{ idx }}">
+                {{ group }}
+              </label>
+            </div>
+
+            <div *ngFor="let ethnicityOption of ethnicitiesUngrouped(); let idx = index">
+              <div
+                *ngIf="group === ethnicityOption.group"
+                class="govuk-radios__conditional"
+                [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value !== ethnicityOption.group"
+                id="conditional-employerType-conditional-1"
+              >
+                <div class="govuk-form-group">
+                  <!-- <label class="govuk-label" for="other"> Other employer type (optional)</label>
+                  <span *ngIf="submitted && form.get('other').invalid" id="other-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('other') }}
+                  </span> -->
+                  <input
+                    class="govuk-radios__input"
+                    [formControlName]="'ethnicity'"
+                    id="ethnicityOption-{{ idx }}"
+                    name="ethnicity"
+                    type="radio"
+                    [value]="ethnicityOption"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              *ngIf="option === 'Other'"
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="form.get('employerType').value !== 'Other'"
+              id="conditional-employerType-conditional-1"
+            >
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="other"> Other employer type (optional)</label>
+                <span *ngIf="submitted && form.get('other').invalid" id="other-error" class="govuk-error-message">
+                  <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('other') }}
+                </span>
+                <input
+                  class="govuk-input govuk-input--width-20"
+                  [class.govuk-input--error]="submitted && form.get('other').invalid"
+                  id="other"
+                  [formControlName]="'other'"
+                  name="other"
+                  type="text"
+                />
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
         <select
           class="govuk-select"
           [class.govuk-select--error]="submitted && form.get('ethnicity').invalid"
@@ -20,7 +84,7 @@
           <option *ngFor="let ethnicity of ethnicitiesUngrouped()" [value]="ethnicity.id">
             {{ ethnicity.ethnicity }}
           </option>
-          <optgroup *ngFor="let groupName of ethnicityGroups()" label="{{ groupName }}">
+          <optgroup *ngFor="let groupName of ethnicityGroups" label="{{ groupName }}">
             <option *ngFor="let ethnicity of ethnicities[groupName]" [value]="ethnicity.id">
               {{ ethnicity.ethnicity }}
             </option>
