@@ -101,7 +101,7 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Disabled</dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.disability || '-' | closedEndedAnswer }}
+      {{ showDisability || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
