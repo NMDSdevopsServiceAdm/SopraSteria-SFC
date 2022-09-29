@@ -29,8 +29,8 @@
             <div *ngFor="let ethnicityOption of ethnicities[group]; let idx = index">
               <div
                 class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value === ethnicityOption.group"
-                id="conditional-employerType-conditional-1"
+                [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value !== ethnicityOption.group"
+                id="conditional-ethnicity-conditional-1"
               >
                 <div class="govuk-radios__item">
                   <input
@@ -67,6 +67,15 @@
             </option>
           </optgroup>
         </select> -->
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third-from-desktop">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="'Personal details'"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
