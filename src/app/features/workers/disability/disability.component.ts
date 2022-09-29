@@ -13,12 +13,18 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './disability.component.html',
 })
 export class DisabilityComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', 'Undisclosed', `Don't know`];
+  public answersAvailable = [
+    { value: 'Yes', tag: 'Yes' },
+    { value: 'No', tag: 'No' },
+    { value: 'Undisclosed', tag: 'They preferred not to say' },
+    { value: `Don't know`, tag: 'I do not know' },
+  ];
+  private ethnicityPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected route: ActivatedRoute,
+    public route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
@@ -32,14 +38,28 @@ export class DisabilityComponent extends QuestionComponent {
   }
 
   init() {
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     if (this.worker.disability) {
       this.form.patchValue({
         disability: this.worker.disability,
       });
     }
 
-    this.next = this.getRoutePath('ethnicity');
-    this.previous = this.getRoutePath('gender');
+    this.setUpPageRouting();
+  }
+
+  private setUpPageRouting() {
+    this.ethnicityPath = this.getRoutePath('ethnicity');
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+
+    if (this.insideFlow) {
+      this.backService.setBackLink({ url: this.getRoutePath('gender') });
+      this.skipRoute = this.ethnicityPath;
+      this.next = this.ethnicityPath;
+    } else {
+      this.return = { url: this.staffRecordSummaryPath };
+      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+    }
   }
 
   generateUpdateProps() {
