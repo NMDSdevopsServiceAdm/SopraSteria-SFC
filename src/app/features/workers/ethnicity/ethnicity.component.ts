@@ -64,7 +64,6 @@ export class EthnicityComponent extends QuestionComponent {
 
   ethnicitiesUngrouped() {
     return this.ethnicities[''];
-    return this.ethnicities[''];
   }
 
   ethnicityGroups() {
