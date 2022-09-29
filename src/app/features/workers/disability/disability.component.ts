@@ -20,7 +20,6 @@ export class DisabilityComponent extends QuestionComponent {
     { value: `Don't know`, tag: 'I do not know' },
   ];
   private ethnicityPath: string[];
-  private staffRecordSummaryPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
