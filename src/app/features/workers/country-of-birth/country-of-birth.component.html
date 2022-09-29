@@ -5,7 +5,8 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l">Personal details</span>
             <h1 class="govuk-fieldset__heading">What's their country of birth?</h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
@@ -67,10 +68,19 @@
                 type="radio"
                 value="Don't know"
               />
-              <label class="govuk-label govuk-radios__label" for="countryOfBirthKnown-3"> Don't know </label>
+              <label class="govuk-label govuk-radios__label" for="countryOfBirthKnown-3"> I do not know </label>
             </div>
           </div>
         </fieldset>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="'Personal details'"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
