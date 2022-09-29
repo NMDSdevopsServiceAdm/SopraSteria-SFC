@@ -250,6 +250,7 @@ describe('NationalityComponent', () => {
         false,
       );
 
+      component.availableNationalities = [{ id: 1, nationality: 'French' }];
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
       userEvent.type(getByLabelText('Nationality'), 'French');
@@ -257,6 +258,7 @@ describe('NationalityComponent', () => {
       fixture.detectChanges();
 
       const updatedFormData = component.form.value;
+      component.availableNationalities = [{ id: 1, nationality: 'French' }];
       expect(updatedFormData).toEqual({ nationalityKnown: 'Other', nationalityName: 'French' });
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
