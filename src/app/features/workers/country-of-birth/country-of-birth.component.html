@@ -3,7 +3,7 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group">
+      <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <span class="govuk-caption-l">Personal details</span>
@@ -40,8 +40,7 @@
               id="conditional-countryOfBirthKnown-conditional-2"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="countryOfBirthName"> Country </label>
-                <span id="countryOfBirthName-hint" class="govuk-hint"> Optional </span>
+                <label class="govuk-label" for="countryOfBirthName"> Country(optional) </label>
                 <span
                   id="countryOfBirthName-error"
                   class="govuk-error-message"
