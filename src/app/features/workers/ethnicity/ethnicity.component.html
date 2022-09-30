@@ -15,7 +15,7 @@
         </h1>
 
         <div class="govuk-radios govuk-radios--conditional">
-          <ng-container *ngFor="let group of ethnicityGroups(); let idx = index">
+          <ng-container *ngFor="let groupName of ethnicityGroups(); let idx = index">
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
@@ -23,54 +23,38 @@
                 id="ethnicityGroup-{{ idx }}"
                 name="ethnicityGroup"
                 type="radio"
-                [value]="group"
+                [value]="groupName"
+                aria-controls="conditional-ethnicity-conditional-1"
               />
               <label class="govuk-label govuk-radios__label" for="ethnicityGroup-{{ idx }}">
-                {{ group }}
+                {{ groupName }}
               </label>
             </div>
-
-            <div *ngFor="let ethnicityOption of ethnicities[group]; let idx = index">
-              <div
-                class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value !== ethnicityOption.group"
-                id="conditional-ethnicity-conditional-1"
-              >
-                <div class="govuk-radios__item">
-                  <input
-                    class="govuk-radios__input"
-                    [formControlName]="'ethnicity'"
-                    id="ethnicityOption-{{ idx }}"
-                    name="ethnicity"
-                    type="radio"
-                    [value]="ethnicityOption.id"
-                  />
-                  <label class="govuk-label govuk-radios__label" for="ethnicityOption-{{ idx }}">
-                    {{ ethnicityOption.ethnicity }}
-                  </label>
-                </div>
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value !== groupName"
+              id="conditional-ethnicity-conditional-1"
+            >
+              <div>
+                <ng-container *ngFor="let ethnicityOption of ethnicities[groupName]; let idx = index">
+                  <div class="govuk-radios__item">
+                    <input
+                      type="radio"
+                      id="ethnicity-{{ idx }}"
+                      [value]="ethnicityOption.id"
+                      name="ethnicity"
+                      [formControlName]="'ethnicity'"
+                      class="govuk-radios__input"
+                    />
+                    <label class="govuk-label govuk-radios__label" for="">
+                      {{ ethnicityOption.ethnicity }}
+                    </label>
+                  </div>
+                </ng-container>
               </div>
             </div>
           </ng-container>
         </div>
-
-        <!-- <select
-          class="govuk-select"
-          [class.govuk-select--error]="submitted && form.get('ethnicity').invalid"
-          [formControlName]="'ethnicity'"
-          id="ethnicity"
-          name="ethnicity"
-        >
-          <option class="form-control" [ngValue]="null">Select ethnicity</option>
-          <option *ngFor="let ethnicity of ethnicitiesUngrouped()" [value]="ethnicity.id">
-            {{ ethnicity.ethnicity }}
-          </option>
-          <optgroup *ngFor="let groupName of ethnicityGroups()" label="{{ groupName }}">
-            <option *ngFor="let ethnicity of ethnicities[groupName]" [value]="ethnicity.id">
-              {{ ethnicity.ethnicity }}
-            </option>
-          </optgroup>
-        </select> -->
       </div>
     </div>
     <div class="govuk-grid-column-one-third" *ngIf="insideFlow">

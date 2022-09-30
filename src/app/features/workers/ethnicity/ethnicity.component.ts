@@ -86,6 +86,7 @@ export class EthnicityComponent extends QuestionComponent {
 
   private prefill() {
     this.form.patchValue({
+      ethnicityGroup: 'Needs to be var of group',
       ethnicity: this.worker.ethnicity.ethnicityId,
     });
   }
