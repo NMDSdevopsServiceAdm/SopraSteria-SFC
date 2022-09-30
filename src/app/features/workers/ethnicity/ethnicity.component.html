@@ -3,9 +3,13 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('ethnicity').invalid">
+      <div
+        class="govuk-form-group govuk-!-margin-bottom-4"
+        [class.govuk-form-group--error]="submitted && form.get('ethnicity').invalid"
+      >
         <h1 class="govuk-label-wrapper">
-          <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="ethnicity">
+          <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+          <label class="govuk-label govuk-label--l govuk-!-margin-bottom-8" for="ethnicity">
             What's their ethnicity?
           </label>
         </h1>
@@ -69,12 +73,12 @@
         </select> -->
       </div>
     </div>
-    <div class="govuk-grid-column-one-third-from-desktop">
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
       <div class="govuk-!-margin-left-8">
         <app-progress-bar
           data-testid="progress-bar-1"
           [sections]="staffRecordSections"
-          [currentSection]="'Personal details'"
+          [currentSection]="section"
         ></app-progress-bar>
       </div>
     </div>

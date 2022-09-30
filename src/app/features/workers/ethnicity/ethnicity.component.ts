@@ -15,6 +15,8 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class EthnicityComponent extends QuestionComponent {
   public ethnicities: any = {};
+  public section = 'Personal details';
+  private nationalityPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -37,19 +39,15 @@ export class EthnicityComponent extends QuestionComponent {
   }
 
   init() {
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+    this.setUpPageRouting();
     if (this.worker.ethnicity) {
-      this.form.patchValue({
-        ethnicity: this.worker.ethnicity.ethnicityId,
-      });
+      this.prefill();
     }
-
-    this.next = this.getRoutePath('nationality');
-    this.previous = this.getRoutePath('disability');
   }
 
   generateUpdateProps() {
     const { ethnicity } = this.form.value;
-
     return ethnicity
       ? {
           ethnicity: {
@@ -70,5 +68,25 @@ export class EthnicityComponent extends QuestionComponent {
 
   ethnicityGroups() {
     return Object.keys(this.ethnicities).filter((e) => e.length);
+  }
+
+  private setUpPageRouting() {
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+    this.nationalityPath = this.getRoutePath('nationality');
+
+    if (this.insideFlow) {
+      this.backService.setBackLink({ url: this.getRoutePath('disability') });
+      this.skipRoute = this.nationalityPath;
+      this.next = this.nationalityPath;
+    } else {
+      this.return = { url: this.staffRecordSummaryPath };
+      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+    }
+  }
+
+  private prefill() {
+    this.form.patchValue({
+      ethnicity: this.worker.ethnicity.ethnicityId,
+    });
   }
 }

@@ -64,6 +64,7 @@ describe('EthnicityComponent', () => {
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
