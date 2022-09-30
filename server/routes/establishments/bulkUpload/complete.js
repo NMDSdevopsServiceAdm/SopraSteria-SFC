@@ -231,15 +231,19 @@ const completePost = async (req, res) => {
           completeSaveTime,
         );
         //  Saves the bulk upload files  to lastBulkUpload
+        console.log('*********************************************');
+        console.log('primaryEstablishmentId:', primaryEstablishmentId);
         await saveLastBulkUpload(primaryEstablishmentId);
 
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
+        console.log('#############################################');
         await purgeBulkUploadS3Objects(primaryEstablishmentId);
 
         // confirm success against the primary establishment
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
         await Establishment.bulkUploadSuccess(primaryEstablishmentId);
-
+        console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
         const completeEndTime = new Date();
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
         timerLog('CHECKPOINT - BU COMPLETE - overall', completeStartTime, completeEndTime);

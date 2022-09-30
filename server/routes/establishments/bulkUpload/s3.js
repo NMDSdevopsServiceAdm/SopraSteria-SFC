@@ -141,10 +141,12 @@ const downloadContent = async (key, size, lastModified) => {
 };
 
 const saveLastBulkUpload = async (establishmentId) => {
+  console.log('***** saveLastBulkUpload ****');
   const listParams = params(establishmentId);
   listParams.Prefix = `${establishmentId}/lastBulkUpload/`;
-
+  console.log('listParams:', listParams);
   const existingFiles = await getKeysFromFolder(listParams);
+  console.log('existingFiles:', existingFiles);
   if (existingFiles.length > 0) {
     const deleteParams = {
       Bucket,
@@ -153,14 +155,16 @@ const saveLastBulkUpload = async (establishmentId) => {
         Quiet: true,
       },
     };
-
+    console.log('Before delete objects');
     await s3.deleteObjects(deleteParams).promise();
+    console.log('After delete objects');
   }
 
   const originFolder = `${establishmentId}/latest/`;
   const destinationFolder = `${establishmentId}/lastBulkUpload/`;
-
+  console.log('*** before move folders ***');
   await moveFolders(originFolder, destinationFolder);
+  console.log('*** after move folders ***');
 };
 const purgeBulkUploadS3Objects = async (establishmentId) => {
   const listParams = params(establishmentId);
@@ -191,6 +195,7 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
 };
 
 const moveFolders = async (folderToMove, destinationFolder) => {
+  console.log('******* moveFolders ********');
   try {
     const listObjectsResponse = await s3
       .listObjects({
@@ -199,14 +204,17 @@ const moveFolders = async (folderToMove, destinationFolder) => {
         Delimiter: '/',
       })
       .promise();
-
+    console.log('listObjectsResponse:', listObjectsResponse);
     const folderContentInfo = listObjectsResponse.Contents;
     const folderPrefix = listObjectsResponse.Prefix;
-
+    console.log('folderContentInfo:', folderContentInfo);
+    console.log('folderPrefix:', folderPrefix);
     await Promise.all(
       folderContentInfo.map(async (fileInfo) => {
+        console.log('fileInfo:', fileInfo.Key);
         const ignoreRoot = /.*\/$/;
         if (!ignoreRoot.test(fileInfo.Key)) {
+          console.log('inside if');
           await s3
             .copyObject({
               Bucket,
@@ -217,7 +225,9 @@ const moveFolders = async (folderToMove, destinationFolder) => {
         }
       }),
     );
+    console.log('**** end of try ****');
   } catch (err) {
+    console.log('**** moveFolder Error ****');
     console.error(err);
   }
 };

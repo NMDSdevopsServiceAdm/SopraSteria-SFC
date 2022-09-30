@@ -2200,6 +2200,7 @@ class Establishment extends EntityValidator {
 
   // for the given establishment, updates the last bulk uploaded timestamp
   static async bulkUploadSuccess(establishmentId) {
+    console.log('******* bulkUploadSuccess **********');
     try {
       await models.establishment.update(
         {
