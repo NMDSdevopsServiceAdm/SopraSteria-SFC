@@ -167,6 +167,7 @@ const saveLastBulkUpload = async (establishmentId) => {
   console.log('*** after move folders ***');
 };
 const purgeBulkUploadS3Objects = async (establishmentId) => {
+  console.log('**** purgeBulkUploadS3Objects ****');
   const listParams = params(establishmentId);
   let deleteKeys = [];
 
@@ -177,21 +178,23 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
       Quiet: true,
     },
   };
-
+  console.log('****** delete keys *******');
   listParams.Prefix = `${establishmentId}/latest/`;
   deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
-
+  console.log('deleteKeys1', deleteKeys);
   listParams.Prefix = `${establishmentId}/validation/`;
   deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
-
+  console.log('deleteKeys2', deleteKeys);
   listParams.Prefix = `${establishmentId}/intermediary/`;
   deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
-
+  console.log('deleteKeys3', deleteKeys);
   deleteParams.Delete.Objects = deleteKeys;
-
+  console.log('deleteParams object:', deleteParams.Delete.Objects);
+  console.log('deleteKeys length:', deleteKeys.length);
   if (deleteKeys.length > 0) {
     await s3.deleteObjects(deleteParams).promise();
   }
+  console.log('****** end *******');
 };
 
 const moveFolders = async (folderToMove, destinationFolder) => {
