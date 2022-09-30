@@ -11,7 +11,7 @@ import userEvent from '@testing-library/user-event';
 
 import { NationalityComponent } from './nationality.component';
 
-fdescribe('NationalityComponent', () => {
+describe('NationalityComponent', () => {
   async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       NationalityComponent,
