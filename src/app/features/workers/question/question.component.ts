@@ -129,7 +129,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
           this.worker.uid,
           'staff-record-summary',
         ]);
-        // this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
         break;
     }
   }
