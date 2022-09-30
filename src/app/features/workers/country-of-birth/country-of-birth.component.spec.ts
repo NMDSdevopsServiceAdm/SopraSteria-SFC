@@ -11,29 +11,37 @@ import { CountryOfBirthComponent } from './country-of-birth.component';
 
 describe('CountryOfBirthComponent', () => {
   async function setup(returnUrl = true) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(CountryOfBirthComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            parent: {
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      CountryOfBirthComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: WorkerService,
+            useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
               snapshot: {
-                data: {
-                  establishment: { uid: 'mocked-uid' },
+                parent: {
+                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
                 },
-                url: [{ path: '' }],
+              },
+              parent: {
+                snapshot: {
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                  },
+                  url: [{ path: '' }],
+                },
               },
             },
           },
-        },
-        {
-          provide: WorkerService,
-          useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
 
@@ -43,6 +51,8 @@ describe('CountryOfBirthComponent', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -57,6 +67,7 @@ describe('CountryOfBirthComponent', () => {
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
@@ -64,6 +75,20 @@ describe('CountryOfBirthComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { getByTestId } = await setup(false);
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render the progress bar when outside the flow', async () => {
+      const { queryByTestId } = await setup();
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
 });

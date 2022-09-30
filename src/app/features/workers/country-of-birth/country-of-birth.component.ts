@@ -19,7 +19,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected route: ActivatedRoute,
+    public route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
@@ -38,6 +38,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
   }
 
   init() {
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     this.subscriptions.add(this.countryService.getCountries().subscribe((res) => (this.availableCountries = res)));
 
     this.subscriptions.add(

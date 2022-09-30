@@ -47,7 +47,6 @@ describe('DisabilityComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const workerService = injector.inject(WorkerService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
