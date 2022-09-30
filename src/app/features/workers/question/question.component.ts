@@ -60,6 +60,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.worker = worker;
 
         if (!this.initiated) {
+          this._init();
           this.back = this.previous
             ? {
                 url: this.previous,

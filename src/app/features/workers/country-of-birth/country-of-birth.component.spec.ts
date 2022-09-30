@@ -47,8 +47,11 @@ describe('CountryOfBirthComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const workerService = injector.inject(WorkerService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
+    const submitSpy = spyOn(component, 'onSubmit').and.callThrough();
 
     return {
       component,
@@ -59,6 +62,8 @@ describe('CountryOfBirthComponent', () => {
       getByTestId,
       queryByTestId,
       routerSpy,
+      submitSpy,
+      workerServiceSpy,
     };
   }
 
@@ -68,7 +73,7 @@ describe('CountryOfBirthComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
+    it(`should show 'Save and continue' cta button , skip this question  and 'View this staff record' link, if a return url is not provided`, async () => {
       const { getByText } = await setup(false);
 
       expect(getByText('Save and continue')).toBeTruthy();
@@ -95,6 +100,30 @@ describe('CountryOfBirthComponent', () => {
         'staff-record',
         component.worker.uid,
         'year-arrived-uk',
+      ]);
+    });
+
+    it(`should call submit data and navigate with the correct url when  'United Kingdom' radio button is selected and 'Save and continue' is clicked`, async () => {
+      const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup(
+        false,
+      );
+
+      fireEvent.click(getByLabelText('United Kingdom'));
+      fireEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({ countryOfBirthKnown: 'United Kingdom', countryOfBirthName: null });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        countryOfBirth: { value: 'United Kingdom' },
+      });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        component.worker.uid,
+        'main-job-start-date',
       ]);
     });
 
@@ -144,17 +173,6 @@ describe('CountryOfBirthComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
-    });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      expect(component.return).toEqual({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-      });
     });
   });
 
