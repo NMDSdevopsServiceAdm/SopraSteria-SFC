@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -30,26 +31,28 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   public canEditWorker: boolean;
   public canViewNinoDob: boolean;
   public showPoolBankTag: boolean;
+  public showDisability: string;
 
   constructor(
     private permissionsService: PermissionsService,
     public workerService: WorkerService,
     private wdfConfirmFieldsService: WdfConfirmFieldsService,
+    protected route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.workplaceUid = this.workplace.uid;
     this.showPoolBankTag = this.worker.contract === 'Pool/Bank' ? true : false;
+    this.showDisability =
+      this.worker.disability === 'Undisclosed' ? 'They preferred not to say' : this.worker.disability;
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
-
     if (this.canEditWorker && this.wdfView) {
       if (this.allRequiredFieldsUpdatedAndEligible()) {
         this.updateFieldsWhichDontRequireConfirmation();
       }
     } else {
-      console.log('**** staff record summary component ****');
       const staffRecordPath = ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid];
       const returnTo = { url: staffRecordPath };
       this.workerService.setReturnTo(returnTo);

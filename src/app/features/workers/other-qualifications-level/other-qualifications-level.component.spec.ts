@@ -43,6 +43,7 @@ describe('OtherQualificationsLevelComponent', () => {
                 data: {
                   establishment: workplace,
                 },
+                url: [{ path: '' }],
               },
             },
             snapshot: {},

@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { EthnicityService } from '@core/services/ethnicity.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -22,9 +23,10 @@ export class EthnicityComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
     private ethnicityService: EthnicityService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe((res) => (this.ethnicities = res.byGroup)));
 

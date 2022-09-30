@@ -282,6 +282,7 @@ describe('StaffDetailsComponent', () => {
     it('Should navigate to staff-record tab when adding a new record is cancelled and account is parent', async () => {
       const { component, routerSpy } = await setup(false);
 
+      component.fixture.componentInstance.isPrimaryAccount = true;
       component.fixture.componentInstance.canReturn = false;
       component.fixture.detectChanges();
 

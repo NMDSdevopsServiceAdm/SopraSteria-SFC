@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_DEFAULT, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
@@ -28,8 +29,9 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       dob: this.formBuilder.group({
@@ -50,9 +52,6 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
         day: date.date(),
       });
     }
-
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-
     this.next = this.getRoutePath('national-insurance-number');
     this.previous = this.getReturnPath();
   }
@@ -95,12 +94,13 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
   }
 
   private getReturnPath() {
-    if (this.workerService.addStaffRecordInProgress$.value) {
-      return this.getRoutePath('staff-details');
+    if (this.insideFlow && this.workerService.addStaffRecordInProgress) {
+      return this.getRoutePath('mandatory-details');
     }
-    if (this.workplace.uid === this.primaryWorkplace.uid) {
-      return ['/dashboard'];
+
+    if (this.insideFlow) {
+      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
     }
-    return [`/workplace/${this.workplace.uid}`];
+    return this.getRoutePath('');
   }
 }

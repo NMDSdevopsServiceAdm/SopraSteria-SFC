@@ -22,8 +22,8 @@ describe('NationalityComponent', () => {
               snapshot: {
                 data: {
                   establishment: { uid: 'mocked-uid' },
-                  primaryWorkplace: {},
                 },
+                url: [{ path: '' }],
               },
             },
           },
