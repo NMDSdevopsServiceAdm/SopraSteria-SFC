@@ -11,7 +11,7 @@ import userEvent from '@testing-library/user-event';
 
 import { NationalityComponent } from './nationality.component';
 
-describe('NationalityComponent', () => {
+fdescribe('NationalityComponent', () => {
   async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       NationalityComponent,
@@ -95,7 +95,7 @@ describe('NationalityComponent', () => {
     it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup();
 
-      fireEvent.click(getByLabelText(`Don't know`));
+      fireEvent.click(getByLabelText('I do not know'));
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
 
@@ -163,7 +163,7 @@ describe('NationalityComponent', () => {
 
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
-      userEvent.type(getByLabelText('Nationality'), 'French');
+      userEvent.type(getByLabelText('Nationality', { exact: false }), 'French');
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
 
@@ -252,7 +252,7 @@ describe('NationalityComponent', () => {
 
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
-      userEvent.type(getByLabelText('Nationality'), 'French');
+      userEvent.type(getByLabelText('Nationality', { exact: false }), 'French');
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
@@ -294,7 +294,7 @@ describe('NationalityComponent', () => {
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
-      userEvent.type(getByLabelText('Nationality'), 'asdf');
+      userEvent.type(getByLabelText('Nationality', { exact: false }), 'fsgj');
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
