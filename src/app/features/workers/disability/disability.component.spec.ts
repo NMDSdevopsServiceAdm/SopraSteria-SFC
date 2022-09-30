@@ -145,6 +145,7 @@ describe('DisabilityComponent', () => {
         'staff-record-summary',
       ]);
     });
+
     it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
       const { component } = await setup();
 

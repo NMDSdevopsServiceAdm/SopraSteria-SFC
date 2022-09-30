@@ -1,11 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { CountryOfBirthComponent } from './country-of-birth.component';
 
@@ -44,6 +45,10 @@ describe('CountryOfBirthComponent', () => {
     );
 
     const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
@@ -53,6 +58,7 @@ describe('CountryOfBirthComponent', () => {
       getByLabelText,
       getByTestId,
       queryByTestId,
+      routerSpy,
     };
   }
 
@@ -75,6 +81,80 @@ describe('CountryOfBirthComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
+      const { component, getByText, routerSpy } = await setup(false);
+
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'year-arrived-uk',
+      ]);
+    });
+
+    it('should navigate to year-arrived-uk page when skipping the question in the flow', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Skip this question');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'year-arrived-uk']);
+    });
+
+    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const link = getByText('Save and return');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
+      const { component } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      expect(component.return).toEqual({
+        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
+      });
     });
   });
 
