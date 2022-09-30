@@ -16,6 +16,8 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class YearArrivedUkComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();
+  public section = 'Personal details';
+  private mainJobStartDatePath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -37,10 +39,42 @@ export class YearArrivedUkComponent extends QuestionComponent {
   }
 
   init() {
-    if (this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom') {
-      this.router.navigate(this.getRoutePath('country-of-birth'), { replaceUrl: true });
-    }
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+    this.setUpPageRouting();
+    this.setupFormValidation();
 
+    if (this.worker.yearArrived) {
+      this.prefill();
+    }
+  }
+
+  setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'year',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the year',
+          },
+          {
+            name: 'min',
+            message: 'Year cannot be more than 100 years ago',
+          },
+          {
+            name: 'max',
+            message: 'Year cannot be in the future',
+          },
+          {
+            name: 'pattern',
+            message: 'Enter a valid year, like 2021',
+          },
+        ],
+      },
+    ];
+  }
+
+  private setupFormValidation() {
     this.subscriptions.add(
       this.form.get('yearKnown').valueChanges.subscribe((value) => {
         this.form.get('year').clearValidators();
@@ -52,48 +86,25 @@ export class YearArrivedUkComponent extends QuestionComponent {
               Validators.required,
               Validators.min(dayjs().subtract(100, 'years').year()),
               Validators.max(dayjs().year()),
+              Validators.pattern('^[0-9]*$'),
             ]);
         }
 
         this.form.get('year').updateValueAndValidity();
       }),
     );
-
-    if (this.worker.yearArrived) {
-      this.form.patchValue({
-        yearKnown: this.worker.yearArrived.value,
-        year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
-      });
-    }
-
-    this.next = this.getRoutePath('recruited-from');
-    this.previous = this.getRoutePath('country-of-birth');
   }
 
-  setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'year',
-        type: [
-          {
-            name: 'required',
-            message: 'Year is required.',
-          },
-          {
-            name: 'min',
-            message: `Year can't be earlier than 100 years ago.`,
-          },
-          {
-            name: 'max',
-            message: `Year can't be in future.`,
-          },
-        ],
-      },
-    ];
+  private prefill() {
+    this.form.patchValue({
+      yearKnown: this.worker.yearArrived.value,
+      year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
+    });
   }
 
   generateUpdateProps() {
-    const { yearKnown, year } = this.form.value;
+    const yearKnown = this.form.value.yearKnown;
+    const year = Number(this.form.value.year);
 
     if (yearKnown) {
       return {
@@ -105,5 +116,19 @@ export class YearArrivedUkComponent extends QuestionComponent {
     }
 
     return null;
+  }
+
+  private setUpPageRouting() {
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+    this.mainJobStartDatePath = this.getRoutePath('main-job-start-date');
+
+    if (this.insideFlow) {
+      this.backService.setBackLink({ url: this.getRoutePath('country-of-birth') });
+      this.skipRoute = this.mainJobStartDatePath;
+      this.next = this.mainJobStartDatePath;
+    } else {
+      this.return = { url: this.staffRecordSummaryPath };
+      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+    }
   }
 }
