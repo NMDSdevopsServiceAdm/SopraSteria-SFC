@@ -32,7 +32,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
-  protected initiated = false;
+  public initiated = false;
 
   public staffRecordSections: string[];
   public insideFlow: boolean;
@@ -60,6 +60,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.worker = worker;
 
         if (!this.initiated) {
+          this._init();
           this.back = this.previous
             ? {
                 url: this.previous,
@@ -67,7 +68,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
               }
             : this.return;
 
-          this.backService.setBackLink(this.back);
+          this.setBackLink();
           this._init();
         }
       }),
@@ -75,6 +76,10 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+  }
+
+  public setBackLink(): void {
+    this.backService.setBackLink(this.back);
   }
 
   ngAfterViewInit() {
