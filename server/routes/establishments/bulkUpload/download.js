@@ -108,6 +108,7 @@ const downloadGet = async (req, res) => {
 
       const filename = renameDownloadType[downloadType];
 
+      console.log('***************** here **********************');
       await s3.saveResponse(req, res, 200, responseText.join(''), {
         'Content-Type': 'text/csv',
         'Content-disposition': `attachment; filename=${
