@@ -49,7 +49,7 @@ export class NursingCategoryComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('nursing-specialism');
-    this.previous = this.getRoutePath('other-job-roles');
+    this.previous = this.insideFlow ? this.getRoutePath('main-job-start-date') : this.getRoutePath('');
   }
 
   generateUpdateProps() {
