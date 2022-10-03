@@ -43,27 +43,22 @@ const trainingCsv = async (establishments, responseSend) => {
   responseSend(trainingHeaders);
 
   console.log('******* trainingCsv ***********');
-  const numberOfEstablishments = establishments.length;
-  console.log('**** numberOfEstablishments:', numberOfEstablishments);
   let numberOfWorkers = 0;
   let trainingRecords = 0;
-  establishments.forEach((establishment) => {
-    numberOfWorkers += establishment.workers.length;
-    establishment.workers.forEach((worker) => {
-      if (worker.trainingRecords) trainingRecords += worker.trainingRecords.length;
-    });
-  });
-  console.log('**** numberOfWorkers:', numberOfWorkers);
-  console.log('**** trainingRecords:', trainingRecords);
-  establishments.map((establishment) =>
-    establishment.workers.map((worker) =>
+
+  establishments.map((establishment) => {
+    numberOfWorkers = establishment.workers.length;
+    establishment.workers.map((worker) => {
+      trainingRecords += worker.workerTraining.length;
       worker.workerTraining.map((trainingRecord) =>
         responseSend(
           NEWLINE + TrainingCSV.toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord),
         ),
-      ),
-    ),
-  );
+      );
+    });
+  });
+  console.log('**** numberOfWorkers:', numberOfWorkers);
+  console.log('**** trainingRecords:', trainingRecords);
 };
 
 const downloadGet = async (req, res) => {
