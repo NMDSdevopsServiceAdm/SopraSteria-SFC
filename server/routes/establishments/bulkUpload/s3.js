@@ -97,6 +97,9 @@ const uploadUniqueLocalAuthoritiesToS3 = async (username, establishmentId, uniqu
 };
 
 const saveResponse = async (req, res, statusCode, body, headers) => {
+  console.log('*************** saveResponse *******************');
+  console.log('***** status code:', statusCode);
+  console.log('***** buRequestId:', req.buRequestId);
   if (!Number.isInteger(statusCode) || statusCode < 100) {
     statusCode = 500;
   }

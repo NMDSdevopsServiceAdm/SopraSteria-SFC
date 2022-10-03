@@ -302,6 +302,11 @@ app.all('*', function (req, res) {
 app.use(Sentry.Handlers.errorHandler());
 // catches errors and returns a sentry ID
 app.use(function onError(err, req, res, next) {
+  console.log('*************************************************************');
+  console.log('*** onError server.js line 306 ***');
+  console.log(err.status);
+  console.log(err.messsage);
+  console.log(res.sentry);
   res.status(err.status || 500);
   return res.send({ errorId: res.sentry + '\n', message: err.message || undefined });
 });
