@@ -50,7 +50,7 @@ const trainingCsv = async (establishments, responseSend) => {
   establishments.forEach((establishment) => {
     numberOfWorkers += establishment.workers.length;
     establishment.workers.forEach((worker) => {
-      trainingRecords += worker.trainingRecords.length;
+      if (worker.trainingRecords) trainingRecords += worker.trainingRecords.length;
     });
   });
   console.log('**** numberOfWorkers:', numberOfWorkers);
