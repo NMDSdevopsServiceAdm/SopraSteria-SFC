@@ -42,6 +42,19 @@ const workerCsv = async (establishments, responseSend, downloadType) => {
 const trainingCsv = async (establishments, responseSend) => {
   responseSend(trainingHeaders);
 
+  console.log('******* trainingCsv ***********');
+  const numberOfEstablishments = establishments.length;
+  console.log('**** numberOfEstablishments:', numberOfEstablishments);
+  let numberOfWorkers = 0;
+  let trainingRecords = 0;
+  establishments.forEach((establishment) => {
+    numberOfWorkers += establishment.workers.length;
+    establishment.workers.forEach((worker) => {
+      trainingRecords += worker.trainingRecords.length;
+    });
+  });
+  console.log('**** numberOfWorkers:', numberOfWorkers);
+  console.log('**** trainingRecords:', trainingRecords);
   establishments.map((establishment) =>
     establishment.workers.map((worker) =>
       worker.workerTraining.map((trainingRecord) =>
@@ -101,7 +114,7 @@ const downloadGet = async (req, res) => {
         case 'training': {
           const trainingRecords = await models.establishment.downloadTrainingRecords(primaryEstablishmentId);
 
-          trainingCsv(trainingRecords, responseSend);
+          await trainingCsv(trainingRecords, responseSend);
           break;
         }
       }
