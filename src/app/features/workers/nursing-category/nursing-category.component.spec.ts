@@ -1,16 +1,18 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { NursingCategoryComponent } from './nursing-category.component';
 
 describe('NursingCategoryComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText } = await render(NursingCategoryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -20,22 +22,31 @@ describe('NursingCategoryComponent', () => {
           useValue: {
             parent: {
               snapshot: {
+                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 data: {
                   establishment: { uid: 'mocked-uid' },
+                  primaryWorkplace: {},
                 },
-                url: [{ path: '' }],
               },
             },
           },
         },
         {
           provide: WorkerService,
-          useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+          useClass: MockWorkerServiceWithUpdateWorker,
         },
       ],
     });
 
     const component = fixture.componentInstance;
+
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const backService = injector.inject(BackService);
+
+    const submitSpy = spyOn(component, 'onSubmit').and.callThrough();
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -43,6 +54,7 @@ describe('NursingCategoryComponent', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      routerSpy,
     };
   }
 
@@ -52,18 +64,100 @@ describe('NursingCategoryComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
-      const { getByText } = await setup(false);
+    it(`should show 'Save and continue' cta button and 'View this staff record'  and 'Skip this question' link, if inside flow`, async () => {
+      const { getByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup();
+      const { getByText } = await setup(false);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
+  });
+
+  it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
+    const { component, getByText, routerSpy } = await setup();
+
+    const button = getByText('Save and continue');
+    fireEvent.click(button);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      'mocked-uid',
+      'staff-record',
+      component.worker.uid,
+      'nursing-specialism',
+    ]);
+  });
+
+  it(`should navigate to 'nursing-specialism' page when skipping the question in the flow`, async () => {
+    const { component, routerSpy, getByText } = await setup();
+
+    const workerId = component.worker.uid;
+    const workplaceId = component.workplace.uid;
+
+    const skipButton = getByText('Skip this question');
+    fireEvent.click(skipButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'nursing-specialism']);
+  });
+
+  it(`should navigate to 'staff-summary-page' page when clicking 'View this staff record' link `, async () => {
+    const { component, routerSpy, getByText } = await setup();
+
+    const workerId = component.worker.uid;
+    const workplaceId = component.workplace.uid;
+
+    const viewStaffRecord = getByText('View this staff record');
+    fireEvent.click(viewStaffRecord);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceId,
+      'staff-record',
+      workerId,
+      'staff-record-summary',
+    ]);
+  });
+
+  it('should navigate to staff-summary-page page when pressing save and return', async () => {
+    const { component, routerSpy, getByText } = await setup(false);
+
+    const workerId = component.worker.uid;
+    const workplaceId = component.workplace.uid;
+
+    const link = getByText('Save and return');
+    fireEvent.click(link);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceId,
+      'staff-record',
+      workerId,
+      'staff-record-summary',
+    ]);
+  });
+
+  it('should navigate to staff-summary-page page when pressing cancel', async () => {
+    const { component, routerSpy, getByText } = await setup(false);
+
+    const workerId = component.worker.uid;
+    const workplaceId = component.workplace.uid;
+
+    const link = getByText('Cancel');
+    fireEvent.click(link);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceId,
+      'staff-record',
+      workerId,
+      'staff-record-summary',
+    ]);
   });
 });
