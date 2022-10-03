@@ -47,7 +47,6 @@ describe('DisabilityComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const workerService = injector.inject(WorkerService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -146,6 +145,7 @@ describe('DisabilityComponent', () => {
         'staff-record-summary',
       ]);
     });
+
     it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
       const { component } = await setup();
 
