@@ -3,6 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -45,10 +46,12 @@ describe('NationalityComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService);
+    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
     const submitSpy = spyOn(component, 'onSubmit').and.callThrough();
+    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -61,6 +64,7 @@ describe('NationalityComponent', () => {
       routerSpy,
       workerServiceSpy,
       submitSpy,
+      backLinkSpy,
     };
   }
 
@@ -301,6 +305,28 @@ describe('NationalityComponent', () => {
       fixture.detectChanges();
 
       expect(getAllByText('Invalid nationality.').length).toEqual(2);
+    });
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to /ethnicity when in the flow', async () => {
+      const { component, backLinkSpy } = await setup();
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'ethnicity'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
     });
   });
 });

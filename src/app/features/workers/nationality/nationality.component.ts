@@ -67,7 +67,7 @@ export class NationalityComponent extends QuestionComponent {
       });
     }
 
-    this.previous = this.getRoutePath('ethnicity');
+    this.previous = this.insideFlow ? this.getRoutePath('ethnicity') : this.getRoutePath('');
     this.next = this.getRoutePath('british-citizenship');
   }
 

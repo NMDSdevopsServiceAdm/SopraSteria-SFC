@@ -28,7 +28,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService,
+    public workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
