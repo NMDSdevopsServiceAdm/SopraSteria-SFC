@@ -109,7 +109,7 @@ const downloadGet = async (req, res) => {
         case 'training': {
           const trainingRecords = await models.establishment.downloadTrainingRecords(primaryEstablishmentId);
 
-          await trainingCsv(trainingRecords, responseSend);
+          trainingCsv(trainingRecords, responseSend);
           break;
         }
       }
