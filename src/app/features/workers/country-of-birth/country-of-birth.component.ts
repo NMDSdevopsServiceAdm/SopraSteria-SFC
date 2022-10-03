@@ -19,7 +19,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected route: ActivatedRoute,
+    public route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
@@ -38,6 +38,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
   }
 
   init() {
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     this.subscriptions.add(this.countryService.getCountries().subscribe((res) => (this.availableCountries = res)));
 
     this.subscriptions.add(
@@ -60,13 +61,19 @@ export class CountryOfBirthComponent extends QuestionComponent {
         countryOfBirthName: other ? other.country : null,
       });
     }
+    this.next = this.getRoutePath('year-arrived-uk');
 
-    this.previous =
-      this.worker.nationality && this.worker.nationality.value === 'British'
-        ? this.getRoutePath('nationality')
-        : this.getRoutePath('british-citizenship');
+    this.previous = this.getReturnPath();
   }
 
+  getReturnPath() {
+    if (this.insideFlow) {
+      return this.worker.nationality && this.worker.nationality.value === 'British'
+        ? this.getRoutePath('nationality')
+        : this.getRoutePath('british-citizenship');
+    }
+    return this.getRoutePath('');
+  }
   setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -99,10 +106,8 @@ export class CountryOfBirthComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    this.next =
-      this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-        ? this.getRoutePath('recruited-from')
-        : this.getRoutePath('year-arrived-uk');
+    const { countryOfBirthKnown } = this.form.controls;
+    countryOfBirthKnown.value === 'United Kingdom' && (this.next = this.getRoutePath('main-job-start-date'));
   }
 
   countryOfBirthNameValidator() {
