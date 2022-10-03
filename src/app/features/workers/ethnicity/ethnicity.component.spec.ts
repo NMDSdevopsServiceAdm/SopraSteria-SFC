@@ -11,35 +11,69 @@ import { fireEvent, render } from '@testing-library/angular';
 import { EthnicityComponent } from './ethnicity.component';
 
 describe('EthnicityComponent', () => {
+  const ethnicityData = {
+    White: [
+      { id: 1, ethnicity: 'white ethnicity 1', group: 'White' },
+      { id: 2, ethnicity: 'white ethnicity 2', group: 'White' },
+    ],
+    Mixed: [
+      { id: 3, ethnicity: 'Mixed / multiple ethnic groups 3', group: 'Mixed / multiple ethnic groups' },
+      { id: 4, ethnicity: 'Mixed / multiple ethnic groups 4', group: 'Mixed / multiple ethnic groups' },
+    ],
+    Asian: [
+      { id: 5, ethnicity: 'Asian / Asian British 5', group: 'Asian / Asian British' },
+      { id: 6, ethnicity: 'Asian / Asian British 6', group: 'Asian / Asian British' },
+    ],
+    Black: [
+      {
+        id: 7,
+        ethnicity: 'Black / African / Caribbean / Black British 7',
+        group: 'Black / African / Caribbean / Black British',
+      },
+      {
+        id: 8,
+        ethnicity: 'Black / African / Caribbean / Black British 8',
+        group: 'Black / African / Caribbean / Black British',
+      },
+    ],
+    Other: [
+      { id: 9, ethnicity: 'Other ethnic group 9', group: 'Other ethnic group' },
+      { id: 10, ethnicity: 'Other ethnic group 10', group: 'Other ethnic group' },
+    ],
+  };
+
   async function setup(returnUrl = true) {
-    const { fixture, getByText, getAllByText, getByLabelText, queryByTestId } = await render(EthnicityComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              parent: {
-                url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
-              },
-            },
-            parent: {
+    const { fixture, getByText, getAllByText, getByLabelText, queryByTestId, queryByText } = await render(
+      EthnicityComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: ActivatedRoute,
+            useValue: {
               snapshot: {
-                data: {
-                  establishment: { uid: 'mocked-uid' },
+                parent: {
+                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
                 },
-                url: [{ path: '' }],
+              },
+              parent: {
+                snapshot: {
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                  },
+                  url: [{ path: '' }],
+                },
               },
             },
           },
-        },
-        {
-          provide: WorkerService,
-          useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
-        },
-      ],
-    });
+          {
+            provide: WorkerService,
+            useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+          },
+        ],
+      },
+    );
 
     const injector = getTestBed();
 
@@ -56,6 +90,7 @@ describe('EthnicityComponent', () => {
       getAllByText,
       getByLabelText,
       queryByTestId,
+      queryByText,
     };
   }
 
@@ -165,6 +200,91 @@ describe('EthnicityComponent', () => {
       expect(component.return).toEqual({
         url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
       });
+    });
+  });
+
+  describe('Radio Buttons', () => {
+    it('Should render the ethnicity group radios when page renders', async () => {
+      const { component, fixture, getByLabelText } = await setup(false);
+
+      component.ethnicities = ethnicityData;
+      fixture.detectChanges();
+
+      expect(getByLabelText('White')).toBeTruthy();
+      expect(getByLabelText('Mixed')).toBeTruthy();
+      expect(getByLabelText('Asian')).toBeTruthy();
+      expect(getByLabelText('Black')).toBeTruthy();
+      expect(getByLabelText('Other')).toBeTruthy();
+    });
+
+    it('Should render the white ethnicitiy radios when category white is clicked', async () => {
+      const { component, fixture, getByText } = await setup(false);
+
+      component.ethnicities = ethnicityData;
+      fixture.detectChanges();
+
+      const whiteButton = getByText('White');
+      fireEvent.click(whiteButton);
+      fixture.detectChanges();
+
+      expect(getByText('white ethnicity 1')).toBeTruthy();
+      expect(getByText('white ethnicity 2')).toBeTruthy();
+    });
+
+    it('Should render the mixed ethnicitiy radios when category mixed is clicked', async () => {
+      const { component, fixture, getByText } = await setup(false);
+
+      component.ethnicities = ethnicityData;
+      fixture.detectChanges();
+
+      const mixedButton = getByText('Mixed');
+      fireEvent.click(mixedButton);
+      fixture.detectChanges();
+
+      expect(getByText('Mixed / multiple ethnic groups 3')).toBeTruthy();
+      expect(getByText('Mixed / multiple ethnic groups 4')).toBeTruthy();
+    });
+
+    it('Should render the asian ethnicitiy radios when category asian is clicked', async () => {
+      const { component, fixture, getByText } = await setup(false);
+
+      component.ethnicities = ethnicityData;
+      fixture.detectChanges();
+
+      const asianButton = getByText('Asian');
+      fireEvent.click(asianButton);
+      fixture.detectChanges();
+
+      expect(getByText('Asian / Asian British 5')).toBeTruthy();
+      expect(getByText('Asian / Asian British 6')).toBeTruthy();
+    });
+
+    it('Should render the black ethnicity radios when category black is clicked', async () => {
+      const { component, fixture, getByText } = await setup(false);
+
+      component.ethnicities = ethnicityData;
+      fixture.detectChanges();
+
+      const blackButton = getByText('Black');
+      fireEvent.click(blackButton);
+      fixture.detectChanges();
+
+      expect(getByText('Black / African / Caribbean / Black British 7')).toBeTruthy();
+      expect(getByText('Black / African / Caribbean / Black British 8')).toBeTruthy();
+    });
+
+    it('Should render the other ethnicity radios when category other is clicked', async () => {
+      const { component, fixture, getByText } = await setup(false);
+
+      component.ethnicities = ethnicityData;
+      fixture.detectChanges();
+
+      const otherButton = getByText('Other');
+      fireEvent.click(otherButton);
+      fixture.detectChanges();
+
+      expect(getByText('Other ethnic group 9')).toBeTruthy();
+      expect(getByText('Other ethnic group 10')).toBeTruthy();
     });
   });
 });

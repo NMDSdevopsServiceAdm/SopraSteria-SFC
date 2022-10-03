@@ -29,9 +29,6 @@ export class EthnicityComponent extends QuestionComponent {
     private ethnicityService: EthnicityService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
-
-    this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe((res) => (this.ethnicities = res.byGroup)));
-
     this.form = this.formBuilder.group({
       ethnicityGroup: null,
       ethnicity: null,
@@ -39,6 +36,7 @@ export class EthnicityComponent extends QuestionComponent {
   }
 
   init() {
+    this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe((res) => (this.ethnicities = res.byGroup)));
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     this.setUpPageRouting();
     if (this.worker.ethnicity) {
