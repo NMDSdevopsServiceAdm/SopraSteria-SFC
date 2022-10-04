@@ -48,9 +48,7 @@ export class NursingSpecialismComponent extends QuestionComponent {
       this.router.navigate(this.getRoutePath('other-job-roles'), { replaceUrl: true });
     }
 
-    this.next = this.workerService.hasJobRole(this.worker, 27)
-      ? this.getRoutePath('mental-health-professional')
-      : this.getRoutePath('recruited-from');
+    this.next = this.getReturnPath();
     this.previous = this.insideFlow ? this.getRoutePath('nursing-category') : this.getRoutePath('');
 
     let checkedSpecialisms = [];
@@ -75,6 +73,20 @@ export class NursingSpecialismComponent extends QuestionComponent {
         }),
       );
     }
+  }
+
+  getReturnPath() {
+    if (this.insideFlow) {
+      return this.workerService.hasJobRole(this.worker, 27)
+        ? this.getRoutePath('mental-health-professional')
+        : this.getRoutePath('recruited-from');
+    }
+    return this.getRoutePath('');
+
+    // onSuccess() {
+    //   const { nationalityKnown } = this.form.controls;
+    //   nationalityKnown.value === 'British' && (this.next = this.getRoutePath('country-of-birth'));
+    // }
   }
 
   generateUpdateProps() {
