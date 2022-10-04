@@ -120,7 +120,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="!worker.nurseSpecialisms"> - </ng-container>
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'No'"> Not using any of their specialisms </ng-container>
-      <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Don\'t know'"> Don't know </ng-container>
+      <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Don\'t know'">Not known</ng-container>
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Yes'">
         <ul class="govuk-list govuk-!-margin-bottom-0">
           <li *ngFor="let specialism of worker.nurseSpecialisms.specialisms">
