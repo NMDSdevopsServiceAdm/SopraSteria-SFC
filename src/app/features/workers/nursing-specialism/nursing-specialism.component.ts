@@ -82,11 +82,6 @@ export class NursingSpecialismComponent extends QuestionComponent {
         : this.getRoutePath('recruited-from');
     }
     return this.getRoutePath('');
-
-    // onSuccess() {
-    //   const { nationalityKnown } = this.form.controls;
-    //   nationalityKnown.value === 'British' && (this.next = this.getRoutePath('country-of-birth'));
-    // }
   }
 
   generateUpdateProps() {
