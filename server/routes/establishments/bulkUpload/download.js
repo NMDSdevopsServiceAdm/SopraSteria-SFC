@@ -58,7 +58,7 @@ const trainingCsv = async (establishments, responseSend) => {
 
   establishments.map((establishment) =>
     establishment.workers.map((worker) => {
-      console.log(worker.uuid);
+      console.log(worker.NameOrIdValue);
       worker.workerTraining.map((trainingRecord) =>
         responseSend(
           NEWLINE + TrainingCSV.toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord),
@@ -66,6 +66,7 @@ const trainingCsv = async (establishments, responseSend) => {
       );
     }),
   );
+  console.log('***** after ******');
 };
 
 const downloadGet = async (req, res) => {
