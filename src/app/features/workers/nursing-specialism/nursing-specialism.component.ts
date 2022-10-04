@@ -50,8 +50,8 @@ export class NursingSpecialismComponent extends QuestionComponent {
 
     this.next = this.workerService.hasJobRole(this.worker, 27)
       ? this.getRoutePath('mental-health-professional')
-      : this.getRoutePath('national-insurance-number');
-    this.previous = this.getRoutePath('nursing-category');
+      : this.getRoutePath('recruited-from');
+    this.previous = this.insideFlow ? this.getRoutePath('nursing-category') : this.getRoutePath('');
 
     let checkedSpecialisms = [];
     if (this.worker.nurseSpecialisms) {
