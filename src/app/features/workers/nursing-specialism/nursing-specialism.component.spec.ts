@@ -71,11 +71,10 @@ describe('NursingSpecialismComponent', () => {
             useValue: {
               parent: {
                 snapshot: {
-                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
                     establishment: { uid: 'mocked-uid' },
-                    primaryWorkplace: {},
                   },
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
               },
             },
@@ -257,6 +256,32 @@ describe('NursingSpecialismComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to nursing-category, when in the flow ', async () => {
+      const worker = workerWithNurseSpecialisms(true);
+      const { component, backLinkSpy } = await setup(worker);
+
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'nursing-category'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
+      const worker = workerWithNurseSpecialisms(true);
+      const { component, backLinkSpy } = await setup(worker, false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
     });
   });
 });
