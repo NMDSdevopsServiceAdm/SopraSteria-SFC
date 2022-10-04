@@ -287,14 +287,14 @@ describe('NursingSpecialismComponent', () => {
 
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
-      const worker = workerWithNurseSpecialisms(true);
+      const worker = workerBuilder();
       const { getByTestId } = await setup(worker);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
 
     it('should not render the progress bar when outside the flow', async () => {
-      const worker = workerWithNurseSpecialisms(true);
+      const worker = workerBuilder();
       const { queryByTestId } = await setup(worker, false);
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
