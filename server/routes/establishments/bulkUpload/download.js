@@ -46,19 +46,26 @@ const trainingCsv = async (establishments, responseSend) => {
   let numberOfWorkers = 0;
   let trainingRecords = 0;
 
-  establishments.map((establishment) => {
+  establishments.forEach((establishment) => {
     numberOfWorkers = establishment.workers.length;
-    establishment.workers.map((worker) => {
+    establishment.workers.forEach((worker) => {
       trainingRecords += worker.workerTraining.length;
+    });
+  });
+
+  console.log('**** numberOfWorkers:', numberOfWorkers);
+  console.log('**** trainingRecords:', trainingRecords);
+
+  establishments.map((establishment) =>
+    establishment.workers.map((worker) => {
+      console.log(worker.uuid);
       worker.workerTraining.map((trainingRecord) =>
         responseSend(
           NEWLINE + TrainingCSV.toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord),
         ),
       );
-    });
-  });
-  console.log('**** numberOfWorkers:', numberOfWorkers);
-  console.log('**** trainingRecords:', trainingRecords);
+    }),
+  );
 };
 
 const downloadGet = async (req, res) => {
