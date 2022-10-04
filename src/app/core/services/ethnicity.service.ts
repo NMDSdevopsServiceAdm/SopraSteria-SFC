@@ -11,7 +11,7 @@ import { EthnicityFullResponse, EthnicityResponse } from '../model/ethnicity.mod
 export class EthnicityService {
   constructor(private http: HttpClient) {}
 
-  getEthnicities(): Observable<EthnicityResponse> {
-    return this.http.get<EthnicityFullResponse>('/api/ethnicity').pipe(map(res => res.ethnicities));
+  public getEthnicities(): Observable<EthnicityResponse> {
+    return this.http.get<EthnicityFullResponse>('/api/ethnicity').pipe(map((res) => res.ethnicities));
   }
 }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Ethnicity } from '@core/model/ethnicity.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -14,7 +15,8 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './ethnicity.component.html',
 })
 export class EthnicityComponent extends QuestionComponent {
-  public ethnicities: any = {};
+  public ethnicitiesByGroup: any = {};
+  public ethnicitiy: Ethnicity;
   public section = 'Personal details';
   private nationalityPath: string[];
 
@@ -29,19 +31,49 @@ export class EthnicityComponent extends QuestionComponent {
     private ethnicityService: EthnicityService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
-    this.form = this.formBuilder.group({
-      ethnicityGroup: null,
-      ethnicity: null,
-    });
+    this.form = this.formBuilder.group(
+      {
+        ethnicityGroup: null,
+        ethnicity: null,
+      },
+      {
+        validator: this.oneRadioRequiredIfGroupSelected,
+      },
+    );
   }
 
   init() {
-    this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe((res) => (this.ethnicities = res.byGroup)));
+    this.getAndSetEthnicityData();
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     this.setUpPageRouting();
-    if (this.worker.ethnicity) {
-      this.prefill();
-    }
+  }
+
+  getAndSetEthnicityData() {
+    this.subscriptions.add(
+      this.ethnicityService.getEthnicities().subscribe((ethnicityData) => {
+        this.ethnicitiesByGroup = ethnicityData.byGroup;
+        this.ethnicitiy = ethnicityData.list.find(
+          (ethnicityObject) => ethnicityObject.id === this.worker.ethnicity.ethnicityId,
+        );
+        if (this.worker.ethnicity) {
+          this.prefill();
+        }
+      }),
+    );
+  }
+
+  setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'ethnicity',
+        type: [
+          {
+            name: 'required',
+            message: 'Select which best describes their ethnic background',
+          },
+        ],
+      },
+    ];
   }
 
   generateUpdateProps() {
@@ -60,12 +92,22 @@ export class EthnicityComponent extends QuestionComponent {
         };
   }
 
+  private oneRadioRequiredIfGroupSelected(form: FormGroup) {
+    if (form?.value?.ethnicityGroup !== null && form?.value?.ethnicity === null) {
+      form.controls.ethnicity.setErrors({
+        required: true,
+      });
+    } else {
+      form.controls.ethnicity.setErrors(null);
+    }
+  }
+
   ethnicitiesUngrouped() {
-    return this.ethnicities[''];
+    return this.ethnicitiesByGroup[''];
   }
 
   ethnicityGroups() {
-    return Object.keys(this.ethnicities).filter((e) => e.length);
+    return Object.keys(this.ethnicitiesByGroup).filter((e) => e.length);
   }
 
   private setUpPageRouting() {
@@ -82,9 +124,13 @@ export class EthnicityComponent extends QuestionComponent {
     }
   }
 
+  public removeSelectedEthnicities() {
+    this.form.get('ethnicity').reset();
+  }
+
   private prefill() {
     this.form.patchValue({
-      ethnicityGroup: 'Needs to be var of group',
+      ethnicityGroup: this.ethnicitiy.group,
       ethnicity: this.worker.ethnicity.ethnicityId,
     });
   }

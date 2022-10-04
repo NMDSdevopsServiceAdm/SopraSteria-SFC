@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByLabelText, render } from '@testing-library/angular';
 
 import { EthnicityComponent } from './ethnicity.component';
 
@@ -207,7 +207,7 @@ describe('EthnicityComponent', () => {
     it('Should render the ethnicity group radios when page renders', async () => {
       const { component, fixture, getByLabelText } = await setup(false);
 
-      component.ethnicities = ethnicityData;
+      component.ethnicitiesByGroup = ethnicityData;
       fixture.detectChanges();
 
       expect(getByLabelText('White')).toBeTruthy();
@@ -220,7 +220,7 @@ describe('EthnicityComponent', () => {
     it('Should render the white ethnicitiy radios when category white is clicked', async () => {
       const { component, fixture, getByText } = await setup(false);
 
-      component.ethnicities = ethnicityData;
+      component.ethnicitiesByGroup = ethnicityData;
       fixture.detectChanges();
 
       const whiteButton = getByText('White');
@@ -234,7 +234,7 @@ describe('EthnicityComponent', () => {
     it('Should render the mixed ethnicitiy radios when category mixed is clicked', async () => {
       const { component, fixture, getByText } = await setup(false);
 
-      component.ethnicities = ethnicityData;
+      component.ethnicitiesByGroup = ethnicityData;
       fixture.detectChanges();
 
       const mixedButton = getByText('Mixed');
@@ -248,7 +248,7 @@ describe('EthnicityComponent', () => {
     it('Should render the asian ethnicitiy radios when category asian is clicked', async () => {
       const { component, fixture, getByText } = await setup(false);
 
-      component.ethnicities = ethnicityData;
+      component.ethnicitiesByGroup = ethnicityData;
       fixture.detectChanges();
 
       const asianButton = getByText('Asian');
@@ -262,7 +262,7 @@ describe('EthnicityComponent', () => {
     it('Should render the black ethnicity radios when category black is clicked', async () => {
       const { component, fixture, getByText } = await setup(false);
 
-      component.ethnicities = ethnicityData;
+      component.ethnicitiesByGroup = ethnicityData;
       fixture.detectChanges();
 
       const blackButton = getByText('Black');
@@ -276,7 +276,7 @@ describe('EthnicityComponent', () => {
     it('Should render the other ethnicity radios when category other is clicked', async () => {
       const { component, fixture, getByText } = await setup(false);
 
-      component.ethnicities = ethnicityData;
+      component.ethnicitiesByGroup = ethnicityData;
       fixture.detectChanges();
 
       const otherButton = getByText('Other');
@@ -285,6 +285,28 @@ describe('EthnicityComponent', () => {
 
       expect(getByText('Other ethnic group 9')).toBeTruthy();
       expect(getByText('Other ethnic group 10')).toBeTruthy();
+    });
+  });
+
+  describe('error message', () => {
+    it('should display an error message when a group is selected but a specfic ethnicity is not selected', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup(false);
+
+      component.ethnicitiesByGroup = ethnicityData;
+      const form = component.form;
+      fixture.detectChanges();
+
+      const otherButton = getByText('Other');
+      fireEvent.click(otherButton);
+
+      const submitButton = getByText('Save and continue');
+      fireEvent.click(submitButton);
+      fixture.detectChanges();
+
+      const errorMessages = getAllByText('Select which best describes their ethnic background');
+
+      expect(form.valid).toBeFalsy();
+      expect(errorMessages.length).toEqual(6);
     });
   });
 });
