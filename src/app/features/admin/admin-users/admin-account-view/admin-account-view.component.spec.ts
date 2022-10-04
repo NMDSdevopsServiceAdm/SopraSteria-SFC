@@ -8,7 +8,6 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { DialogService } from '@core/services/dialog.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import {
@@ -48,7 +47,6 @@ describe('AdminAccountViewComponent', () => {
       providers: [
         AlertService,
         WindowRef,
-        DialogService,
         {
           provide: ActivatedRoute,
           useValue: MockActivatedRoute,
@@ -109,7 +107,7 @@ describe('AdminAccountViewComponent', () => {
 
   describe('buttons and links', async () => {
     it('should render a Resend the user email link if user is pending and is Admin manager', async () => {
-      const { queryByText, component } = await setup(true, true);
+      const { queryByText } = await setup(true, true);
 
       expect(queryByText('Resend the user set-up email')).toBeTruthy();
     });
@@ -214,7 +212,7 @@ describe('AdminAccountViewComponent', () => {
   });
 
   describe('deleting admin user', () => {
-    it('should dipslay a modal when clicking the Delete admin user link', async () => {
+    it('should display a modal when clicking the Delete admin user link', async () => {
       const { fixture, getByText } = await setup();
 
       const deleteLink = getByText('Delete this admin user');
