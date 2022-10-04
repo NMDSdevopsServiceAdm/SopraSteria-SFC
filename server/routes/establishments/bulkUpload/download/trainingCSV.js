@@ -3,6 +3,9 @@ const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const toCSV = (establishmentId, workerId, entity) => {
   // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
+  console.log('******* toCSC *******');
+  console.log('entity.notes:', entity.notes);
+  console.log(decodeURI(entity.notes));
   const columns = [
     csvQuote(establishmentId),
     csvQuote(workerId),
