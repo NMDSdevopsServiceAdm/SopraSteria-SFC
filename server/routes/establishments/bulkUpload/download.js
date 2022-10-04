@@ -42,20 +42,6 @@ const workerCsv = async (establishments, responseSend, downloadType) => {
 const trainingCsv = async (establishments, responseSend) => {
   responseSend(trainingHeaders);
 
-  console.log('******* trainingCsv ***********');
-  let numberOfWorkers = 0;
-  let trainingRecords = 0;
-
-  establishments.forEach((establishment) => {
-    numberOfWorkers = establishment.workers.length;
-    establishment.workers.forEach((worker) => {
-      trainingRecords += worker.workerTraining.length;
-    });
-  });
-
-  console.log('**** numberOfWorkers:', numberOfWorkers);
-  console.log('**** trainingRecords:', trainingRecords);
-
   establishments.map((establishment) =>
     establishment.workers.map((worker) => {
       worker.workerTraining.map((trainingRecord) =>
@@ -65,7 +51,6 @@ const trainingCsv = async (establishments, responseSend) => {
       );
     }),
   );
-  console.log('***** after ******');
 };
 
 const downloadGet = async (req, res) => {
@@ -123,7 +108,6 @@ const downloadGet = async (req, res) => {
 
       const filename = renameDownloadType[downloadType];
 
-      console.log('***************** here **********************');
       await s3.saveResponse(req, res, 200, responseText.join(''), {
         'Content-Type': 'text/csv',
         'Content-disposition': `attachment; filename=${
