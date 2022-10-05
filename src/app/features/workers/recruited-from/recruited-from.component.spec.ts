@@ -1,41 +1,98 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { RecruitedFromComponent } from './recruited-from.component';
 
+const workerBuilder = build('Worker', {
+  fields: {
+    uid: fake((f) => f.datatype.uuid()),
+    countryOfBirth: {
+      value: 'United Kingdom',
+    },
+    mainJob: {
+      id: 20,
+      jobId: 20,
+    },
+  },
+});
+
+const nonUkWorker = () =>
+  workerBuilder({
+    overrides: {
+      countryOfBirth: {
+        value: 'Germany',
+      },
+    },
+  });
+
+const registeredNurse = () =>
+  workerBuilder({
+    overrides: {
+      mainJob: {
+        id: 23,
+        jobId: 23,
+      },
+    },
+  });
+
 describe('RecruitedFromComponent', () => {
-  async function setup(returnUrl = true) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(RecruitedFromComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            parent: {
-              snapshot: {
-                data: {
-                  establishment: { uid: 'mocked-uid' },
+  async function setup(insideFlow = true, workerType = 'ukWorker') {
+    let worker;
+    if (workerType === 'ukWorker') {
+      worker = workerBuilder();
+    } else if (workerType === 'nonUkWorker') {
+      worker = nonUkWorker();
+    } else if (workerType === 'nurse') {
+      worker = registeredNurse();
+    }
+
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      RecruitedFromComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              parent: {
+                snapshot: {
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
+                  },
                 },
-                url: [{ path: '' }],
               },
             },
           },
-        },
-        {
-          provide: WorkerService,
-          useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
-        },
-      ],
-    });
+          {
+            provide: WorkerService,
+            useFactory: MockWorkerServiceWithoutReturnUrl.factory(worker),
+            deps: [HttpClient],
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
+
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const backService = injector.inject(BackService);
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -43,6 +100,10 @@ describe('RecruitedFromComponent', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      routerSpy,
+      backLinkSpy,
+      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -52,18 +113,168 @@ describe('RecruitedFromComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
-      const { getByText } = await setup(false);
+    it(`should show 'Save and continue' cta button and 'View this staff record' and 'Skip this question' link, if a return url is not provided`, async () => {
+      const { getByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup();
+      const { getByText } = await setup(false);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
+      const { component, getByText, routerSpy } = await setup();
+
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'adult-social-care-started',
+      ]);
+    });
+
+    it(`should navigate to  'adult-social-care-started' page when skipping the question in the flow`, async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Skip this question');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'adult-social-care-started',
+      ]);
+    });
+
+    it(`should navigate to 'staff-summary-page' page when clicking 'View this staff record' link `, async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const viewStaffRecord = getByText('View this staff record');
+      fireEvent.click(viewStaffRecord);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const link = getByText('Save and return');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render the progress bar when outside the flow', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to year-arrived-uk, when in the flow and country of birth is not united kingdm', async () => {
+      const { component, backLinkSpy } = await setup(true, 'nonUkWorker');
+
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'year-arrived-uk'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to country-of-birth, when in the flow and the country of birth is united kingdom ', async () => {
+      const { component, backLinkSpy } = await setup();
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'country-of-birth'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to nursing-specialism, when in the flow and the worker is registerd nurse', async () => {
+      const { component, backLinkSpy } = await setup(true, 'nurse');
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'nursing-specialism'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
     });
   });
 });
