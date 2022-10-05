@@ -13,30 +13,33 @@ import { RecruitedFromComponent } from './recruited-from.component';
 
 describe('RecruitedFromComponent', () => {
   async function setup(insideFlow = true) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(RecruitedFromComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            parent: {
-              snapshot: {
-                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
-                data: {
-                  establishment: { uid: 'mocked-uid' },
-                  primaryWorkplace: {},
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      RecruitedFromComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              parent: {
+                snapshot: {
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
+                  },
                 },
               },
             },
           },
-        },
-        {
-          provide: WorkerService,
-          useClass: MockWorkerServiceWithUpdateWorker,
-        },
-      ],
-    });
+          {
+            provide: WorkerService,
+            useClass: MockWorkerServiceWithUpdateWorker,
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
 
@@ -55,6 +58,8 @@ describe('RecruitedFromComponent', () => {
       getByLabelText,
       routerSpy,
       backLinkSpy,
+      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -164,6 +169,20 @@ describe('RecruitedFromComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render the progress bar when outside the flow', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
 });
