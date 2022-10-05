@@ -5,10 +5,9 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('recruitedFromId').invalid">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              Do you know where they were recruited from?
-            </h1>
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l">Employment details</span>
+            <h1 class="govuk-fieldset__heading">Do you know where they were recruited from?</h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
@@ -21,9 +20,7 @@
                 value="Yes"
                 aria-controls="conditional-recruitmentKnown-conditional-1"
               />
-              <label class="govuk-label govuk-radios__label" for="recruitmentKnown-conditional-1">
-                Yes
-              </label>
+              <label class="govuk-label govuk-radios__label" for="recruitmentKnown-conditional-1"> Yes </label>
             </div>
             <div
               class="govuk-radios__conditional"
@@ -31,9 +28,7 @@
               id="conditional-recruitmentKnown-conditional-1"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="recruitedFromId">
-                  Recruited from
-                </label>
+                <label class="govuk-label" for="recruitedFromId"> Recruited from </label>
                 <span
                   *ngIf="submitted && form.get('recruitedFromId').errors"
                   id="recruitedFromId-error"
@@ -66,12 +61,19 @@
                 type="radio"
                 value="No"
               />
-              <label class="govuk-label govuk-radios__label" for="recruitmentKnown-2">
-                No
-              </label>
+              <label class="govuk-label govuk-radios__label" for="recruitmentKnown-2"> No </label>
             </div>
           </div>
         </fieldset>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="'Employment details'"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
