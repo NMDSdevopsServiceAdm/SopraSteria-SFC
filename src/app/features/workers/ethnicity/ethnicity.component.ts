@@ -18,6 +18,14 @@ export class EthnicityComponent extends QuestionComponent {
   public ethnicitiesByGroup: any = {};
   public ethnicitiy: Ethnicity;
   public section = 'Personal details';
+  public doNotKnowValue = `Don't know`;
+  public groupOptions = [
+    { value: 'White', tag: 'White' },
+    { value: 'Mixed / multiple ethnic groups', tag: 'Mixed or Multiple ethnic groups' },
+    { value: 'Asian / Asian British', tag: 'Asian or Asian British' },
+    { value: 'Black / African / Caribbean / Black British', tag: 'Black, African, Caribbean or Black British' },
+    { value: 'Other ethnic group', tag: 'Other ethnic group' },
+  ];
   private nationalityPath: string[];
 
   constructor(
@@ -77,7 +85,7 @@ export class EthnicityComponent extends QuestionComponent {
   }
 
   generateUpdateProps() {
-    const { ethnicity } = this.form.value;
+    const { ethnicity } = this.form.value.ethnicityGroup === this.doNotKnowValue ? { ethnicity: 2 } : this.form.value;
     return ethnicity
       ? {
           ethnicity: {
@@ -93,21 +101,17 @@ export class EthnicityComponent extends QuestionComponent {
   }
 
   private oneRadioRequiredIfGroupSelected(form: FormGroup) {
-    if (form?.value?.ethnicityGroup !== null && form?.value?.ethnicity === null) {
+    if (
+      form?.value?.ethnicityGroup !== null &&
+      form?.value?.ethnicityGroup !== `Don't know` &&
+      form?.value?.ethnicity === null
+    ) {
       form.controls.ethnicity.setErrors({
         required: true,
       });
     } else {
       form.controls.ethnicity.setErrors(null);
     }
-  }
-
-  ethnicitiesUngrouped() {
-    return this.ethnicitiesByGroup[''];
-  }
-
-  ethnicityGroups() {
-    return Object.keys(this.ethnicitiesByGroup).filter((e) => e.length);
   }
 
   private setUpPageRouting() {
@@ -125,6 +129,10 @@ export class EthnicityComponent extends QuestionComponent {
   }
 
   public removeSelectedEthnicities() {
+    if (this.form.get('ethnicityGroup').value === this.doNotKnowValue) {
+      this.form.get('ethnicityGroup').reset();
+      this.form.get('ethnicityGroup').setValue(this.doNotKnowValue);
+    }
     this.form.get('ethnicity').reset();
   }
 

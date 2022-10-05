@@ -15,7 +15,7 @@
           [class.govuk-form-group--error]="submitted && form.invalid"
         >
           <div class="govuk-radios govuk-radios--conditional">
-            <ng-container *ngFor="let groupName of ethnicityGroups(); let idx = index">
+            <ng-container *ngFor="let groupName of groupOptions; let idx = index">
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
@@ -23,17 +23,17 @@
                   id="ethnicityGroup-{{ idx }}"
                   name="ethnicityGroup"
                   type="radio"
-                  [value]="groupName"
+                  [value]="groupName.value"
                   aria-controls="conditional-ethnicity-conditional-1"
                   (change)="removeSelectedEthnicities()"
                 />
                 <label class="govuk-label govuk-radios__label" for="ethnicityGroup-{{ idx }}">
-                  {{ groupName }}
+                  {{ groupName.tag }}
                 </label>
               </div>
               <div
                 class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value !== groupName"
+                [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value !== groupName.value"
                 id="conditional-ethnicity-conditional-1"
               >
                 <div class="govuk-form-group" id="ethnicities-conditional">
@@ -50,7 +50,7 @@
                     <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('ethnicity', 'required') }}
                   </span>
 
-                  <ng-container *ngFor="let ethnicityOption of ethnicitiesByGroup[groupName]; let idx = index">
+                  <ng-container *ngFor="let ethnicityOption of ethnicitiesByGroup[groupName.value]; let idx = index">
                     <div class="govuk-radios__item">
                       <input
                         class="govuk-radios__input"
@@ -69,6 +69,19 @@
                 </div>
               </div>
             </ng-container>
+            <div class="govuk-radios__divider">or</div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="ethnicity-dont-know"
+                name="ethnicityGroup"
+                type="radio"
+                [value]="doNotKnowValue"
+                [formControlName]="'ethnicityGroup'"
+                (click)="removeSelectedEthnicities()"
+              />
+              <label class="govuk-label govuk-radios__label" for="">I do not know</label>
+            </div>
           </div>
         </div>
       </fieldset>
