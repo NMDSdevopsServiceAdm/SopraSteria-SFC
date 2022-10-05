@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -5,14 +6,56 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { RecruitedFromComponent } from './recruited-from.component';
 
+const workerBuilder = build('Worker', {
+  fields: {
+    uid: fake((f) => f.datatype.uuid()),
+    countryOfBirth: {
+      value: 'United Kingdom',
+    },
+    mainJob: {
+      id: 20,
+      jobId: 20,
+    },
+  },
+});
+
+const nonUkWorker = () =>
+  workerBuilder({
+    overrides: {
+      countryOfBirth: {
+        value: 'Germany',
+      },
+    },
+  });
+
+const registeredNurse = () =>
+  workerBuilder({
+    overrides: {
+      mainJob: {
+        id: 23,
+        jobId: 23,
+      },
+    },
+  });
+
 describe('RecruitedFromComponent', () => {
-  async function setup(insideFlow = true) {
+  async function setup(insideFlow = true, workerType = 'ukWorker') {
+    let worker;
+    if (workerType === 'ukWorker') {
+      worker = workerBuilder();
+    } else if (workerType === 'nonUkWorker') {
+      worker = nonUkWorker();
+    } else if (workerType === 'nurse') {
+      worker = registeredNurse();
+    }
+
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       RecruitedFromComponent,
       {
@@ -35,7 +78,8 @@ describe('RecruitedFromComponent', () => {
           },
           {
             provide: WorkerService,
-            useClass: MockWorkerServiceWithUpdateWorker,
+            useFactory: MockWorkerServiceWithoutReturnUrl.factory(worker),
+            deps: [HttpClient],
           },
         ],
       },
@@ -183,6 +227,54 @@ describe('RecruitedFromComponent', () => {
       const { queryByTestId } = await setup(false);
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to year-arrived-uk, when in the flow and country of birth is not united kingdm', async () => {
+      const { component, backLinkSpy } = await setup(true, 'nonUkWorker');
+
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'year-arrived-uk'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to country-of-birth, when in the flow and the country of birth is united kingdom ', async () => {
+      const { component, backLinkSpy } = await setup();
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'country-of-birth'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to nursing-specialism, when in the flow and the worker is registerd nurse', async () => {
+      const { component, backLinkSpy } = await setup(true, 'nurse');
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'nursing-specialism'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
     });
   });
 });
