@@ -38,31 +38,34 @@ describe('AdultSocialCareStartedComponent', () => {
     }
 
     contractType === 'permanent' ? workerBuilder : noPermanentContract;
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(AdultSocialCareStartedComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            parent: {
-              snapshot: {
-                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
-                data: {
-                  establishment: { uid: 'mocked-uid' },
-                  primaryWorkplace: {},
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      AdultSocialCareStartedComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              parent: {
+                snapshot: {
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
+                  },
                 },
               },
             },
           },
-        },
-        {
-          provide: WorkerService,
-          useFactory: MockWorkerServiceWithoutReturnUrl.factory(contract),
-          deps: [HttpClient],
-        },
-      ],
-    });
+          {
+            provide: WorkerService,
+            useFactory: MockWorkerServiceWithoutReturnUrl.factory(contract),
+            deps: [HttpClient],
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -80,6 +83,8 @@ describe('AdultSocialCareStartedComponent', () => {
       getByLabelText,
       routerSpy,
       backLinkSpy,
+      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -217,5 +222,19 @@ describe('AdultSocialCareStartedComponent', () => {
       workerId,
       'staff-record-summary',
     ]);
+  });
+
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render the progress bar when outside the flow', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
   });
 });
