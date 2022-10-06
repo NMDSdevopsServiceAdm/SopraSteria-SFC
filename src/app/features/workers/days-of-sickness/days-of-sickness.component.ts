@@ -70,7 +70,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('contract-with-zero-hours');
-    this.previous = this.getRoutePath('adult-social-care-started');
+    this.previous = this.insideFlow ? this.getRoutePath('adult-social-care-started') : this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {
