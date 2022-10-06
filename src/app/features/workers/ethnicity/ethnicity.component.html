@@ -36,10 +36,8 @@
                 [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value !== groupName.value"
                 id="conditional-ethnicity-conditional-1"
               >
-                <div class="govuk-form-group" id="ethnicities-conditional">
-                  <label
-                    class="govuk-label govuk-label--s govuk-!-font-weight-bold govuk-!-margin-bottom-4"
-                    for="ethnicities-conditional"
+                <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+                  <label class="govuk-label govuk-label--s govuk-!-font-weight-bold govuk-!-margin-bottom-4"
                     >Which of the following best describes their ethnic backgroud?</label
                   >
                   <span
@@ -47,15 +45,16 @@
                     id="ethnicity-error"
                     class="govuk-error-message"
                   >
-                    <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('ethnicity', 'required') }}
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('ethnicity', 'required') }}
                   </span>
 
-                  <ng-container *ngFor="let ethnicityOption of ethnicitiesByGroup[groupName.value]; let idx = index">
+                  <ng-container *ngFor="let ethnicityOption of ethnicitiesByGroup[groupName.value]; let i = index">
                     <div class="govuk-radios__item">
                       <input
                         class="govuk-radios__input"
                         [class.govuk-input--error]="submitted && form.get('ethnicity').invalid"
-                        id="ethnicity-{{ idx }}"
+                        id="ethnicity-{{ idx }}-{{ i }}"
                         name="ethnicity"
                         type="radio"
                         [value]="ethnicityOption.id"
@@ -98,3 +97,4 @@
   </div>
   <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
 </form>
+<!-- ethnicity-error -->

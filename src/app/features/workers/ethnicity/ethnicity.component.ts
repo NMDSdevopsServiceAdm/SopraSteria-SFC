@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Ethnicity } from '@core/model/ethnicity.model';
+import { Ethnicity, EthnicityResponse } from '@core/model/ethnicity.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -39,35 +39,53 @@ export class EthnicityComponent extends QuestionComponent {
     private ethnicityService: EthnicityService,
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
-    this.form = this.formBuilder.group(
-      {
-        ethnicityGroup: null,
-        ethnicity: null,
-      },
-      {
-        validator: this.oneRadioRequiredIfGroupSelected,
-      },
-    );
+    this.form = this.formBuilder.group({
+      ethnicityGroup: null,
+      ethnicity: null,
+    });
   }
 
   init() {
     this.getAndSetEthnicityData();
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     this.setUpPageRouting();
+    this.subscriptions.add(
+      this.form.get('ethnicityGroup').valueChanges.subscribe((value) => {
+        this.submitted = false;
+        this.form.get('ethnicity').clearValidators();
+        if (value !== `Don't know`) {
+          this.form.get('ethnicity').setValidators(Validators.required);
+        }
+        this.form.get('ethnicity').updateValueAndValidity();
+        this.addErrorLinkFunctionality();
+      }),
+    );
   }
 
   getAndSetEthnicityData() {
     this.subscriptions.add(
       this.ethnicityService.getEthnicities().subscribe((ethnicityData) => {
-        this.ethnicitiesByGroup = ethnicityData.byGroup;
-        this.ethnicitiy = ethnicityData.list.find(
-          (ethnicityObject) => ethnicityObject.id === this.worker.ethnicity.ethnicityId,
+        const transformedEthnicityData = this.transformEthnicityData(ethnicityData);
+        this.ethnicitiesByGroup = transformedEthnicityData.byGroup;
+        this.ethnicitiy = transformedEthnicityData.list.find(
+          (ethnicityObject) => ethnicityObject.id === this.worker.ethnicity?.ethnicityId,
         );
         if (this.worker.ethnicity) {
           this.prefill();
         }
       }),
     );
+  }
+
+  transformEthnicityData(ethnicityData): EthnicityResponse {
+    const ethnicityDataByGroup = ethnicityData.byGroup;
+    ethnicityDataByGroup['White'][0].ethnicity = 'English, Welsh, Scottish, Northen Irish or British';
+    ethnicityDataByGroup['Mixed / multiple ethnic groups'][3].ethnicity =
+      'Any other Mixed or Multiple ethnic background';
+    ethnicityDataByGroup['Black / African / Caribbean / Black British'][2].ethnicity =
+      'Any other Black, African or Caribbean background';
+    ethnicityData['byGroup'] = ethnicityDataByGroup;
+    return ethnicityData;
   }
 
   setupFormErrorsMap(): void {
@@ -100,20 +118,6 @@ export class EthnicityComponent extends QuestionComponent {
         };
   }
 
-  private oneRadioRequiredIfGroupSelected(form: FormGroup) {
-    if (
-      form?.value?.ethnicityGroup !== null &&
-      form?.value?.ethnicityGroup !== `Don't know` &&
-      form?.value?.ethnicity === null
-    ) {
-      form.controls.ethnicity.setErrors({
-        required: true,
-      });
-    } else {
-      form.controls.ethnicity.setErrors(null);
-    }
-  }
-
   private setUpPageRouting() {
     this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
     this.nationalityPath = this.getRoutePath('nationality');
@@ -141,5 +145,11 @@ export class EthnicityComponent extends QuestionComponent {
       ethnicityGroup: this.ethnicitiy.group,
       ethnicity: this.worker.ethnicity.ethnicityId,
     });
+  }
+
+  private addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
   }
 }
