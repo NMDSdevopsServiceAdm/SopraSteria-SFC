@@ -66,7 +66,7 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
     this.next = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
       ? this.getRoutePath('days-of-sickness')
       : this.getRoutePath('contract-with-zero-hours');
-    this.previous = this.getRoutePath('recruited-from');
+    this.previous = this.insideFlow ? this.getRoutePath('recruited-from') : this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {
@@ -76,15 +76,15 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Year is required.',
+            message: 'Enter the year',
           },
           {
             name: 'min',
-            message: `Year can't be earlier than 100 years ago.`,
+            message: `Year cannot be more than 100 years ago`,
           },
           {
             name: 'max',
-            message: `Year can't be in future.`,
+            message: `Year cannot be in the future`,
           },
         ],
       },
