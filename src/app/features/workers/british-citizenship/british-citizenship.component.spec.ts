@@ -176,8 +176,6 @@ describe('BritishCitizenshipComponent', () => {
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      console.log(component.return);
-
       expect(component.return).toEqual({
         url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
       });
