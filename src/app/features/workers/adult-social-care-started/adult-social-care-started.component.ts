@@ -66,7 +66,7 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
     this.next = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
       ? this.getRoutePath('days-of-sickness')
       : this.getRoutePath('contract-with-zero-hours');
-    this.previous = this.getRoutePath('recruited-from');
+    this.previous = this.insideFlow ? this.getRoutePath('recruited-from') : this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {
