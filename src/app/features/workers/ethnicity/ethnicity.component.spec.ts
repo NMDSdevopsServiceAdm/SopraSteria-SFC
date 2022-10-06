@@ -8,7 +8,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockEthnicityService } from '@core/test-utils/MockEthnicityService';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, queryByText, render } from '@testing-library/angular';
 
 import { EthnicityComponent } from './ethnicity.component';
 
@@ -173,58 +173,113 @@ describe('EthnicityComponent', () => {
     });
 
     it('Should render the white ethnicitiy radios when category white is clicked', async () => {
-      const { fixture, getByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup(false);
 
       const whiteButton = getByText('White');
       fireEvent.click(whiteButton);
       fixture.detectChanges();
 
-      expect(getByText('white ethnicity 1')).toBeTruthy();
+      expect(getByText('English, Welsh, Scottish, Northen Irish or British')).toBeTruthy();
       expect(getByText('white ethnicity 2')).toBeTruthy();
+      expect(queryByText('Mixed / multiple ethnic groups 3')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 4')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 5')).toBeFalsy();
+      expect(queryByText('Any other Mixed or Multiple ethnic background')).toBeFalsy();
+      expect(queryByText('Asian / Asian British 7')).toBeFalsy();
+      expect(queryByText('Asian / Asian British 8')).toBeFalsy();
+      expect(queryByText('Black / African / Caribbean / Black British 9')).toBeFalsy();
+      expect(queryByText('Black / African / Caribbean / Black British 10')).toBeFalsy();
+      expect(queryByText('Any other Black, African or Caribbean background')).toBeFalsy();
+      expect(queryByText('Other ethnic group 12')).toBeFalsy();
+      expect(queryByText('Other ethnic group 13')).toBeFalsy();
     });
 
     it('Should render the mixed ethnicitiy radios when category mixed is clicked', async () => {
-      const { fixture, getByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup(false);
 
       const mixedButton = getByText('Mixed or Multiple ethnic groups');
       fireEvent.click(mixedButton);
       fixture.detectChanges();
 
+      expect(queryByText('English, Welsh, Scottish, Northen Irish or British')).toBeFalsy();
+      expect(queryByText('white ethnicity 2')).toBeFalsy();
       expect(getByText('Mixed / multiple ethnic groups 3')).toBeTruthy();
       expect(getByText('Mixed / multiple ethnic groups 4')).toBeTruthy();
+      expect(getByText('Mixed / multiple ethnic groups 5')).toBeTruthy();
+      expect(getByText('Any other Mixed or Multiple ethnic background')).toBeTruthy();
+      expect(queryByText('Asian / Asian British 7')).toBeFalsy();
+      expect(queryByText('Asian / Asian British 8')).toBeFalsy();
+      expect(queryByText('Black / African / Caribbean / Black British 9')).toBeFalsy();
+      expect(queryByText('Black / African / Caribbean / Black British 10')).toBeFalsy();
+      expect(queryByText('Any other Black, African or Caribbean background')).toBeFalsy();
+      expect(queryByText('Other ethnic group 12')).toBeFalsy();
+      expect(queryByText('Other ethnic group 13')).toBeFalsy();
     });
 
     it('Should render the asian ethnicitiy radios when category asian is clicked', async () => {
-      const { fixture, getByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup(false);
 
       const asianButton = getByText('Asian or Asian British');
       fireEvent.click(asianButton);
       fixture.detectChanges();
 
-      expect(getByText('Asian / Asian British 5')).toBeTruthy();
-      expect(getByText('Asian / Asian British 6')).toBeTruthy();
+      expect(queryByText('English, Welsh, Scottish, Northen Irish or British')).toBeFalsy();
+      expect(queryByText('white ethnicity 2')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 3')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 4')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 5')).toBeFalsy();
+      expect(queryByText('Any other Mixed or Multiple ethnic background')).toBeFalsy();
+      expect(getByText('Asian / Asian British 7')).toBeTruthy();
+      expect(getByText('Asian / Asian British 8')).toBeTruthy();
+      expect(queryByText('Black / African / Caribbean / Black British 9')).toBeFalsy();
+      expect(queryByText('Black / African / Caribbean / Black British 10')).toBeFalsy();
+      expect(queryByText('Any other Black, African or Caribbean background')).toBeFalsy();
+      expect(queryByText('Other ethnic group 12')).toBeFalsy();
+      expect(queryByText('Other ethnic group 13')).toBeFalsy();
     });
 
     it('Should render the black ethnicity radios when category black is clicked', async () => {
-      const { fixture, getByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup(false);
 
       const blackButton = getByText('Black, African, Caribbean or Black British');
       fireEvent.click(blackButton);
       fixture.detectChanges();
 
-      expect(getByText('Black / African / Caribbean / Black British 7')).toBeTruthy();
-      expect(getByText('Black / African / Caribbean / Black British 8')).toBeTruthy();
+      expect(queryByText('English, Welsh, Scottish, Northen Irish or British')).toBeFalsy();
+      expect(queryByText('white ethnicity 2')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 3')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 4')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 5')).toBeFalsy();
+      expect(queryByText('Any other Mixed or Multiple ethnic background')).toBeFalsy();
+      expect(queryByText('Asian / Asian British 7')).toBeFalsy();
+      expect(queryByText('Asian / Asian British 8')).toBeFalsy();
+      expect(getByText('Black / African / Caribbean / Black British 9')).toBeTruthy();
+      expect(getByText('Black / African / Caribbean / Black British 10')).toBeTruthy();
+      expect(getByText('Any other Black, African or Caribbean background')).toBeTruthy();
+      expect(queryByText('Other ethnic group 12')).toBeFalsy();
+      expect(queryByText('Other ethnic group 13')).toBeFalsy();
     });
 
     it('Should render the other ethnicity radios when category other is clicked', async () => {
-      const { fixture, getByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup(false);
 
       const otherButton = getByText('Other ethnic group');
       fireEvent.click(otherButton);
       fixture.detectChanges();
 
-      expect(getByText('Other ethnic group 9')).toBeTruthy();
-      expect(getByText('Other ethnic group 10')).toBeTruthy();
+      expect(queryByText('English, Welsh, Scottish, Northen Irish or British')).toBeFalsy();
+      expect(queryByText('white ethnicity 2')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 3')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 4')).toBeFalsy();
+      expect(queryByText('Mixed / multiple ethnic groups 5')).toBeFalsy();
+      expect(queryByText('Any other Mixed or Multiple ethnic background')).toBeFalsy();
+      expect(queryByText('Asian / Asian British 7')).toBeFalsy();
+      expect(queryByText('Asian / Asian British 8')).toBeFalsy();
+      expect(queryByText('Black / African / Caribbean / Black British 9')).toBeFalsy();
+      expect(queryByText('Black / African / Caribbean / Black British 10')).toBeFalsy();
+      expect(queryByText('Any other Black, African or Caribbean background')).toBeFalsy();
+      expect(getByText('Other ethnic group 12')).toBeTruthy();
+      expect(getByText('Other ethnic group 13')).toBeTruthy();
     });
   });
 
@@ -245,7 +300,7 @@ describe('EthnicityComponent', () => {
       const errorMessages = getAllByText('Select which best describes their ethnic background');
 
       expect(form.valid).toBeFalsy();
-      expect(errorMessages.length).toEqual(6);
+      expect(errorMessages.length).toEqual(2);
     });
   });
 });

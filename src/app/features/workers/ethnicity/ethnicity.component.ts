@@ -79,6 +79,7 @@ export class EthnicityComponent extends QuestionComponent {
     );
   }
 
+  //text ethnicity pulled from DB can't currently be changed by needs changing on frontend hence transform function AP 06/10/22
   transformEthnicityData(ethnicityData): EthnicityResponse {
     const ethnicityDataByGroup = ethnicityData.byGroup;
     ethnicityDataByGroup['White'][0].ethnicity = 'English, Welsh, Scottish, Northen Irish or British';
