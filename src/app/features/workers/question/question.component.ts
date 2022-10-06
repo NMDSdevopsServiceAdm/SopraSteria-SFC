@@ -100,6 +100,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected setupServerErrorsMap() {}
   protected generateUpdateProps() {}
   protected onSuccess() {}
+  protected addErrorLinkFunctionality(): void {}
 
   protected navigate(action): void {
     switch (action) {
@@ -149,6 +150,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.addErrorLinkFunctionality();
 
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();

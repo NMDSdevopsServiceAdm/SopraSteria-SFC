@@ -25,13 +25,13 @@
                   type="radio"
                   [value]="groupName.value"
                   aria-controls="conditional-ethnicity-conditional-1"
-                  (change)="removeSelectedEthnicities()"
                 />
                 <label class="govuk-label govuk-radios__label" for="ethnicityGroup-{{ idx }}">
                   {{ groupName.tag }}
                 </label>
               </div>
               <div
+                *ngIf="form.get('ethnicityGroup').value === groupName.value"
                 class="govuk-radios__conditional"
                 [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value !== groupName.value"
                 id="conditional-ethnicity-conditional-1"
@@ -54,7 +54,7 @@
                       <input
                         class="govuk-radios__input"
                         [class.govuk-input--error]="submitted && form.get('ethnicity').invalid"
-                        id="ethnicity-{{ idx }}-{{ i }}"
+                        id="ethnicity-{{ i }}"
                         name="ethnicity"
                         type="radio"
                         [value]="ethnicityOption.id"
@@ -77,7 +77,6 @@
                 type="radio"
                 [value]="doNotKnowValue"
                 [formControlName]="'ethnicityGroup'"
-                (click)="removeSelectedEthnicities()"
               />
               <label class="govuk-label govuk-radios__label" for="">I do not know</label>
             </div>

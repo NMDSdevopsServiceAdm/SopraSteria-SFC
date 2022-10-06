@@ -55,9 +55,11 @@ export class EthnicityComponent extends QuestionComponent {
         this.form.get('ethnicity').clearValidators();
         if (value !== `Don't know`) {
           this.form.get('ethnicity').setValidators(Validators.required);
+        } else {
+          this.form.get('ethnicityGroup').setValue(this.doNotKnowValue, { emitEvent: false });
         }
+        this.form.get('ethnicity').setValue(null, { emitEvent: false });
         this.form.get('ethnicity').updateValueAndValidity();
-        this.addErrorLinkFunctionality();
       }),
     );
   }
@@ -132,14 +134,6 @@ export class EthnicityComponent extends QuestionComponent {
     }
   }
 
-  public removeSelectedEthnicities() {
-    if (this.form.get('ethnicityGroup').value === this.doNotKnowValue) {
-      this.form.get('ethnicityGroup').reset();
-      this.form.get('ethnicityGroup').setValue(this.doNotKnowValue);
-    }
-    this.form.get('ethnicity').reset();
-  }
-
   private prefill() {
     this.form.patchValue({
       ethnicityGroup: this.ethnicitiy.group,
@@ -147,7 +141,7 @@ export class EthnicityComponent extends QuestionComponent {
     });
   }
 
-  private addErrorLinkFunctionality(): void {
+  protected addErrorLinkFunctionality(): void {
     if (!this.errorSummaryService.formEl$.value) {
       this.errorSummaryService.formEl$.next(this.formEl);
     }
