@@ -237,4 +237,28 @@ describe('AdultSocialCareStartedComponent', () => {
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to recruited-from, when in the flow', async () => {
+      const { component, backLinkSpy } = await setup(true);
+
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'recruited-from'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
+    });
+  });
 });
