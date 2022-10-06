@@ -13,30 +13,33 @@ import { DaysOfSicknessComponent } from './days-of-sickness.component';
 
 describe('DaysOfSicknessComponent', () => {
   async function setup(insideFlow = true) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(DaysOfSicknessComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            parent: {
-              snapshot: {
-                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
-                data: {
-                  establishment: { uid: 'mocked-uid' },
-                  primaryWorkplace: {},
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      DaysOfSicknessComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              parent: {
+                snapshot: {
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
+                  },
                 },
               },
             },
           },
-        },
-        {
-          provide: WorkerService,
-          useClass: MockWorkerServiceWithoutReturnUrl,
-        },
-      ],
-    });
+          {
+            provide: WorkerService,
+            useClass: MockWorkerServiceWithoutReturnUrl,
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -54,6 +57,8 @@ describe('DaysOfSicknessComponent', () => {
       getByLabelText,
       routerSpy,
       backLinkSpy,
+      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -160,6 +165,44 @@ describe('DaysOfSicknessComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render the progress bar when outside the flow', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to adult-social-care-started, when in the flow', async () => {
+      const { component, backLinkSpy } = await setup(true);
+
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'adult-social-care-started'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
     });
   });
 });
