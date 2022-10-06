@@ -76,15 +76,15 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Year is required.',
+            message: 'Enter the year',
           },
           {
             name: 'min',
-            message: `Year can't be earlier than 100 years ago.`,
+            message: `Year cannot be more than 100 years ago`,
           },
           {
             name: 'max',
-            message: `Year can't be in future.`,
+            message: `Year cannot be in the future`,
           },
         ],
       },
