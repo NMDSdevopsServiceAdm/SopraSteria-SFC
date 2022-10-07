@@ -45,7 +45,6 @@ const createWorker = (id) =>
 
 describe('MainJobStartDateComponent', () => {
   const setup = async (insideFlow = true, worker = workerBuilder()) => {
-    // if (navigatedFrom) history.pushState({ navigatedFrom }, '', '');
     const { fixture, getByText, getByLabelText, getAllByText, getByTestId, queryByTestId } = await render(
       MainJobStartDateComponent,
       {
@@ -117,10 +116,6 @@ describe('MainJobStartDateComponent', () => {
       getByTestId,
     };
   };
-
-  // afterEach(() => {
-  //   window.history.replaceState(undefined, '');
-  // });
 
   it('renders without error', async () => {
     const component = await setup();
@@ -382,15 +377,25 @@ describe('MainJobStartDateComponent', () => {
     expect(errors.length).toBe(2);
   });
 
-  // describe('setBackLink()', () => {
-  //   fit('should set the backlink to /workplace/workplace-uid, when in the flow but addStaffRecoredInProgress is false and primary workplace id is different to workplace id', async () => {
-  //     const { component, backLinkSpy } = await setup();
+  describe('setBackLink()', () => {
+    it('should set the backlink to year arrived uk page when in the flow', async () => {
+      const { component, backLinkSpy } = await setup();
 
-  //     component.setBackLink();
-  //     expect(backLinkSpy).toHaveBeenCalledWith({
-  //       url: [`/workplace/${component.workplace.uid}`],
-  //       fragment: 'staff-records',
-  //     });
-  //   });
-  // });
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', 123, 'staff-record', component.worker.uid, 'year-arrived-uk'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff record summary when outside the flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', 123, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
+    });
+  });
 });

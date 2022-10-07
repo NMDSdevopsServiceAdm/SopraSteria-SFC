@@ -53,12 +53,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
     }
 
     this.next = this.getReturnPath();
-    this.previous = this.getRoutePath('year-arrived-uk');
-
-    const navigatedFromSection = history.state?.navigatedFrom;
-    if (['staff-records', 'mandatory-details'].includes(navigatedFromSection)) {
-      this.return = null;
-    }
+    this.previous = this.insideFlow ? this.getRoutePath('year-arrived-uk') : this.getRoutePath('');
   }
 
   public setupFormErrorsMap(): void {
