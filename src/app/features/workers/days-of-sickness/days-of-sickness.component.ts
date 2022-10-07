@@ -80,15 +80,15 @@ export class DaysOfSicknessComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Number of days is required.',
+            message: 'Number of days is required',
           },
           {
             name: 'min',
-            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}.`,
+            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}`,
           },
           {
             name: 'max',
-            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}.`,
+            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}`,
           },
           {
             name: 'pattern',
