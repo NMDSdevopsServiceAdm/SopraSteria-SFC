@@ -17,7 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class DaysOfSicknessComponent extends QuestionComponent {
   public daysSicknessMin = 0;
-  public daysSicknessMax = 366;
+  public daysSicknessMax = 365;
   public floatPattern = FLOAT_PATTERN.toString();
 
   constructor(
@@ -80,7 +80,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Number of days is required',
+            message: 'Enter the number of days',
           },
           {
             name: 'min',
