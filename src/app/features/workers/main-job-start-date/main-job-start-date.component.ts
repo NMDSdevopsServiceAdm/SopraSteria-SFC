@@ -17,6 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class MainJobStartDateComponent extends QuestionComponent {
   private dateMin = dayjs().subtract(100, 'years');
+  public section = 'Employment details';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -51,8 +52,8 @@ export class MainJobStartDateComponent extends QuestionComponent {
       });
     }
 
-    this.next = this.getRoutePath('other-job-roles');
-    this.previous = this.getReturnPath();
+    this.next = this.getReturnPath();
+    this.previous = this.getRoutePath('year-arrived-uk');
 
     const navigatedFromSection = history.state?.navigatedFrom;
     if (['staff-records', 'mandatory-details'].includes(navigatedFromSection)) {
@@ -96,12 +97,16 @@ export class MainJobStartDateComponent extends QuestionComponent {
   }
 
   private getReturnPath() {
-    if (this.workerService.addStaffRecordInProgress$.value) {
-      return this.getRoutePath('staff-details');
+    if (this.insideFlow) {
+      if (this.workerService.hasJobRole(this.worker, 23)) {
+        return this.getRoutePath('nursing-category');
+      } else if (this.workerService.hasJobRole(this.worker, 27)) {
+        return this.getRoutePath('mental-health-professional');
+      } else {
+        return this.getRoutePath('other-job-roles');
+      }
     }
-    if (this.workplace.uid === this.primaryWorkplace.uid) {
-      return ['/dashboard'];
-    }
-    return [`/workplace/${this.workplace.uid}`];
+
+    return this.getRoutePath('');
   }
 }
