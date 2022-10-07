@@ -39,9 +39,16 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
       });
     }
 
-    this.previous = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
-      ? this.getRoutePath('days-of-sickness')
-      : this.getRoutePath('adult-social-care-started');
+    this.previous = this.getReturnPath();
+  }
+
+  getReturnPath() {
+    if (this.insideFlow) {
+      return [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
+        ? this.getRoutePath('days-of-sickness')
+        : this.getRoutePath('adult-social-care-started');
+    }
+    return this.getRoutePath('');
   }
 
   generateUpdateProps() {
