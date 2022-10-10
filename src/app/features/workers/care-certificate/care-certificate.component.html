@@ -5,9 +5,10 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('careCertificate').invalid">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
-              Have they started or completed the Care Certificate?
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              Have they completed, started or partially completed their Care Certificate?
             </h1>
           </legend>
           <div class="govuk-radios">
@@ -18,14 +19,23 @@
                 id="careCertificate-{{ idx }}"
                 name="careCertificate"
                 type="radio"
-                [value]="answer"
+                [value]="answer.value"
               />
               <label class="govuk-label govuk-radios__label" for="careCertificate-{{ idx }}">
-                {{ answer }}
+                {{ answer.tag }}
               </label>
             </div>
           </div>
         </fieldset>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
     </div>
   </div>

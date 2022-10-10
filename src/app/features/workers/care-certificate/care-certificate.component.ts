@@ -13,7 +13,13 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './care-certificate.component.html',
 })
 export class CareCertificateComponent extends QuestionComponent {
-  public answersAvailable = ['Yes, completed', 'Yes, in progress or partially completed', 'No'];
+  public answersAvailable = [
+    { value: 'Yes, completed', tag: 'Yes, completed' },
+    { value: 'Yes, in progress or partially completed', tag: 'Yes, started or partially completed' },
+    { value: 'No', tag: 'No' },
+  ];
+  public section = 'Training and qualifications';
+  private apprenticeshipTrainingPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -32,23 +38,38 @@ export class CareCertificateComponent extends QuestionComponent {
   }
 
   init() {
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+    this.setUpPageRouting();
     if (this.worker.careCertificate) {
-      this.form.patchValue({
-        careCertificate: this.worker.careCertificate,
-      });
+      this.prefill();
     }
+  }
 
-    this.next = this.getRoutePath('apprenticeship-training');
-    this.previous = this.getRoutePath('salary');
+  private prefill() {
+    this.form.patchValue({
+      careCertificate: this.worker.careCertificate,
+    });
+  }
+
+  private setUpPageRouting() {
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+    this.apprenticeshipTrainingPath = this.getRoutePath('apprenticeship-training');
+
+    if (this.insideFlow) {
+      this.previous = this.getRoutePath('salary');
+      this.skipRoute = this.apprenticeshipTrainingPath;
+      this.next = this.apprenticeshipTrainingPath;
+    } else {
+      this.return = { url: this.staffRecordSummaryPath };
+      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+    }
   }
 
   generateUpdateProps() {
     const { careCertificate } = this.form.value;
-
     if (!careCertificate) {
       return null;
     }
-
     return {
       careCertificate,
     };
