@@ -17,7 +17,6 @@ import { QuestionComponent } from '../question/question.component';
 export class WeeklyContractedHoursComponent extends QuestionComponent {
   public floatPattern = FLOAT_PATTERN.toString();
   public contractedMaxHours = 75;
-
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -29,12 +28,12 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
-
     this.form = this.formBuilder.group({
       hoursKnown: null,
       hours: null,
     });
+
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
   }
 
   init() {
