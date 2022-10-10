@@ -77,7 +77,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Contracted weekly hours is required',
+            message: 'Enter their contracted weekly hours',
           },
           {
             name: 'min',
