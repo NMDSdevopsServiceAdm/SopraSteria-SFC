@@ -4,11 +4,12 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div
-        class="govuk-form-group"
+        class="govuk-form-group govuk-!-margin-bottom-4"
         [class.govuk-form-group--error]="submitted && form.get('approvedMentalHealthWorker').invalid"
       >
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
             <h1 class="govuk-fieldset__heading">Are they an Approved Mental Health Professional?</h1>
           </legend>
           <div class="govuk-radios">
@@ -27,6 +28,15 @@
             </div>
           </div>
         </fieldset>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
