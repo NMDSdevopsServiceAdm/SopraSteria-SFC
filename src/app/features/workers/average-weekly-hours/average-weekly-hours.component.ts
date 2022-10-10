@@ -70,7 +70,7 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('salary');
-    this.previous = this.getRoutePath('contract-with-zero-hours');
+    this.previous = this.insideFlow ? this.getRoutePath('contract-with-zero-hours') : this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {
@@ -80,15 +80,15 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Average weekly hours is required.',
+            message: 'Average weekly hours is required',
           },
           {
             name: 'min',
-            message: `Average weekly hours must be between 0 and ${this.contractedMaxHours}.`,
+            message: `Average weekly hours must be between 0 and ${this.contractedMaxHours}`,
           },
           {
             name: 'max',
-            message: `Average weekly hours must be between 0 and ${this.contractedMaxHours}.`,
+            message: `Average weekly hours must be between 0 and ${this.contractedMaxHours}`,
           },
         ],
       },
