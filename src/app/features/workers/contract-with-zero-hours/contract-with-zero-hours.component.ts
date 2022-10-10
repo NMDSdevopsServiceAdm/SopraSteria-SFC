@@ -14,7 +14,11 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './contract-with-zero-hours.component.html',
 })
 export class ContractWithZeroHoursComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+  public answersAvailable = [
+    { value: 'Yes', tag: 'Yes' },
+    { value: 'No', tag: 'No' },
+    { value: `Don't know`, tag: 'I do not know' },
+  ];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -39,9 +43,22 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
       });
     }
 
-    this.previous = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
-      ? this.getRoutePath('days-of-sickness')
-      : this.getRoutePath('adult-social-care-started');
+    this.next =
+      this.worker.zeroHoursContract === 'Yes' ||
+      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
+        ? this.getRoutePath('average-weekly-hours')
+        : this.getRoutePath('weekly-contracted-hours');
+
+    this.previous = this.getReturnPath();
+  }
+
+  getReturnPath() {
+    if (this.insideFlow) {
+      return [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
+        ? this.getRoutePath('days-of-sickness')
+        : this.getRoutePath('adult-social-care-started');
+    }
+    return this.getRoutePath('');
   }
 
   generateUpdateProps() {
@@ -54,13 +71,5 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     return {
       zeroHoursContract,
     };
-  }
-
-  onSuccess() {
-    this.next =
-      this.worker.zeroHoursContract === 'Yes' ||
-      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-        ? this.getRoutePath('average-weekly-hours')
-        : this.getRoutePath('weekly-contracted-hours');
   }
 }
