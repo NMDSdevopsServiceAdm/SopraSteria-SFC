@@ -6,7 +6,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
 
 import { QuestionComponent } from '../question/question.component';
@@ -30,19 +29,25 @@ export class MainJobStartDateComponent extends QuestionComponent {
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      mainJobStartDate: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
-    });
-    this.form
-      .get('mainJobStartDate')
-      .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(this.dateMin)]);
+    //   this.form = this.formBuilder.group({
+    //     mainJobStartDate: this.formBuilder.group(
+    //       {
+    //         day: null,
+    //         month: null,
+    //         year: null,
+    //       },
+    //     {validators: [DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(this.dateMin)]},
+    //   ),
+
+    //     // { updateOn: 'submit' },
+    // });
+    // this.form
+    //   .get('mainJobStartDate')
+    // .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(this.dateMin)]);
   }
 
   init() {
+    this.setupForm();
     if (this.worker.mainJobStartDate) {
       const date = dayjs(this.worker.mainJobStartDate, DATE_PARSE_FORMAT);
       this.form.get('mainJobStartDate').patchValue({
@@ -54,6 +59,19 @@ export class MainJobStartDateComponent extends QuestionComponent {
 
     this.next = this.getReturnPath();
     this.previous = this.insideFlow ? this.getRoutePath('year-arrived-uk') : this.getRoutePath('');
+  }
+
+  private setupForm(): void {
+    this.form = this.formBuilder.group(
+      {
+        mainJobStartDate: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   public setupFormErrorsMap(): void {
