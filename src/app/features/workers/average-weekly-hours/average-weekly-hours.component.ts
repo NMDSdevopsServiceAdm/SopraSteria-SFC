@@ -80,7 +80,7 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Average weekly hours is required',
+            message: 'Enter the average weekly hours',
           },
           {
             name: 'min',
