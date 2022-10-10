@@ -50,7 +50,7 @@ describe('DateOfBirthComponent', () => {
     const workerService = injector.inject(WorkerService);
     const backService = injector.inject(BackService);
 
-    const submitSpy = spyOn(component, 'onSubmit').and.callThrough();
+    const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
     const backLinkSpy = spyOn(backService, 'setBackLink');

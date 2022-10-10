@@ -14,6 +14,7 @@ import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerSe
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { DatePickerComponent } from '@shared/components/date-picker/date-picker.component';
 import { ErrorSummaryComponent } from '@shared/components/error-summary/error-summary.component';
+import { ProgressBarComponent } from '@shared/components/progress-bar/progress-bar.component';
 import { SubmitButtonComponent } from '@shared/components/submit-button/submit-button.component';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -49,7 +50,7 @@ describe('MainJobStartDateComponent', () => {
       MainJobStartDateComponent,
       {
         imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        declarations: [DatePickerComponent, SubmitButtonComponent, ErrorSummaryComponent],
+        declarations: [DatePickerComponent, SubmitButtonComponent, ErrorSummaryComponent, ProgressBarComponent],
         providers: [
           BackService,
           FormBuilder,
@@ -97,7 +98,7 @@ describe('MainJobStartDateComponent', () => {
     const workerService = injector.inject(WorkerService);
     const backService = injector.inject(BackService);
 
-    const submitSpy = spyOn(component, 'onSubmit').and.callThrough();
+    const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const navigateSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
     const backLinkSpy = spyOn(backService, 'setBackLink');
@@ -362,19 +363,59 @@ describe('MainJobStartDateComponent', () => {
     expect(workerServiceSpy).not.toHaveBeenCalled();
   });
 
-  it('renders an error message component has invalid date', async () => {
-    const { getAllByText, getByLabelText, fixture } = await setup();
+  describe('Error messages', () => {
+    it('renders an error message component has invalid date', async () => {
+      const { getAllByText, getByText, getByLabelText, fixture } = await setup();
 
-    userEvent.type(getByLabelText('Day'), '11');
-    userEvent.type(getByLabelText('Month'), '11');
-    userEvent.type(getByLabelText('Year'), '11');
+      userEvent.type(getByLabelText('Day'), '11');
+      userEvent.type(getByLabelText('Month'), '11');
+      userEvent.type(getByLabelText('Year'), '11');
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
 
-    fixture.componentInstance.submitted = true;
-    fixture.componentInstance.form.value.errors = true;
-    fixture.detectChanges();
+      const errors = getAllByText('Enter a valid main job start date, like 31 3 1980');
 
-    const errors = getAllByText('Main job start date is not a valid date');
-    expect(errors.length).toBe(2);
+      expect(errors.length).toBe(2);
+    });
+
+    it('renders an error message component has main job start date is before the earliest possible start date', async () => {
+      const { getAllByText, getByText, getByLabelText, fixture } = await setup();
+
+      const dateInput = new Date();
+      const day = dateInput.getDate();
+      const month = dateInput.getMonth() + 1;
+      const year = dateInput.getFullYear() - 100;
+
+      userEvent.type(getByLabelText('Day'), day.toString());
+      userEvent.type(getByLabelText('Month'), month.toString());
+      userEvent.type(getByLabelText('Year'), year.toString());
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      const errors = getAllByText(
+        `Main job start date must be after ${day} ${dateInput.toLocaleString('default', { month: 'long' })} ${year}`,
+      );
+
+      expect(errors.length).toBe(2);
+    });
+
+    it('renders an error message component has a future date', async () => {
+      const { getAllByText, getByText, getByLabelText, fixture } = await setup();
+
+      const dateInput = new Date();
+      const day = dateInput.getDate();
+      const month = dateInput.getMonth() + 1;
+      const year = dateInput.getFullYear() + 1;
+
+      userEvent.type(getByLabelText('Day'), day.toString());
+      userEvent.type(getByLabelText('Month'), month.toString());
+      userEvent.type(getByLabelText('Year'), year.toString());
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      const errors = getAllByText('Main job start date must be today or in the past');
+      expect(errors.length).toBe(2);
+    });
   });
 
   describe('setBackLink()', () => {

@@ -9,9 +9,7 @@
       >
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              Are they an Approved Mental Health Professional?
-            </h1>
+            <h1 class="govuk-fieldset__heading">Are they an Approved Mental Health Professional?</h1>
           </legend>
           <div class="govuk-radios">
             <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
@@ -33,5 +31,5 @@
     </div>
   </div>
 
-  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>

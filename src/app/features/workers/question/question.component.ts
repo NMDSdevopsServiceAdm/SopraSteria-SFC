@@ -34,10 +34,11 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected subscriptions: Subscription = new Subscription();
   public initiated = false;
 
-  public staffRecordSections: string[];
+  public staffRecordSections: string[] = ProgressBarUtil.staffRecordProgressBarSections();
   public insideFlow: boolean;
   public flow: string;
   public staffRecordSummaryPath: string[];
+  public submitAction: { action: string; save: boolean } = null;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -54,20 +55,20 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary';
-    this.staffRecordSections = ProgressBarUtil.staffRecordProgressBarSections();
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
         this.worker = worker;
 
         if (!this.initiated) {
           this._init();
+          console.log(this.previous);
           this.back = this.previous
             ? {
                 url: this.previous,
                 ...(!this.workerService.addStaffRecordInProgress$.value && { fragment: 'staff-records' }),
               }
             : this.return;
-
+          console.log('back:', this.back);
           this.setBackLink();
         }
       }),
@@ -106,7 +107,13 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected onSuccess() {}
   protected addErrorLinkFunctionality(): void {}
 
-  protected navigate(action): void {
+  protected navigate(): void {
+    const { action } = this.submitAction;
+
+    if (!action) {
+      return;
+    }
+
     switch (action) {
       case 'continue':
         this.router.navigate(this.next);
@@ -146,9 +153,14 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
-    if (!payload.save) {
-      this.navigate(payload.action);
+  public setSubmitAction(payload: { action: string; save: boolean }): void {
+    this.submitAction = { action: payload.action, save: payload.save };
+
+    !payload.save && this.onSubmit();
+  }
+  public onSubmit() {
+    if (!this.submitAction.save) {
+      this.navigate();
       return;
     }
 
@@ -165,31 +177,33 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (isNull(props)) {
       this.onSuccess();
-      this.navigate(payload.action);
+      this.navigate();
       return;
     }
 
     if (!this.worker) {
+      console.log('**** create worker ******');
       this.subscriptions.add(
         this.workerService.createWorker(this.workplace.uid, props).subscribe(
-          (data) => this._onSuccess(data, payload.action),
+          (data) => this._onSuccess(data),
           (error) => this.onError(error),
         ),
       );
     } else {
+      console.log('**** update worker ****');
       this.subscriptions.add(
         this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
-          (data) => this._onSuccess(data, payload.action),
+          (data) => this._onSuccess(data),
           (error) => this.onError(error),
         ),
       );
     }
   }
 
-  _onSuccess(data, action) {
+  _onSuccess(data) {
     this.workerService.setState({ ...this.worker, ...data });
     this.onSuccess();
-    this.navigate(action);
+    this.navigate();
   }
 
   onError(error) {
