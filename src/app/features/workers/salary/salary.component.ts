@@ -21,6 +21,7 @@ export class SalaryComponent extends QuestionComponent {
   public annually = { min: 500, max: 200000 };
   public intPattern = INT_PATTERN.toString();
   public floatPattern = FLOAT_PATTERN.toString();
+  public section = 'Employment details';
 
   constructor(
     protected formBuilder: FormBuilder,
