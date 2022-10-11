@@ -13,7 +13,11 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './other-qualifications.component.html',
 })
 export class OtherQualificationsComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+  public answersAvailable = [
+    { value: 'Yes', tag: 'Yes' },
+    { value: 'No', tag: 'No' },
+    { value: `Don't know`, tag: 'I do not know' },
+  ];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -37,11 +41,21 @@ export class OtherQualificationsComponent extends QuestionComponent {
         otherQualification: this.worker.otherQualification,
       });
     }
+    this.next =
+      this.worker.otherQualification === 'Yes'
+        ? this.getRoutePath('other-qualifications-level')
+        : this.getRoutePath('');
 
-    this.previous =
-      this.worker.qualificationInSocialCare === 'Yes'
+    this.previous = this.getReturnPath();
+  }
+
+  getReturnPath() {
+    if (this.insideFlow) {
+      return this.worker.qualificationInSocialCare === 'Yes'
         ? this.getRoutePath('social-care-qualification-level')
         : this.getRoutePath('social-care-qualification');
+    }
+    return this.getRoutePath('');
   }
 
   generateUpdateProps(): unknown {
@@ -54,12 +68,5 @@ export class OtherQualificationsComponent extends QuestionComponent {
     return {
       otherQualification,
     };
-  }
-
-  onSuccess(): void {
-    this.next =
-      this.worker.otherQualification === 'Yes'
-        ? this.getRoutePath('other-qualifications-level')
-        : this.getRoutePath('');
   }
 }
