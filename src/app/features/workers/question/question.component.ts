@@ -61,14 +61,13 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
         if (!this.initiated) {
           this._init();
-          console.log(this.previous);
           this.back = this.previous
             ? {
                 url: this.previous,
                 ...(!this.workerService.addStaffRecordInProgress$.value && { fragment: 'staff-records' }),
               }
             : this.return;
-          console.log('back:', this.back);
+
           this.setBackLink();
         }
       }),
@@ -158,6 +157,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     !payload.save && this.onSubmit();
   }
+
   public onSubmit() {
     if (!this.submitAction.save) {
       this.navigate();

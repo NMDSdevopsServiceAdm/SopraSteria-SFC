@@ -27,7 +27,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public jobsAvailable: Job[] = [];
   public showInputTextforOtherRole: boolean;
   public submitTitle = 'Save this staff record';
-  public canReturn = false;
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
@@ -56,15 +55,17 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   init(): void {
-    this.inMandatoryDetailsFlow = this.route.snapshot.parent.url[0].path === 'mandatory-details';
+    this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
     // this.flow = this.insideFlow ? 'staff-record' : 'staff-record/staff-record-summary';
     // this.editFlow = !!this.worker;
     this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
     this.getJobs();
     // this.setBackLinks();
 
-    this.next = this.getRoutePath('mandatory-details');
+    // this.next = this.getRoutePath('mandatory-details');
     this.previous = this.getReturnPath();
+
+    // this.getRouteToDashboard();
   }
 
   public setupFormErrorsMap(): void {
@@ -162,7 +163,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     });
 
     this.selectedJobRole(this.worker.mainJob.jobId);
-    // this.canReturn = true;
   }
 
   private getReturnPath() {
@@ -175,6 +175,9 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     return this.getRoutePath('');
   }
 
+  protected onSuccess(): void {
+    this.next = this.getRoutePath('mandatory-details');
+  }
   // setBackLinks(): void {
   //   if (this.insideFlow && this.isPrimaryAccount) {
   //     this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
