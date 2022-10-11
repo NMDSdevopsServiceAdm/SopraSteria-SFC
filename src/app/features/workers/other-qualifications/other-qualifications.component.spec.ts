@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -37,7 +37,7 @@ describe('OtherQualificationsComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: MockWorkerServiceWithUpdateWorker,
+          useClass: MockWorkerServiceWithoutReturnUrl,
         },
       ],
     });
@@ -69,7 +69,7 @@ describe('OtherQualificationsComponent', () => {
 
   describe('submit buttons', () => {
     it('should render the page with a save and continue button and view this staff record and Skip this question link', async () => {
-      const { component, fixture, getByText } = await setup();
+      const { fixture, getByText } = await setup();
 
       fixture.detectChanges();
 
@@ -121,7 +121,6 @@ describe('OtherQualificationsComponent', () => {
     it('should navigate to staff-record when View this staff record link is clicked', async () => {
       const { component, fixture, routerSpy, getByText } = await setup();
 
-      component.return = null;
       fixture.detectChanges();
 
       const workplaceUid = component.workplace.uid;
@@ -172,6 +171,20 @@ describe('OtherQualificationsComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render the progress bar when outside the flow', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
 });
