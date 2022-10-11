@@ -10,7 +10,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training.component';
 
-fdescribe('ApprenticeshipTrainingComponent', () => {
+describe('ApprenticeshipTrainingComponent', () => {
   async function setup(returnUrl = true) {
     const { fixture, getByText, queryByTestId, getByLabelText, getByTestId } = await render(
       ApprenticeshipTrainingComponent,
