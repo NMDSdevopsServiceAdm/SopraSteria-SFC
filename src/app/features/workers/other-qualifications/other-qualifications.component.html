@@ -3,9 +3,10 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group">
+      <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l">Training and qualifications</span>
             <h1 class="govuk-fieldset__heading">Do they have any other qualifications?</h1>
           </legend>
           <div class="govuk-radios">
@@ -24,6 +25,15 @@
             </div>
           </div>
         </fieldset>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="'Training and qualifications'"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
