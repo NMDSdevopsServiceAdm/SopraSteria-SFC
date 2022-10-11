@@ -3,9 +3,13 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('hours').invalid">
+      <div
+        class="govuk-form-group govuk-!-margin-bottom-4"
+        [class.govuk-form-group--error]="submitted && form.get('hours').invalid"
+      >
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l">Employment details</span>
             <h1 class="govuk-fieldset__heading">Do you know how many hours they're contracted to work each week?</h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
@@ -69,7 +73,17 @@
         </fieldset>
       </div>
     </div>
+
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="'Employment details'"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
 
-  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button [return]="!insideFlow" (clicked)="onSubmit($event)"></app-submit-button>
 </form>
