@@ -13,7 +13,7 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './social-care-qualification.component.html',
 })
 export class SocialCareQualificationComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+  public answersAvailable = ['Yes', 'No', `I do not know`];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -39,7 +39,18 @@ export class SocialCareQualificationComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('other-qualifications');
-    this.previous = this.getRoutePath('apprenticeship-training');
+    this.previous = this.getReturnPath();
+  }
+
+  private getReturnPath() {
+    if (this.insideFlow && this.workerService.addStaffRecordInProgress) {
+      return this.getRoutePath('apprenticeship-training');
+    }
+
+    if (this.insideFlow) {
+      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
+    }
+    return this.getRoutePath('');
   }
 
   generateUpdateProps() {

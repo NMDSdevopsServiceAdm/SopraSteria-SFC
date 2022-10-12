@@ -52,7 +52,18 @@ export class SocialCareQualificationLevelComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('other-qualifications');
-    this.previous = this.getRoutePath('social-care-qualification');
+    this.previous = this.getReturnPath();
+  }
+
+  private getReturnPath() {
+    if (this.insideFlow && this.workerService.addStaffRecordInProgress) {
+      return this.getRoutePath('social-care-qualification');
+    }
+
+    if (this.insideFlow) {
+      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
+    }
+    return this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {
