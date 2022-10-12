@@ -99,6 +99,10 @@
                     <span class="govuk-visually-hidden">Error:</span>
                     <span [innerHTML]="getFormErrorMessage('annualRate', 'max')"></span>
                   </ng-container>
+                    <ng-container *ngIf="form.get('annualRate').hasError('pattern')">
+                      <span class="govuk-visually-hidden">Error:</span>
+                      <span [innerHTML]="getFormErrorMessage('annualRate', 'pattern')"></span>
+                    </ng-container>
                 </span>
                 <span class="govuk-input__currency">
                   <input
