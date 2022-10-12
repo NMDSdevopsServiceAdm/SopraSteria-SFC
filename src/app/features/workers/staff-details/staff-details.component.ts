@@ -178,6 +178,13 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   protected onSuccess(): void {
     this.next = this.getRoutePath('mandatory-details');
   }
+
+  protected addAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: 'Staff record saved',
+    });
+  }
   // setBackLinks(): void {
   //   if (this.insideFlow && this.isPrimaryAccount) {
   //     this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });

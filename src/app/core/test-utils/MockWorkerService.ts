@@ -304,6 +304,8 @@ export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
   setState(worker) {
     this.worker = worker;
     this.worker$ = of(worker as Worker);
+    // console.log('*** setState ****');
+    // console.log(this.worker);
   }
 }
 

@@ -105,6 +105,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected generateUpdateProps() {}
   protected onSuccess() {}
   protected addErrorLinkFunctionality(): void {}
+  protected addAlert(): void {}
 
   protected navigate(): void {
     const { action } = this.submitAction;
@@ -182,7 +183,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if (!this.worker) {
-      console.log('**** create worker ******');
       this.subscriptions.add(
         this.workerService.createWorker(this.workplace.uid, props).subscribe(
           (data) => this._onSuccess(data),
@@ -190,7 +190,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         ),
       );
     } else {
-      console.log('**** update worker ****');
       this.subscriptions.add(
         this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
           (data) => this._onSuccess(data),
@@ -204,6 +203,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.workerService.setState({ ...this.worker, ...data });
     this.onSuccess();
     this.navigate();
+    this.addAlert();
   }
 
   onError(error) {

@@ -51,6 +51,7 @@ export class WorkerService {
   constructor(private http: HttpClient) {}
 
   public get worker() {
+    console.log('*** get worker');
     return this._worker$.value as Worker;
   }
 
