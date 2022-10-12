@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -6,6 +7,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -13,10 +15,33 @@ import { establishmentBuilder } from '../../../../../server/test/factories/model
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsComponent } from './other-qualifications.component';
 
-describe('OtherQualificationsComponent', () => {
+const workerBuilder = build('Worker', {
+  fields: {
+    uid: fake((f) => f.datatype.uuid()),
+    qualificationInSocialCare: 'Yes',
+    otherQualification: 'Yes',
+  },
+});
+
+const NoqualificationInSocialCare = () =>
+  workerBuilder({
+    overrides: {
+      qualificationInSocialCare: 'No',
+      otherQualification: 'No',
+    },
+  });
+
+fdescribe('OtherQualificationsComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
-  async function setup(insideFlow = true) {
+  async function setup(insideFlow = true, qualificationInSocial = 'Yes') {
+    let qualification;
+
+    if (qualificationInSocial === 'Yes') {
+      qualification = workerBuilder();
+    } else if (qualificationInSocial === 'No') {
+      qualification = NoqualificationInSocialCare();
+    }
     const { fixture, getByText, getByTestId, queryByTestId } = await render(OtherQualificationsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -37,7 +62,8 @@ describe('OtherQualificationsComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: MockWorkerServiceWithoutReturnUrl,
+          useFactory: MockWorkerServiceWithoutReturnUrl.factory(qualification),
+          deps: [HttpClient],
         },
       ],
     });
@@ -86,12 +112,11 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it(`should run getRoutePath with a other-qualifications-level string when otherQualification is yes and in the flow`, async () => {
-      const { component, getByText, routerSpy } = await setup();
+      const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
       const button = getByText('Save and continue');
 
       fireEvent.click(button);
-      component.worker.otherQualification;
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -103,11 +128,10 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it(`should call submit data and navigate with the   'other-qualifications-level' url when 'Skip this question' is clicked and in the flow`, async () => {
-      const { component, getByText, routerSpy } = await setup();
+      const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
       const button = getByText('Skip this question');
       fireEvent.click(button);
-      component.worker.otherQualification;
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -185,6 +209,50 @@ describe('OtherQualificationsComponent', () => {
       const { queryByTestId } = await setup(false);
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to social-care-qualification-level, when in the flow', async () => {
+      const { component, backLinkSpy } = await setup(true, 'Yes');
+
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: [
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'social-care-qualification-level',
+        ],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to social-care-qualification-level, when in the flow', async () => {
+      const { component, backLinkSpy } = await setup(true, 'No');
+
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'social-care-qualification'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
     });
   });
 });
