@@ -56,16 +56,9 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
-    // this.flow = this.insideFlow ? 'staff-record' : 'staff-record/staff-record-summary';
-    // this.editFlow = !!this.worker;
     this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
     this.getJobs();
-    // this.setBackLinks();
-
-    // this.next = this.getRoutePath('mandatory-details');
     this.previous = this.getReturnPath();
-
-    // this.getRouteToDashboard();
   }
 
   public setupFormErrorsMap(): void {
@@ -185,53 +178,4 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       message: 'Staff record saved',
     });
   }
-  // setBackLinks(): void {
-  //   if (this.insideFlow && this.isPrimaryAccount) {
-  //     this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
-  //   } else if (this.insideFlow && !this.isPrimaryAccount) {
-  //     this.backService.setBackLink({ url: ['/workplace', this.workplace.uid], fragment: 'staff-records' });
-  //   } else if (!this.insideFlow && !this.inMandatoryDetailsFlow) {
-  //     this.backService.setBackLink({ url: this.getRoutePath('staff-record-summary') });
-  //   } else {
-  //     this.backService.setBackLink({ url: this.getRoutePath('mandatory-details') });
-  //   }
-  // }
-
-  // public navigate(): void {
-  //   const { action } = this.submitAction;
-  //   switch (action) {
-  //     case 'continue':
-  //       if (this.flow === 'staff-record' && !this.editFlow) {
-  //         this.next = this.getRoutePath('mandatory-details');
-  //         this.router.navigate(this.next).then(() => {
-  //           this.alertService.addAlert({
-  //             type: 'success',
-  //             message: 'Staff record saved',
-  //           });
-  //         });
-  //       }
-
-  //       if (this.flow === 'staff-record/staff-record-summary') {
-  //         this.next = this.getRoutePath('staff-record-summary');
-  //         this.router.navigate(this.next);
-  //       }
-  //       break;
-
-  //     case 'exit':
-  //       if (this.isPrimaryAccount) {
-  //         this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
-  //       } else {
-  //         this.router.navigate(['/workplace', this.workplace.uid], { fragment: 'staff-records' });
-  //       }
-  //       break;
-
-  //     case 'return':
-  //       if (this.inMandatoryDetailsFlow) {
-  //         this.router.navigate(this.getRoutePath('mandatory-details'));
-  //       } else {
-  //         this.router.navigate(this.getRoutePath('staff-record-summary'));
-  //       }
-  //       break;
-  //   }
-  // }
 }
