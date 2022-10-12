@@ -27,7 +27,7 @@ import userEvent from '@testing-library/user-event';
 import { workerBuilder } from '../../../../../server/test/factories/models';
 import { StaffDetailsComponent } from './staff-details.component';
 
-fdescribe('StaffDetailsComponent', () => {
+describe('StaffDetailsComponent', () => {
   async function setup(insideFlow = true, returnToMandatoryDetails = false) {
     let path;
     if (returnToMandatoryDetails) {

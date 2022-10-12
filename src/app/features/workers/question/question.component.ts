@@ -74,10 +74,8 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
       }),
     );
 
-    if (this.worker) {
-      this.returnUrl = this.returnUrl
-        ? this.returnUrl
-        : ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
+    if (this.worker && !this.returnUrl) {
+      this.returnUrl = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
     }
 
     this.setupFormErrorsMap();
