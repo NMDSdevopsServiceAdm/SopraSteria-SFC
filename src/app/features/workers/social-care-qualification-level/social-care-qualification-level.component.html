@@ -5,6 +5,7 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('qualification').invalid">
         <h1 class="govuk-label-wrapper">
+          <span class="govuk-caption-l">Training and qualifications</span>
           <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="qualification">
             What is the highest level of their social care qualifications?
           </label>
@@ -21,9 +22,7 @@
             </a>
           </p>
         </app-details>
-        <label class="govuk-label" for="qualification">
-          Qualification level
-        </label>
+        <label class="govuk-label" for="qualification"> Qualification level </label>
         <span
           *ngIf="submitted && form.get('qualification').errors"
           id="qualification-error"
@@ -44,6 +43,15 @@
             {{ qualification.level }}
           </option>
         </select>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="'Training and qualifications'"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
