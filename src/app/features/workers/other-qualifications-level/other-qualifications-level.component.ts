@@ -16,6 +16,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class OtherQualificationsLevelComponent extends QuestionComponent {
   public qualifications: QualificationLevel[];
+  public section = 'Training and qualifications';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -35,24 +36,40 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
   }
 
   init(): void {
-    if (this.worker.otherQualification !== 'Yes') {
-      this.router.navigate(this.getRoutePath('other-qualifications'), { replaceUrl: true });
-    }
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+    this.getAndSetQualifications();
+    this.setUpPageRouting();
 
+    if (this.worker.highestQualification) {
+      this.prefill();
+    }
+  }
+
+  private prefill(): void {
+    this.form.patchValue({
+      qualification: this.worker.highestQualification.qualificationId,
+    });
+  }
+
+  public getAndSetQualifications(): void {
     this.subscriptions.add(
       this.qualificationService.getQualifications().subscribe((qualifications) => {
         this.qualifications = qualifications;
       }),
     );
+  }
 
-    if (this.worker.highestQualification) {
-      this.form.patchValue({
-        qualification: this.worker.highestQualification.qualificationId,
-      });
+  private setUpPageRouting(): void {
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+
+    if (this.insideFlow) {
+      this.previous = this.getRoutePath('other-qualifications');
+      this.skipRoute = this.staffRecordSummaryPath;
+      this.next = this.staffRecordSummaryPath;
+    } else {
+      this.return = { url: this.staffRecordSummaryPath };
+      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
     }
-
-    this.next = this.getRoutePath('');
-    this.previous = this.getRoutePath('other-qualifications');
   }
 
   setupFormErrorsMap(): void {
@@ -71,7 +88,6 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
 
   generateUpdateProps(): unknown {
     const { qualification } = this.form.value;
-
     return {
       highestQualification: {
         qualificationId: parseInt(qualification, 10),
