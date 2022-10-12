@@ -300,13 +300,6 @@ export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
   updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
     return of({ uid: '1' } as WorkerEditResponse);
   }
-
-  setState(worker) {
-    this.worker = worker;
-    this.worker$ = of(worker as Worker);
-    // console.log('*** setState ****');
-    // console.log(this.worker);
-  }
 }
 
 @Injectable()
