@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -27,7 +27,7 @@ import userEvent from '@testing-library/user-event';
 import { workerBuilder } from '../../../../../server/test/factories/models';
 import { StaffDetailsComponent } from './staff-details.component';
 
-describe('StaffDetailsComponent', () => {
+fdescribe('StaffDetailsComponent', () => {
   async function setup(insideFlow = true, returnToMandatoryDetails = false) {
     let path;
     if (returnToMandatoryDetails) {
@@ -93,11 +93,14 @@ describe('StaffDetailsComponent', () => {
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService);
     const backService = injector.inject(BackService);
+    const alertService = injector.inject(AlertService) as AlertService;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const backLinkSpy = spyOn(backService, 'setBackLink');
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+    const setAddStaffRecordInProgressSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
     return {
       component,
@@ -114,6 +117,8 @@ describe('StaffDetailsComponent', () => {
       updateWorkerSpy,
       submitSpy,
       backLinkSpy,
+      alertSpy,
+      setAddStaffRecordInProgressSpy,
     };
   }
 
@@ -227,7 +232,7 @@ describe('StaffDetailsComponent', () => {
     });
 
     it('should show a banner when a staff record has been successfully added', async () => {
-      const { component, fixture, getByText, getByLabelText, workerService } = await setup();
+      const { component, fixture, getByText, getByLabelText, workerService, alertSpy } = await setup();
 
       spyOn(workerService, 'createWorker').and.callThrough();
       spyOn(workerService, 'setState').and.callFake(() => {
@@ -236,8 +241,6 @@ describe('StaffDetailsComponent', () => {
         component.worker.contract = 'Temporary' as Contracts;
         component.worker.mainJob = { jobId: 1 };
       });
-      const alertService = TestBed.inject(AlertService) as AlertService;
-      const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
       component.worker = null;
       const form = component.form;
@@ -257,6 +260,33 @@ describe('StaffDetailsComponent', () => {
       });
     });
 
+    it('should call setAddStaffRecordInProgress when clicking save this staff record', async () => {
+      const { component, fixture, getByText, getByLabelText, workerService, setAddStaffRecordInProgressSpy } =
+        await setup();
+
+      spyOn(workerService, 'createWorker').and.callThrough();
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker = workerBuilder();
+        component.worker.nameOrId = 'Someone';
+        component.worker.contract = 'Temporary' as Contracts;
+        component.worker.mainJob = { jobId: 1 };
+      });
+
+      component.worker = null;
+      const form = component.form;
+      form.controls.nameOrId.setValue('');
+      form.controls.mainJob.setValue('');
+      form.controls.contract.setValue('');
+
+      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
+      userEvent.selectOptions(getByLabelText('Main job role'), ['1']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save this staff record'));
+      fixture.detectChanges();
+
+      expect(setAddStaffRecordInProgressSpy).toHaveBeenCalledWith(true);
+    });
+
     it('should return the user to the workplace home page when clicking cancel', async () => {
       const { component, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup();
 
@@ -268,14 +298,14 @@ describe('StaffDetailsComponent', () => {
       expect(updateWorkerSpy).not.toHaveBeenCalled();
     });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link when editing a staff record`, async () => {
+    it(`should show 'Save and return' cta button and 'Cancel' link when editing a staff record outside`, async () => {
       const { getByText } = await setup(false);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should call submit data and navigate to the the correct url when 'Save and return' is clicked`, async () => {
+    it(`should call submit data and navigate to the the staff record summary page when 'Save and return' is clicked outside of mandatory details flow`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
         false,
       );
@@ -304,6 +334,39 @@ describe('StaffDetailsComponent', () => {
         'staff-record',
         fixture.componentInstance.worker.uid,
         'staff-record-summary',
+      ]);
+    });
+
+    it(`should call submit data and navigate to the the mandatory details page when 'Save and return' is clicked inside the mandatory details flow`, async () => {
+      const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
+        false,
+        true,
+      );
+
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Temporary'));
+      userEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({
+        nameOrId: component.worker.nameOrId,
+        mainJob: '2',
+        otherJobRole: null,
+        contract: 'Temporary',
+      });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        nameOrId: component.worker.nameOrId,
+        contract: 'Temporary',
+        mainJob: { jobId: 2 },
+      });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        fixture.componentInstance.worker.uid,
+        'mandatory-details',
       ]);
     });
 
@@ -342,8 +405,38 @@ describe('StaffDetailsComponent', () => {
       ]);
     });
 
-    it('should return the user to the record summary page when clicking cancel', async () => {
-      const { fixture, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false);
+    it('should not show a banner when updating a staff record', async () => {
+      const { component, fixture, getByText, getByLabelText, workerService, alertSpy } = await setup(false);
+
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker.contract = 'Permanent' as Contracts;
+      });
+
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not call setAddStaffRecordInProgress when clicking save and return', async () => {
+      const { component, fixture, getByText, getByLabelText, workerService, setAddStaffRecordInProgressSpy } =
+        await setup(false);
+
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker.contract = 'Permanent' as Contracts;
+      });
+
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+      expect(setAddStaffRecordInProgressSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return the user to the record summary page when clicking cancel when not in the main flow or mandatory details flow', async () => {
+      const { component, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false);
 
       userEvent.click(getByText('Cancel'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
@@ -351,8 +444,23 @@ describe('StaffDetailsComponent', () => {
         '/workplace',
         'mocked-uid',
         'staff-record',
-        fixture.componentInstance.worker.uid,
+        component.worker.uid,
         'staff-record-summary',
+      ]);
+      expect(updateWorkerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return to the mandatory details page when clicking cancel when not in the main flow but in the mandatory details flow', async () => {
+      const { component, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false, true);
+
+      userEvent.click(getByText('Cancel'));
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'mandatory-details',
       ]);
       expect(updateWorkerSpy).not.toHaveBeenCalled();
     });
@@ -436,7 +544,7 @@ describe('StaffDetailsComponent', () => {
   });
 
   describe('setBackLink()', () => {
-    it('should set the backlink to /workplace/workplace-uid, when in the flowand primary workplace id is different to workplace id', async () => {
+    it('should set the backlink to /workplace/workplace-uid, when in the flow and primary workplace id is different to workplace id', async () => {
       const { component, backLinkSpy } = await setup();
 
       component.setBackLink();

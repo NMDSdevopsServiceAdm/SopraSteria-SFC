@@ -39,6 +39,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public flow: string;
   public staffRecordSummaryPath: string[];
   public submitAction: { action: string; save: boolean } = null;
+  public returnUrl: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -72,6 +73,12 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }),
     );
+
+    if (this.worker) {
+      this.returnUrl = this.returnUrl
+        ? this.returnUrl
+        : ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
+    }
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
@@ -134,13 +141,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'return':
-        this.router.navigate([
-          '/workplace',
-          this.workplace.uid,
-          'staff-record',
-          this.worker.uid,
-          'staff-record-summary',
-        ]);
+        this.router.navigate(this.returnUrl);
         break;
     }
   }

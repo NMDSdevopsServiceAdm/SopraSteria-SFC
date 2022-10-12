@@ -13,7 +13,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { StaffRecordsTabComponent } from './staff-records-tab.component';
@@ -78,15 +78,5 @@ describe('StaffRecordsTab', () => {
   it('should display Add a staff record if user does have canAddWorker permission', async () => {
     const { queryByText } = await setup(['canAddWorker']);
     expect(queryByText('Add a staff record')).toBeTruthy();
-  });
-
-  it('should call setAddStaffRecordInProgress when clicking Add a staff record', async () => {
-    const { fixture, getByText, workerSpy } = await setup(['canAddWorker']);
-
-    const addButton = getByText('Add a staff record');
-    fireEvent.click(addButton);
-    fixture.detectChanges();
-
-    expect(workerSpy).toHaveBeenCalledWith(true);
   });
 });

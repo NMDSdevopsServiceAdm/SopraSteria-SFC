@@ -46,12 +46,15 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      nameOrId: [null, Validators.required],
-      mainJob: [null, Validators.required],
-      otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
-      contract: [null, Validators.required],
-    });
+    this.form = this.formBuilder.group(
+      {
+        nameOrId: [null, Validators.required],
+        mainJob: [null, Validators.required],
+        otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
+        contract: [null, Validators.required],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   init(): void {
@@ -59,6 +62,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
     this.getJobs();
     this.previous = this.getReturnPath();
+    this.editFlow = this.inMandatoryDetailsFlow || !this.insideFlow;
   }
 
   public setupFormErrorsMap(): void {
@@ -160,7 +164,8 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   private getReturnPath() {
     if (this.inMandatoryDetailsFlow) {
-      return this.getRoutePath('mandatory-details');
+      this.returnUrl = this.getRoutePath('mandatory-details');
+      return this.returnUrl;
     }
     if (this.insideFlow) {
       return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
@@ -170,12 +175,14 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   protected onSuccess(): void {
     this.next = this.getRoutePath('mandatory-details');
+    !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
   }
 
   protected addAlert(): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message: 'Staff record saved',
-    });
+    !this.editFlow &&
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Staff record saved',
+      });
   }
 }
