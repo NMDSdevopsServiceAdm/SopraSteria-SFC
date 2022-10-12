@@ -38,6 +38,7 @@ export class SocialCareQualificationComponent extends QuestionComponent {
       });
     }
 
+    this.next = this.getRoutePath('other-qualifications');
     this.previous = this.getRoutePath('apprenticeship-training');
   }
 
