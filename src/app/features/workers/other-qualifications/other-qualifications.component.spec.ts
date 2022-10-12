@@ -31,7 +31,7 @@ const NoqualificationInSocialCare = () =>
     },
   });
 
-fdescribe('OtherQualificationsComponent', () => {
+describe('OtherQualificationsComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   async function setup(insideFlow = true, qualificationInSocial = 'Yes') {
