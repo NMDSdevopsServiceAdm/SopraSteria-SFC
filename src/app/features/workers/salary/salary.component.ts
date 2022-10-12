@@ -22,6 +22,7 @@ export class SalaryComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();
   public floatPattern = FLOAT_PATTERN.toString();
   public section = 'Employment details';
+  private careCertificatePath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -46,6 +47,27 @@ export class SalaryComponent extends QuestionComponent {
   }
 
   init() {
+    this.setValidators();
+    this.setAnnualHourlyPay();
+    this.previous = this.getReturnPath();
+    this.next = this.getRoutePath('care-certificate');
+  }
+
+  private getReturnPath() {
+    if (this.insideFlow) {
+      if (
+        this.worker.zeroHoursContract === 'Yes' ||
+        [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
+      ) {
+        return this.getRoutePath('average-weekly-hours');
+      } else {
+        return this.getRoutePath('weekly-contracted-hours');
+      }
+    }
+    return this.getRoutePath('');
+  }
+
+  private setValidators(): void {
     this.subscriptions.add(
       this.form.get('terms').valueChanges.subscribe((value) => {
         const { annualRate, hourlyRate } = this.form.controls;
@@ -72,7 +94,9 @@ export class SalaryComponent extends QuestionComponent {
         hourlyRate.updateValueAndValidity();
       }),
     );
+  }
 
+  private setAnnualHourlyPay(): void {
     if (this.worker.annualHourlyPay) {
       this.form.patchValue({
         terms: this.worker.annualHourlyPay.value,
@@ -81,13 +105,6 @@ export class SalaryComponent extends QuestionComponent {
           this.worker.annualHourlyPay.value === 'Annually' ? this.worker.annualHourlyPay.rate.toFixed(0) : null,
       });
     }
-
-    this.next = this.getRoutePath('care-certificate');
-    this.previous =
-      this.worker.zeroHoursContract === 'Yes' ||
-      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-        ? this.getRoutePath('average-weekly-hours')
-        : this.getRoutePath('weekly-contracted-hours');
   }
 
   setupFormErrorsMap(): void {
