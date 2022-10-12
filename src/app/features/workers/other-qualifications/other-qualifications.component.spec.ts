@@ -95,9 +95,7 @@ describe('OtherQualificationsComponent', () => {
 
   describe('submit buttons', () => {
     it('should render the page with a save and continue button and view this staff record and Skip this question link', async () => {
-      const { fixture, getByText } = await setup();
-
-      fixture.detectChanges();
+      const { getByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
@@ -143,9 +141,7 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to staff-record when View this staff record link is clicked', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup();
-
-      fixture.detectChanges();
+      const { component, routerSpy, getByText } = await setup();
 
       const workplaceUid = component.workplace.uid;
       const workerUid = component.worker.uid;
