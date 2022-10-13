@@ -134,16 +134,16 @@ describe('StaffDetailsComponent', () => {
     expect(getByText('Add a staff record')).toBeTruthy();
   });
 
-  it(`should render the 'Edit a staff record' heading when inside the flow but accessed from mandatory details page`, async () => {
+  it(`should render the 'Update staff record' heading when inside the flow but accessed from mandatory details page`, async () => {
     const { getByText } = await setup(true, true);
 
-    expect(getByText('Edit a staff record')).toBeTruthy();
+    expect(getByText('Update staff record')).toBeTruthy();
   });
 
-  it(`should render the 'Edit a staff record' heading when outside flow`, async () => {
+  it(`should render the 'Update staff record' heading when outside flow`, async () => {
     const { getByText } = await setup(false);
 
-    expect(getByText('Edit a staff record')).toBeTruthy();
+    expect(getByText('Update staff record')).toBeTruthy();
   });
 
   it('should render the page without the conditional input', async () => {
