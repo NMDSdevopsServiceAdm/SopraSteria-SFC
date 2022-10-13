@@ -10,7 +10,7 @@ import { render } from '@testing-library/angular';
 import { SocialCareQualificationComponent } from './social-care-qualification.component';
 
 describe('SocialCareQualificationComponent', () => {
-  async function setup(insideFlow = true) {
+  async function setup(returnUrl = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       SocialCareQualificationComponent,
       {
@@ -25,7 +25,7 @@ describe('SocialCareQualificationComponent', () => {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
-                  url: [{ path: '' }],
+                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
                 },
               },
             },
@@ -56,15 +56,15 @@ describe('SocialCareQualificationComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  fdescribe('progress bar', () => {
-    it('should render the progress bar when in the flow', async () => {
-      const { getByTestId } = await setup();
+  describe('progress bar', () => {
+    it('should render the workplace progress bar', async () => {
+      const { getByTestId } = await setup(false);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
 
-    it('should not render the progress bar when outside the flow', async () => {
-      const { queryByTestId } = await setup(false);
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { queryByTestId } = await setup();
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
@@ -75,6 +75,7 @@ describe('SocialCareQualificationComponent', () => {
       const { getByText } = await setup(false);
 
       expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
     });
 
