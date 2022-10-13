@@ -10,30 +10,33 @@ import { render } from '@testing-library/angular';
 import { SocialCareQualificationComponent } from './social-care-qualification.component';
 
 describe('SocialCareQualificationComponent', () => {
-  async function setup(returnUrl = true) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(SocialCareQualificationComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            parent: {
-              snapshot: {
-                data: {
-                  establishment: { uid: 'mocked-uid' },
+  async function setup(insideFlow = true) {
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+      SocialCareQualificationComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              parent: {
+                snapshot: {
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                  },
+                  url: [{ path: '' }],
                 },
-                url: [{ path: '' }],
               },
             },
           },
-        },
-        {
-          provide: WorkerService,
-          useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
-        },
-      ],
-    });
+          {
+            provide: WorkerService,
+            useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
 
@@ -43,12 +46,28 @@ describe('SocialCareQualificationComponent', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      getByTestId,
+      queryByTestId,
     };
   }
 
   it('should render the SocialCareQualificationComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  fdescribe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render the progress bar when outside the flow', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
   });
 
   describe('submit buttons', () => {
