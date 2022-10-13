@@ -114,25 +114,25 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Enter their standard annual salary.',
+            message: 'Enter their standard annual salary',
           },
           {
             name: 'pattern',
-            message: 'Standard annual salary must not include pence.',
+            message: 'Standard annual salary must not include pence',
           },
           {
             name: 'min',
             message: `Standard annual salary must be between &pound;${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0',
-            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
           },
           {
             name: 'max',
             message: `Standard annual salary must be between &pound;${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0',
-            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
           },
         ],
       },
@@ -141,21 +141,21 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Enter their standard hourly rate.',
+            message: 'Enter their standard hourly rate',
           },
           {
             name: 'min',
             message: `Standard hourly rate must be between &pound;${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2',
-            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
           },
           {
             name: 'max',
             message: `Standard hourly rate must be between &pound;${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2',
-            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
           },
         ],
       },

@@ -253,7 +253,7 @@ describe('SalaryComponent', () => {
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
       expect(true).toBeTruthy;
-      expect(getAllByText('Enter their standard hourly rate.').length).toEqual(2);
+      expect(getAllByText('Enter their standard hourly rate').length).toEqual(2);
     });
 
     it('returns an error if Hourly is selected and an out of range hourly salary is entered', async () => {
@@ -270,7 +270,7 @@ describe('SalaryComponent', () => {
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
       expect(true).toBeTruthy;
-      expect(getAllByText('Standard hourly rate must be between £2.50 and £200.00.').length).toEqual(2);
+      expect(getAllByText('Standard hourly rate must be between £2.50 and £200.00').length).toEqual(2);
     });
 
     it('returns an error if Annual salary is selected and no Annual salary is entered', async () => {
@@ -284,7 +284,7 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(getAllByText('Enter their standard annual salary.').length).toEqual(2);
+      expect(getAllByText('Enter their standard annual salary').length).toEqual(2);
     });
 
     it('returns an error if Annual salary is selected and an out of range annual salary is entered', async () => {
@@ -299,7 +299,7 @@ describe('SalaryComponent', () => {
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
       expect(true).toBeTruthy;
-      expect(getAllByText('Standard annual salary must be between £500 and £200,000.').length).toEqual(2);
+      expect(getAllByText('Standard annual salary must be between £500 and £200,000').length).toEqual(2);
     });
 
     it('returns an error if Annual salary is selected and a decimal number is entered', async () => {
@@ -314,7 +314,7 @@ describe('SalaryComponent', () => {
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
       expect(true).toBeTruthy;
-      expect(getAllByText('Standard annual salary must not include pence.').length).toEqual(2);
+      expect(getAllByText('Standard annual salary must not include pence').length).toEqual(2);
     });
   });
 
