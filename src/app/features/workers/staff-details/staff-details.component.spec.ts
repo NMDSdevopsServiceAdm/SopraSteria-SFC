@@ -47,10 +47,7 @@ describe('StaffDetailsComponent', () => {
         providers: [
           FormBuilder,
           AlertService,
-          {
-            provide: WindowRef,
-            useValue: WindowRef,
-          },
+          WindowRef,
           {
             provide: PermissionsService,
             useFactory: MockPermissionsService.factory(),
