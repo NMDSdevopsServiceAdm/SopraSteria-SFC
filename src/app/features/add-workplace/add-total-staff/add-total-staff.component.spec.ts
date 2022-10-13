@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -19,7 +18,6 @@ describe('AddTotalStaffComponent', () => {
     const component = await render(AddTotalStaffComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
-        BackService,
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
@@ -149,20 +147,6 @@ describe('AddTotalStaffComponent', () => {
       expect(component.getByText('Save and return')).toBeTruthy();
       expect(cancelLink).toBeTruthy();
       expect(cancelLink.getAttribute('href')).toEqual('/add-total-staff');
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the correct back link', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      (component.fixture.componentInstance as any).setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'select-main-service'],
-      });
     });
   });
 });
