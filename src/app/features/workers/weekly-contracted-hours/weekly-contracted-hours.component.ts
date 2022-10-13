@@ -17,7 +17,6 @@ import { QuestionComponent } from '../question/question.component';
 export class WeeklyContractedHoursComponent extends QuestionComponent {
   public floatPattern = FLOAT_PATTERN.toString();
   public contractedMaxHours = 75;
-
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -29,12 +28,12 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
-
     this.form = this.formBuilder.group({
       hoursKnown: null,
       hours: null,
     });
+
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
   }
 
   init() {
@@ -67,7 +66,8 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('salary');
-    this.previous = this.getRoutePath('contract-with-zero-hours');
+
+    this.previous = this.insideFlow ? this.getRoutePath('contract-with-zero-hours') : this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {
@@ -77,19 +77,19 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Contracted weekly hours is required.',
+            message: 'Enter their contracted weekly hours',
           },
           {
             name: 'min',
-            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}.`,
+            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}`,
           },
           {
             name: 'max',
-            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}.`,
+            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}`,
           },
           {
             name: 'pattern',
-            message: 'Contracted weekly hours must contain only numbers.',
+            message: 'Contracted weekly hours must contain only numbers',
           },
         ],
       },

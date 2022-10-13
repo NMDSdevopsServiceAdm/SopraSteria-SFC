@@ -25,7 +25,7 @@ export const workerBuilder = build('Worker', {
     weeklyHoursAverage: null,
     weeklyHoursContracted: {
       value: 'Yes',
-      hours: fake((f) => f.datatype.number()),
+      hours: '75',
     },
     annualHourlyPay: {
       value: 'Hourly',
