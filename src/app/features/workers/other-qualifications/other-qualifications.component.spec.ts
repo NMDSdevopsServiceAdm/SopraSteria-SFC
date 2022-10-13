@@ -23,7 +23,7 @@ const workerBuilder = build('Worker', {
   },
 });
 
-const NoqualificationInSocialCare = () =>
+const noQualificationInSocialCare = () =>
   workerBuilder({
     overrides: {
       qualificationInSocialCare: 'No',
@@ -40,7 +40,7 @@ describe('OtherQualificationsComponent', () => {
     if (qualificationInSocial === 'Yes') {
       qualification = workerBuilder();
     } else if (qualificationInSocial === 'No') {
-      qualification = NoqualificationInSocialCare();
+      qualification = noQualificationInSocialCare();
     }
     const { fixture, getByText, getByTestId, queryByTestId } = await render(OtherQualificationsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
