@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 
 import { SalaryComponent } from './salary.component';
 
-fdescribe('SalaryComponent', () => {
+describe('SalaryComponent', () => {
   async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       SalaryComponent,
@@ -51,7 +51,7 @@ fdescribe('SalaryComponent', () => {
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
-    const submitSpy = spyOn(component, 'onSubmit').and.callThrough();
+    const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
@@ -316,12 +316,9 @@ fdescribe('SalaryComponent', () => {
       expect(true).toBeTruthy;
       expect(getAllByText('Standard annual salary must not include pence.').length).toEqual(2);
     });
-
-
   });
 
   describe('setBackLink()', () => {
-
     it('should navigate to weekly-contarcted-hours when inside the flow and zero hours contract is not yes', async () => {
       const { component, backLinkSpy } = await setup();
 
@@ -351,7 +348,7 @@ fdescribe('SalaryComponent', () => {
       const { component, backLinkSpy } = await setup();
 
       component.worker.zeroHoursContract = 'No';
-      component.worker.contract = Contracts.Agency
+      component.worker.contract = Contracts.Agency;
       component.ngOnInit();
       component.setBackLink();
       expect(backLinkSpy).toHaveBeenCalledWith({
@@ -359,8 +356,6 @@ fdescribe('SalaryComponent', () => {
         fragment: 'staff-records',
       });
     });
-
-
 
     it('should set the backlink to staff-record-summary, when not in the flow', async () => {
       const { component, backLinkSpy } = await setup(false);
