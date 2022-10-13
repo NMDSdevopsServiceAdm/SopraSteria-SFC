@@ -32,7 +32,6 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.flow = `workplace/${this.establishmentService.establishmentId}`;
     this.workplace = this.establishmentService.establishment;
     this.back = `${this.flow}/regulated-by-cqc`;
-    console.log(this.locationAddresses);
     !this.locationAddresses && this.redirect();
     this.isCQCLocationUpdate = true;
     this.returnToConfirmDetails = this.establishmentService.returnTo;
@@ -61,25 +60,16 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected save(): void {
-    console.log('*** save ****');
     const selectedLocation = this.getSelectedLocation();
-    console.log(selectedLocation);
     this.workplaceService.selectedLocationAddress$.next(selectedLocation);
     this.subscriptions.add(
       this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
-        console.log(this.establishmentService.establishment);
         this.router.navigate(this.establishmentService.returnTo.url, {
           fragment: this.establishmentService.returnTo.fragment,
         });
         this.establishmentService.setReturnTo(null);
       }),
     );
-  }
-
-  public returnToWorkPlace(event: Event) {
-    console.log('*** returnToWorkplace ***');
-    event.preventDefault();
-    this.router.navigate(['/dashboard'], { fragment: 'workplace' });
   }
 }
