@@ -14,6 +14,8 @@ import { SelectWorkplaceDirective } from '@shared/directives/create-workplace/se
 })
 export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   public workplace: Establishment;
+  private back: string;
+
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -29,7 +31,15 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   protected init(): void {
     this.flow = `workplace/${this.establishmentService.establishmentId}`;
     this.workplace = this.establishmentService.establishment;
+    this.back = `${this.flow}/regulated-by-cqc`;
+    console.log(this.locationAddresses);
+    !this.locationAddresses && this.redirect();
     this.isCQCLocationUpdate = true;
+    this.returnToConfirmDetails = this.establishmentService.returnTo;
+  }
+
+  private redirect(): void {
+    this.router.navigate([this.back]);
   }
 
   public setSubmitAction(payload: { action: string; save: boolean }): void {
@@ -43,7 +53,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
+    this.backService.setBackLink({ url: [this.back] });
   }
 
   get return() {
@@ -51,11 +61,14 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected save(): void {
+    console.log('*** save ****');
     const selectedLocation = this.getSelectedLocation();
+    console.log(selectedLocation);
     this.workplaceService.selectedLocationAddress$.next(selectedLocation);
     this.subscriptions.add(
       this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
+        console.log(this.establishmentService.establishment);
         this.router.navigate(this.establishmentService.returnTo.url, {
           fragment: this.establishmentService.returnTo.fragment,
         });
@@ -65,6 +78,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   public returnToWorkPlace(event: Event) {
+    console.log('*** returnToWorkplace ***');
     event.preventDefault();
     this.router.navigate(['/dashboard'], { fragment: 'workplace' });
   }

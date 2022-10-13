@@ -47,9 +47,9 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setErrorMessage();
     this.setupForm();
+    this.setLocationAddresses();
     this.init();
     this.setupFormErrorsMap();
-    this.setLocationAddresses();
     this.setSelectedLocationAddress();
     this.prefillForm();
     this.setBackLink();
@@ -106,8 +106,10 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   protected setLocationAddresses(): void {
     this.subscriptions.add(
       this.workplaceInterfaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
-        this.enteredPostcode = locationAddresses[0].postalCode;
-        this.locationAddresses = locationAddresses;
+        if (locationAddresses) {
+          this.enteredPostcode = locationAddresses[0].postalCode;
+          this.locationAddresses = locationAddresses;
+        }
       }),
     );
   }
@@ -129,7 +131,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   }
 
   protected indexOfSelectedLocationAddress(): number {
-    return this.locationAddresses.findIndex((address) => {
+    return this.locationAddresses?.findIndex((address) => {
       return isEqual(address, this.selectedLocationAddress);
     });
   }
