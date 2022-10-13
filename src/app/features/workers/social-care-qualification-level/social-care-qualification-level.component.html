@@ -21,9 +21,7 @@
             </a>
           </p>
         </app-details>
-        <label class="govuk-label" for="qualification">
-          Qualification level
-        </label>
+        <label class="govuk-label" for="qualification"> Qualification level </label>
         <span
           *ngIf="submitted && form.get('qualification').errors"
           id="qualification-error"
@@ -48,5 +46,5 @@
     </div>
   </div>
 
-  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>

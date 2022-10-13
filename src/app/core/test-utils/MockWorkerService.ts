@@ -282,6 +282,21 @@ export class MockWorkerService extends WorkerService {
 
 @Injectable()
 export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
+  public static factory(worker: Worker) {
+    return (httpClient: HttpClient) => {
+      const service = new MockWorkerServiceWithUpdateWorker(httpClient);
+      if (worker) {
+        service.worker = worker;
+        service.worker$ = of(worker as Worker);
+      }
+      return service;
+    };
+  }
+
+  createWorker(workplaceUid: string, props): Observable<WorkerEditResponse> {
+    return of({ uid: '1' } as WorkerEditResponse);
+  }
+
   updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
     return of({ uid: '1' } as WorkerEditResponse);
   }

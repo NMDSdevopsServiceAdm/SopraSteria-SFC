@@ -93,6 +93,16 @@ export class YearArrivedUkComponent extends QuestionComponent {
         this.form.get('year').updateValueAndValidity();
       }),
     );
+
+    if (this.worker.yearArrived) {
+      this.form.patchValue({
+        yearKnown: this.worker.yearArrived.value,
+        year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
+      });
+    }
+
+    this.next = this.getRoutePath('main-job-start-date');
+    this.previous = this.getRoutePath('country-of-birth');
   }
 
   private prefill() {
