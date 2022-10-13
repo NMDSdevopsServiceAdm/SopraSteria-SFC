@@ -5,6 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
@@ -35,6 +36,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
 
   constructor(
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -68,7 +70,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/find-workplace`] });
+    this.backLinkService.showBackLink();
   }
 
   protected setErrorMessage(): void {
