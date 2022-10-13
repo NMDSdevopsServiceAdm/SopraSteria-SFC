@@ -14,6 +14,8 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class MentalHealthProfessionalComponent extends QuestionComponent implements OnInit, OnDestroy {
   public answersAvailable = ['Yes', 'No', `Don't know`];
+  public section = 'Personal details';
+  private nationalInsuranceNumberPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -32,25 +34,35 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
   }
 
   init(): void {
-    if (!this.workerService.hasJobRole(this.worker, 27)) {
-      this.router.navigate(this.getRoutePath('staff-details'), { replaceUrl: true });
-    }
-
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     if (this.worker.approvedMentalHealthWorker) {
-      this.form.patchValue({
-        approvedMentalHealthWorker: this.worker.approvedMentalHealthWorker,
-      });
+      this.prefill();
     }
+    this.setUpPageRouting();
+  }
 
-    this.next = this.getRoutePath('national-insurance-number');
-    this.previous = this.workerService.hasJobRole(this.worker, 23)
-      ? this.getRoutePath('nursing-specialism')
-      : this.getRoutePath('other-job-roles');
+  private prefill() {
+    this.form.patchValue({
+      approvedMentalHealthWorker: this.worker.approvedMentalHealthWorker,
+    });
+  }
+
+  private setUpPageRouting() {
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+    this.nationalInsuranceNumberPath = this.getRoutePath('national-insurance-number');
+
+    if (this.insideFlow) {
+      this.previous = this.getRoutePath('other-job-roles');
+      this.skipRoute = this.nationalInsuranceNumberPath;
+      this.next = this.nationalInsuranceNumberPath;
+    } else {
+      this.return = { url: this.staffRecordSummaryPath };
+      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+    }
   }
 
   generateUpdateProps() {
     const { approvedMentalHealthWorker } = this.form.controls;
-
     return approvedMentalHealthWorker.value
       ? {
           approvedMentalHealthWorker: approvedMentalHealthWorker.value,

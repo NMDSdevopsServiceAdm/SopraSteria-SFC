@@ -122,7 +122,7 @@ describe('MandatoryDetailsComponent', () => {
     const changeLink = getByText('Change');
 
     expect(changeLink.getAttribute('href')).toBe(
-      `/workplace/${123}/staff-record/${worker.uid}/staff-record-summary/staff-details`,
+      `/workplace/${123}/staff-record/${worker.uid}/mandatory-details/staff-details`,
     );
   });
 

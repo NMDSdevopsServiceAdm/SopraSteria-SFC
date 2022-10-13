@@ -17,6 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class MainJobStartDateComponent extends QuestionComponent {
   private dateMin = dayjs().subtract(100, 'years');
+  public section = 'Employment details';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -29,13 +30,17 @@ export class MainJobStartDateComponent extends QuestionComponent {
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      mainJobStartDate: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
-    });
+    this.form = this.formBuilder.group(
+      {
+        mainJobStartDate: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+      },
+      { updateOn: 'submit' },
+    );
+
     this.form
       .get('mainJobStartDate')
       .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(this.dateMin)]);
@@ -51,13 +56,8 @@ export class MainJobStartDateComponent extends QuestionComponent {
       });
     }
 
-    this.next = this.getRoutePath('other-job-roles');
-    this.previous = this.getReturnPath();
-
-    const navigatedFromSection = history.state?.navigatedFrom;
-    if (['staff-records', 'mandatory-details'].includes(navigatedFromSection)) {
-      this.return = null;
-    }
+    this.next = this.getReturnPath();
+    this.previous = this.insideFlow ? this.getRoutePath('year-arrived-uk') : this.getRoutePath('');
   }
 
   public setupFormErrorsMap(): void {
@@ -67,7 +67,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
         type: [
           {
             name: 'dateValid',
-            message: 'Main job start date is not a valid date',
+            message: 'Enter a valid main job start date, like 31 3 1980',
           },
           {
             name: 'todayOrBefore',
@@ -96,12 +96,16 @@ export class MainJobStartDateComponent extends QuestionComponent {
   }
 
   private getReturnPath() {
-    if (this.workerService.addStaffRecordInProgress$.value) {
-      return this.getRoutePath('staff-details');
+    if (this.insideFlow) {
+      if (this.workerService.hasJobRole(this.worker, 23)) {
+        return this.getRoutePath('nursing-category');
+      } else if (this.workerService.hasJobRole(this.worker, 27)) {
+        return this.getRoutePath('mental-health-professional');
+      } else {
+        return this.getRoutePath('other-job-roles');
+      }
     }
-    if (this.workplace.uid === this.primaryWorkplace.uid) {
-      return ['/dashboard'];
-    }
-    return [`/workplace/${this.workplace.uid}`];
+
+    return this.getRoutePath('');
   }
 }

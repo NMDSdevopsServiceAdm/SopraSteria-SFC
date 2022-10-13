@@ -2,114 +2,120 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Roles } from '@core/model/roles.enum';
-import { AuthService } from '@core/services/auth.service';
+import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
-import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
-import { build, fake, sequence } from '@jackfranklin/test-data-bot';
+import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { ProgressBarComponent } from '@shared/components/progress-bar/progress-bar.component';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
+import { workerBuilder } from '../../../../../server/test/factories/models';
 import { StaffDetailsComponent } from './staff-details.component';
 
 describe('StaffDetailsComponent', () => {
-  const establishmentBuilder = build('Establishment', {
-    fields: {
-      id: sequence(),
-      uid: fake((f) => f.datatype.uuid()),
-      nameOrId: fake((f) => f.lorem.sentence()),
-    },
-  });
+  async function setup(insideFlow = true, returnToMandatoryDetails = false) {
+    let path;
+    if (returnToMandatoryDetails) {
+      path = 'mandatory-details';
+    } else if (insideFlow) {
+      path = 'staff-record';
+    } else {
+      path = 'staff-record-summary';
+    }
 
-  async function setup(returnUrl = true) {
-    const establishment = establishmentBuilder();
-    const component = await render(StaffDetailsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        FormBuilder,
-        {
-          provide: WindowRef,
-          useValue: WindowRef,
-        },
-        {
-          provide: Contracts,
-          useValue: Contracts,
-        },
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
-          deps: [HttpClient, Router, UserService],
-        },
-        {
-          provide: UserService,
-          useFactory: MockUserService.factory(0, Roles.Admin),
-          deps: [HttpClient],
-        },
-        {
-          provide: EstablishmentService,
-          useValue: MockEstablishmentService,
-        },
-        {
-          provide: JobService,
-          useClass: MockJobService,
-        },
-        {
-          provide: AuthService,
-          useValue: MockAuthService,
-        },
-        {
-          provide: WorkerService,
-          useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              url: [{ path: 1 }, { path: 2 }],
+    const { fixture, getByText, getByTestId, getByLabelText, queryByTestId, getAllByText } = await render(
+      StaffDetailsComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        declarations: [ProgressBarComponent],
+        schemas: [NO_ERRORS_SCHEMA],
+        providers: [
+          FormBuilder,
+          AlertService,
+          WindowRef,
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: UserService,
+            useFactory: MockUserService.factory(0, Roles.Admin),
+            deps: [HttpClient],
+          },
+          {
+            provide: JobService,
+            useClass: MockJobService,
+          },
+          {
+            provide: WorkerService,
+            useClass: MockWorkerServiceWithUpdateWorker,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
               parent: {
-                url: [{ path: returnUrl ? 'staff-record/staff-record-summary' : 'staff-record' }],
-              },
-            },
-            parent: {
-              snapshot: {
-                url: [{ path: 'staff-record' }],
-                data: {
-                  establishment,
-                  primaryWorkplace: establishment,
+                snapshot: {
+                  url: [{ path }],
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
+                  },
                 },
               },
             },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
+
+    const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
+    const workerService = injector.inject(WorkerService);
+    const backService = injector.inject(BackService);
+    const alertService = injector.inject(AlertService) as AlertService;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
+    const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+    const backLinkSpy = spyOn(backService, 'setBackLink');
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+    const setAddStaffRecordInProgressSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
     return {
       component,
+      fixture,
+      getByText,
+      getByTestId,
+      queryByTestId,
+      getByLabelText,
+      getAllByText,
       establishmentService,
+      workerService,
       router,
       routerSpy,
+      updateWorkerSpy,
+      submitSpy,
+      backLinkSpy,
+      alertSpy,
+      setAddStaffRecordInProgressSpy,
     };
   }
 
@@ -118,228 +124,466 @@ describe('StaffDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('submit buttons', () => {
-    it(`should show 'Save staff record' cta button and 'Cancel' link when adding a staff record`, async () => {
-      const { component } = await setup(false);
+  it(`should render the 'Add a staff record' heading when inside the flow but not accessed from mandatory details page`, async () => {
+    const { component, fixture, getByText } = await setup();
+    component.worker = null;
+    fixture.detectChanges();
+    expect(getByText('Add a staff record')).toBeTruthy();
+  });
 
-      component.fixture.componentInstance.canReturn = false;
-      component.fixture.detectChanges();
+  it(`should render the 'Update staff record' heading when inside the flow but accessed from mandatory details page`, async () => {
+    const { getByText } = await setup(true, true);
 
-      expect(component.getByText('Save this staff record')).toBeTruthy();
-      expect(component.getByText('Cancel')).toBeTruthy();
-    });
+    expect(getByText('Update staff record')).toBeTruthy();
+  });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link when editing a staff record`, async () => {
-      const { component } = await setup();
+  it(`should render the 'Update staff record' heading when outside flow`, async () => {
+    const { getByText } = await setup(false);
 
-      expect(component.getByText('Save and return')).toBeTruthy();
-      expect(component.getByText('Cancel')).toBeTruthy();
-    });
+    expect(getByText('Update staff record')).toBeTruthy();
+  });
+
+  it('should render the page without the conditional input', async () => {
+    const { component, fixture } = await setup();
+
+    const form = component.form;
+    form.controls.nameOrId.setValue('');
+    form.controls.mainJob.setValue('');
+    form.controls.contract.setValue('');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.govuk-select__conditional--hidden')).toBeTruthy();
+  });
+
+  it('should show the conditional input when selecting a job which has an other value of true', async () => {
+    const { component, getByLabelText, fixture } = await setup();
+
+    const jobWithDropdown = component.jobsAvailable.findIndex((job) => job.other);
+    userEvent.selectOptions(getByLabelText('Main job role'), [jobWithDropdown.toString()]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.govuk-select__conditional--hidden')).toBeFalsy();
   });
 
   describe('progress bar', () => {
     it('should render the progress bar when accessed from the flow', async () => {
-      const { component } = await setup();
+      const { getByTestId } = await setup();
 
-      component.fixture.componentInstance.insideFlow = true;
-      component.fixture.detectChanges();
-
-      expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+      expect(getByTestId('progress-bar-1')).toBeTruthy();
     });
 
     it('should not render the progress bar when accessed from outside the flow', async () => {
-      const { component } = await setup(false);
+      const { queryByTestId } = await setup(false);
 
-      component.fixture.componentInstance.insideFlow = false;
-      component.fixture.detectChanges();
-
-      expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(queryByTestId('progress-bar-1')).toBeFalsy();
     });
   });
 
-  describe('submission and validation', () => {
-    it('should be able to submit when given correct data', async () => {
-      const { component } = await setup();
-      component.fixture.detectChanges();
-      spyOn(component.fixture.componentInstance, 'onSubmit');
-      const submit = component.fixture.nativeElement.querySelector('button[type="submit"]');
-      submit.click();
-      expect(component.fixture.componentInstance.onSubmit).toHaveBeenCalled();
+  describe('submit buttons', () => {
+    it(`should show 'Save staff record' cta button and 'Cancel' link when adding a staff record`, async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Save this staff record')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it('should set submitted to true', async () => {
-      const { component } = await setup();
-      component.fixture.detectChanges();
-      component.fixture.componentInstance.onSubmit();
-      expect(component.fixture.componentInstance.submitted).toBeTruthy();
-    });
+    it(`should call submit data and navigate to the the correct url when 'Save this staff record' is clicked`, async () => {
+      const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, workerService } = await setup();
 
-    it('should be able to pass validation when given correct data', async () => {
-      const { component } = await setup();
-      const form = component.fixture.componentInstance.form;
-      form.controls.nameOrId.setValue('Jeff');
-      form.controls.mainJob.setValue('1');
-      form.controls.contract.setValue('Permanent');
-      expect(form.valid).toBeTruthy();
-    });
+      const createWorkerSpy = spyOn(workerService, 'createWorker').and.callThrough();
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker = workerBuilder();
+        component.worker.nameOrId = 'Someone';
+        component.worker.contract = 'Temporary' as Contracts;
+        component.worker.mainJob = { jobId: 1 };
+      });
 
-    it('should be able to fail validation when given wrong data', async () => {
-      const { component } = await setup();
-      const form = component.fixture.componentInstance.form;
+      component.worker = null;
+      const form = component.form;
       form.controls.nameOrId.setValue('');
       form.controls.mainJob.setValue('');
       form.controls.contract.setValue('');
-      expect(form.valid).toBeFalsy();
-    });
-  });
 
-  describe('job logic', () => {
-    it('should see other job when not chosen other job', async () => {
-      const { component } = await setup();
-      const form = component.fixture.componentInstance.form;
-      form.controls.nameOrId.setValue('Jeff');
-      form.controls.mainJob.setValue('3');
-      form.controls.contract.setValue('Permanent');
-      const contractSelect = component.fixture.nativeElement.querySelector('#mainJob');
-      contractSelect.dispatchEvent(new Event('change'));
-      component.fixture.detectChanges();
-      const otherjob = component.fixture.nativeElement.querySelector('#otherJobRole-conditional');
-      expect(otherjob).toBeTruthy();
-    });
+      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
+      userEvent.selectOptions(getByLabelText('Main job role'), ['1']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save this staff record'));
+      fixture.detectChanges();
 
-    it('should not see other job when not chosen other job type', async () => {
-      const { component } = await setup();
-      const form = component.fixture.componentInstance.form;
-      form.controls.nameOrId.setValue('Jeff');
-      form.controls.mainJob.setValue('2');
-      form.controls.contract.setValue('Permanent');
-      const contractSelect = component.fixture.nativeElement.querySelector('#mainJob');
-      contractSelect.dispatchEvent(new Event('change'));
-      component.fixture.detectChanges();
-      expect(component.fixture.nativeElement.querySelector('.govuk-select__conditional--hidden')).toBeTruthy();
-    });
-  });
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({ nameOrId: 'Someone', mainJob: '1', otherJobRole: null, contract: 'Permanent' });
 
-  describe('navigation', () => {
-    it('Should navigate to mandatory details when inside the staff recruitment flow and creating a new staff record', async () => {
-      const { component, routerSpy } = await setup(false);
-
-      component.fixture.componentInstance.editFlow = false;
-
-      const form = component.fixture.componentInstance.form;
-      form.controls.nameOrId.setValue('Jeff');
-      form.controls.mainJob.setValue('2');
-      form.controls.contract.setValue('Permanent');
-
-      const workerId = component.fixture.componentInstance.worker.uid;
-      const workplaceId = component.fixture.componentInstance.workplace.uid;
-
-      component.fixture.componentInstance.canReturn = false;
-      component.fixture.detectChanges();
-
-      const saveButton = component.getByText('Save this staff record');
-
-      fireEvent.click(saveButton);
-      component.fixture.detectChanges();
-
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(createWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, {
+        nameOrId: component.worker.nameOrId,
+        contract: 'Permanent',
+        mainJob: { jobId: 1 },
+      });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
-        workplaceId,
+        'mocked-uid',
         'staff-record',
-        workerId,
+        fixture.componentInstance.worker.uid,
         'mandatory-details',
       ]);
     });
 
-    it('Should navigate to staff-record-summary when being edited from the staff-record-summary', async () => {
-      const { component, routerSpy } = await setup();
+    it('should show a banner when a staff record has been successfully added', async () => {
+      const { component, fixture, getByText, getByLabelText, workerService, alertSpy } = await setup();
 
-      const form = component.fixture.componentInstance.form;
-      form.controls.nameOrId.setValue('Jeff');
-      form.controls.mainJob.setValue('2');
-      form.controls.contract.setValue('Permanent');
+      spyOn(workerService, 'createWorker').and.callThrough();
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker = workerBuilder();
+        component.worker.nameOrId = 'Someone';
+        component.worker.contract = 'Temporary' as Contracts;
+        component.worker.mainJob = { jobId: 1 };
+      });
 
-      const workerId = component.fixture.componentInstance.worker.uid;
-      const workplaceId = component.fixture.componentInstance.workplace.uid;
+      component.worker = null;
+      const form = component.form;
+      form.controls.nameOrId.setValue('');
+      form.controls.mainJob.setValue('');
+      form.controls.contract.setValue('');
 
-      component.fixture.componentInstance.canReturn = true;
-      component.fixture.detectChanges();
+      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
+      userEvent.selectOptions(getByLabelText('Main job role'), ['1']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save this staff record'));
+      fixture.detectChanges();
 
-      const saveButton = component.getByText('Save and return');
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Staff record saved',
+      });
+    });
 
-      fireEvent.click(saveButton);
-      component.fixture.detectChanges();
+    it('should call setAddStaffRecordInProgress when clicking save this staff record', async () => {
+      const { component, fixture, getByText, getByLabelText, workerService, setAddStaffRecordInProgressSpy } =
+        await setup();
 
+      spyOn(workerService, 'createWorker').and.callThrough();
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker = workerBuilder();
+        component.worker.nameOrId = 'Someone';
+        component.worker.contract = 'Temporary' as Contracts;
+        component.worker.mainJob = { jobId: 1 };
+      });
+
+      component.worker = null;
+      const form = component.form;
+      form.controls.nameOrId.setValue('');
+      form.controls.mainJob.setValue('');
+      form.controls.contract.setValue('');
+
+      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
+      userEvent.selectOptions(getByLabelText('Main job role'), ['1']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save this staff record'));
+      fixture.detectChanges();
+
+      expect(setAddStaffRecordInProgressSpy).toHaveBeenCalledWith(true);
+    });
+
+    it('should return the user to the workplace home page when clicking cancel', async () => {
+      const { component, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup();
+
+      userEvent.click(getByText('Cancel'));
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'exit', save: false });
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
+        fragment: 'staff-records',
+      });
+      expect(updateWorkerSpy).not.toHaveBeenCalled();
+    });
+
+    it(`should show 'Save and return' cta button and 'Cancel' link when editing a staff record outside`, async () => {
+      const { getByText } = await setup(false);
+
+      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should call submit data and navigate to the the staff record summary page when 'Save and return' is clicked outside of mandatory details flow`, async () => {
+      const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
+        false,
+      );
+
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Temporary'));
+      userEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({
+        nameOrId: component.worker.nameOrId,
+        mainJob: '2',
+        otherJobRole: null,
+        contract: 'Temporary',
+      });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        nameOrId: component.worker.nameOrId,
+        contract: 'Temporary',
+        mainJob: { jobId: 2 },
+      });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
-        workplaceId,
+        'mocked-uid',
         'staff-record',
-        workerId,
+        fixture.componentInstance.worker.uid,
         'staff-record-summary',
       ]);
     });
 
-    it('Should navigate to staff-record tab when adding a new record is cancelled and account is parent', async () => {
-      const { component, routerSpy } = await setup(false);
+    it(`should call submit data and navigate to the the mandatory details page when 'Save and return' is clicked inside the mandatory details flow`, async () => {
+      const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
+        false,
+        true,
+      );
 
-      component.fixture.componentInstance.isPrimaryAccount = true;
-      component.fixture.componentInstance.canReturn = false;
-      component.fixture.detectChanges();
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Temporary'));
+      userEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
 
-      const cancelButton = component.getByText('Cancel');
-
-      fireEvent.click(cancelButton);
-      component.fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
-    });
-
-    it('Should navigate to subsidary staff-record tab when adding a new record is cancelled as a subsidary', async () => {
-      const { component, routerSpy } = await setup(false);
-
-      component.fixture.componentInstance.isPrimaryAccount = false;
-
-      const workplaceId = component.fixture.componentInstance.workplace.uid;
-
-      component.fixture.componentInstance.canReturn = false;
-      component.fixture.detectChanges();
-
-      const cancelButton = component.getByText('Cancel');
-
-      fireEvent.click(cancelButton);
-      component.fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId], { fragment: 'staff-records' });
-    });
-
-    it('Should navigate to mandatory details when editing a new record from mandatory details page', async () => {
-      const { component, routerSpy } = await setup();
-
-      component.fixture.componentInstance.editFlow = true;
-      component.fixture.componentInstance.inMandatoryDetailsFlow = true;
-
-      const form = component.fixture.componentInstance.form;
-      form.controls.nameOrId.setValue('Jeff');
-      form.controls.mainJob.setValue('2');
-      form.controls.contract.setValue('Permanent');
-
-      const workerId = component.fixture.componentInstance.worker.uid;
-      const workplaceId = component.fixture.componentInstance.workplace.uid;
-
-      component.fixture.componentInstance.canReturn = true;
-      component.fixture.detectChanges();
-      const cancelButton = component.getByText('Save and return');
-
-      fireEvent.click(cancelButton);
-      component.fixture.detectChanges();
-
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({
+        nameOrId: component.worker.nameOrId,
+        mainJob: '2',
+        otherJobRole: null,
+        contract: 'Temporary',
+      });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        nameOrId: component.worker.nameOrId,
+        contract: 'Temporary',
+        mainJob: { jobId: 2 },
+      });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
-        workplaceId,
+        'mocked-uid',
         'staff-record',
-        workerId,
+        fixture.componentInstance.worker.uid,
         'mandatory-details',
       ]);
+    });
+
+    it(`should call submit data and navigate to the the correct url when 'Save and return' is clicked with the dropdown input`, async () => {
+      const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
+        false,
+      );
+
+      const jobWithDropdown = component.jobsAvailable.findIndex((job) => job.other);
+      userEvent.selectOptions(getByLabelText('Main job role'), [jobWithDropdown.toString()]);
+      fixture.detectChanges();
+      userEvent.type(getByLabelText('What is the job role?'), 'Admin');
+      userEvent.click(getByLabelText('Temporary'));
+      userEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({
+        nameOrId: component.worker.nameOrId,
+        mainJob: '3',
+        otherJobRole: 'Admin',
+        contract: 'Temporary',
+      });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        nameOrId: component.worker.nameOrId,
+        contract: 'Temporary',
+        mainJob: { jobId: 3, other: 'Admin' },
+      });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        fixture.componentInstance.worker.uid,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should not show a banner when updating a staff record', async () => {
+      const { component, fixture, getByText, getByLabelText, workerService, alertSpy } = await setup(false);
+
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker.contract = 'Permanent' as Contracts;
+      });
+
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not call setAddStaffRecordInProgress when clicking save and return', async () => {
+      const { component, fixture, getByText, getByLabelText, workerService, setAddStaffRecordInProgressSpy } =
+        await setup(false);
+
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker.contract = 'Permanent' as Contracts;
+      });
+
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+      expect(setAddStaffRecordInProgressSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return the user to the record summary page when clicking cancel when not in the main flow or mandatory details flow', async () => {
+      const { component, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false);
+
+      userEvent.click(getByText('Cancel'));
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'staff-record-summary',
+      ]);
+      expect(updateWorkerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return to the mandatory details page when clicking cancel when not in the main flow but in the mandatory details flow', async () => {
+      const { component, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false, true);
+
+      userEvent.click(getByText('Cancel'));
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'mandatory-details',
+      ]);
+      expect(updateWorkerSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('error message', () => {
+    it('should return an error message if the name or id value is not filled in', async () => {
+      const { component, fixture, getByLabelText, getByText, getAllByText } = await setup();
+
+      component.worker = null;
+      const form = component.form;
+      form.controls.nameOrId.setValue('');
+      form.controls.mainJob.setValue('');
+      form.controls.contract.setValue('');
+
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Temporary'));
+      userEvent.click(getByText('Save this staff record'));
+      fixture.detectChanges();
+
+      expect(getAllByText('Enter their name or ID number').length).toEqual(2);
+    });
+
+    it('should return an error message if the main job value is not filled in', async () => {
+      const { component, fixture, getByLabelText, getByText, getAllByText } = await setup();
+
+      component.worker = null;
+      const form = component.form;
+      form.controls.nameOrId.setValue('');
+      form.controls.mainJob.setValue('');
+      form.controls.contract.setValue('');
+
+      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
+      userEvent.click(getByLabelText('Temporary'));
+      userEvent.click(getByText('Save this staff record'));
+      fixture.detectChanges();
+
+      expect(getAllByText('Select their main job role').length).toEqual(2);
+    });
+
+    it('should return an error message when conditional other job role is showing and the input has more than 120 characters ', async () => {
+      const { component, fixture, getByLabelText, getByText, getAllByText } = await setup();
+
+      component.worker = null;
+      const form = component.form;
+      form.controls.nameOrId.setValue('');
+      form.controls.mainJob.setValue('');
+      form.controls.contract.setValue('');
+
+      const jobWithDropdown = component.jobsAvailable.findIndex((job) => job.other);
+      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
+      userEvent.selectOptions(getByLabelText('Main job role'), [jobWithDropdown.toString()]);
+      fixture.detectChanges();
+      userEvent.type(
+        getByLabelText('What is the job role?'),
+        'ReallyLongStringReallyLongStringReallyLongStringReallyLongStringReallyLongStringReallyLongStringReallyLongStringReallyLongString',
+      );
+      userEvent.click(getByLabelText('Temporary'));
+      userEvent.click(getByText('Save this staff record'));
+      fixture.detectChanges();
+
+      expect(getAllByText('Job role must be 120 characters or fewer').length).toEqual(2);
+    });
+
+    it('should return an error message if the contract is not filled in', async () => {
+      const { component, fixture, getByLabelText, getByText, getAllByText } = await setup();
+
+      component.worker = null;
+      const form = component.form;
+      form.controls.nameOrId.setValue('');
+      form.controls.mainJob.setValue('');
+      form.controls.contract.setValue('');
+
+      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByText('Save this staff record'));
+      fixture.detectChanges();
+
+      expect(getAllByText('Select the type of contract they have').length).toEqual(2);
+    });
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to /workplace/workplace-uid, when in the flow and primary workplace id is different to workplace id', async () => {
+      const { component, backLinkSpy } = await setup();
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: [`/workplace/${component.workplace.uid}`],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to /dasboard, when in the flow and primary workplace id is equal to workplace id', async () => {
+      const { component, fixture, backLinkSpy, establishmentService } = await setup();
+
+      spyOnProperty(establishmentService, 'primaryWorkplace').and.returnValue({ uid: component.workplace.uid });
+      component.initiated = false;
+      component.ngOnInit();
+
+      fixture.detectChanges();
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/dashboard'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to mandatory-details, when in the flow and accessed from mandatory details is true', async () => {
+      const { component, backLinkSpy } = await setup(true, true);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'mandatory-details'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
     });
   });
 });

@@ -26,7 +26,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   @Output() allFieldsConfirmed = new EventEmitter();
 
   private _worker: Worker;
-  private workplaceUid: string;
+  public workplaceUid: string;
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
   public canViewNinoDob: boolean;
