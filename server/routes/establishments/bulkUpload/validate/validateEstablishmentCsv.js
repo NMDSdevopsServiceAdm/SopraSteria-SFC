@@ -11,15 +11,19 @@ const validateEstablishmentCsv = async (
   myAPIEstablishments,
   myCurrentEstablishments,
 ) => {
+  console.log('******* validateEstablishmentCSV ************');
   const lineValidator = new WorkplaceCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   await lineValidator.validate();
   if (!lineValidator._ignore) {
+    console.log('**** before transform');
     lineValidator.transform();
-
+    console.log('****** after transform ******');
+    console.log('****** before toApi() *******');
     const thisEstablishmentAsAPI = lineValidator.toAPI();
-
+    console.log(thisEstablishmentAsAPI);
+    console.log('***** after toApi() ******');
     try {
       const thisApiEstablishment = new Establishment();
       thisApiEstablishment.initialise(
@@ -34,14 +38,16 @@ const validateEstablishmentCsv = async (
         thisEstablishmentAsAPI.isCQCRegulated,
       );
 
+      console.log("'***** before load *****");
       await thisApiEstablishment.load(thisEstablishmentAsAPI);
 
       if (thisApiEstablishment.validate()) {
         // No validation errors in the entity itself, so add it ready for completion
         myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
       } else {
+        console.log('****** else *****');
         const errors = thisApiEstablishment.errors;
-
+        console.log(errors);
         if (errors.length === 0) {
           myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
         } else {

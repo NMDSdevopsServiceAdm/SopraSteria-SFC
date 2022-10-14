@@ -458,6 +458,8 @@ class Establishment extends EntityValidator {
   // takes the given JSON document and creates an Establishment's set of extendable properties
   // Returns true if the resulting Establishment is valid; otherwise false
   async load(document, associatedEntities = false, bulkUploadCompletion = false) {
+    console.log('***** inside load *****');
+    console.log(document);
     try {
       // bulk upload status
       if (document.status) {
@@ -665,6 +667,7 @@ class Establishment extends EntityValidator {
 
   // returns true if Establishment is valid, otherwise false
   isValid() {
+    console.log('***** isValid ******');
     // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
     if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
       const thisEstablishmentIsValid = this._properties.isValid;
@@ -682,7 +685,7 @@ class Establishment extends EntityValidator {
             );
           });
         }
-
+        console.log('****** here *********');
         this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisEstablishmentIsValid.toString()}`);
         return false;
       }
