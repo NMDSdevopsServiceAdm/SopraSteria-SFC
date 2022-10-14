@@ -164,13 +164,17 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
             });
           } else {
             this.save();
-            const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'type-of-employer'];
-            this.router.navigate(url);
+            this.navigateToNextPage();
           }
         },
         () => this.router.navigate(['/problem-with-the-service']),
       ),
     );
+  }
+
+  protected navigateToNextPage(): void {
+    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'type-of-employer'];
+    this.router.navigate(url);
   }
 
   private setSelectedAddress(index: number): void {

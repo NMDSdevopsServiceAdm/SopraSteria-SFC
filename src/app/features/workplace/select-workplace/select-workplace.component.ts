@@ -22,8 +22,8 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    private establishmentService: EstablishmentService,
-    private workplaceService: WorkplaceService,
+    public establishmentService: EstablishmentService,
+    public workplaceService: WorkplaceService,
   ) {
     super(backService, errorSummaryService, formBuilder, router, route, workplaceService);
   }
@@ -51,7 +51,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
   }
 
-  protected setBackLink(): void {
+  public setBackLink(): void {
     this.backService.setBackLink({ url: [this.back] });
   }
 
@@ -65,11 +65,14 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.subscriptions.add(
       this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
-        this.router.navigate(this.establishmentService.returnTo.url, {
-          fragment: this.establishmentService.returnTo.fragment,
-        });
-        this.establishmentService.setReturnTo(null);
       }),
     );
+  }
+
+  protected navigateToNextPage(): void {
+    this.router.navigate(this.establishmentService.returnTo.url, {
+      fragment: this.establishmentService.returnTo.fragment,
+    });
+    this.establishmentService.setReturnTo(null);
   }
 }
