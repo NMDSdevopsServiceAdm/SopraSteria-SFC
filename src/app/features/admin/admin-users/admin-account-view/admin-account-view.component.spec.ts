@@ -266,15 +266,14 @@ describe('AdminAccountViewComponent', () => {
 
       spyOn(adminUsersService, 'deleteAdminUserDetails').and.returnValue(of({}));
       spyOn(adminUsersService, 'getAdminUsers').and.returnValue(of([{}] as UserDetails[]));
+      fixture.detectChanges();
 
       const deleteLink = getByText('Delete this admin user');
       fireEvent.click(deleteLink);
-      fixture.detectChanges();
 
       const dialog = await within(document.body).findByRole('dialog');
       const confirm = within(dialog).getByText('Delete admin user');
       fireEvent.click(confirm);
-      fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'users']);
     });
