@@ -4,7 +4,11 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import {
+  MockWorkerService,
+  MockWorkerServiceWithoutReturnUrl,
+  MockWorkerServiceWithUpdateWorker,
+} from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, getByLabelText, render } from '@testing-library/angular';
 
@@ -38,7 +42,7 @@ fdescribe('SocialCareQualificationComponent', () => {
           },
           {
             provide: WorkerService,
-            useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+            useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
           },
         ],
       },
@@ -59,7 +63,7 @@ fdescribe('SocialCareQualificationComponent', () => {
       getByLabelText,
       getByTestId,
       queryByTestId,
-      routerSpy
+      routerSpy,
     };
   }
 
