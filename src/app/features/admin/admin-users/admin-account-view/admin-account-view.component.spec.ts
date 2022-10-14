@@ -232,7 +232,6 @@ describe('AdminAccountViewComponent', () => {
       const deleteAdminSpy = spyOn(adminUsersService, 'deleteAdminUserDetails').and.returnValue(of({}));
       const deleteLink = getByText('Delete this admin user');
       fireEvent.click(deleteLink);
-      fixture.detectChanges();
 
       const dialog = await within(document.body).findByRole('dialog');
       const confirm = within(dialog).getByText('Delete admin user');
