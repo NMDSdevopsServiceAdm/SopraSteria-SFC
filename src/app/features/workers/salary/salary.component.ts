@@ -62,6 +62,7 @@ export class SalaryComponent extends QuestionComponent {
         return this.getRoutePath('average-weekly-hours');
       } else {
         return this.getRoutePath('weekly-contracted-hours');
+
       }
     }
     return this.getRoutePath('');
@@ -114,25 +115,25 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Annual salary is required.',
+            message: 'Enter their standard annual salary',
           },
           {
             name: 'pattern',
-            message: 'Annual salary must be rounded to the nearest £.',
+            message: 'Standard annual salary must not include pence',
           },
           {
             name: 'min',
-            message: `Annual salary must be between &pound;${this.decimalPipe.transform(
+            message: `Standard annual salary must be between &pound;${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0',
-            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
           },
           {
             name: 'max',
-            message: `Annual salary must be between &pound;${this.decimalPipe.transform(
+            message: `Standard annual salary must be between &pound;${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0',
-            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
           },
         ],
       },
@@ -141,21 +142,21 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Hourly rate is required.',
+            message: 'Enter their standard hourly rate',
           },
           {
             name: 'min',
-            message: `Hourly rate must be between &pound;${this.decimalPipe.transform(
+            message: `Standard hourly rate must be between &pound;${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2',
-            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
           },
           {
             name: 'max',
-            message: `Hourly rate must be between &pound;${this.decimalPipe.transform(
+            message: `Standard hourly rate must be between &pound;${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2',
-            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
           },
         ],
       },

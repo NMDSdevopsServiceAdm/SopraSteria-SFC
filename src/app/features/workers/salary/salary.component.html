@@ -29,7 +29,7 @@
             >
               <div class="govuk-form-group">
                 <label class="govuk-label" for="hourlyRate"> Standard hourly rate </label>
-                <span id="hourlyRate-hint" class="govuk-hint"> For example 10.40 </span>
+                <span id="hourlyRate-hint" class="govuk-hint"> For example, 10.40 </span>
                 <span
                   *ngIf="submitted && form.get('hourlyRate').errors"
                   id="hourlyRate-error"
@@ -81,7 +81,7 @@
             >
               <div class="govuk-form-group">
                 <label class="govuk-label" for="annualRate"> Standard annual rate </label>
-                <span id="annualRate-hint" class="govuk-hint"> For example 30000 </span>
+                <span id="annualRate-hint" class="govuk-hint"> For example, 30000 </span>
                 <span
                   *ngIf="submitted && form.get('annualRate').errors"
                   id="annualRate-error"
@@ -98,6 +98,10 @@
                   <ng-container *ngIf="form.get('annualRate').hasError('max')">
                     <span class="govuk-visually-hidden">Error:</span>
                     <span [innerHTML]="getFormErrorMessage('annualRate', 'max')"></span>
+                  </ng-container>
+                  <ng-container *ngIf="form.get('annualRate').hasError('pattern')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span [innerHTML]="getFormErrorMessage('annualRate', 'pattern')"></span>
                   </ng-container>
                 </span>
                 <span class="govuk-input__currency">
@@ -139,6 +143,5 @@
       </div>
     </div>
   </div>
-
-  <app-submit-button [return]="!insideFlow" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>

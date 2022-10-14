@@ -33,13 +33,16 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      dob: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
-    });
+    this.form = this.formBuilder.group(
+      {
+        dob: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+      },
+      { updateOn: 'submit' },
+    );
     this.form.get('dob').setValidators([DateValidator.dateValid(), DateValidator.between(this.minDate, this.maxDate)]);
   }
 
@@ -54,10 +57,6 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     }
     this.next = this.getRoutePath('national-insurance-number');
     this.previous = this.getReturnPath();
-  }
-
-  ngAfterViewInit(): void {
-    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   public setupFormErrorsMap(): void {

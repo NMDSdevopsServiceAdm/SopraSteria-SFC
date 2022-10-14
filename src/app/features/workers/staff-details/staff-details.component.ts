@@ -27,7 +27,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public jobsAvailable: Job[] = [];
   public showInputTextforOtherRole: boolean;
   public submitTitle = 'Save this staff record';
-  public canReturn = false;
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
@@ -47,21 +46,23 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      nameOrId: [null, Validators.required],
-      mainJob: [null, Validators.required],
-      otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
-      contract: [null, Validators.required],
-    });
+    this.form = this.formBuilder.group(
+      {
+        nameOrId: [null, Validators.required],
+        mainJob: [null, Validators.required],
+        otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
+        contract: [null, Validators.required],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   init(): void {
-    this.inMandatoryDetailsFlow = this.route.snapshot.parent.url[0].path === 'mandatory-details';
-    this.flow = this.insideFlow ? 'staff-record' : 'staff-record/staff-record-summary';
-    this.editFlow = !!this.worker;
+    this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
     this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
     this.getJobs();
-    this.setBackLinks();
+    this.previous = this.getReturnPath();
+    this.editFlow = this.inMandatoryDetailsFlow || !this.insideFlow;
   }
 
   public setupFormErrorsMap(): void {
@@ -159,55 +160,29 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     });
 
     this.selectedJobRole(this.worker.mainJob.jobId);
-    this.canReturn = true;
   }
 
-  setBackLinks(): void {
-    if (this.insideFlow && this.isPrimaryAccount) {
-      this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
-    } else if (this.insideFlow && !this.isPrimaryAccount) {
-      this.backService.setBackLink({ url: ['/workplace', this.workplace.uid], fragment: 'staff-records' });
-    } else if (!this.insideFlow && !this.inMandatoryDetailsFlow) {
-      this.backService.setBackLink({ url: this.getRoutePath('staff-record-summary') });
-    } else {
-      this.backService.setBackLink({ url: this.getRoutePath('mandatory-details') });
+  private getReturnPath() {
+    if (this.inMandatoryDetailsFlow) {
+      this.returnUrl = this.getRoutePath('mandatory-details');
+      return this.returnUrl;
     }
+    if (this.insideFlow) {
+      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
+    }
+    return this.getRoutePath('');
   }
 
-  public navigate(action: string): void {
-    switch (action) {
-      case 'continue':
-        if (this.flow === 'staff-record' && !this.editFlow) {
-          this.next = this.getRoutePath('mandatory-details');
-          this.router.navigate(this.next).then(() => {
-            this.alertService.addAlert({
-              type: 'success',
-              message: 'Staff record saved',
-            });
-          });
-        }
+  protected onSuccess(): void {
+    this.next = this.getRoutePath('mandatory-details');
+    !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
+  }
 
-        if (this.flow === 'staff-record/staff-record-summary') {
-          this.next = this.getRoutePath('staff-record-summary');
-          this.router.navigate(this.next);
-        }
-        break;
-
-      case 'exit':
-        if (this.isPrimaryAccount) {
-          this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
-        } else {
-          this.router.navigate(['/workplace', this.workplace.uid], { fragment: 'staff-records' });
-        }
-        break;
-
-      case 'return':
-        if (this.inMandatoryDetailsFlow) {
-          this.router.navigate(this.getRoutePath('mandatory-details'));
-        } else {
-          this.router.navigate(this.getRoutePath('staff-record-summary'));
-        }
-        break;
-    }
+  protected addAlert(): void {
+    !this.editFlow &&
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Staff record saved',
+      });
   }
 }

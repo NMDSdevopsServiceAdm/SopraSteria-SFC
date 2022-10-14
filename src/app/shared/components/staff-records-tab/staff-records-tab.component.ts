@@ -24,9 +24,4 @@ export class StaffRecordsTabComponent implements OnInit {
     this.createStaffResponse = this.workerService.getCreateStaffResponse();
     this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
   }
-
-  public addStaffRecordInProgress(event: Event): void {
-    event.preventDefault();
-    this.workerService.setAddStaffRecordInProgress(true);
-  }
 }
