@@ -14,7 +14,7 @@ import { fireEvent, getByLabelText, render } from '@testing-library/angular';
 
 import { SocialCareQualificationComponent } from './social-care-qualification.component';
 
-fdescribe('SocialCareQualificationComponent', () => {
+describe('SocialCareQualificationComponent', () => {
   async function setup(returnUrl = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       SocialCareQualificationComponent,
@@ -35,7 +35,7 @@ fdescribe('SocialCareQualificationComponent', () => {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
-                  url: [{ path: '' }],
+                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
                 },
               },
             },
@@ -103,7 +103,7 @@ fdescribe('SocialCareQualificationComponent', () => {
     });
   });
 
-  fdescribe('navigation', () => {
+  describe('navigation', () => {
     it(`should navigate to social-care-qualification-level page when submitting from flow and 'Yes' is selected`, async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
@@ -242,17 +242,6 @@ fdescribe('SocialCareQualificationComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
-    });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      expect(component.return).toEqual({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-      });
     });
   });
 });

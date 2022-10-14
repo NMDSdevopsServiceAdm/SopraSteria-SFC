@@ -54,6 +54,8 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary';
+    console.log(this.insideFlow);
+    console.log(this.route.parent.snapshot.url[0].path);
     this.staffRecordSections = ProgressBarUtil.staffRecordProgressBarSections();
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
