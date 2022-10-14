@@ -33,7 +33,7 @@ export const workerBuilder = build('Worker', {
     },
     careCertificate: 'Yes',
     apprenticeshipTraining: null,
-    qualificationInSocialCare: 'Yes',
+    qualificationInSocialCare: 'No',
     otherQualification: 'Yes',
     highestQualification: null,
     registeredNurse: 'Yes',

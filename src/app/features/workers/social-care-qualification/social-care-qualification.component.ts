@@ -48,8 +48,8 @@ export class SocialCareQualificationComponent extends QuestionComponent {
     }
 
     if (this.insideFlow) {
-      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
-    }
+    return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
+  }
     return this.getRoutePath('');
   }
 
@@ -67,7 +67,7 @@ export class SocialCareQualificationComponent extends QuestionComponent {
 
   onSuccess() {
     this.next =
-      this.worker.qualificationInSocialCare === 'Yes'
+    this.form.value.qualificationInSocialCare === 'Yes'
         ? this.getRoutePath('social-care-qualification-level')
         : this.getRoutePath('other-qualifications');
   }

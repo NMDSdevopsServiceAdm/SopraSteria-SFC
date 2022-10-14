@@ -1,15 +1,16 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ComponentFixture, getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, getByLabelText, render } from '@testing-library/angular';
 
 import { SocialCareQualificationComponent } from './social-care-qualification.component';
 
-describe('SocialCareQualificationComponent', () => {
+fdescribe('SocialCareQualificationComponent', () => {
   async function setup(returnUrl = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       SocialCareQualificationComponent,
@@ -20,12 +21,17 @@ describe('SocialCareQualificationComponent', () => {
           {
             provide: ActivatedRoute,
             useValue: {
+              snapshot: {
+                parent: {
+                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
+                },
+              },
               parent: {
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
-                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
+                  url: [{ path: '' }],
                 },
               },
             },
@@ -38,7 +44,12 @@ describe('SocialCareQualificationComponent', () => {
       },
     );
 
+    const injector = getTestBed();
+
     const component = fixture.componentInstance;
+    const router = injector.inject(Router) as Router;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
@@ -48,6 +59,7 @@ describe('SocialCareQualificationComponent', () => {
       getByLabelText,
       getByTestId,
       queryByTestId,
+      routerSpy
     };
   }
 
@@ -84,6 +96,159 @@ describe('SocialCareQualificationComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+  });
+
+  fdescribe('navigation', () => {
+    it(`should navigate to social-care-qualification-level page when submitting from flow and 'Yes' is selected`, async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButtonYes = getByLabelText('Yes');
+      fireEvent.click(radioButtonYes);
+
+      fixture.detectChanges();
+
+      console.log(component.form.value);
+
+      const saveButton = getByText('Save and continue');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save and continue')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'social-care-qualification-level',
+      ]);
+    });
+
+    it(`should navigate to other-qualifications page when submitting from flow and 'No' is selected`, async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButtonYes = getByLabelText('No');
+      fireEvent.click(radioButtonYes);
+
+      fixture.detectChanges();
+
+      console.log(component.form.value);
+
+      const saveButton = getByText('Save and continue');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save and continue')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'other-qualifications',
+      ]);
+    });
+
+    it(`should navigate to other-qualifications page when submitting from flow and 'I do not know' is selected`, async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButtonUnknown = getByLabelText('I do not know');
+      fireEvent.click(radioButtonUnknown);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save and continue');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save and continue')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'other-qualifications',
+      ]);
+    });
+
+    it('should navigate to other-qualifications page when skipping the question in the flow', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Skip this question');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'other-qualifications',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButtonNo = getByLabelText('No');
+      fireEvent.click(radioButtonNo);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save and return')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
+      const { component } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      expect(component.return).toEqual({
+        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
+      });
     });
   });
 });
