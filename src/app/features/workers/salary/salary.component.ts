@@ -62,6 +62,7 @@ export class SalaryComponent extends QuestionComponent {
         return this.getRoutePath('average-weekly-hours');
       } else {
         return this.getRoutePath('weekly-contracted-hours');
+
       }
     }
     return this.getRoutePath('');

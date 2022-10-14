@@ -324,6 +324,7 @@ describe('SalaryComponent', () => {
 
       component.worker.zeroHoursContract = `Don't know`;
       component.worker.contract = Contracts.Permanent;
+      component.initiated = false
       component.ngOnInit();
       component.setBackLink();
       expect(backLinkSpy).toHaveBeenCalledWith({
@@ -336,6 +337,7 @@ describe('SalaryComponent', () => {
       const { component, backLinkSpy } = await setup();
 
       component.worker.zeroHoursContract = 'Yes';
+      component.initiated = false
       component.ngOnInit();
       component.setBackLink();
       expect(backLinkSpy).toHaveBeenCalledWith({
@@ -349,6 +351,7 @@ describe('SalaryComponent', () => {
 
       component.worker.zeroHoursContract = 'No';
       component.worker.contract = Contracts.Agency;
+      component.initiated = false
       component.ngOnInit();
       component.setBackLink();
       expect(backLinkSpy).toHaveBeenCalledWith({
