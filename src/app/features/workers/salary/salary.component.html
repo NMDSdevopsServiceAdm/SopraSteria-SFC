@@ -5,7 +5,8 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
             <h1 class="govuk-fieldset__heading">Are they paid hourly or do they have an annual salary?</h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
@@ -28,7 +29,7 @@
             >
               <div class="govuk-form-group">
                 <label class="govuk-label" for="hourlyRate"> Standard hourly rate </label>
-                <span id="hourlyRate-hint" class="govuk-hint"> For example 10.40 </span>
+                <span id="hourlyRate-hint" class="govuk-hint"> For example, 10.40 </span>
                 <span
                   *ngIf="submitted && form.get('hourlyRate').errors"
                   id="hourlyRate-error"
@@ -71,7 +72,7 @@
                 value="Annually"
                 aria-controls="conditional-terms-conditional-2"
               />
-              <label class="govuk-label govuk-radios__label" for="terms-conditional-2"> Annually </label>
+              <label class="govuk-label govuk-radios__label" for="terms-conditional-2"> Annual salary </label>
             </div>
             <div
               class="govuk-radios__conditional"
@@ -80,7 +81,7 @@
             >
               <div class="govuk-form-group">
                 <label class="govuk-label" for="annualRate"> Standard annual rate </label>
-                <span id="annualRate-hint" class="govuk-hint"> For example 30000 </span>
+                <span id="annualRate-hint" class="govuk-hint"> For example, 30000 </span>
                 <span
                   *ngIf="submitted && form.get('annualRate').errors"
                   id="annualRate-error"
@@ -97,6 +98,10 @@
                   <ng-container *ngIf="form.get('annualRate').hasError('max')">
                     <span class="govuk-visually-hidden">Error:</span>
                     <span [innerHTML]="getFormErrorMessage('annualRate', 'max')"></span>
+                  </ng-container>
+                  <ng-container *ngIf="form.get('annualRate').hasError('pattern')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span [innerHTML]="getFormErrorMessage('annualRate', 'pattern')"></span>
                   </ng-container>
                 </span>
                 <span class="govuk-input__currency">
@@ -122,13 +127,21 @@
                 type="radio"
                 value="Don't know"
               />
-              <label class="govuk-label govuk-radios__label" for="terms-3"> Don't know </label>
+              <label class="govuk-label govuk-radios__label" for="terms-3"> I do not know </label>
             </div>
           </div>
         </fieldset>
       </div>
     </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
-
-  <app-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-submit-button>
+  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>

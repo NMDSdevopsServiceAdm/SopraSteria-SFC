@@ -147,13 +147,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    if (this.workerService.hasJobRole(this.worker, 23)) {
-      this.next = this.getRoutePath('nursing-category');
-    } else if (this.workerService.hasJobRole(this.worker, 27)) {
-      this.next = this.getRoutePath('mental-health-professional');
-    } else {
-      this.next = this.getRoutePath('national-insurance-number');
-    }
+    this.next = this.getRoutePath('recruited-from');
   }
 
   onChange(control) {
