@@ -36,10 +36,6 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     return isNumber(number);
   }
 
-  get displayYearArrived() {
-    return this.worker.countryOfBirth && this.worker.countryOfBirth.value !== 'United Kingdom';
-  }
-
   get displayMentalHealthProfessional() {
     return this.workerService.hasJobRole(this.worker, 27);
   }

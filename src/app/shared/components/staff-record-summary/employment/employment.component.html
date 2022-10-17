@@ -1,22 +1,5 @@
 <h2 class="govuk-heading-m">Employment details</h2>
 <dl class="govuk-summary-list asc-summarylist-border-top govuk-!-margin-bottom-0">
-  <div class="govuk-summary-list__row" *ngIf="displayYearArrived">
-    <dt class="govuk-summary-list__key">Year arrived in the UK</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
-    </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' year arrived in UK'"
-        [link]="getRoutePath('year-arrived-uk')"
-        [hasData]="
-          !(worker.yearArrived === null || (worker.yearArrived?.value === null && worker.yearArrived?.year === null))
-        "
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Date started in main job role</dt>
     <dd class="govuk-summary-list__value">
