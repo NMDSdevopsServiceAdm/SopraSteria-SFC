@@ -101,6 +101,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
       { value: 'Asian / Asian British', tag: 'Asian or Asian British' },
       { value: 'Black / African / Caribbean / Black British', tag: 'Black, African, Caribbean or Black British' },
       { value: 'Other ethnic group', tag: 'Other ethnic group' },
+      { value: `Don't know`, tag: `Don't know` },
     ];
     const workerEthnicityObj = ethnicityGroupOptions.find(
       (typeOfEthnicityGroup) => typeOfEthnicityGroup.value === workerEthnicityGroup,
