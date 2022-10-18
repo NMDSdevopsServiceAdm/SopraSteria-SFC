@@ -243,37 +243,24 @@ describe('AdminAccountViewComponent', () => {
     });
 
     it('should navigate back to the admin users page when admin user has been deleted', async () => {
-      console.log('log first line setup of test');
       const { component, fixture, getByText, adminUsersService, routerSpy } = await setup();
-      console.log('log setup of test');
 
       spyOn(adminUsersService, 'deleteAdminUserDetails').withArgs(component.user.uid).and.returnValue(of({}));
-      console.log('log after first spy');
 
       spyOn(adminUsersService, 'getAdminUsers').and.returnValue(of([{}] as UserDetails[]));
 
-      console.log('log after second spy');
-
       const deleteLink = getByText('Delete this admin user');
-      console.log('log after delete text');
 
       fireEvent.click(deleteLink);
-      console.log('log after fire event');
 
       const dialog = await within(document.body).findByRole('dialog');
-      console.log('log after dialog');
 
       const confirm = within(dialog).getByText('Delete admin user');
-      console.log('log after confirm message of dialog');
 
       fireEvent.click(confirm);
-      console.log('log after confirm fire e vent');
-
       fixture.detectChanges();
-      console.log('log after detect change');
 
       expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'users']);
-      console.log('log after expect');
     });
 
     it('should call getAdminUser once the admin user has been deleted', async () => {
