@@ -1,5 +1,5 @@
 <h2 class="govuk-heading-m">Employment details</h2>
-<dl class="govuk-summary-list asc-summarylist-border-top govuk-!-margin-bottom-0">
+<dl class="govuk-summary-list asc-summarylist-border-top">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Date started in main job role</dt>
     <dd class="govuk-summary-list__value">
@@ -50,34 +50,6 @@
         [explanationText]="' approved mental health professional'"
         [link]="getRoutePath('mental-health-professional')"
         [hasData]="!!worker.approvedMentalHealthWorker"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Other job roles</dt>
-    <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="!worker.otherJobs"> - </ng-container>
-      <ng-container *ngIf="worker.otherJobs?.value === 'No'"> No </ng-container>
-      <ng-container *ngIf="worker.otherJobs?.value === 'Yes'">
-        <ul class="govuk-list govuk-!-margin-bottom-0">
-          <li *ngFor="let otherJob of worker.otherJobs.jobs">
-            <ng-container *ngIf="otherJob.other; else title">
-              <span>{{ otherJob.other }}</span>
-            </ng-container>
-            <ng-template #title>
-              <span>{{ otherJob.title }}</span>
-            </ng-template>
-          </li>
-        </ul>
-      </ng-container>
-    </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' other job roles'"
-        [link]="getRoutePath('other-job-roles')"
-        [hasData]="!!worker.otherJobs"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>

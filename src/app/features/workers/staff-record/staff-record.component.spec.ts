@@ -16,7 +16,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, screen } from '@testing-library/angular';
+import { fireEvent, getByTestId, render, screen } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -114,13 +114,11 @@ describe('StaffRecordComponent', () => {
     const text = screen.getByText(`Check the record details you've added before you confirm them.`);
     const flagLongTermAbsenceLink = screen.queryByText('Flag long-term absence');
     const deleteRecordLink = screen.queryByText('Delete staff record');
-    const trainingAndQualsLink = screen.queryByText('Training and qualifications');
 
     expect(button).toBeTruthy();
     expect(text).toBeTruthy();
     expect(flagLongTermAbsenceLink).toBeFalsy();
     expect(deleteRecordLink).toBeFalsy();
-    expect(trainingAndQualsLink).toBeFalsy();
   });
 
   it('should render the completed state text, delete record link, add training link and flag long term absence link when worker.completed is true', async () => {
@@ -137,7 +135,7 @@ describe('StaffRecordComponent', () => {
     const text = screen.getByText(`Check the record details you've added are correct.`);
     const flagLongTermAbsenceLink = screen.getByText('Flag long-term absence');
     const deleteRecordLink = screen.getByText('Delete staff record');
-    const trainingAndQualsLink = screen.getByText('Training and qualifications');
+    const trainingAndQualsLink = screen.getByTestId('training-and-qualifications-link');
 
     expect(button).toBeFalsy();
     expect(text).toBeTruthy();
@@ -158,7 +156,7 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the training and qualifications link with the correct href', async () => {
-    const { getByText, component, fixture } = await setup();
+    const { getByTestId, component, fixture } = await setup();
 
     component.canEditWorker = true;
     component.worker.completed = true;
@@ -166,7 +164,7 @@ describe('StaffRecordComponent', () => {
 
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
-    const link = getByText('Training and qualifications');
+    const link = getByTestId('training-and-qualifications-link');
     expect(link.getAttribute('href')).toEqual(
       `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/training`,
     );

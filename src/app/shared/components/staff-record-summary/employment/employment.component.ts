@@ -1,7 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { EthnicityService } from '@core/services/ethnicity.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -60,6 +59,6 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   }
 
   get mainStartDate() {
-    return dayjs(this.worker.mainJobStartDate).format(DATE_DISPLAY_DEFAULT);
+    return dayjs(this.worker.mainJobStartDate).format('DD MMMM YYYY');
   }
 }

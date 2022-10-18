@@ -1,4 +1,5 @@
-<dl class="govuk-summary-list">
+<h2 class="govuk-heading-m">Training and qualifications</h2>
+<dl class="govuk-summary-list asc-summarylist-border-top govuk-!-margin-bottom-0">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Care Certificate</dt>
 
@@ -37,6 +38,21 @@
         [explanationText]="' care certificate'"
         [link]="getRoutePath('care-certificate')"
         [hasData]="!!worker.careCertificate"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Apprenticeship training</dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.apprenticeshipTraining || '-' | closedEndedAnswer }}
+    </dd>
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+      <app-summary-record-change
+        [explanationText]="' apprenticeship training'"
+        [link]="getRoutePath('apprenticeship-training')"
+        [hasData]="!!worker.apprenticeshipTraining"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
@@ -195,21 +211,6 @@
         [explanationText]="' other qualification level'"
         [link]="getRoutePath('other-qualifications-level')"
         [hasData]="!!worker.highestQualification"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Apprenticeship training</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.apprenticeshipTraining || '-' | closedEndedAnswer }}
-    </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' apprenticeship training'"
-        [link]="getRoutePath('apprenticeship-training')"
-        [hasData]="!!worker.apprenticeshipTraining"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
