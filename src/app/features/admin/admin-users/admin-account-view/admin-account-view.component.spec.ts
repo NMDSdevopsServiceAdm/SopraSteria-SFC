@@ -260,9 +260,9 @@ describe('AdminAccountViewComponent', () => {
     });
 
     it('should navigate back to the admin users page when admin user has been deleted', async () => {
-      const { fixture, getByText, adminUsersService, routerSpy } = await setup();
+      const { component, fixture, getByText, adminUsersService, routerSpy } = await setup();
 
-      spyOn(adminUsersService, 'deleteAdminUserDetails').and.returnValue(of({}));
+      spyOn(adminUsersService, 'deleteAdminUserDetails').withArgs(component.user.uid).and.returnValue(of({}));
       spyOn(adminUsersService, 'getAdminUsers').and.returnValue(of([{}] as UserDetails[]));
 
       const deleteLink = getByText('Delete this admin user');
