@@ -85,6 +85,7 @@
     "jsonwebtoken": "^8.5.1",
     "jspdf": "^2.2.0",
     "jszip": "^3.6.0",
+    "karma-spec-reporter": "^0.0.34",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",

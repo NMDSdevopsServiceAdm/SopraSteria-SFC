@@ -259,7 +259,7 @@ describe('AdminAccountViewComponent', () => {
       expect(getAdminUsersSpy).toHaveBeenCalled();
     });
 
-    fit('should navigate back to the admin users page when admin user has been deleted', async () => {
+    it('should navigate back to the admin users page when admin user has been deleted', async () => {
       console.log('log first line setup of test');
       const { component, fixture, getByText, adminUsersService, routerSpy } = await setup();
       console.log('log setup of test');
