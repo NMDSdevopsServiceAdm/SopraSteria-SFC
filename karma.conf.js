@@ -21,6 +21,9 @@ module.exports = function (config) {
     ],
     client: {
       clearContext: false, // leave Jasmine Spec Runner output visible in browser
+      jasmine: {
+        random: false,
+      },
     },
     coverageReporter: {
       dir: require('path').join(__dirname, '/fecoverage'),
