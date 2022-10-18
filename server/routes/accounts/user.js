@@ -966,6 +966,13 @@ const readNotification = async (req, res) => {
   }
 };
 
+//TODO
+// const createNotification = async (req, res) => {
+//   try {
+//     const params = {}
+//   }
+// }
+
 router.use('/swap/establishment/notification/:nmsdId', Authorization.isAdmin);
 router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) => {
   try {

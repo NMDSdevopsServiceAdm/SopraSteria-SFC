@@ -74,6 +74,9 @@ var longTermAbsence = require('./server/routes/longTermAbsence');
 // admin route
 var admin = require('./server/routes/admin');
 
+// notifications
+var notifications = require('./server/routes/notification');
+
 // reports
 var ReportsRoute = require('./server/routes/reports/index');
 
@@ -280,7 +283,7 @@ app.use('/api/satisfactionSurvey', [cacheMiddleware.nocache, satisfactionSurvey]
 app.use('/api/registrationSurvey', [cacheMiddleware.nocache, registrationSurvey]);
 app.use('/api/cqcStatusCheck', [cacheMiddleware.nocache], cqcStatusCheck);
 app.use('/api/wdf', [cacheMiddleware.nocache, WDFRoute]);
-
+app.use('/api/notification', [cacheMiddleware.nocache, notifications]);
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 

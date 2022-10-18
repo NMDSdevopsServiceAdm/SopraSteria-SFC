@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Notification, NotificationRequest } from '@core/model/notifications.model';
+import { Notification, NotificationRequest, NotificationTypes } from '@core/model/notifications.model';
 import filter from 'lodash/filter';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -12,6 +12,9 @@ export class NotificationsService {
   constructor(private http: HttpClient) {}
 
   getAllNotifications() {
+    const x = this.getNotificationTypes();
+    console.log(x);
+
     return this.http.get<Notification[]>('/api/user/my/notifications');
   }
   public getNotification(notificationUid: string): Notification {
@@ -24,6 +27,10 @@ export class NotificationsService {
 
   get notifications(): Notification[] {
     return this.notifications$.value;
+  }
+
+  public getNotificationTypes(): Observable<NotificationTypes> {
+    return this.http.get<any>('/api/notification/type');
   }
   public getNotificationDetails(notificationId): Observable<any> {
     return this.http.get<any>(`/api/user/my/notifications/${notificationId}`);
