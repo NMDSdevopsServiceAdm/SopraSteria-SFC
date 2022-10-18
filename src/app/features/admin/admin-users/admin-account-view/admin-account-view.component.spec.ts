@@ -219,9 +219,9 @@ describe('AdminAccountViewComponent', () => {
 
       const deleteLink = getByText('Delete this admin user');
       fireEvent.click(deleteLink);
-      fixture.detectChanges();
 
       const dialog = await within(document.body).findByRole('dialog');
+      fixture.detectChanges();
 
       expect(within(dialog).getByText(`You're about to delete this admin user`)).toBeTruthy();
     });
