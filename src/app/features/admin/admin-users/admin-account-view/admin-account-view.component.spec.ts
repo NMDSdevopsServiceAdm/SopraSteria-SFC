@@ -242,23 +242,6 @@ describe('AdminAccountViewComponent', () => {
       expect(deleteAdminSpy).toHaveBeenCalledWith(userId);
     });
 
-    it('should call getAdminUser once the admin user has been deleted', async () => {
-      const { fixture, getByText, adminUsersService } = await setup();
-
-      spyOn(adminUsersService, 'deleteAdminUserDetails').and.returnValue(of({}));
-      const getAdminUsersSpy = spyOn(adminUsersService, 'getAdminUsers');
-
-      const deleteLink = getByText('Delete this admin user');
-      fireEvent.click(deleteLink);
-
-      const dialog = await within(document.body).findByRole('dialog');
-      const confirm = within(dialog).getByText('Delete admin user');
-      fireEvent.click(confirm);
-      fixture.detectChanges();
-
-      expect(getAdminUsersSpy).toHaveBeenCalled();
-    });
-
     it('should navigate back to the admin users page when admin user has been deleted', async () => {
       console.log('log first line setup of test');
       const { component, fixture, getByText, adminUsersService, routerSpy } = await setup();
@@ -291,6 +274,23 @@ describe('AdminAccountViewComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'users']);
       console.log('log after expect');
+    });
+
+    it('should call getAdminUser once the admin user has been deleted', async () => {
+      const { fixture, getByText, adminUsersService } = await setup();
+
+      spyOn(adminUsersService, 'deleteAdminUserDetails').and.returnValue(of({}));
+      const getAdminUsersSpy = spyOn(adminUsersService, 'getAdminUsers');
+
+      const deleteLink = getByText('Delete this admin user');
+      fireEvent.click(deleteLink);
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete admin user');
+      fireEvent.click(confirm);
+      fixture.detectChanges();
+
+      expect(getAdminUsersSpy).toHaveBeenCalled();
     });
   });
 });
