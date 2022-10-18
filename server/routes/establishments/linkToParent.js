@@ -64,7 +64,7 @@ const linkToParent = async (req, res) => {
                   notificationUid: params.notificationUid,
                   type: 'LINKTOPARENTREQUEST',
                   typeUid: params.linkToParentUID,
-                  recipientUserUid: getRecipientUserDetails[i].UserUID,
+                  targetUid: getRecipientUserDetails[i].UserUID,
                   userUid: params.userUid,
                 };
                 await notifications.insertNewNotification(notificationParams);
@@ -203,7 +203,7 @@ const actionLinkToParent = async (req, res) => {
                 notificationUid: uuid.v4(),
                 type: params.type,
                 typeUid: params.linkToParentUid,
-                recipientUserUid: params.subEstablishmentUid,
+                targetUid: params.subEstablishmentUid,
                 userUid: params.userUid,
               };
               if (!uuidRegex.test(notificationParams.notificationUid.toUpperCase())) {
@@ -270,7 +270,7 @@ const delink = async (req, res) => {
                 notificationUid: params.notificationUid,
                 type: 'DELINKTOPARENT',
                 typeUid: params.deLinkToParentUID,
-                recipientUserUid: getRecipientUserDetails[i].UserUID,
+                targetUid: getRecipientUserDetails[i].UserUID,
                 userUid: params.userUid,
               };
               await notifications.insertNewNotification(notificationParams);

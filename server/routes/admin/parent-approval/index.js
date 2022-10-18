@@ -118,7 +118,7 @@ const _notify = async (approvalId, userUid, establishmentId) => {
     users.map(async (user) => {
       const userparams = {
         ...params,
-        recipientUserUid: user.UserUID,
+        targetUid: user.UserUID,
         notificationUid: uuid.v4(),
       };
       await notifications.insertNewNotification(userparams);

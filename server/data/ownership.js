@@ -217,7 +217,7 @@ exports.getOwnershipNotificationDetails = async ({ ownerChangeRequestUid }) =>
 
 const getNotificationRecieverNameQuery = `
   select "NameValue" from cqc."User" as use
-  JOIN cqc."Notifications" as individual on individual."recipientUserUid" = use."UserUID"
+  JOIN cqc."Notifications" as individual on individual."targetUid" = use."UserUID"
   JOIN cqc."Establishment" as sub on sub."EstablishmentID" = use."EstablishmentID"
     WHERE "notificationUid" = :notificationUid;
   `;
