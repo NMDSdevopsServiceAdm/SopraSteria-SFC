@@ -4,6 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -35,6 +36,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
+    protected backService: BackService,
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +55,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         }
       }),
     );
+
+    this.backService.setBackLink({ url: ['dashboard'], fragment: 'staff-records' });
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
