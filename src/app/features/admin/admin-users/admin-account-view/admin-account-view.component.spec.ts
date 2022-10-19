@@ -44,7 +44,7 @@ describe('AdminAccountViewComponent', () => {
       user = AdminUser();
     }
     const { fixture, getByText, queryByText } = await render(AdminAccountViewComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       providers: [
         AlertService,
         WindowRef,
