@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Notification, NotificationRequest, NotificationTypes } from '@core/model/notifications.model';
 import { escapeRegExp } from 'lodash';
 import filter from 'lodash/filter';
-import { BehaviorSubject, concat, Notification, Notification, Observable } from 'rxjs';
+import { BehaviorSubject, concat, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,9 +12,9 @@ export class NotificationsService {
   public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject(null);
   constructor(private http: HttpClient) {}
 
-  public getAllNotifications(establishmentId) {
+  public getAllNotifications() {
     const notificationsUser = this.getUserNotifications();
-    const notificationsEstablishment = this.getEstablishmentNotifications(establishmentId);
+    const notificationsEstablishment = []; //this.getEstablishmentNotifications(establishmentId);
     return concat(notificationsEstablishment, notificationsUser);
   }
 
@@ -33,6 +33,7 @@ export class NotificationsService {
   public createNotificationType(typeParams): Observable<NotificationTypes> {
     return this.http.post<any>('/api/notification/type', typeParams);
   }
+
   public getNotificationTypes(): Observable<NotificationTypes> {
     return this.http.get<any>('/api/notification/type');
   }
@@ -60,9 +61,11 @@ export class NotificationsService {
   public approveOwnership(ownershipChangeRequestId, data): Observable<NotificationRequest> {
     return this.http.put<any>(`/api/ownershipRequest/${ownershipChangeRequestId}`, data);
   }
+
   public setNoticationViewed(notificationUid: string): Observable<Notification> {
     return this.http.post<any>(`/api/user/my/notifications/${notificationUid}`, { isViewed: true });
   }
+
   public setNotificationRequestLinkToParent(establishmentId, data): Observable<NotificationRequest> {
     return this.http.put<any>(`/api/establishment/${establishmentId}/linkToParent/action`, data);
   }

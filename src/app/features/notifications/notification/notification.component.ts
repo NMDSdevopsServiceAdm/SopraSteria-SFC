@@ -158,7 +158,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   private rejectPermissionRequest(requestRejected) {
-    let requestParameter = {
+    const requestParameter = {
       ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
       approvalStatus: 'DENIED',
       rejectionReason: requestRejected.rejectionReason,

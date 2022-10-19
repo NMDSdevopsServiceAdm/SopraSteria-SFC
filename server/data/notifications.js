@@ -61,9 +61,10 @@ const markOneAsReadQuery = `
 const insertNotificationQuery = `
 INSERT INTO
 cqc."Notifications"
-("type", "typeUid", "targetUid", "isViewed", "createdByUserUID")
-VALUES (:type, :typUid, :targetUid, :isViewed, :createdByUserUID);
+("type", "typeUid", "targetUid", "isViewed", "createdByUserUID", notificationTypeUid)
+VALUES (:type, :typeUid, :targetUid, :isViewed, :createdByUserUID, :notificationTypeUid);
 `;
+
 const updateNotificationQuery = `
   UPDATE cqc."Notifications"
   SET "isViewed" = :isViewed
@@ -100,7 +101,7 @@ exports.createNotificationType = async (params) =>
 exports.selectNotificationTypeByTypeName = async (typeName) =>
   db.query(selectNotificationTypeByTypeName,
     {replacements: {type: typeName},
-    type: db.QueryTypes.SELECT
+    type: db.QueryTypes.SELECT,
   });
 
 
@@ -136,7 +137,8 @@ exports.insertNewNotification = async (params) =>
       targetUid: params.targetUid,
       isViewed: false,
       createdByUserUID: params.userUid,
-      isEstablishmentLevel: params.isEstablishmentLevel
+      isEstablishmentLevel: params.isEstablishmentLevel,
+      notificationTypeUid: params.notificationTypeUid
     },
     type: db.QueryTypes.INSERT,
   });

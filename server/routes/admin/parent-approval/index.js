@@ -124,6 +124,9 @@ const _notify = async (approvalId, userUid, establishmentId) => {
       await notifications.insertNewNotification(userparams);
     }),
   );
+
+
+
 };
 
 router.route('/').post(parentApproval);

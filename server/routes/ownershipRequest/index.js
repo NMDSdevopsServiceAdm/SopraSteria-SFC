@@ -50,7 +50,7 @@ const ownershipRequest = async (req, res) => {
         let getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
         if (getRecipientUserDetails.length) {
           //save records
-          params.targetUid = getRecipientUserDetails[0].UserUID;
+          params.recipientUserUid = getRecipientUserDetails[0].UserUID;
         }
         const updateChangeRequest = await ownership.updateChangeRequest(params);
         if (!updateChangeRequest) {
@@ -73,14 +73,14 @@ const ownershipRequest = async (req, res) => {
           let updateNotificationParam = {
             exsistingNotificationUid: params.exsistingNotificationUid,
             ownerRequestChangeUid: params.ownerRequestChangeUid,
-            targetUid: receiverUpdate.dataOwner !== 'Parent' ? req.userUid : params.targetUid,
+            recipientUserUid: receiverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
           };
           let updatedNotificationResp = await notifications.updateNotification(updateNotificationParam);
           if (updatedNotificationResp) {
             let resp = await ownership.getUpdatedOwnershipRequest(params);
             if (resp) {
               // requester useruid to send notification in case his request for swap ownership gets approved or rejected
-              params.targetUid = resp[0].createdByUserUID;
+              params.recipientUserUid = resp[0].createdByUserUID;
               params.notificationUid = uuid.v4();
               params.type = 'OWNERCHANGE';
               if (!uuidRegex.test(params.notificationUid.toUpperCase())) {

@@ -5,7 +5,9 @@ module.exports = {
     await queryInterface.sequelize.query('ALTER TYPE cqc."NotificationType" RENAME TO "NotificationTypes"');
 
     await queryInterface.sequelize.query('ALTER TABLE cqc."Notifications" ADD COLUMN "LevelId" integer NOT NULL DEFAULT 1');
-    await queryInterface.sequelize.query('ALTER TABLE cqc."Notifications" ALTER COLUMN "notificationuid" SET DEFAULT gen_random_uuid()')
+    await queryInterface.sequelize.query('ALTER TABLE cqc."Notifications" ALTER COLUMN "notificationUid" SET DEFAULT gen_random_uuid()');
+    await queryInterface.sequelize.query('ALTER TABLE cqc."Notifications" ALTER COLUMN "typeUid" DROP NOT NULL SET DEFAULT gen_random_uuid()');
+    await queryInterface.sequelize.query('ALTER TABLE IF EXISTS cqc."Notifications" ADD COLUMN "notificationTypeUid" uuid NOT NULL;');
 
     await queryInterface.sequelize.query(`
     CREATE TABLE IF NOT EXISTS cqc."NotificationType"

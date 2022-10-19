@@ -44,10 +44,11 @@ const sendEstablishmentNotification = async (req, res) => {
         const params = {
             targetUid: req.params.establishmentUid,
             type: req.body.type,
-            typeUid: typeData[0].Id,
-            isEstablishmentLevel: true
+            notificationTypeUid: typeData[0].Id,
+            isEstablishmentLevel: true,
+            userUid: req.userUid,
         }
-        console.log(req);
+        console.log(req.userUid);
         await notifications.insertNewNotification(params);
         return res.status(200);
     } catch (e) {
