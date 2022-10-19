@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Notification, NotificationRequest, NotificationTypes } from '@core/model/notifications.model';
 import { escapeRegExp } from 'lodash';
 import filter from 'lodash/filter';
-import { BehaviorSubject, concat, Observable } from 'rxjs';
+import { BehaviorSubject, concat, Observable, zip } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,12 @@ export class NotificationsService {
   public getAllNotifications(establishmentId) {
     const notificationsUser = this.getUserNotifications();
     const notificationsEstablishment = this.getEstablishmentNotifications(establishmentId);
-    return concat(notificationsEstablishment, notificationsUser);
+
+    const output = zip(notificationsUser, notificationsEstablishment).pipe(map((x) => x[0].concat(x[1])));
+
+    console.log(output.subscribe((x) => x));
+
+    return output;
   }
 
   public getNotification(notificationUid: string): Notification {
@@ -43,7 +49,8 @@ export class NotificationsService {
   }
 
   public getEstablishmentNotifications(establishmentUid): Observable<Notification[]> {
-    return this.http.get<any>(`/api/notification/establishment/${establishmentUid}`)
+    console.log(establishmentUid);
+    return this.http.get<any>(`/api/notification/establishment/${establishmentUid}`);
   }
 
   public getNotificationDetails(notificationId): Observable<any> {
