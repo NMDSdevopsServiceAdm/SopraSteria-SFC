@@ -54,7 +54,9 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
-    this.getAndSetEthnicityData();
+    if (this.worker.ethnicity) {
+      this.getAndSetEthnicityData();
+    }
     if (this.canEditWorker && this.wdfView) {
       if (this.allRequiredFieldsUpdatedAndEligible()) {
         this.updateFieldsWhichDontRequireConfirmation();

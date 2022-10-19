@@ -220,7 +220,7 @@ describe('DashboardComponent', () => {
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: `You've confirmed the details of the staff record you added`,
+          message: 'Staff record saved',
         });
       });
     });

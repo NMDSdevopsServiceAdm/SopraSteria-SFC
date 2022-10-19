@@ -116,7 +116,7 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Ethnic group</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-8">
-      {{ ethnicGroupData }}
+      {{ ethnicGroupData || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
@@ -131,7 +131,7 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Ethnic background</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-8">
-      {{ ethnicityData }}
+      {{ ethnicityData || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change

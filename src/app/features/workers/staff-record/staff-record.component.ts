@@ -40,7 +40,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.isParent = this.establishmentService.primaryWorkplace.isParent;
+    this.isParent = this.establishmentService.isOwnWorkplace();
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
@@ -56,7 +56,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       }),
     );
 
-    this.backService.setBackLink({ url: ['dashboard'], fragment: 'staff-records' });
+    this.backService.setBackLink(this.backLinkNavigation());
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
@@ -76,6 +76,11 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         : null,
     });
   }
+  public backLinkNavigation(): URLStructure {
+    return this.isParent
+      ? { url: ['dashboard'], fragment: 'staff-records' }
+      : { url: ['workplace', this.workplace.uid], fragment: 'staff-records' };
+  }
 
   public moveWorker(event: Event): void {
     event.preventDefault();
@@ -89,6 +94,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   }
 
   public saveAndComplete(): void {
+    console.log('>>>>>>>>>>>>>');
+
     const props = {
       completed: true,
     };
