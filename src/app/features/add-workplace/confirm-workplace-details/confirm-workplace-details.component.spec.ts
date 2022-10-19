@@ -267,9 +267,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       value: 'Other',
       other: 'other employer type',
     });
-
     component.ngOnInit();
-    fixture.detectChanges();
     const expectedTypeOfEmployer = 'other employer type';
 
     component.setWorkplaceDetails();
