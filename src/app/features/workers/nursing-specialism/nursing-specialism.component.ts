@@ -44,10 +44,6 @@ export class NursingSpecialismComponent extends QuestionComponent {
   }
 
   init() {
-    if (!this.workerService.hasJobRole(this.worker, 23)) {
-      this.router.navigate(this.getRoutePath('other-job-roles'), { replaceUrl: true });
-    }
-
     this.next = this.getReturnPath();
     this.previous = this.insideFlow ? this.getRoutePath('nursing-category') : this.getRoutePath('');
 

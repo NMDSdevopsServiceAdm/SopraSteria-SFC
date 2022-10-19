@@ -102,7 +102,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
       } else if (this.workerService.hasJobRole(this.worker, 27)) {
         return this.getRoutePath('mental-health-professional');
       } else {
-        return this.getRoutePath('other-job-roles');
+        return this.getRoutePath('recruited-from');
       }
     }
 

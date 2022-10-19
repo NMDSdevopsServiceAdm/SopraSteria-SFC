@@ -38,10 +38,6 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   init() {
-    if (!this.workerService.hasJobRole(this.worker, 23)) {
-      this.router.navigate(this.getRoutePath('other-job-roles'), { replaceUrl: true });
-    }
-
     if (this.worker.registeredNurse) {
       this.form.patchValue({
         nursingCategory: this.worker.registeredNurse,
