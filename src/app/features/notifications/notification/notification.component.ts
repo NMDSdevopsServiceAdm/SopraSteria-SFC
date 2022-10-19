@@ -111,7 +111,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
                     });
                   }
                 });
-                this.notificationsService.getAllNotifications().subscribe(notify => {
+                this.notificationsService.getAllNotifications(this.workplace.uid).subscribe(notify => {
                   this.notificationsService.notifications$.next(notify);
                 });
               }
@@ -171,7 +171,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
         .subscribe(
           request => {
             if (request) {
-              this.notificationsService.getAllNotifications().subscribe(notify => {
+              this.notificationsService.getAllNotifications(this.workplace.uid).subscribe(notify => {
                 this.notificationsService.notifications$.next(notify);
               });
               this.router.navigate(['/dashboard']);

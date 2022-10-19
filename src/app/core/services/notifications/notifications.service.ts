@@ -12,9 +12,9 @@ export class NotificationsService {
   public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject(null);
   constructor(private http: HttpClient) {}
 
-  public getAllNotifications() {
+  public getAllNotifications(establishmentId) {
     const notificationsUser = this.getUserNotifications();
-    const notificationsEstablishment = []; //this.getEstablishmentNotifications(establishmentId);
+    const notificationsEstablishment = this.getEstablishmentNotifications(establishmentId);
     return concat(notificationsEstablishment, notificationsUser);
   }
 

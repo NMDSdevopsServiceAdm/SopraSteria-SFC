@@ -104,7 +104,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
                   }
                 });
                 //get all notification and update with latest
-                this.notificationsService.getAllNotifications().subscribe(notify => {
+                this.notificationsService.getAllNotifications(this.workplace.uid).subscribe(notify => {
                   this.notificationsService.notifications$.next(notify);
                 });
               }
@@ -183,7 +183,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
           request => {
             if (request) {
               //get all notification and update with latest status
-              this.notificationsService.getAllNotifications().subscribe(notify => {
+              this.notificationsService.getAllNotifications(this.workplace.uid).subscribe(notify => {
                 this.notificationsService.notifications$.next(notify);
               });
               this.router.navigate(['/dashboard']);
