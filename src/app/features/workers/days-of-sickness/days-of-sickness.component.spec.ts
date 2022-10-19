@@ -16,7 +16,13 @@ describe('DaysOfSicknessComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       DaysOfSicknessComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [
+          SharedModule,
+          RouterModule,
+          HttpClientTestingModule,
+          ReactiveFormsModule,
+          RouterTestingModule.withRoutes([]),
+        ],
         providers: [
           FormBuilder,
           {

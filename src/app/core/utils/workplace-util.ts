@@ -8,7 +8,9 @@ export class WorkplaceUtil {
       { value: 'Other', text: 'Other' },
     ];
 
-    const typeOfEmployerObj = typeOfEmployerOptions.find((typeOfEmployer) => typeOfEmployer.value === employerType);
+    const typeOfEmployerObj = typeOfEmployerOptions.find(
+      (typeOfEmployer) => typeOfEmployer.value.toLowerCase() === employerType.toLowerCase(),
+    );
 
     return typeOfEmployerObj.text;
   }
