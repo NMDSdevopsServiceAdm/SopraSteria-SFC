@@ -5,6 +5,7 @@ export interface Notification {
   type: NotificationType;
   typeContent: any;
 }
+
 export interface NotificationRequest {
   ownerRequestChangeUid: string;
   userUid?: string;

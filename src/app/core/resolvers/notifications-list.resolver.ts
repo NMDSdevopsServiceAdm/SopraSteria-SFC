@@ -11,11 +11,13 @@ export class NotificationsListResolver implements Resolve<any> {
   constructor(private establishmentService: EstablishmentService, private notificationsService: NotificationsService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.notificationsService.getAllNotifications(this.establishmentService.establishmentId).pipe(
-      tap((notifications) => (this.notificationsService.notifications = notifications)),
-      catchError(() => {
-        return of([]);
-      }),
-    );
+
+
+      return this.notificationsService.getAllNotifications(this.establishmentService.establishmentId).pipe(
+        tap(notifications => (this.notificationsService.notifications = notifications)),
+        catchError(() => {
+          return of([]);
+        })
+      );
+    }
   }
-}

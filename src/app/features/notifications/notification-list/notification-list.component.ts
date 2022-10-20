@@ -25,10 +25,8 @@ export class NotificationListComponent implements OnInit {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.notifications = orderBy(this.notificationService.notifications, (notification) => notification.created, [
+        this.notifications = orderBy(this.notificationService.notifications, (notification) => notification.created, [
       'desc',
     ]);
-
-    console.log(this.notificationService.notifications);
   }
 }

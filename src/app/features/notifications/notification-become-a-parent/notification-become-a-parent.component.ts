@@ -1,6 +1,6 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -20,6 +20,7 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
   public notification;
   public notificationUid: string;
   public status: string;
+  public route1: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -31,7 +32,7 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.notificationUid = this.route.snapshot.params.notificationuid;
+    this.route.params.subscribe(x => this.notificationUid = x.notificationuid);
     this.subscriptions.add(
       this.notificationsService.getNotificationDetails(this.notificationUid).subscribe((details) => {
         this.notification = details;

@@ -24,10 +24,6 @@ export class NotificationsService {
     return output;
   }
 
-  public getNotification(notificationUid: string): Notification {
-    return filter(this.notifications, { notificationUid })[0];
-  }
-
   set notifications(notifications: Notification[]) {
     this.notifications$.next(notifications);
   }
@@ -53,8 +49,8 @@ export class NotificationsService {
     return this.http.get<any>(`/api/notification/establishment/${establishmentUid}`);
   }
 
-  public getNotificationDetails(notificationId): Observable<any> {
-    return this.http.get<any>(`/api/user/my/notifications/${notificationId}`);
+  public getNotificationDetails(notificationUid): Observable<any> {
+    return this.http.get<any>(`/api/notification/${notificationUid}`);
   }
 
   public sendEstablishmentNotification(establishmentUid, notificationType): Observable<any> {
@@ -70,7 +66,7 @@ export class NotificationsService {
   }
 
   public setNoticationViewed(notificationUid: string): Observable<Notification> {
-    return this.http.post<any>(`/api/user/my/notifications/${notificationUid}`, { isViewed: true });
+    return this.http.patch<any>(`/api/notification/${notificationUid}`, { isViewed: true });
   }
 
   public setNotificationRequestLinkToParent(establishmentId, data): Observable<NotificationRequest> {

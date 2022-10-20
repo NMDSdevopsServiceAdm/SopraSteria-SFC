@@ -58,6 +58,8 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
           details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
       })
     );
+
+    console.log(this.route);
     this.setNotificationViewed(this.notificationUid);
   }
   /**

@@ -34,42 +34,70 @@ exports.getListByUser = async ({ userUid, limit, offset }) =>
   db.query(getListQuery, {
     replacements: {
       userUid: userUid,
-      isEstablishmentLevel: false,
       limit: Number.isInteger(limit) && limit > 0 ? limit : null,
       offset: Number.isInteger(offset) && offset > 0 ? offset : 0,
     },
     type: db.QueryTypes.SELECT,
   });
 
-const getOneQuery = `
+const selectOneUserNotification = `
   SELECT
     "notificationUid",
-    type,
+    "type",
     "typeUid",
     created,
     "isViewed",
     "createdByUserUID"
   FROM cqc."Notifications"
   WHERE cqc."Notifications"."notificationUid" = :notificationUid
-  AND cqc."Notifications"."userUid" = :userUid
   LIMIT :limit;
 `;
 
-exports.getOne = async ({ userUid, notificationUid }) =>
-  db.query(getOneQuery, {
+const selectOneEstablishmentNotification = `
+  SELECT
+    "notificationUid",
+    "nt"."type",
+    "notificationContentUid",
+    "ne"."created",
+    "isViewed",
+    "createdByUserUID"
+  FROM cqc."NotificationsEstablishment" "ne"
+  JOIN cqc."NotificationType" "nt"
+  ON "nt"."id" = "ne"."notificationTypeUid"
+  WHERE "ne"."notificationUid" = :notificationUid
+  LIMIT :limit
+`;
+
+exports.selectOneUserNotification = async ({notificationUid}) =>
+  db.query(selectOneUserNotification, {
     replacements: {
-      userUid,
-      notificationUid,
+      notificationUid: notificationUid,
       limit: 1,
     },
     type: db.QueryTypes.SELECT,
   });
 
-const markOneAsReadQuery = `
+  exports.selectOneEstablishmentNotification = async ({ notificationUid }) =>
+  db.query(selectOneEstablishmentNotification, {
+    replacements: {
+      notificationUid: notificationUid,
+      limit: 1,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const markUserNotificationReadQuery = `
   UPDATE cqc."Notifications"
   SET "isViewed" = :isViewed
   WHERE "Notifications"."notificationUid" = :notificationUid
   AND "Notifications"."userUid" = :userUid;
+`;
+
+const markEstablishmentNotificationReadQuery = `
+  UPDATE cqc."NotificationsEstablishment"
+  SET "isViewed" = :isViewed
+  WHERE "NotificationsEstablishment"."notificationUid" = :notificationUid
+  AND "NotificationsEstablishment"."userUid" = :userUid;
 `;
 
 const insertUserNotificationQuery = `
@@ -136,8 +164,18 @@ exports.selectNotificationByEstablishment = async (establishmentUid, limit, offs
 exports.getNotificationTypes = async () =>
   db.query(selectNotificationTypeQuery, { replacements: {}, type: db.QueryTypes.SELECT });
 
-exports.markOneAsRead = async ({ userUid, notificationUid }) =>
-  db.query(markOneAsReadQuery, {
+exports.markUserNotificationAsRead = async ({ userUid, notificationUid }) =>
+  db.query(markUserNotificationReadQuery, {
+    replacements: {
+      userUid,
+      notificationUid,
+      isViewed: true,
+    },
+    type: db.QueryTypes.UPDATE,
+  });
+
+  exports.markEstablishmentNotificationAsRead = async ({ userUid, notificationUid }) =>
+  db.query(markEstablishmentNotificationReadQuery, {
     replacements: {
       userUid,
       notificationUid,

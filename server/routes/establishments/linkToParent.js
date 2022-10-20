@@ -215,7 +215,7 @@ const actionLinkToParent = async (req, res) => {
                 let notificationDetailsParams = {
                   typeUid: params.linkToParentUid,
                 };
-                const notificationDetails = await linkSubToParent.getNotificationDetails(notificationDetailsParams);
+                const notificationDetails = await linkSubToParent.getLinkToParentDetails(notificationDetailsParams);
                 if (notificationDetails) {
                   return res.status(201).send(notificationDetails[0]);
                 }

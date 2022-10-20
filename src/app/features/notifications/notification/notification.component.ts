@@ -62,6 +62,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
           ? details.typeContent.subEstablishmentName
           : details.typeContent.parentEstablishmentName;
 
+      console.log(details.typeContent.approvalStatus);
       if (details.typeContent.approvalStatus === 'APPROVED') {
         this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
       } else {
@@ -70,7 +71,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });
-    this.setNotificationViewed(this.notificationUid);
+    // this.setNotificationViewed(this.notificationUid);
   }
   public approveRequest() {
     if (this.notification) {
