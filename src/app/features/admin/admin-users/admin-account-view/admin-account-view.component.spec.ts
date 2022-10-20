@@ -259,10 +259,8 @@ describe('AdminAccountViewComponent', () => {
 
       fireEvent.click(confirm);
       fixture.detectChanges();
-      console.log('before expect ');
 
       expect(routerSpy).toHaveBeenCalledOnceWith(['/sfcadmin', 'users']);
-      console.log('after expect ');
     });
 
     it('should call getAdminUser once the admin user has been deleted', async () => {
