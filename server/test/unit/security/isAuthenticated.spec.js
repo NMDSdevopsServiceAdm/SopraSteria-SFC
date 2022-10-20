@@ -24,7 +24,6 @@ describe('isAuthenticated', () => {
 
   describe('authorisedEstablishmentPermissionCheck', () => {
     const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f5fff';
-    let sqreenIdentifyFake;
     let jwtStub;
     let sentrySetUserStub;
     let sentrySetContextStub;
@@ -47,7 +46,6 @@ describe('isAuthenticated', () => {
         isParent: false,
         role: 'Read',
       };
-      sqreenIdentifyFake = sinon.fake();
     });
 
     afterEach(() => {
@@ -266,9 +264,6 @@ describe('isAuthenticated', () => {
         params: {
           id: 123,
         },
-        sqreen: {
-          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
-        },
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
@@ -290,21 +285,6 @@ describe('isAuthenticated', () => {
         dataPermissions: null,
         parentIsOwner: true,
       });
-
-      // check squeen is called with correct payload
-      expect(
-        sqreenIdentifyFake.calledWith(
-          req,
-          {
-            userId: req.userUid,
-            establishmentId: req.establishment.uid,
-          },
-          {
-            isParent: req.establishment.isParent,
-            role: req.role,
-          },
-        ),
-      ).to.be.true;
 
       // Assert on sentry calls
       expect(
@@ -357,9 +337,6 @@ describe('isAuthenticated', () => {
         params: {
           id: establishmentUid,
         },
-        sqreen: {
-          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
-        },
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
@@ -381,21 +358,6 @@ describe('isAuthenticated', () => {
         dataPermissions: null,
         parentIsOwner: true,
       });
-
-      // check squeen is called with correct payload
-      expect(
-        sqreenIdentifyFake.calledWith(
-          req,
-          {
-            userId: req.userUid,
-            establishmentId: req.establishment.uid,
-          },
-          {
-            isParent: req.establishment.isParent,
-            role: req.role,
-          },
-        ),
-      ).to.be.true;
 
       // Assert on sentry calls
       expect(
@@ -544,9 +506,6 @@ describe('isAuthenticated', () => {
         params: {
           id: 133,
         },
-        sqreen: {
-          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
-        },
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
@@ -600,9 +559,6 @@ describe('isAuthenticated', () => {
           id: 143,
         },
         establishmentId: 143,
-        sqreen: {
-          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
-        },
       });
       const res = httpMocks.createResponse();
       const next = sinon.fake();
@@ -654,9 +610,6 @@ describe('isAuthenticated', () => {
         },
         params: {
           id: '000aedf4-8e1a-4450-905b-6039179f5fff',
-        },
-        sqreen: {
-          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
         },
       });
       const res = httpMocks.createResponse();
@@ -786,9 +739,6 @@ describe('isAuthenticated', () => {
         },
         params: {
           id: establishmentUid,
-        },
-        sqreen: {
-          identify: (arg1, arg2, arg3) => sqreenIdentifyFake(arg1, arg2, arg3),
         },
       });
       const res = httpMocks.createResponse();

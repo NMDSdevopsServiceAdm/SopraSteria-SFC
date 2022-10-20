@@ -131,19 +131,6 @@ const setSentryContexts = (req, referencedEstablishment) => {
   });
 };
 
-const identifyUserOnSqreen = (req) =>
-  req.sqreen.identify(
-    req,
-    {
-      userId: req.userUid,
-      establishmentId: req.establishment.uid,
-    },
-    {
-      isParent: req.establishment.isParent,
-      role: req.role,
-    },
-  );
-
 const handleExceptions = (req, res, claim, establishmentMatchesClaim, roleCheck) => {
   if (audOrISSInvalid(claim, thisIss)) {
     return sendForbidden(req, res, { name: 'Invalid aud or ISS' });
@@ -243,7 +230,6 @@ const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret
     if (parentPermissionExceptionReturned) return parentPermissionExceptionReturned;
 
     buildRequest(req, claim, referencedEstablishment);
-    identifyUserOnSqreen(req);
     setSentryContexts(req, referencedEstablishment);
 
     return next();
