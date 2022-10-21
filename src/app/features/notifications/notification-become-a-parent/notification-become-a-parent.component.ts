@@ -40,11 +40,9 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
     );
     console.log(this.notification);
     this.setNotificationViewed(this.notificationUid);
-    console.log('Completed');
   }
 
   private setNotificationViewed(notificationUid) {
-    console.log('set as read');
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
         (resp) => {

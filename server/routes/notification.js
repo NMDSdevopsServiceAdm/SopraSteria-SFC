@@ -234,16 +234,16 @@ const setNotificationRead = async (req, res) => {
 
 const sendEstablishmentNotification = async (req, res) => {
   try {
+    console.log(req.body.notificationContentUid);
     const typeData = await notifications.selectNotificationTypeByTypeName(req.body.type);
     const params = {
       establishmentUid: req.params.establishmentUid,
-      notificationTypeUid: typeData[0].Id,
-      notificationContentUid: null,
+      notificationTypeUid: typeData[0].id,
+      notificationContentUid: req.body.notificationContentUid,
       userUid: req.body.userUid,
     };
-    console.log(req.userUid);
-    await notifications.insertNewNotification(params);
-    return res.status(200);
+    await notifications.insertNewEstablishmentNotification(params);
+    return res.status(200).send({ message: 'OK' });
   } catch (e) {
     return res.status(500).send({
       message: e.message,
