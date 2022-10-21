@@ -32,16 +32,19 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.route.params.subscribe(x => this.notificationUid = x.notificationuid);
+    this.route.params.subscribe((x) => (this.notificationUid = x.notificationuid));
     this.subscriptions.add(
       this.notificationsService.getNotificationDetails(this.notificationUid).subscribe((details) => {
         this.notification = details;
       }),
     );
+    console.log(this.notification);
     this.setNotificationViewed(this.notificationUid);
+    console.log('Completed');
   }
 
   private setNotificationViewed(notificationUid) {
+    console.log('set as read');
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
         (resp) => {

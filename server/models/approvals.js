@@ -120,6 +120,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Approvals.findbyUuid = function (uuid) {
+    console.log(uuid);
     return this.findOne({
       where: {
         UUID: uuid,
