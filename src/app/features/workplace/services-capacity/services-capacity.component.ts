@@ -13,7 +13,7 @@ import { Question } from '../question/question.component';
   templateUrl: './services-capacity.component.html',
 })
 export class ServicesCapacityComponent extends Question {
-  public capacities: [];
+  public capacities = [];
   public capacityErrorMsg = 'Number must be between 1 and 999';
   public intPattern = INT_PATTERN.toString();
   public section = 'Services';
@@ -45,6 +45,14 @@ export class ServicesCapacityComponent extends Question {
         if (this.capacities.length === 0) {
           this.router.navigate(['/workplace', this.establishment.uid, 'other-services'], { replaceUrl: true });
         }
+
+        const mainService = this.capacities.filter((m: any) => m.service.toLowerCase().startsWith('main service'));
+        const otherServices = this.capacities
+          .sort((a: any, b: any) => a.service.localeCompare(b.service))
+          .filter((m: any) => !m.service.toLowerCase().startsWith('main service'));
+
+        const sortedServices = mainService.concat(otherServices);
+        this.capacities = sortedServices;
 
         capacities.allServiceCapacities.forEach((service, index) => {
           const group = this.formBuilder.group({});
