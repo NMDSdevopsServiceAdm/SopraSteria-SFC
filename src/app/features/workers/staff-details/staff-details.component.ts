@@ -26,12 +26,12 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   ];
   public jobsAvailable: Job[] = [];
   public showInputTextforOtherRole: boolean;
-  public submitTitle = 'Save this staff record';
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
   public isPrimaryAccount: boolean;
   public inMandatoryDetailsFlow: boolean;
+  private formMainJobIdValue: number;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -63,6 +63,22 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.getJobs();
     this.previous = this.getReturnPath();
     this.editFlow = this.inMandatoryDetailsFlow || !this.insideFlow;
+  }
+
+  public setUpConditionalQuestionLogic(mainJobId): void {
+    this.formMainJobIdValue = parseInt(mainJobId, 10);
+    if (!this.insideFlow && !this.inMandatoryDetailsFlow) {
+      this.submitTitle = 'Save';
+      if (this.formMainJobIdValue === 23) {
+        this.conditionalQuestionUrl = this.getRoutePath('nursing-category');
+      } else if (this.formMainJobIdValue === 27) {
+        this.conditionalQuestionUrl = this.getRoutePath('mental-health-professional');
+      } else {
+        this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
+      }
+    } else {
+      this.submitTitle = 'Save this staff record';
+    }
   }
 
   public setupFormErrorsMap(): void {
@@ -144,6 +160,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   selectedJobRole(id: number) {
+    this.setUpConditionalQuestionLogic(id);
     this.showInputTextforOtherRole = false;
     const otherJob = this.jobsAvailable.find((job) => job.id === +id);
     if (otherJob && otherJob.other) {

@@ -26,6 +26,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public previous: string[];
   public next: string[];
   public back: URLStructure;
+  public conditionalQuestionUrl: string[];
   public skipRoute: string[];
 
   public formErrorsMap: Array<ErrorDetails>;
@@ -40,6 +41,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public staffRecordSummaryPath: string[];
   public submitAction: { action: string; save: boolean } = null;
   public returnUrl: string[];
+  public submitTitle: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -59,7 +61,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
         this.worker = worker;
-
         if (!this.initiated) {
           this._init();
           this.back = this.previous
@@ -121,7 +122,9 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     switch (action) {
       case 'continue':
-        this.router.navigate(this.next);
+        this.submitTitle === 'Save'
+          ? this.router.navigate(this.conditionalQuestionUrl)
+          : this.router.navigate(this.next);
         break;
 
       case 'summary':
@@ -133,10 +136,15 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'exit':
-        const url =
-          this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
-        this.router.navigate(url, { fragment: 'staff-records' });
-        break;
+        if (this.submitTitle === 'Save') {
+          this.router.navigate(this.returnUrl);
+          break;
+        } else {
+          const url =
+            this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
+          this.router.navigate(url, { fragment: 'staff-records' });
+          break;
+        }
 
       case 'return':
         this.router.navigate(this.returnUrl);

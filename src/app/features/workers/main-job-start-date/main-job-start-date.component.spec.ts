@@ -187,7 +187,7 @@ describe('MainJobStartDateComponent', () => {
       123,
       'staff-record',
       fixture.componentInstance.worker.uid,
-      'other-job-roles',
+      'recruited-from',
     ]);
   });
 
@@ -265,7 +265,7 @@ describe('MainJobStartDateComponent', () => {
       123,
       'staff-record',
       fixture.componentInstance.worker.uid,
-      'other-job-roles',
+      'recruited-from',
     ]);
     expect(workerServiceSpy).not.toHaveBeenCalled();
   });

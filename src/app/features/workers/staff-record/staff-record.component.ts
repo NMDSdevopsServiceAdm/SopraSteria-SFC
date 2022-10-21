@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -37,6 +39,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private router: Router,
     private workerService: WorkerService,
     protected backService: BackService,
+    public breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +51,15 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       }),
     );
 
+    if (this.worker.completed) {
+      const journey = this.establishmentService.isOwnWorkplace()
+        ? JourneyType.MY_WORKPLACE
+        : JourneyType.ALL_WORKPLACES;
+      this.breadcrumbService.show(journey);
+    } else {
+      this.backService.setBackLink(this.backLinkNavigation());
+    }
+
     this.subscriptions.add(
       this.workerService.alert$.subscribe((alert) => {
         if (alert) {
@@ -55,8 +67,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         }
       }),
     );
-
-    this.backService.setBackLink(this.backLinkNavigation());
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
@@ -94,8 +104,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   }
 
   public saveAndComplete(): void {
-    console.log('>>>>>>>>>>>>>');
-
     const props = {
       completed: true,
     };
