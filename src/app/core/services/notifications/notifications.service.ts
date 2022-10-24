@@ -53,12 +53,19 @@ export class NotificationsService {
     return this.http.get<any>(`/api/notification/${notificationUid}`);
   }
 
-  public sendEstablishmentNotification(establishmentUid, notificationType): Observable<any> {
-    return this.http.post<any>(`api/notification/establishment/${establishmentUid}`, notificationType);
+  public sendEstablishmentNotification(establishmentUid, notificationType, notificationContentUid?): Observable<any> {
+    return this.http.post<any>(`api/notification/establishment/${establishmentUid}`, {
+      notificationType,
+      notificationContentUid,
+    });
   }
 
-  public sendUserNotification(userUid, notificationType): Observable<any> {
-    return this.http.post<any>(`api/notification/user/${userUid}`, notificationType);
+  public sendUserNotification(userUid, notificationType, notificationContentUid, senderUid): Observable<any> {
+    return this.http.post<any>(`api/notification/user/${userUid}`, {
+      notificationType,
+      notificationContentUid,
+      senderUid,
+    });
   }
 
   public approveOwnership(ownershipChangeRequestId, data): Observable<NotificationRequest> {

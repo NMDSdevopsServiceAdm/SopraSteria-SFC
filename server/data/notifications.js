@@ -186,10 +186,10 @@ exports.insertNewUserNotification = async (params) =>
   db.query(insertUserNotificationQuery, {
     replacements: {
       type: params.type,
-      typeUid: params.typeUid,
+      typeUid: params.notificationContentUid,
       recipientUserUid: params.userUid,
       isViewed: false,
-      createdByUserUID: params.userUid,
+      createdByUserUID: params.senderUid,
       notificationTypeUid: params.notificationTypeUid,
     },
     type: db.QueryTypes.INSERT,

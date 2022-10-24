@@ -251,8 +251,28 @@ const sendEstablishmentNotification = async (req, res) => {
   }
 };
 
+const sendUserNotification = async (req, res) => {
+  try {
+    console.log(req.body.notificationContentUid);
+    const typeData = await notifications.selectNotificationTypeByTypeName(req.body.type);
+    const params = {
+      notificationTypeUid: typeData[0].id,
+      notificationContentUid: req.body.notificationContentUid,
+      userUid: req.params.userUid,
+      senderUid: req.body.senderUid,
+    };
+    await notifications.insertNewUserNotification(params);
+    return res.status(200).send({ message: 'OK' });
+  } catch (e) {
+    return res.status(500).send({
+      message: e.message,
+    });
+  }
+};
+
 router.route('/type').get(getNotificationTypes);
 router.route('/type').post(createNotificationType);
+router.route('/user/:userUid').post(sendUserNotification);
 router.route('/establishment/:establishmentUid').get(getEstablishmentNotifications);
 router.route('/establishment/:establishmentUid').post(sendEstablishmentNotification);
 router.route('/:notificationUid').patch(Authorization.isAuthorised, setNotificationRead);
