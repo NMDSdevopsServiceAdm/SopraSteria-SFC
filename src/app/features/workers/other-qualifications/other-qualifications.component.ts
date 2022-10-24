@@ -36,17 +36,46 @@ export class OtherQualificationsComponent extends QuestionComponent {
   }
 
   init(): void {
+    this.setUpConditionalQuestionLogic(this.worker.otherQualification);
     if (this.worker.otherQualification) {
-      this.form.patchValue({
-        otherQualification: this.worker.otherQualification,
-      });
+      this.prefill();
     }
+
     this.next =
       this.worker.otherQualification === 'Yes'
         ? this.getRoutePath('other-qualifications-level')
         : this.getRoutePath('');
 
     this.previous = this.getReturnPath();
+
+    this.subscriptions.add(
+      this.form.get('otherQualification').valueChanges.subscribe((value) => {
+        if (!this.insideFlow) {
+          this.setUpConditionalQuestionLogic(value);
+        }
+      }),
+    );
+  }
+
+  private prefill(): void {
+    this.form.patchValue({
+      otherQualification: this.worker.otherQualification,
+    });
+  }
+
+  public setUpConditionalQuestionLogic(otherQualification): void {
+    if (otherQualification === 'Yes') {
+      this.conditionalQuestionUrl = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'other-qualifications-level',
+      ];
+    } else {
+      this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
+    }
   }
 
   getReturnPath() {
