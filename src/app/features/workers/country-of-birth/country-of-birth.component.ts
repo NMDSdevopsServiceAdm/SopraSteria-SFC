@@ -39,10 +39,13 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
   init() {
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+    this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
     this.subscriptions.add(this.countryService.getCountries().subscribe((res) => (this.availableCountries = res)));
-
     this.subscriptions.add(
       this.form.get('countryOfBirthKnown').valueChanges.subscribe((value) => {
+        if (!this.insideFlow) {
+          this.setUpConditionalQuestionLogic(value);
+        }
         this.form.get('countryOfBirthName').clearValidators();
 
         if (value === 'Other') {
@@ -64,6 +67,23 @@ export class CountryOfBirthComponent extends QuestionComponent {
     this.next = this.getRoutePath('year-arrived-uk');
 
     this.previous = this.getReturnPath();
+  }
+
+  public setUpConditionalQuestionLogic(countryValue): void {
+    if (!this.insideFlow) {
+      if ((countryValue === 'Other' || countryValue === `Don't know`) && countryValue !== 'United Kingdom') {
+        this.conditionalQuestionUrl = [
+          '/workplace',
+          this.workplace.uid,
+          'staff-record',
+          this.worker.uid,
+          'staff-record-summary',
+          'year-arrived-uk',
+        ];
+      } else {
+        this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
+      }
+    }
   }
 
   getReturnPath() {
@@ -90,7 +110,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
   generateUpdateProps() {
     const { countryOfBirthName, countryOfBirthKnown } = this.form.value;
-
     return countryOfBirthKnown
       ? {
           countryOfBirth: {
