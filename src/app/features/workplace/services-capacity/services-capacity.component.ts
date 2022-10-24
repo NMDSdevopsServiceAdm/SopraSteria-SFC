@@ -5,6 +5,7 @@ import { INT_PATTERN } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import groupBy from 'lodash/groupBy';
 
 import { Question } from '../question/question.component';
 
@@ -46,13 +47,7 @@ export class ServicesCapacityComponent extends Question {
           this.router.navigate(['/workplace', this.establishment.uid, 'other-services'], { replaceUrl: true });
         }
 
-        const mainService = this.capacities.filter((m: any) => m.service.toLowerCase().startsWith('main service'));
-        const otherServices = this.capacities
-          .sort((a: any, b: any) => a.service.localeCompare(b.service))
-          .filter((m: any) => !m.service.toLowerCase().startsWith('main service'));
-
-        const sortedServices = mainService.concat(otherServices);
-        this.capacities = sortedServices;
+        this.sortServices();
 
         capacities.allServiceCapacities.forEach((service, index) => {
           const group = this.formBuilder.group({});
@@ -192,5 +187,40 @@ export class ServicesCapacityComponent extends Question {
     }
 
     return null;
+  }
+
+  protected sortServices() {
+    const mainService = this.capacities.filter((m: any) => m.service.toLowerCase().startsWith('main service'));
+    const otherServices = this.capacities.filter((m: any) => m.service.toLowerCase().startsWith('other'));
+
+    const toSortServices = this.capacities
+      .sort((a: any, b: any) => a.service.localeCompare(b.service))
+      .filter((m: any) => !m.service.toLowerCase().startsWith('main service'))
+      .filter((m: any) => !m.service.toLowerCase().startsWith('other'));
+
+    const groupItemsByServiceName = groupBy(toSortServices, (m) => {
+      const indexOf = m.service.indexOf(':');
+      const serviceName = m.service.substring(0, indexOf);
+      return serviceName;
+    });
+
+    const middleItems = [];
+    for (const [key, value] of Object.entries(groupItemsByServiceName)) {
+      const groupFiltered = value
+        .sort((a: any, b: any) => a.service.localeCompare(b.service))
+        .filter((m: any) => !m.service.toLowerCase().startsWith(`${key.toLocaleLowerCase()}: other`));
+
+      const otherGroupFiltered = value.filter((m: any) =>
+        m.service.toLowerCase().startsWith(`${key.toLocaleLowerCase()}: other`),
+      );
+
+      const groupFilterResult = [...groupFiltered, ...otherGroupFiltered];
+      groupFilterResult.forEach((s) => {
+        middleItems.push(s);
+      });
+    }
+
+    const sortedServices = mainService.concat(middleItems).concat(otherServices);
+    this.capacities = sortedServices;
   }
 }
