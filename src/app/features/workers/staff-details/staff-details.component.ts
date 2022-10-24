@@ -25,6 +25,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     { value: Contracts.Other, tag: 'Other' },
   ];
   public jobsAvailable: Job[] = [];
+  public submitTitle = 'Save this staff record';
   public showInputTextforOtherRole: boolean;
   public canExit = true;
   public editFlow: boolean;
@@ -60,6 +61,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   init(): void {
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
     this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
+    this.showSaveAndCancelButton = !this.insideFlow && !this.inMandatoryDetailsFlow ? true : false;
     this.getJobs();
     this.previous = this.getReturnPath();
     this.editFlow = this.inMandatoryDetailsFlow || !this.insideFlow;
@@ -68,16 +70,27 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public setUpConditionalQuestionLogic(mainJobId): void {
     this.formMainJobIdValue = parseInt(mainJobId, 10);
     if (!this.insideFlow && !this.inMandatoryDetailsFlow) {
-      this.submitTitle = 'Save';
       if (this.formMainJobIdValue === 23) {
-        this.conditionalQuestionUrl = this.getRoutePath('nursing-category');
+        this.conditionalQuestionUrl = [
+          '/workplace',
+          this.workplace.uid,
+          'staff-record',
+          this.worker.uid,
+          'staff-record-summary',
+          'nursing-category',
+        ];
       } else if (this.formMainJobIdValue === 27) {
-        this.conditionalQuestionUrl = this.getRoutePath('mental-health-professional');
+        this.conditionalQuestionUrl = [
+          '/workplace',
+          this.workplace.uid,
+          'staff-record',
+          this.worker.uid,
+          'staff-record-summary',
+          'mental-health-professional',
+        ];
       } else {
         this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
       }
-    } else {
-      this.submitTitle = 'Save this staff record';
     }
   }
 

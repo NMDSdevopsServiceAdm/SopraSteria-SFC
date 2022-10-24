@@ -28,6 +28,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public back: URLStructure;
   public conditionalQuestionUrl: string[];
   public skipRoute: string[];
+  public showSaveAndCancelButton: boolean;
 
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
@@ -122,9 +123,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     switch (action) {
       case 'continue':
-        this.submitTitle === 'Save'
-          ? this.router.navigate(this.conditionalQuestionUrl)
-          : this.router.navigate(this.next);
+        this.router.navigate(this.next);
         break;
 
       case 'summary':
@@ -148,6 +147,10 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
       case 'return':
         this.router.navigate(this.returnUrl);
+        break;
+
+      case 'saveAndContinueConditional':
+        this.router.navigate(this.conditionalQuestionUrl);
         break;
     }
   }

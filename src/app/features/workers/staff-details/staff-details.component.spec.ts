@@ -208,6 +208,7 @@ describe('StaffDetailsComponent', () => {
         'mocked-uid',
         'staff-record',
         component.worker.uid,
+        'staff-record-summary',
         'nursing-category',
       ]);
     });
@@ -226,6 +227,7 @@ describe('StaffDetailsComponent', () => {
         'mocked-uid',
         'staff-record',
         component.worker.uid,
+        'staff-record-summary',
         'mental-health-professional',
       ]);
     });
@@ -362,7 +364,7 @@ describe('StaffDetailsComponent', () => {
         otherJobRole: null,
         contract: 'Temporary',
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
@@ -430,7 +432,7 @@ describe('StaffDetailsComponent', () => {
         otherJobRole: 'Admin',
         contract: 'Temporary',
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
@@ -479,7 +481,7 @@ describe('StaffDetailsComponent', () => {
       const { component, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false);
 
       userEvent.click(getByText('Cancel'));
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'exit', save: false });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
