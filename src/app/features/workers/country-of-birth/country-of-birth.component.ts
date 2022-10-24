@@ -39,7 +39,8 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
   init() {
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-    this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
+    this.setUpConditionalQuestionLogic(this.worker.countryOfBirth.value);
+
     this.subscriptions.add(this.countryService.getCountries().subscribe((res) => (this.availableCountries = res)));
     this.subscriptions.add(
       this.form.get('countryOfBirthKnown').valueChanges.subscribe((value) => {
