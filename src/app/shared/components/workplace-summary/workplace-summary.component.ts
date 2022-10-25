@@ -140,7 +140,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
         const temp = [{}];
         this.capacities.forEach((capacity) => {
           capacity.questions.forEach((question) => {
-          temp[question.questionId] = {question: question.question, value: temp[question.questionId] ? question.question + question.answer : question.answer, service: ` (${capacity.service.split(':')[1]})`};
+          temp[question.questionId] = {question: question.question, value: temp[question.questionId] ? question.question + question.answer : question.answer, service: ` (${capacity.service.split(':')[1].trim().toLowerCase()})`};
           })
         });
 
