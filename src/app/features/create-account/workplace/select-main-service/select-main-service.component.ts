@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -18,13 +19,14 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   constructor(
     public registrationService: RegistrationService,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected workplaceService: WorkplaceService,
     private route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, workplaceService);
+    super(backService, backLinkService, errorSummaryService, formBuilder, router, workplaceService);
   }
 
   protected init(): void {
@@ -61,12 +63,12 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     this.router.navigate(url);
   }
 
-  public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow] });
-      return;
-    }
+  // public setBackLink(): void {
+  //   if (this.returnToConfirmDetails) {
+  //     this.backService.setBackLink({ url: [this.flow] });
+  //     return;
+  //   }
 
-    this.backService.setBackLink({ url: [this.flow, 'type-of-employer'] });
-  }
+  //   this.backService.setBackLink({ url: [this.flow, 'type-of-employer'] });
+  // }
 }
