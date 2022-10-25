@@ -213,36 +213,4 @@ describe('FindWorkplaceAddressComponent', () => {
       expect(form.value.postcode).toBe('');
     });
   });
-
-  describe('setBackLink()', () => {
-    it('should set the back link to `regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.workplaceService.workplaceNotFound$ = new BehaviorSubject(false);
-      component.fixture.componentInstance.ngOnInit();
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'regulated-by-cqc'],
-      });
-    });
-
-    it('should set the back link to `workplace-address-not-found` if returnToWorkplaceNotFound is true', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.workplaceService.workplaceNotFound$ = new BehaviorSubject(true);
-      component.fixture.componentInstance.ngOnInit();
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'workplace-address-not-found'],
-      });
-    });
-  });
 });
