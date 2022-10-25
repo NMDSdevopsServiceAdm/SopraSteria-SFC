@@ -136,35 +136,27 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
         this.capacities = response.allServiceCapacities;
-        console.log(this.capacities);
-
 
         const temp = [{}];
         this.capacities.forEach((capacity) => {
           capacity.questions.forEach((question) => {
-          temp[question.question] = {value: temp[question.question] ? temp[question.question] + question.answer : question.answer, service: ` (${capacity.service})`};
-          console.log(temp);
+          temp[question.questionId] = {question: question.question, value: temp[question.questionId] ? question.question + question.answer : question.answer, service: ` (${capacity.service.split(':')[1]})`};
           })
         });
 
         if (Object.keys(temp).length) {
           Object.keys(temp).forEach((key) => {
-            console.log(key);
-            if (this.pluralMap[key]) {
-              const message = this.i18nPluralPipe.transform(temp[key].value, this.pluralMap[key]) + temp[key].service;
+            if (this.pluralMap[temp[key].question]) {
+              const message = this.i18nPluralPipe.transform(temp[key].value, this.pluralMap[temp[key].question]) + (temp[key].value ? temp[key].service : '');
               this.capacityMessages.push(message);
             }
           });
         }
 
-        console.log(this.capacityMessages);
-
-
       }),
     );
 
-    console.log(this.capacities);
-      console.log(this.capacityMessages);
+;
 
     this.cqcStatusRequested = false;
     this.subscriptions.add(
