@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
@@ -19,11 +20,12 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
     private createAccountService: CreateAccountService,
     protected route: ActivatedRoute,
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, fb, router, route);
+    super(backService, backLinkService, errorSummaryService, fb, router, route);
   }
 
   protected init() {
@@ -48,7 +50,7 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
     this.router.navigate(this.return.url);
   }
 
-  protected setBackLink(): void {
-    this.backService.setBackLink(this.return);
-  }
+  // protected setBackLink(): void {
+  //   this.backService.setBackLink(this.return);
+  // }
 }

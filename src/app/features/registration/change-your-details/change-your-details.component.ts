@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
@@ -18,17 +19,18 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
   constructor(
     private userService: UserService,
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, fb, router, route);
+    super(backService, backLinkService, errorSummaryService, fb, router, route);
   }
 
   protected init() {
     this.setupSubscription();
-    this.setBackLink();
+    // this.setBackLink();
   }
 
   private setupSubscription(): void {
@@ -46,7 +48,7 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
     this.router.navigate(this.previousAndReturnRoute);
   }
 
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: this.previousAndReturnRoute });
-  }
+  // protected setBackLink(): void {
+  //   this.backService.setBackLink({ url: this.previousAndReturnRoute });
+  // }
 }
