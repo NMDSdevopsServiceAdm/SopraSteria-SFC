@@ -36,9 +36,9 @@ export class OtherQualificationsComponent extends QuestionComponent {
   }
 
   init(): void {
-    this.setUpConditionalQuestionLogic(this.worker.otherQualification);
     if (this.worker.otherQualification) {
       this.prefill();
+      this.setUpConditionalQuestionLogic(this.worker.otherQualification);
     }
 
     this.next =

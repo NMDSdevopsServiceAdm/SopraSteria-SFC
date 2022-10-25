@@ -122,6 +122,21 @@ const routes: Routes = [
             },
           },
           {
+            path: 'registered-nurse-details',
+            children: [
+              {
+                path: 'nursing-category',
+                component: NursingCategoryComponent,
+                data: { title: 'Nursing Category' },
+              },
+              {
+                path: 'nursing-specialism',
+                component: NursingSpecialismComponent,
+                data: { title: 'Nursing Specialism' },
+              },
+            ],
+          },
+          {
             path: 'nursing-category',
             component: NursingCategoryComponent,
             data: { title: 'Nursing Category' },

@@ -44,6 +44,7 @@ export class NursingSpecialismComponent extends QuestionComponent {
   }
 
   init() {
+    this.registeredNurseFlow = this.route.parent.snapshot.url[0].path === 'registered-nurse-details';
     this.next = this.getReturnPath();
     this.previous = this.insideFlow ? this.getRoutePath('nursing-category') : this.getRoutePath('');
 

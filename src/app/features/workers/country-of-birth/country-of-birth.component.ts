@@ -39,8 +39,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
   init() {
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-    this.setUpConditionalQuestionLogic(this.worker.countryOfBirth.value);
-
     this.subscriptions.add(this.countryService.getCountries().subscribe((res) => (this.availableCountries = res)));
     this.subscriptions.add(
       this.form.get('countryOfBirthKnown').valueChanges.subscribe((value) => {
@@ -58,6 +56,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
     );
 
     if (this.worker.countryOfBirth) {
+      this.setUpConditionalQuestionLogic(this.worker.countryOfBirth.value);
       const { value, other } = this.worker.countryOfBirth;
 
       this.form.patchValue({
@@ -66,7 +65,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
       });
     }
     this.next = this.getRoutePath('year-arrived-uk');
-
     this.previous = this.getReturnPath();
   }
 

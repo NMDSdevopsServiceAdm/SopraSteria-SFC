@@ -38,13 +38,25 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   init() {
+    this.registeredNurseFlow = this.route.parent.snapshot.url[0].path === 'registered-nurse-details';
     if (this.worker.registeredNurse) {
       this.form.patchValue({
         nursingCategory: this.worker.registeredNurse,
       });
     }
 
-    this.next = this.getRoutePath('nursing-specialism');
+    this.next =
+      this.registeredNurseFlow === true
+        ? [
+            '/workplace',
+            this.workplace.uid,
+            'staff-record',
+            this.worker.uid,
+            'staff-record-summary',
+            'registered-nurse-details',
+            'nursing-specialism',
+          ]
+        : this.getRoutePath('nursing-specialism');
     this.previous = this.insideFlow ? this.getRoutePath('main-job-start-date') : this.getRoutePath('');
   }
 

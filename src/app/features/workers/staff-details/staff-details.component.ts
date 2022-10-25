@@ -77,6 +77,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
           'staff-record',
           this.worker.uid,
           'staff-record-summary',
+          'registered-nurse-details',
           'nursing-category',
         ];
       } else if (this.formMainJobIdValue === 27) {

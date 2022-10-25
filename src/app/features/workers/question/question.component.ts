@@ -38,6 +38,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public staffRecordSections: string[] = ProgressBarUtil.staffRecordProgressBarSections();
   public insideFlow: boolean;
+  public registeredNurseFlow: boolean;
   public flow: string;
   public staffRecordSummaryPath: string[];
   public submitAction: { action: string; save: boolean } = null;

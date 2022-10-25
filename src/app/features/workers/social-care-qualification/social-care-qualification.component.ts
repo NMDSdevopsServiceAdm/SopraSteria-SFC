@@ -36,11 +36,9 @@ export class SocialCareQualificationComponent extends QuestionComponent {
   }
 
   init() {
-    this.setUpConditionalQuestionLogic(this.worker.qualificationInSocialCare);
     if (this.worker.qualificationInSocialCare) {
-      this.form.patchValue({
-        qualificationInSocialCare: this.worker.qualificationInSocialCare,
-      });
+      this.setUpConditionalQuestionLogic(this.worker.qualificationInSocialCare);
+      this.prefill();
     }
 
     this.subscriptions.add(
@@ -54,6 +52,13 @@ export class SocialCareQualificationComponent extends QuestionComponent {
     this.next = this.getRoutePath('other-qualifications');
     this.previous = this.getReturnPath();
   }
+
+  private prefill(): void {
+    this.form.patchValue({
+      qualificationInSocialCare: this.worker.qualificationInSocialCare,
+    });
+  }
+
   public setUpConditionalQuestionLogic(qualificationInSocialCareValue): void {
     if (qualificationInSocialCareValue === 'Yes') {
       this.conditionalQuestionUrl = [

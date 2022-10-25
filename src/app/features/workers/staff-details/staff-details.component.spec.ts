@@ -209,6 +209,7 @@ describe('StaffDetailsComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
+        'registered-nurse-details',
         'nursing-category',
       ]);
     });
