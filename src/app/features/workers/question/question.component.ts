@@ -136,15 +136,14 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'exit':
-        if (this.submitTitle === 'Save') {
+        if (this.registeredNurseFlow) {
           this.router.navigate(this.returnUrl);
           break;
-        } else {
-          const url =
-            this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
-          this.router.navigate(url, { fragment: 'staff-records' });
-          break;
         }
+        const url =
+          this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
+        this.router.navigate(url, { fragment: 'staff-records' });
+        break;
 
       case 'return':
         this.router.navigate(this.returnUrl);
