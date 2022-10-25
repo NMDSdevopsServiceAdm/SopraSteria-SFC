@@ -57,15 +57,19 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
     if (this.worker.countryOfBirth) {
       this.setUpConditionalQuestionLogic(this.worker.countryOfBirth.value);
-      const { value, other } = this.worker.countryOfBirth;
-
-      this.form.patchValue({
-        countryOfBirthKnown: value,
-        countryOfBirthName: other ? other.country : null,
-      });
+      this.prefill();
     }
+
     this.next = this.getRoutePath('year-arrived-uk');
     this.previous = this.getReturnPath();
+  }
+
+  private prefill(): void {
+    const { value, other } = this.worker.countryOfBirth;
+    this.form.patchValue({
+      countryOfBirthKnown: value,
+      countryOfBirthName: other ? other.country : null,
+    });
   }
 
   public setUpConditionalQuestionLogic(countryValue): void {
@@ -77,7 +81,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
           'staff-record',
           this.worker.uid,
           'staff-record-summary',
-          'year-arrived-uk',
+          'year-arrived-uk-summary-flow',
         ];
       } else {
         this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');

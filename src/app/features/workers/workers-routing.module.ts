@@ -202,6 +202,16 @@ const routes: Routes = [
             data: { title: 'Year Arrived in the UK' },
           },
           {
+            path: 'year-arrived-uk-summary-flow',
+            children: [
+              {
+                path: '',
+                component: YearArrivedUkComponent,
+                data: { title: 'Year Arrived in the UK' },
+              },
+            ],
+          },
+          {
             path: 'recruited-from',
             component: RecruitedFromComponent,
             data: { title: 'Recruited From' },
