@@ -42,8 +42,8 @@
   </div>
 
   <app-submit-button
-    [showSaveAndCancelButton]="!!return"
-    [return]="!!return"
+    [showSaveAndCancelButton]="!insideFlow"
+    [return]="!insideFlow"
     (clicked)="setSubmitAction($event)"
   ></app-submit-button>
 </form>

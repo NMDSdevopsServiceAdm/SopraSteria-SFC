@@ -67,7 +67,7 @@ export class SocialCareQualificationComponent extends QuestionComponent {
         'staff-record',
         this.worker.uid,
         'staff-record-summary',
-        'social-care-qualification-level',
+        'social-care-qualification-level-summary-flow',
       ];
     } else {
       this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');

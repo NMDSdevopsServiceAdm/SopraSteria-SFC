@@ -4,7 +4,10 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import {
+  MockWorkerServiceWithoutReturnUrl,
+  MockWorkerServiceWithUpdateWorker,
+} from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, getByLabelText, render } from '@testing-library/angular';
 
@@ -243,7 +246,7 @@ describe('SocialCareQualificationComponent', () => {
       ]);
     });
 
-    it('should navigate to social-care-qualification-level page when pressing save and Yes is entered', async () => {
+    it('should navigate to social-care-qualification-level-summary-flow page when pressing save and Yes is entered', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
 
       const workerId = component.worker.uid;
@@ -265,7 +268,7 @@ describe('SocialCareQualificationComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
-        'social-care-qualification-level',
+        'social-care-qualification-level-summary-flow',
       ]);
     });
 
