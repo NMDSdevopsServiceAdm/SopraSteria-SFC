@@ -6,6 +6,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
@@ -36,6 +37,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected route: ActivatedRoute,
     protected router: Router,
     public workplaceInterfaceService: WorkplaceInterfaceService,
@@ -94,7 +96,8 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [`/${this.flow}`, 'find-workplace'] });
+    this.backLinkService.showBackLink();
+    // this.backService.setBackLink({ url: [`/${this.flow}`, 'find-workplace'] });
   }
 
   public onSubmit(): void {
