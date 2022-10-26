@@ -329,24 +329,6 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   public setBackLink(): void {
     this.backLinkService.showBackLink();
-    // if (this.returnToConfirmDetails) {
-    //   this.backService.setBackLink({ url: [this.flow] });
-    //   return;
-    // }
-    // if (this.isCqcRegulatedAndWorkplaceNotFound()) {
-    //   this.backService.setBackLink({ url: [this.flow, 'workplace-not-found'] });
-    //   return;
-    // }
-    // if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
-    //   this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
-    //   return;
-    // }
-    // if (this.isCqcRegulated) {
-    //   this.backService.setBackLink({ url: [this.flow, 'select-workplace'] });
-    //   return;
-    // }
-
-    // this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
   }
 
   protected setConfirmDetailsBackLink(): void {}

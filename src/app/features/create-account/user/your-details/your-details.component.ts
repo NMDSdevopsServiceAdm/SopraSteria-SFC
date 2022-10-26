@@ -27,10 +27,6 @@ export class YourDetailsComponent extends AccountDetailsDirective {
     super(backService, backLinkService, errorSummaryService, fb, router, route);
   }
 
-  // public setBackLink(): void {
-  //   const url = this.return ? 'confirm-details' : 'add-total-staff';
-  //   this.backService.setBackLink({ url: ['registration', url] });
-  // }
   protected init(): void {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
     this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';

@@ -29,16 +29,7 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
     this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
     this.return = this.registrationService.returnTo$.value;
-    this.setBackLink();
   }
-
-  // public setBackLink(): void {
-  //   if (this.return) {
-  //     this.backService.setBackLink({ url: ['registration', 'confirm-details'] });
-  //     return;
-  //   }
-  //   this.backService.setBackLink({ url: ['registration', 'your-details'] });
-  // }
 
   protected setupSubscriptions(): void {
     this.subscriptions.add(

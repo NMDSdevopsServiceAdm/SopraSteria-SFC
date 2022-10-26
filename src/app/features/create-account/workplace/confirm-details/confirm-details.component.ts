@@ -72,7 +72,6 @@ export class ConfirmDetailsComponent implements OnInit {
 
   public setBackLink(): void {
     this.backLinkService.showBackLink();
-    // this.backService.setBackLink({ url: ['registration', 'create-security-question'] });
   }
 
   private setupSubscriptions(): void {

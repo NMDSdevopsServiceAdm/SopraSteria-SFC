@@ -30,14 +30,7 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
   protected init(): void {
     this.activationToken = this.route.snapshot.params.activationToken;
     this.setupSubscription();
-    // this.setBackLink();
   }
-
-  // protected setBackLink(): void {
-  //   this.return = this.createAccountService.returnTo$.value;
-  //   this.back = this.return ? this.return : { url: ['/activate-account', this.activationToken, 'create-username'] };
-  //   this.backService.setBackLink(this.back);
-  // }
 
   protected setupSubscription(): void {
     this.subscriptions.add(

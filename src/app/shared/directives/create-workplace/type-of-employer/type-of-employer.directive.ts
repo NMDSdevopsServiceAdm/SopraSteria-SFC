@@ -73,14 +73,6 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
 
   public setBackLink(): void {
     this.backLinkService.showBackLink();
-
-    // if (this.returnToConfirmDetails) {
-    //   this.backService.setBackLink({ url: [this.flow] });
-    //   return;
-    // }
-
-    // const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
-    // this.backService.setBackLink({ url: [this.flow, route] });
   }
 
   protected getCQCRegulatedBackLink(): string {

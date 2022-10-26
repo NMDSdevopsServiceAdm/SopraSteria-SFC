@@ -37,7 +37,6 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
     this.return = this.registrationService.returnTo$.value;
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
     this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
-    // this.setBackLink();
   }
 
   protected setupSubscription(): void {
@@ -49,15 +48,6 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
       }),
     );
   }
-
-  // public setBackLink(): void {
-  // if (this.return) {
-  //   const url = 'confirm-details';
-  //   this.backService.setBackLink({ url: ['registration', url] });
-  //   return;
-  // }
-  // this.backService.setBackLink({ url: ['registration', 'username-password'] });
-  // }
 
   protected save(): void {
     this.router.navigate(['/registration/confirm-details']).then(() => {

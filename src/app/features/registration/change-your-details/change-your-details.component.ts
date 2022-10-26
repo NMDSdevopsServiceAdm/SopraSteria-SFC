@@ -30,7 +30,6 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
 
   protected init() {
     this.setupSubscription();
-    // this.setBackLink();
   }
 
   private setupSubscription(): void {
@@ -47,8 +46,4 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
     this.userService.updateState(this.setUserDetails());
     this.router.navigate(this.previousAndReturnRoute);
   }
-
-  // protected setBackLink(): void {
-  //   this.backService.setBackLink({ url: this.previousAndReturnRoute });
-  // }
 }
