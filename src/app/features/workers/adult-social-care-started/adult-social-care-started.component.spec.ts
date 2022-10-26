@@ -41,7 +41,13 @@ describe('AdultSocialCareStartedComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       AdultSocialCareStartedComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [
+          SharedModule,
+          RouterModule,
+          RouterTestingModule.withRoutes([]),
+          HttpClientTestingModule,
+          ReactiveFormsModule,
+        ],
         providers: [
           FormBuilder,
           {

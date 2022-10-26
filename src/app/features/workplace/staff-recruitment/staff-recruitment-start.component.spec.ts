@@ -14,7 +14,7 @@ describe('StaffRecruitmentStartComponent (workplace)', () => {
     navigatedFromFragment ? history.pushState({ navigatedFromFragment }, '') : history.replaceState({}, '');
 
     const { fixture, getByText } = await render(StaffRecruitmentStartComponent, {
-      imports: [RouterModule, RouterTestingModule, WorkplaceModule, HttpClientTestingModule],
+      imports: [RouterModule, WorkplaceModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       providers: [
         BackService,
         {
