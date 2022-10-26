@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -15,13 +16,23 @@ export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
   constructor(
     protected formBuilder: FormBuilder,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected router: Router,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
     public workplaceService: WorkplaceService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, backService, router, route, errorSummaryService, workplaceService, establishmentService);
+    super(
+      formBuilder,
+      backService,
+      backLinkService,
+      router,
+      route,
+      errorSummaryService,
+      workplaceService,
+      establishmentService,
+    );
   }
 
   protected init(): void {
