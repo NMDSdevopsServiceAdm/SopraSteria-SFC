@@ -87,7 +87,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
           'staff-record',
           this.worker.uid,
           'staff-record-summary',
-          'mental-health-professional',
+          'mental-health-professional-summary-flow',
         ];
       } else {
         this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');

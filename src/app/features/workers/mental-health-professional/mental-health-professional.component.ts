@@ -16,6 +16,7 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
   public answersAvailable = ['Yes', 'No', `Don't know`];
   public section = 'Personal details';
   private nationalInsuranceNumberPath: string[];
+  public insideMentalHealthProfessionalSummaryFlow: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -34,7 +35,8 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
   }
 
   init(): void {
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+    this.insideMentalHealthProfessionalSummaryFlow =
+      this.route.snapshot.parent.url[0].path === 'mental-health-professional-summary-flow';
     if (this.worker.approvedMentalHealthWorker) {
       this.prefill();
     }
@@ -51,13 +53,23 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
     this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
     this.nationalInsuranceNumberPath = this.getRoutePath('national-insurance-number');
 
-    if (this.insideFlow) {
+    if (this.insideFlow && !this.insideMentalHealthProfessionalSummaryFlow) {
       this.previous = this.getRoutePath('main-job-start-date');
       this.skipRoute = this.nationalInsuranceNumberPath;
       this.next = this.nationalInsuranceNumberPath;
+    } else if (this.insideMentalHealthProfessionalSummaryFlow) {
+      this.next = this.staffRecordSummaryPath;
+      this.previous = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'staff-details',
+      ];
     } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+      this.next = this.staffRecordSummaryPath;
+      this.previous = this.staffRecordSummaryPath;
     }
   }
 

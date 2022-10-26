@@ -229,7 +229,7 @@ describe('StaffDetailsComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
-        'mental-health-professional',
+        'mental-health-professional-summary-flow',
       ]);
     });
 

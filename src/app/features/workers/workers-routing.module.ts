@@ -143,6 +143,16 @@ const routes: Routes = [
             data: { title: 'Nursing Specialism' },
           },
           {
+            path: 'mental-health-professional-summary-flow',
+            children: [
+              {
+                path: '',
+                component: MentalHealthProfessionalComponent,
+                data: { title: 'Mental Health Professional' },
+              },
+            ],
+          },
+          {
             path: 'mental-health-professional',
             component: MentalHealthProfessionalComponent,
             data: { title: 'Mental Health Professional' },
