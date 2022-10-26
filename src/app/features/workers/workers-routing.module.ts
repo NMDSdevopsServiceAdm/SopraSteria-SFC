@@ -283,6 +283,16 @@ const routes: Routes = [
             data: { title: 'Highest Level of Other Qualifications' },
           },
           {
+            path: 'other-qualifications-level-summary-flow',
+            children: [
+              {
+                path: '',
+                component: OtherQualificationsLevelComponent,
+                data: { title: 'Highest Level of Other Qualifications' },
+              },
+            ],
+          },
+          {
             path: 'add-qualification',
             component: AddEditQualificationComponent,
             data: { title: 'Add Qualification' },

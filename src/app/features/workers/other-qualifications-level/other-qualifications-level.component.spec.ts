@@ -17,7 +17,6 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
-import { OtherQualificationsComponent } from '../other-qualifications/other-qualifications.component';
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level.component';
 
@@ -29,18 +28,7 @@ describe('OtherQualificationsLevelComponent', () => {
     const { fixture, getByText, queryByTestId, getByLabelText, getByTestId } = await render(
       OtherQualificationsLevelComponent,
       {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule.withRoutes([
-            {
-              path: `workplace/${workplace.uid}/staff-record/${worker.uid}/other-qualifications`,
-              component: OtherQualificationsComponent,
-            },
-          ]),
-          HttpClientTestingModule,
-          WorkersModule,
-        ],
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
         providers: [
           FormBuilder,
           {
@@ -56,7 +44,7 @@ describe('OtherQualificationsLevelComponent', () => {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
-                  url: [{ path: '' }],
+                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
                 },
               },
             },
@@ -105,7 +93,7 @@ describe('OtherQualificationsLevelComponent', () => {
 
   describe('submit buttons', () => {
     it('should render the page with a save and continue button when there return value is null', async () => {
-      const { component, fixture, getByText } = await setup();
+      const { component, fixture, getByText } = await setup(false);
 
       component.return = null;
       fixture.detectChanges();
@@ -221,17 +209,6 @@ describe('OtherQualificationsLevelComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
-    });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      expect(component.return).toEqual({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-      });
     });
   });
 });

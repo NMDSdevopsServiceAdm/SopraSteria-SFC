@@ -125,7 +125,7 @@ describe('OtherQualificationsComponent', () => {
       ]);
     });
 
-    it(`should call submit data and navigate with the   'other-qualifications-level' url when 'Skip this question' is clicked and in the flow`, async () => {
+    it(`should call submit data and navigate with the 'other-qualifications-level' url when 'Skip this question' is clicked and in the flow`, async () => {
       const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
       const button = getByText('Skip this question');
@@ -203,7 +203,7 @@ describe('OtherQualificationsComponent', () => {
       ]);
     });
 
-    it('should navigate to other-qualifications-level page when pressing save and Yes is entered', async () => {
+    it('should navigate to other-qualifications-level-summary-flow page when pressing save and Yes is entered', async () => {
       const { component, fixture, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -223,7 +223,7 @@ describe('OtherQualificationsComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
-        'other-qualifications-level',
+        'other-qualifications-level-summary-flow',
       ]);
     });
 

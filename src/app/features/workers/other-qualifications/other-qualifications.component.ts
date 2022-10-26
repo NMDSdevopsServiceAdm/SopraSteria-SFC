@@ -39,20 +39,15 @@ export class OtherQualificationsComponent extends QuestionComponent {
     if (this.worker.otherQualification) {
       this.prefill();
       this.setUpConditionalQuestionLogic(this.worker.otherQualification);
+      this.setUpPageRouting(this.worker.otherQualification);
     }
-
-    this.next =
-      this.worker.otherQualification === 'Yes'
-        ? this.getRoutePath('other-qualifications-level')
-        : this.getRoutePath('');
-
-    this.previous = this.getReturnPath();
 
     this.subscriptions.add(
       this.form.get('otherQualification').valueChanges.subscribe((value) => {
         if (!this.insideFlow) {
           this.setUpConditionalQuestionLogic(value);
         }
+        this.setUpPageRouting(value);
       }),
     );
   }
@@ -63,6 +58,23 @@ export class OtherQualificationsComponent extends QuestionComponent {
     });
   }
 
+  private setUpPageRouting(otherQualification): void {
+    if (this.insideFlow) {
+      this.previous =
+        this.worker.qualificationInSocialCare === 'Yes'
+          ? this.getRoutePath('social-care-qualification-level')
+          : (this.previous = this.getRoutePath('social-care-qualification'));
+      if (otherQualification === 'Yes') {
+        this.next = this.getRoutePath('other-qualifications-level');
+      } else {
+        this.next = this.getRoutePath('');
+      }
+    } else {
+      this.next = this.getRoutePath('');
+      this.previous = this.getRoutePath('');
+    }
+  }
+
   public setUpConditionalQuestionLogic(otherQualification): void {
     if (otherQualification === 'Yes') {
       this.conditionalQuestionUrl = [
@@ -71,29 +83,18 @@ export class OtherQualificationsComponent extends QuestionComponent {
         'staff-record',
         this.worker.uid,
         'staff-record-summary',
-        'other-qualifications-level',
+        'other-qualifications-level-summary-flow',
       ];
     } else {
       this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
     }
   }
 
-  getReturnPath() {
-    if (this.insideFlow) {
-      return this.worker.qualificationInSocialCare === 'Yes'
-        ? this.getRoutePath('social-care-qualification-level')
-        : this.getRoutePath('social-care-qualification');
-    }
-    return this.getRoutePath('');
-  }
-
   generateUpdateProps(): unknown {
     const { otherQualification } = this.form.value;
-
     if (!otherQualification) {
       return null;
     }
-
     return {
       otherQualification,
     };
