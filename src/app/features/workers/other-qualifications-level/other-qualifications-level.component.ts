@@ -63,11 +63,10 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
 
   private setUpPageRouting(): void {
     this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-
     if (this.insideFlow && !this.insideOtherQualificationsLevelSummaryFlow) {
       this.previous = this.getRoutePath('other-qualifications');
-      this.skipRoute = this.staffRecordSummaryPath;
-      this.next = this.staffRecordSummaryPath;
+      this.skipRoute = this.getRoutePath('staff-record-summary-flow');
+      this.next = this.getRoutePath('staff-record-summary-flow');
     } else if (this.insideOtherQualificationsLevelSummaryFlow) {
       this.next = this.staffRecordSummaryPath;
       this.previous = [

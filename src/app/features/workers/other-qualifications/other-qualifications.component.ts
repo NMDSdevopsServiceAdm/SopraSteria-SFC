@@ -67,7 +67,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
       if (otherQualification === 'Yes') {
         this.next = this.getRoutePath('other-qualifications-level');
       } else {
-        this.next = this.getRoutePath('');
+        this.next = this.getRoutePath('staff-record-summary-flow');
       }
     } else {
       this.next = this.getRoutePath('');

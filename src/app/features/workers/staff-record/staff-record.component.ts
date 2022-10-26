@@ -28,6 +28,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public returnToRecord: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
+  public insideFlow: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -44,6 +45,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isParent = this.establishmentService.isOwnWorkplace();
+    this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary';
+
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
@@ -51,7 +54,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       }),
     );
 
-    if (this.worker.completed) {
+    if (!this.insideFlow) {
       const journey = this.establishmentService.isOwnWorkplace()
         ? JourneyType.MY_WORKPLACE
         : JourneyType.ALL_WORKPLACES;
@@ -87,9 +90,9 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     });
   }
   public backLinkNavigation(): URLStructure {
-    return this.isParent
-      ? { url: ['dashboard'], fragment: 'staff-records' }
-      : { url: ['workplace', this.workplace.uid], fragment: 'staff-records' };
+    return this.worker.otherQualification === 'Yes'
+      ? { url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'other-qualifications-level'] }
+      : { url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'other-qualifications'] };
   }
 
   public moveWorker(event: Event): void {

@@ -367,6 +367,11 @@ const routes: Routes = [
         ],
       },
       {
+        path: 'staff-record-summary-flow',
+        component: StaffRecordComponent,
+        data: { title: 'Staff Record' },
+      },
+      {
         path: 'staff-details',
         component: StaffDetailsComponent,
         data: { title: 'Staff Details' },

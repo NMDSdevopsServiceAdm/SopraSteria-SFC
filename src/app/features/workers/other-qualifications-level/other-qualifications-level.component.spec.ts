@@ -131,7 +131,7 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to staff-record-summary page when submitting from flow', async () => {
+    it('should navigate to staff-record-summary-flow page when submitting from flow', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -149,11 +149,11 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary',
+        'staff-record-summary-flow',
       ]);
     });
 
-    it('should navigate to staff-record-summary page when skipping the question in the flow', async () => {
+    it('should navigate to staff-record-summary-flow page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -167,7 +167,7 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary',
+        'staff-record-summary-flow',
       ]);
     });
 
