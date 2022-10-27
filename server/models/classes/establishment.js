@@ -1441,14 +1441,7 @@ class Establishment extends EntityValidator {
                 model: models.serviceCapacity,
                 as: 'reference',
                 attributes: ['id', 'question'],
-                include: [
-                  {
-                    model: models.services,
-                    as: 'service',
-                    attributes: ['name'],
-                  },
-                ]
-              }
+              },
             ],
             attributes: ['id', 'answer'],
           }),

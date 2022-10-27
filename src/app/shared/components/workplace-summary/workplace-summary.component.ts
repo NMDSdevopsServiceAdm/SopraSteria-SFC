@@ -44,22 +44,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     this._workplace = workplace;
     this.capacityMessages = [];
 
-    // if (this._workplace && this._workplace.capacities) {
-    //   const temp = [];
-    //   this._workplace.capacities.forEach((capacity) => {
-    //     temp[capacity.question] = temp[capacity.question] ? temp[capacity.question] + capacity.answer : capacity.answer;
-    //   });
-
-    //   if (Object.keys(temp).length) {
-    //     Object.keys(temp).forEach((key) => {
-    //       if (this.pluralMap[key]) {
-    //         const message = this.i18nPluralPipe.transform(temp[key], this.pluralMap[key]);
-    //         this.capacityMessages.push(message);
-    //       }
-    //     });
-    //   }
-    // }
-
     if (this._workplace.employerType) {
       this._workplace.employerType.value = WorkplaceUtil.formatTypeOfEmployer(this._workplace.employerType.value);
     }
