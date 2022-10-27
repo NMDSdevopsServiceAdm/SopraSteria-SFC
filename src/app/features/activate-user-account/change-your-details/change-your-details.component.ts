@@ -49,8 +49,4 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
     this.createAccountService.userDetails$.next(this.setUserDetails());
     this.router.navigate(this.return.url);
   }
-
-  // protected setBackLink(): void {
-  //   this.backService.setBackLink(this.return);
-  // }
 }

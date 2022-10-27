@@ -74,10 +74,6 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
   }
 
-  // protected setBackLink(): void {
-  //   this.backService.setBackLink(this.establishmentService.returnTo);
-  // }
-
   get return() {
     return this.establishmentService.returnTo;
   }

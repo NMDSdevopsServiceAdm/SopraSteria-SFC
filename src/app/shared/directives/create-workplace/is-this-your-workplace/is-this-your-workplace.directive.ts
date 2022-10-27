@@ -97,7 +97,6 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
 
   public setBackLink(): void {
     this.backLinkService.showBackLink();
-    // this.backService.setBackLink({ url: [`/${this.flow}`, 'find-workplace'] });
   }
 
   public onSubmit(): void {

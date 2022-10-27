@@ -71,7 +71,6 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
 
   public setBackLink(): void {
     this.backLinkService.showBackLink();
-    // this.backService.setBackLink({ url: [`/${this.flow}`, 'select-workplace-address'] });
   }
 
   public onSubmit(): void {

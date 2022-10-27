@@ -71,7 +71,6 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
 
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
-    // this.backService.setBackLink({ url: [this.flow, 'find-workplace-address'] });
   }
 
   protected setupForm(): void {
