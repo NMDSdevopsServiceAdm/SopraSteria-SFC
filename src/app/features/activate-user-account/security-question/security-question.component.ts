@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { SecurityQuestionDirective } from '@shared/directives/user/security-question.directive';
@@ -18,23 +19,17 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
     private createAccountService: CreateAccountService,
     private route: ActivatedRoute,
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, router);
+    super(backService, backLinkService, errorSummaryService, formBuilder, router);
   }
 
   protected init(): void {
     this.activationToken = this.route.snapshot.params.activationToken;
     this.setupSubscription();
-    this.setBackLink();
-  }
-
-  protected setBackLink(): void {
-    this.return = this.createAccountService.returnTo$.value;
-    this.back = this.return ? this.return : { url: ['/activate-account', this.activationToken, 'create-username'] };
-    this.backService.setBackLink(this.back);
   }
 
   protected setupSubscription(): void {

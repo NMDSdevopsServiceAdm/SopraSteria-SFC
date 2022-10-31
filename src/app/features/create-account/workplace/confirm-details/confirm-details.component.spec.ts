@@ -160,18 +160,6 @@ describe('ConfirmDetailsComponent', () => {
     expect(saveSpy).toHaveBeenCalled();
   });
 
-  it('should set the back link to `create-security-question`', async () => {
-    const { component, fixture } = await setup();
-    const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-    component.setBackLink();
-    fixture.detectChanges();
-
-    expect(backLinkSpy).toHaveBeenCalledWith({
-      url: ['registration', 'create-security-question'],
-    });
-  });
-
   describe('Submitting registration', () => {
     it('should call postRegistration with establishment data', async () => {
       const { getByText, getByTestId, postRegistrationSpy } = await setup();
