@@ -26,6 +26,7 @@ const validatePut = async (req, res) => {
     },
   };
 
+  console.log('**** validatePut.js - validatePut *****');
   try {
     const bucketFiles = await S3.listObjectsInBucket(req.establishmentId);
 
