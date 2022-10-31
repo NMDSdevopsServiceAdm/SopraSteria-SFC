@@ -11,7 +11,6 @@ const { createWorkerKey, createEstablishmentKey, deleteRecord } = require('../..
 const validateWorkers = async (workers, myCurrentEstablishments, allEstablishmentsByKey, myAPIEstablishments) => {
   const workersKeyed = {};
   const allWorkersByKey = {};
-  console.log('****** validateWorkers.js - validateWorkers *******');
   const { csvWorkerSchemaErrors, myAPIWorkers, myJSONWorkers } = await validateWorkerCsv(
     workers,
     myCurrentEstablishments,

@@ -19,7 +19,6 @@ const { crossValidate } = require('../../../../models/BulkImport/csv/crossValida
 
 // if commit is false, then the results of validation are not uploaded to S3
 const validateBulkUploadFiles = async (req, files) => {
-  console.log('***** validateBulkUploadFiles.js - validateBulkUploadFiles.js *******');
   const { username, establishmentId, isParent } = req;
 
   const establishments = files.Establishment;

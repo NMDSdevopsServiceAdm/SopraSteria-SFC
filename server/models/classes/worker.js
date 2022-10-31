@@ -327,8 +327,6 @@ class Worker extends EntityValidator {
   // takes the given JSON document and creates a Worker's set of extendable properties
   // Returns true if the resulting Worker is valid; otherwise false
   async load(document, associatedEntities = false, bulkUploadCompletion = false) {
-    console.log('************ worker.js - load **********');
-    console.log('document:', document);
     try {
       // bulk upload status
       if (document.status) {
@@ -462,7 +460,6 @@ class Worker extends EntityValidator {
 
   // returns true if Worker is valid, otherwise false
   isValid() {
-    console.log('**** worker.js - isValid *****');
     // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
     if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
       // the property manager returns a list of all properties that are invalid; or true
