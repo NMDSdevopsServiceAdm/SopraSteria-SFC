@@ -5,6 +5,7 @@ const { validateWorkerLambda } = require('../../lambda');
 const { dateFormatter } = require('../../../../../utils/bulkUploadUtils');
 
 const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
+  console.log('validateWorkerCsv.js - validateWorkerCsv *********');
   const csvWorkerSchemaErrors = [];
   const myAPIWorkers = {};
   const myJSONWorkers = [];
@@ -33,6 +34,7 @@ const validateWorkerCsvLine = async (
   myCurrentEstablishments,
   myJSONWorkers,
 ) => {
+  console.log('******* validateWorkerCsv.js - validateWorkerCsvLine ******');
   const existingWorker = findExistingWorker(thisLine, myCurrentEstablishments);
 
   thisLine.NINUMBER = restoreNINumber(thisLine.NINUMBER, existingWorker);
@@ -43,6 +45,7 @@ const validateWorkerCsvLine = async (
 
   try {
     const thisApiWorker = new Worker();
+    console.log('thisApiWorker', thisApiWorker);
     await thisApiWorker.load(thisWorkerAsAPI);
 
     if (thisApiWorker.validate()) {
