@@ -141,13 +141,10 @@ const downloadContent = async (key, size, lastModified) => {
 };
 
 const saveLastBulkUpload = async (establishmentId) => {
-  console.log('***** s3.js - saveLastBulkUpload ****');
   const listParams = params(establishmentId);
   listParams.Prefix = `${establishmentId}/lastBulkUpload/`;
 
-  console.log('listParams:', listParams.Prefix);
   const existingFiles = await getKeysFromFolder(listParams);
-  console.log('existingFiles:', existingFiles);
   if (existingFiles.length > 0) {
     const deleteParams = {
       Bucket,
@@ -157,17 +154,15 @@ const saveLastBulkUpload = async (establishmentId) => {
       },
     };
 
-    console.log('Before Delete ******');
     await s3.deleteObjects(deleteParams).promise();
-    console.log('After Delete *******');
   }
 
   const originFolder = `${establishmentId}/latest/`;
   const destinationFolder = `${establishmentId}/lastBulkUpload/`;
-  console.log('***** before moveFolders *****');
+
   await moveFolders(originFolder, destinationFolder);
-  console.log('****** after moveFolders *****');
 };
+
 const purgeBulkUploadS3Objects = async (establishmentId) => {
   console.log('**** s3.js - purgeBuklUploadS3Objects ****');
   const listParams = params(establishmentId);
@@ -191,13 +186,25 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
   deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
   console.log('Bucket:', Bucket);
   console.log('listParams:', listParams.Prefix);
-  console.log('deleteKeys:', deleteKeys);
+  console.log('deleteKeys:', deleteKeys.length);
 
-  deleteParams.Delete.Objects = deleteKeys;
-
-  console.log('**** before delete *****');
   if (deleteKeys.length > 0) {
-    await s3.deleteObjects(deleteParams).promise();
+    if (deleteKeys.length < 1000) {
+      console.log('**** in if ****');
+      deleteParams.Delete.Objects = deleteKeys;
+      console.log('**** before if delete *****');
+      await s3.deleteObjects(deleteParams).promise();
+    } else {
+      console.log('in else *******');
+      const chunkSize = 1000;
+      for (let i = 0; i < deleteKeys.length; i += chunkSize) {
+        const chunk = deleteKeys.slice(i, i + chunkSize);
+        deleteParams.Delete.Objects = chunk;
+        console.log(`deleting chunk ${i}: ${chunk.length}`);
+        await s3.deleteObjects(deleteParams).promise();
+        console.log(`after deleting chunk ${i}}`);
+      }
+    }
   }
   console.log('***** after delete *****');
 };

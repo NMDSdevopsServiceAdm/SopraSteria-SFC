@@ -232,12 +232,10 @@ const completePost = async (req, res) => {
           completeSaveTime,
         );
         //  Saves the bulk upload files  to lastBulkUpload
-        console.log('***** before saveLastBulkUpload *****');
         await saveLastBulkUpload(primaryEstablishmentId);
-        console.log('***** after saveLastBulkUpload *****');
+
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
-
         console.log('***** before purgeBulkUploadS3Objects *****');
         await purgeBulkUploadS3Objects(primaryEstablishmentId);
         console.log('***** after purgeBulkUploadS3Objects *****');
