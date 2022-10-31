@@ -158,7 +158,7 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          [explanationText]="' employer type'"
+          [explanationText]="'employer type'"
           [link]="['/workplace', workplace.uid, 'type-of-employer']"
           [hasData]="workplace.employerType?.other || workplace.employerType?.value"
           (setReturnClicked)="this.setReturn()"
