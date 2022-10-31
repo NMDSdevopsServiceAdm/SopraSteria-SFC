@@ -2715,7 +2715,6 @@ class WorkplaceCSVValidator {
 
   // returns true on success, false is any attribute of WorkplaceCSVValidator fails
   async validate() {
-    console.log('***** workplace CSV validator - validate ******');
     this._validateLocalisedId();
     this._validateEstablishmentName();
     this._validateStatus();
@@ -2753,8 +2752,7 @@ class WorkplaceCSVValidator {
 
       // this._validateNoChange(); // Not working, disabled for LA Window
     }
-    console.log('**** validationErrors ****');
-    console.log(this.validationErrors);
+
     return this.validationErrors.length === 0;
   }
 

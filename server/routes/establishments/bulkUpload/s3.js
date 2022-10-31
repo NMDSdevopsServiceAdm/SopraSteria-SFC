@@ -141,11 +141,13 @@ const downloadContent = async (key, size, lastModified) => {
 };
 
 const saveLastBulkUpload = async (establishmentId) => {
+  console.log('***** s3.js - saveLastBulkUpload ****');
   const listParams = params(establishmentId);
   listParams.Prefix = `${establishmentId}/lastBulkUpload/`;
 
+  console.log('listParams:', listParams.Prefix);
   const existingFiles = await getKeysFromFolder(listParams);
-
+  console.log('existingFiles:', existingFiles);
   if (existingFiles.length > 0) {
     const deleteParams = {
       Bucket,
@@ -155,15 +157,19 @@ const saveLastBulkUpload = async (establishmentId) => {
       },
     };
 
+    console.log('Before Delete ******');
     await s3.deleteObjects(deleteParams).promise();
+    console.log('After Delete *******');
   }
 
   const originFolder = `${establishmentId}/latest/`;
   const destinationFolder = `${establishmentId}/lastBulkUpload/`;
-
+  console.log('***** before moveFolders *****');
   await moveFolders(originFolder, destinationFolder);
+  console.log('****** after moveFolders *****');
 };
 const purgeBulkUploadS3Objects = async (establishmentId) => {
+  console.log('**** s3.js - purgeBuklUploadS3Objects ****');
   const listParams = params(establishmentId);
   let deleteKeys = [];
 
@@ -183,12 +189,17 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
 
   listParams.Prefix = `${establishmentId}/intermediary/`;
   deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
+  console.log('Bucket:', Bucket);
+  console.log('listParams:', listParams.Prefix);
+  console.log('deleteKeys:', deleteKeys);
 
   deleteParams.Delete.Objects = deleteKeys;
 
+  console.log('**** before delete *****');
   if (deleteKeys.length > 0) {
     await s3.deleteObjects(deleteParams).promise();
   }
+  console.log('***** after delete *****');
 };
 
 const moveFolders = async (folderToMove, destinationFolder) => {
