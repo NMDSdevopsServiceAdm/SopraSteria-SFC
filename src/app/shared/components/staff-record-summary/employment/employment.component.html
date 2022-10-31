@@ -2,7 +2,7 @@
 <dl class="govuk-summary-list asc-summarylist-border-top">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Date started in main job role</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.mainJobStartDate"
@@ -42,7 +42,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayMentalHealthProfessional">
     <dt class="govuk-summary-list__key">Approved Mental Health Professional</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -57,7 +57,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
     <dt class="govuk-summary-list__key">Nursing and Midwifery Council category</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{ (worker.registeredNurse | nursingCategoriesText) || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -72,7 +72,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
     <dt class="govuk-summary-list__key">Nursing specialisms used in current role</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <ng-container *ngIf="!worker.nurseSpecialisms"> - </ng-container>
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'No'"> Not using any of their specialisms </ng-container>
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Don\'t know'">Not known</ng-container>
@@ -96,7 +96,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Recruited from</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.recruitedFrom"
@@ -121,7 +121,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Year started in adult social care</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{
         worker.socialCareStartDate?.year
           ? worker.socialCareStartDate?.year
@@ -140,7 +140,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayDaysSickness">
     <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.daysSick"
@@ -176,7 +176,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Zero hours contract</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.zeroHoursContract"
@@ -216,7 +216,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayAverageWeeklyHours">
     <dt class="govuk-summary-list__key">Average weekly working hours</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.weeklyHoursAverage"
@@ -265,7 +265,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayWeeklyContractedHours">
     <dt class="govuk-summary-list__key">Contracted weekly hours</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.weeklyHoursContracted"
@@ -315,7 +315,7 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Hourly pay or annual salary</dt>
 
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.annualHourlyPay"

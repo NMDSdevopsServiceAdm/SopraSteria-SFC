@@ -3,7 +3,7 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Care Certificate</dt>
 
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.careCertificate"
@@ -45,7 +45,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Apprenticeship training</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{ worker.apprenticeshipTraining || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -60,7 +60,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Has a social care qualification</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.qualificationInSocialCare"
@@ -102,7 +102,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displaySocialCareQualifications">
     <dt class="govuk-summary-list__key">Highest level of social care qualification</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.socialCareQualification"
@@ -144,7 +144,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Other qualifications</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.otherQualification"
@@ -178,7 +178,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayOtherQualifications">
     <dt class="govuk-summary-list__key">Highest level of other qualifications</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-8">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.highestQualification"
