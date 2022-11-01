@@ -204,9 +204,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
 
   protected save(): void {}
 
-  protected setBackLink(): void {
-    this.backLinkService.showBackLink();
-  }
+  protected setBackLink(): void {}
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

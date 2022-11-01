@@ -31,6 +31,10 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
     this.return = this.registrationService.returnTo$.value;
   }
 
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
+  }
+
   protected setupSubscriptions(): void {
     this.subscriptions.add(
       this.registrationService.loginCredentials$.subscribe((loginCredentials: LoginCredentials) => {

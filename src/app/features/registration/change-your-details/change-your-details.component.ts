@@ -28,8 +28,12 @@ export class ChangeYourDetailsComponent extends AccountDetailsDirective {
     super(backService, backLinkService, errorSummaryService, fb, router, route);
   }
 
-  protected init() {
+  protected init(): void {
     this.setupSubscription();
+  }
+
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   private setupSubscription(): void {

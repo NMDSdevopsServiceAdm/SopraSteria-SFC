@@ -34,6 +34,10 @@ export class YourDetailsComponent extends AccountDetailsDirective {
     this.prefillFormIfUserDetailsExist();
   }
 
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
+  }
+
   protected prefillFormIfUserDetailsExist(): void {
     this.subscriptions.add(
       this.userService.userDetails$.subscribe((userDetails: UserDetails) => {

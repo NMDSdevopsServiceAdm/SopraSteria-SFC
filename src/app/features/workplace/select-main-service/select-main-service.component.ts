@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -16,7 +16,6 @@ import { SelectMainServiceDirective } from '@shared/directives/create-workplace/
 export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public workplace: Establishment;
   constructor(
-    private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     protected backService: BackService,
     protected backLinkService: BackLinkService,
@@ -32,7 +31,6 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     this.workplace = this.establishmentService.establishment;
     this.selectedMainService = this.workplace.mainService;
     this.isWorkPlaceUpdate = true;
-    this.setBackLink();
   }
 
   protected getServiceCategories() {
