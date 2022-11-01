@@ -1,26 +1,33 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-!-margin-bottom-8">
       <h1 class="govuk-heading-l">Get your ASC-WDS certificate</h1>
       <p>As an active ASC-WDS user, you should be proud that the data you share makes the adult social care sector better for everybody.</p>
       <p>This certificate recognises that you contribute information used by DHSC, the Care Quality Commission, and local authorities.</p>
 
       *IMAGE GOES HERE*
-      <a href="#">Download your certificate</a>
+      <a class="govuk__flex govuk__align-items-center" (click)="downloadCertificate()" target="_blank"><img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">Download your certificate</span></a>
     </div>
-    <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-!-margin-bottom-8">
       <h2 class="govuk-heading-s">ASC-WDS email signature</h2>
-      <p>Our unique email signature can be used to let everyone know that yo're helping to spread the message.</p>
+      <p>Our unique email signature can be used to let everyone know that you're helping to spread the message.</p>
 
-      *IMAGE GOES HERE*
-      <a href="#">Download your email signature</a>
+      <img src="https://sfcstaging.cloudapps.digital/public/download/Certificates/Footer/ASC-WDS_Footer+{{years}}.jpg" width="300px" style="border: 1px solid #B1B4B6">
+      <a class="govuk__flex govuk__align-items-center" href="https://sfcstaging.cloudapps.digital/public/download/Certificates/Footer/ASC-WDS_Footer+{{years}}.jpg" target="_blank"><img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">Download your email signature</span></a>
     </div>
-    <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-!-margin-bottom-8">
       <h2 class="govuk-heading-s">ASC-WDS logo</h2>
       <p>If you want something a bit smaller or something to use on your web pages, then we also have an ASC-WDS logo.</p>
 
-      *IMAGE GOES HERE*
-      <a href="#">Download your logo</a>
+      <img src="https://sfcstaging.cloudapps.digital/public/download/Certificates/Logo/ASC-WDS+logo_20{{years}}.jpg" width="150px" style="border: 1px solid #B1B4B6">
+      <a class="govuk__flex govuk__align-items-center" href="public/download/Certificates/Logo/ASC-WDS+logo_20{{years}}.jpg" target="_blank"><img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">Download your logo</span></a>
     </div>
+
+    <div class="govuk-grid-row">
+      <a role="button" draggable="false" class="govuk-button">
+        Return to home
+      </a>
+    </div>
+
   </div>
 </div>

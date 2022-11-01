@@ -36,6 +36,7 @@ const ExpiresSoonAlertDates = require('./expiresSoonAlertDates');
 const WdfClaims = require('./wdfClaims');
 const ChildWorkplaces = require('./childWorkplaces');
 const UpdateSingleEstablishmentField = require('./updateSingleEstablishmentField');
+const Certificates = require('./certificates');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -90,6 +91,7 @@ router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
 router.use('/:id/wdfClaims', WdfClaims);
 router.use('/:id/childWorkplaces', ChildWorkplaces);
 router.use('/:id/updateSingleEstablishmentField', UpdateSingleEstablishmentField);
+router.use('/:id/certificate', Certificates);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {
