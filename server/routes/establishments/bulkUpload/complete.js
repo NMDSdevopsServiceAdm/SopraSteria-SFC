@@ -116,7 +116,6 @@ const completeDeleteEstablishment = async (
 };
 
 const completePost = async (req, res) => {
-  console.log('**** complete.js - completePost ****');
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
   const primaryEstablishmentUid = req.establishment.uid;
@@ -236,13 +235,9 @@ const completePost = async (req, res) => {
 
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
-        console.log('***** before purgeBulkUploadS3Objects *****');
         await purgeBulkUploadS3Objects(primaryEstablishmentId);
-        console.log('***** after purgeBulkUploadS3Objects *****');
         // confirm success against the primary establishment
-        console.log('***** before bulkUploadSuccess *****');
         await Establishment.bulkUploadSuccess(primaryEstablishmentId);
-        console.log('***** after bulkUploadSuccess *****');
         const completeEndTime = new Date();
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
         timerLog('CHECKPOINT - BU COMPLETE - overall', completeStartTime, completeEndTime);
