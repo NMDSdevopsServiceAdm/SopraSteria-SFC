@@ -30,9 +30,6 @@ describe('registerAccountWithTransaction', async () => {
           email: 'testuser@email.com',
         },
       },
-      sqreen: {
-        signup_track() {},
-      },
     };
     res = httpMocks.createResponse();
   });
@@ -176,14 +173,6 @@ describe('registerAccountWithTransaction', async () => {
       sinon.stub(user, 'createUser').callsFake(() => {
         return { uid: 'c1234', status: 'PENDING' };
       });
-    });
-
-    it('should call req.sqreen.signup_track with returned user and establishment uids', async () => {
-      const signupTrackSpy = sinon.spy(req.sqreen, 'signup_track');
-
-      await registerAccountWithTransaction(req, res);
-
-      expect(signupTrackSpy.getCall(0).args[0]).to.deep.equal({ userId: 'c1234', establishmentId: 'a413' });
     });
 
     it('should respond with 200, returned userStatus and succesfully created message', async () => {

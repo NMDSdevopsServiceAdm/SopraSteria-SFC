@@ -141,18 +141,4 @@ describe('NameOfWorkplaceComponent', () => {
     expect(form.valid).toBeTruthy();
     expect(workplaceService.selectedLocationAddress$.value.locationName).toBe('Place Name');
   });
-
-  describe('setBackLink()', () => {
-    it('should set the correct back link when in the parent flow', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'select-workplace-address'],
-      });
-    });
-  });
 });

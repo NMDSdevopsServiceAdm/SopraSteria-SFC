@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
@@ -27,6 +28,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
 
   constructor(
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
@@ -159,12 +161,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   public setBackLink(): void {
-    const returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
-
-    const backLink = returnToWorkplaceNotFound ? 'workplace-address-not-found' : 'regulated-by-cqc';
-
-    this.backService.setBackLink({ url: [this.flow, backLink] });
-    this.workplaceInterfaceService.workplaceNotFound$.next(false);
+    this.backLinkService.showBackLink();
   }
 
   public getFirstErrorMessage(item: string): string {

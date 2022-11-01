@@ -216,9 +216,6 @@ updates:
       - dependency-name: convict-format-with-validator
         versions:
           - 6.0.1
-      - dependency-name: sqreen
-        versions:
-          - 1.62.0
       - dependency-name: slugify
         versions:
           - 1.4.7

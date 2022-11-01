@@ -196,31 +196,4 @@ describe('SecurityQuestionComponent', () => {
     expect(form.valid).toBeTruthy();
     expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
   });
-
-  describe('setBackLink()', () => {
-    it('should set the back link to username-password if feature flag is on and return url is null', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'username-password'],
-      });
-    });
-
-    it('should set the back link to confirm-details if the feature flag is on and return url is not null', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'confirm-details'],
-      });
-    });
-  });
 });

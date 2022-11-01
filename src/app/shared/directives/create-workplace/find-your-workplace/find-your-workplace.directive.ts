@@ -6,6 +6,7 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
@@ -33,6 +34,7 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   constructor(
     protected router: Router,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
@@ -61,18 +63,12 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
   }
 
   public setBackLink(): void {
+    this.backLinkService.showBackLink();
     if (this.returnToConfirmDetails) {
-      this.navigateToConfirmDetails();
       return;
     }
-
-    const backLink = this.returnToWorkplaceNotFound ? 'workplace-not-found' : 'regulated-by-cqc';
-    this.backService.setBackLink({ url: [this.flow, backLink] });
     this.workplaceInterfaceService.workplaceNotFound$.next(false);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected navigateToConfirmDetails(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({

@@ -1,4 +1,3 @@
-/*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,9 +5,11 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
+/*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
 @Directive()
 export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -33,6 +34,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
 
   constructor(
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -54,6 +56,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
     this.setupFormErrorsMap();
     this.init();
     this.setCallToActionLabel();
+    this.setBackLink();
   }
 
   ngAfterViewInit() {
@@ -138,5 +141,9 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
    */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 }

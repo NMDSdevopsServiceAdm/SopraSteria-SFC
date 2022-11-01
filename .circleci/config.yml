@@ -60,14 +60,6 @@ commands:
                 cf set-env "<<parameters.appname>>-dark" DB_PASS "${<<parameters.env_prefix>>_DB_PASS}"
             fi
 
-            if [ -n "${<<parameters.env_prefix>>_SQREEN_APP_NAME}" ]; then
-                cf set-env "<<parameters.appname>>-dark" SQREEN_APP_NAME "${<<parameters.env_prefix>>_SQREEN_APP_NAME}"
-            fi
-
-            if [ -n "${<<parameters.env_prefix>>_SQREEN_TOKEN}" ]; then
-                cf set-env "<<parameters.appname>>-dark" SQREEN_TOKEN "${<<parameters.env_prefix>>_SQREEN_TOKEN}"
-            fi
-
             if [ -n "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}" ]; then
                 cf set-env "<<parameters.appname>>-dark" REDIS_SERVICE_NAME "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}"
             fi
