@@ -39,7 +39,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     this.isParent = this.workplace?.isParent;
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
 
-    this.setBackLink();
+    // this.setBackLink();
   }
 
   protected getServiceCategories(): void {
@@ -80,12 +80,12 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     this.router.navigate(url);
   }
 
-  public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow] });
-      return;
-    }
+  // public setBackLink(): void {
+  //   if (this.returnToConfirmDetails) {
+  //     this.backService.setBackLink({ url: [this.flow] });
+  //     return;
+  //   }
 
-    this.backService.setBackLink({ url: [this.flow, 'type-of-employer'] });
-  }
+  //   this.backService.setBackLink({ url: [this.flow, 'type-of-employer'] });
+  // }
 }

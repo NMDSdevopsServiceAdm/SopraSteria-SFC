@@ -75,6 +75,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
     this.setupServerErrorsMap();
     this.init();
     this.setCallToActionLabel();
+    this.setBackLink();
   }
 
   ngAfterViewInit() {
@@ -83,9 +84,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
 
   protected init(): void {}
 
-  protected setBackLink(): void {
-    this.backLinkService.showBackLink();
-  }
+  protected setBackLink(): void {}
 
   protected setupSubscriptions(): void {}
 

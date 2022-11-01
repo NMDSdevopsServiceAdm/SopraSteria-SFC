@@ -30,6 +30,7 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
   protected init(): void {
     this.activationToken = this.route.snapshot.params.activationToken;
     this.setupSubscription();
+    this.setBackLink();
   }
 
   protected setupSubscription(): void {
@@ -40,6 +41,10 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
         }
       }),
     );
+  }
+
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   protected save(): void {

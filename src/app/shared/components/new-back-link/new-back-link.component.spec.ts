@@ -36,7 +36,7 @@ describe('BackLinkComponent', () => {
     component.showBackLink = true;
     fixture.detectChanges();
 
-    const backLink = getByText('Back link');
+    const backLink = getByText('Back');
     fireEvent.click(backLink);
     fixture.detectChanges();
 
