@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import dayjs from 'dayjs';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
@@ -21,7 +20,7 @@ export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
   }
 
   get dob() {
-    return dayjs(this.worker.dateOfBirth).format(DATE_DISPLAY_DEFAULT);
+    return dayjs(this.worker.dateOfBirth).format('DD MMMM YYYY');
   }
 
   get displayYearArrived() {

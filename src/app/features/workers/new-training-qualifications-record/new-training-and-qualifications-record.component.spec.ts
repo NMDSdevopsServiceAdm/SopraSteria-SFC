@@ -223,7 +223,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     const viewStaffRecordButton = getByText('View staff record', { exact: false });
 
     expect(viewStaffRecordButton.getAttribute('href')).toEqual(
-      `/workplace/${component.workplace.uid}/staff-record/123`,
+      `/workplace/${component.workplace.uid}/staff-record/123/staff-record-summary`,
     );
   });
 
