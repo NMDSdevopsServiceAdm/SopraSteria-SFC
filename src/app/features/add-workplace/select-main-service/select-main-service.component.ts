@@ -79,13 +79,4 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
     this.router.navigate(url);
   }
-
-  // public setBackLink(): void {
-  //   if (this.returnToConfirmDetails) {
-  //     this.backService.setBackLink({ url: [this.flow] });
-  //     return;
-  //   }
-
-  //   this.backService.setBackLink({ url: [this.flow, 'type-of-employer'] });
-  // }
 }
