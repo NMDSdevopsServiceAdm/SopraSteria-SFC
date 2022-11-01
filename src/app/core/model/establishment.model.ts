@@ -26,6 +26,7 @@ export interface Capacity {
   questionId: number;
   seq: number;
   answer: number;
+  serviceName: string;
 }
 
 export interface ShareWith {

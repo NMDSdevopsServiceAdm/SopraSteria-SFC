@@ -1492,6 +1492,7 @@ class Establishment extends EntityValidator {
         });
 
         fetchResults.capacity = capacity;
+
         fetchResults.jobs = jobs;
 
         fetchResults.mainService = { ...mainService, other: fetchResults.MainServiceFkOther };
