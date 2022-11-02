@@ -31,7 +31,7 @@ describe('SelectWorkplaceAddressComponent', () => {
           SelectWorkplaceAddressDirective,
           {
             provide: WorkplaceService,
-            useFactory: MockWorkplaceService.factory({ value: 'Private sector' }, manyLocationAddresses),
+            useFactory: MockWorkplaceService.factory({ value: 'Private Sector' }, manyLocationAddresses),
             deps: [HttpClient],
           },
           {
