@@ -12,6 +12,6 @@ export class WorkplaceUtil {
       (typeOfEmployer) => typeOfEmployer.value.toLowerCase() === employerType.toLowerCase(),
     );
 
-    return typeOfEmployerObj.text;
+    return typeOfEmployerObj?.text;
   }
 }

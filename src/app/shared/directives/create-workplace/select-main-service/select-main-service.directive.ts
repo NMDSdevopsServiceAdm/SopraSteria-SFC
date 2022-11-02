@@ -53,6 +53,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
     this.setupServerErrorsMap();
     this.setSelectedWorkplaceService();
     this.getServiceCategories();
+    this.setBackLink();
   }
 
   ngAfterViewInit(): void {

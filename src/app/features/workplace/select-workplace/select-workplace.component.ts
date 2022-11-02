@@ -15,6 +15,8 @@ import { SelectWorkplaceDirective } from '@shared/directives/create-workplace/se
 })
 export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   public workplace: Establishment;
+  private back: string;
+
   constructor(
     protected backService: BackService,
     protected backLinkService: BackLinkService,
@@ -22,8 +24,8 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    private establishmentService: EstablishmentService,
-    private workplaceService: WorkplaceService,
+    public establishmentService: EstablishmentService,
+    public workplaceService: WorkplaceService,
   ) {
     super(backService, backLinkService, errorSummaryService, formBuilder, router, route, workplaceService);
   }
@@ -31,7 +33,14 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   protected init(): void {
     this.flow = `workplace/${this.establishmentService.establishmentId}`;
     this.workplace = this.establishmentService.establishment;
+    this.back = `${this.flow}/regulated-by-cqc`;
+    !this.locationAddresses && this.redirect();
     this.isCQCLocationUpdate = true;
+    this.returnToConfirmDetails = this.establishmentService.returnTo;
+  }
+
+  private redirect(): void {
+    this.router.navigate([this.back]);
   }
 
   public setSubmitAction(payload: { action: string; save: boolean }): void {
@@ -44,8 +53,8 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
   }
 
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: [this.back] });
   }
 
   get return() {
@@ -58,16 +67,14 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.subscriptions.add(
       this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
-        this.router.navigate(this.establishmentService.returnTo.url, {
-          fragment: this.establishmentService.returnTo.fragment,
-        });
-        this.establishmentService.setReturnTo(null);
       }),
     );
   }
 
-  public returnToWorkPlace(event: Event) {
-    event.preventDefault();
-    this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+  protected navigateToNextPage(): void {
+    this.router.navigate(this.establishmentService.returnTo.url, {
+      fragment: this.establishmentService.returnTo.fragment,
+    });
+    this.establishmentService.setReturnTo(null);
   }
 }

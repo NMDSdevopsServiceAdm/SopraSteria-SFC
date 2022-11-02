@@ -56,7 +56,6 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
     this.setupFormErrorsMap();
     this.init();
     this.setCallToActionLabel();
-    this.setBackLink();
   }
 
   ngAfterViewInit() {
@@ -143,7 +142,5 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
     this.subscriptions.unsubscribe();
   }
 
-  public setBackLink(): void {
-    this.backLinkService.showBackLink();
-  }
+  protected setBackLink(): void {}
 }

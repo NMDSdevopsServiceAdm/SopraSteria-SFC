@@ -32,7 +32,6 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
   protected init(): void {
     this.callToActionLabel = 'Save and continue';
     this.activationToken = this.route.snapshot.params.activationToken;
-    this.setBackLink();
   }
 
   protected setBackLink(): void {

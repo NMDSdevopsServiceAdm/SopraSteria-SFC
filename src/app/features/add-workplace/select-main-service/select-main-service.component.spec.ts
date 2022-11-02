@@ -167,19 +167,4 @@ describe('SelectMainServiceComponent', () => {
 
     expect(spy).toHaveBeenCalledWith(['add-workplace', 'add-total-staff']);
   });
-
-  describe('setBackLink()', () => {
-    it('should set back link to type-of-employer', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'type-of-employer'],
-      });
-    });
-  });
 });

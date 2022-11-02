@@ -4,6 +4,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { Subscription } from 'rxjs';
 
@@ -22,7 +23,7 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   public totalStaff: SummaryList[];
   protected subscriptions: Subscription = new Subscription();
 
-  constructor(protected backService: BackService) {}
+  constructor(protected backService: BackService, protected backLinkService: BackLinkService) {}
 
   ngOnInit(): void {
     this.init();
