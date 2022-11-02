@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -19,6 +20,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
 
   constructor(
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -26,7 +28,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, workplaceService);
+    super(backService, backLinkService, errorSummaryService, formBuilder, router, workplaceService);
   }
 
   protected init(): void {

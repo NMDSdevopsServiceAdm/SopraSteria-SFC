@@ -204,19 +204,4 @@ describe('SelectMainServiceComponent', () => {
 
     expect(form.get('otherWorkplaceService123').value).toEqual('Hello!');
   });
-
-  describe('setBackLink()', () => {
-    it('should set back link to type-of-employer', async () => {
-      const { component, fixture } = await setup();
-
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'type-of-employer'],
-      });
-    });
-  });
 });

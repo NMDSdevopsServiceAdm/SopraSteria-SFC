@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -16,6 +17,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   public workplace: Establishment;
   constructor(
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -23,7 +25,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     private establishmentService: EstablishmentService,
     private workplaceService: WorkplaceService,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, route, workplaceService);
+    super(backService, backLinkService, errorSummaryService, formBuilder, router, route, workplaceService);
   }
 
   protected init(): void {

@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
@@ -20,7 +19,6 @@ describe('FindYourWorkplaceComponent', () => {
     const component = await render(FindYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
-        BackService,
         {
           provide: LocationService,
           useClass: MockLocationService,
@@ -259,45 +257,5 @@ describe('FindYourWorkplaceComponent', () => {
     fireEvent.click(findWorkplaceButton);
 
     expect(component.getAllByText('Server Error. code 500', { exact: false })).toBeTruthy();
-  });
-
-  describe('setBackLink', () => {
-    it('should set the back link to `regulated-by-cqc` when returnToWorkplaceNotFound is set to false', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-      component.fixture.componentInstance.returnToWorkplaceNotFound = false;
-      component.fixture.detectChanges();
-
-      component.fixture.componentInstance.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'regulated-by-cqc'],
-      });
-    });
-
-    it('should set the back link to `workplace-not-found` when returnToWorkplaceNotFound is set to true', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-      component.fixture.componentInstance.returnToWorkplaceNotFound = true;
-      component.fixture.detectChanges();
-
-      component.fixture.componentInstance.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-not-found'],
-      });
-    });
-
-    it('should set the back link to `confirm-details` when returnToConfirmDetails is not null', async () => {
-      const { component } = await setup(false);
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
-      component.fixture.componentInstance.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration/confirm-details'],
-      });
-    });
   });
 });
