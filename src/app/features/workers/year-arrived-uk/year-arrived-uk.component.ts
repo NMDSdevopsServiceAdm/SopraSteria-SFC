@@ -126,7 +126,6 @@ export class YearArrivedUkComponent extends QuestionComponent {
 
     if (this.insideFlow && !this.insideYearArrivedUkMiniFlow) {
       this.previous = this.getRoutePath('country-of-birth');
-      this.skipRoute = this.mainJobStartDatePath;
       this.next = this.mainJobStartDatePath;
     } else if (this.insideYearArrivedUkMiniFlow) {
       this.next = this.staffRecordSummaryPath;

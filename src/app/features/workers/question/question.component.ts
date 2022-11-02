@@ -27,7 +27,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public next: string[];
   public back: URLStructure;
   public conditionalQuestionUrl: string[];
-  public skipRoute: string[];
   public showSaveAndCancelButton: boolean;
 
   public formErrorsMap: Array<ErrorDetails>;

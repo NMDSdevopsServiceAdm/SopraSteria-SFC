@@ -55,7 +55,6 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
 
     if (this.insideFlow && !this.insideMentalHealthProfessionalSummaryFlow) {
       this.previous = this.getRoutePath('main-job-start-date');
-      this.skipRoute = this.nationalInsuranceNumberPath;
       this.next = this.nationalInsuranceNumberPath;
     } else if (this.insideMentalHealthProfessionalSummaryFlow) {
       this.next = this.staffRecordSummaryPath;
