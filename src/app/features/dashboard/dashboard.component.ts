@@ -55,6 +55,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.authService.isOnAdminScreen = false;
     this.showCQCDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
     this.workplace = this.establishmentService.primaryWorkplace;
+    console.log('**** dashboard workplace ****');
+    console.log(this.workplace);
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
     this.establishmentService.setInStaffRecruitmentFlow(false);
@@ -63,11 +65,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.getPermissions();
       this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
 
-      if (this.workplace.locationId) {
-        this.setCheckCQCDetailsBannerInEstablishmentService();
-      }
+      // if (this.workplace.locationId) {
+      //   this.setCheckCQCDetailsBannerInEstablishmentService();
+      // }
 
-      this.getShowCQCDetailsBanner();
+      // this.getShowCQCDetailsBanner();
 
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();
@@ -124,13 +126,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getShowCQCDetailsBanner(): void {
-    this.subscriptions.add(
-      this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
-        this.showCQCDetailsBanner = showBanner;
-      }),
-    );
-  }
+  // private getShowCQCDetailsBanner(): void {
+  //   this.subscriptions.add(
+  //     this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
+  //       this.showCQCDetailsBanner = showBanner;
+  //     }),
+  //   );
+  // }
 
   private showStaffRecordBanner(): void {
     this.alertService.addAlert({

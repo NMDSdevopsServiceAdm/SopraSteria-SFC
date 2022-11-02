@@ -123,8 +123,12 @@ export class EstablishmentService {
   }
 
   setState(establishment) {
+    console.log('****** establishment service - setState *******');
+    console.log(this.establishment);
+    console.log('primaryWorkplace:', this.primaryWorkplace);
     this._establishment$.next(establishment);
     if (this.primaryWorkplace && establishment.uid === this.primaryWorkplace.uid) {
+      console.log('***** inside if - setState ******');
       this.setPrimaryWorkplace(this.establishment);
       this.setCheckCQCDetailsBanner(false);
     }
@@ -176,6 +180,7 @@ export class EstablishmentService {
   }
 
   public get checkCQCDetailsBanner$(): Observable<boolean> {
+    console.log('establishment service checkCQCDetailsBanner$ ****');
     return this._checkCQCDetailsBanner$.asObservable();
   }
 
@@ -184,6 +189,7 @@ export class EstablishmentService {
   }
 
   public setCheckCQCDetailsBanner(data: boolean) {
+    console.log('**** establishmentService - setCheckCQCDetailsBanner ***');
     this._checkCQCDetailsBanner$.next(data);
   }
 

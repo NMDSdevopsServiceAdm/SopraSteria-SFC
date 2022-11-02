@@ -12,7 +12,8 @@ const cqcStatusCheck = async (req, res) => {
 
   try {
     const workplaceCQCData = await CQCDataAPI.getWorkplaceCQCData(locationID);
-
+    console.log('** workplaceCQCData:', workplaceCQCData.gacServiceTypes);
+    console.log('** checkMainServiceMatch:', checkMainServiceMatch(mainService, workplaceCQCData.gacServiceTypes));
     const cqcStatusMatch =
       checkRegistrationStatus(workplaceCQCData) &&
       checkPostcodeMatch(postcode, workplaceCQCData.postalCode) &&
@@ -47,6 +48,9 @@ function checkPostcodeMatch(postcode, cqcPostcode) {
 }
 
 function checkMainServiceMatch(mainService, cqcServices) {
+  console.log('***** checkMainServiceMatch ******');
+  console.log('mainService:', mainService);
+  console.log('cqcServices:', cqcServices);
   if (!mainService || !cqcServices) return true;
 
   const cqcMainService = convertMainServiceToCQC(mainService);
