@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 
 @Component({
   selector: 'app-cannot-create-account',
@@ -11,10 +11,9 @@ export class CannotCreateAccountComponent implements OnInit {
   public flow: string;
   public title: string;
 
-  constructor(public backService: BackService, private route: ActivatedRoute) {}
+  constructor(public backLinkService: BackLinkService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.returnTo = history.state?.returnTo;
     this.flow = this.route.snapshot.data.flow;
     this.setTitle();
     this.setBackLink();
@@ -28,12 +27,6 @@ export class CannotCreateAccountComponent implements OnInit {
   }
 
   public setBackLink(): void {
-    const returnUrl = this.returnTo
-      ? this.returnTo
-      : this.flow === 'registration'
-      ? `${this.flow}/create-account`
-      : `workplace/view-all-workplaces`;
-
-    this.backService.setBackLink({ url: [returnUrl] });
+    this.backLinkService.showBackLink();
   }
 }
