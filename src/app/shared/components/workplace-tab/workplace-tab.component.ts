@@ -31,8 +31,6 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.locationId = this.workplace.locationId;
-    // this.establishmentService.setCheckCQCDetailsBanner(false);
-    // this.getShowCQCDetailsBanner();
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.updateWorkplaceAlert =
       this.workplace.showAddWorkplaceDetailsBanner &&
@@ -45,11 +43,11 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   }
 
   private getShowCQCDetailsBanner(): void {
-    console.log('***** workplace-tab getShowCQCDetailsBanner *****');
-    this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
-      console.log('workplace-tab:', showBanner);
-      this.showCQCDetailsBanner = showBanner;
-    });
+    this.subscriptions.add(
+      this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
+        this.showCQCDetailsBanner = showBanner;
+      }),
+    );
   }
 
   private setCheckCQCDetailsBannerInEstablishmentService(): void {
@@ -60,7 +58,6 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
           mainService: this.workplace.mainService.name,
         })
         .subscribe((response) => {
-          console.log('**** response:', response);
           this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
         }),
     );

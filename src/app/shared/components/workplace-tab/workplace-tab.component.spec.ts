@@ -82,7 +82,7 @@ describe('WorkplaceTabComponent', () => {
     expect(checkShowSharingPermissions).toBeNull();
   });
 
-  it('should navigate to the sharing data page whent the link in the permissions banner is clicked', async () => {
+  it('should navigate to the sharing data page when the link in the permissions banner is clicked', async () => {
     const { component, fixture } = await setup();
     const routerSpy = spyOn(component.router, 'navigate');
     component.showSharingPermissionsBanner = true;

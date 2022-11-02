@@ -10,6 +10,6 @@ export class WorkplaceUtil {
 
     const typeOfEmployerObj = typeOfEmployerOptions.find((typeOfEmployer) => typeOfEmployer.value === employerType);
 
-    return typeOfEmployerObj.text;
+    return typeOfEmployerObj?.text;
   }
 }
