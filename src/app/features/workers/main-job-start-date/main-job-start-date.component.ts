@@ -100,10 +100,14 @@ export class MainJobStartDateComponent extends QuestionComponent {
   private setUpPageRouting(): void {
     if (this.insideFlow) {
       this.next = this.determineNextPath();
-      this.previous =
-        this.worker.countryOfBirth.value === 'Other' || this.worker.countryOfBirth.value === `Don't know`
-          ? this.getRoutePath('year-arrived-uk')
-          : this.getRoutePath('country-of-birth');
+      if (this.worker.countryOfBirth) {
+        this.previous =
+          this.worker.countryOfBirth.value === 'Other' || this.worker.countryOfBirth.value === `Don't know`
+            ? this.getRoutePath('year-arrived-uk')
+            : this.getRoutePath('country-of-birth');
+      } else {
+        this.previous = this.getRoutePath('country-of-birth');
+      }
     } else {
       this.previous = this.getRoutePath('');
       this.next = this.getRoutePath('');

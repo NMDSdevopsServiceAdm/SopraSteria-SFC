@@ -126,11 +126,11 @@ export class EthnicityComponent extends QuestionComponent {
     this.nationalityPath = this.getRoutePath('nationality');
 
     if (this.insideFlow) {
-      this.backService.setBackLink({ url: this.getRoutePath('disability') });
+      this.previous = this.getRoutePath('disability');
       this.next = this.nationalityPath;
     } else {
       this.return = { url: this.staffRecordSummaryPath };
-      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+      this.previous = this.staffRecordSummaryPath;
     }
   }
 

@@ -53,11 +53,11 @@ export class DisabilityComponent extends QuestionComponent {
     this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
 
     if (this.insideFlow) {
-      this.backService.setBackLink({ url: this.getRoutePath('gender') });
+      this.previous = this.getRoutePath('gender');
       this.next = this.ethnicityPath;
     } else {
       this.return = { url: this.staffRecordSummaryPath };
-      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+      this.previous = this.staffRecordSummaryPath;
     }
   }
 

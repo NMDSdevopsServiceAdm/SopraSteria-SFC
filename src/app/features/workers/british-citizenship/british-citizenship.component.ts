@@ -53,11 +53,11 @@ export class BritishCitizenshipComponent extends QuestionComponent {
     this.countryOfBirthPath = this.getRoutePath('country-of-birth');
 
     if (this.insideFlow) {
-      this.backService.setBackLink({ url: this.getRoutePath('nationality') });
+      this.previous = this.getRoutePath('nationality');
       this.next = this.countryOfBirthPath;
     } else {
       this.return = { url: this.staffRecordSummaryPath };
-      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+      this.previous = this.staffRecordSummaryPath;
     }
   }
 

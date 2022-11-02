@@ -53,11 +53,11 @@ export class GenderComponent extends QuestionComponent {
     this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
 
     if (this.insideFlow) {
-      this.backService.setBackLink({ url: this.getRoutePath('home-postcode') });
+      this.previous = this.getRoutePath('home-postcode');
       this.next = this.disabilityPath;
     } else {
       this.return = { url: this.staffRecordSummaryPath };
-      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+      this.previous = this.staffRecordSummaryPath;
     }
   }
 
