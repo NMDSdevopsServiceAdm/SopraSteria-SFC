@@ -16,7 +16,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByTestId, render, screen } from '@testing-library/angular';
+import { fireEvent, getByTestId, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -106,14 +106,14 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the Complete record button and correct text when worker.completed is false', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, getByText, queryByText } = await setup();
 
     component.worker.completed = false;
     fixture.detectChanges();
-    const button = screen.getByText('Confirm record details');
-    const text = screen.getByText(`Check the record details you've added before you confirm them.`);
-    const flagLongTermAbsenceLink = screen.queryByText('Flag long-term absence');
-    const deleteRecordLink = screen.queryByText('Delete staff record');
+    const button = getByText('Confirm record details');
+    const text = getByText(`Check the record details you've added before you confirm them.`);
+    const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
+    const deleteRecordLink = queryByText('Delete staff record');
 
     expect(button).toBeTruthy();
     expect(text).toBeTruthy();
@@ -122,7 +122,7 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the completed state text, delete record link, add training link and flag long term absence link when worker.completed is true', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, queryByText, getByText, getByTestId } = await setup();
 
     component.canEditWorker = true;
     component.canDeleteWorker = true;
@@ -131,11 +131,11 @@ describe('StaffRecordComponent', () => {
 
     fixture.detectChanges();
 
-    const button = screen.queryByText('Confirm record details');
-    const text = screen.getByText(`Check the record details you've added are correct.`);
-    const flagLongTermAbsenceLink = screen.getByText('Flag long-term absence');
-    const deleteRecordLink = screen.getByText('Delete staff record');
-    const trainingAndQualsLink = screen.getByTestId('training-and-qualifications-link');
+    const button = queryByText('Confirm record details');
+    const text = getByText(`Check the record details you've added are correct.`);
+    const flagLongTermAbsenceLink = getByText('Flag long-term absence');
+    const deleteRecordLink = getByText('Delete staff record');
+    const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
 
     expect(button).toBeFalsy();
     expect(text).toBeTruthy();
@@ -225,7 +225,7 @@ describe('StaffRecordComponent', () => {
 
   describe('saveAndComplete', () => {
     it('should call updateWorker on the worker service when button is clicked', async () => {
-      const { component, fixture, workerService } = await setup();
+      const { component, fixture, workerService, getByText } = await setup();
 
       component.worker.completed = false;
       fixture.detectChanges();
@@ -234,20 +234,20 @@ describe('StaffRecordComponent', () => {
       const workplaceUid = component.workplace.uid;
       const workerUid = component.worker.uid;
 
-      const button = screen.getByText('Confirm record details');
+      const button = getByText('Confirm record details');
       fireEvent.click(button);
 
       expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
     });
 
     it('should redirect back to the dashboard when worker is confirmed if workplace and establishment are the same', async () => {
-      const { component, fixture, routerSpy } = await setup();
+      const { component, fixture, routerSpy, getByText } = await setup();
 
       component.workplace.uid = 'mock-uid';
       component.worker.completed = false;
       fixture.detectChanges();
 
-      const button = screen.getByText('Confirm record details');
+      const button = getByText('Confirm record details');
       fireEvent.click(button);
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
@@ -257,12 +257,12 @@ describe('StaffRecordComponent', () => {
     });
 
     it('should redirect back to the child workplace when the worker is confirmed if a parent is in a child workplace', async () => {
-      const { component, fixture, routerSpy } = await setup();
+      const { component, fixture, routerSpy, getByText } = await setup();
 
       component.worker.completed = false;
       fixture.detectChanges();
 
-      const button = screen.getByText('Confirm record details');
+      const button = getByText('Confirm record details');
       fireEvent.click(button);
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
