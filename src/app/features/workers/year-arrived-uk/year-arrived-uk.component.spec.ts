@@ -3,6 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -19,6 +20,7 @@ describe('YearArrivedUkComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
           FormBuilder,
+          BackService,
           {
             provide: ActivatedRoute,
             useValue: {
@@ -49,13 +51,16 @@ describe('YearArrivedUkComponent', () => {
 
     const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
+    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
       fixture,
       routerSpy,
+      backLinkSpy,
       getByText,
       getAllByText,
       getByLabelText,
@@ -176,13 +181,28 @@ describe('YearArrivedUkComponent', () => {
     });
 
     it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component } = await setup();
+      const { component, backLinkSpy } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      expect(component.return).toEqual({
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set backlink to country-of-birth page when not in staff record flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', workplaceId, 'staff-record', workerId, 'country-of-birth'],
+        fragment: 'staff-records',
       });
     });
   });

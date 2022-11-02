@@ -25,13 +25,14 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     { value: Contracts.Other, tag: 'Other' },
   ];
   public jobsAvailable: Job[] = [];
-  public showInputTextforOtherRole: boolean;
   public submitTitle = 'Save this staff record';
+  public showInputTextforOtherRole: boolean;
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
   public isPrimaryAccount: boolean;
   public inMandatoryDetailsFlow: boolean;
+  private formMainJobIdValue: number;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -60,9 +61,38 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   init(): void {
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
     this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
+    this.showSaveAndCancelButton = !this.insideFlow && !this.inMandatoryDetailsFlow ? true : false;
     this.getJobs();
     this.previous = this.getReturnPath();
     this.editFlow = this.inMandatoryDetailsFlow || !this.insideFlow;
+  }
+
+  public setUpConditionalQuestionLogic(mainJobId): void {
+    this.formMainJobIdValue = parseInt(mainJobId, 10);
+    if (!this.insideFlow && !this.inMandatoryDetailsFlow) {
+      if (this.formMainJobIdValue === 23) {
+        this.conditionalQuestionUrl = [
+          '/workplace',
+          this.workplace.uid,
+          'staff-record',
+          this.worker.uid,
+          'staff-record-summary',
+          'registered-nurse-details',
+          'nursing-category',
+        ];
+      } else if (this.formMainJobIdValue === 27) {
+        this.conditionalQuestionUrl = [
+          '/workplace',
+          this.workplace.uid,
+          'staff-record',
+          this.worker.uid,
+          'staff-record-summary',
+          'mental-health-professional-summary-flow',
+        ];
+      } else {
+        this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
+      }
+    }
   }
 
   public setupFormErrorsMap(): void {
@@ -144,6 +174,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   selectedJobRole(id: number) {
+    this.setUpConditionalQuestionLogic(id);
     this.showInputTextforOtherRole = false;
     const otherJob = this.jobsAvailable.find((job) => job.id === +id);
     if (otherJob && otherJob.other) {

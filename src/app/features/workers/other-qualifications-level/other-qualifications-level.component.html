@@ -46,7 +46,7 @@
         </select>
       </div>
     </div>
-    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow && !insideOtherQualificationsLevelSummaryFlow">
       <div class="govuk-!-margin-left-8">
         <app-progress-bar
           data-testid="progress-bar-1"
@@ -57,5 +57,8 @@
     </div>
   </div>
 
-  <app-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-submit-button>
+  <app-submit-button
+    [return]="!insideFlow || insideOtherQualificationsLevelSummaryFlow"
+    (clicked)="setSubmitAction($event)"
+  ></app-submit-button>
 </form>

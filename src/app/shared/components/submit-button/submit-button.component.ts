@@ -5,6 +5,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   templateUrl: './submit-button.component.html',
 })
 export class SubmitButtonComponent {
+  @Input() showSaveAndCancelButton = false;
   @Input() return: boolean;
   @Input() saveCallback: any;
   @Input() callToAction = 'Save and continue';

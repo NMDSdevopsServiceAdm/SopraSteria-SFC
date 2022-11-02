@@ -53,6 +53,9 @@ export const workerBuilder = build('Worker', {
       ethnicityId: 1,
       ethnicity: 'white ethnicity 1',
     },
+    countryOfBirth: {
+      value: 'United Kingdom',
+    },
   },
 });
 

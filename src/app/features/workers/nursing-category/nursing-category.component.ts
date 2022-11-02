@@ -38,18 +38,47 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   init() {
-    if (!this.workerService.hasJobRole(this.worker, 23)) {
-      this.router.navigate(this.getRoutePath('other-job-roles'), { replaceUrl: true });
-    }
-
+    this.registeredNurseFlow = this.route.parent.snapshot.url[0].path === 'registered-nurse-details';
     if (this.worker.registeredNurse) {
-      this.form.patchValue({
-        nursingCategory: this.worker.registeredNurse,
-      });
+      this.prefill();
     }
 
-    this.next = this.getRoutePath('nursing-specialism');
-    this.previous = this.insideFlow ? this.getRoutePath('main-job-start-date') : this.getRoutePath('');
+    this.setUpPageRouting();
+  }
+
+  private prefill(): void {
+    this.form.patchValue({
+      nursingCategory: this.worker.registeredNurse,
+    });
+  }
+
+  private setUpPageRouting(): void {
+    if (this.insideFlow && !this.registeredNurseFlow) {
+      this.next = this.getRoutePath('nursing-specialism');
+      this.previous = this.getRoutePath('main-job-start-date');
+    } else if (this.registeredNurseFlow) {
+      this.previous = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'staff-details',
+      ];
+      this.next = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'registered-nurse-details',
+        'nursing-specialism',
+      ];
+      this.returnUrl = this.getRoutePath('');
+    } else {
+      this.previous = this.getRoutePath('');
+      this.next = this.getRoutePath('');
+    }
   }
 
   generateUpdateProps() {

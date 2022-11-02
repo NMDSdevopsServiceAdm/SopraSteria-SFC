@@ -44,18 +44,12 @@ export class NursingSpecialismComponent extends QuestionComponent {
   }
 
   init() {
-    if (!this.workerService.hasJobRole(this.worker, 23)) {
-      this.router.navigate(this.getRoutePath('other-job-roles'), { replaceUrl: true });
-    }
-
-    this.next = this.getReturnPath();
-    this.previous = this.insideFlow ? this.getRoutePath('nursing-category') : this.getRoutePath('');
+    this.registeredNurseFlow = this.route.parent.snapshot.url[0].path === 'registered-nurse-details';
+    this.setUpPageRouting();
 
     let checkedSpecialisms = [];
     if (this.worker.nurseSpecialisms) {
-      this.form.patchValue({
-        hasNurseSpecialism: this.worker.nurseSpecialisms.value,
-      });
+      this.prefill();
 
       checkedSpecialisms = this.worker.nurseSpecialisms.specialisms
         ? this.worker.nurseSpecialisms.specialisms
@@ -75,13 +69,34 @@ export class NursingSpecialismComponent extends QuestionComponent {
     }
   }
 
-  getReturnPath() {
-    if (this.insideFlow) {
-      return this.workerService.hasJobRole(this.worker, 27)
+  private prefill(): void {
+    this.form.patchValue({
+      hasNurseSpecialism: this.worker.nurseSpecialisms.value,
+    });
+  }
+
+  private setUpPageRouting() {
+    if (this.insideFlow && !this.registeredNurseFlow) {
+      this.previous = this.getRoutePath('nursing-category');
+      this.next = this.workerService.hasJobRole(this.worker, 27)
         ? this.getRoutePath('mental-health-professional')
         : this.getRoutePath('recruited-from');
+    } else if (this.registeredNurseFlow) {
+      this.previous = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'registered-nurse-details',
+        'nursing-category',
+      ];
+      this.next = this.getRoutePath('');
+      this.returnUrl = this.getRoutePath('');
+    } else {
+      this.previous = this.getRoutePath('');
+      this.next = this.getRoutePath('');
     }
-    return this.getRoutePath('');
   }
 
   generateUpdateProps() {

@@ -38,7 +38,7 @@ export class LongTermAbsenceComponent implements OnInit {
     this.longTermAbsenceReasons = this.route.snapshot.data.longTermAbsenceReasons;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.returnUrl = this.workerService.returnTo.url;
+    this.returnUrl = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
   }
 
   ngAfterViewInit(): void {

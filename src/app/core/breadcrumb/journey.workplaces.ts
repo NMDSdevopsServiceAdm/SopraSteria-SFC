@@ -4,7 +4,7 @@ enum Path {
   DASHBOARD = '/dashboard',
   WORKPLACE = '/workplace/:workplaceUid',
   ALL_WORKPLACES = '/workplace/view-all-workplaces',
-  STAFF_RECORD = '/workplace/:workplaceUid/staff-record/:workerUid',
+  STAFF_RECORD = '/workplace/:workplaceUid/staff-record/:workerUid/staff-record-summary',
   MANDATORY_DETAILS = '/workplace/:workplaceUid/staff-record/:workerUid/mandatory-details',
   USERS = '/workplace/:workplaceUid/users',
   USER_ACCOUNT = '/workplace/:workplaceUid/user/:workerUid',

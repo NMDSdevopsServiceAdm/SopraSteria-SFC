@@ -1,8 +1,8 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
+import { EthnicityService } from '@core/services/ethnicity.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -26,16 +26,13 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     workerService: WorkerService,
     wdfConfirmFieldsService: WdfConfirmFieldsService,
     route: ActivatedRoute,
+    ethnicityService: EthnicityService,
   ) {
-    super(permissionsService, workerService, wdfConfirmFieldsService, route);
+    super(permissionsService, workerService, wdfConfirmFieldsService, route, ethnicityService);
   }
 
   isNumber(number: number) {
     return isNumber(number);
-  }
-
-  get displayYearArrived() {
-    return this.worker.countryOfBirth && this.worker.countryOfBirth.value !== 'United Kingdom';
   }
 
   get displayMentalHealthProfessional() {
@@ -62,6 +59,6 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   }
 
   get mainStartDate() {
-    return dayjs(this.worker.mainJobStartDate).format(DATE_DISPLAY_DEFAULT);
+    return dayjs(this.worker.mainJobStartDate).format('DD MMMM YYYY');
   }
 }

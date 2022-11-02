@@ -1,43 +1,36 @@
 <ng-container *ngIf="worker">
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <p
+      *ngIf="worker.longTermAbsence"
+      class="govuk-!-margin-bottom-3 govuk-!-margin-left-3 govuk-tag govuk-tag--grey govuk-!-margin-bottom-0 asc-tag"
+    >
+      Long-term absent
+      <a
+        [routerLink]="[
+          '/workplace',
+          workplace.uid,
+          'training-and-qualifications-record',
+          worker.uid,
+          'long-term-absence'
+        ]"
+        data-testid="longTermAbsence"
+        class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
+        (click)="setReturnTo()"
+        >View</a
+      >
+    </p>
     <div class="govuk-grid-column-full">
-      <div class="govuk-list--inline govuk-list govuk__flex govuk-!-margin-bottom-3 govuk__align-items-center">
-        <span class="govuk-caption-xl govuk-!-margin-right-3 govuk-!-margin-bottom-0">{{ worker.nameOrId }}</span>
-        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-bottom-0 asc-tag">
-          Long-term absent
-          <a
-            [routerLink]="[
-              '/workplace',
-              workplace.uid,
-              'training-and-qualifications-record',
-              worker.uid,
-              'long-term-absence'
-            ]"
-            data-testid="longTermAbsence"
-            class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
-            (click)="setReturnTo()"
-            >View</a
-          >
-        </p>
+      <div class="govuk-!-margin-bottom-0">
+        <span class="govuk-caption-l" data-testid="section-heading">{{ worker.nameOrId }}</span>
       </div>
     </div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
       <h1 class="govuk-heading-l">Staff record</h1>
-      <a
-        *ngIf="canEditWorker && worker.completed"
-        class="govuk-button govuk-button--link govuk-!-padding-left-0"
-        role="button"
-        draggable="false"
-        [routerLink]="['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training']"
-      >
-        Training and qualifications
-      </a>
     </div>
-
     <div class="govuk-grid-column-two-thirds">
-      <div *ngIf="worker.completed" class="govuk-grid-row govuk-!-margin-bottom-3 govuk-!-margin-top-0">
+      <div *ngIf="worker.completed" class="govuk-grid-row govuk-!-margin-top-0">
         <div class="govuk-button-group govuk__align-items-center govuk-util__float-right govuk-!-margin-top-0">
           <a
             class="govuk-button govuk-button--link"
@@ -83,8 +76,22 @@
     </div>
   </div>
   <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <a
+        *ngIf="canEditWorker && worker.completed"
+        class="govuk-button govuk-button--link govuk-!-padding-left-0"
+        role="button"
+        draggable="false"
+        data-testid="training-and-qualifications-link"
+        [routerLink]="['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training']"
+      >
+        Training and qualifications
+      </a>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
     <ng-container *ngIf="worker.completed; else button">
-      <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-3">
         <p>Check the record details you've added are correct.</p>
       </div>
     </ng-container>

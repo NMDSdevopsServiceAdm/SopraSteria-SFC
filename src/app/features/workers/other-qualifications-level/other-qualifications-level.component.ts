@@ -17,6 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 export class OtherQualificationsLevelComponent extends QuestionComponent {
   public qualifications: QualificationLevel[];
   public section = 'Training and qualifications';
+  public insideOtherQualificationsLevelSummaryFlow: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -36,7 +37,8 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
   }
 
   init(): void {
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+    this.insideOtherQualificationsLevelSummaryFlow =
+      this.route.snapshot.parent.url[0].path === 'other-qualifications-level-summary-flow';
     this.getAndSetQualifications();
     this.setUpPageRouting();
 
@@ -61,14 +63,22 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
 
   private setUpPageRouting(): void {
     this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-
-    if (this.insideFlow) {
+    if (this.insideFlow && !this.insideOtherQualificationsLevelSummaryFlow) {
       this.previous = this.getRoutePath('other-qualifications');
-      this.skipRoute = this.staffRecordSummaryPath;
+      this.next = this.getRoutePath('staff-record-summary-flow');
+    } else if (this.insideOtherQualificationsLevelSummaryFlow) {
       this.next = this.staffRecordSummaryPath;
+      this.previous = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'other-qualifications',
+      ];
     } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+      this.previous = this.staffRecordSummaryPath;
+      this.next = this.staffRecordSummaryPath;
     }
   }
 

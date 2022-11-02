@@ -18,6 +18,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();
   public section = 'Personal details';
   private mainJobStartDatePath: string[];
+  public insideYearArrivedUkMiniFlow: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -40,6 +41,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
 
   init() {
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+    this.insideYearArrivedUkMiniFlow = this.route.snapshot.parent.url[0].path === 'year-arrived-uk-summary-flow';
     this.setUpPageRouting();
     this.setupFormValidation();
 
@@ -93,19 +95,9 @@ export class YearArrivedUkComponent extends QuestionComponent {
         this.form.get('year').updateValueAndValidity();
       }),
     );
-
-    if (this.worker.yearArrived) {
-      this.form.patchValue({
-        yearKnown: this.worker.yearArrived.value,
-        year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
-      });
-    }
-
-    this.next = this.getRoutePath('main-job-start-date');
-    this.previous = this.getRoutePath('country-of-birth');
   }
 
-  private prefill() {
+  private prefill(): void {
     this.form.patchValue({
       yearKnown: this.worker.yearArrived.value,
       year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
@@ -132,13 +124,21 @@ export class YearArrivedUkComponent extends QuestionComponent {
     this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
     this.mainJobStartDatePath = this.getRoutePath('main-job-start-date');
 
-    if (this.insideFlow) {
-      this.backService.setBackLink({ url: this.getRoutePath('country-of-birth') });
-      this.skipRoute = this.mainJobStartDatePath;
+    if (this.insideFlow && !this.insideYearArrivedUkMiniFlow) {
+      this.previous = this.getRoutePath('country-of-birth');
       this.next = this.mainJobStartDatePath;
+    } else if (this.insideYearArrivedUkMiniFlow) {
+      this.next = this.staffRecordSummaryPath;
+      this.previous = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'country-of-birth',
+      ];
     } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
+      this.previous = this.staffRecordSummaryPath;
     }
   }
 }

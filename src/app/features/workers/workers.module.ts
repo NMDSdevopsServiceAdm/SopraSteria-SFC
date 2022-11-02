@@ -48,7 +48,6 @@ import { NewTrainingAndQualificationsRecordComponent } from './new-training-qual
 import { NewTrainingComponent } from './new-training-qualifications-record/new-training/new-training.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
-import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
@@ -93,7 +92,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     NationalityComponent,
     NursingCategoryComponent,
     NursingSpecialismComponent,
-    OtherJobRolesComponent,
     OtherQualificationsComponent,
     OtherQualificationsLevelComponent,
     QualificationFormComponent,

@@ -1,11 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, getTestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import {
-  MockWorkerService,
   MockWorkerServiceWithoutReturnUrl,
   MockWorkerServiceWithUpdateWorker,
 } from '@core/test-utils/MockWorkerService';
@@ -95,10 +94,10 @@ describe('SocialCareQualificationComponent', () => {
       expect(getByText('View this staff record')).toBeTruthy();
     });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
+    it(`should show 'Save' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup();
 
-      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
   });
@@ -114,8 +113,6 @@ describe('SocialCareQualificationComponent', () => {
       fireEvent.click(radioButtonYes);
 
       fixture.detectChanges();
-
-      console.log(component.form.value);
 
       const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
@@ -141,8 +138,6 @@ describe('SocialCareQualificationComponent', () => {
       fireEvent.click(radioButtonYes);
 
       fixture.detectChanges();
-
-      console.log(component.form.value);
 
       const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
@@ -201,7 +196,7 @@ describe('SocialCareQualificationComponent', () => {
       ]);
     });
 
-    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+    it('should navigate to staff-summary-page page when pressing save and no is entered', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
 
       const workerId = component.worker.uid;
@@ -212,10 +207,10 @@ describe('SocialCareQualificationComponent', () => {
 
       fixture.detectChanges();
 
-      const saveButton = getByText('Save and return');
+      const saveButton = getByText('Save');
       fireEvent.click(saveButton);
 
-      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -223,6 +218,57 @@ describe('SocialCareQualificationComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing save and I do not know is entered', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButtonNo = getByLabelText('I do not know');
+      fireEvent.click(radioButtonNo);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to social-care-qualification-level-summary-flow page when pressing save and Yes is entered', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButtonNo = getByLabelText('Yes');
+      fireEvent.click(radioButtonNo);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+        'social-care-qualification-level-summary-flow',
       ]);
     });
 

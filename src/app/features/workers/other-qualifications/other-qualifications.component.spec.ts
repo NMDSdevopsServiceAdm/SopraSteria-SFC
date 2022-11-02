@@ -102,10 +102,10 @@ describe('OtherQualificationsComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it('should render the page with a save and return button and a cancel link', async () => {
+    it('should render the page with a save button and a cancel link when not in the flow', async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
@@ -125,7 +125,7 @@ describe('OtherQualificationsComponent', () => {
       ]);
     });
 
-    it(`should call submit data and navigate with the   'other-qualifications-level' url when 'Skip this question' is clicked and in the flow`, async () => {
+    it(`should call submit data and navigate with the 'other-qualifications-level' url when 'Skip this question' is clicked and in the flow`, async () => {
       const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
       const button = getByText('Skip this question');
@@ -157,14 +157,19 @@ describe('OtherQualificationsComponent', () => {
       ]);
     });
 
-    it('should navigate to staff-summary-page page when pressing save and return', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
+    it('should navigate to staff-summary-page page when pressing save and not know is entered', async () => {
+      const { component, fixture, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const link = getByText('Save and return');
+      const radioButton = getByText('I do not know');
+      fireEvent.click(radioButton);
+
+      const link = getByText('Save');
       fireEvent.click(link);
+
+      fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -172,6 +177,53 @@ describe('OtherQualificationsComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing save and No is entered', async () => {
+      const { component, fixture, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButton = getByText('No');
+      fireEvent.click(radioButton);
+
+      const link = getByText('Save');
+      fireEvent.click(link);
+
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to other-qualifications-level-summary-flow page when pressing save and Yes is entered', async () => {
+      const { component, fixture, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButton = getByText('Yes');
+      fireEvent.click(radioButton);
+
+      const link = getByText('Save');
+      fireEvent.click(link);
+
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+        'other-qualifications-level-summary-flow',
       ]);
     });
 

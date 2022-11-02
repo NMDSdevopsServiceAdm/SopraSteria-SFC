@@ -126,11 +126,13 @@
     </div>
   </div>
   <app-submit-button
-    [return]="editFlow"
-    [canExit]="canExit"
-    [recordSummary]="false"
+    [showSaveAndCancelButton]="showSaveAndCancelButton"
     [callToAction]="submitTitle"
+    [recordSummary]="false"
+    [canExit]="canExit"
+    [return]="!insideFlow && !inMandatoryDetailsFlow ? false : editFlow"
     [isExistingStaffRecord]="!!worker"
     (clicked)="setSubmitAction($event)"
-  ></app-submit-button>
+  >
+  </app-submit-button>
 </form>

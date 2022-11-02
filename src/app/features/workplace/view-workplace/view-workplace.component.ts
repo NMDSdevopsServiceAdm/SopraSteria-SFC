@@ -36,6 +36,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public trainingCounts: TrainingCounts;
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
+  private showBanner = false;
 
   constructor(
     private alertService: AlertService,
@@ -51,6 +52,8 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.showBanner = history.state?.showBanner;
+
     this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
@@ -86,6 +89,8 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       url: ['/workplace', this.workplace.uid],
       fragment: 'workplace',
     };
+
+    this.showBanner && this.showStaffRecordBanner();
   }
 
   public onDeleteWorkplace(event: Event): void {
@@ -144,6 +149,13 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
         this.showCQCDetailsBanner = showBanner;
       }),
     );
+  }
+
+  private showStaffRecordBanner(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: 'Staff record saved',
+    });
   }
 
   /**

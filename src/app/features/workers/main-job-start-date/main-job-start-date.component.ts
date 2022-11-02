@@ -48,16 +48,18 @@ export class MainJobStartDateComponent extends QuestionComponent {
 
   init() {
     if (this.worker.mainJobStartDate) {
-      const date = dayjs(this.worker.mainJobStartDate, DATE_PARSE_FORMAT);
-      this.form.get('mainJobStartDate').patchValue({
-        year: date.year(),
-        month: date.format('M'),
-        day: date.date(),
-      });
+      this.prefill();
     }
+    this.setUpPageRouting();
+  }
 
-    this.next = this.getReturnPath();
-    this.previous = this.insideFlow ? this.getRoutePath('year-arrived-uk') : this.getRoutePath('');
+  private prefill(): void {
+    const date = dayjs(this.worker.mainJobStartDate, DATE_PARSE_FORMAT);
+    this.form.get('mainJobStartDate').patchValue({
+      year: date.year(),
+      month: date.format('M'),
+      day: date.date(),
+    });
   }
 
   public setupFormErrorsMap(): void {
@@ -95,17 +97,26 @@ export class MainJobStartDateComponent extends QuestionComponent {
     return { mainJobStartDate: null };
   }
 
-  private getReturnPath() {
+  private setUpPageRouting(): void {
     if (this.insideFlow) {
-      if (this.workerService.hasJobRole(this.worker, 23)) {
-        return this.getRoutePath('nursing-category');
-      } else if (this.workerService.hasJobRole(this.worker, 27)) {
-        return this.getRoutePath('mental-health-professional');
-      } else {
-        return this.getRoutePath('other-job-roles');
-      }
+      this.next = this.determineNextPath();
+      this.previous =
+        this.worker.countryOfBirth.value === 'Other' || this.worker.countryOfBirth.value === `Don't know`
+          ? this.getRoutePath('year-arrived-uk')
+          : this.getRoutePath('country-of-birth');
+    } else {
+      this.previous = this.getRoutePath('');
+      this.next = this.getRoutePath('');
     }
+  }
 
-    return this.getRoutePath('');
+  private determineNextPath() {
+    if (this.workerService.hasJobRole(this.worker, 23)) {
+      return this.getRoutePath('nursing-category');
+    } else if (this.workerService.hasJobRole(this.worker, 27)) {
+      return this.getRoutePath('mental-health-professional');
+    } else {
+      return this.getRoutePath('recruited-from');
+    }
   }
 }

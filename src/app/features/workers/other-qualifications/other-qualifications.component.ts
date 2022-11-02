@@ -36,35 +36,67 @@ export class OtherQualificationsComponent extends QuestionComponent {
   }
 
   init(): void {
-    if (this.worker.otherQualification) {
-      this.form.patchValue({
-        otherQualification: this.worker.otherQualification,
-      });
-    }
-    this.next =
-      this.worker.otherQualification === 'Yes'
-        ? this.getRoutePath('other-qualifications-level')
-        : this.getRoutePath('');
+    this.setUpPageRouting();
 
-    this.previous = this.getReturnPath();
+    if (this.worker.otherQualification) {
+      this.prefill();
+      this.setUpConditionalQuestionLogic(this.worker.otherQualification);
+      this.setUpPageRouting(this.worker.otherQualification);
+    }
+
+    this.subscriptions.add(
+      this.form.get('otherQualification').valueChanges.subscribe((value) => {
+        if (!this.insideFlow) {
+          this.setUpConditionalQuestionLogic(value);
+        }
+        this.setUpPageRouting(value);
+      }),
+    );
   }
 
-  getReturnPath() {
+  private prefill(): void {
+    this.form.patchValue({
+      otherQualification: this.worker.otherQualification,
+    });
+  }
+
+  private setUpPageRouting(otherQualification?): void {
     if (this.insideFlow) {
-      return this.worker.qualificationInSocialCare === 'Yes'
-        ? this.getRoutePath('social-care-qualification-level')
-        : this.getRoutePath('social-care-qualification');
+      this.previous =
+        this.worker.qualificationInSocialCare === 'Yes'
+          ? this.getRoutePath('social-care-qualification-level')
+          : (this.previous = this.getRoutePath('social-care-qualification'));
+      if (otherQualification === 'Yes') {
+        this.next = this.getRoutePath('other-qualifications-level');
+      } else {
+        this.next = this.getRoutePath('staff-record-summary-flow');
+      }
+    } else {
+      this.next = this.getRoutePath('');
+      this.previous = this.getRoutePath('');
     }
-    return this.getRoutePath('');
+  }
+
+  public setUpConditionalQuestionLogic(otherQualification): void {
+    if (otherQualification === 'Yes') {
+      this.conditionalQuestionUrl = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'other-qualifications-level-summary-flow',
+      ];
+    } else {
+      this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
+    }
   }
 
   generateUpdateProps(): unknown {
     const { otherQualification } = this.form.value;
-
     if (!otherQualification) {
       return null;
     }
-
     return {
       otherQualification,
     };

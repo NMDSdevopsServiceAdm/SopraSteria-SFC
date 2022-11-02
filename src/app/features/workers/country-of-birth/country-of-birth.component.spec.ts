@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -20,7 +20,7 @@ describe('CountryOfBirthComponent', () => {
           FormBuilder,
           {
             provide: WorkerService,
-            useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+            useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
           },
           {
             provide: ActivatedRoute,
@@ -81,10 +81,10 @@ describe('CountryOfBirthComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
+    it(`should show 'Save' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup();
 
-      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
@@ -99,7 +99,7 @@ describe('CountryOfBirthComponent', () => {
         'mocked-uid',
         'staff-record',
         component.worker.uid,
-        'year-arrived-uk',
+        'main-job-start-date',
       ]);
     });
 
@@ -139,13 +139,13 @@ describe('CountryOfBirthComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'year-arrived-uk']);
     });
 
-    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+    it('should navigate to staff-summary-page page when pressing Save and no value is entered', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const link = getByText('Save and return');
+      const link = getByText('Save');
       fireEvent.click(link);
 
       expect(routerSpy).toHaveBeenCalledWith([
@@ -154,6 +154,74 @@ describe('CountryOfBirthComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing Save and United Kingdom is selected', async () => {
+      const { component, fixture, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButton = getByText('United Kingdom');
+      fireEvent.click(radioButton);
+
+      const link = getByText('Save');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to year-arrived-uk-summary-flow page when pressing Save and other country is selected', async () => {
+      const { component, fixture, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButton = getByText('Other');
+      fireEvent.click(radioButton);
+
+      const link = getByText('Save');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+        'year-arrived-uk-summary-flow',
+      ]);
+    });
+
+    it('should navigate to year-arrived-uk-summary-flow page when pressing Save and I do not know is selected', async () => {
+      const { component, fixture, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButton = getByText('Other');
+      fireEvent.click(radioButton);
+
+      const link = getByText('Save');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+        'year-arrived-uk-summary-flow',
       ]);
     });
 

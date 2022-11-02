@@ -35,7 +35,6 @@ import { DeleteRecordComponent } from './new-training-qualifications-record/dele
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
-import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
@@ -119,9 +118,19 @@ const routes: Routes = [
             },
           },
           {
-            path: 'other-job-roles',
-            component: OtherJobRolesComponent,
-            data: { title: 'Other Job Roles' },
+            path: 'registered-nurse-details',
+            children: [
+              {
+                path: 'nursing-category',
+                component: NursingCategoryComponent,
+                data: { title: 'Nursing Category' },
+              },
+              {
+                path: 'nursing-specialism',
+                component: NursingSpecialismComponent,
+                data: { title: 'Nursing Specialism' },
+              },
+            ],
           },
           {
             path: 'nursing-category',
@@ -132,6 +141,16 @@ const routes: Routes = [
             path: 'nursing-specialism',
             component: NursingSpecialismComponent,
             data: { title: 'Nursing Specialism' },
+          },
+          {
+            path: 'mental-health-professional-summary-flow',
+            children: [
+              {
+                path: '',
+                component: MentalHealthProfessionalComponent,
+                data: { title: 'Mental Health Professional' },
+              },
+            ],
           },
           {
             path: 'mental-health-professional',
@@ -189,6 +208,16 @@ const routes: Routes = [
             data: { title: 'Year Arrived in the UK' },
           },
           {
+            path: 'year-arrived-uk-summary-flow',
+            children: [
+              {
+                path: '',
+                component: YearArrivedUkComponent,
+                data: { title: 'Year Arrived in the UK' },
+              },
+            ],
+          },
+          {
             path: 'recruited-from',
             component: RecruitedFromComponent,
             data: { title: 'Recruited From' },
@@ -244,6 +273,16 @@ const routes: Routes = [
             data: { title: 'Highest Social Care Qualification Level' },
           },
           {
+            path: 'social-care-qualification-level-summary-flow',
+            children: [
+              {
+                path: '',
+                component: SocialCareQualificationLevelComponent,
+                data: { title: 'Highest Social Care Qualification Level' },
+              },
+            ],
+          },
+          {
             path: 'other-qualifications',
             component: OtherQualificationsComponent,
             data: { title: 'Other Qualifications' },
@@ -252,6 +291,16 @@ const routes: Routes = [
             path: 'other-qualifications-level',
             component: OtherQualificationsLevelComponent,
             data: { title: 'Highest Level of Other Qualifications' },
+          },
+          {
+            path: 'other-qualifications-level-summary-flow',
+            children: [
+              {
+                path: '',
+                component: OtherQualificationsLevelComponent,
+                data: { title: 'Highest Level of Other Qualifications' },
+              },
+            ],
           },
           {
             path: 'add-qualification',
@@ -318,6 +367,11 @@ const routes: Routes = [
         ],
       },
       {
+        path: 'staff-record-summary-flow',
+        component: StaffRecordComponent,
+        data: { title: 'Staff Record' },
+      },
+      {
         path: 'staff-details',
         component: StaffDetailsComponent,
         data: { title: 'Staff Details' },
@@ -350,11 +404,6 @@ const routes: Routes = [
           permissions: ['canAddWorker'],
           title: 'Select Record Type',
         },
-      },
-      {
-        path: 'other-job-roles',
-        component: OtherJobRolesComponent,
-        data: { title: 'Other Job Roles' },
       },
       {
         path: 'nursing-category',

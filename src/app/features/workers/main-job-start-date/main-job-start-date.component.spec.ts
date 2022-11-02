@@ -31,6 +31,10 @@ const workerBuilder = build('Worker', {
       id: 21,
       jobId: 21,
     },
+    countryOfBirth: {
+      other: { countryId: 59, country: 'Denmark' },
+      value: 'Other',
+    },
   },
 });
 
@@ -187,7 +191,7 @@ describe('MainJobStartDateComponent', () => {
       123,
       'staff-record',
       fixture.componentInstance.worker.uid,
-      'other-job-roles',
+      'recruited-from',
     ]);
   });
 
@@ -265,7 +269,7 @@ describe('MainJobStartDateComponent', () => {
       123,
       'staff-record',
       fixture.componentInstance.worker.uid,
-      'other-job-roles',
+      'recruited-from',
     ]);
     expect(workerServiceSpy).not.toHaveBeenCalled();
   });

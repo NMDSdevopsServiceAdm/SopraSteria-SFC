@@ -127,7 +127,6 @@ export class EthnicityComponent extends QuestionComponent {
 
     if (this.insideFlow) {
       this.backService.setBackLink({ url: this.getRoutePath('disability') });
-      this.skipRoute = this.nationalityPath;
       this.next = this.nationalityPath;
     } else {
       this.return = { url: this.staffRecordSummaryPath };

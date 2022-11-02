@@ -3,46 +3,26 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Establishment } from '@core/model/establishment.model';
-import { Worker } from '@core/model/worker.model';
+import { BackService } from '@core/services/back.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-  workerBuilder,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
-import { OtherQualificationsComponent } from '../other-qualifications/other-qualifications.component';
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level.component';
 
 describe('OtherQualificationsLevelComponent', () => {
-  const workplace = establishmentBuilder() as Establishment;
-  const worker = workerBuilder() as Worker;
-
   async function setup(returnUrl = true) {
     const { fixture, getByText, queryByTestId, getByLabelText, getByTestId } = await render(
       OtherQualificationsLevelComponent,
       {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule.withRoutes([
-            {
-              path: `workplace/${workplace.uid}/staff-record/${worker.uid}/other-qualifications`,
-              component: OtherQualificationsComponent,
-            },
-          ]),
-          HttpClientTestingModule,
-          WorkersModule,
-        ],
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
         providers: [
           FormBuilder,
+          BackService,
           {
             provide: ActivatedRoute,
             useValue: {
@@ -56,7 +36,7 @@ describe('OtherQualificationsLevelComponent', () => {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
-                  url: [{ path: '' }],
+                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
                 },
               },
             },
@@ -76,13 +56,16 @@ describe('OtherQualificationsLevelComponent', () => {
 
     const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
+    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
       fixture,
       routerSpy,
+      backLinkSpy,
       getByText,
       queryByTestId,
       getByLabelText,
@@ -105,7 +88,7 @@ describe('OtherQualificationsLevelComponent', () => {
 
   describe('submit buttons', () => {
     it('should render the page with a save and continue button when there return value is null', async () => {
-      const { component, fixture, getByText } = await setup();
+      const { component, fixture, getByText } = await setup(false);
 
       component.return = null;
       fixture.detectChanges();
@@ -143,7 +126,7 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to staff-record-summary page when submitting from flow', async () => {
+    it('should navigate to staff-record-summary-flow page when submitting from flow', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -161,11 +144,11 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary',
+        'staff-record-summary-flow',
       ]);
     });
 
-    it('should navigate to staff-record-summary page when skipping the question in the flow', async () => {
+    it('should navigate to staff-record-summary-flow page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -179,7 +162,7 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary',
+        'staff-record-summary-flow',
       ]);
     });
 
@@ -224,13 +207,28 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component } = await setup();
+      const { component, backLinkSpy } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      expect(component.return).toEqual({
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
         url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set backlink to other-qualifications page when in staff record flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', workplaceId, 'staff-record', workerId, 'other-qualifications'],
+        fragment: 'staff-records',
       });
     });
   });

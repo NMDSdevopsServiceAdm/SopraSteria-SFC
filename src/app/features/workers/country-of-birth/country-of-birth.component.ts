@@ -40,9 +40,11 @@ export class CountryOfBirthComponent extends QuestionComponent {
   init() {
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     this.subscriptions.add(this.countryService.getCountries().subscribe((res) => (this.availableCountries = res)));
-
     this.subscriptions.add(
       this.form.get('countryOfBirthKnown').valueChanges.subscribe((value) => {
+        if (!this.insideFlow) {
+          this.setUpConditionalQuestionLogic(value);
+        }
         this.form.get('countryOfBirthName').clearValidators();
 
         if (value === 'Other') {
@@ -54,16 +56,37 @@ export class CountryOfBirthComponent extends QuestionComponent {
     );
 
     if (this.worker.countryOfBirth) {
-      const { value, other } = this.worker.countryOfBirth;
-
-      this.form.patchValue({
-        countryOfBirthKnown: value,
-        countryOfBirthName: other ? other.country : null,
-      });
+      this.setUpConditionalQuestionLogic(this.worker.countryOfBirth.value);
+      this.prefill();
     }
-    this.next = this.getRoutePath('year-arrived-uk');
 
+    this.next = this.getRoutePath('year-arrived-uk');
     this.previous = this.getReturnPath();
+  }
+
+  private prefill(): void {
+    const { value, other } = this.worker.countryOfBirth;
+    this.form.patchValue({
+      countryOfBirthKnown: value,
+      countryOfBirthName: other ? other.country : null,
+    });
+  }
+
+  public setUpConditionalQuestionLogic(countryValue): void {
+    if (!this.insideFlow) {
+      if ((countryValue === 'Other' || countryValue === `Don't know`) && countryValue !== 'United Kingdom') {
+        this.conditionalQuestionUrl = [
+          '/workplace',
+          this.workplace.uid,
+          'staff-record',
+          this.worker.uid,
+          'staff-record-summary',
+          'year-arrived-uk-summary-flow',
+        ];
+      } else {
+        this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
+      }
+    }
   }
 
   getReturnPath() {
@@ -90,7 +113,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
   generateUpdateProps() {
     const { countryOfBirthName, countryOfBirthKnown } = this.form.value;
-
     return countryOfBirthKnown
       ? {
           countryOfBirth: {
