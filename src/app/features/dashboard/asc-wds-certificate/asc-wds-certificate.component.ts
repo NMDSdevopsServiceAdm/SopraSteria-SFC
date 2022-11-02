@@ -7,16 +7,13 @@ import { EstablishmentService } from '@core/services/establishment.service';
   templateUrl: './asc-wds-certificate.component.html',
 })
 export class AscWdsCertificateComponent implements OnInit {
-
-  constructor(
-    protected establishmentService: EstablishmentService,
-  )
-  {}
+  constructor(protected establishmentService: EstablishmentService) {}
 
   private defaultFileName = `ASC-WDS+certificate`;
   isDev = environment.dev ?? false;
   public certificateName: string;
   public years: string;
+  public downloadLink;
 
   ngOnInit(): void {
     this.getCertificateName();
@@ -27,24 +24,25 @@ export class AscWdsCertificateComponent implements OnInit {
 
     const establishmentId = this.establishmentService.establishmentId;
 
-    this.certificateName = `${establishmentId}+${this.defaultFileName}+${this.years}.pdf`
-  }
+    this.certificateName = `${establishmentId}+${this.defaultFileName}+${this.years}.pdf`;
+  };
 
   private getYears = () => {
     const date = new Date();
     const currentMonth = date.getMonth();
     const currentYear = date.getFullYear() - 2000;
 
-    if(currentMonth >= 4) {
-      return `${currentYear}-${currentYear+1}`
+    if (currentMonth >= 4) {
+      return `${currentYear}-${currentYear + 1}`;
     } else {
-      return `${currentYear-1}-${currentYear}`
+      return `${currentYear - 1}-${currentYear}`;
     }
-  }
+  };
 
-  downloadCertificate(): void {
+  async downloadCertificate(): Promise<any> {
     console.log(this.establishmentService.establishmentId);
-    this.establishmentService.getCertificate(this.establishmentService.establishmentId);
+    this.establishmentService
+      .getCertificate(this.establishmentService.establishmentId)
+      .subscribe((x) => window.open(x.data));
   }
-
 }
