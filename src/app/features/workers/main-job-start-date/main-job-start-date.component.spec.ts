@@ -31,6 +31,10 @@ const workerBuilder = build('Worker', {
       id: 21,
       jobId: 21,
     },
+    countryOfBirth: {
+      other: { countryId: 59, country: 'Denmark' },
+      value: 'Other',
+    },
   },
 });
 
@@ -415,6 +419,28 @@ describe('MainJobStartDateComponent', () => {
 
       const errors = getAllByText('Main job start date must be today or in the past');
       expect(errors.length).toBe(2);
+    });
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to year arrived uk page when in the flow', async () => {
+      const { component, backLinkSpy } = await setup();
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', 123, 'staff-record', component.worker.uid, 'year-arrived-uk'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff record summary when outside the flow', async () => {
+      const { component, backLinkSpy } = await setup(false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', 123, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
     });
   });
 });

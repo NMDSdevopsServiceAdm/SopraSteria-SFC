@@ -58,7 +58,6 @@ export class ApprenticeshipTrainingComponent extends QuestionComponent {
 
     if (this.insideFlow) {
       this.previous = this.getRoutePath('care-certificate');
-      this.skipRoute = this.socialCareQualificationPath;
       this.next = this.socialCareQualificationPath;
     } else {
       this.return = { url: this.staffRecordSummaryPath };

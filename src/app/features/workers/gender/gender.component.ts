@@ -54,7 +54,6 @@ export class GenderComponent extends QuestionComponent {
 
     if (this.insideFlow) {
       this.backService.setBackLink({ url: this.getRoutePath('home-postcode') });
-      this.skipRoute = this.disabilityPath;
       this.next = this.disabilityPath;
     } else {
       this.return = { url: this.staffRecordSummaryPath };

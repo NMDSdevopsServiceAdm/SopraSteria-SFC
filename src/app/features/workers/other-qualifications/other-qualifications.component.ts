@@ -36,6 +36,8 @@ export class OtherQualificationsComponent extends QuestionComponent {
   }
 
   init(): void {
+    this.setUpPageRouting();
+
     if (this.worker.otherQualification) {
       this.prefill();
       this.setUpConditionalQuestionLogic(this.worker.otherQualification);
@@ -58,7 +60,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
     });
   }
 
-  private setUpPageRouting(otherQualification): void {
+  private setUpPageRouting(otherQualification?): void {
     if (this.insideFlow) {
       this.previous =
         this.worker.qualificationInSocialCare === 'Yes'
