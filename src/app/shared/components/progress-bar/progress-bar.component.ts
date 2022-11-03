@@ -10,6 +10,7 @@ export class ProgressBarComponent implements OnInit {
   @Input() sections: string[];
   @Input() currentSection: string;
   @Input() completeProgressBar = false;
+  @Input() currentSectionComplete = false;
   public currentSectionIndex: number;
 
   public ngOnInit(): void {

@@ -5,6 +5,7 @@ import { FLOAT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import isNull from 'lodash/isNull';
 
@@ -16,7 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class DaysOfSicknessComponent extends QuestionComponent {
   public daysSicknessMin = 0;
-  public daysSicknessMax = 366;
+  public daysSicknessMax = 365;
   public floatPattern = FLOAT_PATTERN.toString();
 
   constructor(
@@ -26,8 +27,9 @@ export class DaysOfSicknessComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       daysKnown: null,
@@ -68,7 +70,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('contract-with-zero-hours');
-    this.previous = this.getRoutePath('adult-social-care-started');
+    this.previous = this.insideFlow ? this.getRoutePath('adult-social-care-started') : this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {
@@ -78,15 +80,15 @@ export class DaysOfSicknessComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Number of days is required.',
+            message: 'Enter the number of days',
           },
           {
             name: 'min',
-            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}.`,
+            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}`,
           },
           {
             name: 'max',
-            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}.`,
+            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}`,
           },
           {
             name: 'pattern',

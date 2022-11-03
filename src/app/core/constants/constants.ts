@@ -1,6 +1,6 @@
 export const DATE_PARSE_FORMAT = 'YYYY-MM-DD';
 export const DATE_DISPLAY_DEFAULT = 'DD/MM/YYYY';
-export const DATE_DISPLAY_FULL = 'D MMMM, Y';
+export const DATE_DISPLAY_FULL = 'D MMMM YYYY';
 export const NIN_PATTERN =
   /^(?!BG)(?!GB)(?!NK)(?!KN)(?!TN)(?!NT)(?!ZZ)(?:[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z])(?:\s*\d\s*){6}([A-D]|\s)$/;
 export const POSTCODE_PATTERN =

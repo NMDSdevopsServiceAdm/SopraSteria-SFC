@@ -15,7 +15,7 @@ import { WorkplaceTabComponent } from './workplace-tab.component';
 
 describe('WorkplaceTabComponent', () => {
   const setup = async () => {
-    const { fixture } = await render(WorkplaceTabComponent, {
+    const { fixture, getByText, queryByTestId } = await render(WorkplaceTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -34,7 +34,7 @@ describe('WorkplaceTabComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    return { component, fixture };
+    return { component, fixture, getByText, queryByTestId };
   };
 
   it('should create', async () => {
@@ -53,67 +53,67 @@ describe('WorkplaceTabComponent', () => {
   });
 
   it('should not display the Check CQC Details banner', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, queryByTestId } = await setup();
     component.showCQCDetailsBanner = false;
     fixture.detectChanges();
 
-    const checkCQCDetailsBanner = within(document.body).queryByTestId('check-cqc-details');
+    const checkCQCDetailsBanner = queryByTestId('check-cqc-details');
 
     expect(checkCQCDetailsBanner).toBeNull();
   });
 
   it('should display the Sharing Permissions banner', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, queryByTestId } = await setup();
     component.showSharingPermissionsBanner = true;
     fixture.detectChanges();
 
-    const checkShowSharingPermissions = within(document.body).queryByTestId('check-sharing-permissions');
+    const checkShowSharingPermissions = queryByTestId('check-sharing-permissions');
 
     expect(checkShowSharingPermissions.innerHTML).toContain('You need to review your data sharing permissions');
   });
 
   it('should not display the Sharing Permissions banner', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, queryByTestId } = await setup();
     component.showSharingPermissionsBanner = false;
     fixture.detectChanges();
 
-    const checkShowSharingPermissions = within(document.body).queryByTestId('check-sharing-permissions');
+    const checkShowSharingPermissions = queryByTestId('check-sharing-permissions');
 
     expect(checkShowSharingPermissions).toBeNull();
   });
 
-  it('should navigate to the sharing data page when the link in the permissions banner is clicked', async () => {
-    const { component, fixture } = await setup();
+  it('should navigate to the sharing data page whent the link in the permissions banner is clicked', async () => {
+    const { component, fixture, getByText } = await setup();
     const routerSpy = spyOn(component.router, 'navigate');
     component.showSharingPermissionsBanner = true;
     fixture.detectChanges();
 
-    const link = within(document.body).getByText('Please review your data sharing permissions');
+    const link = getByText('Please review your data sharing permissions');
     fireEvent.click(link);
 
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid, 'sharing-data']);
   });
 
   it('should set the return url in the establishment service to the dashboard if the permission page is accessed from dashboard', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, getByText } = await setup();
     const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
     component.showSharingPermissionsBanner = true;
     fixture.detectChanges();
 
-    const link = within(document.body).getByText('Please review your data sharing permissions');
+    const link = getByText('Please review your data sharing permissions');
     fireEvent.click(link);
 
     expect(setReturnRouteSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
   });
 
   it('should set the return url in the establishment service to the workplace dashboard if the permissions page is accessed from sub establishment', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, getByText } = await setup();
     const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
     component.showSharingPermissionsBanner = true;
     component.route.snapshot.params = { establishmentuid: component.workplace.uid };
     fixture.detectChanges();
 
-    const link = within(document.body).getByText('Please review your data sharing permissions');
+    const link = getByText('Please review your data sharing permissions');
     fireEvent.click(link);
 
     expect(setReturnRouteSpy).toHaveBeenCalledWith({

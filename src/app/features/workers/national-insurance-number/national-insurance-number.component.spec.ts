@@ -11,29 +11,33 @@ import { NationalInsuranceNumberComponent } from './national-insurance-number.co
 
 describe('NationalInsuranceNumberComponent', () => {
   async function setup(returnUrl = true) {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(NationalInsuranceNumberComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        FormBuilder,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            parent: {
-              snapshot: {
-                data: {
-                  establishment: { uid: 'mocked-uid' },
-                  primaryWorkplace: {},
+    const { fixture, getByText, getAllByText, getByLabelText, queryByTestId, getByTestId } = await render(
+      NationalInsuranceNumberComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          FormBuilder,
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              parent: {
+                snapshot: {
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
+                  },
+                  url: [{ path: '' }],
                 },
               },
             },
           },
-        },
-        {
-          provide: WorkerService,
-          useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
-        },
-      ],
-    });
+          {
+            provide: WorkerService,
+            useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
 
@@ -43,12 +47,26 @@ describe('NationalInsuranceNumberComponent', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      queryByTestId,
+      getByTestId,
     };
   }
 
   it('should render the NationalInsuranceNumberComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the progress bar', async () => {
+    const { queryByTestId } = await setup();
+
+    expect(queryByTestId('progress-bar-1')).toBeTruthy();
+  });
+
+  it('should render the input field', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('ni-input'));
   });
 
   describe('submit buttons', () => {
@@ -60,7 +78,9 @@ describe('NationalInsuranceNumberComponent', () => {
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup();
+      const { component, fixture, getByText } = await setup();
+      component.insideFlow = false;
+      fixture.detectChanges();
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();

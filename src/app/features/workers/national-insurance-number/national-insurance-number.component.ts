@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NIN_PATTERN } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -20,8 +21,9 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       nationalInsuranceNumber: [null, this.ninValidator],
@@ -35,10 +37,12 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
       });
     }
 
-    this.next = this.getRoutePath('date-of-birth');
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+
+    this.next = this.getRoutePath('home-postcode');
     this.previous = this.workerService.hasJobRole(this.worker, 27)
       ? this.getRoutePath('mental-health-professional')
-      : this.getRoutePath('other-job-roles');
+      : this.getRoutePath('date-of-birth');
   }
 
   public setupFormErrorsMap(): void {

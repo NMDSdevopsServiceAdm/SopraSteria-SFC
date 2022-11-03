@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -12,17 +13,25 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './gender.component.html',
 })
 export class GenderComponent extends QuestionComponent {
-  public answersAvailable = ['Female', 'Male', 'Other', `Don't know`];
+  public answersAvailable = [
+    { value: 'Female', tag: 'Female' },
+    { value: 'Male', tag: 'Male' },
+    { value: 'Other', tag: 'Other' },
+    { value: `Don't know`, tag: 'I do not know' },
+  ];
+  public section = 'Personal details';
+  private disabilityPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected route: ActivatedRoute,
+    public route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       gender: null,
@@ -30,19 +39,30 @@ export class GenderComponent extends QuestionComponent {
   }
 
   init() {
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     if (this.worker.gender) {
       this.form.patchValue({
         gender: this.worker.gender,
       });
     }
+    this.setUpPageRouting();
+  }
 
-    this.next = this.getRoutePath('disability');
-    this.previous = this.getRoutePath('home-postcode');
+  private setUpPageRouting() {
+    this.disabilityPath = this.getRoutePath('disability');
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+
+    if (this.insideFlow) {
+      this.previous = this.getRoutePath('home-postcode');
+      this.next = this.disabilityPath;
+    } else {
+      this.return = { url: this.staffRecordSummaryPath };
+      this.previous = this.staffRecordSummaryPath;
+    }
   }
 
   generateUpdateProps() {
     const { gender } = this.form.controls;
-
     return gender.value
       ? {
           gender: gender.value,

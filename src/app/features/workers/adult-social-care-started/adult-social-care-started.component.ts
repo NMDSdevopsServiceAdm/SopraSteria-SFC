@@ -5,6 +5,7 @@ import { INT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
@@ -24,8 +25,9 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
@@ -64,7 +66,7 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
     this.next = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
       ? this.getRoutePath('days-of-sickness')
       : this.getRoutePath('contract-with-zero-hours');
-    this.previous = this.getRoutePath('recruited-from');
+    this.previous = this.insideFlow ? this.getRoutePath('recruited-from') : this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {
@@ -74,15 +76,15 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Year is required.',
+            message: 'Enter the year',
           },
           {
             name: 'min',
-            message: `Year can't be earlier than 100 years ago.`,
+            message: `Year cannot be more than 100 years ago`,
           },
           {
             name: 'max',
-            message: `Year can't be in future.`,
+            message: `Year cannot be in the future`,
           },
         ],
       },

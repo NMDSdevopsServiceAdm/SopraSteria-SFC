@@ -108,7 +108,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private showStaffRecordBanner(): void {
     this.alertService.addAlert({
       type: 'success',
-      message: `You've confirmed the details of the staff record you added`,
+      message: 'Staff record saved',
     });
   }
 
