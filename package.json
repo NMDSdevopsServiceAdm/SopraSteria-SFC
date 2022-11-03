@@ -146,7 +146,7 @@
     "@types/sinon": "^10.0.5",
     "@typescript-eslint/eslint-plugin": "4.0.0",
     "@typescript-eslint/parser": "3.10.1",
-    "ajv": "^6.12.6",
+    "ajv": "^8.11.0",
     "ajv-formats": "^2.1.0",
     "aws-sdk-mock": "^5.2.1",
     "chai": "^4.3.0",
