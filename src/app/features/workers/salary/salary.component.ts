@@ -18,7 +18,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class SalaryComponent extends QuestionComponent {
   public hourly = { min: 2.5, max: 200 };
-  public annually = { min: 500, max: 200000 };
+  public annually: any;
   public intPattern = INT_PATTERN.toString();
   public floatPattern = FLOAT_PATTERN.toString();
   public section = 'Employment details';
@@ -47,6 +47,7 @@ export class SalaryComponent extends QuestionComponent {
   }
 
   init() {
+    this.annually = { min: 500, max: this.worker.mainJob.jobId === 26 ? 250000 : 200000 };
     this.setValidators();
     this.setAnnualHourlyPay();
     this.previous = this.getReturnPath();
@@ -62,7 +63,6 @@ export class SalaryComponent extends QuestionComponent {
         return this.getRoutePath('average-weekly-hours');
       } else {
         return this.getRoutePath('weekly-contracted-hours');
-
       }
     }
     return this.getRoutePath('');
