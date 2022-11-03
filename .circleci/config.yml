@@ -60,24 +60,28 @@ commands:
                 cf set-env "<<parameters.appname>>-dark" DB_PASS "${<<parameters.env_prefix>>_DB_PASS}"
             fi
 
+            if [ -n "${<<parameters.env_prefix>>_DB_PORT}" ]; then
+                cf set-env "<<parameters.appname>>-dark" DB_PORT "${<<parameters.env_prefix>>_DB_PORT}"
+            fi
+
             if [ -n "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}" ]; then
                 cf set-env "<<parameters.appname>>-dark" REDIS_SERVICE_NAME "${<<parameters.env_prefix>>_REDIS_SERVICE_NAME}"
             fi
 
-            if [ -n "${<<parameters.env_prefix>>_SLACK_URL}" ]; then
-                cf set-env "<<parameters.appname>>-dark" SLACK_URL "${<<parameters.env_prefix>>_SLACK_URL}"
+            if [ -n "${SLACK_URL}" ]; then
+                cf set-env "<<parameters.appname>>-dark" SLACK_URL "${SLACK_URL}"
             fi
 
             if [ -n "${<<parameters.env_prefix>>_TOKEN_SECRET}" ]; then
-                cf set-env "<<parameters.appname>>-dark" TOKEN_SECRET "${<<parameters.env_prefix>>_TOKEN_SECRET}"
+                cf set-env "<<parameters.appname>>-dark" Token_Secret "${<<parameters.env_prefix>>_TOKEN_SECRET}"
             fi
 
             if [ -n "${<<parameters.env_prefix>>_NOTIFY_KEY}" ]; then
                 cf set-env "<<parameters.appname>>-dark" NOTIFY_KEY "${<<parameters.env_prefix>>_NOTIFY_KEY}"
             fi
 
-            if [ -n "${<<parameters.env_prefix>>_ADMIN_URL}" ]; then
-                cf set-env "<<parameters.appname>>-dark" ADMIN_URL "${<<parameters.env_prefix>>_ADMIN_URL}"
+            if [ -n "${ADMIN_URL}" ]; then
+                cf set-env "<<parameters.appname>>-dark" ADMIN_URL "${ADMIN_URL}"
             fi
 
             if [ -n "${<<parameters.env_prefix>>_HONEYCOMB_WRITE_KEY}" ]; then
@@ -88,8 +92,8 @@ commands:
                 cf set-env "<<parameters.appname>>-dark" TOKEN_ISS "${<<parameters.env_prefix>>_TOKEN_ISS}"
             fi
 
-            if [ -n "${<<parameters.env_prefix>>_GET_ADDRESS}" ]; then
-                cf set-env "<<parameters.appname>>-dark" GET_ADDRESS "${<<parameters.env_prefix>>_GET_ADDRESS}"
+            if [ -n "${GET_ADDRESS}" ]; then
+                cf set-env "<<parameters.appname>>-dark" GET_ADDRESS "${GET_ADDRESS}"
             fi
 
             if [ -n "${<<parameters.env_prefix>>_SEND_IN_BLUE_KEY}" ]; then
