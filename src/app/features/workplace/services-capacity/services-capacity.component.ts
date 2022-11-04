@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,6 +19,7 @@ export class ServicesCapacityComponent extends Question {
   public capacityErrorMsg = 'Number must be between 1 and 999';
   public intPattern = INT_PATTERN.toString();
   public section = 'Services';
+  public errorsSummaryErrorsMap: Array<ErrorDetails> = [];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -49,7 +51,7 @@ export class ServicesCapacityComponent extends Question {
 
         this.sortServices();
 
-        capacities.allServiceCapacities.forEach((service, index) => {
+        capacities.allServiceCapacities.forEach((service) => {
           const group = this.formBuilder.group({});
           const questions = service.questions;
           const id = this.generateFormGroupName(service.service);
@@ -76,7 +78,7 @@ export class ServicesCapacityComponent extends Question {
               patternErrorMsg = 'people using the service';
             }
 
-            this.formErrorsMap.push({
+            const errorObj = {
               item: `${id}.${formControlName}`,
               type: [
                 {
@@ -92,7 +94,10 @@ export class ServicesCapacityComponent extends Question {
                   message: `Number of ${patternErrorMsg} must be a whole number`,
                 },
               ],
-            });
+            };
+
+            this.formErrorsMap.push(errorObj);
+            this.setupErrorSummaryErrorsMap(errorObj, service.service);
           });
 
           if (Object.keys(group.controls).length > 1) {
@@ -103,7 +108,7 @@ export class ServicesCapacityComponent extends Question {
             const requiredErrorMsg = questions.some((question) => question.question.includes('bed'))
               ? 'beds you have'
               : 'places you have at the moment';
-            this.formErrorsMap.push({
+            const errorObj = {
               item: id,
               type: [
                 {
@@ -115,16 +120,29 @@ export class ServicesCapacityComponent extends Question {
                   message: `Enter how many ${requiredErrorMsg}`,
                 },
               ],
-            });
+            };
+
+            this.formErrorsMap.push(errorObj);
+            this.setupErrorSummaryErrorsMap(errorObj, service.service);
           }
+
           this.form.addControl(id, group);
         });
+        console.log('formErrorsMap:', this.formErrorsMap);
+        console.log('errorSummaryErrorsMap:', this.errorsSummaryErrorsMap);
       }),
     );
-
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+  }
+
+  private setupErrorSummaryErrorsMap(errorObj, service): void {
+    const serviceName = service.split(': ')[1];
+    const updatedErrorObj = JSON.parse(JSON.stringify(errorObj));
+    updatedErrorObj.type.forEach((error) => (error.message = `${error.message} (${serviceName})`));
+
+    this.errorsSummaryErrorsMap.push(updatedErrorObj);
   }
 
   protected setupServerErrorsMap(): void {
