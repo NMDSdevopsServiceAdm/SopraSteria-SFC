@@ -15,6 +15,8 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError?: string;
   @Input() public customErrors?: Array<ErrorDefinition>;
+  // changes the hierarchy of error messages being shown in summary if errors from formGroup
+  @Input() public reverseMessagesOrder: false;
   @ViewChild('errorSummary', { static: true }) private errorSummaryElement: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;
@@ -70,13 +72,25 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
         this.collectError(this.form.get(key), key);
       } else if (isFormGroup) {
         const formGroup: AbstractControl = this.form.get(key);
-
-        if (formGroup.errors) {
-          Object.keys(formGroup.errors).forEach((i) => this.collectError(formGroup, key));
-        }
-
         const formGroupControls: AbstractControl = formGroup[`controls`];
-        Object.keys(formGroupControls).forEach((i) => this.collectError(formGroupControls[i], `${key}.${i}`));
+
+        const formGroupControlsErrMsgs = () => {
+          Object.keys(formGroupControls).forEach((i) => this.collectError(formGroupControls[i], `${key}.${i}`));
+        };
+
+        const formGroupErrMsgs = () => {
+          if (formGroup.errors) {
+            Object.keys(formGroup.errors).forEach((i) => this.collectError(formGroup, key));
+          }
+        };
+
+        if (this.reverseMessagesOrder) {
+          formGroupControlsErrMsgs();
+          formGroupErrMsgs();
+        } else {
+          formGroupErrMsgs();
+          formGroupControlsErrMsgs();
+        }
       } else if (isFormArray) {
         const formArray = this.form.get(key) as FormArray;
         if (formArray.errors) {

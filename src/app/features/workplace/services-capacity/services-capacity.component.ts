@@ -128,8 +128,6 @@ export class ServicesCapacityComponent extends Question {
 
           this.form.addControl(id, group);
         });
-        console.log('formErrorsMap:', this.formErrorsMap);
-        console.log('errorSummaryErrorsMap:', this.errorsSummaryErrorsMap);
       }),
     );
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];

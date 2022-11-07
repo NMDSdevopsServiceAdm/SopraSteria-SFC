@@ -3,6 +3,7 @@
   [form]="form"
   [formErrorsMap]="errorsSummaryErrorsMap"
   [serverError]="serverError"
+  [reverseMessagesOrder]="true"
 ></app-error-summary>
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
