@@ -20,13 +20,18 @@ describe('NationalInsuranceNumberComponent', () => {
           {
             provide: ActivatedRoute,
             useValue: {
+              snapshot: {
+                parent: {
+                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
+                },
+              },
               parent: {
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                     primaryWorkplace: {},
                   },
-                  url: [{ path: '' }],
+                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
                 },
               },
             },
