@@ -24,6 +24,7 @@ const config = convict({
       'accessibility',
       'localhost',
       'example',
+      'e2etest',
     ],
     default: 'localhost',
     env: 'NODE_ENV',
@@ -72,22 +73,10 @@ const config = convict({
       default: 'sfcdevdb',
       env: 'DB_NAME',
     },
-    testDatabase: {
-      doc: 'Test database name',
-      format: String,
-      default: 'sfctestdb',
-      env: 'DB_TEST_NAME',
-    },
     username: {
       doc: 'Database username',
       format: String,
       default: 'sfcadmin',
-      env: 'DB_USER',
-    },
-    testUsername: {
-      doc: 'Test database username',
-      format: String,
-      default: 'postgres',
       env: 'DB_USER',
     },
     password: {
@@ -96,20 +85,8 @@ const config = convict({
       default: 'unknown', // note - bug in notify - must provide a default value for it to use env var
       env: 'DB_PASS',
     },
-    testPassword: {
-      doc: 'Test database password',
-      format: '*',
-      default: 'postgres', // note - bug in notify - must provide a default value for it to use env var
-      env: 'DB_PASS',
-    },
     port: {
       doc: 'Database port',
-      format: 'port',
-      default: 5432,
-      env: 'DB_PORT',
-    },
-    testPort: {
-      doc: 'Test database port',
       format: 'port',
       default: 5432,
       env: 'DB_PORT',
@@ -146,6 +123,42 @@ const config = convict({
         format: 'int',
         default: 1000,
       },
+    },
+  },
+
+  e2etestdb: {
+    host: {
+      doc: 'Database host name/IP',
+      format: String,
+      default: '127.0.0.1',
+    },
+    database: {
+      doc: 'Database name',
+      format: String,
+      default: 'sfc-test-db',
+      env: 'sfc-test-db',
+    },
+    username: {
+      doc: 'Database username',
+      format: String,
+      default: 'sfc-test-user',
+      env: 'sfc-test-user',
+    },
+    password: {
+      doc: 'Database username',
+      format: '*',
+      default: 'sfc-test-pass',
+      env: 'sfc-test-pass',
+    },
+    port: {
+      doc: 'Database port',
+      format: 'port',
+      default: 90,
+    },
+    dialect: {
+      doc: 'Database dialect (sequelize)',
+      format: String,
+      default: 'postgres',
     },
   },
   notify: {
