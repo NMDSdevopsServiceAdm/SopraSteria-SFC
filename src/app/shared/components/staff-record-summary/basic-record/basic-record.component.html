@@ -2,13 +2,13 @@
 <dl class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summarylist-border-bottom">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Name or ID number</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{ worker.nameOrId }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' basic record details'"
-        [link]="getRoutePath('staff-details')"
+        [link]="mandatoryDetailsPage ? getMandatoryDetailsRoute() : getRoutePath('staff-details')"
         [hasData]="true"
       ></app-summary-record-change>
     </dd>
@@ -16,7 +16,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Main job role</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.mainJob"
@@ -45,7 +45,7 @@
       <app-summary-record-change
         *ngIf="wdfView && !(worker.wdf?.mainJob.isEligible === 'Yes' && !worker.wdf?.mainJob.updatedSinceEffectiveDate)"
         [explanationText]="' basic record details'"
-        [link]="getRoutePath('staff-details')"
+        [link]="getRoutePath('mandatory-details/staff-details')"
         [hasData]="true"
       ></app-summary-record-change>
     </dd>
@@ -53,13 +53,16 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Contract type</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.contract"
         [overallWdfEligibility]="overallWdfEligibility"
       >
-        {{ worker.contract }}
+        <ng-container *ngIf="showPoolBankTag; else notPoolBankTag">Pool, Bank</ng-container>
+        <ng-template #notPoolBankTag>
+          {{ worker.contract }}
+        </ng-template>
       </app-summary-record-value>
       <app-wdf-field-confirmation
         *ngIf="

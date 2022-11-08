@@ -3,32 +3,97 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('ethnicity').invalid">
-        <h1 class="govuk-label-wrapper">
-          <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="ethnicity">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
             What's their ethnicity?
-          </label>
-        </h1>
-        <select
-          class="govuk-select"
-          [class.govuk-select--error]="submitted && form.get('ethnicity').invalid"
-          [formControlName]="'ethnicity'"
-          id="ethnicity"
-          name="ethnicity"
+          </h1>
+        </legend>
+        <div
+          class="govuk-form-group govuk-!-margin-bottom-4"
+          [class.govuk-form-group--error]="submitted && form.invalid"
         >
-          <option class="form-control" [ngValue]="null">Select ethnicity</option>
-          <option *ngFor="let ethnicity of ethnicitiesUngrouped()" [value]="ethnicity.id">
-            {{ ethnicity.ethnicity }}
-          </option>
-          <optgroup *ngFor="let groupName of ethnicityGroups()" label="{{ groupName }}">
-            <option *ngFor="let ethnicity of ethnicities[groupName]" [value]="ethnicity.id">
-              {{ ethnicity.ethnicity }}
-            </option>
-          </optgroup>
-        </select>
+          <div class="govuk-radios govuk-radios--conditional">
+            <ng-container *ngFor="let groupName of groupOptions; let idx = index">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [formControlName]="'ethnicityGroup'"
+                  id="ethnicityGroup-{{ idx }}"
+                  name="ethnicityGroup"
+                  type="radio"
+                  [value]="groupName.value"
+                  aria-controls="conditional-ethnicity-conditional-1"
+                />
+                <label class="govuk-label govuk-radios__label" for="ethnicityGroup-{{ idx }}">
+                  {{ groupName.tag }}
+                </label>
+              </div>
+              <div
+                *ngIf="form.get('ethnicityGroup').value === groupName.value"
+                class="govuk-radios__conditional"
+                [class.govuk-radios__conditional--hidden]="form.get('ethnicityGroup').value !== groupName.value"
+                id="conditional-ethnicity-conditional-1"
+              >
+                <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+                  <label class="govuk-label govuk-label--s govuk-!-font-weight-bold govuk-!-margin-bottom-4"
+                    >Which of the following best describes their ethnic background?</label
+                  >
+                  <span
+                    *ngIf="submitted && form.get('ethnicity').errors"
+                    id="ethnicity-error"
+                    class="govuk-error-message"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('ethnicity', 'required') }}
+                  </span>
+
+                  <ng-container *ngFor="let ethnicityOption of ethnicitiesByGroup[groupName.value]; let i = index">
+                    <div class="govuk-radios__item">
+                      <input
+                        class="govuk-radios__input"
+                        [class.govuk-input--error]="submitted && form.get('ethnicity').invalid"
+                        id="ethnicity-{{ i }}"
+                        name="ethnicity"
+                        type="radio"
+                        [value]="ethnicityOption.id"
+                        [formControlName]="'ethnicity'"
+                      />
+                      <label class="govuk-label govuk-radios__label" for="">
+                        {{ ethnicityOption.ethnicity }}
+                      </label>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </ng-container>
+            <div class="govuk-radios__divider">or</div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="ethnicity-dont-know"
+                name="ethnicityGroup"
+                type="radio"
+                [value]="doNotKnowValue"
+                [formControlName]="'ethnicityGroup'"
+              />
+              <label class="govuk-label govuk-radios__label" for="">I do not know</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
-
-  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>
+<!-- ethnicity-error -->

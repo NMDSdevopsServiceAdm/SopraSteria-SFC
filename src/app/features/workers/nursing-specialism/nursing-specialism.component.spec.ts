@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BackService } from '@core/services/back.service';
 import { StaffSummaryComponent } from '@shared/components/staff-summary/staff-summary.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -45,47 +46,68 @@ const workerWithNurseSpecialisms = (hasSpecialisms) =>
       },
     },
   });
-
-const getNursingSpecialismComponent = async (worker, returnUrl = true) => {
-  return render(NursingSpecialismComponent, {
-    imports: [
-      FormsModule,
-      ReactiveFormsModule,
-      HttpClientTestingModule,
-      SharedModule,
-      RouterTestingModule.withRoutes([{ path: 'dashboard', component: StaffSummaryComponent }]),
-    ],
-    providers: [
+describe('NursingSpecialismComponent', () => {
+  async function setup(worker, insideFlow = true) {
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, getAllByRole } = await render(
+      NursingSpecialismComponent,
       {
-        provide: WorkerService,
-        useFactory: returnUrl ? MockWorkerService.factory(worker) : MockWorkerServiceWithoutReturnUrl.factory(worker),
-        deps: [HttpClient],
-      },
-      {
-        provide: ActivatedRoute,
-        useValue: {
-          parent: {
-            snapshot: {
-              data: {
-                establishment: { uid: 'mocked-uid' },
-                primaryWorkplace: {},
+        imports: [
+          FormsModule,
+          ReactiveFormsModule,
+          HttpClientTestingModule,
+          SharedModule,
+          RouterTestingModule.withRoutes([{ path: 'dashboard', component: StaffSummaryComponent }]),
+        ],
+        providers: [
+          {
+            provide: WorkerService,
+            useFactory: insideFlow
+              ? MockWorkerServiceWithoutReturnUrl.factory(worker)
+              : MockWorkerService.factory(worker),
+            deps: [HttpClient],
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              parent: {
+                snapshot: {
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                  },
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
+                },
               },
             },
           },
-        },
+        ],
       },
-    ],
-  });
-};
+    );
 
-describe('NursingSpecialismComponent', () => {
-  afterEach(() => {
-    const httpTestingController = TestBed.inject(HttpTestingController);
-    httpTestingController.verify();
-  });
+    const component = fixture.componentInstance;
+
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const backService = injector.inject(BackService);
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const backLinkSpy = spyOn(backService, 'setBackLink');
+
+    return {
+      component,
+      fixture,
+      getByText,
+      getAllByText,
+      getByLabelText,
+      routerSpy,
+      getByTestId,
+      queryByTestId,
+      backLinkSpy,
+      getAllByRole,
+    };
+  }
 
   it('should not select a radio button when worker has not answered question', async () => {
-    const { getAllByRole } = await getNursingSpecialismComponent(workerBuilder());
+    const { getAllByRole } = await setup(workerBuilder());
 
     const answers = getAllByRole('radio') as any[];
     const checkedAnswers = answers.map((answer) => answer.checked);
@@ -95,7 +117,7 @@ describe('NursingSpecialismComponent', () => {
 
   it('should pre-select the radio button when worker has answered question', async () => {
     const worker = workerWithNurseSpecialisms(false);
-    const { fixture } = await getNursingSpecialismComponent(worker);
+    const { fixture } = await setup(worker);
 
     const selectedRadioButton = fixture.nativeElement.querySelector(
       `input[ng-reflect-value="${worker.nurseSpecialisms.value}"]`,
@@ -106,7 +128,7 @@ describe('NursingSpecialismComponent', () => {
 
   it('should pre-select checkboxes when worker has nurse specialisms', async () => {
     const worker = workerWithNurseSpecialisms(true);
-    const { fixture } = await getNursingSpecialismComponent(worker);
+    const { fixture } = await setup(worker);
 
     const selectedCheckboxes = worker.nurseSpecialisms.specialisms.map((thisSpecialism) => {
       return fixture.nativeElement.querySelector(`input[value="${thisSpecialism.specialism}"]`);
@@ -118,7 +140,7 @@ describe('NursingSpecialismComponent', () => {
   it('should put updated worker nurse specialisms', async () => {
     const worker = workerWithNurseSpecialisms(false);
     const newNurseSpecialisms = workerWithNurseSpecialisms(true).nurseSpecialisms;
-    const { fixture, getAllByRole } = await getNursingSpecialismComponent(worker);
+    const { fixture, getAllByRole } = await setup(worker, false);
 
     const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="Yes"]`);
     fireEvent.click(yesRadioButton);
@@ -139,7 +161,7 @@ describe('NursingSpecialismComponent', () => {
 
   it('should put nurse specialisms null when question not answered', async () => {
     const worker = workerBuilder();
-    const { getAllByRole } = await getNursingSpecialismComponent(worker);
+    const { getAllByRole } = await setup(worker, false);
 
     const submit = getAllByRole('button')[0];
 
@@ -152,20 +174,130 @@ describe('NursingSpecialismComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
+    it(`should show 'Save and continue' cta button and 'View this staff record' and skip this question  link, if a return url is not provided`, async () => {
       const worker = workerBuilder();
-      const { getByText } = await getNursingSpecialismComponent(worker, false);
+      const { getByText } = await setup(worker);
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const worker = workerBuilder();
-      const { getByText } = await getNursingSpecialismComponent(worker);
+      const { getByText } = await setup(worker, false);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
+      const worker = workerWithNurseSpecialisms(true);
+      const { component, getByText, routerSpy } = await setup(worker);
+
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'recruited-from',
+      ]);
+    });
+
+    it(`should navigate to  'recruited-from' page when skipping the question in the flow`, async () => {
+      const worker = workerWithNurseSpecialisms(true);
+      const { component, routerSpy, getByText } = await setup(worker);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Skip this question');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'recruited-from']);
+    });
+
+    it(`should navigate to 'staff-summary-page' page when clicking 'View this staff record' link `, async () => {
+      const worker = workerBuilder();
+      const { component, routerSpy, getByText } = await setup(worker);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const viewStaffRecord = getByText('View this staff record');
+      fireEvent.click(viewStaffRecord);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+      const worker = workerBuilder();
+      const { component, routerSpy, getByText } = await setup(worker, false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+  });
+
+  describe('setBackLink()', () => {
+    it('should set the backlink to nursing-category, when in the flow ', async () => {
+      const worker = workerWithNurseSpecialisms(true);
+      const { component, backLinkSpy } = await setup(worker);
+
+      component.initiated = false;
+      component.ngOnInit();
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'nursing-category'],
+        fragment: 'staff-records',
+      });
+    });
+
+    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
+      const worker = workerWithNurseSpecialisms(true);
+      const { component, backLinkSpy } = await setup(worker, false);
+
+      component.setBackLink();
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
+        fragment: 'staff-records',
+      });
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const worker = workerBuilder();
+      const { getByTestId } = await setup(worker);
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render the progress bar when outside the flow', async () => {
+      const worker = workerBuilder();
+      const { queryByTestId } = await setup(worker, false);
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
 });

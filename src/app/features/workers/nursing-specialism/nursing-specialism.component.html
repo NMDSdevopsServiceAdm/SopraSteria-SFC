@@ -2,16 +2,17 @@
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-three-quarters-from-desktop">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl govuk-!-margin-bottom-4">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-4">
+            <span class="govuk-caption-l">Employment details</span>
             <h1 class="govuk-fieldset__heading">Is this nurse using any of their specialisms in their current role?</h1>
           </legend>
           <p>
             All registered nurses choose from one of four specialisms as part of their nursing degree (adult nursing,
             children's nursing, mental health nursing or learning disability nursing). They can specialise in other
-            areas like community care after they have qualified.
+            areas, like community care, after they have qualified.
           </p>
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
@@ -31,7 +32,7 @@
               id="conditional-nurseSpecialism"
             >
               <div class="govuk-form-group">
-                <span id="selectedNurseSpecialisms-hint" class="govuk-hint">Select all that apply.</span>
+                <p>Select all that apply.</p>
                 <div class="govuk-checkboxes">
                   <div
                     class="govuk-checkboxes__item"
@@ -53,17 +54,7 @@
                 </div>
               </div>
             </div>
-            <div class="govuk-radios__item">
-              <input
-                class="govuk-radios__input"
-                id="hasNurseSpecialism-dontKnow"
-                name="hasNurseSpecialism"
-                formControlName="hasNurseSpecialism"
-                type="radio"
-                value="Don't know"
-              />
-              <label for="hasNurseSpecialism-dontKnow" class="govuk-label govuk-radios__label"> Don't know </label>
-            </div>
+
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
@@ -74,14 +65,38 @@
                 value="No"
               />
               <label for="hasNurseSpecialism-no" class="govuk-label govuk-radios__label">
-                This nurse is not using any of their specialisms in their current role
+                No, this nurse is not using any of their specialisms in their <br />
+                current role
               </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="hasNurseSpecialism-dontKnow"
+                name="hasNurseSpecialism"
+                formControlName="hasNurseSpecialism"
+                type="radio"
+                value="Don't know"
+              />
+              <label for="hasNurseSpecialism-dontKnow" class="govuk-label govuk-radios__label"> I do not know</label>
             </div>
           </div>
         </fieldset>
       </div>
     </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow && !registeredNurseFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="'Employment details'"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
 
-  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button
+    [return]="!insideFlow || registeredNurseFlow"
+    (clicked)="setSubmitAction($event)"
+  ></app-submit-button>
 </form>

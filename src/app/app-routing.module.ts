@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
@@ -19,17 +21,23 @@ import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.reso
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
-import { TailoredSeminarsComponent } from '@features/benefits-bundle/benefit-tailored-seminars/benefit-tailored-seminars.component';
+import {
+  TailoredSeminarsComponent,
+} from '@features/benefits-bundle/benefit-tailored-seminars/benefit-tailored-seminars.component';
 import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
 import { BenefitsELearningComponent } from '@features/benefits-bundle/benefits-elearning/benefits-elearning.component';
-import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
+import {
+  BenefitsTrainingDiscountsComponent,
+} from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import {
+  MigratedUserTermsConditionsComponent,
+} from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 
@@ -136,6 +144,7 @@ const routes: Routes = [
           users: AllUsersForEstablishmentResolver,
           workers: WorkersResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
+          primaryWorkplace: PrimaryWorkplaceResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },

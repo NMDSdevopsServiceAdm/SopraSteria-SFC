@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { QualificationLevel } from '@core/model/qualification.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -15,6 +16,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class SocialCareQualificationLevelComponent extends QuestionComponent {
   public qualifications: QualificationLevel[];
+  public insideSocialCareQualificationLevelSummaryFlow: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -23,9 +25,10 @@ export class SocialCareQualificationLevelComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private qualificationService: QualificationService
+    protected establishmentService: EstablishmentService,
+    private qualificationService: QualificationService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       qualification: [null, Validators.required],
@@ -33,24 +36,44 @@ export class SocialCareQualificationLevelComponent extends QuestionComponent {
   }
 
   init(): void {
-    if (this.worker.qualificationInSocialCare !== 'Yes') {
-      this.router.navigate(this.getRoutePath('social-care-qualification'), { replaceUrl: true });
-    }
-
+    this.insideSocialCareQualificationLevelSummaryFlow =
+      this.route.parent.snapshot.url[0].path === 'social-care-qualification-level-summary-flow';
     this.subscriptions.add(
-      this.qualificationService.getQualifications().subscribe(qualifications => {
+      this.qualificationService.getQualifications().subscribe((qualifications) => {
         this.qualifications = qualifications;
-      })
+      }),
     );
 
     if (this.worker.socialCareQualification) {
-      this.form.patchValue({
-        qualification: this.worker.socialCareQualification.qualificationId,
-      });
+      this.prefill();
     }
+    this.setUpPageNavigation();
+  }
 
-    this.next = this.getRoutePath('other-qualifications');
-    this.previous = this.getRoutePath('social-care-qualification');
+  private prefill() {
+    this.form.patchValue({
+      qualification: this.worker.socialCareQualification.qualificationId,
+    });
+  }
+
+  private setUpPageNavigation() {
+    if (this.insideFlow && !this.insideSocialCareQualificationLevelSummaryFlow) {
+      this.next = this.getRoutePath('other-qualifications');
+      this.previous = this.getRoutePath('social-care-qualification');
+    } else if (this.insideSocialCareQualificationLevelSummaryFlow) {
+      this.next = this.getRoutePath('');
+      this.previous = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'social-care-qualification',
+      ];
+    } else {
+      this.next = this.getRoutePath('');
+      this.previous = this.getRoutePath('');
+    }
   }
 
   setupFormErrorsMap(): void {
@@ -69,7 +92,6 @@ export class SocialCareQualificationLevelComponent extends QuestionComponent {
 
   generateUpdateProps() {
     const { qualification } = this.form.value;
-
     return {
       socialCareQualification: {
         qualificationId: parseInt(qualification, 10),

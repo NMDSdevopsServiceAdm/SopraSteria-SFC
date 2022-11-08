@@ -42,9 +42,9 @@
 </ng-container>
 
 <ng-template #noStaffRecords>
-  <app-inset-text color="warning">Start to add your staff records.</app-inset-text>
+  <app-inset-text color="warning" [removeTopMargin]="true">Start to add your staff records</app-inset-text>
 
-  <p>To add a staff record, you need to know that person’s:</p>
+  <p>To add a staff record you need to know the person’s:</p>
   <ul class="govuk-list govuk-list--bullet">
     <li>name or ID number</li>
     <li>main job role</li>
@@ -52,13 +52,13 @@
   </ul>
 
   <p>
-    After you’ve saved the mandatory details you should add details to this record, so that you’ve got a complete record
-    for that person.
+    Save this mandatory information and then continue to add more details so that you get a complete record for that
+    person.
   </p>
-  <p>To complete a record you’ll be asked questions about that person’s:</p>
+  <p>You'll be asked about that person's:</p>
   <ul class="govuk-list govuk-list--bullet">
-    <li>personal details, like their date of birth</li>
+    <li>personal details, like their date of birth and National Insurance number</li>
     <li>employment details, like when they started their main job role</li>
-    <li>qualifications and training</li>
+    <li>training and qualifications</li>
   </ul>
 </ng-template>

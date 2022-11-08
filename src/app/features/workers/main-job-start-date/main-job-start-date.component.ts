@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_FULL, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
@@ -16,6 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class MainJobStartDateComponent extends QuestionComponent {
   private dateMin = dayjs().subtract(100, 'years');
+  public section = 'Employment details';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -24,16 +26,21 @@ export class MainJobStartDateComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      mainJobStartDate: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
-    });
+    this.form = this.formBuilder.group(
+      {
+        mainJobStartDate: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+      },
+      { updateOn: 'submit' },
+    );
+
     this.form
       .get('mainJobStartDate')
       .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(this.dateMin)]);
@@ -41,21 +48,18 @@ export class MainJobStartDateComponent extends QuestionComponent {
 
   init() {
     if (this.worker.mainJobStartDate) {
-      const date = dayjs(this.worker.mainJobStartDate, DATE_PARSE_FORMAT);
-      this.form.get('mainJobStartDate').patchValue({
-        year: date.year(),
-        month: date.format('M'),
-        day: date.date(),
-      });
+      this.prefill();
     }
+    this.setUpPageRouting();
+  }
 
-    this.next = this.getRoutePath('other-job-roles');
-    this.previous = this.getReturnPath();
-
-    const navigatedFromSection = history.state?.navigatedFrom;
-    if (['staff-records', 'mandatory-details'].includes(navigatedFromSection)) {
-      this.return = null;
-    }
+  private prefill(): void {
+    const date = dayjs(this.worker.mainJobStartDate, DATE_PARSE_FORMAT);
+    this.form.get('mainJobStartDate').patchValue({
+      year: date.year(),
+      month: date.format('M'),
+      day: date.date(),
+    });
   }
 
   public setupFormErrorsMap(): void {
@@ -65,7 +69,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
         type: [
           {
             name: 'dateValid',
-            message: 'Main job start date is not a valid date',
+            message: 'Enter a valid main job start date, like 31 3 1980',
           },
           {
             name: 'todayOrBefore',
@@ -93,13 +97,30 @@ export class MainJobStartDateComponent extends QuestionComponent {
     return { mainJobStartDate: null };
   }
 
-  private getReturnPath() {
-    if (this.workerService.addStaffRecordInProgress$.value) {
-      return this.getRoutePath('staff-details');
+  private setUpPageRouting(): void {
+    if (this.insideFlow) {
+      this.next = this.determineNextPath();
+      if (this.worker.countryOfBirth) {
+        this.previous =
+          this.worker.countryOfBirth.value === 'Other' || this.worker.countryOfBirth.value === `Don't know`
+            ? this.getRoutePath('year-arrived-uk')
+            : this.getRoutePath('country-of-birth');
+      } else {
+        this.previous = this.getRoutePath('country-of-birth');
+      }
+    } else {
+      this.previous = this.getRoutePath('');
+      this.next = this.getRoutePath('');
     }
-    if (this.workplace.uid === this.primaryWorkplace.uid) {
-      return ['/dashboard'];
+  }
+
+  private determineNextPath() {
+    if (this.workerService.hasJobRole(this.worker, 23)) {
+      return this.getRoutePath('nursing-category');
+    } else if (this.workerService.hasJobRole(this.worker, 27)) {
+      return this.getRoutePath('mental-health-professional');
+    } else {
+      return this.getRoutePath('recruited-from');
     }
-    return [`/workplace/${this.workplace.uid}`];
   }
 }

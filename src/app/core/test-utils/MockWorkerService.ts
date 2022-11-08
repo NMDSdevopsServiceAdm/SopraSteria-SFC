@@ -25,7 +25,7 @@ export const workerBuilder = build('Worker', {
     weeklyHoursAverage: null,
     weeklyHoursContracted: {
       value: 'Yes',
-      hours: fake((f) => f.datatype.number()),
+      hours: '75',
     },
     annualHourlyPay: {
       value: 'Hourly',
@@ -33,8 +33,8 @@ export const workerBuilder = build('Worker', {
     },
     careCertificate: 'Yes',
     apprenticeshipTraining: null,
-    qualificationInSocialCare: 'Yes',
-    otherQualification: 'No',
+    qualificationInSocialCare: 'No',
+    otherQualification: 'Yes',
     highestQualification: null,
     registeredNurse: 'Yes',
     socialCareQualification: {
@@ -49,6 +49,13 @@ export const workerBuilder = build('Worker', {
     qualificationCount: 0,
     longTermAbsence: null,
     completed: perBuild(() => false),
+    ethnicity: {
+      ethnicityId: 1,
+      ethnicity: 'white ethnicity 1',
+    },
+    countryOfBirth: {
+      value: 'United Kingdom',
+    },
   },
 });
 
@@ -278,13 +285,28 @@ export class MockWorkerService extends WorkerService {
 
 @Injectable()
 export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
+  public static factory(worker: Worker) {
+    return (httpClient: HttpClient) => {
+      const service = new MockWorkerServiceWithUpdateWorker(httpClient);
+      if (worker) {
+        service.worker = worker;
+        service.worker$ = of(worker as Worker);
+      }
+      return service;
+    };
+  }
+
+  createWorker(workplaceUid: string, props): Observable<WorkerEditResponse> {
+    return of({ uid: '1' } as WorkerEditResponse);
+  }
+
   updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
     return of({ uid: '1' } as WorkerEditResponse);
   }
 }
 
 @Injectable()
-export class MockWorkerServiceWithoutReturnUrl extends MockWorkerService {
+export class MockWorkerServiceWithoutReturnUrl extends MockWorkerServiceWithUpdateWorker {
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
       const service = new MockWorkerServiceWithoutReturnUrl(httpClient);

@@ -4,8 +4,9 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">{{ worker ? 'Edit' : 'Add' }} a staff record</h1>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Mandatory information</span>
+          <h1 class="govuk-fieldset__heading">{{ worker ? 'Update' : 'Add a' }} staff record</h1>
         </legend>
         <div
           class="govuk-form-group"
@@ -70,6 +71,7 @@
               {{ getFormErrorMessage('otherJobRole', 'maxlength') }}
             </span>
             <input
+              data-testid="other-job-role"
               class="govuk-input govuk-!-width-two-thirds"
               [formControlName]="'otherJobRole'"
               id="otherJobRole-conditional"
@@ -101,10 +103,10 @@
                   id="contract-{{ idx }}"
                   name="contract"
                   type="radio"
-                  [value]="contract"
+                  [value]="contract.value"
                 />
                 <label class="govuk-label govuk-radios__label" for="contract-{{ idx }}">
-                  {{ contract }}
+                  {{ contract.tag }}
                 </label>
               </div>
             </div>
@@ -112,13 +114,25 @@
         </div>
       </fieldset>
     </div>
+
+    <div class="govuk-grid-column-one-third" *ngIf="!editFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="'Mandatory information'"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
   <app-submit-button
-    [return]="canReturn"
-    [canExit]="canExit"
-    [recordSummary]="false"
+    [showSaveAndCancelButton]="showSaveAndCancelButton"
     [callToAction]="submitTitle"
+    [recordSummary]="false"
+    [canExit]="canExit"
+    [return]="!insideFlow && !inMandatoryDetailsFlow ? false : editFlow"
     [isExistingStaffRecord]="!!worker"
-    (clicked)="onSubmit($event)"
-  ></app-submit-button>
+    (clicked)="setSubmitAction($event)"
+  >
+  </app-submit-button>
 </form>

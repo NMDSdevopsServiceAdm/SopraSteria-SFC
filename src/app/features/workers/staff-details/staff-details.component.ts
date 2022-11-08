@@ -6,6 +6,7 @@ import { Job } from '@core/model/job.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -16,14 +17,22 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './staff-details.component.html',
 })
 export class StaffDetailsComponent extends QuestionComponent implements OnInit, OnDestroy {
-  public contractsAvailable: Array<string> = [];
+  public contractsAvailable = [
+    { value: Contracts.Permanent, tag: 'Permanent' },
+    { value: Contracts.Temporary, tag: 'Temporary' },
+    { value: Contracts.Pool_Bank, tag: 'Pool, Bank' },
+    { value: Contracts.Agency, tag: 'Agency' },
+    { value: Contracts.Other, tag: 'Other' },
+  ];
   public jobsAvailable: Job[] = [];
+  public submitTitle = 'Save this staff record';
   public showInputTextforOtherRole: boolean;
-  public submitTitle = 'Save staff record';
-  public canReturn = false;
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
+  public isPrimaryAccount: boolean;
+  public inMandatoryDetailsFlow: boolean;
+  private formMainJobIdValue: number;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -32,59 +41,58 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     public workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
     protected alertService: AlertService,
     private jobService: JobService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      nameOrId: [null, Validators.required],
-      mainJob: [null, Validators.required],
-      otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
-      contract: [null, Validators.required],
-    });
+    this.form = this.formBuilder.group(
+      {
+        nameOrId: [null, Validators.required],
+        mainJob: [null, Validators.required],
+        otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
+        contract: [null, Validators.required],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   init(): void {
-    this.contractsAvailable = Object.values(Contracts);
-    this.editFlow = !!this.worker;
-    this.subscriptions.add(
-      this.jobService.getJobs().subscribe((jobs) => {
-        if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
-          this.worker.otherJobs.jobs.map((otherjob) => {
-            jobs = jobs.filter((j) => j.id !== otherjob.jobId);
-          });
-        }
-        this.jobsAvailable = jobs;
-        if (this.worker) {
-          this.renderInEditMode();
-        }
-      }),
-    );
-
-    this.previous =
-      this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid
-        ? ['/dashboard']
-        : ['/workplace', this.workplace.uid];
+    this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
+    this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
+    this.showSaveAndCancelButton = !this.insideFlow && !this.inMandatoryDetailsFlow ? true : false;
+    this.getJobs();
+    this.previous = this.getReturnPath();
+    this.editFlow = this.inMandatoryDetailsFlow || !this.insideFlow;
   }
 
-  renderInEditMode(): void {
-    this.form.patchValue({
-      nameOrId: this.worker.nameOrId,
-      mainJob: this.worker.mainJob.jobId,
-      otherJobRole: this.worker.mainJob.other,
-      contract: this.worker.contract,
-    });
-
-    this.selectedJobRole(this.worker.mainJob.jobId);
-
-    if (this.workerService.returnTo === null) {
-      const mandatoryDetailsURL = { url: this.getRoutePath('mandatory-details') };
-      this.workerService.setReturnTo(mandatoryDetailsURL);
-      this.return = mandatoryDetailsURL;
+  public setUpConditionalQuestionLogic(mainJobId): void {
+    this.formMainJobIdValue = parseInt(mainJobId, 10);
+    if (!this.insideFlow && !this.inMandatoryDetailsFlow) {
+      if (this.formMainJobIdValue === 23) {
+        this.conditionalQuestionUrl = [
+          '/workplace',
+          this.workplace.uid,
+          'staff-record',
+          this.worker.uid,
+          'staff-record-summary',
+          'registered-nurse-details',
+          'nursing-category',
+        ];
+      } else if (this.formMainJobIdValue === 27) {
+        this.conditionalQuestionUrl = [
+          '/workplace',
+          this.workplace.uid,
+          'staff-record',
+          this.worker.uid,
+          'staff-record-summary',
+          'mental-health-professional-summary-flow',
+        ];
+      } else {
+        this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
+      }
     }
-
-    this.canReturn = true;
   }
 
   public setupFormErrorsMap(): void {
@@ -128,6 +136,22 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     ];
   }
 
+  getJobs() {
+    this.subscriptions.add(
+      this.jobService.getJobs().subscribe((jobs) => {
+        if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
+          this.worker.otherJobs.jobs.map((otherjob) => {
+            jobs = jobs.filter((j) => j.id !== otherjob.jobId);
+          });
+        }
+        this.jobsAvailable = jobs;
+        if (this.worker) {
+          this.renderInEditMode();
+        }
+      }),
+    );
+  }
+
   generateUpdateProps() {
     const { nameOrId, contract, mainJob, otherJobRole } = this.form.controls;
 
@@ -150,6 +174,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   selectedJobRole(id: number) {
+    this.setUpConditionalQuestionLogic(id);
     this.showInputTextforOtherRole = false;
     const otherJob = this.jobsAvailable.find((job) => job.id === +id);
     if (otherJob && otherJob.other) {
@@ -157,33 +182,38 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
   }
 
-  protected navigate(): void {
-    const currentUrl = this.router.url;
-
-    if (!this.worker) {
-      return this.onCancel();
-    }
-
-    if (!this.next) {
-      this.next = this.getRoutePath('');
-    }
-
-    this.router.navigate(this.next).then(() => {
-      if (currentUrl.endsWith('create-staff-record')) {
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Staff record saved',
-        });
-      }
+  renderInEditMode(): void {
+    this.form.patchValue({
+      nameOrId: this.worker.nameOrId,
+      mainJob: this.worker.mainJob.jobId,
+      otherJobRole: this.worker.mainJob.other,
+      contract: this.worker.contract,
     });
+
+    this.selectedJobRole(this.worker.mainJob.jobId);
   }
 
-  onSuccess() {
-    const path = this.editFlow ? '' : 'mandatory-details';
-    this.next = this.getRoutePath(path);
+  private getReturnPath() {
+    if (this.inMandatoryDetailsFlow) {
+      this.returnUrl = this.getRoutePath('mandatory-details');
+      return this.returnUrl;
+    }
+    if (this.insideFlow) {
+      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
+    }
+    return this.getRoutePath('');
   }
 
-  private onCancel(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+  protected onSuccess(): void {
+    this.next = this.getRoutePath('mandatory-details');
+    !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
+  }
+
+  protected addAlert(): void {
+    !this.editFlow &&
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Staff record saved',
+      });
   }
 }

@@ -24,7 +24,7 @@
           <span *ngIf="submitted && form.invalid" id="workplace-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}
           </span>
-          <ng-container *ngIf="locationAddresses.length > 4; else radioButtonForm">
+          <ng-container *ngIf="locationAddresses?.length > 4; else radioButtonForm">
             <app-select-workplace-dropdown-form
               data-testid="dropdown-form"
               [submitted]="submitted"
@@ -52,7 +52,6 @@
         <app-workplace-submit-button
           [return]="!!return"
           (clicked)="setSubmitAction($event)"
-          [isExistingStaffRecord]="false"
         ></app-workplace-submit-button>
       </ng-container>
 
@@ -71,7 +70,7 @@
     </form>
   </div>
   <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
-    <div class="govuk-util__float-right">
+    <div class="govuk-!-margin-left-8">
       <app-progress-bar
         data-testid="progress-bar-1"
         [header]="'Workplace'"

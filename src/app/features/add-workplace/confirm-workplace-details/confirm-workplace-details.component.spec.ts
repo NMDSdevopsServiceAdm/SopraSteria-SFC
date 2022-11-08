@@ -12,7 +12,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkplaceServiceWithMainService } from '@core/test-utils/MockWorkplaceService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByTestId, render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
@@ -267,9 +267,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       value: 'Other',
       other: 'other employer type',
     });
-
     component.ngOnInit();
-    fixture.detectChanges();
     const expectedTypeOfEmployer = 'other employer type';
 
     component.setWorkplaceDetails();
@@ -288,21 +286,6 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     fireEvent.click(submitButton);
 
     expect(spy).toHaveBeenCalledWith(['/add-workplace/thank-you']);
-  });
-
-  describe('Back link', () => {
-    it('should set the back link to add-total-staff', async () => {
-      const { component, fixture } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      fixture.detectChanges();
-
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'add-total-staff'],
-      });
-    });
   });
 
   describe('Change links', () => {

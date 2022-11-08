@@ -7,6 +7,7 @@ import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -28,11 +29,12 @@ export class ChangeUserSecurityComponent extends SecurityQuestionDirective {
     private userService: UserService,
     private establishmentService: EstablishmentService,
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, router);
+    super(backService, backLinkService, errorSummaryService, formBuilder, router);
   }
 
   protected init(): void {

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { QualificationLevel } from '@core/model/qualification.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -15,6 +16,8 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class OtherQualificationsLevelComponent extends QuestionComponent {
   public qualifications: QualificationLevel[];
+  public section = 'Training and qualifications';
+  public insideOtherQualificationsLevelSummaryFlow: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -23,9 +26,10 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
     private qualificationService: QualificationService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       qualification: [null, Validators.required],
@@ -33,24 +37,49 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
   }
 
   init(): void {
-    if (this.worker.otherQualification !== 'Yes') {
-      this.router.navigate(this.getRoutePath('other-qualifications'), { replaceUrl: true });
-    }
+    this.insideOtherQualificationsLevelSummaryFlow =
+      this.route.snapshot.parent.url[0].path === 'other-qualifications-level-summary-flow';
+    this.getAndSetQualifications();
+    this.setUpPageRouting();
 
+    if (this.worker.highestQualification) {
+      this.prefill();
+    }
+  }
+
+  private prefill(): void {
+    this.form.patchValue({
+      qualification: this.worker.highestQualification.qualificationId,
+    });
+  }
+
+  public getAndSetQualifications(): void {
     this.subscriptions.add(
       this.qualificationService.getQualifications().subscribe((qualifications) => {
         this.qualifications = qualifications;
       }),
     );
+  }
 
-    if (this.worker.highestQualification) {
-      this.form.patchValue({
-        qualification: this.worker.highestQualification.qualificationId,
-      });
+  private setUpPageRouting(): void {
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+    if (this.insideFlow && !this.insideOtherQualificationsLevelSummaryFlow) {
+      this.previous = this.getRoutePath('other-qualifications');
+      this.next = this.getRoutePath('staff-record-summary-flow');
+    } else if (this.insideOtherQualificationsLevelSummaryFlow) {
+      this.next = this.staffRecordSummaryPath;
+      this.previous = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'other-qualifications',
+      ];
+    } else {
+      this.previous = this.staffRecordSummaryPath;
+      this.next = this.staffRecordSummaryPath;
     }
-
-    this.next = this.getRoutePath('');
-    this.previous = this.getRoutePath('other-qualifications');
   }
 
   setupFormErrorsMap(): void {
@@ -69,7 +98,6 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
 
   generateUpdateProps(): unknown {
     const { qualification } = this.form.value;
-
     return {
       highestQualification: {
         qualificationId: parseInt(qualification, 10),

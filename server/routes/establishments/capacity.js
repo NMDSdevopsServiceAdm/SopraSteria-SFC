@@ -18,7 +18,6 @@ const getCapacity = async (req, res) => {
   try {
     if (await thisEstablishment.restore(establishmentId, showHistory)) {
       // show only brief info on Establishment
-
       return res
         .status(200)
         .json(

@@ -27,20 +27,17 @@ describe('EstablishmentService', () => {
 
   describe('updateSingleEstablishmentField', () => {
     it('should call updateSingleEstablishmentField for a given establishment with the correct data', () => {
-      service
-        .updateSingleEstablishmentField('establishmentId', {
-          property: 'exampleColumnName',
-          value: 'Yes, always',
-        })
-        .subscribe();
+      const requestBody = {
+        property: 'exampleColumnName',
+        value: 'Yes, always',
+      };
+
+      service.updateSingleEstablishmentField('establishmentId', requestBody).subscribe();
 
       const req = http.expectOne('/api/establishment/establishmentId/updateSingleEstablishmentField');
 
       expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({
-        property: 'exampleColumnName',
-        value: 'Yes, always',
-      });
+      expect(req.request.body).toEqual(requestBody);
     });
   });
 });

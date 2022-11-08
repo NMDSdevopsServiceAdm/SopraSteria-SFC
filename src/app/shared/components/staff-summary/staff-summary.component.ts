@@ -44,7 +44,7 @@ export class StaffSummaryComponent implements OnInit {
   public getWorkerRecordPath(event: Event, worker: Worker) {
     event.preventDefault();
     this.addQueryParams();
-    const path = ['/workplace', this.workplace.uid, 'staff-record', worker.uid];
+    const path = ['/workplace', this.workplace.uid, 'staff-record', worker.uid, 'staff-record-summary'];
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
   }
 

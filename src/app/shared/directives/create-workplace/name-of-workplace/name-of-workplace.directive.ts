@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
@@ -27,6 +28,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
   constructor(
     protected formBuilder: FormBuilder,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected router: Router,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
@@ -68,7 +70,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [`/${this.flow}`, 'select-workplace-address'] });
+    this.backLinkService.showBackLink();
   }
 
   public onSubmit(): void {

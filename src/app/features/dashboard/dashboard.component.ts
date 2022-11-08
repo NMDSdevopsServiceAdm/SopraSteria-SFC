@@ -63,12 +63,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.getPermissions();
       this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
 
-      if (this.workplace.locationId) {
-        this.setCheckCQCDetailsBannerInEstablishmentService();
-      }
-
-      this.getShowCQCDetailsBanner();
-
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();
       }
@@ -105,37 +99,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.showSecondUserBanner = this.canAddUser && users.length === 1;
   }
 
-  private setCheckCQCDetailsBannerInEstablishmentService(): void {
-    this.subscriptions.add(
-      this.establishmentService
-        .getCQCRegistrationStatus(this.workplace.locationId, {
-          postcode: this.workplace.postcode,
-          mainService: this.workplace.mainService.name,
-        })
-        .subscribe((response) => {
-          this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
-        }),
-    );
-  }
-
   private getEstablishmentUsers(): void {
     this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
       this.userService.updateUsers(users);
     });
   }
 
-  private getShowCQCDetailsBanner(): void {
-    this.subscriptions.add(
-      this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
-        this.showCQCDetailsBanner = showBanner;
-      }),
-    );
-  }
-
   private showStaffRecordBanner(): void {
     this.alertService.addAlert({
       type: 'success',
-      message: `You've confirmed the details of the staff record you added`,
+      message: 'Staff record saved',
     });
   }
 
