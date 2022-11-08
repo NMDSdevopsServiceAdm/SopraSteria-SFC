@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-asc-wds-certificate',
   templateUrl: './asc-wds-certificate.component.html',
 })
 export class AscWdsCertificateComponent implements OnInit {
-  constructor(protected establishmentService: EstablishmentService) {}
+  constructor(protected establishmentService: EstablishmentService, router: Router) {}
 
   private defaultFileName = `ASC-WDS+certificate`;
   isDev = environment.dev ?? false;
@@ -42,7 +43,7 @@ export class AscWdsCertificateComponent implements OnInit {
   async downloadCertificate(): Promise<any> {
     console.log(this.establishmentService.establishmentId);
     this.establishmentService
-      .getCertificate(this.establishmentService.establishmentId)
+      .getCertificate(this.establishmentService.establishmentId, this.years)
       .subscribe((x) => window.open(x.data));
   }
 }
