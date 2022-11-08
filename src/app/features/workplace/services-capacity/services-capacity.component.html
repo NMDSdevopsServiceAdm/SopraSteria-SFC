@@ -3,7 +3,6 @@
   [form]="form"
   [formErrorsMap]="errorsSummaryErrorsMap"
   [serverError]="serverError"
-  [reverseMessagesOrder]="true"
 ></app-error-summary>
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -46,7 +45,7 @@
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFirstErrorMessage(groupName + '.' + controlName) }}
                   </span>
-                  <span
+                  <!-- <span
                     *ngIf="
                       submitted &&
                       form.get(groupName).invalid &&
@@ -58,12 +57,13 @@
                   >
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFormErrorMessage(groupName, 'required') }}
-                  </span>
-                  <span
+                  </span> -->
+                  <!-- <span
                     *ngIf="
                       submitted &&
                       form.get(groupName).invalid &&
                       this.capacityUtilisationValidator(form.get(groupName)) &&
+                      form.get(groupName).get(controlName).valid &&
                       idx === 1
                     "
                     id="{{ groupName }}-error"
@@ -71,7 +71,7 @@
                   >
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFormErrorMessage(groupName, 'overcapacity') }}
-                  </span>
+                  </span> -->
                   <input
                     class="govuk-input govuk-input--width-4"
                     [class.govuk-input--error]="submitted && form.get(groupName).get(controlName).invalid"

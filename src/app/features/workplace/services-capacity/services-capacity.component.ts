@@ -56,7 +56,7 @@ export class ServicesCapacityComponent extends Question {
           const questions = service.questions;
           const id = this.generateFormGroupName(service.service);
 
-          questions.forEach((question) => {
+          questions.forEach((question, index) => {
             const formControlName = this.generateFormControlName(question);
             group.addControl(
               formControlName,
@@ -96,35 +96,35 @@ export class ServicesCapacityComponent extends Question {
               ],
             };
 
+            if (questions.length > 1 && index === 0) {
+              group.controls[formControlName].addValidators([this.requiredValidator]);
+
+              const requiredErrorMsg = questions.some((question) => question.question.includes('bed'))
+                ? 'beds you have'
+                : 'places you have at the moment';
+
+              errorObj.type.push({
+                name: 'required',
+                message: `Enter how many ${requiredErrorMsg}`,
+              });
+            }
+
+            if (questions.length > 1 && index === 1) {
+              group.controls[formControlName].addValidators([this.capacityUtilisationValidator]);
+
+              const overCapacityErrorMsg = questions.some((question) => question.question.includes('beds'))
+                ? 'beds'
+                : 'places';
+
+              errorObj.type.push({
+                name: 'overcapacity',
+                message: `Number cannot be more than the ${overCapacityErrorMsg} you have`,
+              });
+            }
+
             this.formErrorsMap.push(errorObj);
             this.setupErrorSummaryErrorsMap(errorObj, service.service);
           });
-
-          if (Object.keys(group.controls).length > 1) {
-            group.setValidators([this.capacityUtilisationValidator, this.requiredValidator]);
-            const overCapacityErrorMsg = questions.some((question) => question.question.includes('beds'))
-              ? 'beds'
-              : 'places';
-            const requiredErrorMsg = questions.some((question) => question.question.includes('bed'))
-              ? 'beds you have'
-              : 'places you have at the moment';
-            const errorObj = {
-              item: id,
-              type: [
-                {
-                  name: 'overcapacity',
-                  message: `Number cannot be more than the ${overCapacityErrorMsg} you have`,
-                },
-                {
-                  name: 'required',
-                  message: `Enter how many ${requiredErrorMsg}`,
-                },
-              ],
-            };
-
-            this.formErrorsMap.push(errorObj);
-            this.setupErrorSummaryErrorsMap(errorObj, service.service);
-          }
 
           this.form.addControl(id, group);
         });
@@ -180,8 +180,8 @@ export class ServicesCapacityComponent extends Question {
 
   protected requiredValidator(group: FormGroup): ValidationErrors {
     const controls = [];
-    Object.keys(group.controls).forEach((key) => {
-      controls.push(group.get(key));
+    Object.keys(group.parent.controls).forEach((key) => {
+      controls.push(group.parent.get(key));
     });
 
     if (controls[1] && !controls[0].value && controls[1].value) {
@@ -194,8 +194,8 @@ export class ServicesCapacityComponent extends Question {
   protected capacityUtilisationValidator(group: FormGroup): ValidationErrors {
     const controls = [];
 
-    Object.keys(group.controls).forEach((key) => {
-      controls.push(group.get(key));
+    Object.keys(group.parent.controls).forEach((key) => {
+      controls.push(group.parent.get(key));
     });
 
     if (controls[1] && controls[0].value && controls[1].value && controls[1].value > controls[0].value) {
@@ -204,6 +204,23 @@ export class ServicesCapacityComponent extends Question {
 
     return null;
   }
+
+  // protected createDynamicErrorMessaging(): void {
+  //   const keys = Object.keys(this.form.controls);
+  //   console.log(this.form);
+  //   keys.forEach((key) => {
+  //     const group = this.form.get(key) as FormGroup;
+  //     if (Object.keys(group.controls).length > 1) {
+  //       const formControlName = Object.keys(group.controls)[1];
+
+  //       console.log(formControlName);
+  //       // if (group.controls[formControlName].errors) {
+  //       //   const index = this.errorsSummaryErrorsMap.findIndex((error) => error.item === key);
+  //       //   this.errorsSummaryErrorsMap[index].type.forEach((type) => (type.message = ''));
+  //       // }
+  //     }
+  //   });
+  // }
 
   protected sortServices() {
     const mainService = this.capacities.filter((m: any) => m.service.toLowerCase().startsWith('main service'));
