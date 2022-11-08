@@ -17,6 +17,7 @@
     "api:server": "nodemon --inspect server.js",
     "server": "npm-run-all -p -l build:watch api:server",
     "server:test": "mocha server/test/**/*.spec.js",
+    "server:e2e": "export NODE_ENV=e2etest && npm-run-all -p -l build:watch api:server",
     "server:test:e2e": "cypress run",
     "server:test:e2e:open": "cypress open",
     "server:test:unit": "mocha --exit 'server/test/unit/**/*.spec.js'",
@@ -32,7 +33,7 @@
     "db:migrate": "sequelize db:migrate",
     "db:migrate:undo": "sequelize db:migrate:undo",
     "cf:migrate": "node ./bin/cf-migrate.js",
-    "test:server": "NODE_ENV=test npm run server"
+    "test:server": "npm run server"
   },
   "private": true,
   "dependencies": {
@@ -155,7 +156,7 @@
     "aws-sdk-mock": "^5.2.1",
     "chai": "^4.3.0",
     "codelyzer": "^6.0.2",
-    "cypress": "^9.6.0",
+    "cypress": "^9.7.0",
     "eslint": "^7.23.0",
     "eslint-config-prettier": "^7.2.0",
     "faker": "^5.5.3",
