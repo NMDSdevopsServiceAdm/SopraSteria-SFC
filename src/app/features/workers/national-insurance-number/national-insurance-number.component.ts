@@ -14,6 +14,7 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './national-insurance-number.component.html',
 })
 export class NationalInsuranceNumberComponent extends QuestionComponent {
+  private homePostCodePath: string[];
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -31,18 +32,15 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
   }
 
   init() {
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+
     if (this.worker.nationalInsuranceNumber) {
       this.form.patchValue({
         nationalInsuranceNumber: this.worker.nationalInsuranceNumber,
       });
     }
 
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-
-    this.next = this.getRoutePath('home-postcode');
-    this.previous = this.workerService.hasJobRole(this.worker, 27)
-      ? this.getRoutePath('mental-health-professional')
-      : this.getRoutePath('date-of-birth');
+    this.setUpPageRouting();
   }
 
   public setupFormErrorsMap(): void {
@@ -57,6 +55,19 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
         ],
       },
     ];
+  }
+
+  private setUpPageRouting(): void {
+    this.homePostCodePath = this.getRoutePath('home-postcode');
+    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
+
+    if (this.insideFlow) {
+      this.previous = this.getRoutePath('home-postcode');
+      this.next = this.homePostCodePath;
+    } else {
+      this.return = { url: this.staffRecordSections };
+      this.previous = this.staffRecordSummaryPath;
+    }
   }
 
   generateUpdateProps() {
