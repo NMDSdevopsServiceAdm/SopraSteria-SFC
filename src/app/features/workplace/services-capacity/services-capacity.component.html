@@ -45,7 +45,7 @@
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFirstErrorMessage(groupName + '.' + controlName) }}
                   </span>
-                  <!-- <span
+                  <span
                     *ngIf="
                       submitted &&
                       form.get(groupName).invalid &&
@@ -57,8 +57,8 @@
                   >
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFormErrorMessage(groupName, 'required') }}
-                  </span> -->
-                  <!-- <span
+                  </span>
+                  <span
                     *ngIf="
                       submitted &&
                       form.get(groupName).invalid &&
@@ -71,7 +71,7 @@
                   >
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFormErrorMessage(groupName, 'overcapacity') }}
-                  </span> -->
+                  </span>
                   <input
                     class="govuk-input govuk-input--width-4"
                     [class.govuk-input--error]="submitted && form.get(groupName).get(controlName).invalid"
