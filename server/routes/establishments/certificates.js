@@ -29,7 +29,6 @@ const getCertificate = async (req, res) => {
   Key = `${filePathBase}/${establishmentFileName}`;
 
   const exists = await fileExists();
-  console.log('exists: ', exists);
 
   try {
     if (!exists) {
@@ -65,12 +64,12 @@ const fileExists = async () => {
       result = true;
     })
     .catch((err) => {
-      if(err.code === 'NoSuchKey') {
+      if (err.code === 'NoSuchKey') {
         result = false;
       } else {
         throw err;
       }
-    })
+    });
   console.log('Result: ', result);
   return result;
 };
