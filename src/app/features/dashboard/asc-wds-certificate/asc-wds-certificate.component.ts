@@ -41,7 +41,6 @@ export class AscWdsCertificateComponent implements OnInit {
   };
 
   async downloadCertificate(): Promise<any> {
-    console.log(this.establishmentService.establishmentId);
     this.establishmentService
       .getCertificate(this.establishmentService.establishmentId, this.years)
       .subscribe((x) => window.open(x.data));
