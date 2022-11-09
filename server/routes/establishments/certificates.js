@@ -29,10 +29,12 @@ const getCertificate = async (req, res) => {
   Key = `${filePathBase}/${establishmentFileName}`;
 
   const exists = await fileExists();
+  console.log('exists: ', exists);
+
   try {
     if (!exists) {
       const thisEstablishment = new Establishment.Establishment(req.username);
-      await thisEstablishment.restore(req.establishment.uid);
+      await thisEstablishment.restore(req.params.id);
 
       const newFile = await modifyPdf(thisEstablishment.name, fileName);
 
@@ -62,7 +64,14 @@ const fileExists = async () => {
     .then(() => {
       result = true;
     })
-    .catch(() => (result = false));
+    .catch((err) => {
+      if(err.code === 'NoSuchKey') {
+        result = false;
+      } else {
+        throw err;
+      }
+    })
+  console.log('Result: ', result);
   return result;
 };
 
