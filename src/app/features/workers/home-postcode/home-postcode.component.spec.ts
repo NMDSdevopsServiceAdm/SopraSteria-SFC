@@ -6,7 +6,6 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import userEvent from '@testing-library/user-event';
 
 import { HomePostcodeComponent } from './home-postcode.component';
 
@@ -71,20 +70,6 @@ describe('HomePostcodeComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
-    });
-  });
-
-  describe('error messages', () => {
-    it('returns an error if an invalid postcode is entered', async () => {
-      const { fixture, getByText, getAllByText, getByLabelText } = await setup(false);
-
-      userEvent.type(getByLabelText('Postcode'), 'hhhhhhhhhhh');
-      userEvent.click(getByText('Save and continue'));
-      fixture.detectChanges();
-
-      const errors = getAllByText('Enter a real postcode');
-
-      expect(errors.length).toBe(2);
     });
   });
 });
