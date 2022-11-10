@@ -114,7 +114,7 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: ' Enter their standard annual salary',
+            message: 'Enter their standard annual salary',
           },
           {
             name: 'pattern',
