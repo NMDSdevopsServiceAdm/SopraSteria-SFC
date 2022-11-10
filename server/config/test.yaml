@@ -38,6 +38,10 @@ bulkupload:
   lambda:
     stage: sfcstaging
 
+certificate:
+  region: eu-west-2
+  bucketname: sfc-public-staging
+
 disbursement:
     region: eu-west-2
     bucketname: wdf-disbursement-staging
