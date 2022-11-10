@@ -52,7 +52,7 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
         type: [
           {
             name: 'validNin',
-            message: 'Enter a National Insurance number in the correct format',
+            message: `Enter a National Insurance number that's 2 letters, 6 numbers, then A, B, C or D, like QQ 12 34 56 C`,
           },
         ],
       },
