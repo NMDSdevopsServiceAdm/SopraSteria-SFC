@@ -62,7 +62,6 @@ export class SalaryComponent extends QuestionComponent {
         return this.getRoutePath('average-weekly-hours');
       } else {
         return this.getRoutePath('weekly-contracted-hours');
-
       }
     }
     return this.getRoutePath('');
@@ -115,7 +114,7 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Enter their standard annual salary',
+            message: ' Enter their standard annual salary',
           },
           {
             name: 'pattern',
