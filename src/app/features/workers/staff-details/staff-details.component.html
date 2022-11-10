@@ -12,9 +12,7 @@
           class="govuk-form-group"
           [class.govuk-form-group--error]="submitted && (form.get('nameOrId').invalid || serverError)"
         >
-          <label class="govuk-label" for="nameOrId">
-            <b>Name or ID number</b>
-          </label>
+          <label class="govuk-label" for="nameOrId"> Name or ID number </label>
           <span *ngIf="submitted && form.get('nameOrId').errors" id="nameOrId-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFormErrorMessage('nameOrId', 'required') }}
@@ -34,9 +32,7 @@
             submitted && (form.get('mainJob').invalid || form.get('otherJobRole').invalid)
           "
         >
-          <label class="govuk-label" for="mainJob">
-            <b>Main job role</b>
-          </label>
+          <label class="govuk-label" for="mainJob"> Main job role </label>
           <span *ngIf="submitted && form.get('mainJob').errors" id="mainJob-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFormErrorMessage('mainJob', 'required') }}
@@ -59,9 +55,7 @@
             class="govuk-radios__conditional govuk-!-margin-top-4"
             [class.govuk-select__conditional--hidden]="!showInputTextforOtherRole"
           >
-            <label class="govuk-label" for="otherJobRole-conditional">
-              <b>What is the job role?</b>
-            </label>
+            <label class="govuk-label" for="otherJobRole-conditional"> What is the job role? </label>
             <span
               *ngIf="submitted && form.get('otherJobRole').invalid"
               id="otherJobRole-error"
