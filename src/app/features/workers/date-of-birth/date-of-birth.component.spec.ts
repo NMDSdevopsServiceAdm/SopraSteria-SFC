@@ -10,7 +10,6 @@ import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerSe
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import dayjs from 'dayjs';
 
 import { DateOfBirthComponent } from './date-of-birth.component';
 
@@ -221,10 +220,7 @@ describe('DateOfBirthComponent', () => {
     });
 
     it('returns an error if an out-of-range date is entered', async () => {
-      const { fixture, getByText, getAllByText, getByLabelText } = await setup();
-
-      const minDate = dayjs().subtract(100, 'years').add(1, 'days');
-      const maxDate = dayjs().subtract(14, 'years');
+      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup();
 
       userEvent.type(getByLabelText('Day'), '1');
       userEvent.type(getByLabelText('Month'), '12');
@@ -233,9 +229,9 @@ describe('DateOfBirthComponent', () => {
       fixture.detectChanges();
 
       const errors = getAllByText(
-        `Date of birth must to be between ${minDate.format(DATE_DISPLAY_DEFAULT)} and ${maxDate.format(
+        `Date of birth must to be between ${component.minDate.format(
           DATE_DISPLAY_DEFAULT,
-        )}.`,
+        )} and ${component.maxDate.format(DATE_DISPLAY_DEFAULT)}.`,
       );
 
       expect(errors.length).toBe(2);

@@ -36,9 +36,12 @@ export class HomePostcodeComponent extends QuestionComponent {
       establishmentService,
     );
 
-    this.form = this.formBuilder.group({
-      postcode: [null, this.postcodeValidator],
-    });
+    this.form = this.formBuilder.group(
+      {
+        postcode: [null, this.postcodeValidator],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   init() {
@@ -59,7 +62,7 @@ export class HomePostcodeComponent extends QuestionComponent {
         type: [
           {
             name: 'validPostcode',
-            message: 'Enter a real postcode.',
+            message: 'Enter a real postcode',
           },
         ],
       },

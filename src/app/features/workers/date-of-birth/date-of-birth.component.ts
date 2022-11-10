@@ -19,8 +19,8 @@ import { QuestionComponent } from '../question/question.component';
 export class DateOfBirthComponent extends QuestionComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
-  private minDate = dayjs().subtract(100, 'years').add(1, 'days');
-  private maxDate = dayjs().subtract(14, 'years');
+  public minDate = dayjs().subtract(100, 'years').add(1, 'days');
+  public maxDate = dayjs().subtract(14, 'years');
   public section = 'Personal details';
 
   constructor(

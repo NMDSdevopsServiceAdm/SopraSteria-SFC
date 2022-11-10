@@ -6,6 +6,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { NationalInsuranceNumberComponent } from './national-insurance-number.component';
 
@@ -89,6 +90,22 @@ describe('NationalInsuranceNumberComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+  });
+
+  describe('error messages', () => {
+    it('returns an error if an invalid National Insurance number is entered', async () => {
+      const { fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+
+      userEvent.type(getByLabelText('National Insurance number'), 'hhhhhhhhh');
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      const errors = getAllByText(
+        `Enter a National Insurance number that's 2 letters, 6 numbers, then A, B, C or D, like QQ 12 34 56 C`,
+      );
+
+      expect(errors.length).toBe(2);
     });
   });
 });
