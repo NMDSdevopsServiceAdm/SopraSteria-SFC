@@ -107,7 +107,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number of places you have must be a whole number';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -124,7 +124,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
         expect(queryByText('Number cannot be more than the places you have')).toBeFalsy();
@@ -143,7 +143,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -160,7 +160,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number of places being used must be a whole number';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -177,7 +177,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -194,7 +194,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -213,7 +213,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number cannot be more than the places you have';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -230,7 +230,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Enter how many places you have at the moment';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -249,7 +249,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
         expect(queryByText('Number cannot be more than the places you have')).toBeFalsy();
@@ -270,7 +270,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
         expect(queryByText('Number cannot be more than the places you have')).toBeFalsy();
@@ -292,7 +292,7 @@ describe('ServicesCapacityComponent', () => {
 
         const firstErrorMessage = 'Number must be between 1 and 999';
         const secondErrorMessage = 'Number cannot be more than the places you have';
-        const service = capacities[0].service.split(': ')[1];
+        const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(firstErrorMessage)).toBeTruthy();
         expect(getByText(`${firstErrorMessage} (${service})`)).toBeTruthy();
         expect(getByText(secondErrorMessage)).toBeTruthy();
@@ -313,7 +313,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number of beds you have must be a whole number';
-        const service = capacities[1].service.split(': ')[1];
+        const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -330,7 +330,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[1].service.split(': ')[1];
+        const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
         expect(queryByText('Number cannot be more than the beds you have')).toBeFalsy();
@@ -349,7 +349,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[1].service.split(': ')[1];
+        const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -366,7 +366,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number of beds being used must be a whole number';
-        const service = capacities[1].service.split(': ')[1];
+        const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -383,7 +383,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[1].service.split(': ')[1];
+        const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -400,7 +400,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[1].service.split(': ')[1];
+        const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -419,7 +419,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number cannot be more than the beds you have';
-        const service = capacities[1].service.split(': ')[1];
+        const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -436,7 +436,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Enter how many beds you have';
-        const service = capacities[1].service.split(': ')[1];
+        const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -455,7 +455,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[1].service.split(': ')[1];
+        const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
         expect(queryByText('Number cannot be more than the beds you have')).toBeFalsy();
@@ -476,7 +476,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number of people receiving care must be a whole number';
-        const service = capacities[2].service.split(': ')[1];
+        const service = capacities[2].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -493,7 +493,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[2].service.split(': ')[1];
+        const service = capacities[2].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -510,7 +510,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[2].service.split(': ')[1];
+        const service = capacities[2].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -529,7 +529,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number of people using the service must be a whole number';
-        const service = capacities[3].service.split(': ')[1];
+        const service = capacities[3].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -546,7 +546,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[3].service.split(': ')[1];
+        const service = capacities[3].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });
@@ -563,7 +563,7 @@ describe('ServicesCapacityComponent', () => {
         fixture.detectChanges();
 
         const errorMessage = 'Number must be between 1 and 999';
-        const service = capacities[3].service.split(': ')[1];
+        const service = capacities[3].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
       });

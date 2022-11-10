@@ -81,7 +81,7 @@ export class ServicesCapacityComponent extends Question {
   }
 
   private setupErrorSummaryErrorsMap(errorObj, service): void {
-    const serviceName = service.split(': ')[1];
+    const serviceName = service.split(': ')[1].toLowerCase();
     const updatedErrorObj = JSON.parse(JSON.stringify(errorObj));
     updatedErrorObj.type.forEach((error) => (error.message = error.message && `${error.message} (${serviceName})`));
 
