@@ -8,7 +8,7 @@ describe('As an admin I want to login', () => {
   });
 
   beforeEach(() => {
-    cy.visit(Cypress.env('baseUrl'));
+    cy.visit('/');
   });
 
   it('should show the landing page', () => {
