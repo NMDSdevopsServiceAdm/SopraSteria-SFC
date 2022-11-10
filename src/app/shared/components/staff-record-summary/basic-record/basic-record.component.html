@@ -1,8 +1,11 @@
 <h2 class="govuk-heading-m">{{ basicTitle }}</h2>
-<dl class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summarylist-border-bottom">
+<dl
+  class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summarylist-border-bottom"
+  style="border: 1px solid black"
+>
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Name or ID number</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dt class="govuk-summary-list__key govuk-!-padding-right-0" style="border: 1px solid black">Name or ID number</dt>
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9" style="border: 1px solid black">
       {{ worker.nameOrId }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
