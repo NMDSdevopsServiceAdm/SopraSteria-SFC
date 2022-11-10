@@ -28,6 +28,7 @@ const getCertificate = async (req, res) => {
   const establishmentFileName = `${req.params.id} ${fileName}`;
   Key = `${filePathBase}/${establishmentFileName}`;
 
+  console.log(`region: ${s3.region}`);
   const exists = await fileExists();
 
   try {
