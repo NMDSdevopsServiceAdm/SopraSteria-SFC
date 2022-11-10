@@ -25,9 +25,12 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
   ) {
     super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      nationalInsuranceNumber: [null, this.ninValidator],
-    });
+    this.form = this.formBuilder.group(
+      {
+        nationalInsuranceNumber: [null, this.ninValidator],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   init() {
