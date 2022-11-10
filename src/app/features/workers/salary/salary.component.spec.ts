@@ -284,10 +284,10 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(getAllByText('Enter their standard annual salary').length).toEqual(2);
+      expect(getAllByText('Enter their standard annual rate').length).toEqual(2);
     });
 
-    it('returns an error if Annual salary is selected and an out of range annual salary is entered', async () => {
+    it('returns an error if Annual salary is selected and an out of range annual salary is entered when job role is not senior management', async () => {
       const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
       const form = component.form;
       form.controls.terms.setValue('');
@@ -299,7 +299,26 @@ describe('SalaryComponent', () => {
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
       expect(true).toBeTruthy;
-      expect(getAllByText('Standard annual salary must be between £500 and £200,000').length).toEqual(2);
+      expect(getAllByText('Standard annual rate must be between £500 and £200,000').length).toEqual(2);
+    });
+
+    it('returns an error if Annual salary is selected and an out of range annual salary is entered when job role is senior management', async () => {
+      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+      const form = component.form;
+      component.worker.mainJob.jobId = 26;
+      component.initiated = false;
+      component.ngOnInit();
+
+      form.controls.terms.setValue('');
+      form.controls.hourlyRate.setValue('');
+      form.controls.annualRate.setValue('5000000');
+      fixture.detectChanges();
+      fireEvent.click(getByLabelText('Annual salary'));
+      fixture.detectChanges();
+      fireEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+      expect(true).toBeTruthy;
+      expect(getAllByText('Standard annual rate must be between £500 and £250,000').length).toEqual(2);
     });
 
     it('returns an error if Annual salary is selected and a decimal number is entered', async () => {
@@ -314,7 +333,7 @@ describe('SalaryComponent', () => {
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
       expect(true).toBeTruthy;
-      expect(getAllByText('Standard annual salary must not include pence').length).toEqual(2);
+      expect(getAllByText('Standard annual rate must not include pence').length).toEqual(2);
     });
   });
 
@@ -324,7 +343,7 @@ describe('SalaryComponent', () => {
 
       component.worker.zeroHoursContract = `Don't know`;
       component.worker.contract = Contracts.Permanent;
-      component.initiated = false
+      component.initiated = false;
       component.ngOnInit();
       component.setBackLink();
       expect(backLinkSpy).toHaveBeenCalledWith({
@@ -337,7 +356,7 @@ describe('SalaryComponent', () => {
       const { component, backLinkSpy } = await setup();
 
       component.worker.zeroHoursContract = 'Yes';
-      component.initiated = false
+      component.initiated = false;
       component.ngOnInit();
       component.setBackLink();
       expect(backLinkSpy).toHaveBeenCalledWith({
@@ -351,7 +370,7 @@ describe('SalaryComponent', () => {
 
       component.worker.zeroHoursContract = 'No';
       component.worker.contract = Contracts.Agency;
-      component.initiated = false
+      component.initiated = false;
       component.ngOnInit();
       component.setBackLink();
       expect(backLinkSpy).toHaveBeenCalledWith({
