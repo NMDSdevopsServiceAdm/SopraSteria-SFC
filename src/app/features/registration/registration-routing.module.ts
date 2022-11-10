@@ -17,6 +17,7 @@ import { SelectMainServiceComponent } from '@features/create-account/workplace/s
 import { SelectWorkplaceAddressComponent } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/create-account/workplace/select-workplace/select-workplace.component';
 import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
+import { TypeOfEmployerComponent } from '@features/create-account/workplace/type-of-employer/type-of-employer.component';
 import { WorkplaceNameAddressComponent } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
@@ -118,9 +119,91 @@ const routes: Routes = [
   },
   {
     path: 'confirm-details',
-    component: ConfirmDetailsComponent,
-    canActivate: [RegisterGuard],
-    data: { title: 'Confirm Details' },
+    children: [
+      {
+        path: '',
+        component: ConfirmDetailsComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Confirm Details' },
+      },
+      {
+        path: 'find-workplace',
+        component: FindYourWorkplaceComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Find your workplace' },
+      },
+      {
+        path: 'your-workplace',
+        component: IsThisYourWorkplaceComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Is this your workplace?' },
+      },
+      {
+        path: 'workplace-not-found',
+        component: WorkplaceNotFoundComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Could not find your workplace' },
+      },
+      {
+        path: 'select-workplace',
+        component: SelectWorkplaceComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Select Workplace' },
+      },
+      {
+        path: 'workplace-name-address',
+        component: WorkplaceNameAddressComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Workplace name and address?' },
+      },
+      {
+        path: 'type-of-employer',
+        component: TypeOfEmployerComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Type of Employer' },
+      },
+      {
+        path: 'select-main-service',
+        component: SelectMainServiceComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Select Main Service' },
+      },
+      {
+        path: 'add-total-staff',
+        component: AddTotalStaffComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Add Total Staff' },
+      },
+      {
+        path: 'cannot-create-account',
+        component: CannotCreateAccountComponent,
+        data: { title: 'Cannot create account', flow: 'registration' },
+      },
+      {
+        path: 'select-workplace-address',
+        component: SelectWorkplaceAddressComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Select Workplace Address' },
+      },
+      {
+        path: 'username-password',
+        component: UsernamePasswordComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Create your username and password' },
+      },
+      {
+        path: 'create-security-question',
+        component: SecurityQuestionComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Create your security question' },
+      },
+      {
+        path: 'add-user-details',
+        component: YourDetailsComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Add your user details' },
+      },
+    ],
   },
   {
     path: 'complete',
@@ -145,6 +228,12 @@ const routes: Routes = [
     component: SelectWorkplaceAddressComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Select Workplace Address' },
+  },
+  {
+    path: 'type-of-employer',
+    component: TypeOfEmployerComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Type of Employer' },
   },
   {
     path: 'select-main-service',

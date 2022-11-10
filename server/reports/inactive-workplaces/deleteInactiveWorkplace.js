@@ -4,6 +4,9 @@ const buildRow = (workplace) => {
   return {
     workplaceNmdsId: workplace.nmdsId,
     workplaceName: workplace.name,
+    lastLogin: workplace.lastLogin,
+    lastUpdated: workplace.lastUpdated,
+    dataOwner: workplace.dataOwner,
     address: workplace.address,
   };
 };
@@ -17,6 +20,9 @@ const addWorksheet = (workbook) => {
   worksheet.columns = [
     { header: 'Workplace NmdsId', key: 'workplaceNmdsId' },
     { header: 'Workplace name', key: 'workplaceName' },
+    { header: 'Date last login', key: 'lastLogin' },
+    { header: 'Date last updated', key: 'lastUpdated' },
+    { header: 'Data owner', key: 'dataOwner' },
     { header: 'Workplace Address', key: 'address' },
   ];
 

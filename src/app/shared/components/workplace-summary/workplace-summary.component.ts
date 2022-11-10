@@ -6,7 +6,9 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import sortBy from 'lodash/sortBy';
+import { WorkplaceUtil } from '@core/utils/workplace-util';
+import { sortBy } from 'lodash';
+import { stringify } from 'querystring';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,8 +18,10 @@ import { Subscription } from 'rxjs';
 })
 export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   private _workplace: any;
+  public resp: any;
   protected subscriptions: Subscription = new Subscription();
   public hasCapacity: boolean;
+  private capacities: any;
   public capacityMessages = [];
   public pluralMap = [];
   public canEditEstablishment: boolean;
@@ -27,8 +31,11 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   public canViewListOfWorkers = false;
   public confirmedFields: Array<string> = [];
   public showTotalStaffWarning: boolean;
+  public checkAnswersPage: boolean;
+  public now: Date = new Date();
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
+  @Input() removeServiceSectionMargin = false;
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() workerCount: number;
@@ -37,20 +44,8 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     this._workplace = workplace;
     this.capacityMessages = [];
 
-    if (this._workplace && this._workplace.capacities) {
-      const temp = [];
-      this._workplace.capacities.forEach((capacity) => {
-        temp[capacity.question] = temp[capacity.question] ? temp[capacity.question] + capacity.answer : capacity.answer;
-      });
-
-      if (Object.keys(temp).length) {
-        Object.keys(temp).forEach((key) => {
-          if (this.pluralMap[key]) {
-            const message = this.i18nPluralPipe.transform(temp[key], this.pluralMap[key]);
-            this.capacityMessages.push(message);
-          }
-        });
-      }
+    if (this._workplace.employerType) {
+      this._workplace.employerType.value = WorkplaceUtil.formatTypeOfEmployer(this._workplace.employerType.value);
     }
   }
 
@@ -85,23 +80,27 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     private workerService: WorkerService,
     private cqcStatusChangeService: CqcStatusChangeService,
   ) {
-    this.pluralMap['How many beds do you currently have?'] = {
+    this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
       other: '# beds available',
     };
-    this.pluralMap['How many of those beds are currently used?'] = {
+    this.pluralMap['How many of those beds are being used?'] = {
       '=1': '# bed used',
       other: '# beds used',
     };
-    this.pluralMap['How many places do you currently have?'] = {
+    this.pluralMap['How many places do you have at the moment?'] = {
       '=1': '# place',
       other: '# places',
     };
-    this.pluralMap['Number of people receiving care on the completion date'] = {
+    this.pluralMap['Number of people receiving care at the moment'] = {
       '=1': '# person receiving care',
       other: '# people receiving care',
     };
-    this.pluralMap['Number of people using the service on the completion date'] = {
+    this.pluralMap['Number of people using the service at the moment'] = {
+      '=1': '# person using the service',
+      other: '# people using the service',
+    };
+    this.pluralMap['Number of those places that are being used'] = {
       '=1': '# person using the service',
       other: '# people using the service',
     };
@@ -110,6 +109,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit(): void {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+    this.checkAnswersPage = this.return?.url.includes('check-answers');
 
     this.setTotalStaffWarning();
     if (this.canEditEstablishment && this.wdfView) {
@@ -119,8 +119,28 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
+        this.capacities = response.allServiceCapacities;
+
+        const temp = [{}];
+        this.capacities.forEach((capacity) => {
+          capacity.questions.forEach((question) => {
+          temp[question.questionId] = {question: question.question, value: temp[question.questionId] ? question.question + question.answer : question.answer, service: ` (${capacity.service.split(':')[1].trim().toLowerCase()})`};
+          })
+        });
+
+        if (Object.keys(temp).length) {
+          Object.keys(temp).forEach((key) => {
+            if (this.pluralMap[temp[key].question]) {
+              const message = this.i18nPluralPipe.transform(temp[key].value, this.pluralMap[temp[key].question]) + (temp[key].value ? temp[key].service : '');
+              this.capacityMessages.push(message);
+            }
+          });
+        }
+
       }),
     );
+
+;
 
     this.cqcStatusRequested = false;
     this.subscriptions.add(
@@ -146,6 +166,10 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
         (this.workplace.numberOfStaff > 0 || this.workerCount > 0) &&
         this.workplace.numberOfStaff !== this.workerCount;
     }
+  }
+
+  public formatMonetaryValue(unformattedMoneyString): string {
+    return unformattedMoneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   public filterAndSortOtherServices(services: Service[]): Service[] {
@@ -193,6 +217,10 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
         }
       }),
     );
+  }
+
+  public convertToDate(dateString: string): Date {
+    return new Date(dateString);
   }
 
   public updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {

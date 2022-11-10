@@ -113,7 +113,7 @@ describe('WorkplaceReferencesComponent', () => {
     const references = [workplace] as Workplace[];
     const { component } = await setup(references);
     const form = component.fixture.componentInstance.form;
-    console.log(workplace);
+
     const errorMessage = `Enter a unique reference for ${workplace.name}`;
 
     form.controls[`reference-${workplace.uid}`].setValue('');

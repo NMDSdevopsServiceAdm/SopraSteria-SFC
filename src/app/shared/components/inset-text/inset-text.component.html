@@ -1,4 +1,11 @@
-<div class="govuk-inset-text" [ngClass]="color" >
+<div
+  class="govuk-inset-text"
+  [ngClass]="[
+    color,
+    removeBottomMargin ? 'govuk-!-margin-bottom-0' : '',
+    removeTopMargin ? 'govuk-!-margin-top-0' : ''
+  ]"
+>
   <ng-content></ng-content>
   <a *ngIf="closable" href="#" (click)="close($event)" class="govuk-util__float-right">Close</a>
 </div>

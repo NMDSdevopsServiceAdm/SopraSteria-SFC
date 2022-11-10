@@ -14,7 +14,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { UsernamePasswordComponent } from './username-password.component';
 
 describe('UsernamePasswordComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(UsernamePasswordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -34,7 +34,7 @@ describe('UsernamePasswordComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -64,6 +64,20 @@ describe('UsernamePasswordComponent', () => {
   it('should render a UsernamePasswordComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace and user account progress bars', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should show the password as password field when show password is false', async () => {
@@ -329,32 +343,5 @@ describe('UsernamePasswordComponent', () => {
 
     expect(form.valid).toBeTruthy();
     expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the back link to your-details if feature flag is on and return url is null', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'your-details'],
-      });
-    });
-
-    it('should set the back link to confirm-details if the feature flag is on and return url is not null', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'confirm-details'],
-      });
-    });
   });
 });

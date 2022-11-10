@@ -7,120 +7,145 @@
 </app-error-summary>
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
-  <fieldset class="govuk-fieldset">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">Add new starters in the last 12 months</h1>
-          <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
-        </legend>
-      </div>
-    </div>
-    <ng-container formArrayName="starterRecords">
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
-          <label for="jobId-0" class="govuk-label">Job role</label>
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <label for="total-0" class="govuk-label">Number of new starters</label>
-        </div>
-      </div>
-      <div
-        *ngFor="let record of starterRecords.controls; let i = index"
-        [formGroupName]="i"
-        [class.govuk-form-group--error]="submitted && record.invalid"
-      >
-        <div class="govuk-grid-row govuk-!-margin-bottom-6">
-          <div class="govuk-grid-column-two-thirds">
-            <span *ngIf="submitted" id="record-{{ i }}-error" class="govuk-error-message">
-              <ng-container *ngIf="submitted && record.get('jobId').invalid">
-                {{ getFormErrorMessage('starterRecords.jobId', 'required') }}
-              </ng-container>
-            </span>
-            <select
-              class="govuk-select govuk-!-width-full"
-              [class.govuk-select--error]="submitted && record.get('jobId').invalid"
-              [formControlName]="'jobId'"
-              id="jobId-{{ i }}"
-              name="jobId"
-            >
-              <option [ngValue]="null">Select job role</option>
-              <option *ngFor="let job of selectableJobs(i)" [value]="job.id">
-                {{ job.title }}
-              </option>
-            </select>
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <span *ngIf="submitted" id="record-total-{{ i }}-error" class="govuk-error-message">
-              <ng-container *ngIf="submitted && record.get('total').invalid">
-                <span *ngIf="record.get('total').errors.required">
-                  {{ getFormErrorMessage('starterRecords.total', 'required') }}</span
-                >
-                <span *ngIf="record.get('total').errors.min">
-                  {{ getFormErrorMessage('starterRecords.total', 'min') }}</span
-                >
-                <span *ngIf="record.get('total').errors.max">
-                  {{ getFormErrorMessage('starterRecords.total', 'max') }}
-                </span>
-              </ng-container>
-            </span>
-            <input
-              class="govuk-input govuk-!-width-one-half"
-              [class.govuk-input--error]="submitted && record.get('total').invalid"
-              [formControlName]="'total'"
-              id="total-{{ i }}"
-              name="total"
-              type="number"
-            />
-            <a
-              *ngIf="starterRecords.length > 1"
-              href="#"
-              class="govuk-list govuk-list--inline govuk-!-margin-left-3"
-              (click)="removeRecord($event, i)"
-              >Remove</a
-            >
-          </div>
-        </div>
-      </div>
-    </ng-container>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
-        <button
-          *ngIf="!allJobsSelected"
-          class="govuk-button govuk-button--secondary"
-          type="button"
-          (click)="addStarter()"
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <div
+          class="govuk-form-group govuk-!-margin-bottom-2"
+          [class.govuk-form-group--error]="submitted && emptyForm && this.form.invalid"
         >
-          Add another new starter
-        </button>
-      </div>
-      <div class="govuk-grid-column-one-third">
-        <p class="govuk-heading-m">Total: {{ totalStarters }}</p>
-      </div>
-    </div>
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-fieldset__heading govuk__nowrap">
+                  <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+                  Add your new starters from the <br />last 12 months
+                </h1>
+              </legend>
+              <p class="govuk__nowrap">These should only be new starters who are permanent or temporary staff.</p>
+            </div>
+          </div>
+          <ng-container formArrayName="starterRecords">
+            <div
+              *ngFor="let record of starterRecords.controls; let i = index"
+              [formGroupName]="i"
+              [class.govuk-form-group--error]="submitted && !emptyForm && this.form.invalid"
+            >
+              <div class="govuk-grid-row govuk-!-margin-bottom-6" [attr.data-testid]="'row-' + i">
+                <div class="govuk-grid-column-full">
+                  <span class="govuk-error-message">
+                    <ng-container *ngIf="submitted && emptyForm && this.form.invalid">
+                      Select the job role and enter the number of starters, or tell us there are none
+                    </ng-container>
+                  </span>
+                  <h2 class="govuk-heading-s">Job role {{ i + 1 }}</h2>
+                </div>
+                <div class="govuk-grid-column-two-thirds">
+                  <label for="jobRole-{{ i }}" class="govuk-label">Job role</label>
+                  <span *ngIf="submitted" id="starterRecords-jobRole-{{ i }}-error" class="govuk-error-message">
+                    <ng-container
+                      *ngIf="submitted && !emptyForm && record.get('jobRole').invalid; else hiddenJobRoleError"
+                    >
+                      Select the job role
+                      <div *ngIf="record.get('total').invalid">&nbsp;</div>
+                    </ng-container>
+                    <ng-template #hiddenJobRoleError>
+                      <div *ngIf="!emptyForm && record.get('total').invalid">&nbsp; <br />&nbsp;</div>
+                    </ng-template>
+                  </span>
+                  <select
+                    class="govuk-select govuk-!-width-full"
+                    [class.govuk-select--error]="submitted && !emptyForm && record.get('jobRole').invalid"
+                    [formControlName]="'jobRole'"
+                    id="jobRole-{{ i }}"
+                    name="jobRole"
+                  >
+                    <option [ngValue]="null">Select job role</option>
+                    <option *ngFor="let job of selectableJobs(i)" [value]="job.id">
+                      {{ job.title }}
+                    </option>
+                  </select>
+                </div>
+                <div class="govuk-grid-column-one-third">
+                  <label for="total-{{ i }}" class="govuk-label govuk__nowrap">Number of new starters</label>
+                  <span *ngIf="submitted" id="starterRecords-total-{{ i }}-error" class="govuk-error-message">
+                    <ng-container *ngIf="submitted && !emptyForm && record.get('total').invalid; else hiddenTotalError">
+                      <span *ngIf="record.get('total').errors.required"> Enter the number of new starters</span>
+                      <span *ngIf="record.get('total').errors.min">
+                        Number must be between {{ this.minStarters }} and {{ this.maxStarters }}</span
+                      >
+                      <span *ngIf="record.get('total').errors.max">
+                        Number must be between {{ this.minStarters }} and {{ this.maxStarters }}
+                      </span>
+                    </ng-container>
+                    <ng-template #hiddenTotalError
+                      ><div *ngIf="!emptyForm && record.get('jobRole').invalid">&nbsp;</div></ng-template
+                    >
+                  </span>
+                  <input
+                    class="govuk-input govuk-!-width-one-half govuk-!-margin-right-5"
+                    [class.govuk-input--error]="submitted && !emptyForm && record.get('total').invalid"
+                    [formControlName]="'total'"
+                    id="total-{{ i }}"
+                    name="total"
+                    type="number"
+                  />
+                  <a *ngIf="starterRecords.length > 1" href="#" (click)="removeRecord($event, i)">Remove</a>
+                </div>
+              </div>
+              <hr
+                class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-margin-bottom-7"
+              />
+            </div>
+          </ng-container>
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-4">
+              <button
+                *ngIf="!allJobsSelected"
+                class="govuk-button govuk-button--secondary"
+                type="button"
+                (click)="addStarter()"
+              >
+                Add another job role
+              </button>
+            </div>
+            <div class="govuk-grid-column-one-third govuk-!-margin-top-1">
+              <p class="govuk-heading-s">Total new starters: {{ totalStarters }}</p>
+            </div>
+          </div>
 
-    <div class="govuk-form-group">
-      <div class="govuk-radios">
-        <div class="govuk-radios__item" *ngFor="let option of startersKnownOptions; let i = index">
-          <input
-            class="govuk-radios__input"
-            id="noRecordsReason-{{ i }}"
-            name="noRecordsReason"
-            [formControlName]="'noRecordsReason'"
-            type="radio"
-            [value]="option.value"
-          />
-          <label class="govuk-label govuk-radios__label" for="noRecordsReason-{{ i }}">
-            {{ option.label }}
-          </label>
+          <div class="govuk-form-group govuk-!-margin-bottom-3">
+            <div class="govuk-radios">
+              <div class="govuk-radios__item" *ngFor="let option of startersKnownOptions; let i = index">
+                <input
+                  class="govuk-radios__input"
+                  id="noRecordsReason-{{ i }}"
+                  name="noRecordsReason"
+                  [formControlName]="'noRecordsReason'"
+                  type="radio"
+                  [value]="option.value"
+                />
+                <label class="govuk-label govuk-radios__label" for="noRecordsReason-{{ i }}">
+                  {{ option.label }}
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
+      </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
     </div>
-  </fieldset>
-
-  <app-submit-button
-    [return]="!!return"
-    [isExistingStaffRecord]="false"
-    (clicked)="onSubmit($event)"
-  ></app-submit-button>
+  </div>
 </form>

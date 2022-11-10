@@ -5,13 +5,18 @@
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">{{ title }}</h1>
+          <span class="govuk-caption-l">Workplace</span>
+          <h1 *ngIf="isParent" class="govuk-fieldset__heading">
+            Select the workplace you want<br />
+            to add
+          </h1>
+          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Select your workplace address</h1>
         </legend>
         <ng-container *ngIf="!isCQCLocationUpdate">
           <div class="govuk-!-margin-bottom-5">
             <p>
               Postcode entered: <strong>{{ enteredPostcode }}</strong>
-              <a [routerLink]="[flow, 'find-workplace']" class="govuk-!-margin-left-9">Change</a>
+              <a routerLink="/{{ flow }}/find-workplace" class="govuk-!-margin-left-9">Change</a>
             </p>
           </div>
         </ng-container>
@@ -19,21 +24,23 @@
           <span *ngIf="submitted && form.invalid" id="workplace-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}
           </span>
-          <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let item of locationAddresses; let i = index">
-              <input
-                class="govuk-radios__input"
-                id="workplace-{{ i }}"
-                value="{{ item.locationId }}"
-                name="workplace"
-                type="radio"
-                [formControlName]="'workplace'"
-              />
-              <label class="govuk-label govuk-radios__label" for="workplace-{{ i }}">
-                {{ item.locationName }} - {{ item.townCity }} {{ item.postalCode }}
-              </label>
-            </div>
-          </div>
+          <ng-container *ngIf="locationAddresses?.length > 4; else radioButtonForm">
+            <app-select-workplace-dropdown-form
+              data-testid="dropdown-form"
+              [submitted]="submitted"
+              [form]="form"
+              [locationAddresses]="locationAddresses"
+              (clicked)="onLocationChange($event)"
+            ></app-select-workplace-dropdown-form>
+          </ng-container>
+          <ng-template #radioButtonForm>
+            <app-select-workplace-radio-button-form
+              data-testid="radio-button-form"
+              [form]="form"
+              [locationAddresses]="locationAddresses"
+              (clicked)="onLocationChange($event)"
+            ></app-select-workplace-radio-button-form>
+          </ng-template>
         </div>
       </fieldset>
       <ng-container *ngIf="isCQCLocationUpdate; else CQCLocationAdd">
@@ -42,23 +49,41 @@
           <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']">go back and try again</a>.
         </p>
 
-        <button class="govuk-button" type="submit">Save and Return</button>
-        <button
-          type="button"
-          class="govuk-button govuk-button--link govuk-util__float-right"
-          (click)="returnToWorkPlace($event)"
-        >
-          Exit
-        </button>
+        <app-workplace-submit-button
+          [return]="!!return"
+          (clicked)="setSubmitAction($event)"
+        ></app-workplace-submit-button>
       </ng-container>
+
       <ng-template #CQCLocationAdd>
-        <p class="govuk-!-margin-bottom-7">
-          <a [routerLink]="[flow, 'workplace-name-address']" role="button" draggable="false">
-            Workplace is not displayed or is not correct
-          </a>
+        <p class="govuk-!-margin-bottom-7 govuk-!-margin-top-2">
+          <a routerLink="/{{ flow }}/workplace-name-address" role="button" draggable="false"
+            >Enter workplace details manually</a
+          >
+          if they're not displayed or not correct.
         </p>
-        <button class="govuk-button" type="submit">Continue</button>
+        <app-registration-submit-buttons
+          [insideFlow]="insideFlow"
+          [returnRoute]="flow"
+        ></app-registration-submit-buttons>
       </ng-template>
     </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-!-margin-left-8">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="!isParent"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+    </div>
   </div>
 </div>

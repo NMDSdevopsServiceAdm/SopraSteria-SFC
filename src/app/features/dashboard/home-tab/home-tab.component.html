@@ -1,23 +1,27 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
-    <ng-container *ngIf="workplace && canEditEstablishment">
-      <p *ngIf="!workplace.employerType || updateStaffRecords">What you need to do first.</p>
-      <app-inset-text *ngIf="!workplace.employerType || updateStaffRecords" [color]="'todo'">
+    <ng-container *ngIf="workplace && !recruitmentJourneyExistingUserBanner && !addWorkplaceDetailsBanner">
+      <app-inset-text *ngIf="workplace.employerType" [color]="'todo'" class="govuk-!-margin-bottom-2">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <a
-              *ngIf="!workplace?.employerType"
-              [routerLink]="['/workplace', workplace?.uid, 'start']"
-              data-testid="add-workplace-info"
-              >Add workplace information</a
-            >
+            <h2 class="govuk-heading-s">We've added some questions to ASC-WDS</h2>
+            <p>
+              Skills for Care are working with the Department of Health and Social Care to help them better understand
+              how difficult it is to recruit and keep people working in the adult social care sector
+            </p>
+            <a href="#" (click)="canEditEstablishment && setRecuritmentBannerToTrue($event)">
+              Answer our staff recruitment and retention questions
+            </a>
           </div>
         </div>
+      </app-inset-text>
+    </ng-container>
+
+    <ng-container *ngIf="workplace && canEditEstablishment">
+      <app-inset-text *ngIf="addWorkplaceDetailsBanner" [color]="'todo'">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <a href="#" (click)="selectStaffTab($event)" *ngIf="updateStaffRecords" data-testid="add-staff-banner"
-              >Add staff records</a
-            >
+            <a [routerLink]="['/workplace', workplace?.uid, 'start']">Start to add more details about your workplace</a>
           </div>
         </div>
       </app-inset-text>
@@ -38,6 +42,7 @@
         [numberOfStaff]="workplace.numberOfStaff"
       ></app-staff-mismatch-banner>
     </ng-container>
+
     <div *ngIf="workplace">
       <div>
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
@@ -110,6 +115,9 @@
       </li>
       <li class="govuk-!-margin-bottom-3">
         <a [routerLink]="['/first-login-wizard']">Help to get you started</a>
+      </li>
+      <li class="govuk-!-margin-bottom-3">
+        <a [routerLink]="['/asc-wds-certificate']">Get your ASC-WDS certificate</a>
       </li>
     </ul>
     <div *ngIf="canRunLocalAuthorityReport && workplace">

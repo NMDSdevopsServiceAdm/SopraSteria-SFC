@@ -3,15 +3,15 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
-const { meetsMaxUserLimit, partAddUser } = require('../../../../routes/accounts/user');
-const User = require('../../../../models/classes/user');
+const { meetsMaxUserLimit, partAddUser, listAdminUsers, updateUser } = require('../../../../routes/accounts/user');
+const User = require('../../../../models/classes/user').User;
 
 describe('user.js', () => {
   let req;
   let res;
 
   beforeEach(() => {
-    sinon.stub(User.User, 'fetchUserTypeCounts').returns({ Edit: 2, Read: 2 });
+    sinon.stub(User, 'fetchUserTypeCounts').returns({ Edit: 2, Read: 2 });
     req = {
       establishmentId: 123,
       establishment: { id: 123 },
@@ -20,6 +20,7 @@ describe('user.js', () => {
       body: {
         role: 'Edit',
       },
+      username: 'mocked-username',
       get() {
         return 'localhost';
       },
@@ -60,7 +61,7 @@ describe('user.js', () => {
 
       it('should return true if edit user is over the edit user limit', async () => {
         sinon.restore();
-        sinon.stub(User.User, 'fetchUserTypeCounts').returns({ Edit: 3, Read: 3 });
+        sinon.stub(User, 'fetchUserTypeCounts').returns({ Edit: 3, Read: 3 });
 
         const meetLimit = await meetsMaxUserLimit(123, req);
 
@@ -79,7 +80,7 @@ describe('user.js', () => {
         req.body.role = 'Read';
 
         sinon.restore();
-        sinon.stub(User.User, 'fetchUserTypeCounts').returns({ Edit: 3, Read: 3 });
+        sinon.stub(User, 'fetchUserTypeCounts').returns({ Edit: 3, Read: 3 });
 
         const meetLimit = await meetsMaxUserLimit(123, req);
 
@@ -98,7 +99,7 @@ describe('user.js', () => {
 
       it('should return true if edit user is over the edit user limit', async () => {
         sinon.restore();
-        sinon.stub(User.User, 'fetchUserTypeCounts').returns({ Edit: 3, Read: 3 });
+        sinon.stub(User, 'fetchUserTypeCounts').returns({ Edit: 3, Read: 3 });
 
         const meetLimit = await meetsMaxUserLimit(123, req);
 
@@ -117,7 +118,7 @@ describe('user.js', () => {
         req.body.role = 'Read';
 
         sinon.restore();
-        sinon.stub(User.User, 'fetchUserTypeCounts').returns({ Edit: 3, Read: 20 });
+        sinon.stub(User, 'fetchUserTypeCounts').returns({ Edit: 3, Read: 20 });
 
         const meetLimit = await meetsMaxUserLimit(123, req);
 
@@ -127,6 +128,70 @@ describe('user.js', () => {
   });
 
   describe('partAddUser()', () => {
+    describe('/api/add/admin', () => {
+      const newAdmin = {
+        fullname: 'admin user',
+        jobTitle: 'administrator',
+        email: 'admin@email.com',
+        phone: '01234567890',
+        role: 'Admin',
+      };
+
+      const adminToJSON = {
+        uid: 'mocked-uid',
+        username: null,
+        created: '01/02/2022',
+        updated: '01/02/20220',
+        updatedBy: 'mocked-username',
+        isPrimary: false,
+        lastLoggedIn: null,
+        establishmentId: null,
+        agreedUpdatedTerms: false,
+        migratedUserFirstLogon: false,
+        migratedUser: false,
+        registrationSurveyCompleted: null,
+        fullname: 'admin user',
+        jobTitle: 'administrator',
+        email: 'admin@email.com',
+        phone: '01234567890',
+        role: 'Admin',
+        canManagedWdfClaims: false,
+      };
+
+      beforeEach(() => {
+        sinon.stub(User.prototype, 'load').returns(true);
+        sinon.stub(User.prototype, 'save').returns();
+
+        req = {
+          ...req,
+          body: newAdmin,
+          role: 'Admin',
+          establishmentId: null,
+        };
+
+        res = httpMocks.createResponse();
+      });
+
+      it('should return a status of 200 and the new admin when successfully creating an admin', async () => {
+        sinon.stub(User.prototype, 'toJSON').returns(adminToJSON);
+        await partAddUser(req, res);
+
+        const returnedAdmin = { ...adminToJSON, trackingUUID: null };
+        expect(res.statusCode).to.equal(200);
+        expect(res._getJSONData()).to.deep.equal(returnedAdmin);
+      });
+
+      it('should return a status of 200 and the new admin manager when successfully creating an admin manager', async () => {
+        req = { ...req, role: 'AdminManager' };
+        sinon.stub(User.prototype, 'toJSON').returns({ ...adminToJSON, role: 'AdminManager' });
+        await partAddUser(req, res);
+
+        const returnedAdmin = { ...adminToJSON, role: 'AdminManager', trackingUUID: null };
+        expect(res.statusCode).to.equal(200);
+        expect(res._getJSONData()).to.deep.equal(returnedAdmin);
+      });
+    });
+
     it('should return 401 status if user attempting to add is Read user', async () => {
       req.role = 'Read';
 
@@ -158,13 +223,126 @@ describe('user.js', () => {
 
       expect(res.statusCode).to.equal(403);
     });
+  });
 
-    it('should return 403 status if new user has Admin role', async () => {
-      req.body.role = 'Admin';
+  describe('listAdminUsers', () => {
+    const expectedResponse = [
+      {
+        uid: 'mocked-uid',
+        fullname: 'Admin User',
+        role: 'Admin',
+        email: 'admin@email.com',
+        phone: '01234567890',
+        jobTitle: 'admin',
+        updated: '2022-01-02T00:00:00.000Z',
+        username: 'adminUser',
+        isPrimary: null,
+        status: 'Active',
+      },
+      {
+        uid: 'mocked-uid2',
+        fullname: 'Admin Manager',
+        role: 'AdminManager',
+        email: 'adminManager@email.com',
+        phone: '01928374650',
+        jobTitle: 'admin manager',
+        updated: '2022-05-01T23:00:00.000Z',
+        username: null,
+        isPrimary: null,
+        status: 'Pending',
+      },
+    ];
 
-      await partAddUser(req, res);
+    beforeEach(() => {
+      const request = {
+        method: 'GET',
+        url: 'api/users/admin',
+      };
 
-      expect(res.statusCode).to.equal(403);
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+    });
+
+    it('should return a status of 200 and an array of all the admin users', async () => {
+      sinon.stub(User, 'fetchAdminUsers').returns(expectedResponse);
+      await listAdminUsers(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ adminUsers: expectedResponse });
+    });
+
+    it('should pass the back an empty array, if there are no admin users', async () => {
+      sinon.stub(User, 'fetchAdminUsers').returns([]);
+      await listAdminUsers(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ adminUsers: [] });
+    });
+
+    it('should throw an error if there is a problem retrieving admin users', async () => {
+      sinon.stub(User, 'fetchAdminUsers').throws(() => new Error());
+      await listAdminUsers(req, res);
+
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.deep.equal('Failed to get admin users');
+    });
+  });
+
+  describe('updateUser', () => {
+    describe('/api/user/admin/:userId', () => {
+      const updatedAdmin = {
+        fullname: 'admin manager',
+        jobTitle: 'administrator manager',
+        email: 'adminmanager@email.com',
+        phone: '09876543210',
+        role: 'AdminManager',
+      };
+
+      const restoredAdmin = {
+        uid: 'mocked-uid',
+        username: null,
+        created: '01/02/2022',
+        updated: '01/02/20220',
+        updatedBy: 'mocked-username',
+        isPrimary: false,
+        lastLoggedIn: null,
+        establishmentId: null,
+        agreedUpdatedTerms: false,
+        migratedUserFirstLogon: false,
+        migratedUser: false,
+        registrationSurveyCompleted: null,
+        fullname: 'admin user',
+        jobTitle: 'administrator',
+        email: 'admin@email.com',
+        phone: '01234567890',
+        role: 'Admin',
+        canManagedWdfClaims: false,
+      };
+
+      beforeEach(() => {
+        sinon.stub(User.prototype, 'restore').returns(restoredAdmin);
+        sinon.stub(User.prototype, 'load').returns(true);
+        sinon.stub(User.prototype, 'save').returns();
+
+        req = {
+          ...req,
+          body: updatedAdmin,
+          role: 'AdminManager',
+          establishmentId: null,
+          params: { userId: 'mocked-uid' },
+        };
+
+        res = httpMocks.createResponse();
+      });
+
+      it('should return a status of 200 and a success message when successfully creating an admin', async () => {
+        const adminToJSON = { ...restoredAdmin, ...updatedAdmin };
+        sinon.stub(User.prototype, 'toJSON').returns(adminToJSON);
+        await updateUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(res._getJSONData()).to.deep.equal(adminToJSON);
+      });
     });
   });
 });

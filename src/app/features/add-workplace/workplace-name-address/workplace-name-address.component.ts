@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
@@ -15,21 +16,20 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   constructor(
     public workplaceService: WorkplaceService,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, route, router, workplaceService);
+    super(backService, backLinkService, errorSummaryService, formBuilder, route, router, workplaceService);
   }
 
   protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
     this.setServiceVariables();
     this.setupPreFillForm();
-  }
-
-  protected setFlow(): void {
-    this.flow = '/add-workplace';
   }
 
   protected setTitle(): void {
@@ -41,10 +41,10 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   protected setConfirmDetailsBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
+    this.backService.setBackLink({ url: [this.flow] });
   }
 
   protected getNextRoute(): string {
-    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'select-main-service';
+    return this.returnToConfirmDetails ? 'confirm-workplace-details' : 'type-of-employer';
   }
 }

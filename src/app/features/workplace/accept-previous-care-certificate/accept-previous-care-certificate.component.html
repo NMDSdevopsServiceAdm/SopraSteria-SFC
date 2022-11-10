@@ -1,0 +1,63 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">Recruitment</span>
+            Would you accept a Care Certificate from a worker's previous employer?
+          </h1>
+        </legend>
+        <div class="govuk-form-group">
+          <div class="govuk-radios govuk-!-margin-bottom-4">
+            <ng-container *ngFor="let option of previousCareCertificateOptions; let i = index">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  id="acceptCareCertificatesFromPreviousEmployment-{{ i }}"
+                  name="acceptCareCertificatesFromPreviousEmployment"
+                  [formControlName]="'acceptCareCertificatesFromPreviousEmployment'"
+                  type="radio"
+                  [value]="option.value"
+                />
+                <label
+                  class="govuk-label govuk-radios__label"
+                  for="acceptCareCertificatesFromPreviousEmployment-{{ i }}"
+                >
+                  {{ option.label }}
+                </label>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+      <div *ngIf="!return && inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar-2"
+          [header]="'Recruitment'"
+          [sections]="recruitmentSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+        <app-progress-bar
+          data-testid="progress-bar-3"
+          [header]="'Staff benefits'"
+          [sections]="staffBenefitsSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+</form>

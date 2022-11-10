@@ -19,6 +19,7 @@ export class OtherServicesComponent extends Question {
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];
   public serviceGroups: Array<ServiceGroup>;
+  public section = 'Services';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -56,7 +57,8 @@ export class OtherServicesComponent extends Question {
       ),
     );
 
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'type-of-employer'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
   }
 
   private oneCheckboxRequiredIfYes(form: FormGroup) {
@@ -75,7 +77,7 @@ export class OtherServicesComponent extends Question {
       type: [
         {
           name: 'oneCheckboxRequiredIfYes',
-          message: `Select the other services you provide`,
+          message: `Select all the other services you provide`,
         },
       ],
     });

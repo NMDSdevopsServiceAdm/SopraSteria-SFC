@@ -19,6 +19,7 @@ describe('WorkplaceNotFoundComponent', () => {
     searchMethod = '',
     workplaceNotFound = false,
     useDifferentLocationIdOrPostcode = null,
+    registrationFlow = true,
   ) {
     const component = await render(WorkplaceNotFoundComponent, {
       imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -63,7 +64,7 @@ describe('WorkplaceNotFoundComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -97,6 +98,20 @@ describe('WorkplaceNotFoundComponent', () => {
     expect(component.getByText(inputtedPostcode)).toBeTruthy();
   });
 
+  it('should render the workplace progress bar and the user progress bar', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { component } = await setup('', '', false, null, false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
   describe('Registration messages', () => {
     it('should display registration version of heading', async () => {
       const { component } = await setup();
@@ -114,14 +129,14 @@ describe('WorkplaceNotFoundComponent', () => {
 
     it('should display registration version of No answer', async () => {
       const { component } = await setup();
-      const expectedNoAnswer = "No, I'll enter our workplace details myself";
+      const expectedNoAnswer = `No, I'll enter our workplace details myself`;
 
       expect(component.getByText(expectedNoAnswer)).toBeTruthy();
     });
   });
 
   describe('Registration journey', () => {
-    it('should navigate to the find workplace page when selecting yes', async () => {
+    it('should navigate to registration/find-workplace when selecting yes when inside the flow', async () => {
       const { component, spy } = await setup();
       const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
       fireEvent.click(yesRadioButton);
@@ -132,7 +147,18 @@ describe('WorkplaceNotFoundComponent', () => {
       expect(spy).toHaveBeenCalledWith(['/registration', 'find-workplace']);
     });
 
-    it('should navigate to the workplace name and address page when selecting no', async () => {
+    it('should navigate to registraions/confirm-details/find-workplace when selecting yes when outside the flow', async () => {
+      const { component, spy } = await setup('', '', false, null, false);
+      const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+      fireEvent.click(yesRadioButton);
+
+      const continueButton = component.getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalledWith(['/registration/confirm-details', 'find-workplace']);
+    });
+
+    it('should navigate to registration/workplace-name-address when selecting no', async () => {
       const { component, spy } = await setup();
       const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
       fireEvent.click(noRadioButton);
@@ -141,6 +167,17 @@ describe('WorkplaceNotFoundComponent', () => {
       fireEvent.click(continueButton);
 
       expect(spy).toHaveBeenCalledWith(['/registration', 'workplace-name-address']);
+    });
+
+    it('should navigate to registration/confirm-details/workplace-name-address when selecting no', async () => {
+      const { component, spy } = await setup('', '', false, null, false);
+      const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
+      fireEvent.click(noRadioButton);
+
+      const continueButton = component.getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalledWith(['/registration/confirm-details', 'workplace-name-address']);
     });
 
     it('should display an error message when not selecting anything', async () => {

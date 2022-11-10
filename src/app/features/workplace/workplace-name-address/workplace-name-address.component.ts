@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -19,19 +20,30 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   constructor(
     private workplaceService: WorkplaceService,
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
     private establishmentService: EstablishmentService,
   ) {
-    super(backService, errorSummaryService, formBuilder, route, router, workplaceService);
+    super(backService, backLinkService, errorSummaryService, formBuilder, route, router, workplaceService);
   }
 
   protected init(): void {
     this.workplace = this.establishmentService.establishment;
     this.isWorkPlaceUpdate = true;
     this.setLocationAddress();
+  }
+
+  public setSubmitAction(payload: { action: string; save: boolean }): void {
+    if (!payload.save) {
+      this.navigate();
+    }
+  }
+
+  protected navigate(): void {
+    this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
   }
 
   protected setFlow(): void {

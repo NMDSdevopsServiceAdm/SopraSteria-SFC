@@ -16,7 +16,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
 describe('IsThisYourWorkplaceComponent', () => {
-  async function setup(searchMethod = 'locationID', locationId = '1-2123313123') {
+  async function setup(searchMethod = 'locationID', locationId = '1-2123313123', addWorkplaceFlow = true) {
     const primaryWorkplace = { isParent: true };
     const component = await render(IsThisYourWorkplaceComponent, {
       imports: [
@@ -77,7 +77,7 @@ describe('IsThisYourWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'add-workplace',
+                    path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
                   },
                 ],
               },
@@ -105,6 +105,19 @@ describe('IsThisYourWorkplaceComponent', () => {
   it('should render a IsThisYourWorkplaceComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { component } = await setup('locationID', '1-2123313123', false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
   });
 
   it('should render the correct heading when in the parent journey', async () => {
@@ -190,7 +203,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(workplaceSpy).toHaveBeenCalledWith('1-2123313123');
   });
 
-  it('should navigate to the select-main-serice url when selecting yes and the establishment does not already exist in the service', async () => {
+  it('should navigate to the type-of-employer url when selecting yes and the establishment does not already exist in the service', async () => {
     const { component, spy, workplaceService } = await setup();
 
     spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
@@ -201,11 +214,11 @@ describe('IsThisYourWorkplaceComponent', () => {
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['add-workplace', 'select-main-service']);
+    expect(spy).toHaveBeenCalledWith(['add-workplace', 'type-of-employer']);
   });
 
   it('should navigate to the confirm-workplace-details page when selecting yes if returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {
-    const { component, spy, workplaceService } = await setup();
+    const { component, spy, workplaceService } = await setup('locationID', '1-2123313123', false);
 
     component.fixture.componentInstance.returnToConfirmDetails = {
       url: ['add-workplace', 'confirm-workplace-details'],
@@ -219,7 +232,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     const continueButton = component.getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(spy).toHaveBeenCalledWith(['add-workplace', 'confirm-workplace-details']);
+    expect(spy).toHaveBeenCalledWith(['add-workplace/confirm-workplace-details']);
   });
 
   it('should navigate to the problem-with-the-service url when there is a problem with the checkIfEstablishmentExists call', async () => {
@@ -258,19 +271,5 @@ describe('IsThisYourWorkplaceComponent', () => {
 
     expect(form.invalid).toBeTruthy();
     expect(component.getAllByText(errorMessage).length).toBe(2);
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the correct back link when in the parent flow', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'find-workplace'],
-      });
-    });
   });
 });

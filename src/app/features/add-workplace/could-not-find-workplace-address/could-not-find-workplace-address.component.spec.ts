@@ -7,9 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
-import {
-  CouldNotFindWorkplaceAddressDirective,
-} from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
+import { CouldNotFindWorkplaceAddressDirective } from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
@@ -18,8 +16,8 @@ import { AddWorkplaceModule } from '../add-workplace.module';
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address.component';
 
 describe('CouldNotFindWorkplaceAddressComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getByTestId } = await render(CouldNotFindWorkplaceAddressComponent, {
+  async function setup(addWorkplaceFlow = true) {
+    const { fixture, getByText, getByTestId, queryByTestId } = await render(CouldNotFindWorkplaceAddressComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -51,7 +49,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
               parent: {
                 url: [
                   {
-                    path: '/add-workplace',
+                    path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
                   },
                 ],
               },
@@ -74,12 +72,27 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       spy,
       getByText,
       getByTestId,
+      queryByTestId,
     };
   }
 
   it('should render a CouldNotFindWorkplaceAddressComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { queryByTestId } = await setup(false);
+
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should display invalid postcode retrieved from workplace service', async () => {
@@ -171,7 +184,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace-address']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'find-workplace-address']);
     });
 
     it('should navigate to the workplace name and address page when selecting no', async () => {
@@ -182,7 +195,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'workplace-name-address']);
+      expect(spy).toHaveBeenCalledWith(['add-workplace', 'workplace-name-address']);
     });
   });
 
@@ -195,7 +208,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       fixture.detectChanges();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'find-workplace-address'],
+        url: ['add-workplace', 'find-workplace-address'],
       });
     });
   });

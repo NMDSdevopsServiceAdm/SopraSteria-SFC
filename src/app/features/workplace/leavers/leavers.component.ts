@@ -1,13 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { JobService } from '@core/services/job.service';
-import { take } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
 
@@ -20,16 +18,18 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   public jobs: Job[] = [];
   public leaversKnownOptions = [
     {
-      label: 'There have been no new leavers.',
+      label: 'There have been no leavers in the last 12 months',
       value: jobOptionsEnum.NONE,
     },
     {
-      label: `I don't know how many new leavers there have been.`,
+      label: `I do not know how many leavers there have been`,
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
-  private minTotal = 0;
+  public emptyForm = true;
+  private minTotal = 1;
   private maxTotal = 999;
+  public section = 'Vacancies and turnover';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -37,11 +37,9 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private jobService: JobService,
+    private route: ActivatedRoute,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
-
-    this.setupForm();
   }
 
   get leavers(): FormArray {
@@ -57,12 +55,13 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected init(): void {
-    this.getJobs();
+    this.jobs = this.route.snapshot.data.jobs;
+    this.setupForm();
     this.setPreviousRoute();
     this.prefill();
 
     this.subscriptions.add(
-      this.form.get('leaversKnown').valueChanges.subscribe(value => {
+      this.form.get('leaversKnown').valueChanges.subscribe((value) => {
         while (this.leavers.length > 1) {
           this.leavers.removeAt(1);
         }
@@ -81,9 +80,18 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
           .get('total')
           .setValidators([Validators.required, Validators.min(this.minTotal), Validators.max(this.maxTotal)]);
 
+        this.leavers.controls[0].get('jobRole').updateValueAndValidity({ emitEvent: false });
+        this.leavers.controls[0].get('total').updateValueAndValidity({ emitEvent: false });
         this.form.get('leaversKnown').setValue(null, { emitEvent: false });
+
+        if (this.emptyForm && this.leavers.controls[0].get('jobRole').value) {
+          this.submitted = false;
+        }
+
+        this.addErrorLinkFunctionality();
       }),
     );
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'recruitment-advertising-cost'];
   }
 
   private setupForm(): void {
@@ -97,18 +105,9 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
   }
 
-  private getJobs(): void {
-    this.subscriptions.add(
-      this.jobService
-        .getJobs()
-        .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs)),
-    );
-  }
-
   private prefill(): void {
     if (Array.isArray(this.establishment.leavers) && this.establishment.leavers.length) {
-      this.establishment.leavers.forEach(leaver =>
+      this.establishment.leavers.forEach((leaver) =>
         this.leavers.push(this.createLeaverControl(leaver.jobId, leaver.total)),
       );
     } else {
@@ -124,52 +123,85 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'leavers.jobRole',
-        type: [
-          {
-            name: 'required',
-            message: 'Job role is required.',
-          },
-        ],
-      },
-      {
-        item: 'leavers.total',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter number of leavers.',
-          },
-          {
-            name: 'min',
-            message: `Leavers must be ${this.minTotal} or above.`,
-          },
-          {
-            name: 'max',
-            message: `Leavers must be ${this.maxTotal} or lower.`,
-          },
-        ],
-      },
-    ];
+    this.formErrorsMap = [];
+
+    this.leavers.controls.forEach((control, index) => {
+      this.formErrorsMap.push(
+        {
+          item: `leavers.jobRole.${index}`,
+          type: [
+            {
+              name: 'required',
+              message:
+                index === 0 ? 'Select the job role and enter the number of leavers, or tell us there are none' : '',
+            },
+          ],
+        },
+        {
+          item: `leavers.total.${index}`,
+          type: [
+            { name: 'required', message: '' },
+            { name: 'min', message: '' },
+            { name: 'max', message: '' },
+          ],
+        },
+      );
+    });
+  }
+
+  private newFormErrorsMap(): void {
+    this.formErrorsMap = [];
+
+    this.leavers.controls.forEach((control, index) => {
+      this.formErrorsMap.push(
+        {
+          item: `leavers.jobRole.${index}`,
+          type: [
+            {
+              name: 'required',
+              message: `Select the job role (job role ${index + 1})`,
+            },
+          ],
+        },
+        {
+          item: `leavers.total.${index}`,
+          type: [
+            {
+              name: 'required',
+              message: `Enter the number of leavers (job role ${index + 1})`,
+            },
+            {
+              name: 'min',
+              message: `Number must be between ${this.minTotal} and ${this.maxTotal} (job role ${index + 1})`,
+            },
+            {
+              name: 'max',
+              message: `Number must be between ${this.minTotal} and ${this.maxTotal} (job role ${index + 1})`,
+            },
+          ],
+        },
+      );
+    });
   }
 
   public selectableJobs(index): Job[] {
     return this.jobs.filter(
-      job =>
+      (job) =>
         !this.leavers.controls.some(
-          leaver => leaver !== this.leavers.controls[index] && parseInt(leaver.get('jobRole').value, 10) === job.id,
+          (leaver) => leaver !== this.leavers.controls[index] && parseInt(leaver.get('jobRole').value, 10) === job.id,
         ),
     );
   }
 
   public addLeaver(): void {
+    this.submitted = false;
     this.leavers.push(this.createLeaverControl());
   }
 
   public removeLeaver(event: Event, index): void {
     event.preventDefault();
     this.leavers.removeAt(index);
+    this.submitted = false;
   }
 
   private createLeaverControl(jobId = null, total = null): FormGroup {
@@ -188,7 +220,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
 
     if (this.leavers.length) {
       return {
-        leavers: this.leavers.value.map(leaver => ({
+        leavers: this.leavers.value.map((leaver) => ({
           jobId: parseInt(leaver.jobRole, 10),
           total: leaver.total,
         })),
@@ -201,23 +233,34 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
       this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
-        data => this._onSuccess(data),
-        error => this.onError(error),
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
       ),
     );
   }
 
   protected onSuccess(): void {
-    if (this.establishment.leavers && Array.isArray(this.establishment.leavers) && !this.return) {
-      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-leavers']);
-      this.submitAction.action = null;
-    } else {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'check-answers'];
-    }
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'recruitment-advertising-cost'];
   }
 
   private clearValidators(index: number) {
     this.leavers.controls[index].get('jobRole').clearValidators();
     this.leavers.controls[index].get('total').clearValidators();
+  }
+
+  protected createDynamicErrorMessaging(): void {
+    if (this.leavers.controls[0].get('jobRole').valid || this.leavers.controls[0].get('total').valid) {
+      this.emptyForm = false;
+      this.newFormErrorsMap();
+    } else {
+      this.emptyForm = true;
+      this.setupFormErrorsMap();
+    }
+  }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
   }
 }

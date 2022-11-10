@@ -25,7 +25,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <app-tabs>
+    <app-tabs (selectedTabClick)="tabClickEvent($event)">
       <app-tab
         [title]="'Workplace'"
         [redAlert]="workplace?.employerType && (showCQCDetailsBanner || showSharingPermissionsBanner)"
@@ -60,7 +60,7 @@
       <app-tab *ngIf="canViewBenchmarks" [title]="'Benchmarks'">
         <app-benchmarks-tab class="asc-benchmarks-tab" [workplace]="workplace"></app-benchmarks-tab>
       </app-tab>
-      <app-tab *ngIf="canViewListOfUsers" [title]="'Users'" [alert]="false">
+      <app-tab *ngIf="canViewListOfUsers" [title]="'Workplace users'" [alert]="false">
         <app-user-accounts-summary [workplace]="workplace" [showSecondUserBanner]="false"></app-user-accounts-summary>
       </app-tab>
     </app-tabs>

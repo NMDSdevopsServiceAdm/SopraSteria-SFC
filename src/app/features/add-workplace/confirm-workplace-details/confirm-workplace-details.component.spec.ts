@@ -1,8 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EmployerType } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -16,7 +18,7 @@ import { AddWorkplaceModule } from '../add-workplace.module';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details.component';
 
 describe('ConfirmWorkplaceDetailsComponent', () => {
-  async function setup() {
+  async function setup(typeOfEmployer: EmployerType = { value: 'Private Sector' }) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       ConfirmWorkplaceDetailsComponent,
       {
@@ -31,7 +33,8 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
         providers: [
           {
             provide: WorkplaceService,
-            useClass: MockWorkplaceServiceWithMainService,
+            useFactory: MockWorkplaceServiceWithMainService.factory(typeOfEmployer),
+            deps: [HttpClient],
           },
           {
             provide: EstablishmentService,
@@ -52,6 +55,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     spy.and.returnValue(Promise.resolve(true));
 
     const component = fixture.componentInstance;
+    const setTypeOfEmployerSpy = spyOn(component, 'setTypeOfEmployer').and.callThrough();
 
     return {
       fixture,
@@ -61,6 +65,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       getByText,
       getByTestId,
       spy,
+      setTypeOfEmployerSpy,
     };
   }
 
@@ -137,7 +142,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
   });
 
   it('should show workplace details', async () => {
-    const { component, fixture, getByText } = await setup();
+    const { component, fixture, getByText, getByTestId } = await setup();
 
     const expectedLocationName = 'Workplace Name';
     const expectedAddressLine1 = '1 Street';
@@ -150,13 +155,15 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     component.setWorkplaceDetails();
     fixture.detectChanges();
 
-    expect(getByText(expectedLocationName, { exact: false })).toBeTruthy();
-    expect(getByText(expectedAddressLine1, { exact: false })).toBeTruthy();
-    expect(getByText(expectedAddressLine2, { exact: false })).toBeTruthy();
-    expect(getByText(expectedAddressLine3, { exact: false })).toBeTruthy();
-    expect(getByText(expectedTownCity, { exact: false })).toBeTruthy();
-    expect(getByText(expectedPostalCode, { exact: false })).toBeTruthy();
-    expect(getByText(expectedCounty, { exact: false })).toBeTruthy();
+    const addressField = getByTestId('workplaceNameAddress');
+
+    expect(within(addressField).getByText(expectedLocationName, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedAddressLine1, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedAddressLine2, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedAddressLine3, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedTownCity, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedPostalCode, { exact: false })).toBeTruthy();
+    expect(within(addressField).getByText(expectedCounty, { exact: false })).toBeTruthy();
   });
 
   it('should show main service details', async () => {
@@ -170,6 +177,106 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     expect(getByText(expectedMainService, { exact: false })).toBeTruthy();
   });
 
+  it('should show total staff details', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    const expectedTotalStaff = 4;
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTotalStaff, { exact: false })).toBeTruthy();
+  });
+
+  it('should show type of employer with correct text when Local authority (adult services) is selected', async () => {
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({
+      value: 'Local Authority (adult services)',
+    });
+
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'Local authority (adult services)';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Local authority (generic, other) is selected', async () => {
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({
+      value: 'Local Authority (generic/other)',
+    });
+
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'Local authority (generic, other)';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Private sector is selected', async () => {
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup();
+
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'Private sector';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Voluntary, charity, not for profit is selected', async () => {
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({ value: 'Voluntary / Charity' });
+
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'Voluntary, charity, not for profit';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Other is selected and no input', async () => {
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({ value: 'Other' });
+
+    component.ngOnInit();
+    fixture.detectChanges();
+    const expectedTypeOfEmployer = 'Other';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
+  it('should show type of employer with correct text when Other is selected and there is an input', async () => {
+    const { component, fixture, setTypeOfEmployerSpy, getByText } = await setup({
+      value: 'Other',
+      other: 'other employer type',
+    });
+    component.ngOnInit();
+    const expectedTypeOfEmployer = 'other employer type';
+
+    component.setWorkplaceDetails();
+    fixture.detectChanges();
+
+    expect(getByText(expectedTypeOfEmployer)).toBeTruthy();
+    expect(setTypeOfEmployerSpy).toHaveBeenCalled();
+  });
+
   it('should navigate to thank-you page when you click Submit details', async () => {
     const { fixture, spy, getByText } = await setup();
 
@@ -181,30 +288,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     expect(spy).toHaveBeenCalledWith(['/add-workplace/thank-you']);
   });
 
-  describe('Back link', () => {
-    it('should set the back link to add-total-staff', async () => {
-      const { component, fixture } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      fixture.detectChanges();
-
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'add-total-staff'],
-      });
-    });
-  });
-
   describe('Change links', () => {
-    it('should always display three change links', async () => {
-      const { getAllByText } = await setup();
-
-      const changeLinks = getAllByText('Change');
-
-      expect(changeLinks.length).toEqual(3);
-    });
-
     it('should set the change link for location ID to `find-workplace` when CQC regulated with location ID', async () => {
       const { component, fixture, getByTestId } = await setup();
 
@@ -217,7 +301,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/find-workplace');
     });
 
     it('should set the change link for workplace address to `find-workplace` when location ID is null and workplace is CQC regulated', async () => {
@@ -232,7 +316,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/find-workplace');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/find-workplace');
     });
 
     it('should set the change link for workplace address to `workplace-name-address` when workplace is not CQC regulated', async () => {
@@ -247,7 +331,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       const workplaceNameAddressSummaryList = within(getByTestId('workplaceNameAddress'));
       const changeLink = workplaceNameAddressSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe('/add-workplace/workplace-name-address');
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/workplace-name-address');
     });
 
     it('should set the change link for main service to `select-main-service`', async () => {
@@ -256,10 +340,34 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
       component.setWorkplaceDetails();
       fixture.detectChanges();
 
-      const workplaceNameAddressSummaryList = within(getByTestId('mainService'));
-      const changeLink = workplaceNameAddressSummaryList.getByText('Change');
+      const mainServiceSummaryList = within(getByTestId('mainService'));
+      const changeLink = mainServiceSummaryList.getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toEqual('/add-workplace/select-main-service');
+      expect(changeLink.getAttribute('href')).toEqual('/add-workplace/confirm-workplace-details/select-main-service');
+    });
+
+    it('should set the change link for total staff to `add-total-staff`', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.setWorkplaceDetails();
+      fixture.detectChanges();
+
+      const totalStaffSummaryList = within(getByTestId('totalStaff'));
+      const changeLink = totalStaffSummaryList.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/add-total-staff');
+    });
+
+    it('should set the change link for type of employer to `type-of-employer`', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.setWorkplaceDetails();
+      fixture.detectChanges();
+
+      const typeOfEmployerSummaryList = within(getByTestId('typeOfEmployer'));
+      const changeLink = typeOfEmployerSummaryList.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe('/add-workplace/confirm-workplace-details/type-of-employer');
     });
   });
 });

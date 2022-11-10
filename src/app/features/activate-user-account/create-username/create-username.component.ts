@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -17,20 +18,20 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
 
   constructor(
     private createAccountService: CreateAccountService,
-    private route: ActivatedRoute,
+    protected route: ActivatedRoute,
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
     protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, registrationService, router);
+    super(backService, backLinkService, errorSummaryService, formBuilder, registrationService, route, router);
   }
 
   protected init(): void {
     this.callToActionLabel = 'Save and continue';
     this.activationToken = this.route.snapshot.params.activationToken;
-    this.setBackLink();
   }
 
   protected setBackLink(): void {

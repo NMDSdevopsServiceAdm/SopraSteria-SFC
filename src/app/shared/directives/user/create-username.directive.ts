@@ -1,14 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/constants/constants';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
@@ -20,10 +22,14 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
 
   public callToActionLabel: string;
   public form: FormGroup;
+  public flow: string;
+  public insideFlow: boolean;
   public serverError: string;
   public submitted = false;
   public return: URLStructure;
   public showPassword = false;
+  public userAccountSections: string[];
+  public workplaceSections: string[];
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
@@ -32,9 +38,11 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
 
   constructor(
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
+    protected route: ActivatedRoute,
     protected router: Router,
   ) {}
 
@@ -59,12 +67,15 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnInit() {
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setupForm();
     this.setupSubscriptions();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.init();
     this.setCallToActionLabel();
+    this.setBackLink();
   }
 
   ngAfterViewInit() {

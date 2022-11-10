@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { NameOfWorkplaceComponent } from './name-of-workplace.component';
 
 describe('NameOfWorkplaceComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(NameOfWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -33,7 +33,7 @@ describe('NameOfWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -58,6 +58,20 @@ describe('NameOfWorkplaceComponent', () => {
   it('should render a NameOfWorkplaceComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace and user account progress bars', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should render the correct heading when in the registration journey', async () => {
@@ -95,7 +109,7 @@ describe('NameOfWorkplaceComponent', () => {
     expect(component.getAllByText(errorMessage).length).toBe(2);
   });
 
-  it('should navigate to select-main-service url when continue button is clicked and a workplace name is given', async () => {
+  it('should navigate to type-of-employer url when continue button is clicked and a workplace name is given', async () => {
     const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');
@@ -104,7 +118,7 @@ describe('NameOfWorkplaceComponent', () => {
     fireEvent.click(continueButton);
 
     expect(form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalledWith(['registration', 'select-main-service']);
+    expect(spy).toHaveBeenCalledWith(['registration', 'type-of-employer']);
   });
 
   it('should set locationName in registration service when continue button is clicked and a workplace name is given', async () => {
@@ -118,19 +132,5 @@ describe('NameOfWorkplaceComponent', () => {
 
     expect(form.valid).toBeTruthy();
     expect(registrationService.selectedLocationAddress$.value.locationName).toBe('Place Name');
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the correct back link when in the registration flow', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'select-workplace-address'],
-      });
-    });
   });
 });

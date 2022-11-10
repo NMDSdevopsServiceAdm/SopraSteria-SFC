@@ -8,16 +8,17 @@
 <form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-        <fieldset class="govuk-fieldset" aria-describedby="otherJobRoles-hint">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">Do you provide any other services?</h1>
-          </legend>
-          <div class="govuk-!-margin-bottom-7">
-            <p>
-              You selected '{{ establishment.mainService.name }}' as your main service when you created your account.
-            </p>
-          </div>
+      <fieldset class="govuk-fieldset" aria-describedby="otherJobRoles-hint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+            Do you provide any other services?
+          </h1>
+        </legend>
+        <div class="govuk-!-margin-bottom-7">
+          <p>You selected '{{ establishment.mainService.name }}' as your main service when you created your account.</p>
+        </div>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
               <input
@@ -41,7 +42,9 @@
               data-testid="checkboxes"
             >
               <div class="govuk-form-group">
-                <span id="otherJobRoles-hint" class="govuk-hint"> Select all that apply. </span>
+                <div class="govuk-!-margin-bottom-3">
+                  <p><span id="otherJobRoles-hint"> Select all that apply. </span></p>
+                </div>
                 <span
                   *ngIf="submitted && form.get('otherServices').errors"
                   id="otherServices-error"
@@ -83,9 +86,7 @@
                             id="otherServices-conditional-{{ i }}"
                           >
                             <div class="govuk-form-group govuk-!-margin-bottom-2">
-                              <label class="govuk-label" for="additionalOtherService{{ service.id }}">
-                                Enter your other service
-                              </label>
+                              <label class="govuk-label" for="additionalOtherService{{ service.id }}"> Service </label>
                               <span
                                 id="additionalOtherService{{ service.id }}-error"
                                 class="govuk-error-message"
@@ -127,10 +128,19 @@
               <label class="govuk-label govuk-radios__label" for="otherServices-No"> No </label>
             </div>
           </div>
-        </fieldset>
+        </div>
+      </fieldset>
+      <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)">
+      </app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
     </div>
   </div>
-  <app-submit-button [return]="!!return" [isExistingStaffRecord]="false" (clicked)="onSubmit($event)">
-  </app-submit-button>
 </form>

@@ -1,10 +1,10 @@
+import { DecimalPipe } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { WindowRef } from '@core/services/window.ref';
-import { SearchModule } from '@features/search/search.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -14,8 +14,10 @@ import { InactiveEmailsComponent } from './inactive-emails.component';
 describe('InactiveEmailsComponent', () => {
   async function setup() {
     return render(InactiveEmailsComponent, {
-      imports: [SharedModule, SearchModule, HttpClientTestingModule, RouterTestingModule],
+      imports: [SharedModule, HttpClientTestingModule, RouterTestingModule],
       providers: [
+        EmailCampaignService,
+        DecimalPipe,
         {
           provide: WindowRef,
           useClass: WindowRef,

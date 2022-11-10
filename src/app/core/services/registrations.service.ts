@@ -14,11 +14,8 @@ import { Observable } from 'rxjs';
 })
 export class RegistrationsService {
   constructor(private http: HttpClient) {}
-  public getAllRegistrations(): Observable<Registrations[]> {
-    return this.http.get<Registrations[]>('/api/admin/registrations');
-  }
 
-  public getRegistrations(status: string): Observable<any> {
+  public getRegistrations(status: string): Observable<Registrations[]> {
     return this.http.get<Registrations[]>(`/api/admin/registrations/${status}`);
   }
 

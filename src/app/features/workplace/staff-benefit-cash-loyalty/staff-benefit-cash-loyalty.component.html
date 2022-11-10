@@ -1,0 +1,115 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+></app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">Staff benefits</span>
+            Do you pay care workers a cash loyalty bonus within their first 2 years of employment?
+          </h1>
+        </legend>
+        <div class="govuk-!-margin-bottom-6">
+          <p>We only want to know about bonuses given for staying in a role, not for things like performance.</p>
+        </div>
+        <div class="govuk-form-group">
+          <div class="govuk-radios govuk-radios--conditional govuk-!-margin-bottom-4">
+            <ng-container *ngFor="let option of cashLoyaltyRequiredOptions; let i = index">
+              <div class="govuk-radios__item">
+                <input
+                  aria-controls="cashLoyalty-conditional-1"
+                  class="govuk-radios__input"
+                  [formControlName]="'cashLoyalty'"
+                  id="cashLoyalty-{{ i }}"
+                  name="cashLoyalty"
+                  type="radio"
+                  [value]="option.value"
+                  (click)="onChange(option.value)"
+                />
+                <label class="govuk-label govuk-radios__label" for="cashLoyalty">
+                  {{ option.label }}
+                </label>
+              </div>
+
+              <div
+                *ngIf="option.value === 'Yes'"
+                class="govuk-radios__conditional"
+                [class.govuk-radios__conditional--hidden]="!showTextBox"
+                data-testid="cashLoyaltyRadio-conditional"
+              >
+                <div class="govuk-form-group" *ngIf="this.form.get('cashAmount')">
+                  <label class="govuk-label" for="amountSpent">Amount (optional)</label>
+                  <span id="amountSpent-hint" class="govuk-hint">For example, 299.99</span>
+                  <span
+                    *ngIf="submitted && this.form.get('cashAmount').invalid"
+                    id="cashAmount-error"
+                    class="govuk-error-message"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span *ngIf="this.form.get('cashAmount').errors.pattern">
+                      {{ getFormErrorMessage('cashAmount', 'pattern') }}
+                    </span>
+                    <span
+                      *ngIf="
+                        this.form.get('cashAmount').errors.greaterThanTwoDecimalPlaces &&
+                        !this.form.get('cashAmount').errors.pattern
+                      "
+                    >
+                      {{ getFormErrorMessage('cashAmount', 'greaterThanTwoDecimalPlaces') }}
+                    </span>
+                  </span>
+                  <div class="govuk-input__wrapper">
+                    <div class="govuk-input__prefix">£</div>
+                    <input
+                      class="govuk-input govuk-!-width-one-third"
+                      [class.govuk-input--error]="submitted && form.get('cashAmount').invalid"
+                      id="cashAmount"
+                      formControlName="cashAmount"
+                      name="cashAmount"
+                      type="text"
+                    />
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return && !inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="sections"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+      <div *ngIf="!return && inStaffRecruitmentFlow" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar-2"
+          [header]="'Recruitment'"
+          [sections]="recruitmentSections"
+          [completeProgressBar]="'true'"
+          [currentSection]="section"
+        ></app-progress-bar>
+        <app-progress-bar
+          data-testid="progress-bar-3"
+          [header]="'Staff benefits'"
+          [sections]="staffBenefitsSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+</form>

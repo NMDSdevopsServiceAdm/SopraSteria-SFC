@@ -1,5 +1,5 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
+  <div class="govuk-grid-column-full-from-desktop">
     <div class="govuk-!-margin-bottom-7">
       <p class="govuk-heading-m">Workplace</p>
 
@@ -8,6 +8,13 @@
         [summaryList]="workplaceNameAndAddress"
         (setReturn)="onSetReturn()"
         data-testid="workplaceNameAddress"
+      ></app-summary-list>
+
+      <app-summary-list
+        [topBorder]="true"
+        [summaryList]="typeOfEmployer"
+        (setReturn)="onSetReturn()"
+        data-testid="typeOfEmployer"
       ></app-summary-list>
 
       <app-summary-list

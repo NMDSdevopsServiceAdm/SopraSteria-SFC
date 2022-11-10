@@ -1,10 +1,12 @@
-import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-check-answers',
@@ -15,24 +17,55 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
   public summaryReturnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private location: Location, private establishmentService: EstablishmentService) {}
+  constructor(
+    private establishmentService: EstablishmentService,
+    private router: Router,
+    private alertService: AlertService,
+    public backService: BackService,
+  ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.updateEstablishmentService();
+    this.getEstablishmentData();
+  }
+
+  protected updateEstablishmentService(): void {
+    this.establishmentService
+      .getEstablishment(this.establishmentService.establishmentId)
+      .pipe(
+        tap((establishment) => {
+          return (
+            this.establishmentService.setWorkplace(establishment),
+            this.establishmentService.setPrimaryWorkplace(establishment)
+          );
+        }),
+      )
+      .subscribe();
+  }
+
+  public getEstablishmentData(): void {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+      this.establishmentService.establishment$.subscribe((establishment) => {
         this.establishment = establishment;
-
         this.summaryReturnUrl = { url: ['/workplace', establishment.uid, 'check-answers'] };
-      })
+        this.setBackLink();
+      }),
     );
   }
 
-  ngOnDestroy() {
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: ['/workplace', this.establishment.uid, 'sharing-data'] });
+  }
+
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  goBack(event) {
-    event.preventDefault();
-    this.location.back();
+  public showConfirmWorkplaceDetailsAlert(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+    this.alertService.addAlert({
+      type: 'success',
+      message: `You've confirmed the workplace details that you added`,
+    });
   }
 }

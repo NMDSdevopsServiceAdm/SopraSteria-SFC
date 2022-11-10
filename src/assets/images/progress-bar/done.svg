@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Progress/Done</title>
+    <g id="Progress/Done" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Oval" stroke="#00703c" stroke-width="3" fill="#00703c" cx="12" cy="12" r="10.5"></circle>
+        <g id="Icon" transform="translate(1.000000, 1.000000)">
+            <polygon id="Path" points="0 0 22 0 22 22 0 22"></polygon>
+            <polygon id="Glyph" stroke="#FFFFFF" fill="#FFFFFF" stroke-linejoin="round" points="8.91659786 14.4104478 5.57568877 11.2761194 4.46205241 12.3208955 8.91659786 16.5 18.4620524 7.54477612 17.348416 6.5"></polygon>
+        </g>
+    </g>
+</svg>

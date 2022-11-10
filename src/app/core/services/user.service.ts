@@ -17,10 +17,12 @@ export class UserService {
   private _userDetails$: BehaviorSubject<UserDetails> = new BehaviorSubject<UserDetails>(null);
   private _returnUrl$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
   private _loggedInUser$: BehaviorSubject<UserDetails> = new BehaviorSubject<UserDetails>(null);
+  private _users$: BehaviorSubject<Array<UserDetails>> = new BehaviorSubject<Array<UserDetails>>(null);
   public userDetails$: Observable<UserDetails> = this._userDetails$.asObservable();
   public returnUrl$: Observable<URLStructure> = this._returnUrl$.asObservable();
   public migratedUserTermsAccepted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public agreedUpdatedTerms$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public users$: Observable<Array<UserDetails>> = this._users$.asObservable();
   private _agreedUpdatedTermsStatus: boolean = null;
 
   constructor(private http: HttpClient) {}
@@ -41,12 +43,41 @@ export class UserService {
     this._userDetails$.next(userDetails);
   }
 
-  public updateReturnUrl(returnUrl: URLStructure) {
-    this._returnUrl$.next(returnUrl);
+  public updateUsers(users: UserDetails[]) {
+    this._users$.next(users);
   }
 
   public getLoggedInUser(): Observable<UserDetails> {
     return this.http.get<UserDetails>(`/api/user/me`).pipe(tap((user) => (this.loggedInUser = user)));
+  }
+
+  public get returnUrl() {
+    if (this._returnUrl$.value != null) {
+      return this.returnUrl$;
+    }
+
+    const localStorageReturnUrl = localStorage.getItem('returnUrl');
+    if (localStorageReturnUrl) {
+      this._returnUrl$.next(JSON.parse(localStorageReturnUrl));
+    } else if (isDevMode()) {
+      if (!this.returnUrl$) {
+        throw new TypeError('No returnUrl in local storage!');
+      }
+    }
+    return this.returnUrl$;
+  }
+
+  public updateReturnUrl(returnUrl: URLStructure) {
+    this._returnUrl$.next(returnUrl);
+    localStorage.setItem('returnUrl', JSON.stringify(returnUrl));
+  }
+
+  public resetReturnUrl() {
+    this._returnUrl$ = null;
+  }
+
+  public resetUserDetails() {
+    this._userDetails$.next(null);
   }
 
   // get agreedUpdatedTermsStatus
@@ -106,6 +137,10 @@ export class UserService {
    */
   public updateUserDetails(workplaceUid: string, userUid: string, userDetails: UserDetails): Observable<UserDetails> {
     return this.http.put<UserDetails>(`/api/user/establishment/${workplaceUid}/${userUid}`, userDetails);
+  }
+
+  public updateAdminUserDetails(userUid: string, userDetails: UserDetails): Observable<UserDetails> {
+    return this.http.put<UserDetails>(`/api/user/admin/me/${userUid}`, userDetails);
   }
 
   /*

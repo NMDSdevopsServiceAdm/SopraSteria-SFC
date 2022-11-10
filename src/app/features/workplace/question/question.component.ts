@@ -7,6 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import isNull from 'lodash/isNull';
 import { Subscription } from 'rxjs';
 
@@ -22,13 +23,18 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public previousRoute: string[];
   public nextRoute: string[];
   public back: URLStructure;
+  public skipRoute: string[];
+  public hideBackLink: boolean;
 
   public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
   protected subscriptions: Subscription = new Subscription();
   protected initiated = false;
-  protected submitAction: { action: string; save: boolean } = null;
+  public submitAction: { action: string; save: boolean } = null;
+  public workplaceFlowSections: string[] = ProgressBarUtil.workplaceFlowProgressBarSections();
+  public recruitmentSections: string[] = ProgressBarUtil.recruitmentMiniFlowProgressBarSections();
+  public staffBenefitsSections: string[] = ProgressBarUtil.staffBenefitsMiniFlowProgressBarSections();
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -49,7 +55,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
         if (!this.initiated) {
           this._init();
 
-          this.setBackLink();
+          if (!this.hideBackLink) {
+            this.setBackLink();
+          }
         }
       }),
     );
@@ -96,6 +104,10 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
         break;
 
+      case 'skip':
+        this.router.navigate(this.skipRoute);
+        break;
+
       case 'exit':
         const url = this.isPrimaryWorkplace ? ['/dashboard'] : ['/workplace', this.establishment.uid];
         this.router.navigate(url, { fragment: 'workplace' });
@@ -107,8 +119,15 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
-    this.submitAction = payload;
+  public setSubmitAction(payload: { action: string; save: boolean }): void {
+    this.submitAction = { action: payload.action, save: payload.save };
+
+    if (!payload.save) {
+      this.onSubmit();
+    }
+  }
+
+  public onSubmit(): void {
     if (!this.submitAction.save) {
       this.establishment.showSharingPermissionsBanner
         ? this.removeSharingPermissionsBanner(() => this.navigate())
@@ -119,6 +138,13 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.serverError = null;
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    /**
+     * Required to reinstate error links on dynamic forms
+     * where the error summary is removed on adding rows
+     */
+    this.addErrorLinkFunctionality();
+    this.createDynamicErrorMessaging();
 
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
@@ -151,6 +177,8 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     // callback is invoked if func not declared in child to ensure navigation
     completeFunction();
   }
+  protected createDynamicErrorMessaging(): void {}
+  protected addErrorLinkFunctionality(): void {}
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });

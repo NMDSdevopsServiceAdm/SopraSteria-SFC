@@ -12,38 +12,41 @@ import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
 
 describe('WorkplaceNameAddressComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(WorkplaceNameAddressComponent, {
-      imports: [
-        SharedModule,
-        WorkplaceModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              parent: {
-                url: [
-                  {
-                    path: 'registration',
-                  },
-                ],
+  async function setup(registrationFlow = true) {
+    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
+      WorkplaceNameAddressComponent,
+      {
+        imports: [
+          SharedModule,
+          WorkplaceModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          {
+            provide: RegistrationService,
+            useClass: MockRegistrationService,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                parent: {
+                  url: [
+                    {
+                      path: registrationFlow ? 'registration' : 'confirm-details',
+                    },
+                  ],
+                },
               },
             },
           },
-        },
-        FormBuilder,
-      ],
-    });
+          FormBuilder,
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -60,6 +63,8 @@ describe('WorkplaceNameAddressComponent', () => {
       getAllByText,
       queryByText,
       getByText,
+      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -133,7 +138,7 @@ describe('WorkplaceNameAddressComponent', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate to select-main-service page on success', async () => {
+    it('should navigate to type-of-employer page on success', async () => {
       const { component, fixture, getByText, spy } = await setup();
       const form = component.form;
 
@@ -149,11 +154,27 @@ describe('WorkplaceNameAddressComponent', () => {
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/registration', 'select-main-service']);
+      expect(spy).toHaveBeenCalledWith(['registration', 'type-of-employer']);
+    });
+
+    it('should show the continue button when inside the flow', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Continue')).toBeTruthy();
+    });
+
+    it('should show the Save and return button and a cancel link when inside the flow', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.insideFlow = false;
+      fixture.detectChanges();
+
+      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
     });
 
     it('should navigate to confirm-details page on success if returnToConfirmDetails is not null', async () => {
-      const { component, fixture, getByText, spy } = await setup();
+      const { component, fixture, getByText, spy } = await setup(false);
       const form = component.form;
 
       form.controls['workplaceName'].setValue('Workplace');
@@ -165,11 +186,11 @@ describe('WorkplaceNameAddressComponent', () => {
       component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
       fixture.detectChanges();
 
-      const continueButton = getByText('Continue');
+      const continueButton = getByText('Save and return');
       fireEvent.click(continueButton);
 
       expect(form.invalid).toBeFalsy();
-      expect(spy).toHaveBeenCalledWith(['/registration', 'confirm-details']);
+      expect(spy).toHaveBeenCalledWith(['registration/confirm-details']);
     });
   });
 
@@ -341,89 +362,19 @@ describe('WorkplaceNameAddressComponent', () => {
     });
   });
 
-  describe('setBackLink', () => {
-    it('should set the back link to `confirm-details` when returnToConfirmDetails is not null', async () => {
-      const { component, fixture } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+  describe('progressBar', () => {
+    it('should render the workplace and user account progress bars', async () => {
+      const { getByTestId } = await setup();
 
-      component.registrationService.returnTo$.next({ url: ['registration', 'confirm-details'] });
-
-      component.ngOnInit();
-      component.setBackLink();
-
-      fixture.whenStable().then(() => {
-        expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/registration', 'confirm-details'],
-        });
-      });
+      expect(getByTestId('progress-bar-1')).toBeTruthy();
+      expect(getByTestId('progress-bar-2')).toBeTruthy();
     });
 
-    it('should set the back link to `workplace-not-found` when isCqcRegulated and workplaceNotFound in service are true', async () => {
-      const { component, fixture } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { queryByTestId } = await setup(false);
 
-      component.registrationService.workplaceNotFound$.next(true);
-      component.registrationService.isCqcRegulated$.next(true);
-
-      component.ngOnInit();
-
-      fixture.whenStable().then(() => {
-        component.setBackLink();
-
-        expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/registration', 'workplace-not-found'],
-        });
-      });
-    });
-
-    it('should set the back link to `workplace-address-not-found` when returnToWorkplaceNotFound is false and returnToCouldNotFindWorkplaceAddress is true', async () => {
-      const { component, fixture } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.registrationService.workplaceNotFound$.next(true);
-      component.registrationService.isCqcRegulated$.next(false);
-
-      component.ngOnInit();
-
-      fixture.whenStable().then(() => {
-        component.setBackLink();
-
-        expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/registration', 'workplace-address-not-found'],
-        });
-      });
-    });
-
-    it('should set the back link to `select-workplace` when returnToWorkplaceNotFound is false and isCqcRegulated is true', async () => {
-      const { component, fixture } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.registrationService.workplaceNotFound$.next(false);
-      component.registrationService.isCqcRegulated$.next(true);
-
-      component.ngOnInit();
-      component.setBackLink();
-
-      fixture.whenStable().then(() => {
-        expect(backLinkSpy).toHaveBeenCalledWith({
-          url: ['/registration', 'select-workplace'],
-        });
-      });
-    });
-
-    it('should set the back link to `select-workplace-address` when returnToWorkplaceNotFound and isCqcRegulated are false', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.registrationService.workplaceNotFound$.next(false);
-      component.registrationService.isCqcRegulated$.next(false);
-
-      component.ngOnInit();
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'select-workplace-address'],
-      });
+      expect(queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(queryByTestId('progress-bar-2')).toBeFalsy();
     });
   });
 });

@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ReportService } from '@core/services/report.service';
-import { SearchModule } from '@features/search/search.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -16,7 +15,7 @@ describe('ReportComponent', () => {
 
   async function setup() {
     return render(ReportComponent, {
-      imports: [SharedModule, SearchModule, HttpClientTestingModule, RouterTestingModule, AdminModule],
+      imports: [SharedModule, HttpClientTestingModule, RouterTestingModule, AdminModule],
     });
   }
 

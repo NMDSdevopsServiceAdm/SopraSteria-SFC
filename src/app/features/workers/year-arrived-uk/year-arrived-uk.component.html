@@ -3,12 +3,14 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('year').invalid">
+      <div
+        class="govuk-form-group govuk-!-margin-bottom-4"
+        [class.govuk-form-group--error]="submitted && form.get('year').invalid"
+      >
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              Do you know what year they arrived in the UK?
-            </h1>
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+            <h1 class="govuk-fieldset__heading">Do you know what year they arrived in the UK?</h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
@@ -21,9 +23,7 @@
                 value="Yes"
                 aria-controls="conditional-yearKnown-conditional-1"
               />
-              <label class="govuk-label govuk-radios__label" for="yearKnown-conditional-1">
-                Yes
-              </label>
+              <label class="govuk-label govuk-radios__label" for="yearKnown-conditional-2"> Yes </label>
             </div>
             <div
               class="govuk-radios__conditional"
@@ -31,9 +31,7 @@
               id="conditional-yearKnown-conditional-1"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="year">
-                  Year
-                </label>
+                <label class="govuk-label" for="year"> Year </label>
                 <span *ngIf="submitted && form.get('year').errors" id="year-error" class="govuk-error-message">
                   <ng-container *ngIf="form.get('year').hasError('required')">
                     <span class="govuk-visually-hidden">Error:</span>
@@ -47,6 +45,10 @@
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFormErrorMessage('year', 'max') }}
                   </ng-container>
+                  <ng-container *ngIf="form.get('year').hasError('pattern')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('year', 'pattern') }}
+                  </ng-container>
                 </span>
                 <input
                   class="govuk-input govuk-date-input__input govuk-input--width-4"
@@ -54,7 +56,7 @@
                   [formControlName]="'year'"
                   id="year"
                   name="year"
-                  type="number"
+                  type="text"
                   [pattern]="intPattern"
                 />
               </div>
@@ -69,15 +71,25 @@
                 type="radio"
                 value="No"
               />
-              <label class="govuk-label govuk-radios__label" for="yearKnown-2">
-                No
-              </label>
+              <label class="govuk-label govuk-radios__label" for="yearKnown-2"> No </label>
             </div>
           </div>
         </fieldset>
       </div>
     </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow && !insideYearArrivedUkMiniFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
 
-  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button
+    [return]="!insideFlow || insideYearArrivedUkMiniFlow"
+    (clicked)="setSubmitAction($event)"
+  ></app-submit-button>
 </form>

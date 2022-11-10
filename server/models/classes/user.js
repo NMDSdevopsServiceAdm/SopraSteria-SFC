@@ -23,6 +23,7 @@ const JSON_DOCUMENT_TYPE = require('./user/userProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUMENT;
 
 const bcrypt = require('bcrypt-nodejs');
+const { isAdminRole } = require('../../utils/adminUtils');
 const passwordValidator = require('../../utils/security/passwordValidation').isPasswordValid;
 
 // establishment entity
@@ -210,7 +211,7 @@ class User {
       this._isNew = true;
       this._uid = uuid.v4();
 
-      if (!this._isEstablishmentIdValid)
+      if (!this._isEstablishmentIdValid && !isAdminRole(this.userRole))
         throw new UserExceptions.UserSaveException(
           null,
           this._uid,
@@ -235,7 +236,6 @@ class User {
   async load(document) {
     try {
       await this._properties.restore(document, JSON_DOCUMENT_TYPE);
-
       // for user, the username and password are additional (non property based) optional attributes
       if (document.username) {
         this._username = escape(document.username);
@@ -357,7 +357,6 @@ class User {
   // Throws "UserSaveException" on error
   async save(savedBy, ttl = 0, externalTransaction = null, firstSave = false) {
     let mustSave = this._initialise();
-
     if (!this.uid) {
       this._log(User.LOG_ERROR, 'Not able to save an unknown uid');
       throw new UserExceptions.UserSaveException(
@@ -748,7 +747,7 @@ class User {
           ],
         };
       } else {
-        // fetch by username
+        // fetch by uid
         fetchQuery = {
           where: {
             uid: uid,
@@ -764,6 +763,7 @@ class User {
       }
 
       const fetchResults = await models.user.findOne(fetchQuery);
+
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
         this._isNew = false;
@@ -816,11 +816,11 @@ class User {
   async delete(deletedBy, externalTransaction = null) {
     try {
       const updatedTimestamp = new Date();
+      const randomNewUsername = uuid.v4();
+      const oldUsername = this._username;
 
       await models.sequelize.transaction(async (t) => {
         const thisTransaction = externalTransaction ? externalTransaction : t;
-        let randomNewUsername = uuid.v4();
-        let oldUsername = this._username;
 
         const updateDocument = {
           updated: updatedTimestamp,
@@ -828,7 +828,6 @@ class User {
           archived: true,
           FullNameValue: false,
           isPrimary: false,
-          Username: randomNewUsername,
           EmailValue: '',
           PhoneValue: '',
           JobTitle: '',
@@ -848,6 +847,7 @@ class User {
         if (updatedRecordCount === 1) {
           await models.login.update(
             {
+              username: randomNewUsername,
               isActive: false,
             },
             {
@@ -877,32 +877,8 @@ class User {
             property: 'isActive',
             event: {},
           };
-          await models.userAudit.create(auditEvent, { transaction: thisTransaction });
 
-          await models.sequelize.query(
-            'UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-            {
-              replacements: { username: oldUsername, usernameNew: randomNewUsername },
-              type: models.sequelize.QueryTypes.UPDATE,
-              transaction: thisTransaction,
-            },
-          );
-          await models.sequelize.query(
-            'UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-            {
-              replacements: { username: oldUsername, usernameNew: randomNewUsername },
-              type: models.sequelize.QueryTypes.UPDATE,
-              transaction: thisTransaction,
-            },
-          );
-          await models.sequelize.query(
-            'UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
-            {
-              replacements: { username: oldUsername, usernameNew: randomNewUsername },
-              type: models.sequelize.QueryTypes.UPDATE,
-              transaction: thisTransaction,
-            },
-          );
+          await models.userAudit.create(auditEvent, { transaction: thisTransaction });
 
           this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
         } else {
@@ -913,6 +889,24 @@ class User {
             `Failed to update (archive) user record with uid: ${this._uid}`,
           );
         }
+      });
+
+      models.sequelize.query(
+        'UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username',
+        {
+          replacements: { username: oldUsername, usernameNew: randomNewUsername },
+          type: models.sequelize.QueryTypes.UPDATE,
+        },
+      );
+
+      models.sequelize.query('UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username', {
+        replacements: { username: oldUsername, usernameNew: randomNewUsername },
+        type: models.sequelize.QueryTypes.UPDATE,
+      });
+
+      models.sequelize.query('UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username', {
+        replacements: { username: oldUsername, usernameNew: randomNewUsername },
+        type: models.sequelize.QueryTypes.UPDATE,
       });
     } catch (err) {
       console.error('throwing error');
@@ -945,6 +939,30 @@ class User {
     });
 
     return returnData;
+  }
+
+  static async fetchAdminUsers() {
+    const adminUsers = await models.user.fetchAdminUsers();
+    const formattedAdminUsers = adminUsers.map((adminUser) => {
+      return {
+        uid: adminUser.uid,
+        fullname: adminUser.FullNameValue,
+        role: adminUser.UserRoleValue,
+        email: adminUser.EmailValue,
+        phone: adminUser.PhoneValue,
+        jobTitle: adminUser.JobTitleValue,
+        username: adminUser.login && adminUser.login.username,
+        updated: adminUser.updated.toJSON(),
+        isPrimary: adminUser.IsPrimary,
+        status: User.statusTranslator(adminUser.login),
+      };
+    });
+
+    formattedAdminUsers.sort((a, b) => {
+      if (a.status > b.status) return -1;
+      return new Date(b.updated) - new Date(a.updated);
+    });
+    return formattedAdminUsers;
   }
 
   // returns a set of User based on given filter criteria (all if no filters defined) - restricted to the given Establishment

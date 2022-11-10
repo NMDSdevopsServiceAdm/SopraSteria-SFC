@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -14,38 +15,42 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address.component';
 
 describe('SelectWorkplaceAddressComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(SelectWorkplaceAddressComponent, {
-      imports: [
-        SharedModule,
-        RegistrationModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        SelectWorkplaceAddressDirective,
-        {
-          provide: RegistrationService,
-          useClass: MockRegistrationService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              parent: {
-                url: [
-                  {
-                    path: 'registration',
-                  },
-                ],
+  async function setup(registrationFlow = true, manyLocationAddresses = false) {
+    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
+      SelectWorkplaceAddressComponent,
+      {
+        imports: [
+          SharedModule,
+          RegistrationModule,
+          RouterTestingModule,
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          SelectWorkplaceAddressDirective,
+          {
+            provide: RegistrationService,
+            useFactory: MockRegistrationService.factory({ value: 'Private sector' }, manyLocationAddresses),
+            deps: [HttpClient],
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                parent: {
+                  url: [
+                    {
+                      path: registrationFlow ? 'registration' : 'confirm-details',
+                    },
+                  ],
+                },
               },
             },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -62,6 +67,8 @@ describe('SelectWorkplaceAddressComponent', () => {
       getAllByText,
       queryByText,
       getByText,
+      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -86,20 +93,65 @@ describe('SelectWorkplaceAddressComponent', () => {
     expect(getAllByText(retrievedPostcode, { exact: false }).length).toBe(3);
   });
 
-  it('should display number of addresses found which match postcode(2)', async () => {
-    const { getByText } = await setup();
+  it('should render the workplace progress bar and the user progress bar', async () => {
+    const { getByTestId } = await setup();
 
-    const noOfAddressesMessage = '2 addresses found';
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { queryByTestId } = await setup(false);
+
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should render the radio button form if there are less than 5 location addresses for a given postcode', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('radio-button-form')).toBeTruthy();
+    expect(queryByTestId('dropdown-form')).toBeFalsy();
+  });
+
+  it('should render the dropdown form if there are 5 or more location addresses for a given postcode', async () => {
+    const { getByTestId, queryByTestId } = await setup(true, true);
+
+    expect(getByTestId('dropdown-form')).toBeTruthy();
+    expect(queryByTestId('radio-button-form')).toBeFalsy();
+  });
+
+  it('should display number of addresses found which match postcode when drop down shown', async () => {
+    const { getByText } = await setup(true, true);
+
+    const noOfAddressesMessage = '5 addresses found';
 
     expect(getByText(noOfAddressesMessage, { exact: false })).toBeTruthy();
   });
 
-  it('should prefill form with selected location address if it exists by using its index in locationAddresses', async () => {
-    const { component } = await setup();
-    const form = component.form;
+  describe('prefillForm()', () => {
+    it('should prefill the form with selected workplace if it exists', async () => {
+      const { component, fixture } = await setup();
 
-    expect(form.value.address).toBe(0);
-    expect(form.invalid).toBeFalsy();
+      component.registrationService.selectedLocationAddress$.value.locationId = '123';
+      const index = component.locationAddresses.findIndex((address) => (address.locationId = '123')).toString();
+      fixture.detectChanges();
+
+      const form = component.form;
+      expect(form.valid).toBeTruthy();
+      expect(form.value.workplace).toBe(index);
+    });
+
+    it('should not prefill the form with selected workplace if it does not exists', async () => {
+      const { component } = await setup();
+
+      component.registrationService.selectedLocationAddress$ = new BehaviorSubject(null);
+      component.ngOnInit();
+
+      const form = component.form;
+      expect(form.valid).toBeFalsy();
+      expect(form.value.workplace).toBe('');
+    });
   });
 
   describe('Error messages', () => {
@@ -122,25 +174,6 @@ describe('SelectWorkplaceAddressComponent', () => {
     });
   });
 
-  describe('onLocationChange()', () => {
-    it('should update selectedLocationAddress$ in workplace service to have currently selected address', async () => {
-      const { component } = await setup();
-
-      const expectedSelectedLocationAddress = {
-        postalCode: 'ABC 123',
-        addressLine1: '2 Street',
-        county: 'Greater Manchester',
-        locationName: 'Test Care Home',
-        townCity: 'Manchester',
-        locationId: '12345',
-      };
-
-      component.onLocationChange(1);
-
-      expect(component.registrationService.selectedLocationAddress$.value).toEqual(expectedSelectedLocationAddress);
-    });
-  });
-
   describe('Navigation', () => {
     it('should navigate back to the find-workplace-address url in registration flow when Change clicked', async () => {
       const { getByText } = await setup();
@@ -153,25 +186,25 @@ describe('SelectWorkplaceAddressComponent', () => {
     it('should navigate to workplace-name-address url in registration flow when workplace not listed button clicked', async () => {
       const { getByText } = await setup();
 
-      const notDisplayedButton = getByText('Workplace address is not listed or is not correct');
+      const notDisplayedButton = getByText('Enter workplace details manually');
 
       expect(notDisplayedButton.getAttribute('href')).toBe('/registration/workplace-name-address');
     });
 
-    it('should navigate to select-main-service url in registration flow when workplace with name selected and Continue clicked', async () => {
+    it('should navigate to type-of-employer url in registration flow when workplace with name selected and Continue clicked', async () => {
       const { component, spy, getByText, fixture } = await setup();
       const form = component.form;
       const continueButton = getByText('Continue');
-      component.selectedLocationAddress.locationName = 'Name';
+      component.locationAddresses[1].locationName = 'Name';
 
-      form.controls['address'].setValue('1');
-      form.controls['address'].markAsDirty();
+      form.controls['workplace'].setValue('1');
+      form.controls['workplace'].markAsDirty();
       fixture.detectChanges();
       fireEvent.click(continueButton);
 
       expect(form.valid).toBeTruthy();
-
-      expect(spy).toHaveBeenCalledWith(['/registration/select-main-service']);
+      expect(component.registrationService.selectedLocationAddress$.value).toEqual(component.locationAddresses[1]);
+      expect(spy).toHaveBeenCalledWith(['registration/type-of-employer']);
     });
 
     it('should navigate to the confirm-details page in registration flow when workplace selected, Continue clicked and returnToConfirmDetails is not null', async () => {
@@ -180,30 +213,31 @@ describe('SelectWorkplaceAddressComponent', () => {
       component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
 
       const form = component.form;
-      form.controls['address'].setValue('1');
-      form.controls['address'].markAsDirty();
+      form.controls['workplace'].setValue('1');
+      form.controls['workplace'].markAsDirty();
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
       expect(form.valid).toBeTruthy();
-      expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
+      expect(spy).toHaveBeenCalledWith(['registration/confirm-details']);
     });
 
     it('should navigate to workplace-name url in registration flow when workplace without name selected and Continue clicked', async () => {
       const { component, spy, getByText, fixture } = await setup();
       const form = component.form;
       const continueButton = getByText('Continue');
-      component.selectedLocationAddress.locationName = null;
 
-      form.controls['address'].setValue('1');
-      form.controls['address'].markAsDirty();
+      component.locationAddresses[1].locationName = null;
+
+      form.controls['workplace'].setValue('1');
+      form.controls['workplace'].markAsDirty();
       fixture.detectChanges();
       fireEvent.click(continueButton);
 
       expect(form.valid).toBeTruthy();
-
-      expect(spy).toHaveBeenCalledWith(['/registration/workplace-name']);
+      expect(component.registrationService.selectedLocationAddress$.value).toEqual(component.locationAddresses[1]);
+      expect(spy).toHaveBeenCalledWith(['registration/workplace-name']);
     });
   });
 });

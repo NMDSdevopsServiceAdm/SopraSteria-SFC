@@ -1,21 +1,27 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <app-panel [title]="'Thank you'">
-      The workplace details you entered are now being checked by Skills for Care
-    </app-panel>
-    <h2 class="govuk-heading-m govuk-!-margin-top-5">What happens next?</h2>
+    <div
+      class="govuk-panel govuk-panel--confirmation govuk-util__align-left govuk-!-padding-top-5 govuk-!-padding-bottom-5"
+    >
+      <h6 class="govuk-panel__title govuk-!-font-size-36 govuk-!-margin-bottom-2">Thank you</h6>
+      <span class="govuk-panel__body govuk-!-font-size-19"
+        >The workplace details you entered are now being checked by Skills for Care</span
+      >
+    </div>
+    <h2 class="govuk-heading-m govuk-!-margin-top-7">What happens next?</h2>
     <p>
       Skills for Care will check the workplace details you entered and then contact you by email or telephone as soon as
       possible.
     </p>
     <p>You will not be able to view this workplace until Skills for Care validate it.</p>
-    <p>
-      <a [routerLink]="['/contact-us']" target="_blank">
-        Contact us<span class="govuk-visually-hidden">, (opens in a new window)</span>
-      </a>
-      if you have any questions.
-    </p>
-    <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-3" [routerLink]="['/dashboard']">
+
+    <app-details [title]="'Contact us if you have any questions'">
+      <p>
+        Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> <br />or email
+        <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
+      </p>
+    </app-details>
+    <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-4" [routerLink]="['/dashboard']">
       Return to home
     </a>
   </div>

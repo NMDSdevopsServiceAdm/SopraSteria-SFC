@@ -21,7 +21,6 @@ class WorkerCsvValidator {
     this._key = null;
     this._establishmentKey = null;
 
-    this._fluVac = null;
     this._NINumber = null;
     this._postCode = null;
     this._DOB = null;
@@ -204,9 +203,7 @@ class WorkerCsvValidator {
   static get DISPLAY_ID_WARNING() {
     return 3050;
   }
-  static get FLUVAC_WARNING() {
-    return 3055;
-  }
+
   static get NINUMBER_WARNING() {
     return 3060;
   }
@@ -393,10 +390,6 @@ class WorkerCsvValidator {
 
   get dislpayID() {
     return this._displayId;
-  }
-
-  get fluVac() {
-    return this._fluVac;
   }
 
   get niNumber() {
@@ -744,35 +737,11 @@ class WorkerCsvValidator {
     }
   }
 
-  _validateFluVac() {
-    const myFluVac = parseInt(this._currentLine.FLUVAC, 10);
-    const fluVacValues = [1, 2, 999];
-
-    if (this._currentLine.FLUVAC.length > 0) {
-      if (isNaN(myFluVac) || !fluVacValues.includes(myFluVac)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.FLUVAC_WARNING,
-          warnType: 'WORKER_FLUVAC_WARNING',
-          warning: 'FLUVAC the code you have selected has not been recognised and will be ignored',
-          source: this._currentLine.FLUVAC,
-          column: 'FLUVAC',
-        });
-        return false;
-      } else {
-        this._fluVac = myFluVac;
-        return true;
-      }
-    }
-  }
-
   _validateNINumber() {
     const myNINumber = this._currentLine.NINUMBER;
     const niRegex = /^\s*[a-zA-Z]{2}(?:\s*\d\s*){6}[a-zA-Z]?\s*$/;
 
-    if (myNINumber.length > 0) {
+    if (myNINumber) {
       if (myNINumber.length > 0 && !niRegex.test(myNINumber)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -790,6 +759,7 @@ class WorkerCsvValidator {
         return true;
       }
     }
+    return true;
   }
 
   _validatePostCode() {
@@ -1529,7 +1499,8 @@ class WorkerCsvValidator {
 
   _validateSalary() {
     const mySalary = parseInt(this._currentLine.SALARY, 10);
-    const digitRegex = /^[0-9]{1,9}$/;
+    const mainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
+    const MAX_VALUE = mainJobRole === 1 ? 250000 : 200000;
 
     // optional
     if (this._currentLine.SALARY.length > 0) {
@@ -1546,14 +1517,14 @@ class WorkerCsvValidator {
           column: 'SALARYINT',
         });
         return false;
-      } else if (isNaN(mySalary) || !digitRegex.test(this._currentLine.SALARY)) {
+      } else if (isNaN(mySalary) || mySalary <= 500 || mySalary >= MAX_VALUE) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: WorkerCsvValidator.SALARY_ERROR,
           errType: 'SALARY_ERROR',
-          error: 'Salary (SALARY) must be an integer upto 9 digits',
+          error: `Salary (SALARY) must be an integer between £500 and £${MAX_VALUE}`,
           source: this._currentLine.SALARY,
           column: 'SALARY',
         });
@@ -2441,7 +2412,6 @@ class WorkerCsvValidator {
 
       if (localValidationErrors.length > 0) {
         localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
-        return false;
       }
 
       return {
@@ -2828,7 +2798,6 @@ class WorkerCsvValidator {
     // only continue to process validation, if the status is not UNCHECKED, DELETED OR UNCHANGED
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateContractType() ? false : status;
-      status = !this._validateFluVac() ? false : status;
       status = !this._validateNINumber() ? false : status;
       status = !this._validatePostCode() ? false : status;
       status = !this._validateDOB() ? false : status;
@@ -2908,7 +2877,6 @@ class WorkerCsvValidator {
       uniqueWorkerId: this._uniqueWorkerId,
       changeUniqueWorker: this._changeUniqueWorkerId ? this._changeUniqueWorkerId : undefined,
       displayId: this._displayId,
-      fluJab: this._fluVac ? this.fluVac : undefined,
       niNumber: this._NINumber ? this._NINumber : undefined,
       postcode: this._postCode ? this._postCode : undefined,
       dateOfBirth: this._DOB ? this._DOB.format('DD/MM/YYYY') : undefined,
@@ -3050,20 +3018,6 @@ class WorkerCsvValidator {
 
     if (this._nursingSpecialist) {
       changeProperties.nurseSpecialisms = this.BUDI.mapNurseSpecialismsToDb(this._nursingSpecialist);
-    }
-
-    if (this._fluVac) {
-      switch (this._fluVac) {
-        case 1:
-          changeProperties.fluJab = 'Yes';
-          break;
-        case 2:
-          changeProperties.fluJab = 'No';
-          break;
-        case 999:
-          changeProperties.fluJab = "Don't know";
-          break;
-      }
     }
 
     if (this._startInsect) {

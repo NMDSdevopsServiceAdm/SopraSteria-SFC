@@ -31,7 +31,6 @@ import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worke
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
-import { FluJabComponent } from './flu-jab/flu-jab.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
@@ -49,7 +48,6 @@ import { NewTrainingAndQualificationsRecordComponent } from './new-training-qual
 import { NewTrainingComponent } from './new-training-qualifications-record/new-training/new-training.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
-import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
@@ -86,7 +84,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DisabilityComponent,
     EditWorkerComponent,
     EthnicityComponent,
-    FluJabComponent,
     GenderComponent,
     HomePostcodeComponent,
     MainJobStartDateComponent,
@@ -95,7 +92,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     NationalityComponent,
     NursingCategoryComponent,
     NursingSpecialismComponent,
-    OtherJobRolesComponent,
     OtherQualificationsComponent,
     OtherQualificationsLevelComponent,
     QualificationFormComponent,

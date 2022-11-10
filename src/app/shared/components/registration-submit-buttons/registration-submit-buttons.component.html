@@ -1,0 +1,10 @@
+<div class="govuk-button-group govuk-!-margin-top-4">
+  <ng-container *ngIf="insideFlow; else outsideFlow">
+    <button class="govuk-button" type="submit">Continue</button>
+  </ng-container>
+  <ng-template #outsideFlow>
+    <button class="govuk-button govuk-!-margin-right-9" type="submit">Save and return</button>
+    <span class="govuk-visually-hidden">or</span>
+    <a class="govuk-button govuk-button--link govuk-!-margin-left-9" routerLink="/{{ returnRoute }}">Cancel</a>
+  </ng-template>
+</div>

@@ -14,7 +14,7 @@ exports.UserEmailProperty = class UserEmailProperty extends ChangePropertyProtot
   async restoreFromJson(document) {
     if (document.email) {
       const EMAIL_MAX_LENGTH = 120;
-      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/;
+      const emailRegex = /^[A-Za-z0-9.'_%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/;
       if (document.email.length > 0 && document.email.length <= EMAIL_MAX_LENGTH && emailRegex.test(document.email)) {
         this.property = document.email;
       } else {

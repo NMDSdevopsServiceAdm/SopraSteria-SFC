@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
+import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
@@ -12,14 +13,13 @@ import { AddWorkplaceModule } from '../add-workplace.module';
 import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
 describe('RegulatedByCqcComponent', () => {
-  async function setup() {
+  async function setup(addWorkplaceFlow = true) {
     const component = await render(RegulatedByCqcComponent, {
-      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
-          provide: RegistrationService,
-          useClass: RegistrationService,
-          deps: [HttpClient],
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
         },
         {
           provide: ActivatedRoute,
@@ -28,7 +28,7 @@ describe('RegulatedByCqcComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'add-workplace',
+                    path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
                   },
                 ],
               },
@@ -53,6 +53,19 @@ describe('RegulatedByCqcComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should not render the progress bar when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
   });
 
   it('should navigate to the find workplace page when selecting yes', async () => {
@@ -122,20 +135,6 @@ describe('RegulatedByCqcComponent', () => {
       expect(form.invalid).toBeTruthy();
       expect(form.value.regulatedByCQC).not.toBe('yes');
       expect(form.value.regulatedByCQC).not.toBe('no');
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the correct back link when in the parent flow', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/add-workplace', 'start'],
-      });
     });
   });
 });

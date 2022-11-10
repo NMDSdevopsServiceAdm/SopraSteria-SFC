@@ -87,6 +87,22 @@ describe('StaffSummaryComponent', () => {
     expect(component.getAllByText('Add more details').length).toBe(3);
   });
 
+  it('should render the add more details link with the correct routing', async () => {
+    const { component, workers } = await setup();
+
+    component.fixture.componentInstance.canEditWorker = true;
+    component.detectChanges();
+
+    const workplace = component.fixture.componentInstance.workplace;
+    const addMoreDetailsLinks = component.getAllByText('Add more details');
+
+    workers.map((worker, index) => {
+      expect(addMoreDetailsLinks[index].getAttribute('href')).toEqual(
+        `/workplace/${workplace.uid}/staff-record/${worker.uid}/date-of-birth`,
+      );
+    });
+  });
+
   describe('Calling getAllWorkers when sorting', () => {
     const sortByOptions = [
       ['0_asc', 'staffNameAsc', 'Staff name (A to Z)'],
@@ -189,6 +205,28 @@ describe('StaffSummaryComponent', () => {
       component.fixture.detectChanges();
 
       expect((component.getByLabelText('Search for staff records') as HTMLInputElement).value).toBe('mysupersearch');
+    });
+  });
+
+  describe('getWorkerRecordPath', () => {
+    it('navigates to the staff record summary when not in the wdf view', async () => {
+      const { component, router, workers } = await setup();
+
+      component.fixture.componentInstance.canViewWorker = true;
+      component.detectChanges();
+      const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+      const worker = workers[0];
+      const nameLink = component.getByText(worker.nameOrId);
+      fireEvent.click(nameLink);
+
+      const workplace = component.fixture.componentInstance.workplace;
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplace.uid,
+        'staff-record',
+        worker.uid,
+        'staff-record-summary',
+      ]);
     });
   });
 });

@@ -3,14 +3,17 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -21,7 +24,7 @@ import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.componen
 import { TabComponent } from '@shared/components/tabs/tab.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 const MockWindow = {
@@ -62,12 +65,16 @@ describe('DashboardComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(0, true),
+          useFactory: MockUserService.factory(0, Roles.Admin),
           deps: [HttpClient],
         },
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: BenchmarksService,
+          useClass: MockBenchmarksService,
         },
         { provide: WindowToken, useValue: MockWindow },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -98,6 +105,9 @@ describe('DashboardComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
+    const benchmarksService = injector.inject(BenchmarksService) as BenchmarksService;
+    const benchmarkUsageSpy = spyOn(benchmarksService, 'postBenchmarkTabUsage').and.callThrough();
+
     const component = fixture.componentInstance;
     return {
       component,
@@ -108,11 +118,13 @@ describe('DashboardComponent', () => {
       establishmentService,
       router,
       alertSpy,
+      benchmarkUsageSpy,
     };
   }
 
   it('should render a DashboardComponent', async () => {
     const { component } = await setup();
+
     expect(component).toBeTruthy();
   });
 
@@ -165,20 +177,6 @@ describe('DashboardComponent', () => {
       expect(queryByTestId('tab_benchmarks')).toBeNull();
     });
 
-    it('should display the Users tab', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      const establishment = {
-        ...component.workplace,
-      };
-      establishment.isRegulated = false;
-      component.workplace = establishment;
-      component.wdfNewDesignFlag = false;
-      fixture.detectChanges();
-
-      expect(getByText('Users')).toBeTruthy();
-    });
-
     it('should display a flag on the workplace tab when the sharing permissions banner flag is true', async () => {
       const { component, fixture, getByTestId } = await setup();
 
@@ -186,20 +184,6 @@ describe('DashboardComponent', () => {
       fixture.detectChanges();
 
       expect(getByTestId('red-flag')).toBeTruthy();
-    });
-
-    describe('Users tab warning', () => {
-      it('should not display an orange flag on the Users tab when more than one user', async () => {
-        const { queryByTestId } = await setup(false);
-
-        expect(queryByTestId('orange-flag')).toBeFalsy();
-      });
-
-      it('should display an orange flag on the Users tab when only one user', async () => {
-        const { queryByTestId } = await setup(true);
-
-        expect(queryByTestId('orange-flag')).toBeTruthy();
-      });
     });
 
     describe('Staff records tab warning', () => {
@@ -236,8 +220,41 @@ describe('DashboardComponent', () => {
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: `You've confirmed the details of the staff record you added`,
+          message: 'Staff record saved',
         });
+      });
+    });
+
+    describe('tabClickEvent', () => {
+      it('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
+        const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
+
+        component.canViewBenchmarks = true;
+        fixture.detectChanges();
+
+        const benchmarksTab = getByTestId('tab_benchmarks');
+
+        fireEvent.click(benchmarksTab);
+        expect(benchmarkUsageSpy).toHaveBeenCalled();
+      });
+
+      it('should not call postBenchmarkTabUsage when the other dashboard tabs are clicked', async () => {
+        const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
+
+        component.canViewBenchmarks = true;
+        fixture.detectChanges();
+
+        const homeTab = getByTestId('tab_home');
+        const workplaceTab = getByTestId('tab_workplace');
+        const staffRecordsTab = getByTestId('tab_staff-records');
+        const trainingAndQualificationsTab = getByTestId('tab_training-and-qualifications');
+
+        fireEvent.click(homeTab);
+        fireEvent.click(workplaceTab);
+        fireEvent.click(staffRecordsTab);
+        fireEvent.click(trainingAndQualificationsTab);
+
+        expect(benchmarkUsageSpy).not.toHaveBeenCalled();
       });
     });
   });

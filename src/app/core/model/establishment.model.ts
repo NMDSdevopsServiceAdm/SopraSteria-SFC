@@ -9,6 +9,11 @@ export interface MainService {
   otherName?: string;
 }
 
+export interface EmployerType {
+  value: string;
+  other?: string;
+}
+
 export interface ServiceUser {
   id: number;
   group: string;
@@ -21,6 +26,7 @@ export interface Capacity {
   questionId: number;
   seq: number;
   answer: number;
+  serviceName: string;
 }
 
 export interface ShareWith {
@@ -42,25 +48,30 @@ export interface PrimaryAuthority {
 
 export interface Vacancy {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 
 export interface Starter {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 
 export interface Leaver {
   jobId: number;
-  title: string;
+  title?: string;
   total: number;
 }
 
 export interface Category {
   trainingId: number;
   title: string;
+}
+
+export interface BannerFlag {
+  property: string;
+  value: boolean;
 }
 
 export interface WDF {
@@ -99,7 +110,7 @@ export interface Establishment {
   mainService: MainService;
   employerType: {
     value: string;
-    other: string;
+    other?: string;
   };
   numberOfStaff: number;
   totalWorkers: number;
@@ -136,6 +147,16 @@ export interface Establishment {
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
+  recruitmentJourneyExistingUserBanner?: boolean;
+  doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
+  moneySpentOnAdvertisingInTheLastFourWeeks?: string;
+  wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
+  peopleInterviewedInTheLastFourWeeks?: string;
+  showAddWorkplaceDetailsBanner?: boolean;
+  pensionContribution?: string;
+  careWorkersLeaveDaysPerYear?: string;
+  careWorkersCashLoyaltyForFirstTwoYears?: string;
+  sickPay?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -150,9 +171,29 @@ export enum jobOptionsEnum {
   NONE = 'None',
 }
 
+export enum staffRecruitmentOptionsEnum {
+  ALWAYS = 'Yes, always',
+  VERY_OFTEN = 'Yes, very often',
+  NOT_OFTEN = 'Yes, but not very often',
+  NEVER = 'No, never',
+}
+
 export enum mandatoryTrainingJobOption {
   all = 'all',
   selected = 'selected',
+}
+
+export enum StaffBenefitEnum {
+  YES = 'Yes',
+  NO = 'No',
+  DONT_KNOW = "Don't know",
+}
+
+export interface StaffRecruitmentDataRequest {
+  amountSpent?: string;
+  numberOfInterviews?: string;
+  trainingRequired?: string;
+  acceptCareCertificatesFromPreviousEmployment?: string;
 }
 
 export interface LocalIdentifiersRequest {

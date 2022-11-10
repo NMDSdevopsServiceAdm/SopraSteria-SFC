@@ -13,7 +13,7 @@ describe('whichFile', () => {
     });
 
     it('return true when headings match without CHGUNIQUEWRKID', async () => {
-      const header = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,';
+      const header = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,';
       expect(isWorkerFile(header)).to.deep.equal(true);
     });
 
@@ -43,7 +43,7 @@ describe('whichFile', () => {
     });
 
     it('should return the correct file type for workers', () => {
-      const fileType = getFileType('LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,FLUVAC,');
+      const fileType = getFileType('LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,');
 
       expect(fileType).to.deep.equal('Worker');
     });

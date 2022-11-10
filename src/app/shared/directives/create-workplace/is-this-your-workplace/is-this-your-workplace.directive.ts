@@ -6,9 +6,11 @@ import { Establishment } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -27,11 +29,15 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
   public revealTitle: string;
   public returnToConfirmDetails: URLStructure;
   private subscriptions: Subscription = new Subscription();
+  public workplaceSections: string[];
+  public userAccountSections: string[];
+  public insideFlow: boolean;
 
   constructor(
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected route: ActivatedRoute,
     protected router: Router,
     public workplaceInterfaceService: WorkplaceInterfaceService,
@@ -39,7 +45,9 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
   ) {}
 
   ngOnInit(): void {
-    this.flow = this.route.snapshot.parent.url[0].path;
+    this.init();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
     this.setupForm();
     this.setBackLink();
@@ -51,6 +59,9 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
     this.prefillForm();
     this.setupFormErrorsMap();
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected init(): void {}
 
   public ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
@@ -85,7 +96,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [`/${this.flow}`, 'find-workplace'] });
+    this.backLinkService.showBackLink();
   }
 
   public onSubmit(): void {
@@ -114,7 +125,8 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
               state: { returnTo: `${this.flow}/your-workplace` },
             });
           } else {
-            this.router.navigate([this.flow, this.getNextRoute()]);
+            const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'type-of-employer'];
+            this.router.navigate(url);
           }
         },
         () => this.router.navigate(['/problem-with-the-service']),

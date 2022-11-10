@@ -7,16 +7,19 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import filter from 'lodash/filter';
 import { Subscription } from 'rxjs';
 
 @Directive()
 export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
+  public isWorkPlaceUpdate: boolean;
   protected allServices: Array<Service> = [];
-  protected flow: string;
+  public flow: string;
   protected otherServiceMaxLength = 120;
   protected selectedMainService: Service;
   protected serverErrorsMap: Array<ErrorDefinition>;
@@ -28,9 +31,13 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   public submitted = false;
   public returnToConfirmDetails: URLStructure;
   public isParent: boolean;
+  public insideFlow: boolean;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
 
   constructor(
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -39,11 +46,14 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
 
   ngOnInit(): void {
     this.init();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.setSelectedWorkplaceService();
     this.getServiceCategories();
+    this.setBackLink();
   }
 
   ngAfterViewInit(): void {
@@ -155,6 +165,10 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
     const selectedWorkPlaceServiceId: number = parseInt(this.form.get('workplaceService').value, 10);
     const workplaceService: Service = filter(this.allServices, { id: selectedWorkPlaceServiceId })[0];
 
+    if (workplaceService.isCQC === null) {
+      workplaceService.isCQC = this.workplaceService.isCqcRegulated$.value;
+    }
+
     if (workplaceService.other) {
       workplaceService.otherName = this.form.get(`otherWorkplaceService${selectedWorkPlaceServiceId}`).value;
     }
@@ -177,6 +191,10 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   protected navigateToNextPage(): void {}

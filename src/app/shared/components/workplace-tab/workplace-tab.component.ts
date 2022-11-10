@@ -31,17 +31,36 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.locationId = this.workplace.locationId;
-    this.establishmentService.setCheckCQCDetailsBanner(false);
-    this.getShowCQCDetailsBanner();
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.updateWorkplaceAlert =
-      !this.workplace.employerType && this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+      this.workplace.showAddWorkplaceDetailsBanner &&
+      this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+
+    if (this.workplace.locationId) {
+      this.setCheckCQCDetailsBannerInEstablishmentService();
+    }
+    this.getShowCQCDetailsBanner();
   }
 
   private getShowCQCDetailsBanner(): void {
-    this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
-      this.showCQCDetailsBanner = showBanner;
-    });
+    this.subscriptions.add(
+      this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
+        this.showCQCDetailsBanner = showBanner;
+      }),
+    );
+  }
+
+  private setCheckCQCDetailsBannerInEstablishmentService(): void {
+    this.subscriptions.add(
+      this.establishmentService
+        .getCQCRegistrationStatus(this.workplace.locationId, {
+          postcode: this.workplace.postcode,
+          mainService: this.workplace.mainService.name,
+        })
+        .subscribe((response) => {
+          this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
+        }),
+    );
   }
 
   public navigateToShareDataPage(e: Event): void {

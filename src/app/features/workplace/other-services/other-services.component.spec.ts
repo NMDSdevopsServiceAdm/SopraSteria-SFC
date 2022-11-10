@@ -16,28 +16,48 @@ import { OtherServicesComponent } from './other-services.component';
 
 describe('OtherServicesComponent', () => {
   const setup = async () => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(OtherServicesComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
-      providers: [
-        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        FormBuilder,
-        ErrorSummaryService,
-        SubmitButtonComponent,
-        QuestionComponent,
-      ],
-    });
+    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
+      OtherServicesComponent,
+      {
+        imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+        providers: [
+          { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          FormBuilder,
+          ErrorSummaryService,
+          SubmitButtonComponent,
+          QuestionComponent,
+        ],
+      },
+    );
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, fireEvent };
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId };
   };
 
   it('should render an OtherServicesComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the section, the question but not the progress bar when not in the flow', async () => {
+    const { getByText, getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('section-heading')).toBeTruthy();
+    expect(getByText('Do you provide any other services?')).toBeTruthy();
+    expect(queryByTestId('progress-bar')).toBeFalsy();
+  });
+
+  it('should render the progress bar when in the flow', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.return = null;
+    fixture.detectChanges();
+
+    expect(getByTestId('progress-bar')).toBeTruthy();
   });
 
   it('should display dropdown checkboxes when Yes is selected', async () => {
@@ -64,10 +84,10 @@ describe('OtherServicesComponent', () => {
   it('should show error message(twice) when user tries to answer Yes with no checkboxes ticked', async () => {
     const { component, fixture, getAllByText, getByTestId } = await setup();
     const yesButton = getByTestId('otherServices-conditional-1');
-    const errorMessage = 'Select the other services you provide';
-    const event = { action: 'continue', save: true };
+    const errorMessage = 'Select all the other services you provide';
+    component.submitAction = { action: 'continue', save: true };
     fireEvent.click(yesButton);
-    component.onSubmit(event);
+    component.onSubmit();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.form.invalid).toBeTruthy();

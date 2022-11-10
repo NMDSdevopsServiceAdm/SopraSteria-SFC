@@ -1,26 +1,32 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('totalStaff').invalid">
-      <h1 class="govuk-heading-xl">Add the total number of staff for your workplace</h1>
-      <span id="totalStaff-hint" class="govuk-hint">
-        The total needs to include all staff (care-providers and none care-providers, those on permanent or temporary
-        contracts, pool, bank and agency workers).
-      </span>
-      <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
-        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
-      </span>
-      <div [formGroup]="form">
-        <label class="govuk-label" for="totalStaff"> Total number of staff </label>
-        <input
-          class="govuk-input govuk-input--width-4"
-          [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
-          [formControlName]="'totalStaff'"
-          id="totalStaff"
-          name="totalStaff"
-          type="text"
-          aria-describedby="totalStaff-hint"
-        />
-      </div>
-    </div>
+<fieldset class="govuk-fieldset">
+  <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+    <span class="govuk-caption-l">Workplace</span>
+    <h1 class="govuk-fieldset__heading">Add the total number of staff for your workplace</h1>
+  </legend>
+  <p data-testid="info">
+    The number should include all staff (care-providing and none care-providing, those on permanent or temporary
+    contracts, pool, bank and agency workers).
+  </p>
+  <app-details [title]="'Not sure how many members of staff your workplace has?'">
+    <p>
+      You can enter an estimate to save time, but remember to update this number in ASC-WDS once this account has been
+      validated by Skills for Care.
+    </p>
+  </app-details>
+  <div class="govuk-form-group" [formGroup]="form" [class.govuk-form-group--error]="submitted && form.invalid">
+    <label class="govuk-label" for="totalStaff"> Number of staff</label>
+    <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('totalStaff') }}
+    </span>
+
+    <input
+      class="govuk-input govuk-input--width-5"
+      [formControlName]="'totalStaff'"
+      id="totalStaff"
+      name="totalStaff"
+      [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
+      type="text"
+      aria-describedby="totalStaff-hint"
+    />
   </div>
-</div>
+</fieldset>

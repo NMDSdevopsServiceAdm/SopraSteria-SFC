@@ -5,9 +5,11 @@ import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { Subscription } from 'rxjs';
 
@@ -21,9 +23,12 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public submitted = false;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
 
   constructor(
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
@@ -33,7 +38,8 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
 
   ngOnInit(): void {
     this.setFlow();
-
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
@@ -155,12 +161,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   public setBackLink(): void {
-    const returnToWorkplaceNotFound = this.workplaceInterfaceService.workplaceNotFound$.value;
-
-    const backLink = returnToWorkplaceNotFound ? 'workplace-address-not-found' : 'regulated-by-cqc';
-
-    this.backService.setBackLink({ url: [this.flow, backLink] });
-    this.workplaceInterfaceService.workplaceNotFound$.next(false);
+    this.backLinkService.showBackLink();
   }
 
   public getFirstErrorMessage(item: string): string {

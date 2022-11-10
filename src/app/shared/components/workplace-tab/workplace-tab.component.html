@@ -1,8 +1,10 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Workplace</h2>
+  </div>
+</div>
 <ng-container *ngIf="!updateWorkplaceAlert && (showCQCDetailsBanner || showSharingPermissionsBanner)">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Workplace</h2>
-    </div>
     <div class="govuk-grid-column-two-thirds-from-desktop" *ngIf="showCQCDetailsBanner">
       <app-inset-text [color]="'todo'" data-testid="check-cqc-details">
         <h3 class="govuk-heading-s">You need to check your CQC details</h3>
@@ -30,19 +32,12 @@
   </div>
 </ng-container>
 
-<ng-container *ngIf="updateWorkplaceAlert; then alert; else summary"></ng-container>
-<ng-template #alert>
+<ng-container>
   <app-inset-text *ngIf="updateWorkplaceAlert" color="todo">
-    You need to provide information on your workplace.<br />
-    <a [routerLink]="['/workplace', workplace?.uid, 'start']">Add workplace information</a>
+    <a [routerLink]="['/workplace', workplace?.uid, 'start']" [state]="{ navigatedFromFragment: 'workplace' }">
+      Start to add more details about your workplace
+    </a>
   </app-inset-text>
-</ng-template>
-
-<ng-template #summary>
-  <app-workplace-summary
-    *ngIf="workplace"
-    [workplace]="workplace"
-    [workerCount]="workerCount"
-    [return]="summaryReturnUrl"
-  ></app-workplace-summary>
-</ng-template>
+  <app-workplace-summary [workplace]="workplace" [workerCount]="workerCount" [return]="summaryReturnUrl">
+  </app-workplace-summary>
+</ng-container>

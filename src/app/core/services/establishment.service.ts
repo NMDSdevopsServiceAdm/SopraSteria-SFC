@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
@@ -76,6 +76,8 @@ export class EstablishmentService {
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
+  private _employerTypeHasValue: boolean = null;
+  private _inStaffRecruitmentFlow: boolean;
 
   constructor(private http: HttpClient) {}
 
@@ -89,8 +91,20 @@ export class EstablishmentService {
     return this._primaryWorkplace$.value;
   }
 
+  public get employerTypeHasValue(): boolean {
+    return this._employerTypeHasValue;
+  }
+
+  public setEmployerTypeHasValue(hasValue: boolean) {
+    this._employerTypeHasValue = hasValue;
+  }
+
   public setPrimaryWorkplace(workplace: Establishment) {
     this._primaryWorkplace$.next(workplace);
+  }
+
+  public setWorkplace(workplace: Establishment) {
+    this._establishment$.next(workplace);
   }
 
   public get establishment$() {
@@ -119,6 +133,7 @@ export class EstablishmentService {
   public resetState() {
     this._establishmentId = null;
     this._establishment$.next(null);
+    this._inStaffRecruitmentFlow = false;
     this.setPrimaryWorkplace(null);
     this.setCheckCQCDetailsBanner(false);
   }
@@ -144,10 +159,19 @@ export class EstablishmentService {
   }
 
   public get returnTo(): URLStructure {
+    if (this.returnTo$.value) {
+      return this.returnTo$.value;
+    }
+    const returnTo = localStorage.getItem('returnTo');
+    if (returnTo) {
+      this.returnTo$.next(JSON.parse(returnTo));
+    }
+
     return this.returnTo$.value;
   }
 
-  public setReturnTo(returnTo: URLStructure) {
+  public setReturnTo(returnTo: URLStructure): void {
+    localStorage.setItem('returnTo', JSON.stringify(returnTo));
     this.returnTo$.next(returnTo);
   }
 
@@ -161,6 +185,27 @@ export class EstablishmentService {
 
   public setCheckCQCDetailsBanner(data: boolean) {
     this._checkCQCDetailsBanner$.next(data);
+  }
+
+  public get inStaffRecruitmentFlow() {
+    if (this._inStaffRecruitmentFlow) {
+      return this._inStaffRecruitmentFlow;
+    }
+
+    const inStaffRecruitmentFlow = localStorage.getItem('inStaffRecruitmentFlow');
+
+    if (inStaffRecruitmentFlow) {
+      this._inStaffRecruitmentFlow = JSON.parse(inStaffRecruitmentFlow);
+    } else if (isDevMode() && !this._inStaffRecruitmentFlow) {
+      throw new TypeError('No value for inRecruitmentFlow in local storage!');
+    }
+
+    return this._inStaffRecruitmentFlow;
+  }
+
+  public setInStaffRecruitmentFlow(data: boolean) {
+    this._inStaffRecruitmentFlow = data;
+    localStorage.setItem('inStaffRecruitmentFlow', data.toString());
   }
 
   getEstablishment(id: string, wdf: boolean = false) {
@@ -217,8 +262,8 @@ export class EstablishmentService {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
   }
 
-  updateSharingPermissionsBanner(establishmentId: string, data: any): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/updateSharingPermissionsBanner`, data);
+  updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/updateSingleEstablishmentField`, data);
   }
 
   updateLocalAuthorities(establishmentId, data) {
@@ -325,5 +370,9 @@ export class EstablishmentService {
     return this.http
       .get<any>(`/api/establishment/${establishmentId}/childWorkplaces`, { params: queryParams || {} })
       .pipe(map((data) => data));
+  }
+
+  public getCertificate(establishmentId: string, years: string): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/certificate/${years}`);
   }
 }

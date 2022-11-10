@@ -134,7 +134,12 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
               this.router.navigateByUrl(this.authService.redirectLocation);
             } else {
-              this.router.navigate(['/dashboard']);
+              if (response.body.establishment.employerTypeSet === false) {
+                this.establishmentService.setEmployerTypeHasValue(false);
+                this.router.navigate(['workplace', `${response.body.establishment.uid}`, 'type-of-employer']);
+              } else {
+                this.router.navigate(['/dashboard']);
+              }
             }
             this.authService.clearPreviousUser();
 

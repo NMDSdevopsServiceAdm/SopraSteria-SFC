@@ -5,6 +5,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -41,6 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
+    private benchmarksService: BenchmarksService,
     private userService: UserService,
     private workerService: WorkerService,
     private route: ActivatedRoute,
@@ -55,25 +57,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
+    this.establishmentService.setInStaffRecruitmentFlow(false);
 
     if (this.workplace) {
       this.getPermissions();
       this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
 
-      if (this.workplace.locationId) {
-        this.setCheckCQCDetailsBannerInEstablishmentService();
-      }
-
-      this.getShowCQCDetailsBanner();
-
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();
       }
       this.setShowSecondUserBanner();
+      this.getEstablishmentUsers();
     }
 
     this.showBanner && this.showStaffRecordBanner();
-    this.setUserServiceReturnUrl();
     this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
   }
 
@@ -102,39 +99,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.showSecondUserBanner = this.canAddUser && users.length === 1;
   }
 
-  private setUserServiceReturnUrl(): void {
-    this.userService.updateReturnUrl({
-      url: ['/dashboard'],
-      fragment: 'users',
+  private getEstablishmentUsers(): void {
+    this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((users) => {
+      this.userService.updateUsers(users);
     });
-  }
-
-  private setCheckCQCDetailsBannerInEstablishmentService(): void {
-    this.subscriptions.add(
-      this.establishmentService
-        .getCQCRegistrationStatus(this.workplace.locationId, {
-          postcode: this.workplace.postcode,
-          mainService: this.workplace.mainService.name,
-        })
-        .subscribe((response) => {
-          this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
-        }),
-    );
-  }
-
-  private getShowCQCDetailsBanner(): void {
-    this.subscriptions.add(
-      this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
-        this.showCQCDetailsBanner = showBanner;
-      }),
-    );
   }
 
   private showStaffRecordBanner(): void {
     this.alertService.addAlert({
       type: 'success',
-      message: `You've confirmed the details of the staff record you added`,
+      message: 'Staff record saved',
     });
+  }
+
+  public tabClickEvent($event) {
+    if ($event.tabSlug === 'benchmarks') {
+      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplace.id).subscribe());
+    }
   }
 
   ngOnDestroy(): void {

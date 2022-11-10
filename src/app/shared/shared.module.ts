@@ -9,8 +9,6 @@ import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
-import { CqcConfirmationDialogComponent } from '@features/search/cqc-status-change/cqc-confirmation-dialog.component';
-import { ParentConfirmationDialogComponent } from '@features/search/parent-request/parent-confirmation-dialog.component';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/check-cqc-details.component';
@@ -38,16 +36,21 @@ import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-r
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
+import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
+import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { ProgressComponent } from './components/progress/progress.component';
+import { RegistrationSubmitButtonsComponent } from './components/registration-submit-buttons/registration-submit-buttons.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
+import { SelectWorkplaceDropdownFormComponent } from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
+import { SelectWorkplaceRadioButtonFormComponent } from './components/select-workplace-radio-button-form/select-workplace-radio-button-form.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
@@ -71,11 +74,14 @@ import { TrainingAndQualificationsTabComponent } from './components/training-and
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
+import { UserFormComponent } from './components/user-form/user-form.component';
+import { UserTableComponent } from './components/users-table/user.table.component';
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
 import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
-import { WhyCollectingFluJabComponent } from './components/why-collecting-flu-jab/why-collecting-flu-jab.component';
+import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
+import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
@@ -116,7 +122,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     FileValueAccessorDirective,
     BulkUploadFileTypePipePipe,
     SanitizeVideoUrlPipe,
-    WhyCollectingFluJabComponent,
     InsetTextComponent,
     MessagesComponent,
     NumericAnswerPipe,
@@ -147,7 +152,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceSummaryComponent,
     WorkplaceTabComponent,
     OrderOtherPipe,
     LongDatePipe,
@@ -163,8 +167,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     DeleteWorkplaceDialogComponent,
-    ParentConfirmationDialogComponent,
-    CqcConfirmationDialogComponent,
+    // ParentConfirmationDialogComponent,
+    // CqcConfirmationDialogComponent,
     TotalStaffComponent,
     MoveWorkplaceDialogComponent,
     WdfFieldConfirmationComponent,
@@ -183,6 +187,16 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
+    WorkplaceSubmitButtonComponent,
+    UserTableComponent,
+    UserFormComponent,
+    WorkplaceContinueCancelButtonComponent,
+    ProgressBarComponent,
+    WorkplaceSummaryComponent,
+    SelectWorkplaceRadioButtonFormComponent,
+    SelectWorkplaceDropdownFormComponent,
+    RegistrationSubmitButtonsComponent,
+    NewBackLinkComponent,
   ],
   exports: [
     AlertComponent,
@@ -202,7 +216,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     EmploymentComponent,
     ErrorSummaryComponent,
     FileValueAccessorDirective,
-    WhyCollectingFluJabComponent,
     InsetTextComponent,
     MessagesComponent,
     NumericAnswerPipe,
@@ -231,7 +244,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceSummaryComponent,
     WorkplaceTabComponent,
     OrderOtherPipe,
     TrainingLinkPanelComponent,
@@ -248,8 +260,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     DeleteWorkplaceDialogComponent,
-    ParentConfirmationDialogComponent,
-    CqcConfirmationDialogComponent,
+    // ParentConfirmationDialogComponent,
+    // CqcConfirmationDialogComponent,
     TotalStaffComponent,
     BulkUploadFileTypePipePipe,
     SanitizeVideoUrlPipe,
@@ -268,6 +280,17 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
+    WorkplaceSubmitButtonComponent,
+    UserTableComponent,
+    UserFormComponent,
+    WorkplaceContinueCancelButtonComponent,
+    ProgressBarComponent,
+    WorkplaceSummaryComponent,
+    SummaryRecordChangeComponent,
+    SelectWorkplaceRadioButtonFormComponent,
+    SelectWorkplaceDropdownFormComponent,
+    RegistrationSubmitButtonsComponent,
+    NewBackLinkComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

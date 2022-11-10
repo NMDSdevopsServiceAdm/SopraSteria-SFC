@@ -4,12 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import {
-  SelectMainServiceDirective,
-} from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
   selector: 'app-select-main-service',
@@ -21,6 +20,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
 
   constructor(
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -28,17 +28,18 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, workplaceService);
+    super(backService, backLinkService, errorSummaryService, formBuilder, router, workplaceService);
   }
 
   protected init(): void {
-    this.flow = 'add-workplace';
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
     this.isRegulated = this.workplaceService.isRegulated();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
 
-    this.setBackLink();
+    // this.setBackLink();
   }
 
   protected getServiceCategories(): void {
@@ -75,38 +76,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    this.router.navigate([this.flow, 'add-total-staff']);
-  }
-
-  public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow, 'confirm-workplace-details'] });
-      return;
-    }
-
-    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
-    this.backService.setBackLink({ url: [this.flow, route] });
-  }
-
-  private getCQCRegulatedBackLink(): string {
-    if (this.workplaceService.manuallyEnteredWorkplace$.value) {
-      return 'workplace-name-address';
-    }
-    if (this.workplaceService.locationAddresses$.value.length == 1) {
-      return 'your-workplace';
-    }
-    if (this.workplaceService.locationAddresses$.value.length > 1) {
-      return 'select-workplace';
-    }
-  }
-
-  private getNonCQCRegulatedBackLink(): string {
-    if (this.workplaceService.manuallyEnteredWorkplace$.value) {
-      return 'workplace-name-address';
-    }
-    if (this.workplaceService.manuallyEnteredWorkplaceName$.value) {
-      return 'workplace-name';
-    }
-    return 'select-workplace-address';
+    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
+    this.router.navigate(url);
   }
 }

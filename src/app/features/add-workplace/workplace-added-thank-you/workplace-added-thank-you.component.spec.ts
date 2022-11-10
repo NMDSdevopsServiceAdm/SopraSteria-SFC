@@ -29,12 +29,10 @@ describe('WorkplaceAddedThankYouComponent', () => {
     expect(component.getByText('Thank you')).toBeTruthy();
   });
 
-  it('should go to contact us when link clicked', async () => {
+  it(`should display the reveal`, async () => {
     const { component } = await setup();
 
-    const contactUs = component.getByText('Contact us', { exact: false });
-
-    expect(contactUs.getAttribute('href')).toBe('/contact-us');
+    expect(component.getByText('Contact us if you have any questions')).toBeTruthy();
   });
 
   it('should navigate to dashboard when Return to home link clicked', async () => {

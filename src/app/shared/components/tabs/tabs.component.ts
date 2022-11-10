@@ -4,7 +4,9 @@ import {
   Component,
   ContentChildren,
   ElementRef,
+  EventEmitter,
   OnDestroy,
+  Output,
   QueryList,
   ViewChild,
 } from '@angular/core';
@@ -19,6 +21,8 @@ import { TabComponent } from './tab.component';
   templateUrl: './tabs.component.html',
 })
 export class TabsComponent implements AfterContentInit, OnDestroy {
+  @Output() selectedTabClick = new EventEmitter();
+
   private currentTab: number;
   private subscriptions: Subscription = new Subscription();
   @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
@@ -97,6 +101,8 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
 
     this.unselectTabs();
     tab.active = true;
+
+    this.selectedTabClick.emit({ tabSlug: tab.slug });
 
     const path = hasCurrentTab ? this.location.path().split('?')[0] : this.location.path();
     this.location.replaceState(`${path}#${tab.slug}`);

@@ -3,6 +3,7 @@ import { FormArray, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -28,8 +29,9 @@ export class NursingSpecialismComponent extends QuestionComponent {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
 
     this.form = formBuilder.group({
       hasNurseSpecialism: null,
@@ -42,20 +44,12 @@ export class NursingSpecialismComponent extends QuestionComponent {
   }
 
   init() {
-    if (!this.workerService.hasJobRole(this.worker, 23)) {
-      this.router.navigate(this.getRoutePath('other-job-roles'), { replaceUrl: true });
-    }
-
-    this.next = this.workerService.hasJobRole(this.worker, 27)
-      ? this.getRoutePath('mental-health-professional')
-      : this.getRoutePath('flu-jab');
-    this.previous = this.getRoutePath('nursing-category');
+    this.registeredNurseFlow = this.route.parent.snapshot.url[0].path === 'registered-nurse-details';
+    this.setUpPageRouting();
 
     let checkedSpecialisms = [];
     if (this.worker.nurseSpecialisms) {
-      this.form.patchValue({
-        hasNurseSpecialism: this.worker.nurseSpecialisms.value,
-      });
+      this.prefill();
 
       checkedSpecialisms = this.worker.nurseSpecialisms.specialisms
         ? this.worker.nurseSpecialisms.specialisms
@@ -72,6 +66,36 @@ export class NursingSpecialismComponent extends QuestionComponent {
           checked,
         }),
       );
+    }
+  }
+
+  private prefill(): void {
+    this.form.patchValue({
+      hasNurseSpecialism: this.worker.nurseSpecialisms.value,
+    });
+  }
+
+  private setUpPageRouting() {
+    if (this.insideFlow && !this.registeredNurseFlow) {
+      this.previous = this.getRoutePath('nursing-category');
+      this.next = this.workerService.hasJobRole(this.worker, 27)
+        ? this.getRoutePath('mental-health-professional')
+        : this.getRoutePath('recruited-from');
+    } else if (this.registeredNurseFlow) {
+      this.previous = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'registered-nurse-details',
+        'nursing-category',
+      ];
+      this.next = this.getRoutePath('');
+      this.returnUrl = this.getRoutePath('');
+    } else {
+      this.previous = this.getRoutePath('');
+      this.next = this.getRoutePath('');
     }
   }
 

@@ -12,6 +12,10 @@ enum Path {
   REJECTED_REGISTRATION = '/sfcadmin/registrations/rejected/:establishmentUid',
   CQC_MAIN_SERVICE_CHANGE = '/sfcadmin/cqc-main-service-change',
   CQC_MAIN_SERVICE_CHANGE_REQUEST = '/sfcadmin/cqc-main-service -change/:establishmentUid',
+  ADMIN_USERS = '/sfcadmin/users',
+  ADD_ADMIN_USER_DETAILS = '/sfcadmin/users/add-admin-user-details',
+  VIEW_ADMIN_USER_DETAILS = '/sfcadmin/users/:useruid',
+  EDIT_ADMIN_USER_DETAILS = '/sfcadmin/users/:useruid/edit',
 }
 
 export const adminJourney: JourneyRoute = {
@@ -100,6 +104,37 @@ export const adminCqcStatusChangeJournery: JourneyRoute = {
             {
               title: 'Request',
               path: Path.CQC_MAIN_SERVICE_CHANGE_REQUEST,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const adminUserJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Admin',
+      path: Path.ADMIN,
+      children: [
+        {
+          title: 'Admin users',
+          path: Path.ADMIN_USERS,
+          children: [
+            {
+              title: 'Add admin user details',
+              path: Path.ADD_ADMIN_USER_DETAILS,
+            },
+            {
+              title: 'Admin user details',
+              path: Path.VIEW_ADMIN_USER_DETAILS,
+              children: [
+                {
+                  title: 'Change admin user details',
+                  path: Path.EDIT_ADMIN_USER_DETAILS,
+                },
+              ],
             },
           ],
         },

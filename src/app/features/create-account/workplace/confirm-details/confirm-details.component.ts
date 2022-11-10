@@ -3,6 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { EmployerType } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
@@ -11,6 +12,7 @@ import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
@@ -28,7 +30,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
-  protected termsAndConditionsCheckbox: boolean;
+  public termsAndConditionsCheckbox: boolean;
   protected service: Service;
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
@@ -40,10 +42,13 @@ export class ConfirmDetailsComponent implements OnInit {
   public userDetails: UserDetails;
   protected actionType: string;
   public isCqcRegulated: boolean;
+  public typeOfEmployer: EmployerType;
+  public workplaceName: string;
 
   constructor(
     public registrationService: RegistrationService,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: FormBuilder,
     private userService: UserService,
@@ -56,14 +61,17 @@ export class ConfirmDetailsComponent implements OnInit {
     this.prefillForm();
     this.setupSubscriptions();
     this.setBackLink();
+    this.termsAndConditionsCheckbox = false;
+    this.workplaceName = this.locationAddress.locationName;
   }
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
+    this.backService.setBackLink(null);
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: ['registration', 'create-security-question'] });
+    this.backLinkService.showBackLink();
   }
 
   private setupSubscriptions(): void {
@@ -74,12 +82,13 @@ export class ConfirmDetailsComponent implements OnInit {
       this.registrationService.loginCredentials$,
       this.registrationService.securityDetails$,
       this.registrationService.totalStaff$,
+      this.registrationService.typeOfEmployer$,
     ]);
     const userSubscriptions = combineLatest([this.userService.userDetails$]);
     const subscriptions = combineLatest([registrationSubscriptions, userSubscriptions]).pipe(
       map(
         ([
-          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, totalStaff],
+          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, totalStaff, typeOfEmployer],
           [userDetails],
         ]) => {
           return {
@@ -90,19 +99,21 @@ export class ConfirmDetailsComponent implements OnInit {
             loginCredentials,
             securityDetails,
             totalStaff,
+            typeOfEmployer,
           };
         },
       ),
     );
     this.subscriptions.add(
       subscriptions.subscribe((res) => {
+        this.userDetails = res.userDetails;
         this.isCqcRegulated = res.isCqcRegulated;
         this.locationAddress = res.locationAddress;
         this.service = res.service;
         this.loginCredentials = res.loginCredentials;
         this.securityDetails = res.securityDetails;
         this.totalStaff = res.totalStaff;
-        this.userDetails = res.userDetails;
+        this.typeOfEmployer = res.typeOfEmployer;
       }),
     );
   }
@@ -127,6 +138,7 @@ export class ConfirmDetailsComponent implements OnInit {
         mainServiceOther: this.service.otherName ? this.service.otherName : null,
         isRegulated: this.isCqcRegulated,
         numberOfStaff: this.totalStaff,
+        typeOfEmployer: this.typeOfEmployer,
       },
       user: {
         ...this.userDetails,
@@ -152,7 +164,7 @@ export class ConfirmDetailsComponent implements OnInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      termsAndConditions: [null, Validators.required],
+      termsAndConditions: [null, { validators: [Validators.required, Validators.requiredTrue], updateOn: 'submit' }],
     });
   }
 
@@ -178,9 +190,9 @@ export class ConfirmDetailsComponent implements OnInit {
       });
     }
   }
-
   public setTermsAndConditionsCheckbox() {
-    this.registrationService.termsAndConditionsCheckbox$.next(!this.termsAndConditionsCheckbox);
+    this.termsAndConditionsCheckbox = !this.form.get('termsAndConditions').value;
+    this.registrationService.termsAndConditionsCheckbox$.next(this.termsAndConditionsCheckbox);
   }
 
   public getFirstErrorMessage(item: string): string {

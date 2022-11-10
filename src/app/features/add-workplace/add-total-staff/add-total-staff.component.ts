@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
@@ -16,6 +17,7 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
   constructor(
     protected router: Router,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
@@ -26,6 +28,7 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
     super(
       router,
       backService,
+      backLinkService,
       errorSummaryService,
       route,
       formBuilder,
@@ -36,14 +39,13 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
   }
 
   protected init(): void {
-    this.flow = 'add-workplace';
+    this.returnToConfirmDetails = this.workplaceInterfaceService.returnTo$.value;
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'add-workplace';
+    this.flow = this.insideFlow ? 'add-workplace' : 'add-workplace/confirm-workplace-details';
   }
 
   protected navigateToNextPage(): void {
-    this.router.navigate([this.flow, 'confirm-workplace-details']);
-  }
-
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, 'select-main-service'] });
+    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'confirm-workplace-details'];
+    this.router.navigate(url);
   }
 }

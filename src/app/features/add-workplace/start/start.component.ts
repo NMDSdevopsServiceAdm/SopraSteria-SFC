@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
@@ -7,7 +7,7 @@ import { WorkplaceService } from '@core/services/workplace.service';
   templateUrl: './start.component.html',
 })
 export class StartComponent implements OnInit {
-  constructor(public backService: BackService, private workplaceService: WorkplaceService) {}
+  constructor(public backLinkService: BackLinkService, private workplaceService: WorkplaceService) {}
 
   ngOnInit(): void {
     this.workplaceService.resetService();
@@ -16,6 +16,6 @@ export class StartComponent implements OnInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: ['/workplace', 'view-all-workplaces'] });
+    this.backLinkService.showBackLink();
   }
 }

@@ -25,7 +25,6 @@ const buildWorkerCsv = build('WorkerCSV', {
     MAINJOBROLE: '4',
     MAINJRDESC: '',
     NATIONALITY: '826',
-    FLUVAC: '',
     NINUMBER: 'JA622112A',
     NMCREG: '',
     NONSCQUAL: '2',
@@ -101,61 +100,6 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator.validationErrors.map((err) => err.warning)).not.to.include(
           'DAYSSICK in the last 12 months has not changed please check this is correct',
         );
-      });
-    });
-
-    describe('flu jab', () => {
-      const codesToTest = ['1', '2', '999'];
-      codesToTest.forEach((code) => {
-        it('should not emit an warning if FLUVAC is not ' + code, async () => {
-          const validator = new WorkerCsvValidator(
-            buildWorkerCsv({
-              overrides: {
-                STATUS: 'NEW',
-                FLUVAC: code,
-              },
-            }),
-            2,
-            null,
-            mappings,
-          );
-
-          await validator.validate();
-          const validationErrors = validator._validationErrors;
-
-          expect(validationErrors.length).to.equal(0);
-        });
-      });
-
-      it('should emit an warning if FLUVAC is not in 1, 2, 999, null', async () => {
-        const validator = new WorkerCsvValidator(
-          buildWorkerCsv({
-            overrides: {
-              STATUS: 'NEW',
-              FLUVAC: '8',
-            },
-          }),
-          2,
-          null,
-          mappings,
-        );
-
-        await validator.validate();
-        const validationErrors = validator._validationErrors;
-
-        expect(validationErrors.length).to.equal(1);
-        expect(validationErrors).to.deep.equal([
-          {
-            worker: '3',
-            name: 'MARMA',
-            lineNumber: 2,
-            warnCode: 3055,
-            warnType: 'WORKER_FLUVAC_WARNING',
-            warning: 'FLUVAC the code you have selected has not been recognised and will be ignored',
-            source: '8',
-            column: 'FLUVAC',
-          },
-        ]);
       });
     });
 
@@ -630,6 +574,239 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
+    describe('_validationQualificationRecords', () => {
+      it('should not emit a warning if the qualification year and ID are valid', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;2020',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(0);
+      });
+
+      it('should emit a error if the qualification ID not a number', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: 'qualification;2020',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The code you have entered for (QUALACH01) is incorrect',
+            source: 'qualification;2020',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit a warning if the year is null', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            warnType: 'QUAL_ACH01_ERROR',
+            warning: 'Year achieved for QUALACH01 is blank',
+            source: '314;',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit an error if the year is not a number', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;happy',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '314;happy',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit an error if the year is invalid', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;happy',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '314;happy',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit an error if the qualification year is over 100 years ago', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;1900',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '314;1900',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit an error if the qualification year is in the future', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;5000',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
+            errType: 'QUAL_ACH01_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '314;5000',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit a warning if the qualification description is greater than 120 characters', async () => {
+        const longstring =
+          'thisisalongstringthisisalongstringthisisalongstringthisisalongstringthisisalongstringthisisalongstringthisisalongstringthis';
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '314;2015',
+              QUALACH01NOTES: longstring,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(1);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: WorkerCsvValidator.QUAL_ACH01_NOTES_ERROR,
+            warnType: 'QUAL_ACH01_NOTES_ERROR',
+            warning: 'The notes you have entered for (QUALACH01NOTES) are over 120 characters and will be ignored',
+            source: longstring,
+            column: 'QUALACH01NOTES',
+          },
+        ]);
+      });
+    });
+
     describe('_validateLocalId()', () => {
       it('should allow valid LOCALESTID', async () => {
         const validator = new WorkerCsvValidator(
@@ -679,7 +856,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator._validationErrors.length).to.equal(1);
       });
 
-      it('should add LOCAL_ID_ERROR error when LOCALESTID is oveer 50 characters', async () => {
+      it('should add LOCAL_ID_ERROR error when LOCALESTID is over 50 characters', async () => {
         const worker = buildWorkerCsv({
           overrides: {
             STATUS: 'NEW',
@@ -702,6 +879,128 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             error: 'LOCALESTID is longer than 50 characters',
             source: worker.LOCALESTID,
             column: 'LOCALESTID',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
+
+    describe('_validateSalary()', () => {
+      it('should not error when the worker is not a senior manager and the salary is between £500 and £200000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '20000',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should not error when the worker is a senior manager and the salary entered is over £200000 and under £250000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '240000',
+            MAINJOBROLE: '1',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should error when salary entered is below £500', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '300',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.SALARY_ERROR,
+            errType: 'SALARY_ERROR',
+            error: 'Salary (SALARY) must be an integer between £500 and £200000',
+            source: worker.SALARY,
+            column: 'SALARY',
+            name: 'MARMA',
+            worker: '3',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it('should error when worker is not a senior manager and salary is over £200000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '250000',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.SALARY_ERROR,
+            errType: 'SALARY_ERROR',
+            error: 'Salary (SALARY) must be an integer between £500 and £200000',
+            source: worker.SALARY,
+            column: 'SALARY',
+            name: 'MARMA',
+            worker: '3',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it('should error when the worker is a senior manager and the salary entered is over £250000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '260000',
+            MAINJOBROLE: '1',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.SALARY_ERROR,
+            errType: 'SALARY_ERROR',
+            error: 'Salary (SALARY) must be an integer between £500 and £250000',
+            source: worker.SALARY,
+            column: 'SALARY',
+            name: 'MARMA',
+            worker: '3',
           },
         ]);
         expect(validator._validationErrors.length).to.equal(1);

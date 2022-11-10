@@ -8,6 +8,7 @@ import {
   adminJourney,
   adminPendingRegistrationJourney,
   adminRejectedRegistrationJourney,
+  adminUserJourney,
 } from '@core/breadcrumb/journey.admin';
 import {
   benchmarksPayJourney,
@@ -244,6 +245,10 @@ export class BreadcrumbService {
       }
       case JourneyType.BENEFITS_BUNDLE: {
         routes = benefitsBundleJourney;
+        break;
+      }
+      case JourneyType.ADMIN_USERS: {
+        routes = adminUserJourney;
         break;
       }
       default: {

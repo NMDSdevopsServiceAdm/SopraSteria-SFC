@@ -1,0 +1,78 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Workplace</span>
+          <h1 class="govuk-fieldset__heading">We could not find {{ isParent ? 'the' : 'your' }} workplace</h1>
+        </legend>
+        <p>
+          CQC location ID or postcode entered: <strong>{{ postcodeOrLocationId }}</strong>
+        </p>
+        <h4 class="govuk-heading-s">
+          Do you want to try find {{ isParent ? 'the' : 'your' }} workplace with a different CQC location ID or
+          postcode?
+        </h4>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+          <span
+            *ngIf="submitted && this.form.get('useDifferentLocationIdOrPostcode').errors"
+            id="useDifferentLocationIdOrPostcode-error"
+            data-testid="errorMessage"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getErrorMessage('useDifferentLocationIdOrPostcode') }}
+          </span>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="useDifferentLocationIdOrPostcode-conditional-1"
+                class="govuk-radios__input"
+                id="useDifferentLocationIdOrPostcode-1"
+                name="useDifferentLocationIdOrPostcode"
+                type="radio"
+                value="yes"
+                [formControlName]="'useDifferentLocationIdOrPostcode'"
+              />
+              <label for="useDifferentLocationIdOrPostcode-1" class="govuk-label govuk-radios__label">Yes</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                aria-controls="useDifferentLocationIdOrPostcode-conditional-2"
+                class="govuk-radios__input"
+                id="useDifferentLocationIdOrPostcode-2"
+                name="useDifferentLocationIdOrPostcode"
+                type="radio"
+                value="no"
+                [formControlName]="'useDifferentLocationIdOrPostcode'"
+              />
+              <label for="useDifferentLocationIdOrPostcode-2" class="govuk-label govuk-radios__label"
+                >No, I'll enter {{ isParent ? 'the' : 'our' }} workplace details myself</label
+              >
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
+    </form>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-!-margin-left-8">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="!isParent"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Confirm workplace'"
+      ></app-progress-bar>
+    </div>
+  </div>
+</div>

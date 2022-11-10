@@ -1,7 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -15,34 +16,43 @@ import { of } from 'rxjs';
 import { DataSharingComponent } from './data-sharing.component';
 
 describe('DataSharingComponent', () => {
-  async function setup(shareWith = { cqc: null, localAuthorities: null }) {
-    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(DataSharingComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      providers: [
-        ErrorSummaryService,
-        BackService,
-        FormBuilder,
-        { provide: EstablishmentService, useFactory: MockEstablishmentService.factory(shareWith) },
-      ],
-    });
+  async function setup(shareWith = { cqc: null, localAuthorities: null }, returnUrl = true) {
+    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
+      DataSharingComponent,
+      {
+        imports: [
+          SharedModule,
+          RouterModule,
+          RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
+          HttpClientTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+        ],
+        providers: [
+          ErrorSummaryService,
+          BackService,
+          FormBuilder,
+          {
+            provide: EstablishmentService,
+            useFactory: MockEstablishmentService.factory(shareWith, returnUrl),
+            deps: [HttpClient],
+          },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const router = injector.inject(Router) as Router;
 
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(null);
     const updateDataSharingSpy = spyOn(establishmentService, 'updateDataSharing').and.returnValue(of(true));
-    const updateSharingPermissionsBannerSpy = spyOn(
+    const updateSingleEstablishmentFieldSpy = spyOn(
       establishmentService,
-      'updateSharingPermissionsBanner',
-    ).and.returnValue(of(true));
+      'updateSingleEstablishmentField',
+    ).and.returnValue(of({ property: 'showAddWorkplaceDetailsBanner', value: false }));
 
     return {
       fixture,
@@ -51,14 +61,32 @@ describe('DataSharingComponent', () => {
       getAllByText,
       queryByText,
       getByTestId,
+      queryByTestId,
+      routerSpy,
       updateDataSharingSpy,
-      updateSharingPermissionsBannerSpy,
+      updateSingleEstablishmentFieldSpy,
     };
   }
 
   it('should render DataSharingComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the progress bar when in the flow', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.return = null;
+    fixture.detectChanges();
+
+    expect(getByTestId('progress-bar')).toBeTruthy();
+  });
+
+  it('should render the section, the question but not the progress bar when not in the flow', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('section-heading')).toBeTruthy();
+    expect(queryByTestId('progress-bar')).toBeFalsy();
   });
 
   describe('Top of page paragraph and reveals', async () => {
@@ -69,7 +97,7 @@ describe('DataSharingComponent', () => {
       fixture.detectChanges();
 
       expect(
-        queryByText("We'd like to share your data with the Care Quality Commission (CQC) and local authorities."),
+        queryByText(`We'd like to share your data with the Care Quality Commission (CQC) and local authorities.`),
       ).toBeTruthy();
     });
 
@@ -80,7 +108,7 @@ describe('DataSharingComponent', () => {
       fixture.detectChanges();
 
       expect(
-        queryByText("We'd like to share your data with the Care Quality Commission (CQC) and local authorities."),
+        queryByText(`We'd like to share your data with the Care Quality Commission (CQC) and local authorities.`),
       ).toBeFalsy();
     });
 
@@ -263,9 +291,21 @@ describe('DataSharingComponent', () => {
     });
   });
 
+  it('should have link to check-answers page on continue button', async () => {
+    const { fixture, getByText, routerSpy } = await setup();
+    fixture.componentInstance.return = null;
+    fixture.detectChanges();
+
+    const workplaceUid = fixture.componentInstance.establishment.uid;
+    const continueButton = getByText('Save and continue');
+    fireEvent.click(continueButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceUid, 'check-answers']);
+  });
+
   describe('removing sharing permission banner function', () => {
-    it('should call updateSharingPermissionsBanner when the save and return button is clicked', async () => {
-      const { component, fixture, getByText, updateSharingPermissionsBannerSpy } = await setup();
+    it('should call updateSingleEstablishmentField when the save and return button is clicked', async () => {
+      const { component, fixture, getByText, updateSingleEstablishmentFieldSpy } = await setup();
 
       component.establishment.showSharingPermissionsBanner = true;
       fixture.detectChanges();
@@ -273,19 +313,95 @@ describe('DataSharingComponent', () => {
       const returnButton = getByText('Save and return');
       fireEvent.click(returnButton);
 
-      expect(updateSharingPermissionsBannerSpy).toHaveBeenCalled();
+      expect(updateSingleEstablishmentFieldSpy).toHaveBeenCalled();
     });
 
-    it('should call updateSharingPermissionsBanner when the exit button is clicked', async () => {
-      const { component, fixture, getByText, updateSharingPermissionsBannerSpy } = await setup();
+    it('should call updateSingleEstablishmentField when the cancel button is clicked', async () => {
+      const { component, fixture, getByText, updateSingleEstablishmentFieldSpy } = await setup();
 
       component.establishment.showSharingPermissionsBanner = true;
       fixture.detectChanges();
 
-      const returnButton = getByText('Exit');
+      const returnButton = getByText('Cancel');
       fireEvent.click(returnButton);
 
-      expect(updateSharingPermissionsBannerSpy).toHaveBeenCalled();
+      expect(updateSingleEstablishmentFieldSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('submit buttons', () => {
+    it(`should show 'Save and continue' cta button and 'Skip this question' link`, async () => {
+      const { getByText } = await setup({ cqc: null, localAuthorities: null }, false);
+
+      expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
+    });
+
+    it('should navigate to the sharing-data page when skip the question', async () => {
+      const { fixture, getByText, routerSpy, component } = await setup({ cqc: null, localAuthorities: null }, false);
+
+      component.return = null;
+      fixture.detectChanges();
+
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
+    });
+
+    it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
+      const { component, fixture, getByText } = await setup({ cqc: null, localAuthorities: null }, false);
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+    });
+
+    it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
+      const { component, fixture, getByText } = await setup({ cqc: null, localAuthorities: null }, false);
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction');
+
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    });
+
+    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should call the setSubmitAction function with an action of return and save as true when clicking 'Save and return' button`, async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+    });
+
+    it(`should call the setSubmitAction function with an action of exit and save as false when clicking 'Cancel' link`, async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: false });
     });
   });
 });

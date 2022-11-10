@@ -7,6 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
 @Directive()
 export class CouldNotFindWorkplaceAddressDirective implements OnInit {
@@ -17,6 +18,10 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted: boolean;
+  public insideFlow: boolean;
+  public flow: string;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
 
   constructor(
     protected workplaceInterfaceService: WorkplaceInterfaceService,
@@ -28,9 +33,10 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
     protected route: ActivatedRoute,
   ) {}
 
-  public flow: string;
-
   ngOnInit(): void {
+    this.init();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.flow = this.route.snapshot.parent.url[0].path;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
@@ -41,6 +47,9 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
     this.invalidPostcodeEntered = this.workplaceInterfaceService.invalidPostcodeEntered$.value;
     this.workplaceInterfaceService.useDifferentLocationIdOrPostcode$.next(null);
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected init(): void {}
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);

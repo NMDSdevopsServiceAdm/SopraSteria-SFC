@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { SecurityQuestionDirective } from '@shared/directives/user/security-question.directive';
 
 @Component({
@@ -12,18 +14,29 @@ import { SecurityQuestionDirective } from '@shared/directives/user/security-ques
   templateUrl: './create-security-question.component.html',
 })
 export class SecurityQuestionComponent extends SecurityQuestionDirective {
+  public workplaceSections: string[];
+  public userAccountSections: string[];
+  public insideFlow: boolean;
+  public flow: string;
+
   constructor(
     private registrationService: RegistrationService,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    private route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, formBuilder, router);
+    super(backService, backLinkService, errorSummaryService, formBuilder, router);
   }
 
   protected init(): void {
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.return = this.registrationService.returnTo$.value;
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
     this.setBackLink();
   }
 
@@ -37,13 +50,8 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
     );
   }
 
-  public setBackLink(): void {
-    if (this.return) {
-      const url = 'confirm-details';
-      this.backService.setBackLink({ url: ['registration', url] });
-      return;
-    }
-    this.backService.setBackLink({ url: ['registration', 'username-password'] });
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   protected save(): void {

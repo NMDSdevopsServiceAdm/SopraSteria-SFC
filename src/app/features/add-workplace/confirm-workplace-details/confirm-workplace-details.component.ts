@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { AddWorkplaceFlow, AddWorkplaceResponse } from '@core/model/workplace.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -23,8 +24,9 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     protected router: Router,
     protected workplaceService: WorkplaceService,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
   ) {
-    super(backService);
+    super(backService, backLinkService);
   }
 
   protected init(): void {
@@ -38,11 +40,11 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     this.locationAddress = this.workplaceService.selectedLocationAddress$.value;
     this.workplace = this.workplaceService.selectedWorkplaceService$.value;
     this.WorkplaceTotalStaff = this.workplaceService.totalStaff$.value;
+    this.employerTypeObject = this.workplaceService.typeOfEmployer$.value;
   }
 
   public setBackLink(): void {
-    const backLinkUrl = 'add-total-staff';
-    this.backService.setBackLink({ url: [this.flow, backLinkUrl] });
+    this.backLinkService.showBackLink();
   }
 
   public continue(): void {
@@ -58,6 +60,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
             this.locationAddress,
             this.workplace,
             this.WorkplaceTotalStaff,
+            this.employerTypeObject,
           ),
         )
         .subscribe(
@@ -76,7 +79,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
 
   public onSetReturn(): void {
     this.workplaceService.setReturnTo({
-      url: [`${this.flow}/confirm-details`],
+      url: [`${this.flow}/confirm-workplace-details`],
     });
   }
 

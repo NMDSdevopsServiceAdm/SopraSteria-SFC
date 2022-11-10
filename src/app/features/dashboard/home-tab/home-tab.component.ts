@@ -53,7 +53,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canViewWorkplaces: boolean;
   public canViewReports: boolean;
   public isParent: boolean;
-  public updateStaffRecords: boolean;
   public user: UserDetails;
   public canViewChangeDataOwner: boolean;
   public canViewDataPermissionsLink: boolean;
@@ -72,6 +71,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public workplaceUid: string;
   public now: Date = new Date();
   public wdfNewDesignFlag: boolean;
+  public recruitmentJourneyExistingUserBanner: boolean;
+  public addWorkplaceDetailsBanner: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -91,7 +92,9 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.user = this.userService.loggedInUser;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.recruitmentJourneyExistingUserBanner = this.primaryWorkplace.recruitmentJourneyExistingUserBanner;
 
+    this.addWorkplaceDetailsBanner = this.primaryWorkplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();
 
     if (this.workplace) {
@@ -105,7 +108,8 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.establishmentService.establishment$.pipe(take(1)).subscribe((workplace) => {
           this.isLocalAuthority =
-            this.workplace.employerType && this.workplace.employerType.value.startsWith('Local Authority');
+            this.workplace.employerType &&
+            this.workplace.employerType.value.toLowerCase().startsWith('local authority');
 
           this.canRunLocalAuthorityReport =
             this.workplace.isParent &&
@@ -119,7 +123,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
       isAdmin: isAdminRole(this.user.role),
     });
 
-    if (!this?.workplace?.employerType) {
+    if (this.addWorkplaceDetailsBanner) {
       this.window.dataLayer.push({
         firstTimeLogin: true,
         workplaceID: this?.workplace?.nmdsId ? this.workplace.nmdsId : null,
@@ -386,6 +390,18 @@ export class HomeTabComponent implements OnInit, OnDestroy {
 
   public convertToDate(dateString: string): Date {
     return new Date(dateString);
+  }
+
+  public setRecuritmentBannerToTrue(event: Event): void {
+    event.preventDefault();
+    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
+    if (this.canEditEstablishment) {
+      this.subscriptions.add(
+        this.establishmentService
+          .updateSingleEstablishmentField(this.workplace.uid, data)
+          .subscribe(() => this.router.navigate(['/workplace', this.workplace.uid, 'staff-recruitment-start'])),
+      );
+    }
   }
 
   ngOnDestroy(): void {

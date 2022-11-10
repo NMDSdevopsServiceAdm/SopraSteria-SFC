@@ -36,6 +36,7 @@ import { TrainingService } from '@core/services/training.service';
 import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { TailoredSeminarsComponent } from '@features/benefits-bundle/benefit-tailored-seminars/benefit-tailored-seminars.component';
 import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
 import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
@@ -53,6 +54,7 @@ import { LogoutComponent } from '@features/logout/logout.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
+import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -71,6 +73,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
 @NgModule({
   declarations: [
     AppComponent,
+    AscWdsCertificateComponent,
     DashboardComponent,
     DashboardHeaderComponent,
     FirstLoginPageComponent,
@@ -96,6 +99,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     BenefitAccordionComponent,
     BenefitsTrainingDiscountsComponent,
     BenefitsELearningComponent,
+    TailoredSeminarsComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

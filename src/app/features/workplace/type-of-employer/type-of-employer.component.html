@@ -1,14 +1,14 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">What type of employer is {{ establishment.name }}?</h1>
-          </legend>
-
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+          <span class="govuk-caption-l" data-testid="section-heading">Workplace</span>
+          <h1 class="govuk-fieldset__heading">What type of employer are you?</h1>
+        </legend>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <span
             *ngIf="submitted && form.get('employerType').invalid"
             id="employerType-error"
@@ -17,7 +17,7 @@
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('employerType') }}
           </span>
           <div class="govuk-radios govuk-radios--conditional">
-            <ng-container *ngFor="let answer of options; let idx = index">
+            <ng-container *ngFor="let option of options; let idx = index">
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
@@ -25,22 +25,21 @@
                   id="employerType-{{ idx }}"
                   name="employerType"
                   type="radio"
-                  [value]="answer"
+                  [value]="option.value"
                 />
                 <label class="govuk-label govuk-radios__label" for="employerType-{{ idx }}">
-                  {{ answer }}
+                  {{ option.text }}
                 </label>
               </div>
 
               <div
-                *ngIf="answer === 'Other'"
+                *ngIf="option.value === 'Other'"
                 class="govuk-radios__conditional"
                 [class.govuk-radios__conditional--hidden]="form.get('employerType').value !== 'Other'"
                 id="conditional-employerType-conditional-1"
               >
                 <div class="govuk-form-group">
-                  <label class="govuk-label" for="other"> Other Employer Type </label>
-                  <span id="employerType-hint" class="govuk-hint"> Optional </span>
+                  <label class="govuk-label" for="other"> Other employer type (optional)</label>
                   <span *ngIf="submitted && form.get('other').invalid" id="other-error" class="govuk-error-message">
                     <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('other') }}
                   </span>
@@ -56,14 +55,16 @@
               </div>
             </ng-container>
           </div>
-        </fieldset>
-      </div>
-    </div>
-  </div>
+        </div>
+      </fieldset>
 
-  <app-submit-button
-    [return]="!!return"
-    [isExistingStaffRecord]="false"
-    (clicked)="onSubmit($event)"
-  ></app-submit-button>
-</form>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+        [recordSummary]="showSkipButton"
+        [callToAction]="callToAction"
+        [marginTop4]="true"
+      ></app-workplace-submit-button>
+    </form>
+  </div>
+</div>

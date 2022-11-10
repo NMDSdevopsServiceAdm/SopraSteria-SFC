@@ -14,6 +14,8 @@ import { RegulatedByCQCDirective } from '@features/workplace-find-and-select/reg
   templateUrl: './regulated-by-cqc.component.html',
 })
 export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
+  public nextRoute: string[];
+
   constructor(
     private workplaceService: WorkplaceService,
     protected backService: BackService,
@@ -42,6 +44,26 @@ export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
     return this.establishmentService.returnTo;
   }
 
+  public navigateAction(payload: { action: string; save: boolean }): void {
+    if (!payload.save) {
+      this.navigate(payload.action);
+    }
+  }
+
+  protected navigate(action): void {
+    if (!action) {
+      return;
+    }
+
+    if (action === 'continue') {
+      this.router.navigate(this.nextRoute);
+      return;
+    } else if (action === 'return') {
+      this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
+      return;
+    }
+  }
+
   protected onSuccess(data: LocationSearchResponse): void {
     this.workplaceService.isRegulated$.next(this.regulatedByCQC.value === 'yes');
     if (data.success === 1) {
@@ -54,6 +76,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
     this.workplaceService.isRegulated$.next(this.regulatedByCQC.value === 'yes');
     this.navigateToWorkplaceNotFoundRoute();
   }
+
   public returnToWorkPlace(event: Event) {
     event.preventDefault();
     this.router.navigate(['/dashboard'], { fragment: 'workplace' });

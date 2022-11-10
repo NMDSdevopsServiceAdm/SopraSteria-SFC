@@ -1,6 +1,6 @@
 export const DATE_PARSE_FORMAT = 'YYYY-MM-DD';
 export const DATE_DISPLAY_DEFAULT = 'DD/MM/YYYY';
-export const DATE_DISPLAY_FULL = 'D MMMM, Y';
+export const DATE_DISPLAY_FULL = 'D MMMM YYYY';
 export const NIN_PATTERN =
   /^(?!BG)(?!GB)(?!NK)(?!KN)(?!TN)(?!NT)(?!ZZ)(?:[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z])(?:\s*\d\s*){6}([A-D]|\s)$/;
 export const POSTCODE_PATTERN =
@@ -12,5 +12,5 @@ export const API_PATTERN = /^\/api\//;
 export const ADD_USER_API = '/api/user/add';
 export const ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES = /^[A-Za-z0-9_-]*$/;
 export const FILE_UPLOAD_TYPES = ['CSV', 'ZIP'];
-export const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/;
+export const EMAIL_PATTERN = /^[A-Za-z0-9._'%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/;
 export const PHONE_PATTERN = /^[0-9 x(?=ext 0-9+)]{8,50}$/;

@@ -356,6 +356,18 @@ const config = convict({
       },
     },
   },
+  certificate: {
+    region: {
+      doc: 'AWS region override for certificate S3 only',
+      format: '*',
+      default: 'eu-west-2',
+    },
+    bucketname: {
+      doc: 'Bucket used to upload all client certificates',
+      format: '*',
+      default: 'sfc-public-staging',
+    },
+  },
   disbursement: {
     region: {
       doc: 'AWS region override for disbursement S3 only',

@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
@@ -15,15 +16,18 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirec
   constructor(
     public registrationService: RegistrationService,
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, registrationService);
+    super(backService, backLinkService, errorSummaryService, formBuilder, router, route, registrationService);
   }
 
-  protected setFlow(): void {
-    this.flow = '/registration';
+  protected init(): void {
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.flow = this.insideFlow ? 'registration' : 'regiastration/confirm-details';
   }
 
   protected setTitle(): void {

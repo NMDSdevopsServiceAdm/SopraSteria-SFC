@@ -13,6 +13,7 @@ import { NameOfWorkplaceComponent } from '@features/create-account/workplace/nam
 import { SelectWorkplaceAddressComponent } from '@features/create-account/workplace/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/create-account/workplace/select-workplace/select-workplace.component';
 import { ThankYouComponent } from '@features/create-account/workplace/thank-you/thank-you.component';
+import { TypeOfEmployerComponent } from '@features/create-account/workplace/type-of-employer/type-of-employer.component';
 import { WorkplaceNameAddressComponent } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/create-account/workplace/workplace-not-found/workplace-not-found.component';
 import { PagesModule } from '@features/pages/pages.module';
@@ -20,11 +21,10 @@ import { ChangeYourDetailsComponent } from '@features/registration/change-your-d
 import { RegistrationCompleteComponent } from '@features/registration/registration-complete/registration-complete.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 import { SharedModule } from '@shared/shared.module';
-
+import { RegulatedByCqcComponent } from '@features/create-account/workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { FindWorkplaceAddressComponent } from '../create-account/workplace/find-workplace-address/find-workplace-address.component';
 import { FindYourWorkplaceComponent } from '../create-account/workplace/find-your-workplace/find-your-workplace.component';
 import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
-import { RegulatedByCqcComponent } from '../create-account/workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 
@@ -46,13 +46,14 @@ import { CreateAccountComponent } from './create-account/create-account.componen
     CreateAccountComponent,
     FindYourWorkplaceComponent,
     IsThisYourWorkplaceComponent,
-    RegulatedByCqcComponent,
     WorkplaceNotFoundComponent,
     NameOfWorkplaceComponent,
     UsernamePasswordComponent,
     CouldNotFindWorkplaceAddressComponent,
     ConfirmDetailsComponent,
     AddTotalStaffComponent,
+    TypeOfEmployerComponent,
+    RegulatedByCqcComponent,
   ],
 })
 export class RegistrationModule {}

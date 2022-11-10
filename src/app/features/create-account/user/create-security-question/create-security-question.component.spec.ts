@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { SecurityQuestionComponent } from './create-security-question.component';
 
 describe('SecurityQuestionComponent', () => {
-  async function setup() {
+  async function setup(registrationFlow = true) {
     const component = await render(SecurityQuestionComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
       providers: [
@@ -28,7 +28,7 @@ describe('SecurityQuestionComponent', () => {
               parent: {
                 url: [
                   {
-                    path: 'registration',
+                    path: registrationFlow ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -56,6 +56,39 @@ describe('SecurityQuestionComponent', () => {
   it('should render a SecurityQuestionComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the workplace and user account progress bars', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+  });
+
+  it('should not render the progress bars when accessed from outside the flow', async () => {
+    const { component } = await setup(false);
+
+    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+  });
+
+  it('should show the continue button when inside the flow', async () => {
+    const { component } = await setup();
+
+    expect(component.getByText('Continue')).toBeTruthy();
+  });
+
+  it('should show the Save and return button and a cancel link when inside the flow', async () => {
+    const { component } = await setup();
+
+    component.fixture.componentInstance.insideFlow = false;
+    component.fixture.componentInstance.flow = 'registration/confirm-details';
+    component.fixture.detectChanges();
+    const cancelLink = component.getByText('Cancel');
+
+    expect(component.getByText('Save and return')).toBeTruthy();
+    expect(cancelLink).toBeTruthy();
+    expect(cancelLink.getAttribute('href')).toEqual('/registration/confirm-details');
   });
 
   it('should not let you submit with no question', async () => {
@@ -143,30 +176,24 @@ describe('SecurityQuestionComponent', () => {
     expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
   });
 
-  describe('setBackLink()', () => {
-    it('should set the back link to username-password if feature flag is on and return url is null', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+  it('should navigate to confirm-details when submitting form and not in the flow', async () => {
+    const { component, spy } = await setup(false);
 
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
+    const form = component.fixture.componentInstance.form;
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'username-password'],
-      });
-    });
+    component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
 
-    it('should set the back link to confirm-details if the feature flag is on and return url is not null', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
+    form.controls['securityQuestion'].markAsDirty();
+    form.controls['securityQuestion'].setValue('question');
 
-      component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
+    form.controls['securityQuestionAnswer'].markAsDirty();
+    form.controls['securityQuestionAnswer'].setValue('answer');
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'confirm-details'],
-      });
-    });
+    const submitButton = component.getByText('Save and return');
+    fireEvent.click(submitButton);
+    component.fixture.detectChanges();
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
   });
 });

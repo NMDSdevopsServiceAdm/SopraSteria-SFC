@@ -1,8 +1,11 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { EmployerType } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
+import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -12,16 +15,20 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   public workplace: Service;
   public workplaceNameAndAddress: SummaryList[];
   public mainService: SummaryList[];
+  public typeOfEmployer: SummaryList[];
   public nameAndAddress: string;
   public WorkplaceTotalStaff: string;
+  public employerType: string;
+  public employerTypeObject: EmployerType;
   public totalStaff: SummaryList[];
   protected subscriptions: Subscription = new Subscription();
 
-  constructor(protected backService: BackService) {}
+  constructor(protected backService: BackService, protected backLinkService: BackLinkService) {}
 
   ngOnInit(): void {
     this.init();
     this.setNameAndAddress();
+    this.setTypeOfEmployer();
     this.setWorkplaceDetails();
   }
 
@@ -42,11 +49,13 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       this.setNonCqcRegulatedWorkplaceDetails();
     }
 
+    const confirmDetailsUrl = this.flow.includes('registration') ? 'confirm-details' : 'confirm-workplace-details';
+
     this.mainService = [
       {
         label: 'Main service',
         data: this.workplace.name,
-        route: { url: [this.flow, 'select-main-service'] },
+        route: { url: [this.flow, confirmDetailsUrl, 'select-main-service'] },
       },
     ];
 
@@ -54,17 +63,27 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
       {
         label: 'Number of staff',
         data: this.WorkplaceTotalStaff,
-        route: { url: [this.flow, 'add-total-staff'] },
+        route: { url: [this.flow, confirmDetailsUrl, 'add-total-staff'] },
+      },
+    ];
+
+    this.typeOfEmployer = [
+      {
+        label: 'Employer type',
+        data: this.employerType,
+        route: { url: [this.flow, confirmDetailsUrl, 'type-of-employer'] },
       },
     ];
   }
 
   protected setCqcRegulatedWithLocationIdWorkplaceDetails(): void {
+    const confirmDetails = this.flow.includes('add-workplace') ? 'confirm-workplace-details' : 'confirm-details';
+
     this.workplaceNameAndAddress = [
       {
         label: 'CQC location ID',
         data: this.locationAddress.locationId,
-        route: { url: [this.flow, 'find-workplace'] },
+        route: { url: [this.flow, confirmDetails, 'find-workplace'] },
       },
       {
         label: 'Name and address',
@@ -74,11 +93,13 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   }
 
   protected setCqcRegulatedWithoutLocationIdWorkplaceDetails(): void {
+    const confirmDetails = this.flow.includes('add-workplace') ? 'confirm-workplace-details' : 'confirm-details';
+
     this.workplaceNameAndAddress = [
       {
         label: 'Name',
         data: this.locationAddress.locationName,
-        route: { url: [this.flow, 'find-workplace'] },
+        route: { url: [this.flow, confirmDetails, 'find-workplace'] },
       },
       {
         label: 'Address',
@@ -88,11 +109,13 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
   }
 
   protected setNonCqcRegulatedWorkplaceDetails(): void {
+    const confirmDetailsUrl = this.flow.includes('registration') ? 'confirm-details' : 'confirm-workplace-details';
+
     this.workplaceNameAndAddress = [
       {
         label: 'Name',
         data: this.locationAddress.locationName,
-        route: { url: [this.flow, 'workplace-name-address'] },
+        route: { url: [this.flow, confirmDetailsUrl, 'workplace-name-address'] },
       },
       {
         label: 'Address',
@@ -115,6 +138,14 @@ export class ConfirmWorkplaceDetailsDirective implements OnInit, OnDestroy {
     }
 
     this.nameAndAddress = this.convertWorkplaceAddressToString(workplaceAddress);
+  }
+
+  public setTypeOfEmployer(): void {
+    if (this.employerTypeObject.value === 'Other' && this.employerTypeObject.other) {
+      this.employerType = this.employerTypeObject.other;
+    } else {
+      this.employerType = WorkplaceUtil.formatTypeOfEmployer(this.employerTypeObject.value);
+    }
   }
 
   private convertWorkplaceAddressToString(workplaceAddress: Array<string>): string {

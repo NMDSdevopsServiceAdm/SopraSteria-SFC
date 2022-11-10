@@ -21,7 +21,7 @@ const _maptoCSVregisteredNurse = (registeredNurse) => {
 
 // takes the given Worker entity and writes it out to CSV string (one line)
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
-  // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","FLUVAC","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
+  // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
   //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
   //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
   const columns = [];
@@ -37,23 +37,6 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
 
   // "DISPLAYID"
   columns.push(csvQuote(entity.NameOrIdValue));
-
-  // "FLUVAC"
-  let fluvac = '';
-  switch (entity.FluJabValue) {
-    case 'Yes':
-      fluvac = 1;
-      break;
-
-    case 'No':
-      fluvac = 2;
-      break;
-
-    case "Don't know":
-      fluvac = 999;
-      break;
-  }
-  columns.push(fluvac);
 
   // "NINUMBER"
   downloadType === 'workersSanitise' && entity.NationalInsuranceNumberValue

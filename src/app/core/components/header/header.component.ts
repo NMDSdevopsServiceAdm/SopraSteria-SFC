@@ -4,7 +4,6 @@ import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,26 +13,25 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public isOnAdminScreen: boolean;
+  public isOnAdminScreen = true;
+  public users: Array<UserDetails>;
   public fullname: string;
   public user: UserDetails;
   public showDropdown = false;
   public workplaceId: string;
-  public wdfNewDesignFlag: boolean;
 
   constructor(
     private authService: AuthService,
     private idleService: IdleService,
     private userService: UserService,
     private establishmentService: EstablishmentService,
-    private featureFlagsService: FeatureFlagsService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.getUser();
+    this.setupUserSubscription();
     this.onAdminScreen();
-
-    this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
+    this.workplaceId && this.getUsers();
   }
 
   ngOnDestroy(): void {
@@ -49,6 +47,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
   }
 
+  private setupUserSubscription(): void {
+    this.subscriptions.add(
+      this.userService.users$.subscribe((users) => {
+        this.users = users;
+      }),
+    );
+  }
+
+  public getUsers(): void {
+    this.userService
+      .getAllUsersForEstablishment(this.workplaceId)
+      .subscribe((users) => this.userService.updateUsers(users));
+  }
+
   public isLoggedIn(): boolean {
     return this.authService.isAuthenticated();
   }
@@ -61,7 +73,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.authService.isOnAdminScreen$.subscribe((isOnAdminScreen) => {
         this.isOnAdminScreen = isOnAdminScreen;
-
         this.getEstablishmentId();
       }),
     );

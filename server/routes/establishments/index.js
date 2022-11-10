@@ -5,6 +5,7 @@ const slack = require('../../utils/slack/slack-logger');
 const sns = require('../../aws/sns');
 const Authorization = require('../../utils/security/isAuthenticated');
 const { hasPermission } = require('../../utils/security/hasPermission');
+const { Op } = require('sequelize');
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
@@ -31,10 +32,11 @@ const LocationDetails = require('./locationdetails');
 const MandatoryTraining = require('./mandatoryTraining');
 const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
-const SharingPermissionsBanner = require('./sharingPermissionsBanner');
 const ExpiresSoonAlertDates = require('./expiresSoonAlertDates');
 const WdfClaims = require('./wdfClaims');
 const ChildWorkplaces = require('./childWorkplaces');
+const UpdateSingleEstablishmentField = require('./updateSingleEstablishmentField');
+const Certificates = require('./certificates');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -85,10 +87,11 @@ router.use('/:id/locationDetails', LocationDetails);
 router.use('/:id/mandatoryTraining', MandatoryTraining);
 router.use('/:id/workers', Workers);
 router.use('/:id/benchmarks', Benchmarks);
-router.use('/:id/updateSharingPermissionsBanner', SharingPermissionsBanner);
 router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
 router.use('/:id/wdfClaims', WdfClaims);
 router.use('/:id/childWorkplaces', ChildWorkplaces);
+router.use('/:id/updateSingleEstablishmentField', UpdateSingleEstablishmentField);
+router.use('/:id/certificate', Certificates);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {
@@ -109,6 +112,7 @@ const addEstablishment = async (req, res) => {
     MainServiceOther: req.body.mainServiceOther,
     IsRegulated: req.body.isRegulated,
     NumberOfStaff: req.body.totalStaff,
+    TypeOfEmployer: req.body.typeOfEmployer,
   };
 
   try {
@@ -126,12 +130,11 @@ const addEstablishment = async (req, res) => {
         serviceResults = await models.services.findOne({
           where: {
             name: establishmentData.MainService,
-            iscqcregistered: false,
+            iscqcregistered: { [Op.or]: [false, null] },
             isMain: true,
           },
         });
       }
-
       if (serviceResults && serviceResults.id && establishmentData.MainService === serviceResults.name) {
         establishmentData.MainServiceId = serviceResults.id;
       } else {
@@ -177,6 +180,7 @@ const addEstablishment = async (req, res) => {
         },
         ustatus: 'PENDING',
         numberOfStaff: establishmentData.NumberOfStaff,
+        employerType: establishmentData.TypeOfEmployer,
       });
 
       // no Establishment properties on registration

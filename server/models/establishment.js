@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+const { query } = require('express');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -699,6 +700,62 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'IsNationalOrg',
       },
+      peopleInterviewedInTheLastFourWeeks: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"PeopleInterviewedInTheLastFourWeeks"',
+      },
+      moneySpentOnAdvertisingInTheLastFourWeeks: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"MoneySpentOnAdvertisingInTheLastFourWeeks"',
+      },
+      doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
+        field: '"DoNewStartersRepeatMandatoryTrainingFromPreviousEmployment"',
+      },
+      wouldYouAcceptCareCertificatesFromPreviousEmployment: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
+        field: '"WouldYouAcceptCareCertificatesFromPreviousEmployment"',
+      },
+      recruitmentJourneyExistingUserBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'RecruitmentJourneyExistingUserBanner',
+      },
+      showAddWorkplaceDetailsBanner: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+        field: 'ShowAddWorkplaceDetailsBanner',
+      },
+      careWorkersLeaveDaysPerYear: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'CareWorkersLeaveDaysPerYear',
+      },
+      careWorkersCashLoyaltyForFirstTwoYears: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'CareWorkersCashLoyaltyForFirstTwoYears',
+      },
+      pensionContribution: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'PensionContribution',
+      },
+      sickPay: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'SickPay',
+      },
     },
     {
       defaultScope: {
@@ -1108,6 +1165,8 @@ module.exports = function (sequelize, DataTypes) {
         'EstablishmentUID',
         'Reviewer',
         'InReview',
+        'EmployerTypeValue',
+        'EmployerTypeOther',
       ],
       where: {
         uid,
@@ -1234,6 +1293,14 @@ module.exports = function (sequelize, DataTypes) {
         'StartersValue',
         'LeaversValue',
         'reasonsForLeaving',
+        'moneySpentOnAdvertisingInTheLastFourWeeks',
+        'peopleInterviewedInTheLastFourWeeks',
+        'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
+        'wouldYouAcceptCareCertificatesFromPreviousEmployment',
+        'careWorkersLeaveDaysPerYear',
+        'careWorkersCashLoyaltyForFirstTwoYears',
+        'sickPay',
+        'pensionContribution',
       ],
       where: {
         [Op.or]: [
@@ -1327,7 +1394,6 @@ module.exports = function (sequelize, DataTypes) {
             'uid',
             'LocalIdentifierValue',
             'NameOrIdValue',
-            'FluJabValue',
             'NationalInsuranceNumberValue',
             'PostcodeValue',
             'DateOfBirthValue',
@@ -2018,17 +2084,98 @@ module.exports = function (sequelize, DataTypes) {
     return { ...data, pendingCount };
   };
 
-  Establishment.archiveInactiveWorkplaces = async function (establishmentIds) {
-    return await this.update(
+  Establishment.getRegistrationIdsForArchiving = async function (establishmentIds, transaction) {
+    const lastMonth = moment().subtract(1, 'months').endOf('month');
+    const twentyFourLastMonths = lastMonth.clone().subtract(24, 'months').format('YYYY-MM-DD');
+    return await sequelize.query(
+      `
+    SELECT
+    u."RegistrationID"
+    FROM
+      cqc."EstablishmentLastActivity" e
+      inner join cqc."User" u  on e."EstablishmentID" = u."EstablishmentID"
+        inner join cqc."Login" l on u."RegistrationID"  = l."RegistrationID"
+    WHERE
+      e."LastLogin" <= :twentyFourLastMonths
+      AND e."LastUpdated" <= :twentyFourLastMonths
+      AND NOT EXISTS
+      (
+         SELECT s."EstablishmentID" AS EstablishmentID
+            FROM cqc."EstablishmentLastActivity" s
+            WHERE  s."IsParent" = true AND EXISTS
+          (
+             SELECT c."EstablishmentID"
+              FROM cqc."EstablishmentLastActivity" c
+                WHERE s."EstablishmentID" = c."ParentID"
+                 AND c."LastLogin" > :twentyFourLastMonths
+                 AND c."LastUpdated" > :twentyFourLastMonths
+              AND c."IsParent"= false
+            ) AND s."EstablishmentID"  =  e."EstablishmentID"
+     )
+
+    and e."EstablishmentID" IN(:establishmentIds)
+        `,
       {
-        archived: true,
-      },
-      {
-        where: {
-          id: establishmentIds,
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {
+          twentyFourLastMonths,
+          establishmentIds,
         },
       },
+      { transaction },
     );
+  };
+
+  Establishment.archiveInactiveWorkplaces = async function (establishmentIds) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        await Establishment.update(
+          {
+            archived: true,
+          },
+          {
+            where: {
+              id: establishmentIds,
+            },
+            transaction: t,
+          },
+        );
+
+        await sequelize.models.user.update(
+          {
+            archived: true,
+            FullNameValue: 'inactive',
+            EmailValue: 'inactive',
+          },
+          {
+            where: {
+              establishmentId: establishmentIds,
+            },
+            transaction: t,
+          },
+        );
+        const registrationIds = await Establishment.getRegistrationIdsForArchiving(establishmentIds, t);
+
+        const promises = registrationIds.map((registration) => {
+          return sequelize.models.login.update(
+            {
+              isActive: false,
+              username: 'inactive' + registration.RegistrationID,
+              status: 'inactive',
+            },
+            {
+              where: {
+                registrationId: registration.RegistrationID,
+              },
+              transaction: t,
+            },
+          );
+        });
+        return await Promise.all(promises);
+      });
+    } catch (error) {
+      console.log({ error });
+    }
   };
 
   return Establishment;

@@ -51,6 +51,13 @@ describe('FindWorkplaceAddressComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the workplace progress bar but not the user progress bar', async () => {
+    const { component } = await setup();
+
+    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(component.queryByTestId('progress-bar-2')).toBeTruthy();
+  });
+
   it('should not lookup postcode when the form is empty', async () => {
     const { component, locationService } = await setup();
     const findAddressButton = component.getByText('Find address');
@@ -195,38 +202,6 @@ describe('FindWorkplaceAddressComponent', () => {
       const form = component.fixture.componentInstance.form;
       expect(form.valid).toBeFalsy();
       expect(form.value.postcode).toBe('');
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the back link to `regulated-by-cqc` if returnToWorkplaceNotFound is false', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.registrationService.workplaceNotFound$ = new BehaviorSubject(false);
-      component.fixture.componentInstance.ngOnInit();
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'regulated-by-cqc'],
-      });
-    });
-
-    it('should set the back link to `workplace-address-not-found` if returnToWorkplaceNotFound is true', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.registrationService.workplaceNotFound$ = new BehaviorSubject(true);
-      component.fixture.componentInstance.ngOnInit();
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'workplace-address-not-found'],
-      });
     });
   });
 });

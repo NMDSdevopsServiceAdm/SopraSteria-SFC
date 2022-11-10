@@ -8,28 +8,40 @@ import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolv
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
-import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import {
+  SelectMainServiceCqcConfirmComponent,
+} from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import {
+  UserAccountEditDetailsComponent,
+} from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
+import {
+  AcceptPreviousCareCertificateComponent,
+} from './accept-previous-care-certificate/accept-previous-care-certificate.component';
+import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
-import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
-import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
-import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
+import {
+  ConfirmStaffRecruitmentAndBenefitsComponent,
+} from './confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
+import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
+import { PensionsComponent } from './pensions/pensions.component';
+import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
@@ -37,12 +49,19 @@ import { SelectPrimaryUserComponent } from './select-primary-user/select-primary
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
+import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
+import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
+import {
+  StaffRecruitmentCaptureTrainingRequirementComponent,
+} from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
-import { SuccessComponent } from './success/success.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
+import {
+  UserAccountEditPermissionsComponent,
+} from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
@@ -96,6 +115,13 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Start',
+        },
+      },
+      {
+        path: 'staff-recruitment-start',
+        component: StaffRecruitmentStartComponent,
+        data: {
+          title: 'Staff Recruitment Start',
         },
       },
       {
@@ -221,54 +247,103 @@ const routes: Routes = [
         path: 'vacancies',
         component: VacanciesComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Vacancies',
         },
       },
       {
-        path: 'confirm-vacancies',
-        component: ConfirmVacanciesComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Confirm Vacancies',
-        },
-      },
-      {
         path: 'starters',
         component: StartersComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Starters',
         },
       },
       {
-        path: 'confirm-starters',
-        component: ConfirmStartersComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Confirm Starters',
-        },
-      },
-      {
         path: 'leavers',
         component: LeaversComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Leavers',
         },
       },
       {
-        path: 'confirm-leavers',
-        component: ConfirmLeaversComponent,
+        path: 'recruitment-advertising-cost',
+        component: RecruitmentAdvertisingCostComponent,
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Confirm Leavers',
+          title: 'Recruitment Advertising Cost',
+        },
+      },
+      {
+        path: 'number-of-interviews',
+        component: NumberOfInterviewsComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Number Of Interviews',
+        },
+      },
+      {
+        path: 'staff-recruitment-capture-training-requirement',
+        component: StaffRecruitmentCaptureTrainingRequirementComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Staff Recruitment Capture Training Requirement',
+        },
+      },
+      {
+        path: 'confirm-staff-recruitment-and-benefits',
+        component: ConfirmStaffRecruitmentAndBenefitsComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Confirm Staff Recruitment And Benefits',
+        },
+      },
+      {
+        path: 'staff-benefit-holiday-leave',
+        component: StaffBenefitHolidayLeaveComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Staff Benefit Holiday Leave',
+        },
+      },
+      {
+        path: 'accept-previous-care-certificate',
+        component: AcceptPreviousCareCertificateComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Accept Previous Care Certificate',
+        },
+      },
+      {
+        path: 'cash-loyalty',
+        component: StaffBenefitCashLoyaltyComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Cash Loyalty',
+        },
+      },
+
+      {
+        path: 'benefits-statutory-sick-pay',
+        component: BenefitsStatutorySickPayComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Benefits Statutory Sick Pay',
         },
       },
       {
@@ -281,12 +356,11 @@ const routes: Routes = [
         },
       },
       {
-        path: 'success',
-        component: SuccessComponent,
-        canActivate: [CheckPermissionsGuard],
+        path: 'pensions',
+        component: PensionsComponent,
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Success',
+          title: 'Pensions',
         },
       },
       {

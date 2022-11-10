@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
@@ -20,14 +21,15 @@ export class UserAccountEditDetailsComponent extends AccountDetailsDirective {
 
   constructor(
     private breadcrumbService: BreadcrumbService,
-    private route: ActivatedRoute,
+    protected route: ActivatedRoute,
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
     protected userService: UserService,
   ) {
-    super(backService, errorSummaryService, fb, router);
+    super(backService, backLinkService, errorSummaryService, fb, router, route);
   }
 
   protected init() {

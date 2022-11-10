@@ -6,15 +6,16 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 import { Subscription } from 'rxjs';
 
 @Directive()
 export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-
   public isWorkPlaceUpdate: boolean;
   public form: FormGroup;
   public formControlsMap: any[];
@@ -26,14 +27,18 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   public returnToWorkplaceNotFound: boolean;
   public isCqcRegulated: boolean;
   public manuallyEnteredWorkplace: boolean;
-  protected flow: string;
+  public flow: string;
   protected workplaceNameMaxLength = 120;
   protected addressMaxLength = 40;
   protected postcodeMaxLength = 8;
   protected subscriptions: Subscription = new Subscription();
+  public workplaceSections: string[];
+  public userAccountSections: string[];
+  public insideFlow: boolean;
 
   constructor(
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
@@ -70,6 +75,8 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   ngOnInit(): void {
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.setupForm();
     this.setupFormControlsMap();
     this.setFlow();
@@ -301,8 +308,8 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   protected setSelectedLocationAddress(): void {
     this.workplaceInterfaceService.selectedLocationAddress$.next(this.getLocationAddress());
     this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(true);
-    const url = this.getNextRoute();
-    this.router.navigate([this.flow, url]);
+    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'type-of-employer'];
+    this.router.navigate(url);
   }
 
   protected getNextRoute(): void {}
@@ -321,24 +328,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.setConfirmDetailsBackLink();
-      return;
-    }
-    if (this.isCqcRegulatedAndWorkplaceNotFound()) {
-      this.backService.setBackLink({ url: [this.flow, 'workplace-not-found'] });
-      return;
-    }
-    if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
-      this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
-      return;
-    }
-    if (this.isCqcRegulated) {
-      this.backService.setBackLink({ url: [this.flow, 'select-workplace'] });
-      return;
-    }
-
-    this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+    this.backLinkService.showBackLink();
   }
 
   protected setConfirmDetailsBackLink(): void {}

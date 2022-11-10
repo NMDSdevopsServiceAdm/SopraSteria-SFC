@@ -25,84 +25,19 @@
         </a>
       </div>
 
-      <ng-container *ngIf="endorsedProvidersLinkFlag">
-        <app-benefit-accordion [benefit]="benefits[7]" [index]="7" (toggleEmitter)="toggleAccordion(7)">
-          <p>
-            We've negotiated some great discounts from endorsed providers who offer high quality learning and
-            development to the social care sector.
-          </p>
-          <p>
-            <a href="/benefits-bundle/training-discounts"
-              >View discounts from Skills for Care's endorsed training providers</a
-            >
-          </p>
-        </app-benefit-accordion>
-      </ng-container>
-
       <app-benefit-accordion [benefit]="benefits[0]" [index]="0" (toggleEmitter)="toggleAccordion(0)">
         <p>
-          <a href="https://bookshop.skillsforcare.org.uk/Shop" target="_blank">Visit the Skills for Care bookshop</a>
-          and use voucher code <strong>ASCWDS-2122</strong> to claim your discount.
+          We've negotiated some great discounts from endorsed providers who offer high quality learning and development
+          to the social care sector.
+        </p>
+        <p>
+          <a href="/benefits-bundle/training-discounts"
+            >View discounts from Skills for Care's endorsed training providers</a
+          >
         </p>
       </app-benefit-accordion>
 
       <app-benefit-accordion [benefit]="benefits[1]" [index]="1" (toggleEmitter)="toggleAccordion(1)">
-        <p>
-          These seminars teach a specific, values-based interviewing style that helps identify candidates who fit with
-          your organisation's values, culture and expectations.
-        </p>
-        <p>
-          Email <strong>randr@skillsforcare.org.uk</strong> to register your interest, and include your Workplace ID ({{
-            workplaceId
-          }}) in the email. These seminars are tailored to your needs and delivered directly to your organisation.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Recruitment-retention/Values-based-recruitment-and-retention/Values-based-interviewing-seminar.aspx"
-            target="_blank"
-            >Read more about values-based interviewing</a
-          >
-          on the Skills for Care website.
-        </p>
-      </app-benefit-accordion>
-
-      <app-benefit-accordion [benefit]="benefits[2]" [index]="2" (toggleEmitter)="toggleAccordion(2)">
-        <p>
-          These seminars introduce a values-based methodology that allows you to communicate effectively with staff,
-          helping them to feel supported and empowered.
-        </p>
-
-        <p>
-          Email <strong>randr@skillsforcare.org.uk</strong> to register your interest, and include your Workplace ID ({{
-            workplaceId
-          }}) in the email. These seminars are tailored to your needs and delivered directly to your organisation.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Recruitment-retention/Values-based-recruitment-and-retention/Valuable-conversations-online-seminar.aspx"
-            target="_blank"
-            >Read more about valuable conversations</a
-          >
-          on the Skills for Care website.
-        </p>
-      </app-benefit-accordion>
-
-      <app-benefit-accordion [benefit]="benefits[3]" [index]="3" (toggleEmitter)="toggleAccordion(3)">
-        <p>Coming soon.</p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Leadership-management/support-for-registered-managers/membership/membership.aspx"
-            target="_blank"
-            >Read more about registered manager membership</a
-          >
-          on the Skills for Care website.
-        </p>
-      </app-benefit-accordion>
-
-      <app-benefit-accordion [benefit]="benefits[4]" [index]="4" (toggleEmitter)="toggleAccordion(4)">
         <p>
           Skills for Care offer low cost eLearning on a variety of topics. Your ASC-WDS account entitles you to 10% off
           the purchase price of the modules.
@@ -113,21 +48,24 @@
         </p>
       </app-benefit-accordion>
 
-      <app-benefit-accordion [benefit]="benefits[5]" [index]="5" (toggleEmitter)="toggleAccordion(5)">
+      <app-benefit-accordion [benefit]="benefits[2]" [index]="2" (toggleEmitter)="toggleAccordion(2)">
         <p>
-          This free training comes as 3 individual packages for your staff. There's a rapid induction programme,
-          refresher training and a volunteer programme.
-        </p>
-        <p>Your chosen training provider will need your Workplace ID ({{ workplaceId }}) when you register.</p>
-        <p>
-          <a href="https://www.skillsforcare.org.uk/About/News/COVID-19-Essential-training.aspx" target="_blank"
-            >Read more about funded essential training</a
-          >
-          on the Skills for Care website.
+          <a href="https://bookshop.skillsforcare.org.uk/Shop" target="_blank">Visit the Skills for Care bookshop</a>
+          and use voucher code <strong>ASCWDS-2223</strong> to claim your discount.
         </p>
       </app-benefit-accordion>
 
-      <app-benefit-accordion [benefit]="benefits[6]" [index]="6" (toggleEmitter)="toggleAccordion(6)">
+      <app-benefit-accordion [benefit]="benefits[3]" [index]="3" (toggleEmitter)="toggleAccordion(3)">
+        <p>
+          These seminars from Skills for Care offer learning on a range of topics. They can be tailored to your needs
+          and delivered directly to your organisation. Claim 10% off with your ASC-WDS workplace ID.
+        </p>
+        <p>
+          <a [routerLink]="['tailored-seminars']">Read more about these tailored seminars</a>
+        </p>
+      </app-benefit-accordion>
+
+      <app-benefit-accordion [benefit]="benefits[4]" [index]="4" (toggleEmitter)="toggleAccordion(4)">
         <p>
           <a
             href="https://www.skillsforcare.org.uk/Documents/Standards-legislation/CQC/Recommendations-for-CQC-providers.pdf"

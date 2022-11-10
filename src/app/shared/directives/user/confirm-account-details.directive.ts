@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
@@ -31,7 +32,11 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
   public userDetails: UserDetails;
   public slectedCqcValue: boolean;
 
-  constructor(protected errorSummaryService: ErrorSummaryService, protected formBuilder: FormBuilder) {}
+  constructor(
+    protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder,
+    protected route: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
     this.setupForm();

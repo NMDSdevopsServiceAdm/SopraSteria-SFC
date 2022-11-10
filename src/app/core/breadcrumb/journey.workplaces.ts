@@ -4,7 +4,7 @@ enum Path {
   DASHBOARD = '/dashboard',
   WORKPLACE = '/workplace/:workplaceUid',
   ALL_WORKPLACES = '/workplace/view-all-workplaces',
-  STAFF_RECORD = '/workplace/:workplaceUid/staff-record/:workerUid',
+  STAFF_RECORD = '/workplace/:workplaceUid/staff-record/:workerUid/staff-record-summary',
   MANDATORY_DETAILS = '/workplace/:workplaceUid/staff-record/:workerUid/mandatory-details',
   USERS = '/workplace/:workplaceUid/users',
   USER_ACCOUNT = '/workplace/:workplaceUid/user/:workerUid',
@@ -42,26 +42,20 @@ export const myWorkplaceJourney: JourneyRoute = {
     {
       title: 'Users',
       path: Path.USERS,
-    },
-    {
-      title: 'Add a user',
-      path: Path.CREATE_ACCOUNT,
-    },
-    {
-      title: 'User details',
-      path: Path.USER_ACCOUNT,
-      referrer: {
-        path: Path.DASHBOARD,
-        fragment: 'users',
-      },
       children: [
         {
-          title: 'Permissions',
-          path: Path.USER_PERMISSIONS,
-          referrer: {
-            path: Path.DASHBOARD,
-            fragment: 'users',
-          },
+          title: 'Add a user',
+          path: Path.CREATE_ACCOUNT,
+        },
+        {
+          title: 'User details',
+          path: Path.USER_ACCOUNT,
+          children: [
+            {
+              title: 'Permissions',
+              path: Path.USER_PERMISSIONS,
+            },
+          ],
         },
       ],
     },
@@ -105,13 +99,17 @@ export const allWorkplacesJourney: JourneyRoute = {
             {
               title: 'Add a user',
               path: Path.CREATE_ACCOUNT,
+              referrer: {
+                path: Path.WORKPLACE,
+                fragment: 'workplace-users',
+              },
             },
             {
               title: 'User details',
               path: Path.USER_ACCOUNT,
               referrer: {
                 path: Path.WORKPLACE,
-                fragment: 'users',
+                fragment: 'workplace-users',
               },
               children: [
                 {
@@ -119,7 +117,7 @@ export const allWorkplacesJourney: JourneyRoute = {
                   path: Path.USER_PERMISSIONS,
                   referrer: {
                     path: Path.WORKPLACE,
-                    fragment: 'users',
+                    fragment: 'workplace-users',
                   },
                 },
               ],

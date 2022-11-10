@@ -9,6 +9,10 @@ body {
   font-family: $govuk-font-family;
 }
 
+html {
+  overflow-x: scroll;
+}
+
 @import 'modules/overlay';
 @import 'modules/sticky-footer';
 @import 'modules/utils';

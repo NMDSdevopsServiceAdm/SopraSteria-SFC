@@ -13,39 +13,58 @@ import { Question } from '../question/question.component';
 })
 export class TypeOfEmployerComponent extends Question {
   public options = [
-    'Local Authority (adult services)',
-    'Local Authority (generic/other)',
-    'Private Sector',
-    'Voluntary / Charity',
-    'Other',
+    { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
+    { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
+    { value: 'Private Sector', text: 'Private sector' },
+    { value: 'Voluntary / Charity', text: 'Voluntary, charity, not for profit' },
+    { value: 'Other', text: 'Other' },
   ];
   public maxLength = 120;
+  public showSkipButton = true;
+  public callToAction = 'Save and continue';
+  public dataOwner: any;
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      employerType: ['', Validators.required],
-      other: [null, Validators.maxLength(this.maxLength)],
-    });
+    this.form = this.formBuilder.group(
+      {
+        employerType: ['', Validators.required],
+        other: [null, Validators.maxLength(this.maxLength)],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   protected init(): void {
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
+
+    if (this.establishmentService.employerTypeHasValue === false) {
+      this.callToAction = 'Continue to homepage';
+      this.hideBackLink = true;
+      this.showSkipButton = false;
+      this.establishmentService.getEstablishment(this.establishment.uid).subscribe((data) => {
+        this.dataOwner = this.establishment.dataOwner;
+
+        this.dataOwner === 'Workplace'
+          ? (this.nextRoute = ['/dashboard'])
+          : (this.nextRoute = ['/workplace', this.establishment.uid]);
+      });
+    }
+
     if (this.establishment.employerType) {
       this.form.patchValue({
         employerType: this.establishment.employerType.value,
         other: this.establishment.employerType.other,
       });
     }
-
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
   }
 
   protected setupFormErrorsMap(): void {
@@ -55,7 +74,7 @@ export class TypeOfEmployerComponent extends Question {
         type: [
           {
             name: 'required',
-            message: 'Please select an Employer type',
+            message: 'Select the type of employer',
           },
         ],
       },
@@ -86,11 +105,12 @@ export class TypeOfEmployerComponent extends Question {
       : null;
   }
 
-  updateEstablishment(props) {
+  updateEstablishment(props): void {
     this.subscriptions.add(
-      this.establishmentService
-        .updateTypeOfEmployer(this.establishment.uid, props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+      this.establishmentService.updateTypeOfEmployer(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
     );
   }
 }

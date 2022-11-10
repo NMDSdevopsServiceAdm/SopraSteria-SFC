@@ -13,6 +13,7 @@ import { Question } from '../question/question.component';
   templateUrl: './data-sharing.component.html',
 })
 export class DataSharingComponent extends Question {
+  public section = 'Permissions';
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -39,7 +40,8 @@ export class DataSharingComponent extends Question {
       });
     }
 
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-benefit-holiday-leave'];
+    this.skipRoute = ['/workplace', this.establishment.uid, 'check-answers'];
   }
 
   protected setupServerErrorsMap(): void {
@@ -80,13 +82,13 @@ export class DataSharingComponent extends Question {
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'total-staff'];
+    this.nextRoute = ['/workplace', this.establishment.uid, 'check-answers'];
   }
 
   protected removeSharingPermissionsBanner(completeFunction): void {
-    const data = { showPermissionsBannerFlag: false };
+    const data = { property: 'showSharingPermissionsBanner', value: false };
     this.subscriptions.add(
-      this.establishmentService.updateSharingPermissionsBanner(this.establishment.uid, data).subscribe(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe(
         (data) => {
           this.establishmentService.setState({ ...this.establishment, ...data });
           completeFunction();

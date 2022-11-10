@@ -42,16 +42,16 @@ export class LastBulkUploadComponent implements OnInit {
     return encodeURI(url);
   }
 
-  public downloadFile(event: Event, key: string): void {
+  public downloadFile(event: Event, key: string, fileType: string): void {
     event.preventDefault();
 
     let type: BulkUploadFileType = null;
 
-    if (key.includes('staff')) {
+    if (fileType === 'Worker') {
       type = this.sanitise ? BulkUploadFileType.WorkerSanitise : BulkUploadFileType.Worker;
-    } else if (key.includes('workplace')) {
+    } else if (fileType === 'Establishment') {
       type = BulkUploadFileType.Establishment;
-    } else if (key.includes('training')) {
+    } else if (fileType === 'Training') {
       type = BulkUploadFileType.Training;
     }
 
@@ -59,7 +59,6 @@ export class LastBulkUploadComponent implements OnInit {
       .getUploadedFileFromS3(this.establishmentService.primaryWorkplace.uid, key, type)
       .pipe(take(1))
       .subscribe((response) => {
-        console.log(response);
         const filename = FileUtil.getFileName(response);
         const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
         saveAs(blob, filename);
