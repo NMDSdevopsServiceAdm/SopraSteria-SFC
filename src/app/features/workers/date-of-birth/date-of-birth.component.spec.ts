@@ -3,6 +3,7 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -10,6 +11,7 @@ import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerSe
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import dayjs from 'dayjs';
 
 import { DateOfBirthComponent } from './date-of-birth.component';
 
@@ -201,6 +203,43 @@ describe('DateOfBirthComponent', () => {
         'staff-record-summary',
       ]);
       expect(workerServiceSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('error messages', () => {
+    it('returns an error if an invalid date is entered', async () => {
+      const { fixture, getByText, getAllByText, getByLabelText } = await setup();
+
+      userEvent.type(getByLabelText('Day'), '55555');
+      userEvent.type(getByLabelText('Month'), '12');
+      userEvent.type(getByLabelText('Year'), '2000');
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      const errors = getAllByText('Enter a valid date of birth, like 31 3 1980');
+
+      expect(errors.length).toBe(2);
+    });
+
+    it('returns an error if an out-of-range date is entered', async () => {
+      const { fixture, getByText, getAllByText, getByLabelText } = await setup();
+
+      const minDate = dayjs().subtract(100, 'years').add(1, 'days');
+      const maxDate = dayjs().subtract(14, 'years');
+
+      userEvent.type(getByLabelText('Day'), '1');
+      userEvent.type(getByLabelText('Month'), '12');
+      userEvent.type(getByLabelText('Year'), '1000');
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      const errors = getAllByText(
+        `Date of birth must to be between ${minDate.format(DATE_DISPLAY_DEFAULT)} and ${maxDate.format(
+          DATE_DISPLAY_DEFAULT,
+        )}.`,
+      );
+
+      expect(errors.length).toBe(2);
     });
   });
 

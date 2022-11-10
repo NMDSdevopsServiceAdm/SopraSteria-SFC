@@ -66,13 +66,13 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
         type: [
           {
             name: 'dateValid',
-            message: 'The date you entered is in the wrong format',
+            message: 'Enter a valid date of birth, like 31 3 1980',
           },
           {
             name: 'dateBetween',
-            message: `The date has to be between ${this.minDate.format(DATE_DISPLAY_DEFAULT)} and ${this.maxDate.format(
+            message: `Date of birth must to be between ${this.minDate.format(
               DATE_DISPLAY_DEFAULT,
-            )}.`,
+            )} and ${this.maxDate.format(DATE_DISPLAY_DEFAULT)}.`,
           },
         ],
       },
