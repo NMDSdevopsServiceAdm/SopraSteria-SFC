@@ -44,6 +44,7 @@ const getCertificate = async (req, res) => {
         ContentDisposition: `attachment; filename="${fileName}"`,
         ACL: 'public-read',
       };
+      console.log(s3.region);
       uploadToS3(uploadParams);
     }
     res.status(200).send({ data: Key });
@@ -63,13 +64,13 @@ const fileExists = async () => {
     .then(() => {
       result = true;
     })
-    .catch(() => {
-      // if (err.code === 'NoSuchKey') {
-      //   result = false;
-      // } else {
-      //   throw err;
-      // }
-      return false;
+    .catch((err) => {
+      console.log(err);
+      if (err.code === 'NoSuchKey') {
+        result = false;
+      } else {
+        throw err;
+      }
     });
   console.log('Result: ', result);
   return result;
