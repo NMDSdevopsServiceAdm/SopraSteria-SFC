@@ -48,7 +48,7 @@ export class HomePostcodeComponent extends QuestionComponent {
         type: [
           {
             name: 'validPostcode',
-            message: 'Enter a real postcode.',
+            message: 'Enter a real postcode',
           },
         ],
       },
