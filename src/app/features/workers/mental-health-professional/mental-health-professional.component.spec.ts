@@ -187,31 +187,5 @@ describe('MentalHealtProfessionalComponent', () => {
         'staff-record-summary',
       ]);
     });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set backlink to main-job-start-date page when in staff record flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'main-job-start-date'],
-        fragment: 'staff-records',
-      });
-    });
   });
 });

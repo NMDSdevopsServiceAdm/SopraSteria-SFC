@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
@@ -315,59 +314,6 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       expect(true).toBeTruthy;
       expect(getAllByText('Standard annual salary must not include pence').length).toEqual(2);
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should navigate to weekly-contarcted-hours when inside the flow and zero hours contract is not yes', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.worker.zeroHoursContract = `Don't know`;
-      component.worker.contract = Contracts.Permanent;
-      component.initiated = false
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'weekly-contracted-hours'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should navigate to average-weekly-hours when inside the flow and zero hours contract is yes', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.worker.zeroHoursContract = 'Yes';
-      component.initiated = false
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'average-weekly-hours'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should navigate to average-weekly-hours when inside the flow and zero hours contract is not yes, but the contract type is pool bank, agency, or other', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.worker.zeroHoursContract = 'No';
-      component.worker.contract = Contracts.Agency;
-      component.initiated = false
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'average-weekly-hours'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
     });
   });
 });

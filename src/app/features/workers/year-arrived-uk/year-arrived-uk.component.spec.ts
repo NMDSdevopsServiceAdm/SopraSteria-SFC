@@ -179,32 +179,6 @@ describe('YearArrivedUkComponent', () => {
         'staff-record-summary',
       ]);
     });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set backlink to country-of-birth page when not in staff record flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'country-of-birth'],
-        fragment: 'staff-records',
-      });
-    });
   });
 
   describe('error messages', () => {

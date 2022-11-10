@@ -1,11 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -240,57 +239,6 @@ describe('DateOfBirthComponent', () => {
       );
 
       expect(errors.length).toBe(2);
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the backlink to /workplace/workplace-uid, when in the flow but addStaffRecoredInProgress is false and primary workplace id is different to workplace id', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: [`/workplace/${component.workplace.uid}`],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to /dasboard, when in the flow but addStaffRecoredInProgress is false and primary workplace id is equal to workplace id', async () => {
-      const { component, fixture, backLinkSpy } = await setup();
-
-      const establishmentService = TestBed.inject(EstablishmentService);
-      spyOnProperty(establishmentService, 'primaryWorkplace').and.returnValue({ uid: 'mocked-uid' });
-      component.initiated = false;
-      component.ngOnInit();
-
-      fixture.detectChanges();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to mandatory-details, when in the flow and addStaffRecordInProgress is true', async () => {
-      const { component, backLinkSpy, workerService } = await setup();
-
-      spyOnProperty(workerService, 'addStaffRecordInProgress', 'get').and.returnValue(true);
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'mandatory-details'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
     });
   });
 });

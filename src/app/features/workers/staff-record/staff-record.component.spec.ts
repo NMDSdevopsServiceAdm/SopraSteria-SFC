@@ -111,7 +111,7 @@ describe('StaffRecordComponent', () => {
     component.worker.completed = false;
     fixture.detectChanges();
     const button = getByText('Confirm record details');
-    const text = getByText(`Check the record details you've added before you confirm them.`);
+    const text = getByText(`Check these details before you confirm them.`);
     const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
     const deleteRecordLink = queryByText('Delete staff record');
 

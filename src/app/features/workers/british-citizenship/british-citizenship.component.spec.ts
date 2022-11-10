@@ -169,16 +169,5 @@ describe('BritishCitizenshipComponent', () => {
         'staff-record-summary',
       ]);
     });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      expect(component.return).toEqual({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-      });
-    });
   });
 });

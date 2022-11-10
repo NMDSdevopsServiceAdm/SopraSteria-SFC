@@ -259,48 +259,4 @@ describe('OtherQualificationsComponent', () => {
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
-
-  describe('setBackLink()', () => {
-    it('should set the backlink to social-care-qualification-level, when in the flow', async () => {
-      const { component, backLinkSpy } = await setup(true, 'Yes');
-
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: [
-          '/workplace',
-          component.workplace.uid,
-          'staff-record',
-          component.worker.uid,
-          'social-care-qualification-level',
-        ],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to social-care-qualification-level, when in the flow', async () => {
-      const { component, backLinkSpy } = await setup(true, 'No');
-
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'social-care-qualification'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
-    });
-  });
 });

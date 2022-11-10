@@ -259,32 +259,6 @@ describe('NursingSpecialismComponent', () => {
     });
   });
 
-  describe('setBackLink()', () => {
-    it('should set the backlink to nursing-category, when in the flow ', async () => {
-      const worker = workerWithNurseSpecialisms(true);
-      const { component, backLinkSpy } = await setup(worker);
-
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'nursing-category'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const worker = workerWithNurseSpecialisms(true);
-      const { component, backLinkSpy } = await setup(worker, false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
-    });
-  });
-
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
       const worker = workerBuilder();

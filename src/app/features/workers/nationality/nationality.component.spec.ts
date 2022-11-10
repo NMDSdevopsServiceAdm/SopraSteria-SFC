@@ -307,26 +307,4 @@ describe('NationalityComponent', () => {
       expect(getAllByText('Invalid nationality.').length).toEqual(2);
     });
   });
-
-  describe('setBackLink()', () => {
-    it('should set the backlink to /ethnicity when in the flow', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'ethnicity'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
-    });
-  });
 });

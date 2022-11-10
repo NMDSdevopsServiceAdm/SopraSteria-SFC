@@ -237,40 +237,4 @@ describe('ContractWithZeroHoursComponent', () => {
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
-
-  describe('setBackLink()', () => {
-    it('should set the backlink to days-of-sickness, when in the flow and the contract type is permanent or temporary', async () => {
-      const { component, backLinkSpy } = await setup(true, 'permanent');
-
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'days-of-sickness'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to adult-social-care-started, when in the flow and the contract type is not permanent or temporary ', async () => {
-      const { component, backLinkSpy } = await setup(true, 'other');
-
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'adult-social-care-started'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
-    });
-  });
 });
