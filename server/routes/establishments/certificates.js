@@ -47,7 +47,6 @@ const getCertificate = async (req, res) => {
         ContentDisposition: `attachment; filename="${fileName}"`,
         ACL: 'public-read',
       };
-      console.log(s3.region);
       uploadToS3(uploadParams);
     }
     res.status(200).send({ data: Key });
@@ -86,6 +85,9 @@ const modifyPdf = async (establishmentName, fileName) => {
   };
 
   let existingPdfBytes;
+
+  console.log('GET TEMPLATE:');
+  console.log(params);
   await s3
     .getObject(params)
     .promise()
@@ -94,6 +96,7 @@ const modifyPdf = async (establishmentName, fileName) => {
     })
     .catch((err) => console.log(err));
 
+  console.log('GOT TEMPLATE SUCCESFULLY');
   const pdfDoc = await pdfLib.PDFDocument.load(existingPdfBytes);
 
   const form = pdfDoc.getForm();
@@ -105,10 +108,13 @@ const modifyPdf = async (establishmentName, fileName) => {
 };
 
 const uploadToS3 = async (uploadParams) => {
+  console.log('UPLOAD TO S3');
+  console.log(uploadParams);
   s3.putObject(uploadParams)
     .promise()
     .then()
     .catch((err) => console.log(err));
+  console.log('UPLOAD COMPLETE');
 };
 
 router.route('/:years').get(Authorization.isAuthorised, getCertificate);
