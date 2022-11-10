@@ -304,8 +304,6 @@ app.use(function onError(err, req, res, next) {
 });
 
 const startApp = () => {
-  console.log('Start App');
-  console.log(config.get('listen.port'));
   if (config.get('honeycomb.write_key')) {
     beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
   }
