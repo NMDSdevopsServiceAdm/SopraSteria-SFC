@@ -157,6 +157,7 @@
     "chai": "^4.3.0",
     "codelyzer": "^6.0.2",
     "cypress": "^9.7.0",
+    "cypress-slow-down": "^1.2.1",
     "eslint": "^7.23.0",
     "eslint-config-prettier": "^7.2.0",
     "faker": "^5.5.3",
