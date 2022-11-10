@@ -63,12 +63,13 @@ const fileExists = async () => {
     .then(() => {
       result = true;
     })
-    .catch((err) => {
-      if (err.code === 'NoSuchKey') {
-        result = false;
-      } else {
-        throw err;
-      }
+    .catch(() => {
+      // if (err.code === 'NoSuchKey') {
+      //   result = false;
+      // } else {
+      //   throw err;
+      // }
+      return false;
     });
   console.log('Result: ', result);
   return result;
