@@ -11,7 +11,6 @@ export class AscWdsCertificateComponent implements OnInit {
   constructor(protected establishmentService: EstablishmentService, router: Router) {}
 
   private defaultFileName = `ASC-WDS+certificate`;
-  isDev = environment.dev ?? false;
   public certificateName: string;
   public years: string;
   public downloadLink;
