@@ -4,9 +4,13 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import {
+  MockWorkerServiceWithoutReturnUrl,
+  MockWorkerServiceWithUpdateWorker,
+} from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { CountryOfBirthComponent } from './country-of-birth.component';
 
@@ -70,6 +74,20 @@ describe('CountryOfBirthComponent', () => {
   it('should render the CountryOfBirthComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('progress bar', () => {
+    it('should render the progress bar when in the flow', async () => {
+      const { getByTestId } = await setup(false);
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render the progress bar when outside the flow', async () => {
+      const { queryByTestId } = await setup();
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
   });
 
   describe('submit buttons', () => {
@@ -243,18 +261,17 @@ describe('CountryOfBirthComponent', () => {
       ]);
     });
   });
+  xdescribe('error messages', () => {
+    it('returns an error if an invalid country is entered', async () => {
+      const { fixture, getByText, getAllByText, getByLabelText } = await setup(false);
 
-  describe('progress bar', () => {
-    it('should render the progress bar when in the flow', async () => {
-      const { getByTestId } = await setup(false);
+      userEvent.click(getByLabelText('Other'));
+      fixture.detectChanges();
+      userEvent.type(getByLabelText('Country (optional)'), 'xxxxxxx');
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
 
-      expect(getByTestId('progress-bar')).toBeTruthy();
-    });
-
-    it('should not render the progress bar when outside the flow', async () => {
-      const { queryByTestId } = await setup();
-
-      expect(queryByTestId('progress-bar')).toBeFalsy();
+      expect(getAllByText('Enter a valid country').length).toEqual(2);
     });
   });
 });

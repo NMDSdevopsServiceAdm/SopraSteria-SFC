@@ -115,7 +115,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
         type: [
           {
             name: 'validCountryOfBirth',
-            message: 'Invalid country of birth.',
+            message: 'Enter a valid country',
           },
         ],
       },
