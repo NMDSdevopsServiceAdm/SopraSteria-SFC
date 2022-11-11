@@ -94,7 +94,7 @@ export class RecruitedFromComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Recruitment from has to be provided.',
+            message: 'Select where they were recruited from',
           },
         ],
       },
