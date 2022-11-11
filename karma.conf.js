@@ -39,7 +39,7 @@ module.exports = function (config) {
         },
       },
     },
-    reporters: ['progress', 'junit', 'spec'],
+    reporters: ['progress', 'junit'],
 
     specReporter: {
       maxLogLines: 5, // limit number of lines logged per test
