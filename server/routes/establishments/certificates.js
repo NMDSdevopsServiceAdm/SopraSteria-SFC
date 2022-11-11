@@ -28,9 +28,6 @@ const getCertificate = async (req, res) => {
   const establishmentFileName = `${req.params.id} ${fileName}`;
   Key = `${filePathBase}/${establishmentFileName}`;
 
-  console.log(String(config.get('certificate.region')));
-  console.log(s3);
-  console.log(Bucket);
   const exists = await fileExists();
 
   try {
@@ -47,7 +44,9 @@ const getCertificate = async (req, res) => {
         ContentDisposition: `attachment; filename="${fileName}"`,
         ACL: 'public-read',
       };
+      console.log('BEFORE UPLOAD TO S3');
       uploadToS3(uploadParams);
+      console.log('AFTER UPLOAD TO S3');
     }
     res.status(200).send({ data: Key });
   } catch (err) {
@@ -110,10 +109,13 @@ const modifyPdf = async (establishmentName, fileName) => {
 const uploadToS3 = async (uploadParams) => {
   console.log('UPLOAD TO S3');
   console.log(uploadParams);
-  s3.putObject(uploadParams)
-    .promise()
-    .then(console.log('UPLOAD COMPLETE'))
-    .catch((err) => console.log(err));
+  try {
+    await s3.putObject(uploadParams).promise();
+  } catch (err) {
+    console.log('UPLOAD FAILED');
+    console.log(err);
+  }
+  console.log('UPLOAD COMPLETE');
 };
 
 router.route('/:years').get(Authorization.isAuthorised, getCertificate);
