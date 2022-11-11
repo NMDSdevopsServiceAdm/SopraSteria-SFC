@@ -60,11 +60,9 @@ export class NationalityComponent extends QuestionComponent {
     this.subscriptions.add(
       this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
         this.form.get('nationalityName').clearValidators();
-
         if (value === 'Other') {
           this.form.get('nationalityName').setValidators([this.nationalityNameValidator]);
         }
-
         this.form.get('nationalityName').updateValueAndValidity();
       }),
     );
@@ -89,7 +87,7 @@ export class NationalityComponent extends QuestionComponent {
         type: [
           {
             name: 'validNationality',
-            message: 'Invalid nationality.',
+            message: 'Enter a valid nationality',
           },
         ],
       },

@@ -4,10 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -261,10 +258,11 @@ describe('CountryOfBirthComponent', () => {
       ]);
     });
   });
-  xdescribe('error messages', () => {
+  describe('error messages', () => {
     it('returns an error if an invalid country is entered', async () => {
-      const { fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
 
+      component.availableCountries = [{ id: 1, country: 'France' }];
       userEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
       userEvent.type(getByLabelText('Country (optional)'), 'xxxxxxx');

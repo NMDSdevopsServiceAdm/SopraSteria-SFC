@@ -8,7 +8,7 @@
           <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
           <h1 class="govuk-fieldset__heading">What's their nationality?</h1>
         </legend>
-        <div class="govuk-form-group">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
               <input
@@ -40,8 +40,7 @@
               id="conditional-nationalityKnown-conditional-2"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="nationalityName"> Nationality </label>
-                <span id="nationalityName-hint" class="govuk-hint"> Optional </span>
+                <label class="govuk-label" for="nationalityName"> Nationality (optional) </label>
                 <span
                   id="nationalityName-error"
                   class="govuk-error-message"
@@ -54,6 +53,7 @@
                     [formGroup]="form"
                     [dataProvider]="nationalityNameFilter"
                     [formControlName]="'nationalityName'"
+                    [error]="submitted && form.get('nationalityKnown').invalid"
                   ></app-auto-suggest>
                 </div>
               </div>
