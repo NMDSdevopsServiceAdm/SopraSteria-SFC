@@ -40,7 +40,7 @@ const getCertificate = async (req, res) => {
         Key,
         Body: newFile,
         ContentDisposition: `attachment; filename="${fileName}"`,
-        // ACL: 'public-read',
+        ACL: 'public-read',
       };
       await uploadToS3(uploadParams);
     }
@@ -106,10 +106,13 @@ const modifyPdf = async (establishmentName, fileName) => {
 const uploadToS3 = async (uploadParams) => {
   console.log('UPLOAD TO S3');
   console.log(uploadParams);
-  s3.putObject(uploadParams)
-    .promise()
-    .then(console.log('UPLOAD COMPLETE'))
-    .catch((err) => console.log(err));
+  try {
+    await s3.putObject(uploadParams).promise();
+  } catch (err) {
+    console.log('UPLOAD FAILED');
+    console.log(err);
+  }
+  console.log('UPLOAD COMPLETE');
 };
 
 router.route('/:years').get(Authorization.isAuthorised, getCertificate);
