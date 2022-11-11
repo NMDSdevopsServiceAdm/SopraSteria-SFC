@@ -167,7 +167,7 @@ describe('NationalityComponent', () => {
 
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
-      userEvent.type(getByLabelText('Nationality'), 'French');
+      userEvent.type(getByLabelText('Nationality (optional)'), 'French');
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
 
@@ -257,7 +257,7 @@ describe('NationalityComponent', () => {
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
-      userEvent.type(getByLabelText('Nationality'), 'French');
+      userEvent.type(getByLabelText('Nationality (optional)'), 'French');
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
@@ -300,11 +300,11 @@ describe('NationalityComponent', () => {
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
-      userEvent.type(getByLabelText('Nationality'), 'asdf');
+      userEvent.type(getByLabelText('Nationality (optional)'), 'asdf');
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
-      expect(getAllByText('Invalid nationality.').length).toEqual(2);
+      expect(getAllByText('Enter a valid nationality').length).toEqual(2);
     });
   });
 });

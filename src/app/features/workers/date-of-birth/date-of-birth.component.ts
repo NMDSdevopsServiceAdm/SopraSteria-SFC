@@ -83,7 +83,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
             name: 'dateBetween',
             message: `Date of birth must to be between ${this.minDate.format(
               DATE_DISPLAY_DEFAULT,
-            )} and ${this.maxDate.format(DATE_DISPLAY_DEFAULT)}.`,
+            )} and ${this.maxDate.format(DATE_DISPLAY_DEFAULT)}`,
           },
         ],
       },

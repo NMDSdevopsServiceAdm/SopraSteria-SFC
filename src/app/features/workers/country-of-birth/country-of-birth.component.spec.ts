@@ -261,10 +261,11 @@ describe('CountryOfBirthComponent', () => {
       ]);
     });
   });
-  xdescribe('error messages', () => {
+  describe('error messages', () => {
     it('returns an error if an invalid country is entered', async () => {
-      const { fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
 
+      component.availableCountries = [{ id: 1, country: 'France' }];
       userEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
       userEvent.type(getByLabelText('Country (optional)'), 'xxxxxxx');

@@ -231,7 +231,7 @@ describe('DateOfBirthComponent', () => {
       const errors = getAllByText(
         `Date of birth must to be between ${component.minDate.format(
           DATE_DISPLAY_DEFAULT,
-        )} and ${component.maxDate.format(DATE_DISPLAY_DEFAULT)}.`,
+        )} and ${component.maxDate.format(DATE_DISPLAY_DEFAULT)}`,
       );
 
       expect(errors.length).toBe(2);
