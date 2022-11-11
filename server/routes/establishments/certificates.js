@@ -93,10 +93,10 @@ const modifyPdf = async (establishmentName, fileName) => {
     .promise()
     .then((data) => {
       existingPdfBytes = data.Body.buffer;
+      console.log('GOT TEMPLATE SUCCESFULLY');
     })
     .catch((err) => console.log(err));
 
-  console.log('GOT TEMPLATE SUCCESFULLY');
   const pdfDoc = await pdfLib.PDFDocument.load(existingPdfBytes);
 
   const form = pdfDoc.getForm();
@@ -112,9 +112,8 @@ const uploadToS3 = async (uploadParams) => {
   console.log(uploadParams);
   s3.putObject(uploadParams)
     .promise()
-    .then()
+    .then(console.log('UPLOAD COMPLETE'))
     .catch((err) => console.log(err));
-  console.log('UPLOAD COMPLETE');
 };
 
 router.route('/:years').get(Authorization.isAuthorised, getCertificate);
