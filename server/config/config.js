@@ -328,7 +328,7 @@ const config = convict({
     bucketname: {
       doc: 'Bucket used to upload all client certificates',
       format: '*',
-      default: 'sfc-public-dev',
+      default: 'sfc-public-staging',
     },
   },
   disbursement: {

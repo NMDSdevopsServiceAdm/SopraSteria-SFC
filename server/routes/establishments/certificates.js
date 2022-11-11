@@ -23,11 +23,9 @@ const params = () => {
 };
 
 const getCertificate = async (req, res) => {
-  // Determine file name
   const fileName = `${fileNameBase} ${req.params.years}.pdf`;
   const establishmentFileName = `${req.params.id} ${fileName}`;
   Key = `${filePathBase}/${establishmentFileName}`;
-
   const exists = await fileExists();
 
   try {
@@ -44,11 +42,12 @@ const getCertificate = async (req, res) => {
         ContentDisposition: `attachment; filename="${fileName}"`,
         ACL: 'public-read',
       };
-      console.log('BEFORE UPLOAD TO S3');
-      uploadToS3(uploadParams);
-      console.log('AFTER UPLOAD TO S3');
+      await uploadToS3(uploadParams);
     }
-    res.status(200).send({ data: Key });
+
+    const url = await s3.getSignedUrl('getObject', params());
+    console.log({ url });
+    res.status(200).send({ data: url });
   } catch (err) {
     console.error(err);
     return res.status(500).send();
@@ -66,14 +65,12 @@ const fileExists = async () => {
       result = true;
     })
     .catch((err) => {
-      console.log(err);
       if (err.code === 'NoSuchKey') {
         result = false;
       } else {
         throw err;
       }
     });
-  console.log('Result: ', result);
   return result;
 };
 
