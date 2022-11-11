@@ -54,6 +54,7 @@
                     [formGroup]="form"
                     [dataProvider]="nationalityNameFilter"
                     [formControlName]="'nationalityName'"
+                    [error]="submitted && form.get('nationalityName').invalid"
                   ></app-auto-suggest>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NavigationStart, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -11,9 +11,17 @@ export class BackLinkService {
   public readonly backLink$: Observable<boolean> = this._backLink$.asObservable();
 
   constructor(private router: Router) {
-    this.router.events.pipe(filter((event) => event instanceof NavigationStart)).subscribe(() => {
+    // console.log('*******');
+    // console.log(this.router.events.pipe());
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       this.removeBackLink();
     });
+    // this.router.events.pipe(
+    //   filter((event) => event instanceof NavigationEnd),
+    //   map(() => {
+    //     console.log(parse(this.router.url).pathname);
+    //   }),
+    // );
   }
   private set backLink(show: boolean) {
     this._backLink$.next(show);
