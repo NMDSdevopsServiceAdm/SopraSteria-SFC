@@ -45,8 +45,7 @@ const getCertificate = async (req, res) => {
       await uploadToS3(uploadParams);
     }
 
-    const url = await s3.getSignedUrl('getObject', params());
-    console.log({ url });
+    const url = await getSignedUrl();
     res.status(200).send({ data: url });
   } catch (err) {
     console.error(err);
@@ -54,24 +53,23 @@ const getCertificate = async (req, res) => {
   }
 };
 
-const fileExists = async () => {
-  let result;
-  const objectParams = params();
-  // S3 sdk doesn't have a function for checking if file exists so attempt a get and return false if it fails
-  await s3
-    .getObject(objectParams)
-    .promise()
-    .then(() => {
-      result = true;
-    })
-    .catch((err) => {
-      if (err.code === 'NoSuchKey') {
-        result = false;
-      } else {
-        throw err;
-      }
+const getSignedUrl = async () => {
+  return new Promise((resolve, reject) => {
+    s3.getSignedUrl('getObject', params(), (err, url) => {
+      if (err) reject(err);
+      resolve(url);
     });
-  return result;
+  });
+};
+
+const fileExists = async () => {
+  try {
+    await s3.getObject(params()).promise();
+    return true;
+  } catch (error) {
+    console.log({ error });
+    return false;
+  }
 };
 
 const modifyPdf = async (establishmentName, fileName) => {
@@ -80,20 +78,10 @@ const modifyPdf = async (establishmentName, fileName) => {
     Bucket,
   };
 
-  let existingPdfBytes;
-
   console.log('GET TEMPLATE:');
-  console.log(params);
-  await s3
-    .getObject(params)
-    .promise()
-    .then((data) => {
-      existingPdfBytes = data.Body.buffer;
-      console.log('GOT TEMPLATE SUCCESFULLY');
-    })
-    .catch((err) => console.log(err));
+  var response = await s3.getObject(params).promise();
 
-  const pdfDoc = await pdfLib.PDFDocument.load(existingPdfBytes);
+  const pdfDoc = await pdfLib.PDFDocument.load(response.Body.buffer);
 
   const form = pdfDoc.getForm();
   const fields = form.getFields();
@@ -104,15 +92,11 @@ const modifyPdf = async (establishmentName, fileName) => {
 };
 
 const uploadToS3 = async (uploadParams) => {
-  console.log('UPLOAD TO S3');
-  console.log(uploadParams);
   try {
     await s3.putObject(uploadParams).promise();
   } catch (err) {
-    console.log('UPLOAD FAILED');
     console.log(err);
   }
-  console.log('UPLOAD COMPLETE');
 };
 
 router.route('/:years').get(Authorization.isAuthorised, getCertificate);
