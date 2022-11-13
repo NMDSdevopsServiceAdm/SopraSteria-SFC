@@ -11,7 +11,7 @@ const Authorization = require('../../utils/security/isAuthenticated');
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 
-const filePathBase = 'public/download/certificates';
+const filePathBase = 'public/download';
 let fileNameBase = 'ASC-WDS certificate';
 let Key;
 
@@ -40,7 +40,6 @@ const getCertificate = async (req, res) => {
         Key,
         Body: newFile,
         ContentDisposition: `attachment; filename="${fileName}"`,
-        ACL: 'public-read',
       };
       await uploadToS3(uploadParams);
     }
