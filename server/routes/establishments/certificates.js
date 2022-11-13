@@ -40,6 +40,7 @@ const getCertificate = async (req, res) => {
         Key,
         Body: newFile,
         ContentDisposition: `attachment; filename="${fileName}"`,
+        ACL: 'public-read',
       };
       await uploadToS3(uploadParams);
     }
@@ -77,7 +78,9 @@ const modifyPdf = async (establishmentName, fileName) => {
   };
 
   console.log('GET TEMPLATE:');
+  console.log({ params });
   var response = await s3.getObject(params).promise();
+  console.log('GOT from Template s3');
 
   const pdfDoc = await pdfLib.PDFDocument.load(response.Body.buffer);
 
