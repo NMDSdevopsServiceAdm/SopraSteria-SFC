@@ -11,7 +11,7 @@ const Authorization = require('../../utils/security/isAuthenticated');
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 
-const filePathBase = 'public/download';
+const filePathBase = 'public/download/certificates';
 let fileNameBase = 'ASC-WDS certificate';
 let Key;
 
