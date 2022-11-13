@@ -27,7 +27,7 @@ const getCertificate = async (req, res) => {
   const establishmentFileName = `${req.params.id} ${fileName}`;
   Key = `${filePathBase}/${establishmentFileName}`;
   const exists = await fileExists();
-
+  console.log({ Key, exists, params: params() });
   try {
     if (!exists) {
       const thisEstablishment = new Establishment.Establishment(req.username);
@@ -47,8 +47,7 @@ const getCertificate = async (req, res) => {
     const url = await getSignedUrl();
     res.status(200).send({ data: url });
   } catch (err) {
-    console.error(err);
-    return res.status(500).send();
+    return res.status(500).send({ err });
   }
 };
 
@@ -95,6 +94,7 @@ const uploadToS3 = async (uploadParams) => {
     await s3.putObject(uploadParams).promise();
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
