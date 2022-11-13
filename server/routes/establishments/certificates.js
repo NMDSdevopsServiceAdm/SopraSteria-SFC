@@ -40,7 +40,6 @@ const getCertificate = async (req, res) => {
         Key,
         Body: newFile,
         ContentDisposition: `attachment; filename="${fileName}"`,
-        ACL: 'public-read',
       };
       await uploadToS3(uploadParams);
     }
