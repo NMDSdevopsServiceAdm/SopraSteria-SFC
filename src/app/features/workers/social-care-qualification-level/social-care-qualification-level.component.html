@@ -29,13 +29,13 @@
           {{ getFormErrorMessage('qualification', 'required') }}
         </span>
         <select
-          class="govuk-select"
+          class="govuk-select govuk-!-width-one-half"
           [class.govuk-select--error]="submitted && form.get('qualification').invalid"
           [formControlName]="'qualification'"
           id="qualification"
           name="qualification"
         >
-          <option [ngValue]="null">Select Qualification Level</option>
+          <option [ngValue]="null">Select</option>
           <option *ngFor="let qualification of qualifications" [value]="qualification.id">
             {{ qualification.level }}
           </option>

@@ -152,7 +152,7 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Enter their standard hourly rate',
+            message: 'Enter their standard hourly salary',
           },
           {
             name: 'min',
@@ -163,7 +163,7 @@ export class SalaryComponent extends QuestionComponent {
           },
           {
             name: 'max',
-            message: `Standard hourly rate must be between &pound;${this.decimalPipe.transform(
+            message: `Standard hourly salary must be between &pound;${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2',
             )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,

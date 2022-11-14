@@ -10,6 +10,7 @@ import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerSe
 import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { RecruitedFromComponent } from './recruited-from.component';
 
@@ -227,6 +228,19 @@ describe('RecruitedFromComponent', () => {
       const { queryByTestId } = await setup(false);
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+  });
+
+  describe('error messages', () => {
+    it('returns an error message when yes is clicked but no recruitment source is selected', async () => {
+      const { fixture, getByText, getAllByText, getByLabelText } = await setup();
+
+      userEvent.click(getByLabelText('Yes'));
+      fixture.detectChanges();
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      expect(getAllByText('Select where they were recruited from').length).toEqual(2);
     });
   });
 });
