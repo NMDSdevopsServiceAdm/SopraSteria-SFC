@@ -33,7 +33,7 @@
           {{ getFormErrorMessage('qualification', 'required') }}
         </span>
         <select
-          class="govuk-select govuk-!-width-two-thirds"
+          class="govuk-select govuk-!-width-one-half"
           [class.govuk-select--error]="submitted && form.get('qualification').invalid"
           [formControlName]="'qualification'"
           id="qualification"
