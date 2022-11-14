@@ -198,6 +198,16 @@ const routes: Routes = [
             data: { title: 'British Citizenship' },
           },
           {
+            path: 'british-citizenship-summary-flow',
+            children: [
+              {
+                path: '',
+                component: BritishCitizenshipComponent,
+                data: { title: 'British Citizenship' },
+              },
+            ],
+          },
+          {
             path: 'country-of-birth',
             component: CountryOfBirthComponent,
             data: { title: 'Country of Birth' },

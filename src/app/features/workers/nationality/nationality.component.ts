@@ -51,19 +51,14 @@ export class NationalityComponent extends QuestionComponent {
   }
 
   init() {
-    this.subscriptions.add(
-      this.nationalityService
-        .getNationalities()
-        .subscribe((nationalities) => (this.availableNationalities = nationalities)),
-    );
+    this.availableNationalitiesList();
+    this.nationalityValidation();
 
     this.subscriptions.add(
       this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
-        this.form.get('nationalityName').clearValidators();
-        if (value === 'Other') {
-          this.form.get('nationalityName').setValidators([this.nationalityNameValidator]);
+        if (!this.insideFlow) {
+          this.setUpConditionalQuestionLogic(value);
         }
-        this.form.get('nationalityName').updateValueAndValidity();
       }),
     );
 
@@ -78,6 +73,41 @@ export class NationalityComponent extends QuestionComponent {
 
     this.previous = this.insideFlow ? this.getRoutePath('ethnicity') : this.getRoutePath('');
     this.next = this.getRoutePath('british-citizenship');
+  }
+
+  public setUpConditionalQuestionLogic(nationalityKnownValue: string): void {
+    if (nationalityKnownValue !== 'British') {
+      this.conditionalQuestionUrl = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'staff-record-summary',
+        'british-citizenship-summary-flow',
+      ];
+    } else {
+      this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
+    }
+  }
+
+  private availableNationalitiesList(): void {
+    this.subscriptions.add(
+      this.nationalityService
+        .getNationalities()
+        .subscribe((nationalities) => (this.availableNationalities = nationalities)),
+    );
+  }
+
+  private nationalityValidation(): void {
+    this.subscriptions.add(
+      this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
+        this.form.get('nationalityName').clearValidators();
+        if (value === 'Other') {
+          this.form.get('nationalityName').setValidators([this.nationalityNameValidator]);
+        }
+        this.form.get('nationalityName').updateValueAndValidity();
+      }),
+    );
   }
 
   setupFormErrorsMap(): void {

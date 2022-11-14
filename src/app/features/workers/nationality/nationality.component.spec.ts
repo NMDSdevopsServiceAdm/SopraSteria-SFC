@@ -99,7 +99,7 @@ describe('NationalityComponent', () => {
     it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup();
 
-      fireEvent.click(getByLabelText(`Don't know`));
+      fireEvent.click(getByLabelText('I do not know'));
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
 
@@ -218,25 +218,25 @@ describe('NationalityComponent', () => {
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link if outside the flow`, async () => {
+    it(`should show 'Save' cta button and 'Cancel' link if outside the flow`, async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should call submit data and navigate with the correct url when 'British' radio button is selected and 'Save and return' is clicked`, async () => {
+    it(`should call submit data and navigate with the correct url when 'British' radio button is selected and 'Save' is clicked`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup(
         false,
       );
 
       fireEvent.click(getByLabelText('British'));
-      fireEvent.click(getByText('Save and return'));
+      fireEvent.click(getByText('Save'));
       fixture.detectChanges();
 
       const updatedFormData = component.form.value;
       expect(updatedFormData).toEqual({ nationalityKnown: 'British', nationalityName: null });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'British' },
       });
@@ -249,7 +249,7 @@ describe('NationalityComponent', () => {
       ]);
     });
 
-    it(`should call submit data and navigate with the correct url when 'Other' radio button is selected, dropdown input is filled out correctly and 'Save and return' is clicked`, async () => {
+    it(`should call submit data and navigate to british-citizenship-summary-flow when 'Other' radio button is selected, dropdown input is filled out correctly and 'Save' is clicked`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup(
         false,
       );
@@ -258,13 +258,13 @@ describe('NationalityComponent', () => {
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
       userEvent.type(getByLabelText('Nationality (optional)'), 'French');
-      fireEvent.click(getByText('Save and return'));
+      fireEvent.click(getByText('Save'));
       fixture.detectChanges();
 
       const updatedFormData = component.form.value;
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
       expect(updatedFormData).toEqual({ nationalityKnown: 'Other', nationalityName: 'French' });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'Other', other: { nationality: 'French' } },
       });
@@ -274,6 +274,7 @@ describe('NationalityComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
+        'british-citizenship-summary-flow',
       ]);
     });
 
@@ -301,7 +302,7 @@ describe('NationalityComponent', () => {
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
       userEvent.type(getByLabelText('Nationality (optional)'), 'asdf');
-      fireEvent.click(getByText('Save and return'));
+      fireEvent.click(getByText('Save'));
       fixture.detectChanges();
 
       expect(getAllByText('Enter a valid nationality').length).toEqual(2);
