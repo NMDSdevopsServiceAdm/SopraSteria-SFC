@@ -68,7 +68,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('year-arrived-uk');
-    this.previous = this.getReturnPath();
   }
 
   private prefill(): void {
@@ -77,15 +76,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
       countryOfBirthKnown: value,
       countryOfBirthName: other ? other.country : null,
     });
-  }
-
-  getReturnPath() {
-    if (this.insideFlow) {
-      return this.worker.nationality && this.worker.nationality.value === 'British'
-        ? this.getRoutePath('nationality')
-        : this.getRoutePath('british-citizenship');
-    }
-    return this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {

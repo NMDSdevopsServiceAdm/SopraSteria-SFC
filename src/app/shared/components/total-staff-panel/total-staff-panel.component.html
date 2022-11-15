@@ -6,7 +6,7 @@
     <dd data-testid="totalStaffText">
       <span class="govuk-!-margin-right-1">total number of staff {{ !totalStaff ? 'is missing' : '' }}</span>
     </dd>
-    <dd>
+    <dd data-testid="totalStaffLink">
       <a
         *ngIf="canEditEstablishment"
         [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']"

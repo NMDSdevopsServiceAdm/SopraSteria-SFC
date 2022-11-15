@@ -197,7 +197,7 @@ describe('CountryOfBirthComponent', () => {
       ]);
     });
 
-    it('should navigate to year-arrived-uk-summary-flow page when pressing Save and other country is selected', async () => {
+    it('should navigate to year-arrived-uk-summary page when pressing Save and other country is selected', async () => {
       const { component, fixture, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -216,11 +216,11 @@ describe('CountryOfBirthComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
-        'year-arrived-uk-summary-flow',
+        'year-arrived-uk',
       ]);
     });
 
-    it('should navigate to year-arrived-uk-summary-flow page when pressing Save and I do not know is selected', async () => {
+    it('should navigate to year-arrived-uk page when pressing Save and I do not know is selected', async () => {
       const { component, fixture, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -239,7 +239,7 @@ describe('CountryOfBirthComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
-        'year-arrived-uk-summary-flow',
+        'year-arrived-uk',
       ]);
     });
 

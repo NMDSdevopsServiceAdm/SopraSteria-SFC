@@ -53,7 +53,6 @@ export class YearArrivedUkComponent extends QuestionComponent {
   init() {
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     this.next = this.getRoutePath('main-job-start-date');
-    this.previous = this.getRoutePath('country-of-birth');
 
     this.setupFormValidation();
     if (this.worker.yearArrived) {

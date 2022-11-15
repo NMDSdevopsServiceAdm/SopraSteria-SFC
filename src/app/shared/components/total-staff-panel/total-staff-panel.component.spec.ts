@@ -40,10 +40,11 @@ describe('TotalStaffPanelComponent', () => {
     fixture.detectChanges();
 
     const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffLink = within(document.body).queryByTestId('totalStaffLink');
     const totalStaffText = within(document.body).queryByTestId('totalStaffText');
 
     expect(totalStaffNumber.innerHTML).toContain('23');
-    expect(totalStaffNumber.innerHTML).toContain('Change');
+    expect(totalStaffLink.innerHTML).toContain('Change');
     expect(totalStaffText.innerHTML).toContain('total number of staff');
     expect(totalStaffText.innerHTML).not.toContain('is missing');
   });
@@ -52,10 +53,10 @@ describe('TotalStaffPanelComponent', () => {
     component.totalStaff = undefined;
     fixture.detectChanges();
 
-    const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffLink = within(document.body).queryByTestId('totalStaffLink');
     const totalStaffText = within(document.body).queryByTestId('totalStaffText');
 
-    expect(totalStaffNumber.innerHTML).toContain('Add');
+    expect(totalStaffLink.innerHTML).toContain('Add');
     expect(totalStaffText.innerHTML).toContain('total number of staff is missing');
   });
 
@@ -107,14 +108,14 @@ describe('TotalStaffPanelComponent', () => {
     component.totalWorkers = 24;
     fixture.detectChanges();
 
-    const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffLink = within(document.body).queryByTestId('totalStaffLink');
     const totalStaffText = within(document.body).queryByTestId('totalStaffText');
     const staffAddedNumber = within(document.body).queryByTestId('staffAddedNumber');
     const staffAddedText = within(document.body).queryByTestId('staffAddedText');
     const changeNumber = within(document.body).queryAllByTestId('changeNumber');
     const changeText = within(document.body).queryAllByTestId('changeText');
 
-    expect(totalStaffNumber.innerHTML).toContain('Add');
+    expect(totalStaffLink.innerHTML).toContain('Add');
     expect(totalStaffText.innerHTML).toContain('total number of staff is missing');
     expect(staffAddedNumber.innerHTML).toContain('24');
     expect(staffAddedText.textContent).toContain('staff records added');
