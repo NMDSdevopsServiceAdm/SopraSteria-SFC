@@ -4,7 +4,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { build, fake } from '@jackfranklin/test-data-bot';
@@ -27,7 +26,7 @@ const noPermanentContract = () =>
     },
   });
 
-describe('ContractWithZeroHoursComponent', () => {
+fdescribe('ContractWithZeroHoursComponent', () => {
   async function setup(insideFlow = true, contractType = 'permanent') {
     let contract;
 
@@ -70,10 +69,10 @@ describe('ContractWithZeroHoursComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const backService = injector.inject(BackService);
+    const workerService = injector.inject(WorkerService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const backLinkSpy = spyOn(backService, 'setBackLink');
+    const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
     return {
       component,
@@ -82,7 +81,6 @@ describe('ContractWithZeroHoursComponent', () => {
       getAllByText,
       getByLabelText,
       routerSpy,
-      backLinkSpy,
       getByTestId,
       queryByTestId,
     };
@@ -105,7 +103,7 @@ describe('ContractWithZeroHoursComponent', () => {
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
@@ -187,13 +185,37 @@ describe('ContractWithZeroHoursComponent', () => {
       ]);
     });
 
-    it('should navigate to staff-summary-page page when pressing save and return', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
+    it('should navigate to average-weekly hours when yes is selected and save is clicked', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const link = getByText('Save and return');
+      const radioButton = getByLabelText('Yes');
+      fireEvent.click(radioButton);
+      const link = getByText('Save');
+      fireEvent.click(link);
+
+      fixture.detectChanges();
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+        'average-weekly-hours',
+      ]);
+    });
+
+    it('should navigate to contracted-weekly-hours when no is selected and save is clicked', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButton = getByLabelText('No');
+      fireEvent.click(radioButton);
+      const link = getByText('Save');
       fireEvent.click(link);
 
       expect(routerSpy).toHaveBeenCalledWith([
@@ -202,6 +224,28 @@ describe('ContractWithZeroHoursComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
+        'weekly-contracted-hours',
+      ]);
+    });
+
+    it('should navigate to contracted-weekly-hours when I do not know is selected and save is clicked', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButton = getByLabelText('I do not know');
+      fireEvent.click(radioButton);
+      const link = getByText('Save');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+        'weekly-contracted-hours',
       ]);
     });
 

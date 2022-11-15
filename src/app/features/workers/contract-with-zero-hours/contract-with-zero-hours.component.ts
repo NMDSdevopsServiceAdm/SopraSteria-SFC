@@ -59,17 +59,6 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
       [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
         ? this.getRoutePath('average-weekly-hours')
         : this.getRoutePath('weekly-contracted-hours');
-
-    this.previous = this.getReturnPath();
-  }
-
-  getReturnPath() {
-    if (this.insideFlow) {
-      return [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
-        ? this.getRoutePath('days-of-sickness')
-        : this.getRoutePath('adult-social-care-started');
-    }
-    return this.getRoutePath('');
   }
 
   generateUpdateProps() {
@@ -82,5 +71,17 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     return {
       zeroHoursContract,
     };
+  }
+
+  onSuccess() {
+    const { zeroHoursContract } = this.form.controls;
+    if (!this.insideFlow) {
+      const staffSummaryUrl = this.getRoutePath('');
+      zeroHoursContract.value === 'Yes' ||
+      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
+        ? staffSummaryUrl.push('average-weekly-hours')
+        : staffSummaryUrl.push('weekly-contracted-hours');
+      this.next = staffSummaryUrl;
+    }
   }
 }
