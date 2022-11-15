@@ -59,7 +59,7 @@ export class SocialCareQualificationComponent extends QuestionComponent {
     });
   }
 
-  generateUpdateProps() {
+  generateUpdateProps(): unknown {
     const { qualificationInSocialCare } = this.form.value;
 
     if (!qualificationInSocialCare) {
@@ -71,11 +71,11 @@ export class SocialCareQualificationComponent extends QuestionComponent {
     };
   }
 
-  onSuccess() {
-    const { qualificationInSocialCare } = this.form.controls;
+  onSuccess(): void {
+    const { qualificationInSocialCare } = this.form.value;
 
     const summaryRecordUrl = this.getRoutePath('');
-    if (qualificationInSocialCare.value === 'Yes') {
+    if (qualificationInSocialCare === 'Yes') {
       if (this.insideFlow) {
         this.next = this.getRoutePath('social-care-qualification-level');
       } else {

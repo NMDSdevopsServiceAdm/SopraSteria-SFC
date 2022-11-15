@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
@@ -11,7 +10,6 @@ import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsComponent } from './other-qualifications.component';
 
@@ -32,8 +30,6 @@ const noQualificationInSocialCare = () =>
   });
 
 describe('OtherQualificationsComponent', () => {
-  const workplace = establishmentBuilder() as Establishment;
-
   async function setup(insideFlow = true, qualificationInSocial = 'Yes') {
     let qualification;
 
@@ -125,7 +121,7 @@ describe('OtherQualificationsComponent', () => {
       ]);
     });
 
-    it(`should call submit data and navigate with the 'other-qualifications-level' url when 'Skip this question' is clicked and in the flow`, async () => {
+    it(`should navigate with the 'confirm-staff-record' url when 'Skip this question' is clicked and in the flow`, async () => {
       const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
       const button = getByText('Skip this question');
@@ -136,7 +132,7 @@ describe('OtherQualificationsComponent', () => {
         'mocked-uid',
         'staff-record',
         component.worker.uid,
-        'other-qualifications-level',
+        'confirm-staff-record',
       ]);
     });
 
@@ -203,7 +199,7 @@ describe('OtherQualificationsComponent', () => {
       ]);
     });
 
-    it('should navigate to other-qualifications-level-summary-flow page when pressing save and Yes is entered', async () => {
+    it('should navigate to other-qualifications-level page when pressing save and Yes is entered', async () => {
       const { component, fixture, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -223,7 +219,7 @@ describe('OtherQualificationsComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
-        'other-qualifications-level-summary-flow',
+        'other-qualifications-level',
       ]);
     });
 

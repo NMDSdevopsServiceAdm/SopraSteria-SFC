@@ -272,6 +272,7 @@ const routes: Routes = [
             component: SocialCareQualificationLevelComponent,
             data: { title: 'Highest Social Care Qualification Level' },
           },
+
           {
             path: 'other-qualifications',
             component: OtherQualificationsComponent,
@@ -357,9 +358,9 @@ const routes: Routes = [
         ],
       },
       {
-        path: 'staff-record-summary-flow',
+        path: 'confirm-staff-record',
         component: StaffRecordComponent,
-        data: { title: 'Staff Record' },
+        data: { title: 'Confirm Staff Record' },
       },
       {
         path: 'staff-details',

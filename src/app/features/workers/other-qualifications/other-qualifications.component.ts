@@ -47,22 +47,23 @@ export class OtherQualificationsComponent extends QuestionComponent {
   }
 
   init(): void {
-    this.setUpPageRouting();
+    // this.setUpPageRouting();
 
     if (this.worker.otherQualification) {
       this.prefill();
-      this.setUpConditionalQuestionLogic(this.worker.otherQualification);
-      this.setUpPageRouting(this.worker.otherQualification);
+      // this.setUpConditionalQuestionLogic(this.worker.otherQualification);
+      // this.setUpPageRouting(this.worker.otherQualification);
     }
 
-    this.subscriptions.add(
-      this.form.get('otherQualification').valueChanges.subscribe((value) => {
-        if (!this.insideFlow) {
-          this.setUpConditionalQuestionLogic(value);
-        }
-        this.setUpPageRouting(value);
-      }),
-    );
+    this.next = this.getRoutePath('confirm-staff-record');
+    // this.subscriptions.add(
+    //   this.form.get('otherQualification').valueChanges.subscribe((value) => {
+    //     if (!this.insideFlow) {
+    //       this.setUpConditionalQuestionLogic(value);
+    //     }
+    //     this.setUpPageRouting(value);
+    //   }),
+    // );
   }
 
   private prefill(): void {
@@ -80,7 +81,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
       if (otherQualification === 'Yes') {
         this.next = this.getRoutePath('other-qualifications-level');
       } else {
-        this.next = this.getRoutePath('staff-record-summary-flow');
+        this.next = this.getRoutePath('confirm-staff-record');
       }
     } else {
       this.next = this.getRoutePath('');
@@ -111,5 +112,21 @@ export class OtherQualificationsComponent extends QuestionComponent {
     return {
       otherQualification,
     };
+  }
+
+  onSuccess(): void {
+    const { otherQualification } = this.form.value;
+
+    const summaryRecordUrl = this.getRoutePath('');
+    if (otherQualification === 'Yes') {
+      if (this.insideFlow) {
+        this.next = this.getRoutePath('other-qualifications-level');
+      } else {
+        this.next = summaryRecordUrl;
+        this.next.push('other-qualifications-level');
+      }
+    } else {
+      !this.insideFlow && (this.next = summaryRecordUrl);
+    }
   }
 }
