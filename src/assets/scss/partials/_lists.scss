@@ -15,7 +15,7 @@
   background-color: govuk-colour('light-grey');
   margin: 0;
   @include govuk-responsive-margin(4, 'bottom');
-  @include govuk-responsive-padding(2);
+  @include govuk-responsive-padding(3);
 
   grid-template-columns: 1fr;
   @include govuk-media-query($from: tablet) {
@@ -25,7 +25,7 @@
   &__column {
     display: flex;
     align-items: center;
-    @include govuk-responsive-padding(2);
+    @include govuk-responsive-padding(1);
     @include govuk-responsive-padding(3, 'right');
 
     dt {

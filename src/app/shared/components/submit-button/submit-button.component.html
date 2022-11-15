@@ -42,8 +42,12 @@
     </ng-container>
   </ng-template>
   <ng-template #summary>
-    <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('return', true)">
-      Save and return
+    <!-- <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
+      Save
+    </button> -->
+
+    <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick(summaryActionType, true)">
+      {{ summaryContinue ? 'Save' : 'Save and return' }}
     </button>
 
     <span class="govuk-visually-hidden">or</span>

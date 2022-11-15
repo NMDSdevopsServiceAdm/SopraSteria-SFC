@@ -52,10 +52,10 @@ export class YearArrivedUkComponent extends QuestionComponent {
 
   init() {
     this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-    this.insideYearArrivedUkMiniFlow = this.route.snapshot.parent.url[0].path === 'year-arrived-uk-summary-flow';
-    this.setUpPageRouting();
-    this.setupFormValidation();
+    this.next = this.getRoutePath('main-job-start-date');
+    this.previous = this.getRoutePath('country-of-birth');
 
+    this.setupFormValidation();
     if (this.worker.yearArrived) {
       this.prefill();
     }
@@ -129,27 +129,5 @@ export class YearArrivedUkComponent extends QuestionComponent {
     }
 
     return null;
-  }
-
-  private setUpPageRouting() {
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-    this.mainJobStartDatePath = this.getRoutePath('main-job-start-date');
-
-    if (this.insideFlow && !this.insideYearArrivedUkMiniFlow) {
-      this.previous = this.getRoutePath('country-of-birth');
-      this.next = this.mainJobStartDatePath;
-    } else if (this.insideYearArrivedUkMiniFlow) {
-      this.next = this.staffRecordSummaryPath;
-      this.previous = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'country-of-birth',
-      ];
-    } else {
-      this.previous = this.staffRecordSummaryPath;
-    }
   }
 }

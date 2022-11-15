@@ -53,9 +53,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
     this.subscriptions.add(this.countryService.getCountries().subscribe((res) => (this.availableCountries = res)));
     this.subscriptions.add(
       this.form.get('countryOfBirthKnown').valueChanges.subscribe((value) => {
-        if (!this.insideFlow) {
-          this.setUpConditionalQuestionLogic(value);
-        }
         this.form.get('countryOfBirthName').clearValidators();
 
         if (value === 'Other') {
@@ -67,7 +64,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
     );
 
     if (this.worker.countryOfBirth) {
-      this.setUpConditionalQuestionLogic(this.worker.countryOfBirth.value);
       this.prefill();
     }
 
@@ -83,23 +79,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
     });
   }
 
-  public setUpConditionalQuestionLogic(countryValue): void {
-    if (!this.insideFlow) {
-      if ((countryValue === 'Other' || countryValue === `Don't know`) && countryValue !== 'United Kingdom') {
-        this.conditionalQuestionUrl = [
-          '/workplace',
-          this.workplace.uid,
-          'staff-record',
-          this.worker.uid,
-          'staff-record-summary',
-          'year-arrived-uk-summary-flow',
-        ];
-      } else {
-        this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
-      }
-    }
-  }
-
   getReturnPath() {
     if (this.insideFlow) {
       return this.worker.nationality && this.worker.nationality.value === 'British'
@@ -108,6 +87,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
     }
     return this.getRoutePath('');
   }
+
   setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -140,7 +120,14 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
   onSuccess() {
     const { countryOfBirthKnown } = this.form.controls;
-    countryOfBirthKnown.value === 'United Kingdom' && (this.next = this.getRoutePath('main-job-start-date'));
+    if (countryOfBirthKnown.value === 'United Kingdom') {
+      this.next = this.insideFlow ? this.getRoutePath('main-job-start-date') : this.getRoutePath('');
+    } else {
+      if (!this.insideFlow) {
+        this.next = this.getRoutePath('');
+        this.next.push('year-arrived-uk');
+      }
+    }
   }
 
   countryOfBirthNameValidator() {

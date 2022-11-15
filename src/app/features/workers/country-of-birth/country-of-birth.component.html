@@ -89,8 +89,8 @@
   </div>
 
   <app-submit-button
-    [showSaveAndCancelButton]="!insideFlow"
     [return]="!insideFlow"
+    [summaryContinue]="true"
     (clicked)="setSubmitAction($event)"
   ></app-submit-button>
 </form>
