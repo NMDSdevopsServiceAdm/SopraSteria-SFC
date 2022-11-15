@@ -48,52 +48,15 @@ export class SocialCareQualificationComponent extends QuestionComponent {
 
   init() {
     if (this.worker.qualificationInSocialCare) {
-      this.setUpConditionalQuestionLogic(this.worker.qualificationInSocialCare);
       this.prefill();
     }
-
-    this.subscriptions.add(
-      this.form.get('qualificationInSocialCare').valueChanges.subscribe((value) => {
-        if (!this.insideFlow) {
-          this.setUpConditionalQuestionLogic(value);
-        }
-      }),
-    );
-
     this.next = this.getRoutePath('other-qualifications');
-    this.previous = this.getReturnPath();
   }
 
   private prefill(): void {
     this.form.patchValue({
       qualificationInSocialCare: this.worker.qualificationInSocialCare,
     });
-  }
-
-  public setUpConditionalQuestionLogic(qualificationInSocialCareValue): void {
-    if (qualificationInSocialCareValue === 'Yes') {
-      this.conditionalQuestionUrl = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'social-care-qualification-level-summary-flow',
-      ];
-    } else {
-      this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
-    }
-  }
-
-  private getReturnPath() {
-    if (this.insideFlow && this.workerService.addStaffRecordInProgress) {
-      return this.getRoutePath('apprenticeship-training');
-    }
-
-    if (this.insideFlow) {
-      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
-    }
-    return this.getRoutePath('');
   }
 
   generateUpdateProps() {
@@ -109,9 +72,18 @@ export class SocialCareQualificationComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    this.next =
-      this.form.value.qualificationInSocialCare === 'Yes'
-        ? this.getRoutePath('social-care-qualification-level')
-        : this.getRoutePath('other-qualifications');
+    const { qualificationInSocialCare } = this.form.controls;
+
+    const summaryRecordUrl = this.getRoutePath('');
+    if (qualificationInSocialCare.value === 'Yes') {
+      if (this.insideFlow) {
+        this.next = this.getRoutePath('social-care-qualification-level');
+      } else {
+        this.next = summaryRecordUrl;
+        this.next.push('social-care-qualification-level');
+      }
+    } else {
+      !this.insideFlow && (this.next = summaryRecordUrl);
+    }
   }
 }

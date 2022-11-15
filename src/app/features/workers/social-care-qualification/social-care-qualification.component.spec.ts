@@ -9,7 +9,7 @@ import {
   MockWorkerServiceWithUpdateWorker,
 } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByLabelText, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { SocialCareQualificationComponent } from './social-care-qualification.component';
 
@@ -268,7 +268,7 @@ describe('SocialCareQualificationComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
-        'social-care-qualification-level-summary-flow',
+        'social-care-qualification-level',
       ]);
     });
 

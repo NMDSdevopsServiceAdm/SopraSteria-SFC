@@ -43,11 +43,12 @@
     </ng-container>
   </ng-template>
   <ng-template #summary>
-    <!-- <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
-      Save
-    </button> -->
-
-    <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick(summaryActionType, true)">
+    <button
+      type="submit"
+      class="govuk-button govuk-!-margin-right-9"
+      (click)="onButtonClick(summaryActionType, true)"
+      [ngClass]="{ additionalHorizontalPadding: summaryContinue }"
+    >
       {{ summaryContinue ? 'Save' : 'Save and return' }}
     </button>
 

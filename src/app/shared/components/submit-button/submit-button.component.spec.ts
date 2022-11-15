@@ -5,7 +5,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { SubmitButtonComponent } from './submit-button.component';
 
 describe('SubmitButtonComponent', () => {
-  const setup = async (shouldReturn = false) =>
+  const setup = async (shouldReturn = false, summaryContinue = false) =>
     render(SubmitButtonComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       componentProperties: {
@@ -15,6 +15,7 @@ describe('SubmitButtonComponent', () => {
         canExit: false,
         exitText: 'Cancel',
         isExistingStaffRecord: true,
+        summaryContinue: summaryContinue,
       },
     });
 
@@ -70,6 +71,13 @@ describe('SubmitButtonComponent', () => {
       const { getByText } = await setup(true);
 
       expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should render the 'Save' button and 'Cancel' link when submitContinue is true`, async () => {
+      const { getByText } = await setup(true, true);
+
+      expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
@@ -135,6 +143,16 @@ describe('SubmitButtonComponent', () => {
 
     fireEvent.click(getByText('Save and return'));
     expect(spy).toHaveBeenCalledWith({ action: 'return', save: true });
+  });
+
+  it(`should emit the 'continue' and save event on Save button click`, async () => {
+    const { fixture, getByText } = await setup(true, true);
+
+    const spy = spyOn(fixture.componentInstance.clicked, 'emit');
+    expect(spy).not.toHaveBeenCalled();
+
+    fireEvent.click(getByText('Save'));
+    expect(spy).toHaveBeenCalledWith({ action: 'continue', save: true });
   });
 
   it(`should emit the 'return' event on cancel button click when return is true`, async () => {
