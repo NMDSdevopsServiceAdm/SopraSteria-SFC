@@ -18,10 +18,16 @@
         src="/public/download/certificates/sample-image/asc-wds+certificate+sample+23-24.png"
         width="300px"
         style="border: 1px solid #b1b4b6"
+        class="govuk-!-margin-bottom-4"
       />
-      <a class="govuk__flex govuk__align-items-center" (click)="downloadCertificate()" target="_blank"
+      <a
+        class="govuk__flex govuk__align-items-center govuk-button--link govuk-link"
+        (click)="downloadCertificate()"
+        target="_blank"
+        href="#"
+        onclick="return false;"
         ><img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1"
-          >Download your certificate</span
+          >Download your certificate (PDF, 90KB)</span
         ></a
       >
     </div>
@@ -34,13 +40,14 @@
         src="public/download/certificates/footer/ASC-WDS_Footer+{{ years }}.jpg"
         width="300px"
         style="border: 1px solid #b1b4b6"
+        class="govuk-!-margin-bottom-4"
       />
       <a
         class="govuk__flex govuk__align-items-center"
         href="public/download/certificates/footer/ASC-WDS_Footer+{{ years }}.jpg"
         target="_blank"
         ><img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1"
-          >Download your email signature</span
+          >Download your email signature (JPG, 96KB)</span
         ></a
       >
     </div>
@@ -55,13 +62,14 @@
         src="public/download/certificates/logo/ASC-WDS+logo_20{{ years }}.jpg"
         width="150px"
         style="border: 1px solid #b1b4b6"
+        class="govuk-!-margin-bottom-4"
       />
       <a
         class="govuk__flex govuk__align-items-center"
         href="public/download/certificates/logo/ASC-WDS+logo_20{{ years }}.jpg"
         target="_blank"
         ><img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1"
-          >Download your logo</span
+          >Download your logo (JPG, 145KB)</span
         ></a
       >
     </div>
