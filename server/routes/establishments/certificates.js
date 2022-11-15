@@ -27,7 +27,6 @@ const getCertificate = async (req, res) => {
   const establishmentFileName = `${req.params.id} ${fileName}`;
   Key = `${filePathBase}/${establishmentFileName}`;
   const exists = await fileExists();
-  console.log({ Key, exists, params: params() });
   try {
     if (!exists) {
       const thisEstablishment = new Establishment.Establishment(req.username);
@@ -66,7 +65,6 @@ const fileExists = async () => {
     await s3.getObject(params()).promise();
     return true;
   } catch (error) {
-    console.log({ error });
     return false;
   }
 };
@@ -77,10 +75,7 @@ const modifyPdf = async (establishmentName, fileName) => {
     Bucket,
   };
 
-  console.log('GET TEMPLATE:');
-  console.log({ params });
   var response = await s3.getObject(params).promise();
-  console.log('GOT from Template s3');
 
   const pdfDoc = await pdfLib.PDFDocument.load(response.Body.buffer);
 
