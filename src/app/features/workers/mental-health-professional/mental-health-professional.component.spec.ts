@@ -80,7 +80,7 @@ describe('MentalHealtProfessionalComponent', () => {
     expect(getByTestId('section-heading')).toBeTruthy();
     expect(getByLabelText('Yes')).toBeTruthy();
     expect(getByLabelText('No')).toBeTruthy();
-    expect(getByLabelText(`Don't know`)).toBeTruthy();
+    expect(getByLabelText('I do not know')).toBeTruthy();
   });
 
   describe('submit buttons', () => {
