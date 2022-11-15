@@ -7,7 +7,10 @@ import { BackService } from '@core/services/back.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import {
+  MockWorkerServiceWithoutReturnUrl,
+  MockWorkerServiceWithUpdateWorker,
+} from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -126,7 +129,7 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to staff-record-summary-flow page when submitting from flow', async () => {
+    it('should navigate to confirm-staff-record page when submitting from flow', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -144,11 +147,11 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary-flow',
+        'confirm-staff-record',
       ]);
     });
 
-    it('should navigate to staff-record-summary-flow page when skipping the question in the flow', async () => {
+    it('should navigate to confirm-staff-record page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -162,7 +165,7 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary-flow',
+        'confirm-staff-record',
       ]);
     });
 

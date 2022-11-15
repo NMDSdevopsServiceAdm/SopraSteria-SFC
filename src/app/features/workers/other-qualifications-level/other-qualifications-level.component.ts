@@ -48,14 +48,13 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
   }
 
   init(): void {
-    this.insideOtherQualificationsLevelSummaryFlow =
-      this.route.snapshot.parent.url[0].path === 'other-qualifications-level-summary-flow';
     this.getAndSetQualifications();
-    this.setUpPageRouting();
 
     if (this.worker.highestQualification) {
       this.prefill();
     }
+
+    this.next = this.getRoutePath('confirm-staff-record');
   }
 
   private prefill(): void {
@@ -70,27 +69,6 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
         this.qualifications = qualifications;
       }),
     );
-  }
-
-  private setUpPageRouting(): void {
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-    if (this.insideFlow && !this.insideOtherQualificationsLevelSummaryFlow) {
-      this.previous = this.getRoutePath('other-qualifications');
-      this.next = this.getRoutePath('staff-record-summary-flow');
-    } else if (this.insideOtherQualificationsLevelSummaryFlow) {
-      this.next = this.staffRecordSummaryPath;
-      this.previous = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'other-qualifications',
-      ];
-    } else {
-      this.previous = this.staffRecordSummaryPath;
-      this.next = this.staffRecordSummaryPath;
-    }
   }
 
   setupFormErrorsMap(): void {

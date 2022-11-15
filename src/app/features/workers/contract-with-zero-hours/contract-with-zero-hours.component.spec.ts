@@ -26,7 +26,7 @@ const noPermanentContract = () =>
     },
   });
 
-fdescribe('ContractWithZeroHoursComponent', () => {
+describe('ContractWithZeroHoursComponent', () => {
   async function setup(insideFlow = true, contractType = 'permanent') {
     let contract;
 
