@@ -15,7 +15,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class MentalHealthProfessionalComponent extends QuestionComponent implements OnInit, OnDestroy {
   public answersAvailable = ['Yes', 'No', 'I do not know'];
-  public section = 'Personal details';
+  public section = 'Employment details';
   private nationalInsuranceNumberPath: string[];
   public insideMentalHealthProfessionalSummaryFlow: boolean;
 
@@ -62,7 +62,7 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
 
   private setUpPageRouting() {
     this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-    this.nationalInsuranceNumberPath = this.getRoutePath('national-insurance-number');
+    this.nationalInsuranceNumberPath = this.getRoutePath('recruited-from');
 
     if (this.insideFlow && !this.insideMentalHealthProfessionalSummaryFlow) {
       this.previous = this.getRoutePath('main-job-start-date');

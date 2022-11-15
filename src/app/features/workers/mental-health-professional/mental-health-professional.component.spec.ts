@@ -114,7 +114,7 @@ describe('MentalHealtProfessionalComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to national-insurance-number page when submitting from flow', async () => {
+    it('should navigate to recruited-from page when submitting from flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -125,16 +125,10 @@ describe('MentalHealtProfessionalComponent', () => {
 
       expect(getByText('Save and continue')).toBeTruthy();
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'national-insurance-number',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'recruited-from']);
     });
 
-    it('should navigate to national-insurance-number page when skipping the question in the flow', async () => {
+    it('should navigate to recruited-from page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -143,13 +137,7 @@ describe('MentalHealtProfessionalComponent', () => {
       const skipButton = getByText('Skip this question');
       fireEvent.click(skipButton);
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'national-insurance-number',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'recruited-from']);
     });
 
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
