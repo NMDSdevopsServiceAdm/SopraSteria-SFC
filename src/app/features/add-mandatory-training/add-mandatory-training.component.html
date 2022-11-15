@@ -7,24 +7,7 @@
 </app-error-summary>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl">Manage mandatory training</h1>
-    <details class="govuk-details" data-module="govuk-details">
-      <summary class="govuk-details__summary">
-        <span class="govuk-details__summary-text"> Help with mandatory training </span>
-      </summary>
-      <div class="govuk-details__text">
-        Choose the training you want to make mandatory for your staff, dependent on your main service and the needs of
-        those you provide care for. It will help you identify who needs training and let you know when training expires.
-      </div>
-    </details>
-    <a
-      href="#"
-      *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
-      (click)="removeAllCategories($event)"
-      class="govuk-list govuk-list--inline"
-    >
-      Remove all training selections</a
-    >
+    <h1 class="govuk-heading-l">Add a mandatory training category</h1>
   </div>
 </div>
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -173,5 +156,5 @@
       </div>
     </ng-container>
   </fieldset>
-  <app-submit-exit-buttons [return]="return"></app-submit-exit-buttons>
+  <app-submit-exit-buttons [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
 </form>

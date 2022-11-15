@@ -9,14 +9,14 @@ import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { getByText, render } from '@testing-library/angular';
 
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
 import { AddMandatoryTrainingModule } from './add-mandatory-training.module';
 
 describe('AddMandatoryTrainingComponent', () => {
   async function setup() {
-    const component = await render(AddMandatoryTrainingComponent, {
+    const { getByText, fixture } = await render(AddMandatoryTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, AddMandatoryTrainingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -48,8 +48,12 @@ describe('AddMandatoryTrainingComponent', () => {
         },
       ],
     });
+    const component = fixture.componentInstance;
+
     return {
       component,
+      fixture,
+      getByText,
     };
   }
 
@@ -58,27 +62,34 @@ describe('AddMandatoryTrainingComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('Should display a title, Save and return button and Cancel Link', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Add a mandatory training category')).toBeTruthy();
+    expect(getByText('Save and return')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
+  });
+
   describe('setBackLink', async () => {
     it('should return to dashboard when the workplace is the primary workplace', async () => {
-      const { component } = await setup();
+      const { component, fixture } = await setup();
       const expectedReturnUrl = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
 
-      component.fixture.componentInstance.primaryWorkplace.uid = '123';
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
+      component.primaryWorkplace.uid = '123';
+      component.setBackLink();
+      fixture.detectChanges();
 
-      expect(component.fixture.componentInstance.return).toEqual(expectedReturnUrl);
+      expect(component.return).toEqual(expectedReturnUrl);
     });
 
     it('should return to subsidiary dashboard when the workplace is not the primary workplace', async () => {
-      const { component } = await setup();
+      const { component, fixture } = await setup();
       const expectedReturnUrl = { url: ['/workplace', '123'], fragment: 'training-and-qualifications' };
 
-      component.fixture.componentInstance.primaryWorkplace.uid = '125';
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
+      component.primaryWorkplace.uid = '125';
+      component.setBackLink();
+      fixture.detectChanges();
 
-      expect(component.fixture.componentInstance.return).toEqual(expectedReturnUrl);
+      expect(component.return).toEqual(expectedReturnUrl);
     });
   });
 });

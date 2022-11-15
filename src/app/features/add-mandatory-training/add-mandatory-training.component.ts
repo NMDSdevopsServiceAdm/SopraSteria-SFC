@@ -18,7 +18,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
-import { RemoveAllSelectionsDialogComponent } from '@features/add-mandatory-training/remove-all-selections-dialog.component';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
 
@@ -46,7 +45,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       value: mandatoryTrainingJobOption.all,
     },
     {
-      label: `Selected job roles only`,
+      label: `Only selected job roles`,
       value: mandatoryTrainingJobOption.selected,
     },
   ];
@@ -201,18 +200,6 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     this.categoriesArray.removeAt(index);
   }
 
-  public removeAllCategories(event: Event): void {
-    event.preventDefault();
-
-    this.dialogService.open(RemoveAllSelectionsDialogComponent, {}).afterClosed.subscribe((deleteConfirmed) => {
-      if (deleteConfirmed) {
-        this.categoriesArray.clear();
-        const props = this.generateUpdateProps();
-        this.updateMandatoryTraining(props, true);
-      }
-    });
-  }
-
   // create training category contral to add new training
   private createCategoryControl(trainingId = null, vType = mandatoryTrainingJobOption.all): FormGroup {
     return this.formBuilder.group({
@@ -315,7 +302,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   //update vacancy array on vanancy type change
   public onVacancyTypeSelectionChange(index: number) {
     const vacancyType = this.categoriesArray.controls[index].get('vacancyType').value;
-    let vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
+    const vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
     if (vacancyType === mandatoryTrainingJobOption.all) {
       while (vacanciesArray.length > 0) {
         vacanciesArray.removeAt(0);
