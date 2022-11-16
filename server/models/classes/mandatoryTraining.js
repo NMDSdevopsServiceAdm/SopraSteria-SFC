@@ -97,65 +97,60 @@ class MandatoryTraining extends EntityValidator {
 
   // validates a given mandatory training record; returns the training record if valid
   async validateMandatoryTrainingRecord(document) {
-    let validatedMandatoryTrainingRecord = [];
+    let validatedMandatoryTrainingRecord;
     let returnStatus = true;
     //validate all posted training ids
-    if (document && Array.isArray(document)) {
-      for (let i = 0; i < document.length; i++) {
-        let doc = document[i];
-        if (!doc.trainingCategoryId) {
-          console.error('POST:: create mandatoryTraining - Failed Validation - Training Category ID missing');
-          this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Training Category ID missing');
-          return false;
-        }
-        // get training details
-        const trainingCategoryDetails = await models.workerTrainingCategories.findOne({
-          where: {
-            id: doc.trainingCategoryId,
-          },
-          attributes: ['id'],
-        });
+    if (document) {
+      if (!document.trainingCategoryId) {
+        console.error('POST:: create mandatoryTraining - Failed Validation - Training Category ID missing');
+        this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Training Category ID missing');
+        return false;
+      }
+      // get training details
+      const trainingCategoryDetails = await models.workerTrainingCategories.findOne({
+        where: {
+          id: document.trainingCategoryId,
+        },
+        attributes: ['id'],
+      });
 
-        if (trainingCategoryDetails && trainingCategoryDetails.id) {
-          // get job details if doc.allJobRoles === false
-          if (!doc.allJobRoles) {
-            let foundJobRoles = true;
-            if (!doc.allJobRoles && Array.isArray(doc.jobs) && doc.jobs.length > 0) {
-              for (let j = 0; j < doc.jobs.length; j++) {
-                let job = doc.jobs[j];
-                const jobDetails = await models.job.findOne({
-                  where: {
-                    id: job.id,
-                  },
-                  attributes: ['id'],
-                });
+      if (trainingCategoryDetails && trainingCategoryDetails.id) {
+        // get job details if doc.allJobRoles === false
+        if (!document.allJobRoles) {
+          let foundJobRoles = true;
+          if (!document.allJobRoles && Array.isArray(document.jobs) && document.jobs.length > 0) {
+            for (let i = 0; i < document.jobs.length; i++) {
+              let job = document.jobs[i];
+              const jobDetails = await models.job.findOne({
+                where: {
+                  id: job.id,
+                },
+                attributes: ['id'],
+              });
 
-                if (!jobDetails || !jobDetails.id) {
-                  foundJobRoles = false;
-                  console.error('POST:: create mandatoryTraining - Failed Validation - Job role record not found');
-                  this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Job role record not found');
-                  returnStatus = false;
-                }
+              if (!jobDetails || !jobDetails.id) {
+                foundJobRoles = false;
+                console.error('POST:: create mandatoryTraining - Failed Validation - Job role record not found');
+                this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Job role record not found');
+                returnStatus = false;
               }
-            } else {
-              console.error(
-                'POST:: create mandatoryTraining - Failed Validation - Selected job roles record not found',
-              );
-              this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Selected job roles record not found');
-              returnStatus = false;
-            }
-
-            if (foundJobRoles) {
-              validatedMandatoryTrainingRecord.push(doc);
             }
           } else {
-            validatedMandatoryTrainingRecord.push(doc);
+            console.error('POST:: create mandatoryTraining - Failed Validation - Selected job roles record not found');
+            this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Selected job roles record not found');
+            returnStatus = false;
+          }
+
+          if (foundJobRoles) {
+            validatedMandatoryTrainingRecord = document;
           }
         } else {
-          console.error('POST:: create mandatoryTraining - Failed Validation - Training Category record not found');
-          this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Training record not found');
-          return false;
+          validatedMandatoryTrainingRecord = document;
         }
+      } else {
+        console.error('POST:: create mandatoryTraining - Failed Validation - Training Category record not found');
+        this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Training record not found');
+        return false;
       }
     } else {
       console.error('POST:: create mandatoryTraining - Failed Validation - Invalid Input');
@@ -179,7 +174,7 @@ class MandatoryTraining extends EntityValidator {
       if (validatedTrainingRecord !== false) {
         return (this.mandatorytrainingDetails = validatedTrainingRecord);
       } else {
-        this._log(MandatoryTraining.LOG_ERROR, `Failed Validation::load - failed`);
+        this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation::load - failed');
         return false;
       }
     } catch (err) {
@@ -197,73 +192,64 @@ class MandatoryTraining extends EntityValidator {
     if (initializedRecords && this._isNew) {
       // create new Mandatory Training Record
       try {
-        //find already existing mandatory details, if found delete them
-        const fetchQuery = {
-          where: {
-            establishmentFK: this.establishmentId,
-          },
-        };
-        await models.MandatoryTraining.destroy(fetchQuery);
-
         // save new mandatory training details
-        for (let i = 0; i < this.mandatorytrainingDetails.length; i++) {
-          let row = this.mandatorytrainingDetails[i];
-          if (row.allJobRoles) {
-            // fetch all job roles
-            let allJobRoles = await models.job.findAll({
-              attributes: ['id'],
-            });
-            if (allJobRoles && Array.isArray(allJobRoles) && allJobRoles.length > 0) {
-              row.jobs = allJobRoles;
-            } else {
-              throw new Error('No Job roles found');
-            }
-          }
-
-          if (Array.isArray(row.jobs) && row.jobs.length > 0) {
-            for (let j = 0; j < row.jobs.length; j++) {
-              let job = row.jobs[j];
-              const now = new Date();
-              let creationDocument = {
-                establishmentFK: this.establishmentId,
-                trainingCategoryFK: row.trainingCategoryId,
-                jobFK: job.id,
-                created: now,
-                updated: now,
-                createdBy: savedBy.toLowerCase(),
-                updatedBy: savedBy.toLowerCase(),
-              };
-
-              // need to create the Training record only
-              //  in one transaction
-              await models.sequelize.transaction(async (t) => {
-                // the saving of an Mandatory Training record can be initiated within
-                //  an external transaction
-                const thisTransaction = externalTransaction ? externalTransaction : t;
-
-                // now save the document
-                let creation = await models.MandatoryTraining.create(creationDocument, {
-                  transaction: thisTransaction,
-                });
-
-                const sanitisedResults = creation.get({ plain: true });
-                returnSavedResponse.push({
-                  id: sanitisedResults.ID,
-                  created: sanitisedResults.created,
-                  updated: sanitisedResults.updated,
-                  createdBy: savedBy.toLowerCase(),
-                  updatedBy: savedBy.toLowerCase(),
-                });
-                this._isNew = false;
-
-                this._log(
-                  MandatoryTraining.LOG_INFO,
-                  `Created Mandatory Training Record with id (${sanitisedResults.ID})`,
-                );
-              });
-            }
+        let row = this.mandatorytrainingDetails;
+        if (row.allJobRoles) {
+          // fetch all job roles
+          let allJobRoles = await models.job.findAll({
+            attributes: ['id'],
+          });
+          if (allJobRoles && Array.isArray(allJobRoles) && allJobRoles.length > 0) {
+            row.jobs = allJobRoles;
+          } else {
+            throw new Error('No Job roles found');
           }
         }
+
+        if (Array.isArray(row.jobs) && row.jobs.length > 0) {
+          for (let i = 0; i < row.jobs.length; i++) {
+            let job = row.jobs[i];
+            const now = new Date();
+            let creationDocument = {
+              establishmentFK: this.establishmentId,
+              trainingCategoryFK: row.trainingCategoryId,
+              jobFK: job.id,
+              created: now,
+              updated: now,
+              createdBy: savedBy.toLowerCase(),
+              updatedBy: savedBy.toLowerCase(),
+            };
+
+            // need to create the Training record only
+            //  in one transaction
+            await models.sequelize.transaction(async (t) => {
+              // the saving of an Mandatory Training record can be initiated within
+              //  an external transaction
+              const thisTransaction = externalTransaction ? externalTransaction : t;
+
+              // now save the document
+              let creation = await models.MandatoryTraining.create(creationDocument, {
+                transaction: thisTransaction,
+              });
+
+              const sanitisedResults = creation.get({ plain: true });
+              returnSavedResponse.push({
+                id: sanitisedResults.ID,
+                created: sanitisedResults.created,
+                updated: sanitisedResults.updated,
+                createdBy: savedBy.toLowerCase(),
+                updatedBy: savedBy.toLowerCase(),
+              });
+              this._isNew = false;
+
+              this._log(
+                MandatoryTraining.LOG_INFO,
+                `Created Mandatory Training Record with id (${sanitisedResults.ID})`,
+              );
+            });
+          }
+        }
+
         return returnSavedResponse;
       } catch (err) {
         console.error(`POST:: create mandatoryTraining - Failed to save new Mandatory training record: ${err}`);
