@@ -33,7 +33,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   private otherJobRoleCharacterLimit = 120;
   public isPrimaryAccount: boolean;
   public inMandatoryDetailsFlow: boolean;
-  private formMainJobIdValue: number;
+  public summaryContinue: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -72,38 +72,10 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   init(): void {
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
     this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
-    this.showSaveAndCancelButton = !this.insideFlow && !this.inMandatoryDetailsFlow ? true : false;
+    this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
     this.getJobs();
-    this.previous = this.getReturnPath();
+    this.getReturnPath();
     this.editFlow = this.inMandatoryDetailsFlow || !this.insideFlow;
-  }
-
-  public setUpConditionalQuestionLogic(mainJobId): void {
-    this.formMainJobIdValue = parseInt(mainJobId, 10);
-    if (!this.insideFlow && !this.inMandatoryDetailsFlow) {
-      if (this.formMainJobIdValue === 23) {
-        this.conditionalQuestionUrl = [
-          '/workplace',
-          this.workplace.uid,
-          'staff-record',
-          this.worker.uid,
-          'staff-record-summary',
-          'registered-nurse-details',
-          'nursing-category',
-        ];
-      } else if (this.formMainJobIdValue === 27) {
-        this.conditionalQuestionUrl = [
-          '/workplace',
-          this.workplace.uid,
-          'staff-record',
-          this.worker.uid,
-          'staff-record-summary',
-          'mental-health-professional-summary-flow',
-        ];
-      } else {
-        this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
-      }
-    }
   }
 
   public setupFormErrorsMap(): void {
@@ -185,7 +157,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   selectedJobRole(id: number) {
-    this.setUpConditionalQuestionLogic(id);
     this.showInputTextforOtherRole = false;
     const otherJob = this.jobsAvailable.find((job) => job.id === +id);
     if (otherJob && otherJob.other) {
@@ -207,16 +178,22 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   private getReturnPath() {
     if (this.inMandatoryDetailsFlow) {
       this.returnUrl = this.getRoutePath('mandatory-details');
-      return this.returnUrl;
+      return;
     }
-    if (this.insideFlow) {
-      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
-    }
-    return this.getRoutePath('');
   }
 
   protected onSuccess(): void {
-    this.next = this.getRoutePath('mandatory-details');
+    if (this.editFlow) {
+      const nextRoute = this.getRoutePath('');
+      if (this.workerService.hasJobRole(this.worker, 27)) {
+        nextRoute.push('mental-health-professional');
+      } else if (this.workerService.hasJobRole(this.worker, 23)) {
+        nextRoute.push('nursing-category');
+      }
+      this.next = nextRoute;
+    } else {
+      this.next = this.getRoutePath('mandatory-details');
+    }
     !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
   }
 

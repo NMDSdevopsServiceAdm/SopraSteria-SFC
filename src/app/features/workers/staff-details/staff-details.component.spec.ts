@@ -194,7 +194,7 @@ describe('StaffDetailsComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should set conditionalQuestionUrl when not in mandatory details flow or in the staff record flow and mainJobRole selected is 23`, async () => {
+    xit(`should set conditionalQuestionUrl when not in mandatory details flow or in the staff record flow and mainJobRole selected is 23`, async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, false);
 
       userEvent.type(getByLabelText('Name or ID number'), 'Someone');
@@ -215,8 +215,9 @@ describe('StaffDetailsComponent', () => {
     });
 
     it(`should set conditionalQuestionUrl when not in mandatory details flow or in the staff record flow and mainJobRole selected is 23`, async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, false);
+      const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
 
+      spyOn(workerService, 'hasJobRole').and.returnValue(true);
       userEvent.type(getByLabelText('Name or ID number'), 'Someone');
       userEvent.selectOptions(getByLabelText('Main job role'), ['27']);
       userEvent.click(getByLabelText('Permanent'));
@@ -229,7 +230,7 @@ describe('StaffDetailsComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
-        'mental-health-professional-summary-flow',
+        'mental-health-professional',
       ]);
     });
 
@@ -365,7 +366,7 @@ describe('StaffDetailsComponent', () => {
         otherJobRole: null,
         contract: 'Temporary',
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
@@ -433,7 +434,7 @@ describe('StaffDetailsComponent', () => {
         otherJobRole: 'Admin',
         contract: 'Temporary',
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',

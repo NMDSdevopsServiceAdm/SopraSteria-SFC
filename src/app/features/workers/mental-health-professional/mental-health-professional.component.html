@@ -41,8 +41,5 @@
     </div>
   </div>
 
-  <app-submit-button
-    [return]="!insideFlow || insideMentalHealthProfessionalSummaryFlow"
-    (clicked)="setSubmitAction($event)"
-  ></app-submit-button>
+  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>

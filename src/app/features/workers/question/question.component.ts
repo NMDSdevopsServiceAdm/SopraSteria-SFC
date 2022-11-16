@@ -27,8 +27,8 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public previous: string[];
   public next: string[];
   public back: URLStructure;
-  public conditionalQuestionUrl: string[];
-  public showSaveAndCancelButton: boolean;
+  public conditionalQuestionUrl: string[]; // delete
+  public showSaveAndCancelButton: boolean; // delete
 
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
@@ -38,12 +38,12 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public staffRecordSections: string[] = ProgressBarUtil.staffRecordProgressBarSections();
   public insideFlow: boolean;
-  public registeredNurseFlow: boolean;
+  public registeredNurseFlow: boolean; // delete
   public flow: string;
   public staffRecordSummaryPath: string[];
   public submitAction: { action: string; save: boolean } = null;
   public returnUrl: string[];
-  public submitTitle: string;
+  public submitTitle: string; // ???
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -150,7 +150,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(this.returnUrl);
         break;
 
-      case 'saveAndContinueConditional':
+      case 'saveAndContinueConditional': // delete
         this.router.navigate(this.conditionalQuestionUrl);
         break;
     }

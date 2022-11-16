@@ -61,7 +61,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
     if (this.worker.mainJobStartDate) {
       this.prefill();
     }
-    this.setUpPageRouting();
+    this.next = this.getNextRoute();
   }
 
   private prefill(): void {
@@ -108,24 +108,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
     return { mainJobStartDate: null };
   }
 
-  private setUpPageRouting(): void {
-    if (this.insideFlow) {
-      this.next = this.determineNextPath();
-      if (this.worker.countryOfBirth) {
-        this.previous =
-          this.worker.countryOfBirth.value === 'Other' || this.worker.countryOfBirth.value === `Don't know`
-            ? this.getRoutePath('year-arrived-uk')
-            : this.getRoutePath('country-of-birth');
-      } else {
-        this.previous = this.getRoutePath('country-of-birth');
-      }
-    } else {
-      this.previous = this.getRoutePath('');
-      this.next = this.getRoutePath('');
-    }
-  }
-
-  private determineNextPath() {
+  private getNextRoute() {
     if (this.workerService.hasJobRole(this.worker, 23)) {
       return this.getRoutePath('nursing-category');
     } else if (this.workerService.hasJobRole(this.worker, 27)) {

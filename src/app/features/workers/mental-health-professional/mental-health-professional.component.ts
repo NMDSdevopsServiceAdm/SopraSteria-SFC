@@ -46,41 +46,16 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
   }
 
   init(): void {
-    this.insideMentalHealthProfessionalSummaryFlow =
-      this.route.snapshot.parent.url[0].path === 'mental-health-professional-summary-flow';
     if (this.worker.approvedMentalHealthWorker) {
       this.prefill();
     }
-    this.setUpPageRouting();
+    this.next = this.getRoutePath('recruited-from');
   }
 
   private prefill() {
     this.form.patchValue({
       approvedMentalHealthWorker: this.worker.approvedMentalHealthWorker,
     });
-  }
-
-  private setUpPageRouting() {
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-    this.nationalInsuranceNumberPath = this.getRoutePath('recruited-from');
-
-    if (this.insideFlow && !this.insideMentalHealthProfessionalSummaryFlow) {
-      this.previous = this.getRoutePath('main-job-start-date');
-      this.next = this.nationalInsuranceNumberPath;
-    } else if (this.insideMentalHealthProfessionalSummaryFlow) {
-      this.next = this.staffRecordSummaryPath;
-      this.previous = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'staff-details',
-      ];
-    } else {
-      this.next = this.staffRecordSummaryPath;
-      this.previous = this.staffRecordSummaryPath;
-    }
   }
 
   generateUpdateProps() {
