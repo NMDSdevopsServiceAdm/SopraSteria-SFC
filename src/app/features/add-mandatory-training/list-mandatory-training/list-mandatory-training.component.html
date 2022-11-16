@@ -31,16 +31,22 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body" *ngFor="let records of existingMandatoryTrainings.mandatoryTraining">
-      <ng-container>
-        <tr class="govuk-table__row govuk-util__vertical-align-top">
-          <td class="govuk-table__cell">
-            <a href="#">
-              {{ records.category }}
-            </a>
-          </td>
-          <td class="govuk-table__cell">{{ '-' }}</td>
-        </tr>
-      </ng-container>
+      <tr class="govuk-table__row govuk-util__vertical-align-top">
+        <td class="govuk-table__cell">
+          <a href="#">
+            {{ records.category }}
+          </a>
+        </td>
+
+        <td class="govuk-table__cell">
+          <ng-container *ngIf="records.jobs.length > 28">
+            {{ 'All' }}
+          </ng-container>
+          <ng-container *ngIf="records.jobs.length < 29">
+            <div *ngFor="let job of records.jobs">{{ job.title }}</div>
+          </ng-container>
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>

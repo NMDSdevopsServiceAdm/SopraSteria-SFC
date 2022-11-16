@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { allMandatoryTrainingCategories, Establishment } from '@core/model/establishment.model';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { Establishment } from '@core/model/establishment.model';
+import { allMandatoryTrainingCategories } from '@core/model/training.model';
+import { JobService } from '@core/services/job.service';
+import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -13,15 +15,13 @@ export class ListMandatoryTrainingComponent implements OnInit {
   public establishment: Establishment;
 
   public existingMandatoryTrainings: allMandatoryTrainingCategories;
-  constructor(public establishmentService: EstablishmentService, private route: ActivatedRoute) {}
+  constructor(public trainingService: TrainingService, private route: ActivatedRoute, public jobService: JobService) {}
 
   ngOnInit(): void {
     this.establishment = this.route.parent.snapshot.data.establishment;
 
     this.subscriptions.add(
-      this.establishmentService.getAllMandatoryTrainings(this.establishment.uid).subscribe((trainings) => {
-        console.log({ trainings });
-
+      this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((trainings) => {
         this.existingMandatoryTrainings = trainings;
       }),
     );
