@@ -54,14 +54,6 @@ export class NationalityComponent extends QuestionComponent {
     this.availableNationalitiesList();
     this.nationalityValidation();
 
-    this.subscriptions.add(
-      this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
-        if (!this.insideFlow) {
-          this.setUpConditionalQuestionLogic(value);
-        }
-      }),
-    );
-
     if (this.worker.nationality) {
       const { value, other } = this.worker.nationality;
 
@@ -71,23 +63,7 @@ export class NationalityComponent extends QuestionComponent {
       });
     }
 
-    this.previous = this.insideFlow ? this.getRoutePath('ethnicity') : this.getRoutePath('');
     this.next = this.getRoutePath('british-citizenship');
-  }
-
-  public setUpConditionalQuestionLogic(nationalityKnownValue: string): void {
-    if (nationalityKnownValue !== 'British') {
-      this.conditionalQuestionUrl = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'british-citizenship-summary-flow',
-      ];
-    } else {
-      this.conditionalQuestionUrl = this.getRoutePath('staff-record-summary');
-    }
   }
 
   private availableNationalitiesList(): void {
@@ -145,9 +121,16 @@ export class NationalityComponent extends QuestionComponent {
       : null;
   }
 
-  onSuccess() {
-    const { nationalityKnown } = this.form.controls;
-    nationalityKnown.value === 'British' && (this.next = this.getRoutePath('country-of-birth'));
+  onSuccess(): void {
+    const { nationalityKnown } = this.form.value;
+    if (nationalityKnown === 'British') {
+      this.next = this.insideFlow ? this.getRoutePath('country-of-birth') : this.getRoutePath('');
+    } else {
+      if (!this.insideFlow) {
+        this.next = this.getRoutePath('');
+        this.next.push('british-citizenship');
+      }
+    }
   }
 
   nationalityNameValidator() {

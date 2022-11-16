@@ -109,8 +109,8 @@ export class CountryOfBirthComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    const { countryOfBirthKnown } = this.form.controls;
-    if (countryOfBirthKnown.value === 'United Kingdom') {
+    const { countryOfBirthKnown } = this.form.value;
+    if (countryOfBirthKnown === 'United Kingdom') {
       this.next = this.insideFlow ? this.getRoutePath('main-job-start-date') : this.getRoutePath('');
     } else {
       if (!this.insideFlow) {

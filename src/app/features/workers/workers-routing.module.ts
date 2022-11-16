@@ -198,16 +198,6 @@ const routes: Routes = [
             data: { title: 'British Citizenship' },
           },
           {
-            path: 'british-citizenship-summary-flow',
-            children: [
-              {
-                path: '',
-                component: BritishCitizenshipComponent,
-                data: { title: 'British Citizenship' },
-              },
-            ],
-          },
-          {
             path: 'country-of-birth',
             component: CountryOfBirthComponent,
             data: { title: 'Country of Birth' },
@@ -282,16 +272,6 @@ const routes: Routes = [
             path: 'other-qualifications-level',
             component: OtherQualificationsLevelComponent,
             data: { title: 'Highest Level of Other Qualifications' },
-          },
-          {
-            path: 'other-qualifications-level-summary-flow',
-            children: [
-              {
-                path: '',
-                component: OtherQualificationsLevelComponent,
-                data: { title: 'Highest Level of Other Qualifications' },
-              },
-            ],
           },
           {
             path: 'add-qualification',

@@ -236,7 +236,7 @@ describe('NationalityComponent', () => {
 
       const updatedFormData = component.form.value;
       expect(updatedFormData).toEqual({ nationalityKnown: 'British', nationalityName: null });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'British' },
       });
@@ -264,7 +264,7 @@ describe('NationalityComponent', () => {
       const updatedFormData = component.form.value;
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
       expect(updatedFormData).toEqual({ nationalityKnown: 'Other', nationalityName: 'French' });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'Other', other: { nationality: 'French' } },
       });
@@ -274,7 +274,7 @@ describe('NationalityComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
-        'british-citizenship-summary-flow',
+        'british-citizenship',
       ]);
     });
 
