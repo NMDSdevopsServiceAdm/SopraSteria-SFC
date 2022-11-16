@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QualificationLevel } from '@core/model/qualification.model';
 import { BackService } from '@core/services/back.service';
@@ -43,7 +43,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     );
 
     this.form = this.formBuilder.group({
-      qualification: [null, Validators.required],
+      qualification: null,
     });
   }
 
@@ -71,26 +71,13 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     );
   }
 
-  setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'qualification',
-        type: [
-          {
-            name: 'required',
-            message: 'Please fill required fields.',
-          },
-        ],
-      },
-    ];
-  }
-
   generateUpdateProps(): unknown {
     const { qualification } = this.form.value;
-    return {
+    const props = {
       highestQualification: {
-        qualificationId: parseInt(qualification, 10),
+        qualificationId: qualification && parseInt(qualification, 10),
       },
     };
+    return props;
   }
 }
