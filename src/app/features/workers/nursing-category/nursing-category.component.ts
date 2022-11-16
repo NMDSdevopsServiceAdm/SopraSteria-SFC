@@ -49,47 +49,23 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   init() {
-    this.registeredNurseFlow = this.route.parent.snapshot.url[0].path === 'registered-nurse-details';
     if (this.worker.registeredNurse) {
       this.prefill();
     }
 
-    this.setUpPageRouting();
+    this.next = this.insideFlow ? this.getRoutePath('nursing-specialism') : this.getSummaryRoute();
+  }
+
+  private getSummaryRoute(): string[] {
+    const summaryUrl = this.getRoutePath('');
+    summaryUrl.push('nursing-specialism');
+    return summaryUrl;
   }
 
   private prefill(): void {
     this.form.patchValue({
       nursingCategory: this.worker.registeredNurse,
     });
-  }
-
-  private setUpPageRouting(): void {
-    if (this.insideFlow && !this.registeredNurseFlow) {
-      this.next = this.getRoutePath('nursing-specialism');
-      this.previous = this.getRoutePath('main-job-start-date');
-    } else if (this.registeredNurseFlow) {
-      this.previous = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'staff-details',
-      ];
-      this.next = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'registered-nurse-details',
-        'nursing-specialism',
-      ];
-      this.returnUrl = this.getRoutePath('');
-    } else {
-      this.previous = this.getRoutePath('');
-      this.next = this.getRoutePath('');
-    }
   }
 
   generateUpdateProps() {

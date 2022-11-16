@@ -77,10 +77,10 @@ describe('NursingCategoryComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
+    it(`should show 'Save' cta button and 'Cancel' link if not in the flow`, async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
   });
@@ -130,13 +130,13 @@ describe('NursingCategoryComponent', () => {
     ]);
   });
 
-  it('should navigate to staff-summary-page page when pressing save and return', async () => {
+  it('should navigate to nursing-specialism page when pressing Save button outside of the flow', async () => {
     const { component, routerSpy, getByText } = await setup(false);
 
     const workerId = component.worker.uid;
     const workplaceId = component.workplace.uid;
 
-    const link = getByText('Save and return');
+    const link = getByText('Save');
     fireEvent.click(link);
 
     expect(routerSpy).toHaveBeenCalledWith([
@@ -145,6 +145,7 @@ describe('NursingCategoryComponent', () => {
       'staff-record',
       workerId,
       'staff-record-summary',
+      'nursing-specialism',
     ]);
   });
 
