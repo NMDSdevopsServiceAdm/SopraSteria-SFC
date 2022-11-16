@@ -95,74 +95,69 @@ class MandatoryTraining extends EntityValidator {
     }
   }
 
-  // validates a given mandatory training record; returns the training record if valid
   async validateMandatoryTrainingRecord(document) {
-    let validatedMandatoryTrainingRecord;
-    let returnStatus = true;
-    //validate all posted training ids
+    let returnStatus;
     if (document) {
-      if (!document.trainingCategoryId) {
-        console.error('POST:: create mandatoryTraining - Failed Validation - Training Category ID missing');
-        this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Training Category ID missing');
-        return false;
-      }
-      // get training details
-      const trainingCategoryDetails = await models.workerTrainingCategories.findOne({
-        where: {
-          id: document.trainingCategoryId,
-        },
-        attributes: ['id'],
-      });
+      returnStatus = this.checkMandatoryTrainingRecordHasTrainingCategoryId(document.trainingCategoryId);
+      const trainingCategoryDetails = await this.findWorkerTrainingCategories(document.trainingCategoryId);
+      returnStatus = this.checkMandatoryTrainingRecordCategoryDetails(trainingCategoryDetails, document);
+    } else {
+      returnStatus = this.reportError('Invalid Input');
+    }
+    return returnStatus ? document : false;
+  }
 
-      if (trainingCategoryDetails && trainingCategoryDetails.id) {
-        // get job details if doc.allJobRoles === false
-        if (!document.allJobRoles) {
-          let foundJobRoles = true;
-          if (!document.allJobRoles && Array.isArray(document.jobs) && document.jobs.length > 0) {
-            for (let i = 0; i < document.jobs.length; i++) {
-              let job = document.jobs[i];
-              const jobDetails = await models.job.findOne({
-                where: {
-                  id: job.id,
-                },
-                attributes: ['id'],
-              });
+  checkMandatoryTrainingRecordHasTrainingCategoryId(trainingCategoryId) {
+    return trainingCategoryId ? true : this.reportError('Training Category ID missing');
+  }
 
-              if (!jobDetails || !jobDetails.id) {
-                foundJobRoles = false;
-                console.error('POST:: create mandatoryTraining - Failed Validation - Job role record not found');
-                this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Job role record not found');
-                returnStatus = false;
-              }
-            }
-          } else {
-            console.error('POST:: create mandatoryTraining - Failed Validation - Selected job roles record not found');
-            this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Selected job roles record not found');
-            returnStatus = false;
-          }
+  async findWorkerTrainingCategories(trainingCategoryId) {
+    return await models.workerTrainingCategories.findOne({
+      where: {
+        id: trainingCategoryId,
+      },
+      attributes: ['id'],
+    });
+  }
 
-          if (foundJobRoles) {
-            validatedMandatoryTrainingRecord = document;
-          }
-        } else {
-          validatedMandatoryTrainingRecord = document;
+  checkMandatoryTrainingRecordCategoryDetails(trainingCategoryDetails, document) {
+    if (trainingCategoryDetails && trainingCategoryDetails.id) {
+      return document.allJobRoles ? true : this.checkNewMandatoryTrainingJobRoles(document.jobs);
+    } else {
+      return this.reportError('Training record not found');
+    }
+  }
+
+  async checkNewMandatoryTrainingJobRoles(newMandatoryTrainingJobRolesArray) {
+    if (Array.isArray(newMandatoryTrainingJobRolesArray) && newMandatoryTrainingJobRolesArray.length > 0) {
+      for (let i = 0; i < newMandatoryTrainingJobRolesArray.length; i++) {
+        let job = newMandatoryTrainingJobRolesArray[i];
+        const jobDetails = await models.job.findOne({
+          where: {
+            id: job.id,
+          },
+          attributes: ['id'],
+        });
+        if (!this.checkJobDetailsExist(jobDetails)) {
+          return false;
         }
-      } else {
-        console.error('POST:: create mandatoryTraining - Failed Validation - Training Category record not found');
-        this._log(MandatoryTraining.LOG_ERROR, 'Failed Validation - Training record not found');
-        return false;
       }
     } else {
-      console.error('POST:: create mandatoryTraining - Failed Validation - Invalid Input');
-      this._log(MandatoryTraining.LOG_ERROR, 'Invalid Input');
-      return false;
+      return this.reportError('Selected job roles record not found');
     }
+    return true;
+  }
 
-    if (returnStatus === false) {
-      return false;
-    } else {
-      return validatedMandatoryTrainingRecord;
+  checkJobDetailsExist(jobDetails) {
+    if (!jobDetails || !jobDetails.id) {
+      return this.reportError('Job role record not found');
     }
+  }
+
+  reportError(specifiedErrorString) {
+    console.error(`POST:: create mandatoryTraining - Failed Validation - ${specifiedErrorString}`);
+    this._log(MandatoryTraining.LOG_ERROR, `Failed Validation - ${specifiedErrorString}`);
+    return false;
   }
 
   // takes the given JSON document and updates self (internal properties)

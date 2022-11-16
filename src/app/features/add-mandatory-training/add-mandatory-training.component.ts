@@ -2,11 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import {
-  allMandatoryTrainingCategories,
-  Establishment,
-  mandatoryTrainingJobOption,
-} from '@core/model/establishment.model';
+import { allMandatoryTrainingCategories, Establishment, mandatoryTrainingJobOption } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
@@ -127,18 +123,19 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
 
   //setup server error message
   private setupServerErrorsMap(): void {
+    const serverErrorMessage = 'There has been a problem saving your mandatory training. Please try again.';
     this.serverErrorsMap = [
       {
         name: 500,
-        message: 'There has been a problem saving your mandatory training. Please try again.',
+        message: serverErrorMessage,
       },
       {
         name: 400,
-        message: 'There has been a problem saving your mandatory training. Please try again.',
+        message: serverErrorMessage,
       },
       {
         name: 404,
-        message: 'There has been a problem saving your mandatory training. Please try again.',
+        message: serverErrorMessage,
       },
     ];
   }
