@@ -121,7 +121,7 @@ describe('StaffRecordComponent', () => {
     expect(deleteRecordLink).toBeFalsy();
   });
 
-  it('should render the completed state text, delete record link, add training link and flag long term absence link when worker.completed is true', async () => {
+  it('should render the delete record link, add training link and flag long term absence link, and not correct text when worker.completed is true', async () => {
     const { component, fixture, queryByText, getByText, getByTestId } = await setup();
 
     component.canEditWorker = true;
@@ -132,13 +132,13 @@ describe('StaffRecordComponent', () => {
     fixture.detectChanges();
 
     const button = queryByText('Confirm record details');
-    const text = getByText(`Check the record details you've added are correct.`);
+    const text = queryByText(`Check the record details you've added are correct.`);
     const flagLongTermAbsenceLink = getByText('Flag long-term absence');
     const deleteRecordLink = getByText('Delete staff record');
     const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
 
     expect(button).toBeFalsy();
-    expect(text).toBeTruthy();
+    expect(text).toBeFalsy();
     expect(flagLongTermAbsenceLink).toBeTruthy();
     expect(deleteRecordLink).toBeTruthy();
     expect(trainingAndQualsLink).toBeTruthy();
