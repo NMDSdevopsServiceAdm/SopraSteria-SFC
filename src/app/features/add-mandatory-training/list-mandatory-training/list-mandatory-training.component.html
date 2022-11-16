@@ -1,11 +1,14 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-l">Add and manage mandatory training categories</h1>
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      Add and manage mandatory<br />
+      training categories
+    </h1>
   </div>
 
-  <div class="govuk-grid-column-one-half">
+  <div class="govuk-grid-column-one-half govuk-!-margin-top-3">
     <p>
-      Add the training categories you want to make mandatory for your staff.it will help you identify<br />
+      Add the training categories you want to make mandatory for your staff. It will help you identify<br />
       who is missing training and let you know when<br />
       training expires.
     </p>
@@ -19,17 +22,19 @@
   >
     <a href="#">Remove all mandatory training categories</a>
   </div>
-  <table
-    class="govuk-table"
-    data-testid="training-worker-table"
-    *ngIf="existingMandatoryTrainings.mandatoryTrainingCount > 0"
-  >
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">Mandatory training categories</th>
-        <th class="govuk-table__header" scope="col">Job roles</th>
-      </tr>
-    </thead>
+</div>
+<table
+  class="govuk-table"
+  data-testid="training-worker-table"
+  *ngIf="existingMandatoryTrainings.mandatoryTrainingCount > 0"
+>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Mandatory training categories</th>
+      <th class="govuk-table__header" scope="col">Job roles</th>
+    </tr>
+  </thead>
+  <ng-container>
     <tbody class="govuk-table__body" *ngFor="let records of existingMandatoryTrainings.mandatoryTraining">
       <tr class="govuk-table__row govuk-util__vertical-align-top">
         <td class="govuk-table__cell">
@@ -48,5 +53,5 @@
         </td>
       </tr>
     </tbody>
-  </table>
-</div>
+  </ng-container>
+</table>

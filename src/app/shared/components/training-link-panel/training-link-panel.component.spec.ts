@@ -75,19 +75,19 @@ describe('TrainingLinkPanelComponent', () => {
     component.getByText('Updated 1 January 2020');
   });
 
-  it('should show the Manage mandatory training link when canEditEstablishment in permissions service is true', async () => {
+  it('should show the Add and manage mandatory training categories training link when canEditEstablishment in permissions service is true', async () => {
     const { component } = await setup();
 
-    expect(component.getByText('Manage mandatory training')).toBeTruthy();
+    expect(component.getByText('Add and manage mandatory training categories')).toBeTruthy();
   });
 
-  it('should not show the Manage mandatory training link when user does not have edit access', async () => {
+  it('should not show theAdd and manage mandatory training categories link when user does not have edit access', async () => {
     const { component, fixture, componentInstance } = await setup();
 
     componentInstance.canEditEstablishment = false;
     fixture.detectChanges();
 
-    expect(component.queryByText('Manage mandatory training')).toBeFalsy();
+    expect(component.queryByText('Add and manage mandatory training categories')).toBeFalsy();
   });
 
   it('should show the `change when you get expires soon alert` link when  canEditEstablishment in permissions service is true', async () => {
