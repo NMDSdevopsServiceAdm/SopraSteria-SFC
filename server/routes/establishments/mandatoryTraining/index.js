@@ -46,8 +46,8 @@ const createMandatoryTraining = async (req, res) => {
   try {
     const isValidRecord = await thisMandatoryTrainingRecord.load(req.body);
     if (isValidRecord) {
-      const saveRecords = await thisMandatoryTrainingRecord.save(req.userUid);
-      return res.status(200).json(saveRecords);
+      const saveStatus = await thisMandatoryTrainingRecord.save(req.userUid);
+      return res.status(200).json(`success: ${saveStatus}`);
     } else {
       return res.status(400).send('Unexpected Input.');
     }
