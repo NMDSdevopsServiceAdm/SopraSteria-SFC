@@ -21,13 +21,13 @@
 <div class="govuk-grid-row">
   <div
     class="govuk-grid-column-one-thirds govuk-!-margin-bottom-6 govuk-!-margin-right-4 govuk-util__align-right govuk-list govuk-list--inline"
-    *ngIf="existingMandatoryTrainings.mandatoryTrainingCount > 0"
+    *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
   >
     <a data-testid="removeMandatoryTrainingLink" href="#">Remove all mandatory training categories</a>
   </div>
 </div>
 
-<table class="govuk-table" data-testid="training-table" *ngIf="existingMandatoryTrainings.mandatoryTrainingCount > 0">
+<table class="govuk-table" data-testid="training-table" *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row" data-testid="training-table-heading">
       <th class="govuk-table__header" scope="col">Mandatory training categories</th>
