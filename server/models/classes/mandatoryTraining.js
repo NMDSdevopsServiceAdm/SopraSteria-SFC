@@ -85,8 +85,6 @@ class MandatoryTraining extends EntityValidator {
     return this._updatedBy;
   }
 
-  // takes the given JSON document and updates self (internal properties)
-  // Thows "Error" on error.
   async load(document) {
     try {
       const validatedTrainingRecord = await this.validateMandatoryTrainingRecord(document);
