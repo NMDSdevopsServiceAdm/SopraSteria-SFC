@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FLOAT_PATTERN } from '@core/constants/constants';
-import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -48,13 +47,6 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
   }
 
   init() {
-    if (
-      this.worker.zeroHoursContract === 'Yes' ||
-      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-    ) {
-      this.router.navigate(this.getRoutePath('average-weekly-hours'), { replaceUrl: true });
-    }
-
     this.subscriptions.add(
       this.form.get('hoursKnown').valueChanges.subscribe((value) => {
         this.form.get('hours').clearValidators();
@@ -77,8 +69,6 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('salary');
-
-    this.previous = this.insideFlow ? this.getRoutePath('contract-with-zero-hours') : this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {

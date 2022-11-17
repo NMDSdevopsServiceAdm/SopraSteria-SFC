@@ -50,26 +50,13 @@ export class GenderComponent extends QuestionComponent {
   }
 
   init() {
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     if (this.worker.gender) {
       this.form.patchValue({
         gender: this.worker.gender,
       });
     }
-    this.setUpPageRouting();
-  }
 
-  private setUpPageRouting() {
-    this.disabilityPath = this.getRoutePath('disability');
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-
-    if (this.insideFlow) {
-      this.previous = this.getRoutePath('home-postcode');
-      this.next = this.disabilityPath;
-    } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.previous = this.staffRecordSummaryPath;
-    }
+    this.next = this.getRoutePath('disability');
   }
 
   generateUpdateProps() {

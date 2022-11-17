@@ -96,7 +96,7 @@ describe('MandatoryDetailsComponent', () => {
   it('should render the progress bar', async () => {
     const { queryByTestId } = await setup();
 
-    expect(queryByTestId('progress-bar-1')).toBeTruthy();
+    expect(queryByTestId('progress-bar')).toBeTruthy();
   });
 
   it('should show Worker information in summary list', async () => {
@@ -133,7 +133,7 @@ describe('MandatoryDetailsComponent', () => {
     const detailsButton = getByTestId('add-details-button');
     detailsButton.click();
     expect(submission).toHaveBeenCalled();
-    expect(routerSpy).toHaveBeenCalledWith(['', 'date-of-birth'], { state: { navigatedFrom: 'mandatory-details' } });
+    expect(routerSpy).toHaveBeenCalledWith(['', 'date-of-birth']);
   });
 
   it('should take you to to dashboard if adding a staff record to own establishment', async () => {

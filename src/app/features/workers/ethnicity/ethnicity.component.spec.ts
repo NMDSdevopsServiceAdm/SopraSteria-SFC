@@ -6,14 +6,14 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { EthnicityService } from '@core/services/ethnicity.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEthnicityService } from '@core/test-utils/MockEthnicityService';
-import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, queryByText, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { EthnicityComponent } from './ethnicity.component';
 
 describe('EthnicityComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, queryByTestId, queryByText } = await render(
       EthnicityComponent,
       {
@@ -23,24 +23,20 @@ describe('EthnicityComponent', () => {
           {
             provide: ActivatedRoute,
             useValue: {
-              snapshot: {
-                parent: {
-                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
-                },
-              },
               parent: {
                 snapshot: {
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
                     establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
                   },
-                  url: [{ path: '' }],
                 },
               },
             },
           },
           {
             provide: WorkerService,
-            useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+            useClass: MockWorkerServiceWithUpdateWorker,
           },
           {
             provide: EthnicityService,
@@ -76,21 +72,21 @@ describe('EthnicityComponent', () => {
 
   describe('progress bar', () => {
     it('should render the progress bar', async () => {
-      const { queryByTestId } = await setup(false);
+      const { queryByTestId } = await setup();
 
-      expect(queryByTestId('progress-bar-1')).toBeTruthy();
+      expect(queryByTestId('progress-bar')).toBeTruthy();
     });
 
     it('should not render the progress bar if not inside the flow', async () => {
-      const { queryByTestId } = await setup();
+      const { queryByTestId } = await setup(false);
 
-      expect(queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
 
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button and 'View this staff record' link, and skip skip this question link, if a return url is not provided`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
@@ -98,7 +94,7 @@ describe('EthnicityComponent', () => {
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup(true);
+      const { getByText } = await setup(false);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -107,7 +103,7 @@ describe('EthnicityComponent', () => {
 
   describe('navigation', () => {
     it('should navigate to nationality page when submitting from flow', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
+      const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -119,25 +115,61 @@ describe('EthnicityComponent', () => {
     });
 
     it('should navigate to nationality page when skipping the question in the flow', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      const skipButton = getByText('Skip this question');
-      fireEvent.click(skipButton);
-
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'nationality']);
-    });
-
-    it('should navigate to staff-summary-page page when pressing cancel', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const skipButton = getByText('Cancel');
-      fireEvent.click(skipButton);
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'nationality']);
+    });
+
+    it('should navigate to staff-summary-page page when pressing view this staff record', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const link = getByText('View this staff record');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -151,7 +183,7 @@ describe('EthnicityComponent', () => {
 
   describe('Radio Buttons', () => {
     it('Should render the ethnicity group radios when page renders', async () => {
-      const { getByLabelText, getByText } = await setup(false);
+      const { getByLabelText, getByText } = await setup();
 
       expect(getByLabelText('White')).toBeTruthy();
       expect(getByLabelText('Mixed or Multiple ethnic groups')).toBeTruthy();
@@ -162,7 +194,7 @@ describe('EthnicityComponent', () => {
     });
 
     it('Should render the white ethnicitiy radios when category white is clicked', async () => {
-      const { fixture, getByText, queryByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup();
 
       const whiteButton = getByText('White');
       fireEvent.click(whiteButton);
@@ -184,7 +216,7 @@ describe('EthnicityComponent', () => {
     });
 
     it('Should render the mixed ethnicitiy radios when category mixed is clicked', async () => {
-      const { fixture, getByText, queryByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup();
 
       const mixedButton = getByText('Mixed or Multiple ethnic groups');
       fireEvent.click(mixedButton);
@@ -206,7 +238,7 @@ describe('EthnicityComponent', () => {
     });
 
     it('Should render the asian ethnicitiy radios when category asian is clicked', async () => {
-      const { fixture, getByText, queryByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup();
 
       const asianButton = getByText('Asian or Asian British');
       fireEvent.click(asianButton);
@@ -228,7 +260,7 @@ describe('EthnicityComponent', () => {
     });
 
     it('Should render the black ethnicity radios when category black is clicked', async () => {
-      const { fixture, getByText, queryByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup();
 
       const blackButton = getByText('Black, African, Caribbean or Black British');
       fireEvent.click(blackButton);
@@ -250,7 +282,7 @@ describe('EthnicityComponent', () => {
     });
 
     it('Should render the other ethnicity radios when category other is clicked', async () => {
-      const { fixture, getByText, queryByText } = await setup(false);
+      const { fixture, getByText, queryByText } = await setup();
 
       const otherButton = getByText('Other ethnic group');
       fireEvent.click(otherButton);
@@ -274,7 +306,7 @@ describe('EthnicityComponent', () => {
 
   describe('error message', () => {
     it('should display an error message when a group is selected but a specfic ethnicity is not selected', async () => {
-      const { component, fixture, getByText, getAllByText } = await setup(false);
+      const { component, fixture, getByText, getAllByText } = await setup();
 
       const form = component.form;
       fixture.detectChanges();

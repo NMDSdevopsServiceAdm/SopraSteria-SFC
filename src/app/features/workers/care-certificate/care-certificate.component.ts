@@ -49,8 +49,7 @@ export class CareCertificateComponent extends QuestionComponent {
   }
 
   init() {
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-    this.setUpPageRouting();
+    this.next = this.getRoutePath('apprenticeship-training');
     if (this.worker.careCertificate) {
       this.prefill();
     }
@@ -60,19 +59,6 @@ export class CareCertificateComponent extends QuestionComponent {
     this.form.patchValue({
       careCertificate: this.worker.careCertificate,
     });
-  }
-
-  private setUpPageRouting() {
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-    this.apprenticeshipTrainingPath = this.getRoutePath('apprenticeship-training');
-
-    if (this.insideFlow) {
-      this.previous = this.getRoutePath('salary');
-      this.next = this.apprenticeshipTrainingPath;
-    } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
-    }
   }
 
   generateUpdateProps() {

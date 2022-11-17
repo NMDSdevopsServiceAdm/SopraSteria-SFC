@@ -67,7 +67,6 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
       });
     }
     this.next = this.getRoutePath('national-insurance-number');
-    this.previous = this.getReturnPath();
   }
 
   public setupFormErrorsMap(): void {
@@ -101,16 +100,5 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     }
 
     return { dateOfBirth: null };
-  }
-
-  private getReturnPath() {
-    if (this.insideFlow && this.workerService.addStaffRecordInProgress) {
-      return this.getRoutePath('mandatory-details');
-    }
-
-    if (this.insideFlow) {
-      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
-    }
-    return this.getRoutePath('');
   }
 }

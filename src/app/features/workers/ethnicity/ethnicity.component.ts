@@ -58,8 +58,7 @@ export class EthnicityComponent extends QuestionComponent {
 
   init() {
     this.getAndSetEthnicityData();
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-    this.setUpPageRouting();
+    this.next = this.getRoutePath('nationality');
     this.subscriptions.add(
       this.form.get('ethnicityGroup').valueChanges.subscribe((value) => {
         this.submitted = false;
@@ -130,19 +129,6 @@ export class EthnicityComponent extends QuestionComponent {
             ethnicity: null,
           },
         };
-  }
-
-  private setUpPageRouting() {
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-    this.nationalityPath = this.getRoutePath('nationality');
-
-    if (this.insideFlow) {
-      this.previous = this.getRoutePath('disability');
-      this.next = this.nationalityPath;
-    } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.previous = this.staffRecordSummaryPath;
-    }
   }
 
   private prefill() {

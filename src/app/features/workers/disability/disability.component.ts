@@ -49,27 +49,12 @@ export class DisabilityComponent extends QuestionComponent {
   }
 
   init() {
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     if (this.worker.disability) {
       this.form.patchValue({
         disability: this.worker.disability,
       });
     }
-
-    this.setUpPageRouting();
-  }
-
-  private setUpPageRouting() {
-    this.ethnicityPath = this.getRoutePath('ethnicity');
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-
-    if (this.insideFlow) {
-      this.previous = this.getRoutePath('gender');
-      this.next = this.ethnicityPath;
-    } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.previous = this.staffRecordSummaryPath;
-    }
+    this.next = this.getRoutePath('ethnicity');
   }
 
   generateUpdateProps() {

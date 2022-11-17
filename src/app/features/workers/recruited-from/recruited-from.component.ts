@@ -71,20 +71,6 @@ export class RecruitedFromComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('adult-social-care-started');
-
-    this.previous = this.getReturnPath();
-  }
-
-  getReturnPath() {
-    if (this.insideFlow) {
-      if (this.workerService.hasJobRole(this.worker, 23)) {
-        return this.getRoutePath('nursing-specialism');
-      }
-      return this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-        ? this.getRoutePath('country-of-birth')
-        : this.getRoutePath('year-arrived-uk');
-    }
-    return this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {

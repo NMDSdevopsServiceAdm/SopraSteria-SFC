@@ -1,11 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { HomePostcodeComponent } from './home-postcode.component';
@@ -42,6 +43,11 @@ describe('HomePostcodeComponent', () => {
 
     const component = fixture.componentInstance;
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
       fixture,
@@ -50,6 +56,7 @@ describe('HomePostcodeComponent', () => {
       getByLabelText,
       getByTestId,
       queryByTestId,
+      routerSpy,
     };
   }
 
@@ -86,6 +93,88 @@ describe('HomePostcodeComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+  });
+
+  describe('navigation', () => {
+    it('should navigate to gender page when submitting from flow', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const saveButton = getByText('Save and continue');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save and continue')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'gender']);
+    });
+
+    it('should navigate to gender page when skipping the question in the flow', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Skip this question');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'gender']);
+    });
+
+    it('should navigate to staff-summary-page page when pressing view this staff record', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('View this staff record');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Save and return');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Cancel');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
     });
   });
 

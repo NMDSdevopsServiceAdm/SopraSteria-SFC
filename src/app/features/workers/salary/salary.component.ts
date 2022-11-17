@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FLOAT_PATTERN, INT_PATTERN } from '@core/constants/constants';
-import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -60,22 +59,7 @@ export class SalaryComponent extends QuestionComponent {
   init() {
     this.setValidators();
     this.setAnnualHourlyPay();
-    this.previous = this.getReturnPath();
     this.next = this.getRoutePath('care-certificate');
-  }
-
-  private getReturnPath() {
-    if (this.insideFlow) {
-      if (
-        this.worker.zeroHoursContract === 'Yes' ||
-        [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-      ) {
-        return this.getRoutePath('average-weekly-hours');
-      } else {
-        return this.getRoutePath('weekly-contracted-hours');
-      }
-    }
-    return this.getRoutePath('');
   }
 
   private setValidators(): void {

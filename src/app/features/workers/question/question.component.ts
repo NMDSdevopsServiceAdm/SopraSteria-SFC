@@ -27,8 +27,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public previous: string[];
   public next: string[];
   public back: URLStructure;
-  public conditionalQuestionUrl: string[]; // delete
-  public showSaveAndCancelButton: boolean; // delete
 
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
@@ -38,12 +36,10 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public staffRecordSections: string[] = ProgressBarUtil.staffRecordProgressBarSections();
   public insideFlow: boolean;
-  public registeredNurseFlow: boolean; // delete
   public flow: string;
-  public staffRecordSummaryPath: string[];
   public submitAction: { action: string; save: boolean } = null;
   public returnUrl: string[];
-  public submitTitle: string; // ???
+  public submitTitle: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -137,10 +133,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'exit':
-        if (this.registeredNurseFlow) {
-          this.router.navigate(this.returnUrl);
-          break;
-        }
         const url =
           this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
         this.router.navigate(url, { fragment: 'staff-records' });
@@ -148,10 +140,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
       case 'return':
         this.router.navigate(this.returnUrl);
-        break;
-
-      case 'saveAndContinueConditional': // delete
-        this.router.navigate(this.conditionalQuestionUrl);
         break;
     }
   }

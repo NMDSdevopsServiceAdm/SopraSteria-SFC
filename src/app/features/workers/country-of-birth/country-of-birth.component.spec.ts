@@ -4,10 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -15,7 +12,7 @@ import userEvent from '@testing-library/user-event';
 import { CountryOfBirthComponent } from './country-of-birth.component';
 
 describe('CountryOfBirthComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       CountryOfBirthComponent,
       {
@@ -24,22 +21,17 @@ describe('CountryOfBirthComponent', () => {
           FormBuilder,
           {
             provide: WorkerService,
-            useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
+            useClass: MockWorkerServiceWithUpdateWorker,
           },
           {
             provide: ActivatedRoute,
             useValue: {
-              snapshot: {
-                parent: {
-                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
-                },
-              },
               parent: {
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
-                  url: [{ path: '' }],
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
               },
             },
@@ -78,13 +70,13 @@ describe('CountryOfBirthComponent', () => {
 
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
-      const { getByTestId } = await setup(false);
+      const { getByTestId } = await setup();
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
 
     it('should not render the progress bar when outside the flow', async () => {
-      const { queryByTestId } = await setup();
+      const { queryByTestId } = await setup(false);
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
@@ -92,7 +84,7 @@ describe('CountryOfBirthComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button , skip this question  and 'View this staff record' link, if a return url is not provided`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
@@ -100,37 +92,21 @@ describe('CountryOfBirthComponent', () => {
     });
 
     it(`should show 'Save' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup();
+      const { getByText } = await setup(false);
 
       expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
-      const { component, getByText, routerSpy } = await setup(false);
-
-      const button = getByText('Save and continue');
-      fireEvent.click(button);
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-record',
-        component.worker.uid,
-        'main-job-start-date',
-      ]);
-    });
-
     it(`should call submit data and navigate with the correct url when  'United Kingdom' radio button is selected and 'Save and continue' is clicked`, async () => {
-      const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup(
-        false,
-      );
+      const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup();
 
       fireEvent.click(getByLabelText('United Kingdom'));
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
 
       const updatedFormData = component.form.value;
+
       expect(updatedFormData).toEqual({ countryOfBirthKnown: 'United Kingdom', countryOfBirthName: null });
       expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
@@ -145,8 +121,79 @@ describe('CountryOfBirthComponent', () => {
       ]);
     });
 
+    it(`should call submit data and navigate to year-arrived-uk page when 'Save and continue' is clicked and 'Other' radio is selected`, async () => {
+      const { component, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup();
+
+      fireEvent.click(getByLabelText('Other'));
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+
+      const updatedFormData = component.form.value;
+
+      expect(updatedFormData).toEqual({ countryOfBirthKnown: 'Other', countryOfBirthName: null });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        countryOfBirth: { value: 'Other' },
+      });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'year-arrived-uk',
+      ]);
+    });
+
+    it(`should call submit data and navigate to year-arrived-uk page when 'Save and continue' is clicked and 'Other' radio is selected and optional input is filled out`, async () => {
+      const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup();
+
+      component.availableCountries = [{ id: 1, country: 'France' }];
+      fireEvent.click(getByLabelText('Other'));
+      fixture.detectChanges();
+      userEvent.type(getByLabelText('Country (optional)'), 'France');
+      fireEvent.click(getByText('Save and continue'));
+
+      const updatedFormData = component.form.value;
+
+      expect(updatedFormData).toEqual({ countryOfBirthKnown: 'Other', countryOfBirthName: 'France' });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        countryOfBirth: { value: 'Other', other: { country: 'France' } },
+      });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'year-arrived-uk',
+      ]);
+    });
+
+    it(`should call submit data and navigate to year-arrived-uk page when 'Save and continue' is clicked and 'I do not know' radio is selected`, async () => {
+      const { component, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup();
+
+      fireEvent.click(getByLabelText('I do not know'));
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+
+      const updatedFormData = component.form.value;
+
+      expect(updatedFormData).toEqual({ countryOfBirthKnown: `Don't know`, countryOfBirthName: null });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        countryOfBirth: { value: `Don't know` },
+      });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'year-arrived-uk',
+      ]);
+    });
+
     it('should navigate to year-arrived-uk page when skipping the question in the flow', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
+      const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -158,8 +205,8 @@ describe('CountryOfBirthComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing Save and no value is entered', async () => {
-      const { component, routerSpy, getByText } = await setup();
-
+      const { component, routerSpy, getByText } = await setup(false);
+      component.form.setValue({ countryOfBirthKnown: null, countryOfBirthName: null });
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
@@ -172,16 +219,17 @@ describe('CountryOfBirthComponent', () => {
         'staff-record',
         workerId,
         'staff-record-summary',
+        'year-arrived-uk',
       ]);
     });
 
     it('should navigate to staff-summary-page page when pressing Save and United Kingdom is selected', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup();
+      const { component, fixture, routerSpy, getByLabelText, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const radioButton = getByText('United Kingdom');
+      const radioButton = getByLabelText('United Kingdom');
       fireEvent.click(radioButton);
 
       const link = getByText('Save');
@@ -198,12 +246,12 @@ describe('CountryOfBirthComponent', () => {
     });
 
     it('should navigate to year-arrived-uk-summary page when pressing Save and other country is selected', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup();
+      const { component, fixture, routerSpy, getByLabelText, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const radioButton = getByText('Other');
+      const radioButton = getByLabelText('Other');
       fireEvent.click(radioButton);
 
       const link = getByText('Save');
@@ -220,13 +268,32 @@ describe('CountryOfBirthComponent', () => {
       ]);
     });
 
+    it(`should navigate to year-arrived-uk page when pressing Save and Other is selected with optional input`, async () => {
+      const { component, fixture, getByText, getByLabelText, routerSpy } = await setup(false);
+
+      component.availableCountries = [{ id: 1, country: 'France' }];
+      fireEvent.click(getByLabelText('Other'));
+      fixture.detectChanges();
+      userEvent.type(getByLabelText('Country (optional)'), 'France');
+      fireEvent.click(getByText('Save'));
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        component.worker.uid,
+        'staff-record-summary',
+        'year-arrived-uk',
+      ]);
+    });
+
     it('should navigate to year-arrived-uk page when pressing Save and I do not know is selected', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup();
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const radioButton = getByText('Other');
+      const radioButton = getByLabelText('I do not know');
       fireEvent.click(radioButton);
 
       const link = getByText('Save');
@@ -244,7 +311,7 @@ describe('CountryOfBirthComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const { component, routerSpy, getByText } = await setup();
+      const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -261,9 +328,10 @@ describe('CountryOfBirthComponent', () => {
       ]);
     });
   });
+
   describe('error messages', () => {
     it('returns an error if an invalid country is entered', async () => {
-      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup();
 
       component.availableCountries = [{ id: 1, country: 'France' }];
       userEvent.click(getByLabelText('Other'));
