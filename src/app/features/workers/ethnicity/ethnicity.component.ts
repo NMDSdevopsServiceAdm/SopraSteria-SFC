@@ -59,6 +59,7 @@ export class EthnicityComponent extends QuestionComponent {
   init() {
     this.getAndSetEthnicityData();
     this.next = this.getRoutePath('nationality');
+    this.prefill();
     this.subscriptions.add(
       this.form.get('ethnicityGroup').valueChanges.subscribe((value) => {
         this.submitted = false;
