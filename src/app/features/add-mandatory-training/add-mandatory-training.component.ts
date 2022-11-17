@@ -2,9 +2,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment, mandatoryTrainingCategories, mandatoryTrainingJobOption } from '@core/model/establishment.model';
+import {
+  allMandatoryTrainingCategories,
+  Establishment,
+  mandatoryTrainingCategories,
+  mandatoryTrainingJobOption,
+} from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
-import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
+import { TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -310,7 +315,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   //update vacancy array on vanancy type change
   public onVacancyTypeSelectionChange(index: number) {
     const vacancyType = this.categoriesArray.controls[index].get('vacancyType').value;
-    let vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
+    const vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[index]).controls.vacancies;
     if (vacancyType === mandatoryTrainingJobOption.all) {
       while (vacanciesArray.length > 0) {
         vacanciesArray.removeAt(0);
