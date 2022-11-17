@@ -23,16 +23,12 @@ describe('NewTrainingComponent', () => {
     mandatoryTraining: [
       {
         establishmentId: 2341,
-        trainingCategoryId: 3,
-        category: "Childrens / young people's related training",
+        trainingCategoryId: 2,
+        category: 'Autism',
         jobs: [
           {
-            id: 9,
-            title: 'Care navigator',
-          },
-          {
-            id: 2,
-            title: 'Administrative, office staff (non care-providing)',
+            id: 1,
+            title: 'Activities worker, coordinator',
           },
         ],
       },
@@ -231,5 +227,26 @@ describe('NewTrainingComponent', () => {
       By.css('[data-testid="removeMandatoryTrainingLink"]'),
     );
     expect(removeMandatoryTrainingLink).toBeTruthy();
+  });
+
+  describe('mandatory training tabel records', () => {
+    it('should render a category  name for each training record category', async () => {
+      existingMandatoryTrainings.mandatoryTrainingCount > 0;
+      fixture.detectChanges();
+
+      const coshCategory = fixture.debugElement.query(By.css('[data-testid="category-Coshh"]')).nativeElement;
+      const autismCategory = fixture.debugElement.query(By.css('[data-testid="category-Autism"]')).nativeElement;
+
+      expect(autismCategory.textContent).toContain('Autism');
+      expect(coshCategory.textContent).toContain('Coshh');
+    });
+
+    it('should render a job name for each training record category', async () => {
+      const coshCategory = fixture.debugElement.query(By.css('[data-testid="titleAll"]')).nativeElement;
+
+      const autismCategory = fixture.debugElement.query(By.css('[data-testid="titleJob"]')).nativeElement;
+      expect(coshCategory.textContent).toContain('All');
+      expect(autismCategory.textContent).toContain('Activities worker, coordinator');
+    });
   });
 });
