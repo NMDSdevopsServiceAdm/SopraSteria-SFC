@@ -5,30 +5,28 @@
       training categories
     </h1>
   </div>
-
-  <div
-    class="govuk-grid-column-one-half govuk-!-margin-top-2 govuk-!-margin-bottom-6"
-    data-testid="mandatoryTrainingInfo"
-  >
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half govuk-!-margin-top-2" data-testid="mandatoryTrainingInfo">
     <p>
       Add the training categories you want to make mandatory for your staff. It will help you identify<br />
       who is missing training and let you know when<br />
       training expires.
     </p>
   </div>
-  <div
-    class="govuk-grid-column-one-half govuk-!-margin-bottom-2 govuk-util__align-right"
-    data-testid="mandatoryTrainingButton"
-  >
+  <div class="govuk-grid-column-one-half govuk-util__align-right" data-testid="mandatoryTrainingButton">
     <button class="govuk-button">Add a mandatory training category</button>
   </div>
+</div>
+<div class="govuk-grid-row">
   <div
-    class="govuk-grid-column-one-half govuk-!-margin-bottom-6 govuk-util__align-right govuk-list govuk-list--inline"
+    class="govuk-grid-column-one-thirds govuk-!-margin-bottom-6 govuk-!-margin-right-4 govuk-util__align-right govuk-list govuk-list--inline"
     *ngIf="existingMandatoryTrainings.mandatoryTrainingCount > 0"
   >
     <a data-testid="removeMandatoryTrainingLink" href="#">Remove all mandatory training categories</a>
   </div>
 </div>
+
 <table class="govuk-table" data-testid="training-table" *ngIf="existingMandatoryTrainings.mandatoryTrainingCount > 0">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row" data-testid="training-table-heading">
