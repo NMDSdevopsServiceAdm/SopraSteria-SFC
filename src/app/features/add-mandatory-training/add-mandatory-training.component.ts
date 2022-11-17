@@ -3,13 +3,12 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import {
-  allMandatoryTrainingCategories,
   Establishment,
   mandatoryTrainingCategories,
   mandatoryTrainingJobOption,
 } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
-import { TrainingCategory } from '@core/model/training.model';
+import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';

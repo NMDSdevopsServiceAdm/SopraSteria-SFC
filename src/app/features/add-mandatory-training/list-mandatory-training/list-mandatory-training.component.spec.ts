@@ -229,6 +229,26 @@ describe('NewTrainingComponent', () => {
     expect(removeMandatoryTrainingLink).toBeTruthy();
   });
 
+  it('should show the manage mandatory training table', async () => {
+    component.existingMandatoryTrainings.mandatoryTrainingCount > 0;
+    fixture.detectChanges();
+    const mandatoryTrainingTable = fixture.debugElement.query(By.css('[data-testid="training-table"]')).nativeElement;
+
+    expect(mandatoryTrainingTable).toBeTruthy();
+  });
+
+  it('should show the manage mandatory training table heading', async () => {
+    component.existingMandatoryTrainings.mandatoryTrainingCount > 0;
+    fixture.detectChanges();
+
+    const mandatoryTrainingTableHeading = fixture.debugElement.query(
+      By.css('[data-testid="training-table-heading"]'),
+    ).nativeElement;
+
+    expect(mandatoryTrainingTableHeading.textContent).toContain('Mandatory training categories');
+    expect(mandatoryTrainingTableHeading.textContent).toContain('Job roles');
+  });
+
   describe('mandatory training tabel records', () => {
     it('should render a category  name for each training record category', async () => {
       existingMandatoryTrainings.mandatoryTrainingCount > 0;
