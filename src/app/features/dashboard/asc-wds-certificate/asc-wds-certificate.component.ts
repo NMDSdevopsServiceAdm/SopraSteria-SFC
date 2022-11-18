@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
@@ -7,7 +9,11 @@ import { EstablishmentService } from '@core/services/establishment.service';
   templateUrl: './asc-wds-certificate.component.html',
 })
 export class AscWdsCertificateComponent implements OnInit {
-  constructor(protected establishmentService: EstablishmentService, router: Router) {}
+  constructor(
+    protected establishmentService: EstablishmentService,
+    private breadcrumbService: BreadcrumbService,
+    router: Router,
+  ) {}
 
   private defaultFileName = `ASC-WDS+certificate`;
   public certificateName: string;
@@ -15,6 +21,7 @@ export class AscWdsCertificateComponent implements OnInit {
   public downloadLink;
 
   ngOnInit(): void {
+    this.breadcrumbService.show(JourneyType.PUBLIC);
     this.getCertificateName();
   }
 

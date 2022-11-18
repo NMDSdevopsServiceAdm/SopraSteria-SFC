@@ -9,10 +9,15 @@ enum Path {
   PRIVACY_NOTICE = '/privacy-notice',
   CONTACT_US_OR_LEAVE_FEEDBACK = '/contact-us-or-leave-feedback',
   THANK_YOU = '/thank-you',
+  CERTIFICATES = '/asc-wds-certificate',
 }
 
 export const publicJourney: JourneyRoute = {
   children: [
+    {
+      title: 'ASC-WDS Certificates',
+      path: Path.CERTIFICATES,
+    },
     {
       title: 'Cookie policy',
       path: Path.COOKIE_POLICY,
