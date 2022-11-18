@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -25,5 +25,10 @@ export class TrainingService {
 
   public resetSelectedStaff(): void {
     this.selectedStaff = [];
+  }
+
+  //get all mandatory training
+  public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
+    return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
   }
 }
