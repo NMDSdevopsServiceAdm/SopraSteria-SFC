@@ -1,10 +1,18 @@
-<h1 id="dialogHeading">
-  You're about to remove all training selections.
-</h1>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-!-margin-bottom-8" id="dialogHeading">
+      You're about to remove all mandatory training categories for your workplace
+    </h1>
+    <p>
+      If you do this, your workplace will not have any training set up as being mandatory for your staff at the moment.
+    </p>
 
-<p>If you do this, your workplace will not have any training set up as being mandatory for your staff at the moment.</p>
+    <div class="govuk-button-group">
+      <button class="govuk-button govuk-button--warning govuk-!-margin-right-9 govuk-!-margin-top-6" type="button">
+        Remove categories
+      </button>
 
-<button (click)="close(true)" class="govuk-button">Remove all training selections</button>
-<button (click)="close(false)" class="govuk-button govuk-button--link govuk-util__float-right">
-  Cancel
-</button>
+      <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9">Cancel</a>
+    </div>
+  </div>
+</div>
