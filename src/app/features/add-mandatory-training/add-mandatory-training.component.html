@@ -21,7 +21,7 @@
           <label class="govuk-label govuk-!-margin-top-4" for="trainingCategory"> Mandatory training </label>
           <span *ngIf="submitted" id="trainingCategory-error" class="govuk-error-message">
             <ng-container *ngIf="submitted && form.get('trainingCategory').invalid">
-              Select the mandatory training
+              <label for="trainingCategory">Select the mandatory training</label>
             </ng-container>
           </span>
           <select

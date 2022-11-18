@@ -151,6 +151,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   public addVacancy(): void {
     const vacancyArray = <FormArray>(<FormGroup>this.form).controls.vacancies;
     vacancyArray.push(this.createVacancyControl());
+    this.setupFormErrorsMap();
   }
 
   public removeVacancy(event: Event, jobIndex): void {
