@@ -193,7 +193,7 @@ describe('EthnicityComponent', () => {
       expect(getByText(`I do not know`)).toBeTruthy();
     });
 
-    it('Should render the white ethnicitiy radios when category white is clicked', async () => {
+    it('Should render the white ethnicity radios when category white is clicked', async () => {
       const { fixture, getByText, queryByText } = await setup();
 
       const whiteButton = getByText('White');
@@ -215,7 +215,7 @@ describe('EthnicityComponent', () => {
       expect(queryByText('Other ethnic group 13')).toBeFalsy();
     });
 
-    it('Should render the mixed ethnicitiy radios when category mixed is clicked', async () => {
+    it('Should render the mixed ethnicity radios when category mixed is clicked', async () => {
       const { fixture, getByText, queryByText } = await setup();
 
       const mixedButton = getByText('Mixed or Multiple ethnic groups');
@@ -237,7 +237,7 @@ describe('EthnicityComponent', () => {
       expect(queryByText('Other ethnic group 13')).toBeFalsy();
     });
 
-    it('Should render the asian ethnicitiy radios when category asian is clicked', async () => {
+    it('Should render the asian ethnicity radios when category asian is clicked', async () => {
       const { fixture, getByText, queryByText } = await setup();
 
       const asianButton = getByText('Asian or Asian British');

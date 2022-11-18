@@ -49,6 +49,7 @@ export class RecruitedFromComponent extends QuestionComponent {
     this.subscriptions.add(
       this.form.get('recruitmentKnown').valueChanges.subscribe((val) => {
         this.form.get('recruitedFromId').clearValidators();
+        console.log(val);
 
         if (val === 'Yes') {
           this.form.get('recruitedFromId').setValidators(Validators.required);
