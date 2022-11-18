@@ -21,7 +21,7 @@
           <label class="govuk-label govuk-!-margin-top-4" for="trainingCategory"> Mandatory training </label>
           <span *ngIf="submitted" id="trainingCategory-error" class="govuk-error-message">
             <ng-container *ngIf="submitted && form.get('trainingCategory').invalid">
-              {{ getFormErrorMessage('trainingCategory', 'required') }}
+              Select the mandatory training
             </ng-container>
           </span>
           <select
@@ -78,9 +78,7 @@
             <div class="govuk-form-group">
               <label class="govuk-label" for="id-{{ j }}"> Job role </label>
               <span *ngIf="submitted && vacancy.get('id').invalid" id="id-{{ j }}-error" class="govuk-error-message">
-                <ng-container *ngIf="vacancy.get('id').invalid">
-                  {{ getFormErrorMessage('vacancies', 'required') }}
-                </ng-container>
+                <ng-container *ngIf="vacancy.get('id').invalid"> Select the job role </ng-container>
               </span>
               <select
                 class="govuk-select"

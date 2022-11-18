@@ -63,9 +63,8 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     this.setBackLink();
     this.getAllTrainingCategories();
     this.getAlJobs();
-    this.setupFormErrorsMap();
-    this.setupServerErrorsMap();
     this.setUpForm();
+    this.setupServerErrorsMap();
   }
 
   ngOnDestroy(): void {
@@ -108,16 +107,19 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
           },
         ],
       },
-      {
-        item: 'vacancies',
+    ];
+    const vacanciesArray = this.form.get('vacancies') as FormArray;
+    vacanciesArray.controls.forEach((vacanciesItem, index) => {
+      this.formErrorsMap.push({
+        item: `vacancies.id.${index}`,
         type: [
           {
             name: 'required',
-            message: 'Select the job role',
+            message: `Select the job role (job role ${index + 1})`,
           },
         ],
-      },
-    ];
+      });
+    });
   }
 
   private setupServerErrorsMap(): void {
@@ -136,10 +138,6 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         message: serverErrorMessage,
       },
     ];
-  }
-
-  public getFormErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   private setUpForm(trainingId = null, vType = mandatoryTrainingJobOption.all): void {
@@ -178,7 +176,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   protected updateMandatoryTraining(props): void {
     this.subscriptions.add(
       this.establishmentService.updateMandatoryTraining(this.establishment.uid, props).subscribe(
-        (success) => {
+        () => {
           this.router.navigate(this.return.url, { fragment: this.return.fragment });
         },
         (error) => {
@@ -203,6 +201,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
 
   public onSubmit() {
     this.submitted = true;
+    this.setupFormErrorsMap();
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
