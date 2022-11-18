@@ -2,13 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import {
-  allMandatoryTrainingCategories,
-  Establishment,
-  mandatoryTrainingJobOption,
-} from '@core/model/establishment.model';
+import { Establishment, mandatoryTrainingJobOption } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
-import { TrainingCategory } from '@core/model/training.model';
+import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
