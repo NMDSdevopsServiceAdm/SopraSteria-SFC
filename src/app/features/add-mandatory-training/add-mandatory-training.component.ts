@@ -68,9 +68,9 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   }
 
   public setBackLink(): void {
-    const url =
-      this.establishment.uid === this.primaryWorkplace.uid ? ['/dashboard'] : ['/workplace', this.establishment.uid];
-    this.return = { url: url, fragment: 'training-and-qualifications' };
+    this.return = {
+      url: ['/workplace', this.establishmentService.primaryWorkplace.uid, 'add-and-manage-mandatory-training'],
+    };
     this.backService.setBackLink(this.return);
   }
 

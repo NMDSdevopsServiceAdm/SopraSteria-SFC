@@ -342,7 +342,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       fixture.detectChanges();
 
       const link = getByText('Manage mandatory training');
-      expect(link.getAttribute('href')).toBe(`/workplace/${workplaceUid}/add-mandatory-training`);
+      expect(link.getAttribute('href')).toBe(`/workplace/${workplaceUid}/add-and-manage-mandatory-training`);
     });
 
     it('should display the mandatory training table when training exists', async () => {

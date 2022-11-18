@@ -302,26 +302,14 @@ describe('AddMandatoryTrainingComponent', () => {
   });
 
   describe('setBackLink', async () => {
-    it('should return to dashboard when the workplace is the primary workplace', async () => {
+    it('should return to the add and manage mandatory training page', async () => {
       const { component, fixture } = await setup();
-      const expectedReturnUrl = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
-
-      component.primaryWorkplace.uid = '123';
       component.setBackLink();
       fixture.detectChanges();
 
-      expect(component.return).toEqual(expectedReturnUrl);
-    });
-
-    it('should return to subsidiary dashboard when the workplace is not the primary workplace', async () => {
-      const { component, fixture } = await setup();
-      const expectedReturnUrl = { url: ['/workplace', '123'], fragment: 'training-and-qualifications' };
-
-      component.primaryWorkplace.uid = '125';
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(component.return).toEqual(expectedReturnUrl);
+      expect(component.return).toEqual({
+        url: ['/workplace', component.primaryWorkplace.uid, 'add-and-manage-mandatory-training'],
+      });
     });
   });
 });

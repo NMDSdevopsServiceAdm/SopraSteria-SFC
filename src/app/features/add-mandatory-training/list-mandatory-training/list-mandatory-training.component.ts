@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
@@ -21,6 +22,8 @@ export class ListMandatoryTrainingComponent implements OnInit {
     private route: ActivatedRoute,
     public jobService: JobService,
     private breadcrumbService: BreadcrumbService,
+    private router: Router,
+    public establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
@@ -32,5 +35,14 @@ export class ListMandatoryTrainingComponent implements OnInit {
         this.existingMandatoryTrainings = trainings;
       }),
     );
+  }
+
+  public navigateToAddNewMandatoryTraining() {
+    this.router.navigate([
+      '/workplace',
+      this.establishmentService.primaryWorkplace.uid,
+      'add-and-manage-mandatory-training',
+      'add-new-mandatory-training',
+    ]);
   }
 }

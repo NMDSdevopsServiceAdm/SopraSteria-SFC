@@ -1,7 +1,7 @@
 import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
-  MANDATORY_TRAINING = '/add-mandatory-training',
+  MANDATORY_TRAINING = '/add-and-manage-mandatory-training',
   DASHBOARD = '/dashboard',
 }
 
