@@ -17,7 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class EthnicityComponent extends QuestionComponent {
   public ethnicitiesByGroup: any = {};
-  public ethnicitiy: Ethnicity;
+  public ethnicity: Ethnicity;
   public section = 'Personal details';
   public doNotKnowValue = `Don't know`;
   public groupOptions = [
@@ -27,6 +27,8 @@ export class EthnicityComponent extends QuestionComponent {
     { value: 'Black / African / Caribbean / Black British', tag: 'Black, African, Caribbean or Black British' },
     { value: 'Other ethnic group', tag: 'Other ethnic group' },
   ];
+  public savedStateEthnicity = null;
+  public savedStateEthnicityGroup = null;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -59,6 +61,14 @@ export class EthnicityComponent extends QuestionComponent {
     this.getAndSetEthnicityData();
     this.next = this.getRoutePath('nationality');
     this.subscriptions.add(
+      this.form.get('ethnicity').valueChanges.subscribe((value) => {
+        if (value !== null) {
+          this.savedStateEthnicity = value;
+          this.savedStateEthnicityGroup = this.form.get('ethnicityGroup').value;
+        }
+      }),
+    );
+    this.subscriptions.add(
       this.form.get('ethnicityGroup').valueChanges.subscribe((value) => {
         this.submitted = false;
         this.form.get('ethnicity').clearValidators();
@@ -67,8 +77,14 @@ export class EthnicityComponent extends QuestionComponent {
         } else {
           this.form.get('ethnicityGroup').setValue(this.doNotKnowValue, { emitEvent: false });
         }
-        this.form.get('ethnicity').setValue(null, { emitEvent: false });
-        this.form.get('ethnicity').updateValueAndValidity();
+        if (value === this.savedStateEthnicityGroup) {
+          this.form.patchValue({
+            ethnicity: this.savedStateEthnicity,
+          });
+        } else {
+          this.form.get('ethnicity').setValue(null, { emitEvent: false });
+          this.form.get('ethnicity').updateValueAndValidity();
+        }
       }),
     );
   }
@@ -78,7 +94,7 @@ export class EthnicityComponent extends QuestionComponent {
       this.ethnicityService.getEthnicities().subscribe((ethnicityData) => {
         const transformedEthnicityData = this.transformEthnicityData(ethnicityData);
         this.ethnicitiesByGroup = transformedEthnicityData.byGroup;
-        this.ethnicitiy = transformedEthnicityData.list.find(
+        this.ethnicity = transformedEthnicityData.list.find(
           (ethnicityObject) => ethnicityObject.id === this.worker.ethnicity?.ethnicityId,
         );
         if (this.worker.ethnicity) {
@@ -132,7 +148,7 @@ export class EthnicityComponent extends QuestionComponent {
 
   private prefill() {
     this.form.patchValue({
-      ethnicityGroup: this.ethnicitiy.group,
+      ethnicityGroup: this.ethnicity.group,
       ethnicity: this.worker.ethnicity.ethnicityId,
     });
   }

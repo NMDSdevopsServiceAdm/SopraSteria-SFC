@@ -2,7 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FLOAT_PATTERN, INT_PATTERN } from '@core/constants/constants';
+import { INT_PATTERN, SALARY_PATTERN } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -20,7 +20,7 @@ export class SalaryComponent extends QuestionComponent {
   public hourly = { min: 2.5, max: 200 };
   public annually = { min: 500, max: 200000 };
   public intPattern = INT_PATTERN.toString();
-  public floatPattern = FLOAT_PATTERN.toString();
+  public salaryPattern = SALARY_PATTERN.toString();
   public section = 'Employment details';
 
   constructor(
@@ -46,7 +46,7 @@ export class SalaryComponent extends QuestionComponent {
     );
 
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
-    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
+    this.salaryPattern = this.salaryPattern.substring(1, this.salaryPattern.length - 1);
 
     this.form = this.formBuilder.group({
       terms: null,
@@ -73,7 +73,7 @@ export class SalaryComponent extends QuestionComponent {
             Validators.required,
             Validators.min(this.hourly.min),
             Validators.max(this.hourly.max),
-            Validators.pattern(this.floatPattern),
+            Validators.pattern(this.salaryPattern),
           ]);
         } else if (value === 'Annually') {
           annualRate.setValidators([
@@ -136,6 +136,10 @@ export class SalaryComponent extends QuestionComponent {
           {
             name: 'required',
             message: 'Enter their standard hourly salary',
+          },
+          {
+            name: 'pattern',
+            message: 'Standard hourly rate can only have 1 or 2 digits after the decimal point when you include pence',
           },
           {
             name: 'min',

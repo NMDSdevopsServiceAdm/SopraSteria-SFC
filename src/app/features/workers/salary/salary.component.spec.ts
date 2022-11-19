@@ -272,6 +272,26 @@ describe('SalaryComponent', () => {
       expect(getAllByText('Standard hourly salary must be between £2.50 and £200.00').length).toEqual(2);
     });
 
+    it('returns an error if Hourly is selected and more than 2 decimal places are entered', async () => {
+      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+
+      const form = component.form;
+      form.controls.terms.setValue('');
+      form.controls.hourlyRate.setValue('4.444');
+      form.controls.annualRate.setValue('');
+
+      fixture.detectChanges();
+      fireEvent.click(getByLabelText('Hourly'));
+      fixture.detectChanges();
+      fireEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+      expect(true).toBeTruthy;
+      expect(
+        getAllByText('Standard hourly rate can only have 1 or 2 digits after the decimal point when you include pence')
+          .length,
+      ).toEqual(2);
+    });
+
     it('returns an error if Annual salary is selected and no Annual salary is entered', async () => {
       const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
       const form = component.form;

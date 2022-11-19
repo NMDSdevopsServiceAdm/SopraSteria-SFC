@@ -49,12 +49,17 @@ export class RecruitedFromComponent extends QuestionComponent {
     this.subscriptions.add(
       this.form.get('recruitmentKnown').valueChanges.subscribe((val) => {
         this.form.get('recruitedFromId').clearValidators();
-
         if (val === 'Yes') {
           this.form.get('recruitedFromId').setValidators(Validators.required);
         }
 
         this.form.get('recruitedFromId').updateValueAndValidity();
+      }),
+    );
+
+    this.subscriptions.add(
+      this.form.get('recruitedFromId').valueChanges.subscribe(() => {
+        this.submitted = false;
       }),
     );
 
