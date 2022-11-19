@@ -112,14 +112,14 @@ describe('SubmitButtonComponent', () => {
     expect(spy).toHaveBeenCalledWith({ action: 'summary', save: false });
   });
 
-  it(`should emit 'skip' event on Skip this question button click`, async () => {
+  it(`should emit 'continue' event on Skip this question button click`, async () => {
     const { fixture, getByText } = await setup();
 
     const spy = spyOn(fixture.componentInstance.clicked, 'emit');
     expect(spy).not.toHaveBeenCalled();
 
     fireEvent.click(getByText('Skip this question'));
-    expect(spy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    expect(spy).toHaveBeenCalledWith({ action: 'continue', save: false });
   });
 
   it(`should emit the 'exit' event on cancel button click`, async () => {

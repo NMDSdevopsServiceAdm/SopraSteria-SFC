@@ -263,7 +263,7 @@ describe('MainJobStartDateComponent', () => {
     const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup();
 
     userEvent.click(getByText('Skip this question'));
-    expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
     expect(navigateSpy).toHaveBeenCalledWith([
       '/workplace',
       123,
@@ -279,7 +279,7 @@ describe('MainJobStartDateComponent', () => {
     const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup(true, registeredNurse);
 
     userEvent.click(getByText('Skip this question'));
-    expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
     expect(navigateSpy).toHaveBeenCalledWith([
       '/workplace',
       123,
@@ -295,7 +295,7 @@ describe('MainJobStartDateComponent', () => {
     const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup(true, socialWorker);
 
     userEvent.click(getByText('Skip this question'));
-    expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
     expect(navigateSpy).toHaveBeenCalledWith([
       '/workplace',
       123,

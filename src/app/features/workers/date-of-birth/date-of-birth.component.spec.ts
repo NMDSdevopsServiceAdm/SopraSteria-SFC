@@ -4,7 +4,6 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -48,12 +47,10 @@ describe('DateOfBirthComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService);
-    const backService = injector.inject(BackService);
 
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -62,7 +59,6 @@ describe('DateOfBirthComponent', () => {
       routerSpy,
       submitSpy,
       workerServiceSpy,
-      backLinkSpy,
       getByText,
       getAllByText,
       getByLabelText,
@@ -143,7 +139,7 @@ describe('DateOfBirthComponent', () => {
       const { fixture, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup();
 
       userEvent.click(getByText('Skip this question'));
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',

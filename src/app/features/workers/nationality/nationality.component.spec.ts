@@ -207,7 +207,7 @@ describe('NationalityComponent', () => {
       const { component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup();
 
       fireEvent.click(getByText('Skip this question'));
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         component.workplace.uid,

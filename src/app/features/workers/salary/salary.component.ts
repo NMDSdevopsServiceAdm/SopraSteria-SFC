@@ -22,7 +22,6 @@ export class SalaryComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();
   public floatPattern = FLOAT_PATTERN.toString();
   public section = 'Employment details';
-  private careCertificatePath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,

@@ -27,7 +27,6 @@ export class EthnicityComponent extends QuestionComponent {
     { value: 'Black / African / Caribbean / Black British', tag: 'Black, African, Caribbean or Black British' },
     { value: 'Other ethnic group', tag: 'Other ethnic group' },
   ];
-  private nationalityPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,

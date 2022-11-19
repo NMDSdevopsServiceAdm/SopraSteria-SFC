@@ -194,9 +194,10 @@ describe('StaffDetailsComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    xit(`should set conditionalQuestionUrl when not in mandatory details flow or in the staff record flow and mainJobRole selected is 23`, async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, false);
+    it(`should navigate to the nursing-category page if the main job role has and id of 23 and outside of the flow`, async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
 
+      spyOn(workerService, 'hasJobRole').and.returnValues(false, true); // returns false the first time it is called and true the second time it is called
       userEvent.type(getByLabelText('Name or ID number'), 'Someone');
       userEvent.selectOptions(getByLabelText('Main job role'), ['23']);
       userEvent.click(getByLabelText('Permanent'));
@@ -209,12 +210,11 @@ describe('StaffDetailsComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
-        'registered-nurse-details',
         'nursing-category',
       ]);
     });
 
-    it(`should set conditionalQuestionUrl when not in mandatory details flow or in the staff record flow and mainJobRole selected is 23`, async () => {
+    it(`should navigate to the mental-health-professional page if the main job role has and id of 27 and outside of the flow`, async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
 
       spyOn(workerService, 'hasJobRole').and.returnValue(true);

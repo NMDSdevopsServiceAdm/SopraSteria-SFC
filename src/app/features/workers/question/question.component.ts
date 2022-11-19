@@ -128,10 +128,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(this.getRoutePath(''));
         break;
 
-      case 'skip':
-        this.router.navigate(this.next);
-        break;
-
       case 'exit':
         const url =
           this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
