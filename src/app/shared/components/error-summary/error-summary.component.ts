@@ -109,6 +109,8 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
         });
       }
     });
+
+    this.sortErrors();
   }
 
   /**
@@ -156,6 +158,20 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
 
   public getCurrentRoute(): string {
     return this.router.url.split('#')[0].split('?')[0];
+  }
+
+  /**
+   * This sort function is used for the service capacity component, where the first error
+   * shown should be that of the main service (if it has one)
+   */
+  private sortErrors(): void {
+    const index = this.errors.findIndex((error) => error.item.includes('MainService'));
+
+    if (index > 0) {
+      const errorsArrCopy = [...this.errors];
+      const errorArray1 = errorsArrCopy.splice(index, 1);
+      this.errors = [...errorArray1, ...errorsArrCopy];
+    }
   }
 
   /**
