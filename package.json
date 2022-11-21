@@ -94,7 +94,7 @@
     "notifications-node-client": "^5.1.1",
     "openpgp": "^5.0.0-1",
     "p-ratelimit": "^1.0.1",
-    "passport": "^0.4.1",
+    "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "pdf-lib": "^1.17.1",
     "pg": "^8.5.1",
