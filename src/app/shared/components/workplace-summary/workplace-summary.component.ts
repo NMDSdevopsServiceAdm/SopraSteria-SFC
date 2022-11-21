@@ -8,7 +8,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { sortBy } from 'lodash';
-import { stringify } from 'querystring';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -124,23 +123,26 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
         const temp = [{}];
         this.capacities.forEach((capacity) => {
           capacity.questions.forEach((question) => {
-          temp[question.questionId] = {question: question.question, value: temp[question.questionId] ? question.question + question.answer : question.answer, service: ` (${capacity.service.split(':')[1].trim().toLowerCase()})`};
-          })
+            temp[question.questionId] = {
+              question: question.question,
+              value: temp[question.questionId] ? question.question + question.answer : question.answer,
+              service: ` (${capacity.service.split(':')[1].trim().toLowerCase()})`,
+            };
+          });
         });
 
         if (Object.keys(temp).length) {
           Object.keys(temp).forEach((key) => {
             if (this.pluralMap[temp[key].question]) {
-              const message = this.i18nPluralPipe.transform(temp[key].value, this.pluralMap[temp[key].question]) + (temp[key].value ? temp[key].service : '');
+              const message =
+                this.i18nPluralPipe.transform(temp[key].value, this.pluralMap[temp[key].question]) +
+                (temp[key].value ? temp[key].service : '');
               this.capacityMessages.push(message);
             }
           });
         }
-
       }),
     );
-
-;
 
     this.cqcStatusRequested = false;
     this.subscriptions.add(

@@ -371,4 +371,8 @@ export class EstablishmentService {
       .get<any>(`/api/establishment/${establishmentId}/childWorkplaces`, { params: queryParams || {} })
       .pipe(map((data) => data));
   }
+
+  public getCertificate(establishmentId: string, years: string): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/certificate/${years}`);
+  }
 }

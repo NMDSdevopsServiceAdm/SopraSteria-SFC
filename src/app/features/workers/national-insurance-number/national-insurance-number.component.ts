@@ -15,6 +15,7 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './national-insurance-number.component.html',
 })
 export class NationalInsuranceNumberComponent extends QuestionComponent {
+  private homePostCodePath: string[];
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -45,6 +46,8 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
   }
 
   init() {
+    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
+
     if (this.worker.nationalInsuranceNumber) {
       this.form.patchValue({
         nationalInsuranceNumber: this.worker.nationalInsuranceNumber,

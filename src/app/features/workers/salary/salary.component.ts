@@ -18,7 +18,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class SalaryComponent extends QuestionComponent {
   public hourly = { min: 2.5, max: 200 };
-  public annually = { min: 500, max: 200000 };
+  public annually: any;
   public intPattern = INT_PATTERN.toString();
   public salaryPattern = SALARY_PATTERN.toString();
   public section = 'Employment details';
@@ -56,6 +56,7 @@ export class SalaryComponent extends QuestionComponent {
   }
 
   init() {
+    this.annually = { min: 500, max: this.worker.mainJob.jobId === 26 ? 250000 : 200000 };
     this.setValidators();
     this.setAnnualHourlyPay();
     this.next = this.getRoutePath('care-certificate');
@@ -108,22 +109,22 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Enter their standard annual salary',
+            message: 'Enter their standard annual rate',
           },
           {
             name: 'pattern',
-            message: 'Standard annual salary must not include pence',
+            message: 'Standard annual rate must not include pence',
           },
           {
             name: 'min',
-            message: `Standard annual salary must be between &pound;${this.decimalPipe.transform(
+            message: `Standard annual rate must be between &pound;${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0',
             )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
           },
           {
             name: 'max',
-            message: `Standard annual salary must be between &pound;${this.decimalPipe.transform(
+            message: `Standard annual rate must be between &pound;${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0',
             )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,

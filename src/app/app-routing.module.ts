@@ -29,6 +29,7 @@ import { BenefitsELearningComponent } from '@features/benefits-bundle/benefits-e
 import {
   BenefitsTrainingDiscountsComponent,
 } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
+import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
@@ -154,6 +155,11 @@ const routes: Routes = [
           wizard: WizardResolver,
         },
         data: { title: 'First Login Wizard' },
+      },
+      {
+        path: 'asc-wds-certificate',
+        component: AscWdsCertificateComponent,
+        data: { title: 'Certificate' },
       },
       {
         path: 'bulk-upload',
