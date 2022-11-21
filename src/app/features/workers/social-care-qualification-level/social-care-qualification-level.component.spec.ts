@@ -4,7 +4,10 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import {
+  MockWorkerServiceWithoutReturnUrl,
+  MockWorkerServiceWithUpdateWorker,
+} from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -104,8 +107,6 @@ describe('SocialCareQualificationLevelComponent', () => {
       component.form.controls.qualification.setValue('2');
       fixture.detectChanges();
 
-      console.log(component.form.value);
-
       const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
 
@@ -139,7 +140,7 @@ describe('SocialCareQualificationLevelComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
-      const { component, fixture, routerSpy, getByText} = await setup();
+      const { component, fixture, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -179,5 +180,4 @@ describe('SocialCareQualificationLevelComponent', () => {
       ]);
     });
   });
-
 });

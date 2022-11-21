@@ -90,19 +90,14 @@
     </div>
   </div>
   <div class="govuk-grid-row">
-    <ng-container *ngIf="worker.completed; else button">
-      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-3">
-        <p>Check the record details you've added are correct.</p>
-      </div>
-    </ng-container>
-    <ng-template #button>
+    <ng-container *ngIf="!worker.completed">
       <div class="govuk-grid-column-full">
         <div class="govuk-button-group govuk__flex govuk__justify-content-space-between govuk-!-margin-top-0">
-          <p>Check the record details you've added before you confirm them.</p>
+          <p>Check these details before you confirm them.</p>
           <button type="button" class="govuk-button" (click)="saveAndComplete()">Confirm record details</button>
         </div>
       </div>
-    </ng-template>
+    </ng-container>
   </div>
   <app-basic-record [basicTitle]="'Mandatory information'" [workplace]="workplace" [worker]="worker"></app-basic-record>
   <app-personal-details [workplace]="workplace" [worker]="worker"></app-personal-details>

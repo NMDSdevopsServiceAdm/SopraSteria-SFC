@@ -705,8 +705,9 @@ class Worker extends EntityValidator {
 
           const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
-          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
 
+          const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
+         
           // note - if the worker was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
             ...modifedUpdateDocument,

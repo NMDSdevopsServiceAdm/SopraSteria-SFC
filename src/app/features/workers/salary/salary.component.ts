@@ -2,9 +2,8 @@ import { DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FLOAT_PATTERN, INT_PATTERN } from '@core/constants/constants';
-import { Contracts } from '@core/model/contracts.enum';
-import { BackService } from '@core/services/back.service';
+import { INT_PATTERN, SALARY_PATTERN } from '@core/constants/constants';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -20,24 +19,23 @@ export class SalaryComponent extends QuestionComponent {
   public hourly = { min: 2.5, max: 200 };
   public annually: any;
   public intPattern = INT_PATTERN.toString();
-  public floatPattern = FLOAT_PATTERN.toString();
+  public salaryPattern = SALARY_PATTERN.toString();
   public section = 'Employment details';
-  private careCertificatePath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     private decimalPipe: DecimalPipe,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
-    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
+    this.salaryPattern = this.salaryPattern.substring(1, this.salaryPattern.length - 1);
 
     this.form = this.formBuilder.group({
       terms: null,
@@ -50,22 +48,7 @@ export class SalaryComponent extends QuestionComponent {
     this.annually = { min: 500, max: this.worker.mainJob.jobId === 26 ? 250000 : 200000 };
     this.setValidators();
     this.setAnnualHourlyPay();
-    this.previous = this.getReturnPath();
     this.next = this.getRoutePath('care-certificate');
-  }
-
-  private getReturnPath() {
-    if (this.insideFlow) {
-      if (
-        this.worker.zeroHoursContract === 'Yes' ||
-        [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-      ) {
-        return this.getRoutePath('average-weekly-hours');
-      } else {
-        return this.getRoutePath('weekly-contracted-hours');
-      }
-    }
-    return this.getRoutePath('');
   }
 
   private setValidators(): void {
@@ -80,7 +63,7 @@ export class SalaryComponent extends QuestionComponent {
             Validators.required,
             Validators.min(this.hourly.min),
             Validators.max(this.hourly.max),
-            Validators.pattern(this.floatPattern),
+            Validators.pattern(this.salaryPattern),
           ]);
         } else if (value === 'Annually') {
           annualRate.setValidators([
@@ -142,7 +125,11 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Enter their standard hourly rate',
+            message: 'Enter their standard hourly salary',
+          },
+          {
+            name: 'pattern',
+            message: 'Standard hourly rate can only have 1 or 2 digits after the decimal point when you include pence',
           },
           {
             name: 'min',
@@ -153,7 +140,7 @@ export class SalaryComponent extends QuestionComponent {
           },
           {
             name: 'max',
-            message: `Standard hourly rate must be between &pound;${this.decimalPipe.transform(
+            message: `Standard hourly salary must be between &pound;${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2',
             )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,

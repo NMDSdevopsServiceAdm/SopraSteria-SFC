@@ -8,7 +8,7 @@
           <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
           <h1 class="govuk-fieldset__heading">What's their nationality?</h1>
         </legend>
-        <div class="govuk-form-group">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
               <input
@@ -40,8 +40,7 @@
               id="conditional-nationalityKnown-conditional-2"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="nationalityName"> Nationality </label>
-                <span id="nationalityName-hint" class="govuk-hint"> Optional </span>
+                <label class="govuk-label" for="nationalityName"> Nationality (optional) </label>
                 <span
                   id="nationalityName-error"
                   class="govuk-error-message"
@@ -54,6 +53,7 @@
                     [formGroup]="form"
                     [dataProvider]="nationalityNameFilter"
                     [formControlName]="'nationalityName'"
+                    [error]="submitted && form.get('nationalityName').invalid"
                   ></app-auto-suggest>
                 </div>
               </div>
@@ -68,7 +68,7 @@
                 type="radio"
                 value="Don't know"
               />
-              <label class="govuk-label govuk-radios__label" for="nationalityKnown-3"> Don't know </label>
+              <label class="govuk-label govuk-radios__label" for="nationalityKnown-3"> I do not know </label>
             </div>
           </div>
         </div>
@@ -85,5 +85,9 @@
     </div>
   </div>
 
-  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+  <app-submit-button
+    [summaryContinue]="true"
+    [return]="!insideFlow"
+    (clicked)="setSubmitAction($event)"
+  ></app-submit-button>
 </form>

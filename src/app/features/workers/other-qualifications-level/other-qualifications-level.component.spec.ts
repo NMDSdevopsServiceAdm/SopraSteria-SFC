@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
@@ -22,7 +21,6 @@ describe('OtherQualificationsLevelComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
         providers: [
           FormBuilder,
-          BackService,
           {
             provide: ActivatedRoute,
             useValue: {
@@ -56,16 +54,13 @@ describe('OtherQualificationsLevelComponent', () => {
 
     const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
-    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
       fixture,
       routerSpy,
-      backLinkSpy,
       getByText,
       queryByTestId,
       getByLabelText,
@@ -126,7 +121,7 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to staff-record-summary-flow page when submitting from flow', async () => {
+    it('should navigate to confirm-staff-record page when submitting from flow', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -144,11 +139,11 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary-flow',
+        'confirm-staff-record',
       ]);
     });
 
-    it('should navigate to staff-record-summary-flow page when skipping the question in the flow', async () => {
+    it('should navigate to confirm-staff-record page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -162,7 +157,7 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary-flow',
+        'confirm-staff-record',
       ]);
     });
 
@@ -204,32 +199,6 @@ describe('OtherQualificationsLevelComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
-    });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set backlink to other-qualifications page when in staff record flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'other-qualifications'],
-        fragment: 'staff-records',
-      });
     });
   });
 });

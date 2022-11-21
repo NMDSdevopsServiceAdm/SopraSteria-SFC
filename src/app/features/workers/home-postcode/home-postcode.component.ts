@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { POSTCODE_PATTERN } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -18,16 +18,19 @@ export class HomePostcodeComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      postcode: [null, this.postcodeValidator],
-    });
+    this.form = this.formBuilder.group(
+      {
+        postcode: [null, this.postcodeValidator],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   init() {
@@ -38,7 +41,6 @@ export class HomePostcodeComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('gender');
-    this.previous = this.getRoutePath('national-insurance-number');
   }
 
   public setupFormErrorsMap(): void {
@@ -48,7 +50,7 @@ export class HomePostcodeComponent extends QuestionComponent {
         type: [
           {
             name: 'validPostcode',
-            message: 'Enter a real postcode.',
+            message: 'Enter a real postcode',
           },
         ],
       },

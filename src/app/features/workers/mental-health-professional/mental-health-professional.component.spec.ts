@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -19,7 +18,6 @@ describe('MentalHealtProfessionalComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
           FormBuilder,
-          BackService,
           {
             provide: ActivatedRoute,
             useValue: {
@@ -50,16 +48,13 @@ describe('MentalHealtProfessionalComponent', () => {
 
     const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
-    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
       fixture,
       routerSpy,
-      backLinkSpy,
       getByText,
       getAllByText,
       getByLabelText,
@@ -80,7 +75,7 @@ describe('MentalHealtProfessionalComponent', () => {
     expect(getByTestId('section-heading')).toBeTruthy();
     expect(getByLabelText('Yes')).toBeTruthy();
     expect(getByLabelText('No')).toBeTruthy();
-    expect(getByLabelText(`Don't know`)).toBeTruthy();
+    expect(getByLabelText('I do not know')).toBeTruthy();
   });
 
   describe('submit buttons', () => {
@@ -114,7 +109,7 @@ describe('MentalHealtProfessionalComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to national-insurance-number page when submitting from flow', async () => {
+    it('should navigate to recruited-from page when submitting from flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -125,16 +120,10 @@ describe('MentalHealtProfessionalComponent', () => {
 
       expect(getByText('Save and continue')).toBeTruthy();
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'national-insurance-number',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'recruited-from']);
     });
 
-    it('should navigate to national-insurance-number page when skipping the question in the flow', async () => {
+    it('should navigate to recruited-from page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -143,13 +132,7 @@ describe('MentalHealtProfessionalComponent', () => {
       const skipButton = getByText('Skip this question');
       fireEvent.click(skipButton);
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'national-insurance-number',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'recruited-from']);
     });
 
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
@@ -186,32 +169,6 @@ describe('MentalHealtProfessionalComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
-    });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set backlink to main-job-start-date page when in staff record flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'main-job-start-date'],
-        fragment: 'staff-records',
-      });
     });
   });
 });

@@ -40,11 +40,12 @@ describe('TotalStaffPanelComponent', () => {
     fixture.detectChanges();
 
     const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffLink = within(document.body).queryByTestId('totalStaffLink');
     const totalStaffText = within(document.body).queryByTestId('totalStaffText');
 
     expect(totalStaffNumber.innerHTML).toContain('23');
-    expect(totalStaffNumber.innerHTML).toContain('Change');
-    expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffLink.innerHTML).toContain('Change');
+    expect(totalStaffText.innerHTML).toContain('total number of staff');
     expect(totalStaffText.innerHTML).not.toContain('is missing');
   });
 
@@ -52,10 +53,10 @@ describe('TotalStaffPanelComponent', () => {
     component.totalStaff = undefined;
     fixture.detectChanges();
 
-    const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffLink = within(document.body).queryByTestId('totalStaffLink');
     const totalStaffText = within(document.body).queryByTestId('totalStaffText');
 
-    expect(totalStaffNumber.innerHTML).toContain('Add');
+    expect(totalStaffLink.innerHTML).toContain('Add');
     expect(totalStaffText.innerHTML).toContain('Total number of staff is missing');
   });
 
@@ -67,7 +68,7 @@ describe('TotalStaffPanelComponent', () => {
     const staffAddedText = within(document.body).queryByTestId('staffAddedText');
 
     expect(staffAddedNumber.innerHTML).toContain('24');
-    expect(staffAddedText.textContent).toContain('Staff records added');
+    expect(staffAddedText.textContent).toContain('staff records added');
   });
 
   it('should change to single record if only 1 staff record added', () => {
@@ -78,7 +79,7 @@ describe('TotalStaffPanelComponent', () => {
     const staffAddedText = within(document.body).queryByTestId('staffAddedText');
 
     expect(staffAddedNumber.innerHTML).toContain('1');
-    expect(staffAddedText.textContent).toContain('Staff record added');
+    expect(staffAddedText.textContent).toContain('staff record added');
   });
 
   it('should show total staff and staff added but not changes if number are equal', () => {
@@ -94,10 +95,10 @@ describe('TotalStaffPanelComponent', () => {
     const changeText = within(document.body).queryAllByTestId('changeText');
 
     expect(totalStaffNumber.innerHTML).toContain('24');
-    expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).toContain('total number of staff');
     expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('24');
-    expect(staffAddedText.textContent).toContain('Staff records added');
+    expect(staffAddedText.textContent).toContain('staff records added');
     expect(changeNumber.length).toEqual(0);
     expect(changeText.length).toEqual(0);
   });
@@ -107,17 +108,17 @@ describe('TotalStaffPanelComponent', () => {
     component.totalWorkers = 24;
     fixture.detectChanges();
 
-    const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffLink = within(document.body).queryByTestId('totalStaffLink');
     const totalStaffText = within(document.body).queryByTestId('totalStaffText');
     const staffAddedNumber = within(document.body).queryByTestId('staffAddedNumber');
     const staffAddedText = within(document.body).queryByTestId('staffAddedText');
     const changeNumber = within(document.body).queryAllByTestId('changeNumber');
     const changeText = within(document.body).queryAllByTestId('changeText');
 
-    expect(totalStaffNumber.innerHTML).toContain('Add');
+    expect(totalStaffLink.innerHTML).toContain('Add');
     expect(totalStaffText.innerHTML).toContain('Total number of staff is missing');
     expect(staffAddedNumber.innerHTML).toContain('24');
-    expect(staffAddedText.textContent).toContain('Staff records added');
+    expect(staffAddedText.textContent).toContain('staff records added');
     expect(changeNumber.length).toEqual(0);
     expect(changeText.length).toEqual(0);
   });
@@ -135,12 +136,12 @@ describe('TotalStaffPanelComponent', () => {
     const changeText = within(document.body).queryByTestId('changeText');
 
     expect(totalStaffNumber.innerHTML).toContain('24');
-    expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).toContain('total number of staff');
     expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('25');
-    expect(staffAddedText.textContent).toContain('Staff records added');
+    expect(staffAddedText.textContent).toContain('staff records added');
     expect(changeNumber.innerHTML).toContain('1');
-    expect(changeText.textContent).toContain('Staff record to delete');
+    expect(changeText.textContent).toContain('staff record to delete');
   });
 
   it('should show total staff, staff added and changes if number are not equal but have more workers', () => {
@@ -156,12 +157,12 @@ describe('TotalStaffPanelComponent', () => {
     const changeText = within(document.body).queryByTestId('changeText');
 
     expect(totalStaffNumber.innerHTML).toContain('24');
-    expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).toContain('total number of staff');
     expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('300');
-    expect(staffAddedText.textContent).toContain('Staff records added');
+    expect(staffAddedText.textContent).toContain('staff records added');
     expect(changeNumber.innerHTML).toContain('276');
-    expect(changeText.textContent).toContain('Staff records to delete');
+    expect(changeText.textContent).toContain('staff records to delete');
   });
 
   it('should show total staff, staff added and changes if number are not equal but only have 1 more total staff', () => {
@@ -177,12 +178,12 @@ describe('TotalStaffPanelComponent', () => {
     const changeText = within(document.body).queryByTestId('changeText');
 
     expect(totalStaffNumber.innerHTML).toContain('25');
-    expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).toContain('total number of staff');
     expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('24');
-    expect(staffAddedText.textContent).toContain('Staff records added');
+    expect(staffAddedText.textContent).toContain('staff records added');
     expect(changeNumber.innerHTML).toContain('1');
-    expect(changeText.textContent).toContain('Staff record to add');
+    expect(changeText.textContent).toContain('staff record to add');
   });
 
   it('should show total staff, staff added and changes if number are not equal but have more total staff', () => {
@@ -198,11 +199,11 @@ describe('TotalStaffPanelComponent', () => {
     const changeText = within(document.body).queryByTestId('changeText');
 
     expect(totalStaffNumber.innerHTML).toContain('200');
-    expect(totalStaffText.innerHTML).toContain('Total number of staff');
+    expect(totalStaffText.innerHTML).toContain('total number of staff');
     expect(totalStaffText.innerHTML).not.toContain('is missing');
     expect(staffAddedNumber.innerHTML).toContain('25');
-    expect(staffAddedText.textContent).toContain('Staff records added');
+    expect(staffAddedText.textContent).toContain('staff records added');
     expect(changeNumber.innerHTML).toContain('175');
-    expect(changeText.textContent).toContain('Staff records to add');
+    expect(changeText.textContent).toContain('staff records to add');
   });
 });

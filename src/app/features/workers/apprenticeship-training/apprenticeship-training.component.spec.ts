@@ -4,14 +4,14 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training.component';
 
 describe('ApprenticeshipTrainingComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, queryByTestId, getByLabelText, getByTestId } = await render(
       ApprenticeshipTrainingComponent,
       {
@@ -21,24 +21,20 @@ describe('ApprenticeshipTrainingComponent', () => {
           {
             provide: ActivatedRoute,
             useValue: {
-              snapshot: {
-                parent: {
-                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
-                },
-              },
               parent: {
                 snapshot: {
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
                     establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
                   },
-                  url: [{ path: '' }],
                 },
               },
             },
           },
           {
             provide: WorkerService,
-            useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+            useClass: MockWorkerServiceWithUpdateWorker,
           },
         ],
       },
@@ -79,7 +75,7 @@ describe('ApprenticeshipTrainingComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button, skip this question and 'View this staff record' link, if a return url is not provided`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
@@ -87,7 +83,7 @@ describe('ApprenticeshipTrainingComponent', () => {
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup();
+      const { getByText } = await setup(false);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -96,21 +92,21 @@ describe('ApprenticeshipTrainingComponent', () => {
 
   describe('progress bar', () => {
     it('should render the workplace progress bar', async () => {
-      const { getByTestId } = await setup(false);
+      const { getByTestId } = await setup();
 
-      expect(getByTestId('progress-bar-1')).toBeTruthy();
+      expect(getByTestId('progress-bar')).toBeTruthy();
     });
 
     it('should not render the progress bars when accessed from outside the flow', async () => {
-      const { queryByTestId } = await setup();
+      const { queryByTestId } = await setup(false);
 
-      expect(queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
 
   describe('navigation', () => {
     it('should navigate to social-care-qualification page when submitting from flow', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
+      const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -130,13 +126,13 @@ describe('ApprenticeshipTrainingComponent', () => {
     });
 
     it('should navigate to social-care-qualification page when skipping the question in the flow', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
+      const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const skipButton = getByText('Skip this question');
-      fireEvent.click(skipButton);
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -147,14 +143,32 @@ describe('ApprenticeshipTrainingComponent', () => {
       ]);
     });
 
-    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+    it('should navigate to staff-summary-page page when pressing view this staff record', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const skipButton = getByText('Save and return');
-      fireEvent.click(skipButton);
+      const link = getByText('View this staff record');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -166,13 +180,13 @@ describe('ApprenticeshipTrainingComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const { component, routerSpy, getByText } = await setup();
+      const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const skipButton = getByText('Cancel');
-      fireEvent.click(skipButton);
+      const link = getByText('Cancel');
+      fireEvent.click(link);
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -181,17 +195,6 @@ describe('ApprenticeshipTrainingComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
-    });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      expect(component.return).toEqual({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-      });
     });
   });
 });

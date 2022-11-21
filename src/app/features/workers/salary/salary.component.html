@@ -47,6 +47,10 @@
                     <span class="govuk-visually-hidden">Error:</span>
                     <span [innerHTML]="getFormErrorMessage('hourlyRate', 'max')"></span>
                   </ng-container>
+                  <ng-container *ngIf="form.get('hourlyRate').hasError('pattern')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    <span [innerHTML]="getFormErrorMessage('hourlyRate', 'pattern')"></span>
+                  </ng-container>
                 </span>
                 <span class="govuk-input__currency">
                   <input
