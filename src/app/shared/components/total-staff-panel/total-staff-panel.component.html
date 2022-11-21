@@ -4,7 +4,7 @@
       {{ totalStaff }}
     </dt>
     <dd data-testid="totalStaffText">
-      <span class="govuk-!-margin-right-1">total number of staff {{ !totalStaff ? 'is missing' : '' }}</span>
+      <span>{{ !totalStaff ? 'Total' : 'total' }} number of staff {{ !totalStaff ? 'is missing' : '' }}</span>
     </dd>
     <dd data-testid="totalStaffLink">
       <a
