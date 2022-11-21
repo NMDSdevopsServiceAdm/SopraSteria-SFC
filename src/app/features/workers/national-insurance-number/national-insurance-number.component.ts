@@ -46,8 +46,6 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
   }
 
   init() {
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-
     if (this.worker.nationalInsuranceNumber) {
       this.form.patchValue({
         nationalInsuranceNumber: this.worker.nationalInsuranceNumber,

@@ -57,7 +57,7 @@ describe('TotalStaffPanelComponent', () => {
     const totalStaffText = within(document.body).queryByTestId('totalStaffText');
 
     expect(totalStaffLink.innerHTML).toContain('Add');
-    expect(totalStaffText.innerHTML).toContain('total number of staff is missing');
+    expect(totalStaffText.innerHTML).toContain('Total number of staff is missing');
   });
 
   it('should show staff added', () => {
@@ -116,7 +116,7 @@ describe('TotalStaffPanelComponent', () => {
     const changeText = within(document.body).queryAllByTestId('changeText');
 
     expect(totalStaffLink.innerHTML).toContain('Add');
-    expect(totalStaffText.innerHTML).toContain('total number of staff is missing');
+    expect(totalStaffText.innerHTML).toContain('Total number of staff is missing');
     expect(staffAddedNumber.innerHTML).toContain('24');
     expect(staffAddedText.textContent).toContain('staff records added');
     expect(changeNumber.length).toEqual(0);

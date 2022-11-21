@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -50,10 +49,8 @@ describe('DaysOfSicknessComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -62,7 +59,6 @@ describe('DaysOfSicknessComponent', () => {
       getAllByText,
       getByLabelText,
       routerSpy,
-      backLinkSpy,
       getByTestId,
       queryByTestId,
     };
