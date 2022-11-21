@@ -87,7 +87,7 @@
                 id="id-{{ j }}"
               >
                 <option [ngValue]="null">Select job role</option>
-                <option *ngFor="let job of jobs" [value]="job.id">
+                <option *ngFor="let job of this.filteredJobs[j]" [value]="job.id">
                   {{ job.title }}
                 </option>
               </select>
