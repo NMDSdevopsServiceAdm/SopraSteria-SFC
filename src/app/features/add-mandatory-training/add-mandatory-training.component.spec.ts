@@ -67,13 +67,16 @@ describe('AddMandatoryTrainingComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService);
+    const alertService = injector.inject(AlertService) as AlertService;
 
     const updateMandatoryTrainingSpy = spyOn(establishmentService, 'updateMandatoryTraining').and.callThrough();
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     return {
       component,
       fixture,
       updateMandatoryTrainingSpy,
+      alertSpy,
       getByText,
       getByLabelText,
       getAllByLabelText,
@@ -309,6 +312,28 @@ describe('AddMandatoryTrainingComponent', () => {
 
       expect(component.return).toEqual({
         url: ['/workplace', component.primaryWorkplace.uid, 'add-and-manage-mandatory-training'],
+      });
+    });
+  });
+
+  describe('success alert', async () => {
+    it('should show success banner when a mandatory training is saved', async () => {
+      const { component, alertSpy, fixture, getByLabelText, getByText } = await setup();
+
+      const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
+      fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
+
+      const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[0].label);
+      fireEvent.click(allJobRolesRadioButton);
+
+      fixture.detectChanges();
+
+      const submitButton = getByText('Save and return');
+      fireEvent.click(submitButton);
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Mandatory training category added',
       });
     });
   });

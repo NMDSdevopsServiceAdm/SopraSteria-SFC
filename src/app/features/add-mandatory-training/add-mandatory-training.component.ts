@@ -6,6 +6,7 @@ import { Establishment, mandatoryTrainingJobOption } from '@core/model/establish
 import { Job } from '@core/model/job.model';
 import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -53,6 +54,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     private jobService: JobService,
     protected router: Router,
     private route: ActivatedRoute,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -203,6 +205,10 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       this.establishmentService.updateMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
           this.router.navigate(this.return.url, { fragment: this.return.fragment });
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Mandatory training category added',
+          });
         },
         (error) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
