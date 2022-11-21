@@ -11,18 +11,14 @@
 }
 
 .govuk-list--tab {
-  display: grid;
+  display: flex;
   background-color: govuk-colour('light-grey');
   margin: 0;
   @include govuk-responsive-margin(4, 'bottom');
   @include govuk-responsive-padding(3);
 
-  grid-template-columns: 1fr;
-  @include govuk-media-query($from: tablet) {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
   &__column {
+    flex: 1;
     display: flex;
     align-items: center;
     @include govuk-responsive-padding(1);
@@ -39,7 +35,6 @@
     dd {
       margin: 0;
       display: flex;
-      justify-content: space-between;
       @include govuk-font(19);
     }
 

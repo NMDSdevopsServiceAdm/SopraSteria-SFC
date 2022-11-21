@@ -10,7 +10,8 @@
       <a
         *ngIf="canEditEstablishment"
         [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']"
-        class="govuk-!-font-size-19 govuk-!-font-weight-regular"
+        class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-padding-right-9 govuk-!-margin-right-9"
+        [ngClass]="{ 'govuk-!-padding-right-9 govuk-!-margin-right-9': !totalStaff }"
         (click)="setReturn()"
       >
         {{ totalStaff ? 'Change' : 'Add' }} <span class="govuk-visually-hidden"> total number of staff</span>
