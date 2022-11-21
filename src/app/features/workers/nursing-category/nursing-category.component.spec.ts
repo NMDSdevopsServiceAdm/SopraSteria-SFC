@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -45,10 +44,8 @@ describe('NursingCategoryComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -59,7 +56,6 @@ describe('NursingCategoryComponent', () => {
       routerSpy,
       getByTestId,
       queryByTestId,
-      backLinkSpy,
     };
   }
 

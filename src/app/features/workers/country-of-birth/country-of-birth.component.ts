@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CountryResponse, CountryService } from '@core/services/country.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -21,23 +20,13 @@ export class CountryOfBirthComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     public route: ActivatedRoute,
-    protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     private countryService: CountryService,
   ) {
-    super(
-      formBuilder,
-      router,
-      route,
-      backService,
-      backLinkService,
-      errorSummaryService,
-      workerService,
-      establishmentService,
-    );
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.countryOfBirthNameValidator = this.countryOfBirthNameValidator.bind(this);
     this.countryOfBirthNameFilter = this.countryOfBirthNameFilter.bind(this);

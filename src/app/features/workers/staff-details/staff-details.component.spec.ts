@@ -8,7 +8,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -89,13 +88,11 @@ describe('StaffDetailsComponent', () => {
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService);
-    const backService = injector.inject(BackService);
     const alertService = injector.inject(AlertService) as AlertService;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
-    const backLinkSpy = spyOn(backService, 'setBackLink');
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
     const setAddStaffRecordInProgressSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
@@ -113,7 +110,6 @@ describe('StaffDetailsComponent', () => {
       routerSpy,
       updateWorkerSpy,
       submitSpy,
-      backLinkSpy,
       alertSpy,
       setAddStaffRecordInProgressSpy,
     };

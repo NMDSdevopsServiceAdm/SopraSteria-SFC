@@ -100,8 +100,6 @@ describe('ServicesCapacityComponent', () => {
         const question: string = capacities[0]['questions'][0];
         const input = getByLabelText(question['question']);
 
-        console.log(capacities[0]);
-
         userEvent.type(input, '3.5');
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();

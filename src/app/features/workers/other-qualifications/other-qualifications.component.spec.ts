@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { build, fake } from '@jackfranklin/test-data-bot';
@@ -41,7 +40,6 @@ describe('OtherQualificationsComponent', () => {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(OtherQualificationsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
-        BackService,
         {
           provide: ActivatedRoute,
           useValue: {
@@ -68,17 +66,14 @@ describe('OtherQualificationsComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
       fixture,
       routerSpy,
       getByText,
-      backLinkSpy,
       getByTestId,
       queryByTestId,
     };

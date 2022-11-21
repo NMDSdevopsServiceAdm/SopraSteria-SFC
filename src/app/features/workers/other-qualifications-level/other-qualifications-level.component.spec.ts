@@ -3,14 +3,10 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -25,7 +21,6 @@ describe('OtherQualificationsLevelComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
         providers: [
           FormBuilder,
-          BackService,
           {
             provide: ActivatedRoute,
             useValue: {
@@ -59,16 +54,13 @@ describe('OtherQualificationsLevelComponent', () => {
 
     const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
-    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
       fixture,
       routerSpy,
-      backLinkSpy,
       getByText,
       queryByTestId,
       getByLabelText,

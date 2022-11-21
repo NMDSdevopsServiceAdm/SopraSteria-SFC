@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { Job } from '@core/model/job.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -39,7 +38,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     public workerService: WorkerService,
@@ -47,16 +45,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     protected alertService: AlertService,
     private jobService: JobService,
   ) {
-    super(
-      formBuilder,
-      router,
-      route,
-      backService,
-      backLinkService,
-      errorSummaryService,
-      workerService,
-      establishmentService,
-    );
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group(
       {
