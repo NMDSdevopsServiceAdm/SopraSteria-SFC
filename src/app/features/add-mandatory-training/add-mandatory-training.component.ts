@@ -22,6 +22,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public submitted = false;
   public categories: TrainingCategory[];
+  public filteredTrainingCategories: TrainingCategory[];
   private subscriptions: Subscription = new Subscription();
   public jobs: Job[] = [];
   public trainings: TrainingCategory[] = [];
@@ -56,11 +57,18 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.establishment = this.route.parent.snapshot.data.establishment;
-    this.setBackLink();
-    this.getAllTrainingCategories();
-    this.getAlJobs();
+
+    this.subscriptions.add(
+      this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((existingMandatoryTraining) => {
+        this.existingMandatoryTrainings = existingMandatoryTraining;
+        this.getAllTrainingCategories();
+      }),
+    );
+
+    this.getAllJobs();
     this.setUpForm();
     this.setupServerErrorsMap();
+    this.setBackLink();
   }
 
   ngOnDestroy(): void {
@@ -79,17 +87,29 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       this.trainingService
         .getCategories()
         .pipe(take(1))
-        .subscribe((trainings) => (this.trainings = trainings)),
+        .subscribe((trainings) => {
+          this.trainings = this.filterTrainingCategories(trainings);
+        }),
     );
   }
 
-  private getAlJobs(): void {
+  private getAllJobs(): void {
     this.subscriptions.add(
       this.jobService
         .getJobs()
         .pipe(take(1))
         .subscribe((jobs) => (this.jobs = jobs)),
     );
+  }
+
+  public filterTrainingCategories(trainings) {
+    const preSelectedIds = this.existingMandatoryTrainings.mandatoryTraining.map(
+      (existingMandatoryTrainings) => existingMandatoryTrainings.trainingCategoryId,
+    );
+
+    return trainings.filter((training) => {
+      return !preSelectedIds.includes(training.id);
+    });
   }
 
   protected setupFormErrorsMap(): void {
@@ -161,6 +181,17 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       id: [jobId, [Validators.required]],
     });
   }
+
+  // public selectableJobs(categoryIndex, jobIndex): Job[] {
+  //   const vacanciesArray = <FormArray>(<FormGroup>this.categoriesArray.controls[categoryIndex]).controls.vacancies;
+  //   return this.jobs.filter(
+  //     (job) =>
+  //       !vacanciesArray.controls.some(
+  //         (vacancy) =>
+  //           vacancy !== vacanciesArray.controls[jobIndex] && parseInt(vacancy.get('id').value, 10) === job.id,
+  //       ),
+  //   );
+  // }
 
   protected generateUpdateProps(): any {
     return {
