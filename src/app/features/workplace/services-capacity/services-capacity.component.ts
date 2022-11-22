@@ -51,11 +51,10 @@ export class ServicesCapacityComponent extends Question {
 
         this.sortServices();
 
-        capacities.allServiceCapacities.forEach((service) => {
+        this.capacities.forEach((service) => {
           const group = this.formBuilder.group({});
           const questions = service.questions;
           const id = this.generateFormGroupName(service.service);
-
           questions.forEach((question) => {
             const formControlName = this.generateFormControlName(question);
             group.addControl(
@@ -75,6 +74,7 @@ export class ServicesCapacityComponent extends Question {
         });
       }),
     );
+
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
