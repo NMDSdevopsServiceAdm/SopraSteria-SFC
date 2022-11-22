@@ -3,6 +3,9 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddMandatoryTrainingRoutingModule } from '@features/add-mandatory-training/add-mandatory-routing.module';
 import { RemoveAllSelectionsDialogComponent } from '@features/add-mandatory-training/remove-all-selections-dialog.component';
+import {
+  DeleteMandatoryTrainingCategoryComponent,
+} from '@features/delete-mandatory-training-category/delete-mandatory-training-category.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
@@ -10,6 +13,6 @@ import { ListMandatoryTrainingComponent } from './list-mandatory-training/list-m
 
 @NgModule({
   imports: [CommonModule, AddMandatoryTrainingRoutingModule, ReactiveFormsModule, SharedModule],
-  declarations: [AddMandatoryTrainingComponent, RemoveAllSelectionsDialogComponent, ListMandatoryTrainingComponent],
+  declarations: [AddMandatoryTrainingComponent, RemoveAllSelectionsDialogComponent, ListMandatoryTrainingComponent, DeleteMandatoryTrainingCategoryComponent],
 })
 export class AddMandatoryTrainingModule {}
