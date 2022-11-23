@@ -106,7 +106,7 @@ export class NursingSpecialismComponent extends QuestionComponent {
         type: [
           {
             name: 'oneCheckboxRequired',
-            message: 'Select all nursing specialisms they are using in their current role',
+            message: `Select which specialisms they're using`,
           },
         ],
       },
