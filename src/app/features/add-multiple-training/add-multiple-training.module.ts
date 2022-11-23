@@ -6,6 +6,7 @@ import { SharedModule } from '@shared/shared.module';
 
 import { AddMultipleTrainingRoutingModule } from './add-multiple-training-routing.module';
 import { SelectStaffComponent } from './select-staff/select-staff.component';
+import { SelectedStaffPanelComponent } from './selected-staff-panel/selected-staff-panel.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
 
 @NgModule({
@@ -17,7 +18,7 @@ import { MultipleTrainingDetailsComponent } from './training-details/training-de
     OverlayModule,
     AddMultipleTrainingRoutingModule,
   ],
-  declarations: [SelectStaffComponent, MultipleTrainingDetailsComponent],
+  declarations: [SelectStaffComponent, MultipleTrainingDetailsComponent, SelectedStaffPanelComponent],
   providers: [],
 })
 export class AddMultipleTrainingModule {}

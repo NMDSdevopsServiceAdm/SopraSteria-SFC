@@ -22,6 +22,11 @@ export class SelectStaffComponent implements OnInit {
   public selectAll = false;
   private formErrorsMap: Array<ErrorDetails>;
   private workplaceUid: string;
+  private itemsPerPage = 15;
+  private totalWorkerCount: number;
+  public showSearchBar: boolean;
+
+  public selectedWorkers: string[] = [];
 
   constructor(
     public backService: BackService,
@@ -37,6 +42,8 @@ export class SelectStaffComponent implements OnInit {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.workers = this.route.snapshot.data.workers.workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
+    this.totalWorkerCount = this.workers.length;
+    this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
     this.setupForm();
     this.setupFormErrorsMap();
     this.setReturnLink();
@@ -108,20 +115,46 @@ export class SelectStaffComponent implements OnInit {
     this.backService.setBackLink({ url: this.returnLink, fragment: 'training-and-qualifications' });
   }
 
-  public selectAllWorkers(isChecked: boolean): void {
-    this.selectStaff.controls.forEach((control) => {
-      return (control.value.checked = isChecked);
-    });
+  // public selectAllWorkers(isChecked: boolean): void {
+  //   this.selectStaff.controls.forEach((control) => {
+  //     return (control.value.checked = isChecked);
+  //   });
+  // }
+
+  public selectAllWorkers(event: Event): void {
+    event.preventDefault();
+    if (this.selectAll) {
+      this.selectAll = false;
+      this.selectedWorkers = [];
+    } else {
+      this.selectAll = true;
+      this.selectedWorkers = this.workers.map((worker) => worker.uid);
+    }
+  }
+  // public selectWorker(control) {
+  //   control.value.checked = !control.value.checked;
+  //   this.updateSelectAllCheckbox();
+  // }
+
+  public selectWorker(event: Event, workerId: string): void {
+    event.preventDefault();
+    if (this.selectedWorkers.includes(workerId)) {
+      const index = this.selectedWorkers.indexOf(workerId);
+      this.selectedWorkers.splice(index, 1);
+      this.selectAll = false;
+    } else {
+      this.selectedWorkers.push(workerId);
+    }
   }
 
-  public selectWorker(control) {
-    control.value.checked = !control.value.checked;
-    this.updateSelectAllCheckbox();
-  }
+  // public updateSelectAllCheckbox(): void {
+  //   const allWorkersSelected = this.selectStaff.controls.every((control) => control.value.checked === true);
+  //   this.selectAll = allWorkersSelected ? true : false;
+  // }
 
   public updateSelectAllCheckbox(): void {
-    const allWorkersSelected = this.selectStaff.controls.every((control) => control.value.checked === true);
-    this.selectAll = allWorkersSelected ? true : false;
+    this.selectAll = this.selectedWorkers?.length === this.workers.length;
+    console.log(this.selectAll);
   }
 
   private updateSelectedStaff(): void {

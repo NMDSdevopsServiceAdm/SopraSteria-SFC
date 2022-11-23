@@ -3,13 +3,39 @@
 
 <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="govuk-grid-row">
-    <fieldset class="govuk-fieldset">
-      <div class="govuk-grid-column-two-thirds-from-desktop">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
-          <h1 class="govuk-fieldset__heading">Select the staff who have completed the training</h1>
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-7">
+          <span class="govuk-caption-l">Add multiple records</span>
+          <h1 class="govuk-fieldset__heading">Select all those who you want to add a record for</h1>
         </legend>
-      </div>
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+
+        <div *ngIf="showSearchBar" class="govuk-!-margin-bottom-8">
+          <app-search-input label="Search for staff" accessibleLabel="search for staff"></app-search-input>
+        </div>
+
+        <!-- <div class="govuk-grid-column-two-thirds"> -->
+        <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
+          <span class="govuk-!-font-weight-bold">Showing x of {{ workers.length }} staff</span>
+          <a href="#" (click)="selectAllWorkers($event)" class="govuk-util__float-right">
+            {{ selectAll ? 'Deselect All' : 'Select all' }}</a
+          >
+        </div>
+        <dl class="govuk-summary-list govuk-summary-list--top-border">
+          <ng-container *ngFor="let worker of workers">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">{{ worker.nameOrId }}</dt>
+              <dd class="govuk-summary-list__value">{{ worker.mainJob.title }}</dd>
+              <dd class="govuk-summary-list__actions">
+                <a href="#" (click)="selectWorker($event, worker.uid)">{{
+                  selectAll || selectedWorkers?.includes(worker.uid) ? 'Deselect' : 'Select'
+                }}</a>
+              </dd>
+            </div>
+          </ng-container>
+        </dl>
+        <!-- </div> -->
+        <!-- <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <span *ngIf="submitted && form?.invalid" id="selectStaff-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           {{ getFirstErrorMessage('selectStaff') }}
@@ -48,11 +74,15 @@
             </div>
           </ng-container>
         </div>
-      </div>
-      <div class="govuk-button-group">
-        <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-7" type="submit">Continue</button>
-        <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel()">Cancel</a>
-      </div>
-    </fieldset>
+      </div> -->
+        <div class="govuk-button-group">
+          <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-7" type="submit">Continue</button>
+          <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel()">Cancel</a>
+        </div>
+      </fieldset>
+    </div>
+    <div class="govuk-grid-columm-one-third">
+      <app-selected-staff-panel [selectedWorkerCount]="selectedWorkers.length"></app-selected-staff-panel>
+    </div>
   </div>
 </form>
