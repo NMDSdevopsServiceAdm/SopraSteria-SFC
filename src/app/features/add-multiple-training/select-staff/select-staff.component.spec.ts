@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -19,7 +18,6 @@ describe('SelectStaffComponent', () => {
     const component = await render(SelectStaffComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
       providers: [
-        BackService,
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
@@ -211,38 +209,6 @@ describe('SelectStaffComponent', () => {
       component.fixture.detectChanges();
 
       expect(component.fixture.componentInstance.returnLink).toEqual(['/workplace', '1234-5678']);
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the back link to the dashboard if the establishment uid is the same as the primary uid', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.primaryWorkplaceUid = '1234-5678';
-      component.fixture.componentInstance.setReturnLink();
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-        fragment: 'training-and-qualifications',
-      });
-    });
-
-    it(`should set the back link to the subsidiary's dashboard if the establishment uid is not the same as the primary uid`, async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.primaryWorkplaceUid = '5678-9001';
-      component.fixture.componentInstance.setReturnLink();
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', '1234-5678'],
-        fragment: 'training-and-qualifications',
-      });
     });
   });
 });

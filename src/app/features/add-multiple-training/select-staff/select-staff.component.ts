@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
@@ -29,7 +29,7 @@ export class SelectStaffComponent implements OnInit {
   public selectedWorkers: string[] = [];
 
   constructor(
-    public backService: BackService,
+    public backLinkService: BackLinkService,
     public trainingService: TrainingService,
     private establishmentService: EstablishmentService,
     private formBuilder: FormBuilder,
@@ -112,7 +112,7 @@ export class SelectStaffComponent implements OnInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: this.returnLink, fragment: 'training-and-qualifications' });
+    this.backLinkService.showBackLink();
   }
 
   // public selectAllWorkers(isChecked: boolean): void {
