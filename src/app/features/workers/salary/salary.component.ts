@@ -51,6 +51,11 @@ export class SalaryComponent extends QuestionComponent {
     this.next = this.getRoutePath('care-certificate');
   }
 
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
   private setValidators(): void {
     this.subscriptions.add(
       this.form.get('terms').valueChanges.subscribe((value) => {
@@ -78,6 +83,12 @@ export class SalaryComponent extends QuestionComponent {
         hourlyRate.updateValueAndValidity();
       }),
     );
+
+    this.subscriptions.add(
+      this.form.get('terms').valueChanges.subscribe(() => {
+        this.submitted = false;
+      }),
+    );
   }
 
   private setAnnualHourlyPay(): void {
@@ -98,25 +109,25 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Enter their standard annual rate',
+            message: 'Enter their standard annual salary',
           },
           {
             name: 'pattern',
-            message: 'Standard annual rate must not include pence',
+            message: 'Standard annual salary must not include pence',
           },
           {
             name: 'min',
-            message: `Standard annual rate must be between &pound;${this.decimalPipe.transform(
+            message: `Standard annual salary must be between £${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0',
-            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
+            )} and £${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
           },
           {
             name: 'max',
-            message: `Standard annual rate must be between &pound;${this.decimalPipe.transform(
+            message: `Standard annual salary must be between £${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0',
-            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
+            )} and £${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
           },
         ],
       },
@@ -125,7 +136,7 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Enter their standard hourly salary',
+            message: 'Enter their standard hourly rate',
           },
           {
             name: 'pattern',
@@ -133,17 +144,17 @@ export class SalaryComponent extends QuestionComponent {
           },
           {
             name: 'min',
-            message: `Standard hourly rate must be between &pound;${this.decimalPipe.transform(
+            message: `Standard hourly rate must be between £${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2',
-            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
+            )} and £${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
           },
           {
             name: 'max',
-            message: `Standard hourly salary must be between &pound;${this.decimalPipe.transform(
+            message: `Standard hourly rate must be between £${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2',
-            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
+            )} and £${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
           },
         ],
       },

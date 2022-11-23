@@ -35,22 +35,7 @@
                   id="hourlyRate-error"
                   class="govuk-error-message"
                 >
-                  <ng-container *ngIf="form.get('hourlyRate').hasError('required')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    <span [innerHTML]="getFormErrorMessage('hourlyRate', 'required')"></span>
-                  </ng-container>
-                  <ng-container *ngIf="form.get('hourlyRate').hasError('min')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    <span [innerHTML]="getFormErrorMessage('hourlyRate', 'min')"></span>
-                  </ng-container>
-                  <ng-container *ngIf="form.get('hourlyRate').hasError('max')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    <span [innerHTML]="getFormErrorMessage('hourlyRate', 'max')"></span>
-                  </ng-container>
-                  <ng-container *ngIf="form.get('hourlyRate').hasError('pattern')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    <span [innerHTML]="getFormErrorMessage('hourlyRate', 'pattern')"></span>
-                  </ng-container>
+                  <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('hourlyRate') }}
                 </span>
                 <span class="govuk-input__currency">
                   <input
@@ -84,29 +69,14 @@
               id="conditional-terms-conditional-2"
             >
               <div class="govuk-form-group">
-                <label class="govuk-label" for="annualRate"> Standard annual rate </label>
+                <label class="govuk-label" for="annualRate"> Standard annual salary </label>
                 <span id="annualRate-hint" class="govuk-hint"> For example, 30000 </span>
                 <span
                   *ngIf="submitted && form.get('annualRate').errors"
                   id="annualRate-error"
                   class="govuk-error-message"
                 >
-                  <ng-container *ngIf="form.get('annualRate').hasError('required')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    <span [innerHTML]="getFormErrorMessage('annualRate', 'required')"></span>
-                  </ng-container>
-                  <ng-container *ngIf="form.get('annualRate').hasError('min')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    <span [innerHTML]="getFormErrorMessage('annualRate', 'min')"></span>
-                  </ng-container>
-                  <ng-container *ngIf="form.get('annualRate').hasError('max')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    <span [innerHTML]="getFormErrorMessage('annualRate', 'max')"></span>
-                  </ng-container>
-                  <ng-container *ngIf="form.get('annualRate').hasError('pattern')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    <span [innerHTML]="getFormErrorMessage('annualRate', 'pattern')"></span>
-                  </ng-container>
+                  <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('annualRate') }}
                 </span>
                 <span class="govuk-input__currency">
                   <input
