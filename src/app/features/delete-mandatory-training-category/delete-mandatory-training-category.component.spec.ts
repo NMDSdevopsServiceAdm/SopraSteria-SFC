@@ -26,7 +26,7 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
     };
   }
 
-  fit('should create', async () => {
+  it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
