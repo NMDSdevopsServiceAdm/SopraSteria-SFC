@@ -8,12 +8,12 @@
         [wdfValue]="worker.wdf?.dateOfBirth"
         [overallWdfEligibility]="overallWdfEligibility"
       >
-        <div class="govuk-!-display-inline-block govuk-!-width-one-third">
+        <div class="govuk-!-display-inline-block govuk-!-width-one-half">
           <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
           <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
         </div>
         <ng-container *ngIf="canViewNinoDob">
-          <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
+          <div class="govuk-!-display-inline-block govuk-!-width-one-half">
             <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
               >{{ dobHidden ? 'Show' : 'Hide' }}
             </a>
