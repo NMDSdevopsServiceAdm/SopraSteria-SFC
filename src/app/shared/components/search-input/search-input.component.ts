@@ -17,6 +17,8 @@ export class SearchInputComponent {
       this.emitInput.emit(this.searchTerm);
     }
   }
+  @Input() showClearResults = true;
+
   @Output() emitInput = new EventEmitter<string>();
 
   public searched = false;

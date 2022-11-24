@@ -7,6 +7,9 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
+import { WorkerService } from '@core/services/worker.service';
+import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-select-staff',
@@ -14,6 +17,8 @@ import { TrainingService } from '@core/services/training.service';
 })
 export class SelectStaffComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
+  @ViewChild(SearchInputComponent) searchInput: SearchInputComponent;
+
   public workers: Array<Worker>;
   public form: FormGroup;
   public submitted: boolean;
@@ -22,9 +27,14 @@ export class SelectStaffComponent implements OnInit {
   public selectAll = false;
   private formErrorsMap: Array<ErrorDetails>;
   private workplaceUid: string;
-  private itemsPerPage = 15;
-  private totalWorkerCount: number;
+  public itemsPerPage = 15;
+  public currentPageIndex = 0;
+  public totalWorkerCount: number;
   public showSearchBar: boolean;
+  public sortByValue = 'staffNameAsc';
+  public paginatedWorkers: Worker[];
+  private searchTerm = '';
+  public searchResults: Worker[];
 
   public selectedWorkers: string[] = [];
 
@@ -36,17 +46,20 @@ export class SelectStaffComponent implements OnInit {
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private route: ActivatedRoute,
+    private workerService: WorkerService,
   ) {}
 
   ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
-    this.workers = this.route.snapshot.data.workers.workers.sort((a, b) => a.nameOrId.localeCompare(b.nameOrId));
+    this.workers = this.route.snapshot.data.workers.workers;
     this.totalWorkerCount = this.workers.length;
+    this.getWorkers();
     this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
     this.setupForm();
-    this.setupFormErrorsMap();
+    // this.setupFormErrorsMap();
     this.setReturnLink();
+    console.log(this.searchResults);
     this.setBackLink();
   }
 
@@ -81,6 +94,42 @@ export class SelectStaffComponent implements OnInit {
 
     this.updateSelectAllCheckbox();
   };
+
+  // public getPageOfWorkers(): void {
+  //   this.workerService
+  //     .getAllWorkers(this.workplaceUid, {
+  //       pageIndex: this.currentPageIndex,
+  //       itemsPerPage: this.itemsPerPage,
+  //       sortByValue: this.sortByValue,
+  //       ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
+  //     })
+  //     .pipe(take(1))
+  //     .subscribe(({ workers }) => {
+  //       console.log(workers);
+  //       this.paginatedWorkers = workers;
+  //     });
+  // }
+
+  private getWorkers(searchTerm?): void {
+    console.log(searchTerm);
+    this.workerService
+      .getAllWorkers(this.workplaceUid, {
+        pageIndex: this.currentPageIndex,
+        itemsPerPage: this.itemsPerPage,
+        sortByValue: this.sortByValue,
+        ...(searchTerm ? { searchTerm } : {}),
+      })
+      .pipe(take(1))
+      .subscribe(({ workers }) => {
+        searchTerm ? (this.searchResults = workers) : (this.paginatedWorkers = workers);
+      });
+  }
+
+  public handlePageUpdate(pageIndex: number): void {
+    this.currentPageIndex = pageIndex;
+
+    this.getWorkers();
+  }
 
   private oneCheckboxRequired(form: FormGroup): void {
     if (form?.value?.selectStaff?.every((staff) => staff.checked === false)) {
@@ -154,17 +203,16 @@ export class SelectStaffComponent implements OnInit {
 
   public updateSelectAllCheckbox(): void {
     this.selectAll = this.selectedWorkers?.length === this.workers.length;
-    console.log(this.selectAll);
   }
 
   private updateSelectedStaff(): void {
-    const selectedStaff = this.selectStaff.controls
-      .filter((control) => control.value.checked)
-      .map((control) => {
-        return control.value.workerUid;
-      });
+    // const selectedStaff = this.selectStaff.controls
+    //   .filter((control) => control.value.checked)
+    //   .map((control) => {
+    //     return control.value.workerUid;
+    //   });
 
-    this.trainingService.updateSelectedStaff(selectedStaff);
+    this.trainingService.updateSelectedStaff(this.selectedWorkers);
   }
 
   public onSubmit(): void {
@@ -181,6 +229,22 @@ export class SelectStaffComponent implements OnInit {
     }
   }
 
+  handleSearch(searchTerm: string): void {
+    const prevPageIndex = this.currentPageIndex;
+    this.currentPageIndex = 0;
+    this.searchTerm = searchTerm;
+    this.addQueryParams();
+    this.getWorkers(searchTerm);
+    this.currentPageIndex = prevPageIndex;
+  }
+
+  private addQueryParams(): void {
+    this.router.navigate([], {
+      queryParams: { search: this.searchTerm },
+      queryParamsHandling: 'merge',
+    });
+  }
+
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
@@ -189,5 +253,11 @@ export class SelectStaffComponent implements OnInit {
   public onCancel(): void {
     this.trainingService.resetSelectedStaff();
     this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
+  }
+
+  public handleResetSearch(event: Event): void {
+    event.preventDefault();
+    this.searchInput.handleResetSearch();
+    this.searchResults = undefined;
   }
 }
