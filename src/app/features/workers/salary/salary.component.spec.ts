@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByText, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SalaryComponent } from './salary.component';
@@ -247,8 +247,7 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(true).toBeTruthy;
-      expect(getAllByText('Enter their standard hourly salary').length).toEqual(2);
+      expect(getAllByText('Enter their standard hourly rate').length).toEqual(2);
     });
 
     it('returns an error if Hourly is selected and an out of range hourly salary is entered', async () => {
@@ -264,8 +263,7 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(true).toBeTruthy;
-      expect(getAllByText('Standard hourly salary must be between £2.50 and £200.00').length).toEqual(2);
+      expect(getAllByText('Standard hourly rate must be between £2.50 and £200.00').length).toEqual(2);
     });
 
     it('returns an error if Hourly is selected and more than 2 decimal places are entered', async () => {
@@ -281,7 +279,6 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(true).toBeTruthy;
       expect(
         getAllByText('Standard hourly rate can only have 1 or 2 digits after the decimal point when you include pence')
           .length,
@@ -299,7 +296,7 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(getAllByText('Enter their standard annual rate').length).toEqual(2);
+      expect(getAllByText('Enter their standard annual salary').length).toEqual(2);
     });
 
     it('returns an error if Annual salary is selected and an out of range annual salary is entered when job role is senior management', async () => {
@@ -317,8 +314,7 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(true).toBeTruthy;
-      expect(getAllByText('Standard annual rate must be between £500 and £250,000').length).toEqual(2);
+      expect(getAllByText('Standard annual salary must be between £500 and £250,000').length).toEqual(2);
     });
 
     it('returns an error if Annual salary is selected and a decimal number is entered', async () => {
@@ -332,8 +328,7 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
-      expect(true).toBeTruthy;
-      expect(getAllByText('Standard annual rate must not include pence').length).toEqual(2);
+      expect(getAllByText('Standard annual salary must not include pence').length).toEqual(2);
     });
   });
 });

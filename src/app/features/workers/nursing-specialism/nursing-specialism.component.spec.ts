@@ -291,6 +291,17 @@ describe('NursingSpecialismComponent', () => {
     });
   });
 
+  describe('error messages', () => {
+    it('returns an error if Yes is selected and no specialisms are ticked', async () => {
+      const { fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+      fireEvent.click(getByLabelText('Yes'));
+      fixture.detectChanges();
+      fireEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+      expect(getAllByText(`Select which specialisms they're using`).length).toEqual(2);
+    });
+  });
+
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
       const worker = workerBuilder();
