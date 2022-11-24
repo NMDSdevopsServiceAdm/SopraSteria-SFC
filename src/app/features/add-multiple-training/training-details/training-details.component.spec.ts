@@ -96,12 +96,12 @@ describe('MultipleTrainingDetailsComponent', () => {
 
   it('should show the correct title', async () => {
     const { getByText } = await setup();
-    expect(getByText('Add training details')).toBeTruthy();
+    expect(getByText('Add training record details')).toBeTruthy();
   });
 
-  it('should show the Finish button', async () => {
+  it('should show the Continue button', async () => {
     const { getByText } = await setup();
-    expect(getByText('Finish')).toBeTruthy();
+    expect(getByText('Continue')).toBeTruthy();
   });
 
   it('should show a dropdown with the correct categories in', async () => {
@@ -128,7 +128,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     component.form.get('category').setValue('1');
     component.form.get('category').markAsDirty();
 
-    const finishButton = getByText('Finish');
+    const finishButton = getByText('Continue');
     fireEvent.click(finishButton);
     fixture.detectChanges();
 
@@ -167,7 +167,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       component.form.markAsDirty();
       component.form.get('category').setValue(null);
       component.form.get('category').markAsDirty();
-      const finishButton = getByText('Finish');
+      const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(component.form.invalid).toBeTruthy();
@@ -179,7 +179,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       component.form.markAsDirty();
       component.form.get('title').setValue('a');
       component.form.get('title').markAsDirty();
-      const finishButton = getByText('Finish');
+      const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
@@ -194,7 +194,7 @@ describe('MultipleTrainingDetailsComponent', () => {
           'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         );
       component.form.get('title').markAsDirty();
-      const finishButton = getByText('Finish');
+      const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
@@ -205,7 +205,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       component.form.markAsDirty();
       component.form.get('completed').setValue({ day: 32, month: 12, year: 2000 });
       component.form.get('completed').markAsDirty();
-      const finishButton = getByText('Finish');
+      const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Date completed must be a valid date').length).toEqual(2);
@@ -218,7 +218,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const todayDate = { day: 31, month: 12, year: today.getFullYear() + 1 };
       component.form.get('completed').setValue(todayDate);
       component.form.get('completed').markAsDirty();
-      const finishButton = getByText('Finish');
+      const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Date completed must be before today').length).toEqual(2);
@@ -231,7 +231,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const todayDate = { day: 31, month: 12, year: today.getFullYear() - 101 };
       component.form.get('completed').setValue(todayDate);
       component.form.get('completed').markAsDirty();
-      const finishButton = getByText('Finish');
+      const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Date completed cannot be more than 100 years ago').length).toEqual(2);
@@ -242,7 +242,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       component.form.markAsDirty();
       component.form.get('expires').setValue({ day: 32, month: 12, year: 2000 });
       component.form.get('expires').markAsDirty();
-      const finishButton = getByText('Finish');
+      const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
@@ -255,7 +255,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const todayDate = { day: 31, month: 12, year: today.getFullYear() - 101 };
       component.form.get('expires').setValue(todayDate);
       component.form.get('expires').markAsDirty();
-      const finishButton = getByText('Finish');
+      const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
