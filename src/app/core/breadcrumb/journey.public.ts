@@ -15,7 +15,7 @@ enum Path {
 export const publicJourney: JourneyRoute = {
   children: [
     {
-      title: 'ASC-WDS Certificates',
+      title: 'Get your ASC-WDS certificate',
       path: Path.CERTIFICATES,
     },
     {
