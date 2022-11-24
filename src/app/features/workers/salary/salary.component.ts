@@ -177,4 +177,10 @@ export class SalaryComponent extends QuestionComponent {
       },
     };
   }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
+  }
 }
