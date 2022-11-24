@@ -4,14 +4,14 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { DisabilityComponent } from './disability.component';
 
 describe('DisabilityComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       DisabilityComponent,
       {
@@ -20,22 +20,18 @@ describe('DisabilityComponent', () => {
           FormBuilder,
           {
             provide: WorkerService,
-            useClass: returnUrl ? MockWorkerService : MockWorkerServiceWithoutReturnUrl,
+            useClass: MockWorkerServiceWithUpdateWorker,
           },
           {
             provide: ActivatedRoute,
             useValue: {
-              snapshot: {
-                parent: {
-                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
-                },
-              },
               parent: {
                 snapshot: {
+                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
                     establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
                   },
-                  url: [{ path: '' }],
                 },
               },
             },
@@ -69,7 +65,7 @@ describe('DisabilityComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button and 'View this staff record' and 'Skip this question' link, when inside flow`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
@@ -77,14 +73,14 @@ describe('DisabilityComponent', () => {
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' when outside flow is provided`, async () => {
-      const { getByText } = await setup();
+      const { getByText } = await setup(false);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
     it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
-      const { component, getByText, routerSpy } = await setup(false);
+      const { component, getByText, routerSpy } = await setup();
 
       const button = getByText('Save and continue');
       fireEvent.click(button);
@@ -99,24 +95,24 @@ describe('DisabilityComponent', () => {
     });
 
     it('should navigate to ethnicity page when skipping the question in the flow', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      const skipButton = getByText('Skip this question');
-      fireEvent.click(skipButton);
-
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'ethnicity']);
-    });
-
-    it('should navigate to staff-summary-page page when pressing save and return', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const link = getByText('Save and return');
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'ethnicity']);
+    });
+
+    it('should navigate to staff-summary-page page when pressing view this staff record', async () => {
+      const { component, routerSpy, getByText } = await setup();
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const link = getByText('View this staff record');
       fireEvent.click(link);
 
       expect(routerSpy).toHaveBeenCalledWith([
@@ -128,8 +124,26 @@ describe('DisabilityComponent', () => {
       ]);
     });
 
+    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const { component, routerSpy, getByText } = await setup();
+      const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -145,28 +159,17 @@ describe('DisabilityComponent', () => {
         'staff-record-summary',
       ]);
     });
-
-    it('should set backlink to staff-summary-page page when not in staff record flow', async () => {
-      const { component } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      expect(component.return).toEqual({
-        url: ['/workplace', workplaceId, 'staff-record', workerId, 'staff-record-summary'],
-      });
-    });
   });
 
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
-      const { getByTestId } = await setup(false);
+      const { getByTestId } = await setup();
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
 
     it('should not render the progress bar when outside the flow', async () => {
-      const { queryByTestId } = await setup();
+      const { queryByTestId } = await setup(false);
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });

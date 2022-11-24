@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { NavigationStart, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +10,15 @@ export class BackLinkService {
   public readonly backLink$: Observable<boolean> = this._backLink$.asObservable();
 
   constructor(private router: Router) {
-    this.router.events.pipe(filter((event) => event instanceof NavigationStart)).subscribe(() => {
-      this.removeBackLink();
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        if (!event.urlAfterRedirects.includes('#' && 'error')) {
+          this.removeBackLink();
+        }
+      }
     });
   }
+
   private set backLink(show: boolean) {
     this._backLink$.next(show);
   }

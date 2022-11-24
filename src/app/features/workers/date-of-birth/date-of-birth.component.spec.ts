@@ -1,10 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -48,12 +47,10 @@ describe('DateOfBirthComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService);
-    const backService = injector.inject(BackService);
 
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -62,7 +59,6 @@ describe('DateOfBirthComponent', () => {
       routerSpy,
       submitSpy,
       workerServiceSpy,
-      backLinkSpy,
       getByText,
       getAllByText,
       getByLabelText,
@@ -143,7 +139,7 @@ describe('DateOfBirthComponent', () => {
       const { fixture, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup();
 
       userEvent.click(getByText('Skip this question'));
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
@@ -204,54 +200,37 @@ describe('DateOfBirthComponent', () => {
     });
   });
 
-  describe('setBackLink()', () => {
-    it('should set the backlink to /workplace/workplace-uid, when in the flow but addStaffRecoredInProgress is false and primary workplace id is different to workplace id', async () => {
-      const { component, backLinkSpy } = await setup();
+  describe('error messages', () => {
+    it('returns an error if an invalid date is entered', async () => {
+      const { fixture, getByText, getAllByText, getByLabelText } = await setup();
 
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: [`/workplace/${component.workplace.uid}`],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to /dasboard, when in the flow but addStaffRecoredInProgress is false and primary workplace id is equal to workplace id', async () => {
-      const { component, fixture, backLinkSpy } = await setup();
-
-      const establishmentService = TestBed.inject(EstablishmentService);
-      spyOnProperty(establishmentService, 'primaryWorkplace').and.returnValue({ uid: 'mocked-uid' });
-      component.initiated = false;
-      component.ngOnInit();
-
+      userEvent.type(getByLabelText('Day'), '55555');
+      userEvent.type(getByLabelText('Month'), '12');
+      userEvent.type(getByLabelText('Year'), '2000');
+      userEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-        fragment: 'staff-records',
-      });
+
+      const errors = getAllByText('Enter a valid date of birth, like 31 3 1980');
+
+      expect(errors.length).toBe(2);
     });
 
-    it('should set the backlink to mandatory-details, when in the flow and addStaffRecordInProgress is true', async () => {
-      const { component, backLinkSpy, workerService } = await setup();
+    it('returns an error if an out-of-range date is entered', async () => {
+      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup();
 
-      spyOnProperty(workerService, 'addStaffRecordInProgress', 'get').and.returnValue(true);
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'mandatory-details'],
-        fragment: 'staff-records',
-      });
-    });
+      userEvent.type(getByLabelText('Day'), '1');
+      userEvent.type(getByLabelText('Month'), '12');
+      userEvent.type(getByLabelText('Year'), '1000');
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
 
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
+      const errors = getAllByText(
+        `Date of birth must to be between ${component.minDate.format(
+          DATE_DISPLAY_DEFAULT,
+        )} and ${component.maxDate.format(DATE_DISPLAY_DEFAULT)}`,
+      );
 
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
+      expect(errors.length).toBe(2);
     });
   });
 });

@@ -129,7 +129,7 @@ export class StartersComponent extends Question {
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [];
 
-    this.starterRecords.controls.forEach((control, index) => {
+    this.starterRecords.controls.forEach((_, index) => {
       this.formErrorsMap.push(
         {
           item: `starterRecords.jobRole.${index}`,
@@ -156,7 +156,7 @@ export class StartersComponent extends Question {
   private newFormErrorsMap(): void {
     this.formErrorsMap = [];
 
-    this.starterRecords.controls.forEach((control, index) => {
+    this.starterRecords.controls.forEach((_, index) => {
       this.formErrorsMap.push(
         {
           item: `starterRecords.jobRole.${index}`,

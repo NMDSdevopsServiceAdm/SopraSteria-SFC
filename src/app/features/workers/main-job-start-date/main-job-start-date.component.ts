@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_FULL, DATE_PARSE_FORMAT } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -23,12 +23,12 @@ export class MainJobStartDateComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group(
       {
@@ -50,7 +50,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
     if (this.worker.mainJobStartDate) {
       this.prefill();
     }
-    this.setUpPageRouting();
+    this.next = this.getNextRoute();
   }
 
   private prefill(): void {
@@ -97,24 +97,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
     return { mainJobStartDate: null };
   }
 
-  private setUpPageRouting(): void {
-    if (this.insideFlow) {
-      this.next = this.determineNextPath();
-      if (this.worker.countryOfBirth) {
-        this.previous =
-          this.worker.countryOfBirth.value === 'Other' || this.worker.countryOfBirth.value === `Don't know`
-            ? this.getRoutePath('year-arrived-uk')
-            : this.getRoutePath('country-of-birth');
-      } else {
-        this.previous = this.getRoutePath('country-of-birth');
-      }
-    } else {
-      this.previous = this.getRoutePath('');
-      this.next = this.getRoutePath('');
-    }
-  }
-
-  private determineNextPath() {
+  private getNextRoute() {
     if (this.workerService.hasJobRole(this.worker, 23)) {
       return this.getRoutePath('nursing-category');
     } else if (this.workerService.hasJobRole(this.worker, 27)) {

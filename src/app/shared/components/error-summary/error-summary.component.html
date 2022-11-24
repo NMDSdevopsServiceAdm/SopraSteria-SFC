@@ -6,17 +6,16 @@
   data-module="error-summary"
   #errorSummary
 >
-  <h2 class="govuk-error-summary__title" id="error-summary-title">
-    There is a problem
-  </h2>
+  <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list">
       <ng-container *ngIf="errors">
-        <ng-container *ngIf="getCurrentRoute(); let currentRoute;">
+        <ng-container *ngIf="getCurrentRoute(); let currentRoute">
           <li *ngFor="let i of errors">
             <a
               (click)="focusOnField(i.item)"
               [routerLink]="currentRoute"
+              [replaceUrl]="true"
               [fragment]="getErrorId(i.item)"
               [queryParamsHandling]="'merge'"
               [innerHTML]="getFormErrorMessage(i.item, i.errors[0])"

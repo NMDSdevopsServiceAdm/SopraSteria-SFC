@@ -77,10 +77,10 @@
         </fieldset>
       </div>
     </div>
-    <div class="govuk-grid-column-one-third" *ngIf="insideFlow && !insideYearArrivedUkMiniFlow">
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
       <div class="govuk-!-margin-left-8">
         <app-progress-bar
-          data-testid="progress-bar-1"
+          data-testid="progress-bar"
           [sections]="staffRecordSections"
           [currentSection]="section"
         ></app-progress-bar>
@@ -88,8 +88,5 @@
     </div>
   </div>
 
-  <app-submit-button
-    [return]="!insideFlow || insideYearArrivedUkMiniFlow"
-    (clicked)="setSubmitAction($event)"
-  ></app-submit-button>
+  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>

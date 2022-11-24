@@ -23,13 +23,10 @@ const params = () => {
 };
 
 const getCertificate = async (req, res) => {
-  // Determine file name
   const fileName = `${fileNameBase} ${req.params.years}.pdf`;
   const establishmentFileName = `${req.params.id} ${fileName}`;
   Key = `${filePathBase}/${establishmentFileName}`;
-
   const exists = await fileExists();
-
   try {
     if (!exists) {
       const thisEstablishment = new Establishment.Establishment(req.username);
@@ -42,36 +39,34 @@ const getCertificate = async (req, res) => {
         Key,
         Body: newFile,
         ContentDisposition: `attachment; filename="${fileName}"`,
-        ACL: 'public-read',
       };
-      uploadToS3(uploadParams);
+
+      await uploadToS3(uploadParams);
     }
-    res.status(200).send({ data: Key });
+
+    const url = await getSignedUrl();
+    res.status(200).send({ data: url });
   } catch (err) {
-    console.error(err);
-    return res.status(500).send();
+    return res.status(500).send({ err });
   }
 };
 
-const fileExists = async () => {
-  let result;
-  const objectParams = params();
-  // S3 sdk doesn't have a function for checking if file exists so attempt a get and return false if it fails
-  await s3
-    .getObject(objectParams)
-    .promise()
-    .then(() => {
-      result = true;
-    })
-    .catch((err) => {
-      if (err.code === 'NoSuchKey') {
-        result = false;
-      } else {
-        throw err;
-      }
+const getSignedUrl = async () => {
+  return new Promise((resolve, reject) => {
+    s3.getSignedUrl('getObject', params(), (err, url) => {
+      if (err) reject(err);
+      resolve(url);
     });
-  console.log('Result: ', result);
-  return result;
+  });
+};
+
+const fileExists = async () => {
+  try {
+    await s3.getObject(params()).promise();
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 const modifyPdf = async (establishmentName, fileName) => {
@@ -80,16 +75,9 @@ const modifyPdf = async (establishmentName, fileName) => {
     Bucket,
   };
 
-  let existingPdfBytes;
-  await s3
-    .getObject(params)
-    .promise()
-    .then((data) => {
-      existingPdfBytes = data.Body.buffer;
-    })
-    .catch((err) => console.log(err));
+  var response = await s3.getObject(params).promise();
 
-  const pdfDoc = await pdfLib.PDFDocument.load(existingPdfBytes);
+  const pdfDoc = await pdfLib.PDFDocument.load(response.Body.buffer);
 
   const form = pdfDoc.getForm();
   const fields = form.getFields();
@@ -100,10 +88,12 @@ const modifyPdf = async (establishmentName, fileName) => {
 };
 
 const uploadToS3 = async (uploadParams) => {
-  s3.putObject(uploadParams)
-    .promise()
-    .then()
-    .catch((err) => console.log(err));
+  try {
+    await s3.putObject(uploadParams).promise();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 };
 
 router.route('/:years').get(Authorization.isAuthorised, getCertificate);

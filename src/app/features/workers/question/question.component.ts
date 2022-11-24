@@ -5,7 +5,7 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -26,8 +26,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public previous: string[];
   public next: string[];
   public back: URLStructure;
-  public conditionalQuestionUrl: string[];
-  public showSaveAndCancelButton: boolean;
 
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
@@ -37,9 +35,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public staffRecordSections: string[] = ProgressBarUtil.staffRecordProgressBarSections();
   public insideFlow: boolean;
-  public registeredNurseFlow: boolean;
   public flow: string;
-  public staffRecordSummaryPath: string[];
   public submitAction: { action: string; save: boolean } = null;
   public returnUrl: string[];
   public submitTitle: string;
@@ -48,7 +44,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
@@ -85,7 +81,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink(this.back);
+    this.backLinkService.showBackLink();
   }
 
   ngAfterViewInit() {
@@ -130,15 +126,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(this.getRoutePath(''));
         break;
 
-      case 'skip':
-        this.router.navigate(this.next);
-        break;
-
       case 'exit':
-        if (this.registeredNurseFlow) {
-          this.router.navigate(this.returnUrl);
-          break;
-        }
         const url =
           this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
         this.router.navigate(url, { fragment: 'staff-records' });
@@ -146,10 +134,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
       case 'return':
         this.router.navigate(this.returnUrl);
-        break;
-
-      case 'saveAndContinueConditional':
-        this.router.navigate(this.conditionalQuestionUrl);
         break;
     }
   }

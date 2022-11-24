@@ -4,12 +4,12 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { RecruitedFromComponent } from './recruited-from.component';
 
@@ -89,10 +89,8 @@ describe('RecruitedFromComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -101,7 +99,6 @@ describe('RecruitedFromComponent', () => {
       getAllByText,
       getByLabelText,
       routerSpy,
-      backLinkSpy,
       getByTestId,
       queryByTestId,
     };
@@ -230,51 +227,16 @@ describe('RecruitedFromComponent', () => {
     });
   });
 
-  describe('setBackLink()', () => {
-    it('should set the backlink to year-arrived-uk, when in the flow and country of birth is not united kingdm', async () => {
-      const { component, backLinkSpy } = await setup(true, 'nonUkWorker');
+  describe('error messages', () => {
+    it('returns an error message when yes is clicked but no recruitment source is selected', async () => {
+      const { fixture, getByText, getAllByText, getByLabelText } = await setup();
 
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'year-arrived-uk'],
-        fragment: 'staff-records',
-      });
-    });
+      userEvent.click(getByLabelText('Yes'));
+      fixture.detectChanges();
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
 
-    it('should set the backlink to country-of-birth, when in the flow and the country of birth is united kingdom ', async () => {
-      const { component, backLinkSpy } = await setup();
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'country-of-birth'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to nursing-specialism, when in the flow and the worker is registerd nurse', async () => {
-      const { component, backLinkSpy } = await setup(true, 'nurse');
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'nursing-specialism'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
+      expect(getAllByText('Select where they were recruited from').length).toEqual(2);
     });
   });
 });

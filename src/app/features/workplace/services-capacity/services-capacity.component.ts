@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,6 +19,7 @@ export class ServicesCapacityComponent extends Question {
   public capacityErrorMsg = 'Number must be between 1 and 999';
   public intPattern = INT_PATTERN.toString();
   public section = 'Services';
+  public errorsSummaryErrorsMap: ErrorDetails[] = [];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -49,11 +51,10 @@ export class ServicesCapacityComponent extends Question {
 
         this.sortServices();
 
-        capacities.allServiceCapacities.forEach((service, index) => {
+        this.capacities.forEach((service) => {
           const group = this.formBuilder.group({});
           const questions = service.questions;
           const id = this.generateFormGroupName(service.service);
-
           questions.forEach((question) => {
             const formControlName = this.generateFormControlName(question);
             group.addControl(
@@ -63,60 +64,12 @@ export class ServicesCapacityComponent extends Question {
                 updateOn: 'submit',
               }),
             );
-
-            let patternErrorMsg;
-
-            if (question.question.includes('beds')) {
-              patternErrorMsg = question.seq === 1 ? 'beds you have' : 'beds being used';
-            } else if (question.question.includes('places')) {
-              patternErrorMsg = question.seq === 1 ? 'places you have' : 'places being used';
-            } else if (question.question.includes('people receiving care')) {
-              patternErrorMsg = 'people receiving care';
-            } else {
-              patternErrorMsg = 'people using the service';
-            }
-
-            this.formErrorsMap.push({
-              item: `${id}.${formControlName}`,
-              type: [
-                {
-                  name: 'min',
-                  message: this.capacityErrorMsg,
-                },
-                {
-                  name: 'max',
-                  message: this.capacityErrorMsg,
-                },
-                {
-                  name: 'pattern',
-                  message: `Number of ${patternErrorMsg} must be a whole number`,
-                },
-              ],
-            });
           });
 
           if (Object.keys(group.controls).length > 1) {
             group.setValidators([this.capacityUtilisationValidator, this.requiredValidator]);
-            const overCapacityErrorMsg = questions.some((question) => question.question.includes('beds'))
-              ? 'beds'
-              : 'places';
-            const requiredErrorMsg = questions.some((question) => question.question.includes('bed'))
-              ? 'beds you have'
-              : 'places you have at the moment';
-            this.formErrorsMap.push({
-              item: id,
-              type: [
-                {
-                  name: 'overcapacity',
-                  message: `Number cannot be more than the ${overCapacityErrorMsg} you have`,
-                },
-                {
-                  name: 'required',
-                  message: `Enter how many ${requiredErrorMsg}`,
-                },
-              ],
-            });
           }
+
           this.form.addControl(id, group);
         });
       }),
@@ -125,6 +78,14 @@ export class ServicesCapacityComponent extends Question {
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+  }
+
+  private setupErrorSummaryErrorsMap(errorObj, service): void {
+    const serviceName = service.split(': ')[1].toLowerCase();
+    const updatedErrorObj = JSON.parse(JSON.stringify(errorObj));
+    updatedErrorObj.type.forEach((error) => (error.message = error.message && `${error.message} (${serviceName})`));
+
+    this.errorsSummaryErrorsMap.push(updatedErrorObj);
   }
 
   protected setupServerErrorsMap(): void {
@@ -187,6 +148,82 @@ export class ServicesCapacityComponent extends Question {
     }
 
     return null;
+  }
+
+  protected createDynamicErrorMessaging(): void {
+    this.formErrorsMap = [];
+    this.errorsSummaryErrorsMap = [];
+
+    this.capacities.forEach((service) => {
+      const questions = service.questions;
+      const id = this.generateFormGroupName(service.service);
+      const group = this.form.get(id) as FormGroup;
+
+      questions.forEach((question) => {
+        const formControlName = this.generateFormControlName(question);
+
+        let patternErrorMsg;
+
+        if (question.question.includes('beds')) {
+          patternErrorMsg = question.seq === 1 ? 'beds you have' : 'beds being used';
+        } else if (question.question.includes('places')) {
+          patternErrorMsg = question.seq === 1 ? 'places you have' : 'places being used';
+        } else if (question.question.includes('people receiving care')) {
+          patternErrorMsg = 'people receiving care';
+        } else {
+          patternErrorMsg = 'people using the service';
+        }
+
+        const errorObj = {
+          item: `${id}.${formControlName}`,
+          type: [
+            {
+              name: 'min',
+              message: this.capacityErrorMsg,
+            },
+            {
+              name: 'max',
+              message: this.capacityErrorMsg,
+            },
+            {
+              name: 'pattern',
+              message: `Number of ${patternErrorMsg} must be a whole number`,
+            },
+          ],
+        };
+
+        this.formErrorsMap.push(errorObj);
+        this.setupErrorSummaryErrorsMap(errorObj, service.service);
+      });
+
+      if (Object.keys(group.controls).length > 1) {
+        group.setValidators([this.capacityUtilisationValidator, this.requiredValidator]);
+        const overCapacityErrorMsg = questions.some((question) => question.question.includes('beds'))
+          ? 'beds'
+          : 'places';
+        const requiredErrorMsg = questions.some((question) => question.question.includes('bed'))
+          ? 'beds you have'
+          : 'places you have at the moment';
+
+        const [, value] = Object.entries(group.controls)[1];
+
+        const errorObj = {
+          item: id,
+          type: [
+            {
+              name: 'overcapacity',
+              message: value.invalid ? '' : `Number cannot be more than the ${overCapacityErrorMsg} you have`,
+            },
+            {
+              name: 'required',
+              message: `Enter how many ${requiredErrorMsg}`,
+            },
+          ],
+        };
+        this.formErrorsMap.push(errorObj);
+        this.setupErrorSummaryErrorsMap(errorObj, service.service);
+      }
+    });
   }
 
   protected sortServices() {

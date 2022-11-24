@@ -1,15 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { ProgressBarUtil } from '@core/utils/progress-bar-util';
-import { BackService } from '@core/services/back.service';
 
 @Component({
   selector: 'app-mandatory-details',
@@ -24,6 +23,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
 
   constructor(
     private backService: BackService,
+    protected backLinkService: BackLinkService,
     private route: ActivatedRoute,
     private workerService: WorkerService,
     private router: Router,
@@ -45,16 +45,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   }
 
   public setBackLink(): void {
-    const url = {
-      url: [
-        '/workplace',
-        this.establishmentService.establishment.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-details',
-      ],
-    };
-    this.backService.setBackLink(url);
+    this.backLinkService.showBackLink();
   }
 
   navigateToDashboard(event: Event): void {
@@ -67,11 +58,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
     event.preventDefault();
     const urlArr = this.router.url.split('/');
     const url = urlArr.slice(0, urlArr.length - 1).join('/');
-    this.router.navigate([url, 'date-of-birth'], {
-      state: {
-        navigatedFrom: 'mandatory-details',
-      },
-    });
+    this.router.navigate([url, 'date-of-birth']);
   }
 
   ngOnDestroy(): void {

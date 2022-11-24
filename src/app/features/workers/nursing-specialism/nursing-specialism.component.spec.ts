@@ -1,16 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { StaffSummaryComponent } from '@shared/components/staff-summary/staff-summary.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkerService } from '../../../core/services/worker.service';
-import { MockWorkerService, MockWorkerServiceWithoutReturnUrl } from '../../../core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker } from '../../../core/test-utils/MockWorkerService';
 import { NursingSpecialismComponent } from './nursing-specialism.component';
 
 const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
@@ -46,6 +45,7 @@ const workerWithNurseSpecialisms = (hasSpecialisms) =>
       },
     },
   });
+
 describe('NursingSpecialismComponent', () => {
   async function setup(worker, insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, getAllByRole } = await render(
@@ -61,9 +61,7 @@ describe('NursingSpecialismComponent', () => {
         providers: [
           {
             provide: WorkerService,
-            useFactory: insideFlow
-              ? MockWorkerServiceWithoutReturnUrl.factory(worker)
-              : MockWorkerService.factory(worker),
+            useFactory: MockWorkerServiceWithUpdateWorker.factory(worker),
             deps: [HttpClient],
           },
           {
@@ -87,10 +85,11 @@ describe('NursingSpecialismComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const backService = injector.inject(BackService);
+    const workerService = injector.inject(WorkerService);
 
+    const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const backLinkSpy = spyOn(backService, 'setBackLink');
+    const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
     return {
       component,
@@ -101,18 +100,16 @@ describe('NursingSpecialismComponent', () => {
       routerSpy,
       getByTestId,
       queryByTestId,
-      backLinkSpy,
       getAllByRole,
+      submitSpy,
+      workerServiceSpy,
     };
   }
 
-  it('should not select a radio button when worker has not answered question', async () => {
-    const { getAllByRole } = await setup(workerBuilder());
-
-    const answers = getAllByRole('radio') as any[];
-    const checkedAnswers = answers.map((answer) => answer.checked);
-
-    expect(checkedAnswers).not.toEqual(jasmine.arrayContaining([true]));
+  it('should render the component', async () => {
+    const worker = workerWithNurseSpecialisms(false);
+    const { component } = await setup(worker);
+    expect(component).toBeTruthy();
   });
 
   it('should pre-select the radio button when worker has answered question', async () => {
@@ -140,37 +137,56 @@ describe('NursingSpecialismComponent', () => {
   it('should put updated worker nurse specialisms', async () => {
     const worker = workerWithNurseSpecialisms(false);
     const newNurseSpecialisms = workerWithNurseSpecialisms(true).nurseSpecialisms;
-    const { fixture, getAllByRole } = await setup(worker, false);
+    const { component, fixture, getByText, submitSpy, workerServiceSpy } = await setup(worker);
 
     const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="Yes"]`);
     fireEvent.click(yesRadioButton);
 
-    newNurseSpecialisms.specialisms.forEach((thisSpecialism) => {
+    const nurseSpecialismArr = newNurseSpecialisms.specialisms.map((thisSpecialism) => {
       const checkbox = fixture.nativeElement.querySelector(`input[value="${thisSpecialism.specialism}"]`);
       fireEvent.click(checkbox);
+      return thisSpecialism.specialism;
     });
 
-    const submit = getAllByRole('button')[0];
+    const submit = getByText('Save and continue');
     fireEvent.click(submit);
+    fixture.detectChanges();
 
-    const httpTestingController = TestBed.inject(HttpTestingController);
-    const req = httpTestingController.expectOne(`/api/establishment/mocked-uid/worker/${worker.uid}`);
+    const updatedFormData = component.form.value;
+    expect(updatedFormData).toEqual({
+      hasNurseSpecialism: 'Yes',
+      selectedNurseSpecialisms: nurseSpecialismArr,
+    });
 
-    expect(req.request.body).toEqual({ nurseSpecialisms: newNurseSpecialisms });
+    expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+
+    expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+      nurseSpecialisms: {
+        value: 'Yes',
+        specialisms: nurseSpecialismArr.map((specialism) => ({ specialism })),
+      },
+    });
   });
 
   it('should put nurse specialisms null when question not answered', async () => {
     const worker = workerBuilder();
-    const { getAllByRole } = await setup(worker, false);
+    const { component, fixture, getByText, submitSpy, workerServiceSpy } = await setup(worker);
 
-    const submit = getAllByRole('button')[0];
+    const submit = getByText('Save and continue');
 
     fireEvent.click(submit);
+    fixture.detectChanges();
 
-    const httpTestingController = TestBed.inject(HttpTestingController);
-    const req = httpTestingController.expectOne(`/api/establishment/mocked-uid/worker/${worker.uid}`);
+    const updatedFormData = component.form.value;
+    expect(updatedFormData).toEqual({
+      hasNurseSpecialism: null,
+      selectedNurseSpecialisms: [],
+    });
 
-    expect(req.request.body).toEqual({ nurseSpecialisms: { value: null, specialisms: [] } });
+    expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+    expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+      nurseSpecialisms: { value: null, specialisms: [] },
+    });
   });
 
   describe('submit buttons', () => {
@@ -191,23 +207,20 @@ describe('NursingSpecialismComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
+    it(`should call submit data and navigate with to correct url when 'Save and continue' is clicked`, async () => {
       const worker = workerWithNurseSpecialisms(true);
       const { component, getByText, routerSpy } = await setup(worker);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
 
       const button = getByText('Save and continue');
       fireEvent.click(button);
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-record',
-        component.worker.uid,
-        'recruited-from',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'recruited-from']);
     });
 
-    it(`should navigate to  'recruited-from' page when skipping the question in the flow`, async () => {
+    it(`should navigate to 'recruited-from' page when skipping the question in the flow`, async () => {
       const worker = workerWithNurseSpecialisms(true);
       const { component, routerSpy, getByText } = await setup(worker);
 
@@ -239,6 +252,25 @@ describe('NursingSpecialismComponent', () => {
       ]);
     });
 
+    it(`should navigate with to correct url when 'Save and return' is clicked`, async () => {
+      const worker = workerWithNurseSpecialisms(true);
+      const { component, getByText, routerSpy } = await setup(worker, false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
       const worker = workerBuilder();
       const { component, routerSpy, getByText } = await setup(worker, false);
@@ -259,29 +291,14 @@ describe('NursingSpecialismComponent', () => {
     });
   });
 
-  describe('setBackLink()', () => {
-    it('should set the backlink to nursing-category, when in the flow ', async () => {
-      const worker = workerWithNurseSpecialisms(true);
-      const { component, backLinkSpy } = await setup(worker);
-
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'nursing-category'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const worker = workerWithNurseSpecialisms(true);
-      const { component, backLinkSpy } = await setup(worker, false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
+  describe('error messages', () => {
+    it('returns an error if Yes is selected and no specialisms are ticked', async () => {
+      const { fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+      fireEvent.click(getByLabelText('Yes'));
+      fixture.detectChanges();
+      fireEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+      expect(getAllByText(`Select which specialisms they're using`).length).toEqual(2);
     });
   });
 

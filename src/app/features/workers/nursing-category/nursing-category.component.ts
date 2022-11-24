@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -25,12 +25,12 @@ export class NursingCategoryComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       nursingCategory: null,
@@ -38,47 +38,23 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   init() {
-    this.registeredNurseFlow = this.route.parent.snapshot.url[0].path === 'registered-nurse-details';
     if (this.worker.registeredNurse) {
       this.prefill();
     }
 
-    this.setUpPageRouting();
+    this.next = this.insideFlow ? this.getRoutePath('nursing-specialism') : this.getSummaryRoute();
+  }
+
+  private getSummaryRoute(): string[] {
+    const summaryUrl = this.getRoutePath('');
+    summaryUrl.push('nursing-specialism');
+    return summaryUrl;
   }
 
   private prefill(): void {
     this.form.patchValue({
       nursingCategory: this.worker.registeredNurse,
     });
-  }
-
-  private setUpPageRouting(): void {
-    if (this.insideFlow && !this.registeredNurseFlow) {
-      this.next = this.getRoutePath('nursing-specialism');
-      this.previous = this.getRoutePath('main-job-start-date');
-    } else if (this.registeredNurseFlow) {
-      this.previous = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'staff-details',
-      ];
-      this.next = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'registered-nurse-details',
-        'nursing-specialism',
-      ];
-      this.returnUrl = this.getRoutePath('');
-    } else {
-      this.previous = this.getRoutePath('');
-      this.next = this.getRoutePath('');
-    }
   }
 
   generateUpdateProps() {

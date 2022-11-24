@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Ethnicity, EthnicityResponse } from '@core/model/ethnicity.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { EthnicityService } from '@core/services/ethnicity.service';
@@ -16,7 +16,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class EthnicityComponent extends QuestionComponent {
   public ethnicitiesByGroup: any = {};
-  public ethnicitiy: Ethnicity;
+  public ethnicity: Ethnicity;
   public section = 'Personal details';
   public doNotKnowValue = `Don't know`;
   public groupOptions = [
@@ -26,19 +26,20 @@ export class EthnicityComponent extends QuestionComponent {
     { value: 'Black / African / Caribbean / Black British', tag: 'Black, African, Caribbean or Black British' },
     { value: 'Other ethnic group', tag: 'Other ethnic group' },
   ];
-  private nationalityPath: string[];
+  public savedStateEthnicity = null;
+  public savedStateEthnicityGroup = null;
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     private ethnicityService: EthnicityService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
     this.form = this.formBuilder.group({
       ethnicityGroup: null,
       ethnicity: null,
@@ -47,8 +48,15 @@ export class EthnicityComponent extends QuestionComponent {
 
   init() {
     this.getAndSetEthnicityData();
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-    this.setUpPageRouting();
+    this.next = this.getRoutePath('nationality');
+    this.subscriptions.add(
+      this.form.get('ethnicity').valueChanges.subscribe((value) => {
+        if (value !== null) {
+          this.savedStateEthnicity = value;
+          this.savedStateEthnicityGroup = this.form.get('ethnicityGroup').value;
+        }
+      }),
+    );
     this.subscriptions.add(
       this.form.get('ethnicityGroup').valueChanges.subscribe((value) => {
         this.submitted = false;
@@ -58,8 +66,14 @@ export class EthnicityComponent extends QuestionComponent {
         } else {
           this.form.get('ethnicityGroup').setValue(this.doNotKnowValue, { emitEvent: false });
         }
-        this.form.get('ethnicity').setValue(null, { emitEvent: false });
-        this.form.get('ethnicity').updateValueAndValidity();
+        if (value === this.savedStateEthnicityGroup) {
+          this.form.patchValue({
+            ethnicity: this.savedStateEthnicity,
+          });
+        } else {
+          this.form.get('ethnicity').setValue(null, { emitEvent: false });
+          this.form.get('ethnicity').updateValueAndValidity();
+        }
       }),
     );
   }
@@ -69,7 +83,7 @@ export class EthnicityComponent extends QuestionComponent {
       this.ethnicityService.getEthnicities().subscribe((ethnicityData) => {
         const transformedEthnicityData = this.transformEthnicityData(ethnicityData);
         this.ethnicitiesByGroup = transformedEthnicityData.byGroup;
-        this.ethnicitiy = transformedEthnicityData.list.find(
+        this.ethnicity = transformedEthnicityData.list.find(
           (ethnicityObject) => ethnicityObject.id === this.worker.ethnicity?.ethnicityId,
         );
         if (this.worker.ethnicity) {
@@ -121,22 +135,9 @@ export class EthnicityComponent extends QuestionComponent {
         };
   }
 
-  private setUpPageRouting() {
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-    this.nationalityPath = this.getRoutePath('nationality');
-
-    if (this.insideFlow) {
-      this.previous = this.getRoutePath('disability');
-      this.next = this.nationalityPath;
-    } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.previous = this.staffRecordSummaryPath;
-    }
-  }
-
   private prefill() {
     this.form.patchValue({
-      ethnicityGroup: this.ethnicitiy.group,
+      ethnicityGroup: this.ethnicity.group,
       ethnicity: this.worker.ethnicity.ethnicityId,
     });
   }
