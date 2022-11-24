@@ -57,9 +57,9 @@ export class SelectStaffComponent implements OnInit {
     this.getWorkers();
     this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
     this.setupForm();
+    this.prefill();
     // this.setupFormErrorsMap();
     this.setReturnLink();
-    console.log(this.searchResults);
     this.setBackLink();
   }
 
@@ -69,6 +69,10 @@ export class SelectStaffComponent implements OnInit {
 
   get selectStaff(): FormArray {
     return this.form.get('selectStaff') as FormArray;
+  }
+
+  private prefill(): void {
+    this.selectedWorkers = this.trainingService.selectedStaff;
   }
 
   private setupForm = () => {
@@ -111,7 +115,6 @@ export class SelectStaffComponent implements OnInit {
   // }
 
   private getWorkers(searchTerm?): void {
-    console.log(searchTerm);
     this.workerService
       .getAllWorkers(this.workplaceUid, {
         pageIndex: this.currentPageIndex,
@@ -220,13 +223,13 @@ export class SelectStaffComponent implements OnInit {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if (this.form.valid) {
-      this.updateSelectedStaff();
-      this.trainingService.addMultipleTrainingInProgress$.next(true);
-      this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
-    } else {
-      this.errorSummaryService.scrollToErrorSummary();
-    }
+    // if (this.form.valid) {
+    this.updateSelectedStaff();
+    this.trainingService.addMultipleTrainingInProgress$.next(true);
+    this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
+    // } else {
+    //   this.errorSummaryService.scrollToErrorSummary();
+    // }
   }
 
   handleSearch(searchTerm: string): void {
