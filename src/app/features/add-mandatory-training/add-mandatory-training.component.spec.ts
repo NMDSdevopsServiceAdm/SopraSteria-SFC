@@ -110,7 +110,7 @@ describe('AddMandatoryTrainingComponent', () => {
       const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
       fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
 
-      const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[0].label);
+      const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[0].label);
       fireEvent.click(allJobRolesRadioButton);
 
       fixture.detectChanges();
@@ -127,10 +127,10 @@ describe('AddMandatoryTrainingComponent', () => {
       const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
       fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
 
-      const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[1].label);
+      const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[1].label);
       fireEvent.click(allJobRolesRadioButton);
 
-      const specficJobRoleSelect = getByLabelText('Job role', { exact: true });
+      const specficJobRoleSelect = getByLabelText('Job role 1', { exact: true });
       fireEvent.change(specficJobRoleSelect, { target: { value: 27 } });
 
       fixture.detectChanges();
@@ -142,13 +142,12 @@ describe('AddMandatoryTrainingComponent', () => {
     });
 
     it('Should call updateMandatoryTraining on submit when a training is selected and multiple specified job roles are selected', async () => {
-      const { component, updateMandatoryTrainingSpy, fixture, getByLabelText, getByText, getAllByLabelText } =
-        await setup();
+      const { component, updateMandatoryTrainingSpy, fixture, getByLabelText, getByText } = await setup();
 
       const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
       fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
 
-      const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[1].label);
+      const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[1].label);
       fireEvent.click(allJobRolesRadioButton);
 
       const addAnotherJobRoleButton = getByText('Add another job role');
@@ -156,10 +155,11 @@ describe('AddMandatoryTrainingComponent', () => {
 
       fixture.detectChanges();
 
-      const specficJobRoleSelectArray = getAllByLabelText('Job role', { exact: true });
+      const specifiedJobRoleOne = getByLabelText('Job role 1', { exact: true });
+      const specifiedJobRoleTwo = getByLabelText('Job role 2', { exact: true });
 
-      fireEvent.change(specficJobRoleSelectArray[0], { target: { value: 27 } });
-      fireEvent.change(specficJobRoleSelectArray[1], { target: { value: 23 } });
+      fireEvent.change(specifiedJobRoleOne, { target: { value: 27 } });
+      fireEvent.change(specifiedJobRoleTwo, { target: { value: 23 } });
 
       const submitButton = getByText('Save and return');
       fireEvent.click(submitButton);
@@ -168,19 +168,19 @@ describe('AddMandatoryTrainingComponent', () => {
     });
   });
 
-  describe('vacancyType form', async () => {
+  describe('allOrSelectedJobRoles form', async () => {
     it('Should not display a job role selection when All job roles is selected', async () => {
       const { component, fixture, getByLabelText, queryByText } = await setup();
 
       const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
       fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
 
-      const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[0].label);
+      const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[0].label);
       fireEvent.click(allJobRolesRadioButton);
 
       fixture.detectChanges();
 
-      expect(queryByText('Job role', { exact: true })).toBeFalsy();
+      expect(queryByText('Job role 1', { exact: true })).toBeFalsy();
     });
 
     it('Should display a job role selection when All job roles is selected', async () => {
@@ -189,12 +189,12 @@ describe('AddMandatoryTrainingComponent', () => {
       const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
       fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
 
-      const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[1].label);
+      const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[1].label);
       fireEvent.click(allJobRolesRadioButton);
 
       fixture.detectChanges();
 
-      expect(queryByText('Job role', { exact: true })).toBeTruthy();
+      expect(queryByText('Job role 1', { exact: true })).toBeTruthy();
     });
   });
 
@@ -204,7 +204,7 @@ describe('AddMandatoryTrainingComponent', () => {
         const { updateMandatoryTrainingSpy, component, fixture, getByLabelText, getByText, getAllByText } =
           await setup();
 
-        const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[0].label);
+        const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[0].label);
         fireEvent.click(allJobRolesRadioButton);
 
         fixture.detectChanges();
@@ -221,10 +221,10 @@ describe('AddMandatoryTrainingComponent', () => {
         const { updateMandatoryTrainingSpy, component, fixture, getByLabelText, getByText, getAllByText } =
           await setup();
 
-        const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[1].label);
+        const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[1].label);
         fireEvent.click(allJobRolesRadioButton);
 
-        const specficJobRoleSelect = getByLabelText('Job role', { exact: true });
+        const specficJobRoleSelect = getByLabelText('Job role 1', { exact: true });
         fireEvent.change(specficJobRoleSelect, { target: { value: 27 } });
 
         fixture.detectChanges();
@@ -245,7 +245,7 @@ describe('AddMandatoryTrainingComponent', () => {
         const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
         fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
 
-        const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[1].label);
+        const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[1].label);
         fireEvent.click(allJobRolesRadioButton);
 
         fixture.detectChanges();
@@ -266,7 +266,7 @@ describe('AddMandatoryTrainingComponent', () => {
         const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
         fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
 
-        const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[1].label);
+        const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[1].label);
         fireEvent.click(allJobRolesRadioButton);
 
         const addAnotherJobRoleButton = getByText('Add another job role');
@@ -288,7 +288,7 @@ describe('AddMandatoryTrainingComponent', () => {
     it('should display a mandatory training error and a job role error if a mandatory training is not provided, only selected job roles is selected and a job role is not specified', async () => {
       const { updateMandatoryTrainingSpy, component, fixture, getByLabelText, getByText, getAllByText } = await setup();
 
-      const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[1].label);
+      const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[1].label);
       fireEvent.click(allJobRolesRadioButton);
 
       fixture.detectChanges();
@@ -304,18 +304,6 @@ describe('AddMandatoryTrainingComponent', () => {
     });
   });
 
-  describe('setBackLink', async () => {
-    it('should return to the add and manage mandatory training page', async () => {
-      const { component, fixture } = await setup();
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(component.return).toEqual({
-        url: ['/workplace', component.primaryWorkplace.uid, 'add-and-manage-mandatory-training'],
-      });
-    });
-  });
-
   describe('success alert', async () => {
     it('should show success banner when a mandatory training is saved', async () => {
       const { component, alertSpy, fixture, getByLabelText, getByText } = await setup();
@@ -323,7 +311,7 @@ describe('AddMandatoryTrainingComponent', () => {
       const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
       fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
 
-      const allJobRolesRadioButton = getByLabelText(component.vacanciesOptions[0].label);
+      const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[0].label);
       fireEvent.click(allJobRolesRadioButton);
 
       fixture.detectChanges();
