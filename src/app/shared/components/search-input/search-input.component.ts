@@ -17,6 +17,7 @@ export class SearchInputComponent {
       this.emitInput.emit(this.searchTerm);
     }
   }
+  // remove the clear search results from being shown in this component
   @Input() showClearResults = true;
 
   @Output() emitInput = new EventEmitter<string>();
