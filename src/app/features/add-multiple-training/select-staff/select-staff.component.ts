@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Worker } from '@core/model/worker.model';
@@ -54,9 +54,9 @@ export class SelectStaffComponent implements OnInit {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.workers = this.route.snapshot.data.workers.workers;
     this.totalWorkerCount = this.workers.length;
-    this.getWorkers();
+    this.getPageOfWorkers();
     this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
-    this.setupForm();
+    // this.setupForm();
     this.prefill();
     // this.setupFormErrorsMap();
     this.setReturnLink();
@@ -67,82 +67,110 @@ export class SelectStaffComponent implements OnInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  get selectStaff(): FormArray {
-    return this.form.get('selectStaff') as FormArray;
-  }
+  // get selectStaff(): FormArray {
+  //   return this.form.get('selectStaff') as FormArray;
+  // }
 
   private prefill(): void {
     this.selectedWorkers = this.trainingService.selectedStaff;
+    this.updateSelectAllCheckbox();
   }
 
-  private setupForm = () => {
-    const workerFormArray = this.workers.map((worker) => {
-      const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
+  // private setupForm = () => {
+  //   const workerFormArray = this.workers.map((worker) => {
+  //     const checked = this.trainingService.selectedStaff?.includes(worker.uid) ? true : false;
 
-      return this.formBuilder.control({
-        name: worker.nameOrId,
-        workerUid: worker.uid,
-        checked,
-      });
-    });
-
-    this.form = this.formBuilder.group(
-      {
-        selectStaff: this.formBuilder.array(workerFormArray),
-      },
-      {
-        validator: this.oneCheckboxRequired,
-        updateOn: 'submit',
-      },
-    );
-
-    this.updateSelectAllCheckbox();
-  };
-
-  // public getPageOfWorkers(): void {
-  //   this.workerService
-  //     .getAllWorkers(this.workplaceUid, {
-  //       pageIndex: this.currentPageIndex,
-  //       itemsPerPage: this.itemsPerPage,
-  //       sortByValue: this.sortByValue,
-  //       ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
-  //     })
-  //     .pipe(take(1))
-  //     .subscribe(({ workers }) => {
-  //       console.log(workers);
-  //       this.paginatedWorkers = workers;
+  //     return this.formBuilder.control({
+  //       name: worker.nameOrId,
+  //       workerUid: worker.uid,
+  //       checked,
   //     });
-  // }
+  //   });
 
-  private getWorkers(searchTerm?): void {
+  //   this.form = this.formBuilder.group(
+  //     {
+  //       selectStaff: this.formBuilder.array(workerFormArray),
+  //     },
+  //     {
+  //       validator: this.oneCheckboxRequired,
+  //       updateOn: 'submit',
+  //     },
+  //   );
+
+  //   this.updateSelectAllCheckbox();
+  // };
+
+  public getPageOfWorkers(): void {
     this.workerService
       .getAllWorkers(this.workplaceUid, {
         pageIndex: this.currentPageIndex,
         itemsPerPage: this.itemsPerPage,
         sortByValue: this.sortByValue,
-        ...(searchTerm ? { searchTerm } : {}),
       })
       .pipe(take(1))
       .subscribe(({ workers }) => {
-        searchTerm ? (this.searchResults = workers) : (this.paginatedWorkers = workers);
+        this.paginatedWorkers = workers;
       });
   }
+
+  public getSearchResults(): void {
+    if (this.searchTerm) {
+      this.workerService
+        .getAllWorkers(this.workplaceUid, {
+          pageIndex: this.currentPageIndex,
+          itemsPerPage: this.itemsPerPage,
+          sortByValue: this.sortByValue,
+          ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
+        })
+        .pipe(take(1))
+        .subscribe(({ workers }) => {
+          this.searchResults = workers;
+        });
+    } else {
+      this.searchResults = undefined;
+    }
+  }
+
+  // private getWorkers(successFunction, searchTerm?): void {
+  //   console.log(searchTerm);
+  //   this.workerService
+  //     .getAllWorkers(this.workplaceUid, {
+  //       pageIndex: this.currentPageIndex,
+  //       itemsPerPage: this.itemsPerPage,
+  //       sortByValue: this.sortByValue,
+  //       ...(searchTerm ? { searchTerm } : {}),
+  //     })
+  //     .pipe(take(1))
+  //     .subscribe(async ({ workers }) => {
+  //       // await successFunction(workers);
+  //       console.log(searchTerm !== undefined);
+  //       searchTerm !== undefined ? (this.searchResults = workers) : (this.paginatedWorkers = workers);
+  //     });
+  // }
+
+  // private async searchSuccess(workersArr: Worker[]): Promise<void> {
+  //   this.searchResults = workersArr;
+  // }
+
+  // private async paginationSuccess(workersArr: Worker[]): Promise<void> {
+  //   this.paginatedWorkers = workersArr;
+  // }
 
   public handlePageUpdate(pageIndex: number): void {
     this.currentPageIndex = pageIndex;
 
-    this.getWorkers();
+    this.getPageOfWorkers();
   }
 
-  private oneCheckboxRequired(form: FormGroup): void {
-    if (form?.value?.selectStaff?.every((staff) => staff.checked === false)) {
-      form.controls.selectStaff.setErrors({
-        oneCheckboxRequired: true,
-      });
-    } else {
-      form.controls.selectStaff.setErrors(null);
-    }
-  }
+  // private oneCheckboxRequired(form: FormGroup): void {
+  //   if (form?.value?.selectStaff?.every((staff) => staff.checked === false)) {
+  //     form.controls.selectStaff.setErrors({
+  //       oneCheckboxRequired: true,
+  //     });
+  //   } else {
+  //     form.controls.selectStaff.setErrors(null);
+  //   }
+  // }
 
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
@@ -219,17 +247,19 @@ export class SelectStaffComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    this.oneCheckboxRequired(this.form);
+    // this.oneCheckboxRequired(this.form);
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     // if (this.form.valid) {
-    this.updateSelectedStaff();
-    this.trainingService.addMultipleTrainingInProgress$.next(true);
-    this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
-    // } else {
-    //   this.errorSummaryService.scrollToErrorSummary();
-    // }
+    if (this.selectedWorkers.length > 0) {
+      this.updateSelectedStaff();
+      this.trainingService.addMultipleTrainingInProgress$.next(true);
+      this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
+    } else {
+      console.log('Error *********');
+      //   this.errorSummaryService.scrollToErrorSummary();
+    }
   }
 
   handleSearch(searchTerm: string): void {
@@ -237,7 +267,8 @@ export class SelectStaffComponent implements OnInit {
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
     this.addQueryParams();
-    this.getWorkers(searchTerm);
+    // this.getWorkers(this.searchSuccess, searchTerm);
+    this.getSearchResults();
     this.currentPageIndex = prevPageIndex;
   }
 
@@ -261,6 +292,5 @@ export class SelectStaffComponent implements OnInit {
   public handleResetSearch(event: Event): void {
     event.preventDefault();
     this.searchInput.handleResetSearch();
-    this.searchResults = undefined;
   }
 }
