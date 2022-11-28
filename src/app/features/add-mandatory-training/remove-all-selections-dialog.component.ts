@@ -1,20 +1,50 @@
-import { Component, Inject } from '@angular/core';
-import { DialogComponent } from '@core/components/dialog.component';
-import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { TrainingService } from '@core/services/training.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-remove-all-selections-dialog',
   templateUrl: './remove-all-selections-dialog.component.html',
 })
-export class RemoveAllSelectionsDialogComponent extends DialogComponent {
+export class RemoveAllMandatoryTrainingComponent implements OnInit {
+  public establishment: Establishment;
+  private subscriptions: Subscription = new Subscription();
   constructor(
-    @Inject(DIALOG_DATA) public data: { },
-    public dialog: Dialog<RemoveAllSelectionsDialogComponent>
-  ) {
-    super(data, dialog);
+    protected backLinkService: BackLinkService,
+    private trainingService: TrainingService,
+    private route: ActivatedRoute,
+    protected router: Router,
+    private alertService: AlertService,
+    protected establishmentService: EstablishmentService,
+  ) {}
+
+  ngOnInit(): void {
+    this.establishment = this.route.parent.snapshot.data.establishment;
+    this.setBackLink();
   }
 
-  public close(confirmed: boolean) {
-    this.dialog.close(confirmed);
+  public setBackLink(): void {
+    this.backLinkService.showBackLink();
+  }
+
+  public deleteMandatoryTraining(): void {
+    this.subscriptions.add(
+      this.trainingService.deleteAllMandatoryTraining(this.establishment.id).subscribe(() => {
+        this.router.navigate([
+          '/workplace',
+          this.establishmentService.primaryWorkplace.uid,
+          'add-and-manage-mandatory-training',
+        ]);
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'All mandatory training categories removed',
+        });
+      }),
+    );
   }
 }

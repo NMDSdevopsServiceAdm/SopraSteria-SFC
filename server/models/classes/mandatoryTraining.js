@@ -405,7 +405,7 @@ class MandatoryTraining extends EntityValidator {
     } catch (err) {
       this._log(MandatoryTraining.LOG_ERROR, err);
 
-      throw new Error('Failed to delete Mandatory Training record');
+      throw new Error('Failed to delete Mandatory Training records');
     }
   }
 }

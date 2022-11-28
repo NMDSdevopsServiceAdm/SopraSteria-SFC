@@ -58,9 +58,6 @@ const createMandatoryTraining = async (req, res) => {
 };
 
 const deleteAllMandatoryTraining = async (req, res) => {
-  console.log('deleteeee me ');
-  const establishmentId = req.establishmentId;
-  console.log(establishmentId);
   const thisTrainingRecord = new MandatoryTraining(req.establishmentId);
   try {
     await thisTrainingRecord.deleteAllMandatoryTraining();

@@ -31,4 +31,8 @@ export class TrainingService {
   public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
     return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
   }
+
+  deleteAllMandatoryTraining(establishmentId: number) {
+    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining/delete`);
+  }
 }
