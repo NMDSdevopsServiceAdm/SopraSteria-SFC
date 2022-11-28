@@ -22,6 +22,7 @@ import { take } from 'rxjs/internal/operators/take';
 export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
+  public renderAsEditMandatoryTraning: boolean;
   public submitted = false;
   public categories: TrainingCategory[];
   public filteredTrainingCategories: TrainingCategory[];
@@ -65,6 +66,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.establishment = this.route.parent.snapshot.data.establishment;
+    this.renderAsEditMandatoryTraning = this.route.snapshot.url[0].path === 'edit-mandatory-training';
 
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((existingMandatoryTraining) => {

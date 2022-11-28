@@ -7,7 +7,9 @@
 </app-error-summary>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Add a mandatory training category</h1>
+    <h1 class="govuk-heading-l">
+      {{ renderAsEditMandatoryTraning ? 'Mandatory training category' : 'Add a mandatory training category' }}
+    </h1>
   </div>
 </div>
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">

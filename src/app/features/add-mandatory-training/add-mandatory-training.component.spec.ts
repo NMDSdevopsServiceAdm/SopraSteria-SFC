@@ -19,7 +19,7 @@ import { AddMandatoryTrainingComponent } from './add-mandatory-training.componen
 import { AddMandatoryTrainingModule } from './add-mandatory-training.module';
 
 describe('AddMandatoryTrainingComponent', () => {
-  async function setup() {
+  async function setup(renderAsEditMandatoryTraning = false) {
     const { getByText, getByLabelText, getAllByLabelText, getAllByText, queryByText, fixture } = await render(
       AddMandatoryTrainingComponent,
       {
@@ -29,7 +29,6 @@ describe('AddMandatoryTrainingComponent', () => {
           AlertService,
           BackService,
           DialogService,
-          TrainingService,
           {
             provide: WindowRef,
             useClass: WindowRef,
@@ -49,6 +48,11 @@ describe('AddMandatoryTrainingComponent', () => {
           {
             provide: ActivatedRoute,
             useValue: {
+              snapshot: {
+                url: [
+                  { path: renderAsEditMandatoryTraning ? 'edit-mandatory-training' : 'add-new-mandatory-training' },
+                ],
+              },
               parent: {
                 snapshot: {
                   data: {

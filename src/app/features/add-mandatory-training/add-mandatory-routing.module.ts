@@ -15,6 +15,16 @@ const routes: Routes = [
     component: AddMandatoryTrainingComponent,
     data: { title: 'Add New Mandatory Training' },
   },
+  {
+    path: ':trainingCategoryId',
+    children: [
+      {
+        path: 'edit-mandatory-training',
+        component: AddMandatoryTrainingComponent,
+        data: { title: 'Edit Mandatory Training' },
+      },
+    ],
+  },
 ];
 
 @NgModule({
