@@ -36,6 +36,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public section: string;
   public buttonText: string;
   public showWorkerCount = false;
+  public remainingCharacterCount: number = this.notesMaxLength;
+  public notesValue = '';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -64,6 +66,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  public handleOnInput(event: Event) {
+    this.notesValue = (<HTMLInputElement>event.target).value;
+    this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
   }
 
   protected init(): void {}

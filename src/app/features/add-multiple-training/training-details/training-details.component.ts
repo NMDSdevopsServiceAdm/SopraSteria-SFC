@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Alert } from '@core/model/alert.model';
 import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -79,11 +78,8 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.trainingService.resetSelectedStaff();
     this.trainingService.addMultipleTrainingInProgress$.next(false);
 
-    await this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
-    this.alertService.addAlert({
-      type: 'success',
-      message: `Training records have been added for ${response.savedRecords} staff`,
-    } as Alert);
+    //AP + GB Will need changing to be whatever the new summary page url is 25/11/2022
+    await this.router.navigate(['add-multiple-records-summary']);
   }
 
   private onError(error) {
