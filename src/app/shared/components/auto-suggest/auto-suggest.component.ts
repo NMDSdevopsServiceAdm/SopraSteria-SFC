@@ -20,6 +20,7 @@ export class AutoSuggestComponent implements ControlValueAccessor {
   @Input() formControlName: string;
   @Input() formGroup: FormGroup;
   @Input() dataProvider: Function;
+  @Input() error = false;
 
   constructor() {}
 

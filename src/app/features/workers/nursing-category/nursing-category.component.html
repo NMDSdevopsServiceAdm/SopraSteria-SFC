@@ -29,7 +29,7 @@
         </fieldset>
       </div>
     </div>
-    <div class="govuk-grid-column-one-third" *ngIf="!registeredNurseFlow && insideFlow">
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
       <div class="govuk-!-margin-left-8">
         <app-progress-bar
           data-testid="progress-bar"
@@ -41,8 +41,7 @@
   </div>
 
   <app-submit-button
-    [recordSummary]="!registeredNurseFlow"
-    [canExit]="registeredNurseFlow"
+    [summaryContinue]="true"
     [return]="!insideFlow"
     (clicked)="setSubmitAction($event)"
   ></app-submit-button>

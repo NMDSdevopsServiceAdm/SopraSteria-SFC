@@ -32,7 +32,9 @@ import { MentalHealthProfessionalComponent } from './mental-health-professional/
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
-import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
+import {
+  NewTrainingAndQualificationsRecordComponent,
+} from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
@@ -40,7 +42,9 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
+import {
+  SocialCareQualificationLevelComponent,
+} from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
@@ -118,21 +122,6 @@ const routes: Routes = [
             },
           },
           {
-            path: 'registered-nurse-details',
-            children: [
-              {
-                path: 'nursing-category',
-                component: NursingCategoryComponent,
-                data: { title: 'Nursing Category' },
-              },
-              {
-                path: 'nursing-specialism',
-                component: NursingSpecialismComponent,
-                data: { title: 'Nursing Specialism' },
-              },
-            ],
-          },
-          {
             path: 'nursing-category',
             component: NursingCategoryComponent,
             data: { title: 'Nursing Category' },
@@ -141,16 +130,6 @@ const routes: Routes = [
             path: 'nursing-specialism',
             component: NursingSpecialismComponent,
             data: { title: 'Nursing Specialism' },
-          },
-          {
-            path: 'mental-health-professional-summary-flow',
-            children: [
-              {
-                path: '',
-                component: MentalHealthProfessionalComponent,
-                data: { title: 'Mental Health Professional' },
-              },
-            ],
           },
           {
             path: 'mental-health-professional',
@@ -208,16 +187,6 @@ const routes: Routes = [
             data: { title: 'Year Arrived in the UK' },
           },
           {
-            path: 'year-arrived-uk-summary-flow',
-            children: [
-              {
-                path: '',
-                component: YearArrivedUkComponent,
-                data: { title: 'Year Arrived in the UK' },
-              },
-            ],
-          },
-          {
             path: 'recruited-from',
             component: RecruitedFromComponent,
             data: { title: 'Recruited From' },
@@ -273,16 +242,6 @@ const routes: Routes = [
             data: { title: 'Highest Social Care Qualification Level' },
           },
           {
-            path: 'social-care-qualification-level-summary-flow',
-            children: [
-              {
-                path: '',
-                component: SocialCareQualificationLevelComponent,
-                data: { title: 'Highest Social Care Qualification Level' },
-              },
-            ],
-          },
-          {
             path: 'other-qualifications',
             component: OtherQualificationsComponent,
             data: { title: 'Other Qualifications' },
@@ -291,16 +250,6 @@ const routes: Routes = [
             path: 'other-qualifications-level',
             component: OtherQualificationsLevelComponent,
             data: { title: 'Highest Level of Other Qualifications' },
-          },
-          {
-            path: 'other-qualifications-level-summary-flow',
-            children: [
-              {
-                path: '',
-                component: OtherQualificationsLevelComponent,
-                data: { title: 'Highest Level of Other Qualifications' },
-              },
-            ],
           },
           {
             path: 'add-qualification',
@@ -367,9 +316,9 @@ const routes: Routes = [
         ],
       },
       {
-        path: 'staff-record-summary-flow',
+        path: 'confirm-staff-record',
         component: StaffRecordComponent,
-        data: { title: 'Staff Record' },
+        data: { title: 'Confirm Staff Record' },
       },
       {
         path: 'staff-details',

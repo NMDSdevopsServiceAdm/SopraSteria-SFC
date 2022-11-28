@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -24,12 +24,12 @@ export class YearArrivedUkComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
@@ -40,11 +40,9 @@ export class YearArrivedUkComponent extends QuestionComponent {
   }
 
   init() {
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-    this.insideYearArrivedUkMiniFlow = this.route.snapshot.parent.url[0].path === 'year-arrived-uk-summary-flow';
-    this.setUpPageRouting();
-    this.setupFormValidation();
+    this.next = this.getRoutePath('main-job-start-date');
 
+    this.setupFormValidation();
     if (this.worker.yearArrived) {
       this.prefill();
     }
@@ -118,27 +116,5 @@ export class YearArrivedUkComponent extends QuestionComponent {
     }
 
     return null;
-  }
-
-  private setUpPageRouting() {
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-    this.mainJobStartDatePath = this.getRoutePath('main-job-start-date');
-
-    if (this.insideFlow && !this.insideYearArrivedUkMiniFlow) {
-      this.previous = this.getRoutePath('country-of-birth');
-      this.next = this.mainJobStartDatePath;
-    } else if (this.insideYearArrivedUkMiniFlow) {
-      this.next = this.staffRecordSummaryPath;
-      this.previous = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        this.worker.uid,
-        'staff-record-summary',
-        'country-of-birth',
-      ];
-    } else {
-      this.previous = this.staffRecordSummaryPath;
-    }
   }
 }

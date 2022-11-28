@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -24,12 +24,12 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       zeroHoursContract: null,
@@ -48,17 +48,6 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
       [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
         ? this.getRoutePath('average-weekly-hours')
         : this.getRoutePath('weekly-contracted-hours');
-
-    this.previous = this.getReturnPath();
-  }
-
-  getReturnPath() {
-    if (this.insideFlow) {
-      return [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
-        ? this.getRoutePath('days-of-sickness')
-        : this.getRoutePath('adult-social-care-started');
-    }
-    return this.getRoutePath('');
   }
 
   generateUpdateProps() {
@@ -71,5 +60,17 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     return {
       zeroHoursContract,
     };
+  }
+
+  onSuccess() {
+    const { zeroHoursContract } = this.form.controls;
+    if (!this.insideFlow) {
+      const staffSummaryUrl = this.getRoutePath('');
+      zeroHoursContract.value === 'Yes' ||
+      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
+        ? staffSummaryUrl.push('average-weekly-hours')
+        : staffSummaryUrl.push('weekly-contracted-hours');
+      this.next = staffSummaryUrl;
+    }
   }
 }

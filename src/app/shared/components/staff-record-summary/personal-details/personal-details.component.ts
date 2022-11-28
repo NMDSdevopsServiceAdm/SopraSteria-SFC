@@ -20,7 +20,7 @@ export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
   }
 
   get dob() {
-    return dayjs(this.worker.dateOfBirth).format('DD MMMM YYYY');
+    return dayjs(this.worker.dateOfBirth).format('D MMMM YYYY');
   }
 
   get displayYearArrived() {

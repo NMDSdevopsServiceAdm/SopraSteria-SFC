@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -20,18 +20,17 @@ export class ApprenticeshipTrainingComponent extends QuestionComponent {
   ];
 
   public section = 'Training and qualifications';
-  private socialCareQualificationPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       apprenticeshipTraining: null,
@@ -39,8 +38,8 @@ export class ApprenticeshipTrainingComponent extends QuestionComponent {
   }
 
   init() {
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
-    this.setUpPageRouting();
+    this.next = this.getRoutePath('social-care-qualification');
+
     if (this.worker.apprenticeshipTraining) {
       this.prefill();
     }
@@ -50,19 +49,6 @@ export class ApprenticeshipTrainingComponent extends QuestionComponent {
     this.form.patchValue({
       apprenticeshipTraining: this.worker.apprenticeshipTraining,
     });
-  }
-
-  private setUpPageRouting(): void {
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-    this.socialCareQualificationPath = this.getRoutePath('social-care-qualification');
-
-    if (this.insideFlow) {
-      this.previous = this.getRoutePath('care-certificate');
-      this.next = this.socialCareQualificationPath;
-    } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.backService.setBackLink({ url: this.staffRecordSummaryPath });
-    }
   }
 
   generateUpdateProps() {

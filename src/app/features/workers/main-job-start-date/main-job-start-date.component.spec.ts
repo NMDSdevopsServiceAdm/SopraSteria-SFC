@@ -4,7 +4,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -56,7 +55,6 @@ describe('MainJobStartDateComponent', () => {
         imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         declarations: [DatePickerComponent, SubmitButtonComponent, ErrorSummaryComponent, ProgressBarComponent],
         providers: [
-          BackService,
           FormBuilder,
           ReactiveFormsModule,
           ErrorSummaryService,
@@ -100,12 +98,10 @@ describe('MainJobStartDateComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService);
-    const backService = injector.inject(BackService);
 
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const navigateSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -116,7 +112,6 @@ describe('MainJobStartDateComponent', () => {
       submitSpy,
       navigateSpy,
       workerServiceSpy,
-      backLinkSpy,
       queryByTestId,
       getByTestId,
     };
@@ -263,7 +258,7 @@ describe('MainJobStartDateComponent', () => {
     const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup();
 
     userEvent.click(getByText('Skip this question'));
-    expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
     expect(navigateSpy).toHaveBeenCalledWith([
       '/workplace',
       123,
@@ -279,7 +274,7 @@ describe('MainJobStartDateComponent', () => {
     const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup(true, registeredNurse);
 
     userEvent.click(getByText('Skip this question'));
-    expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
     expect(navigateSpy).toHaveBeenCalledWith([
       '/workplace',
       123,
@@ -295,7 +290,7 @@ describe('MainJobStartDateComponent', () => {
     const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup(true, socialWorker);
 
     userEvent.click(getByText('Skip this question'));
-    expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+    expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
     expect(navigateSpy).toHaveBeenCalledWith([
       '/workplace',
       123,
@@ -419,28 +414,6 @@ describe('MainJobStartDateComponent', () => {
 
       const errors = getAllByText('Main job start date must be today or in the past');
       expect(errors.length).toBe(2);
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the backlink to year arrived uk page when in the flow', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', 123, 'staff-record', component.worker.uid, 'year-arrived-uk'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff record summary when outside the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', 123, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
     });
   });
 });
