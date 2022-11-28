@@ -85,6 +85,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    console.log(this.formEl);
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 

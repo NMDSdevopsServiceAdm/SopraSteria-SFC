@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { SelectStaffComponent } from './select-staff.component';
 
-fdescribe('SelectStaffComponent', () => {
+describe('SelectStaffComponent', () => {
   async function setup(preselectedStaff = true) {
     const { fixture, getByText } = await render(SelectStaffComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],

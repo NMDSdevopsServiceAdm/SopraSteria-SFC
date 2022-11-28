@@ -1,5 +1,4 @@
-<!-- <app-error-summary *ngIf="submitted && form?.invalid" [formErrorsMap]="formErrorsMap" [form]="form">
-</app-error-summary> -->
+<app-select-staff-error-summary *ngIf="submitted && error" [errorsMap]="errorsMap"> </app-select-staff-error-summary>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -56,11 +55,12 @@
       </div>
     </ng-container>
 
-    <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
+    <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5" #selectAllButton>
       <span class="govuk-!-font-weight-bold"
         >Showing {{ paginatedWorkers?.length }} of {{ totalWorkerCount }} staff</span
       >
-      <a href="#" (click)="selectAllWorkers($event)" class="govuk-util__float-right">
+      <span *ngIf="submitted && error" class="govuk-visually-hidden" id="selectStaff-error">Error:</span>
+      <a href="#" (click)="selectAllWorkers($event)" name="selectStaff" class="govuk-util__float-right">
         {{ selectAll ? 'Deselect All' : 'Select all' }}</a
       >
     </div>

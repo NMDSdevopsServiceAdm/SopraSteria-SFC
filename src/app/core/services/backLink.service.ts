@@ -12,7 +12,7 @@ export class BackLinkService {
   constructor(private router: Router) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        if (!event.urlAfterRedirects.includes('#' && 'error' && '?')) {
+        if (!event.urlAfterRedirects.includes('#' && 'error')) {
           this.removeBackLink();
         }
       }

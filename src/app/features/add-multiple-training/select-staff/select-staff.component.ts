@@ -16,7 +16,7 @@ import { take } from 'rxjs/operators';
   templateUrl: './select-staff.component.html',
 })
 export class SelectStaffComponent implements OnInit {
-  @ViewChild('formEl') formEl: ElementRef;
+  @ViewChild('selectAllButton') selectAllButton: ElementRef;
   @ViewChild(SearchInputComponent) searchInput: SearchInputComponent;
 
   public workers: Array<Worker>;
@@ -25,7 +25,7 @@ export class SelectStaffComponent implements OnInit {
   public primaryWorkplaceUid: string;
   public returnLink: Array<string>;
   public selectAll = false;
-  private formErrorsMap: Array<ErrorDetails>;
+  private errorsMap: Array<ErrorDetails>;
   private workplaceUid: string;
   public itemsPerPage = 15;
   public currentPageIndex = 0;
@@ -35,6 +35,8 @@ export class SelectStaffComponent implements OnInit {
   public paginatedWorkers: Worker[];
   private searchTerm = '';
   public searchResults: Worker[];
+  public errorMessage = 'Select the staff who have completed the training';
+  public error = false;
 
   public selectedWorkers: string[] = [];
 
@@ -58,13 +60,13 @@ export class SelectStaffComponent implements OnInit {
     this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
     // this.setupForm();
     this.prefill();
-    // this.setupFormErrorsMap();
+    this.setupErrorsMap();
     this.setReturnLink();
     this.setBackLink();
   }
 
   ngAfterViewInit(): void {
-    this.errorSummaryService.formEl$.next(this.formEl);
+    this.errorSummaryService.formEl$.next(this.selectAllButton);
   }
 
   // get selectStaff(): FormArray {
@@ -172,8 +174,8 @@ export class SelectStaffComponent implements OnInit {
   //   }
   // }
 
-  private setupFormErrorsMap(): void {
-    this.formErrorsMap = [
+  private setupErrorsMap(): void {
+    this.errorsMap = [
       {
         item: 'selectStaff',
         type: [
@@ -249,7 +251,9 @@ export class SelectStaffComponent implements OnInit {
   public onSubmit(): void {
     // this.oneCheckboxRequired(this.form);
     this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.error = false;
+    // this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.errorSummaryService.syncErrorsEvent.next(true);
 
     // if (this.form.valid) {
     if (this.selectedWorkers.length > 0) {
@@ -257,8 +261,8 @@ export class SelectStaffComponent implements OnInit {
       this.trainingService.addMultipleTrainingInProgress$.next(true);
       this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
     } else {
-      console.log('Error *********');
-      //   this.errorSummaryService.scrollToErrorSummary();
+      this.error = true;
+      this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
@@ -281,7 +285,7 @@ export class SelectStaffComponent implements OnInit {
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.errorsMap);
   }
 
   public onCancel(): void {
