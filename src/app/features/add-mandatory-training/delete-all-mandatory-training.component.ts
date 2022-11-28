@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-remove-all-selections-dialog',
-  templateUrl: './remove-all-selections-dialog.component.html',
+  templateUrl: './delete-all-mandatory-training.component.html',
 })
 export class RemoveAllMandatoryTrainingComponent implements OnInit {
   public establishment: Establishment;
@@ -46,5 +46,13 @@ export class RemoveAllMandatoryTrainingComponent implements OnInit {
         });
       }),
     );
+  }
+
+  public navigateToPreviousPage(): void {
+    this.router.navigate([
+      '/workplace',
+      this.establishmentService.primaryWorkplace.uid,
+      'add-and-manage-mandatory-training',
+    ]);
   }
 }
