@@ -29,7 +29,12 @@
       data-testid="removeMandatoryTrainingLink"
       draggable="false"
       role="button"
-      [routerLink]="['/workplace', establishment.uid, 'add-mandatory-training', 'remove-all-mandatory-training']"
+      [routerLink]="[
+        '/workplace',
+        establishment.uid,
+        'add-and-manage-mandatory-training',
+        'remove-all-mandatory-training'
+      ]"
       >Remove all mandatory training categories</a
     >
   </div>

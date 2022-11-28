@@ -2,14 +2,18 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddMandatoryTrainingRoutingModule } from '@features/add-mandatory-training/add-mandatory-routing.module';
-import { RemoveAllSelectionsDialogComponent } from '@features/add-mandatory-training/remove-all-selections-dialog.component';
+import { RemoveAllMandatoryTrainingComponent } from '@features/add-mandatory-training/remove-all-selections-dialog.component';
 import { SharedModule } from '@shared/shared.module';
 
+import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training/add-and-manage-mandatory-training.component';
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
-import { ListMandatoryTrainingComponent } from './list-mandatory-training/list-mandatory-training.component';
 
 @NgModule({
   imports: [CommonModule, AddMandatoryTrainingRoutingModule, ReactiveFormsModule, SharedModule],
-  declarations: [AddMandatoryTrainingComponent, RemoveAllSelectionsDialogComponent, ListMandatoryTrainingComponent],
+  declarations: [
+    AddMandatoryTrainingComponent,
+    RemoveAllMandatoryTrainingComponent,
+    AddAndManageMandatoryTrainingComponent,
+  ],
 })
 export class AddMandatoryTrainingModule {}
