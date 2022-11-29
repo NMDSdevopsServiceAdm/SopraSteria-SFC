@@ -17,9 +17,7 @@ const validateEstablishmentCsv = async (
   await lineValidator.validate();
   if (!lineValidator._ignore) {
     lineValidator.transform();
-
     const thisEstablishmentAsAPI = lineValidator.toAPI();
-
     try {
       const thisApiEstablishment = new Establishment();
       thisApiEstablishment.initialise(
@@ -41,7 +39,6 @@ const validateEstablishmentCsv = async (
         myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
       } else {
         const errors = thisApiEstablishment.errors;
-
         if (errors.length === 0) {
           myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
         } else {
