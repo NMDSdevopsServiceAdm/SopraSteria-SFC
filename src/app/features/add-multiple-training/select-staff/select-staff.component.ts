@@ -16,7 +16,7 @@ import { take } from 'rxjs/operators';
   templateUrl: './select-staff.component.html',
 })
 export class SelectStaffComponent implements OnInit, AfterViewInit {
-  @ViewChild('selectAllButton') selectAllButton: ElementRef;
+  @ViewChild('table') table: ElementRef;
   @ViewChild(SearchInputComponent) searchInput: SearchInputComponent;
 
   public workers: Array<Worker>;
@@ -64,7 +64,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.errorSummaryService.formEl$.next(this.selectAllButton);
+    this.errorSummaryService.formEl$.next(this.table);
   }
 
   private prefill(): void {
