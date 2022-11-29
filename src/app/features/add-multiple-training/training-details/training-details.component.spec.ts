@@ -155,7 +155,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(component.form.invalid).toBeTruthy();
-      expect(getAllByText('Select a training category').length).toEqual(3);
+      expect(getAllByText('Select the training category').length).toEqual(3);
     });
 
     it('should show an error when training name less than 3 characters', async () => {
@@ -225,6 +225,17 @@ describe('MultipleTrainingDetailsComponent', () => {
       const { component, getByText, fixture, getAllByText } = await setup();
       component.form.markAsDirty();
       component.form.get('expires').setValue({ day: 32, month: 12, year: 2000 });
+      component.form.get('expires').markAsDirty();
+      const finishButton = getByText('Continue');
+      fireEvent.click(finishButton);
+      fixture.detectChanges();
+      expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
+    });
+
+    it('should show an error when expiry date not valid and 0s are entered in the input fields', async () => {
+      const { component, getByText, fixture, getAllByText } = await setup();
+      component.form.markAsDirty();
+      component.form.get('expires').setValue({ day: 0, month: 0, year: 0 });
       component.form.get('expires').markAsDirty();
       const finishButton = getByText('Continue');
       fireEvent.click(finishButton);

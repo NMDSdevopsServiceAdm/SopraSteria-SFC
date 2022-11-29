@@ -134,7 +134,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Select a training category',
+            message: 'Select the training category',
           },
         ],
       },
