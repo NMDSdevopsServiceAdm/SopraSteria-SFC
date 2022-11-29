@@ -32,7 +32,7 @@ export class TrainingService {
     return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
   }
 
-  deleteAllMandatoryTraining(establishmentId: number) {
+  public deleteAllMandatoryTraining(establishmentId: number) {
     return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining/delete`);
   }
 }
