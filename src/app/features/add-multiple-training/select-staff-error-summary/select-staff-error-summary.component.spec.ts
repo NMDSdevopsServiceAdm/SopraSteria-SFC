@@ -4,7 +4,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { SelectStaffErrorSummaryComponent } from './select-staff-error-summary.component';
 
-fdescribe('SelectStaffErrorSummaryComponent', () => {
+describe('SelectStaffErrorSummaryComponent', () => {
   async function setup() {
     const { fixture, getByText, getByTestId } = await render(SelectStaffErrorSummaryComponent, {
       imports: [RouterModule, RouterTestingModule],

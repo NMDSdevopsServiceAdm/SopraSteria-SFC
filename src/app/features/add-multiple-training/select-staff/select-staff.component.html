@@ -10,7 +10,6 @@
     <div *ngIf="showSearchBar" class="govuk-!-margin-bottom-8">
       <app-search-input
         label="Search for staff"
-        accessibleLabel="search for staff"
         (emitInput)="handleSearch($event)"
         [showClearResults]="false"
       ></app-search-input>
@@ -21,7 +20,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <ng-container *ngIf="searchResults">
-      <div class="govuk-!-margin-bottom-8">
+      <div class="govuk-!-margin-bottom-8" data-testid="searchResults">
         <ng-container *ngIf="searchResults.length > 0; else noResults">
           <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
             <span class="govuk-!-font-weight-bold">Showing search results</span>
@@ -62,7 +61,7 @@
         >
 
         <a href="#" (click)="selectAllWorkers($event)" class="govuk-util__float-right">
-          {{ selectAll ? 'Deselect All' : 'Select all' }}</a
+          {{ selectAll ? 'Deselect all' : 'Select all' }}</a
         >
       </div>
       <div *ngIf="submitted && error">
@@ -96,7 +95,10 @@
   </div>
   <div class="govuk-grid-column-one-third">
     <div class="govuk-!-margin-left-5 govuk-!-margin-top-8">
-      <app-selected-staff-panel [selectedWorkerCount]="selectedWorkers.length"></app-selected-staff-panel>
+      <app-selected-staff-panel
+        data-testid="selectedStaffPanel"
+        [selectedWorkerCount]="selectedWorkers.length"
+      ></app-selected-staff-panel>
     </div>
   </div>
 </div>
