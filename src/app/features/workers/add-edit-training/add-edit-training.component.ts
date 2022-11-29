@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -26,8 +27,18 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    protected backLinkService: BackLinkService,
   ) {
-    super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
+    super(
+      formBuilder,
+      route,
+      router,
+      backService,
+      errorSummaryService,
+      trainingService,
+      workerService,
+      backLinkService,
+    );
   }
 
   protected init(): void {

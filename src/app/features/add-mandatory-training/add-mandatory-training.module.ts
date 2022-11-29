@@ -6,12 +6,10 @@ import { RemoveAllSelectionsDialogComponent } from '@features/add-mandatory-trai
 import { SharedModule } from '@shared/shared.module';
 
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
+import { ListMandatoryTrainingComponent } from './list-mandatory-training/list-mandatory-training.component';
 
 @NgModule({
   imports: [CommonModule, AddMandatoryTrainingRoutingModule, ReactiveFormsModule, SharedModule],
-  declarations: [
-    AddMandatoryTrainingComponent,
-    RemoveAllSelectionsDialogComponent
-  ],
+  declarations: [AddMandatoryTrainingComponent, RemoveAllSelectionsDialogComponent, ListMandatoryTrainingComponent],
 })
 export class AddMandatoryTrainingModule {}

@@ -1,7 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-character-count',
@@ -15,10 +14,8 @@ export class CharacterCountComponent implements OnInit, OnDestroy {
   @Input() words = false;
 
   ngOnInit() {
-    this.remaining = this.max;
-
     this.subscriptions.add(
-      this.control.valueChanges.pipe(debounceTime(200)).subscribe((value: string) => {
+      this.control.valueChanges.subscribe((value: string) => {
         if (value) {
           if (this.words) {
             this.remaining = this.max - value.match(/\S+/g).length;
