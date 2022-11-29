@@ -236,10 +236,8 @@ const completePost = async (req, res) => {
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
         await purgeBulkUploadS3Objects(primaryEstablishmentId);
-
         // confirm success against the primary establishment
         await Establishment.bulkUploadSuccess(primaryEstablishmentId);
-
         const completeEndTime = new Date();
         timerLog('CHECKPOINT - BU COMPLETE - clean up', completeSaveTime, completeEndTime);
         timerLog('CHECKPOINT - BU COMPLETE - overall', completeStartTime, completeEndTime);

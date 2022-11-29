@@ -682,7 +682,6 @@ class Establishment extends EntityValidator {
             );
           });
         }
-
         this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisEstablishmentIsValid.toString()}`);
         return false;
       }
