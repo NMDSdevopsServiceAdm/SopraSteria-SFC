@@ -11,7 +11,7 @@ describe('SelectStaffErrorSummaryComponent', () => {
       declarations: [],
       providers: [],
       componentProperties: {
-        errorsMap: [
+        formErrorsMap: [
           {
             item: 'error1',
             type: [
