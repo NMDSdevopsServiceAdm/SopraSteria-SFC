@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -11,6 +11,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { RemoveAllMandatoryTrainingComponent } from './delete-all-mandatory-training.component';
 
@@ -42,7 +43,7 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
               snapshot: {
                 data: {
                   establishment: {
-                    uid: '123',
+                    uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
                   },
                 },
               },
@@ -60,11 +61,16 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
     const deleteAllMandatoryTrainingSpy = spyOn(trainingService, 'deleteAllMandatoryTraining').and.callThrough();
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
+    const router = injector.inject(Router) as Router;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
       fixture,
       deleteAllMandatoryTrainingSpy,
       alertSpy,
+      routerSpy,
       getByText,
     };
   }
@@ -103,7 +109,16 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
 
       expect(deleteAllMandatoryTrainingSpy).toHaveBeenCalled();
     });
-  });
 
-  describe('success alert', async () => {});
+    it('return to the add-and-manage-mandatory-training when cancel is clicked', async () => {
+      const { component, getByText, routerSpy } = await setup();
+
+      userEvent.click(getByText('Cancel'));
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.establishment.uid,
+        'add-and-manage-mandatory-training',
+      ]);
+    });
+  });
 });
