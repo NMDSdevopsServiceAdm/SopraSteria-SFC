@@ -18,4 +18,8 @@ export class ProgressBarUtil {
   public static staffBenefitsMiniFlowProgressBarSections = (): string[] => {
     return ['Loyalty bonus', 'Statutory Sick Pay', 'Pensions', 'Holiday leave'];
   };
+
+  public static staffRecordProgressBarSections = (): string[] => {
+    return ['Mandatory information', 'Personal details', 'Employment details', 'Training and qualifications'];
+  };
 }

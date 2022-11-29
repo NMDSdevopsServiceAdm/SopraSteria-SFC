@@ -5,6 +5,7 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
@@ -34,6 +35,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   constructor(
     protected router: Router,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
     protected formBuilder: FormBuilder,
@@ -54,6 +56,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
     this.appDetailTitle = `Not sure how many members of staff ${this.isParent ? 'the' : 'your'} workplace has?`;
+    this.setBackLink();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -64,6 +67,10 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
 
   public ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   protected prefillForm(): void {

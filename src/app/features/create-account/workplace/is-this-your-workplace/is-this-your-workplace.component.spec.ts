@@ -280,18 +280,4 @@ describe('IsThisYourWorkplaceComponent', () => {
     expect(form.invalid).toBeTruthy();
     expect(component.getAllByText(errorMessage).length).toBe(2);
   });
-
-  describe('setBackLink()', () => {
-    it('should set the correct back link when in the registration flow', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'find-workplace'],
-      });
-    });
-  });
 });

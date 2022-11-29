@@ -2,8 +2,9 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_DEFAULT, DATE_PARSE_FORMAT } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
@@ -17,30 +18,35 @@ import { QuestionComponent } from '../question/question.component';
 export class DateOfBirthComponent extends QuestionComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
-  private minDate = dayjs().subtract(100, 'years').add(1, 'days');
-  private maxDate = dayjs().subtract(14, 'years');
+  public minDate = dayjs().subtract(100, 'years').add(1, 'days');
+  public maxDate = dayjs().subtract(14, 'years');
+  public section = 'Personal details';
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService,
+    public workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      dob: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
-    });
+    this.form = this.formBuilder.group(
+      {
+        dob: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+      },
+      { updateOn: 'submit' },
+    );
     this.form.get('dob').setValidators([DateValidator.dateValid(), DateValidator.between(this.minDate, this.maxDate)]);
   }
 
-  init() {
+  init(): void {
     if (this.worker.dateOfBirth) {
       const date = dayjs(this.worker.dateOfBirth, DATE_PARSE_FORMAT);
       this.form.get('dob').patchValue({
@@ -49,13 +55,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
         day: date.date(),
       });
     }
-
-    this.next = this.getRoutePath('home-postcode');
-    this.previous = this.getRoutePath('national-insurance-number');
-  }
-
-  ngAfterViewInit() {
-    this.errorSummaryService.formEl$.next(this.formEl);
+    this.next = this.getRoutePath('national-insurance-number');
   }
 
   public setupFormErrorsMap(): void {
@@ -65,13 +65,13 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
         type: [
           {
             name: 'dateValid',
-            message: 'The date you entered is in the wrong format',
+            message: 'Enter a valid date of birth, like 31 3 1980',
           },
           {
             name: 'dateBetween',
-            message: `The date has to be between ${this.minDate.format(DATE_DISPLAY_DEFAULT)} and ${this.maxDate.format(
+            message: `Date of birth must to be between ${this.minDate.format(
               DATE_DISPLAY_DEFAULT,
-            )}.`,
+            )} and ${this.maxDate.format(DATE_DISPLAY_DEFAULT)}`,
           },
         ],
       },

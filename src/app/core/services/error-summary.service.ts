@@ -19,6 +19,7 @@ export class ErrorSummaryService {
     this.router.navigate([this.getRouteName()], {
       fragment: 'error-summary-title',
       queryParamsHandling: 'merge',
+      replaceUrl: true,
     });
   }
 

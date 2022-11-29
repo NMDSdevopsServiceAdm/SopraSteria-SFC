@@ -21,7 +21,7 @@ import { StaffRecordsTabComponent } from './staff-records-tab.component';
 describe('StaffRecordsTab', () => {
   async function setup(permissions = []) {
     const establishment = establishmentBuilder() as Establishment;
-    const component = await render(StaffRecordsTabComponent, {
+    const { fixture, getByText, queryByText } = await render(StaffRecordsTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -47,14 +47,21 @@ describe('StaffRecordsTab', () => {
         workplace: establishment,
       },
     });
+
+    const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const workerService = injector.inject(WorkerService) as WorkerService;
+    const workerSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
     return {
       component,
+      fixture,
+      getByText,
+      queryByText,
       establishmentService,
       workerService,
+      workerSpy,
     };
   }
 
@@ -64,12 +71,12 @@ describe('StaffRecordsTab', () => {
   });
 
   it('should not display Add a staff record if user does not have canAddWorker permission', async () => {
-    const { component } = await setup();
-    expect(component.queryByText('Add a staff record')).toBeFalsy();
+    const { queryByText } = await setup();
+    expect(queryByText('Add a staff record')).toBeFalsy();
   });
 
   it('should display Add a staff record if user does have canAddWorker permission', async () => {
-    const { component } = await setup(['canAddWorker']);
-    expect(component.queryByText('Add a staff record')).toBeTruthy();
+    const { queryByText } = await setup(['canAddWorker']);
+    expect(queryByText('Add a staff record')).toBeTruthy();
   });
 });

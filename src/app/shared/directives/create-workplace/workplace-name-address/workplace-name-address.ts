@@ -6,6 +6,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
@@ -37,6 +38,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
 
   constructor(
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
@@ -326,24 +328,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
   }
 
   public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow] });
-      return;
-    }
-    if (this.isCqcRegulatedAndWorkplaceNotFound()) {
-      this.backService.setBackLink({ url: [this.flow, 'workplace-not-found'] });
-      return;
-    }
-    if (this.isNotCqcRegulatedAndWorkplaceNotFound()) {
-      this.backService.setBackLink({ url: [this.flow, 'workplace-address-not-found'] });
-      return;
-    }
-    if (this.isCqcRegulated) {
-      this.backService.setBackLink({ url: [this.flow, 'select-workplace'] });
-      return;
-    }
-
-    this.backService.setBackLink({ url: [this.flow, 'select-workplace-address'] });
+    this.backLinkService.showBackLink();
   }
 
   protected setConfirmDetailsBackLink(): void {}

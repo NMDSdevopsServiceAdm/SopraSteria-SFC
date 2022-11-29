@@ -21,6 +21,8 @@ export class WorkerPayPipe extends DecimalPipe implements PipeTransform {
         format = '1.2-2';
         break;
     }
-    return `£${super.transform(workerPay.rate, format)} ${workerPay.value}`;
+    return `£${super.transform(workerPay.rate, format)} ${
+      workerPay.value === 'Annually' ? 'annual salary' : 'hourly pay'
+    }`;
   }
 }

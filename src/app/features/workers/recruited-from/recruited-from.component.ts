@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { RecruitmentResponse, RecruitmentService } from '@core/services/recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -19,12 +20,13 @@ export class RecruitedFromComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private recruitmentService: RecruitmentService
+    protected establishmentService: EstablishmentService,
+    private recruitmentService: RecruitmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       recruitmentKnown: null,
@@ -34,19 +36,24 @@ export class RecruitedFromComponent extends QuestionComponent {
 
   init() {
     this.subscriptions.add(
-      this.form.get('recruitmentKnown').valueChanges.subscribe(val => {
+      this.form.get('recruitmentKnown').valueChanges.subscribe((val) => {
         this.form.get('recruitedFromId').clearValidators();
-
         if (val === 'Yes') {
           this.form.get('recruitedFromId').setValidators(Validators.required);
         }
 
         this.form.get('recruitedFromId').updateValueAndValidity();
-      })
+      }),
     );
 
     this.subscriptions.add(
-      this.recruitmentService.getRecruitedFrom().subscribe(res => (this.availableRecruitments = res))
+      this.form.get('recruitedFromId').valueChanges.subscribe(() => {
+        this.submitted = false;
+      }),
+    );
+
+    this.subscriptions.add(
+      this.recruitmentService.getRecruitedFrom().subscribe((res) => (this.availableRecruitments = res)),
     );
 
     if (this.worker.recruitedFrom) {
@@ -58,10 +65,6 @@ export class RecruitedFromComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('adult-social-care-started');
-    this.previous =
-      this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-        ? this.getRoutePath('country-of-birth')
-        : this.getRoutePath('year-arrived-uk');
   }
 
   setupFormErrorsMap(): void {
@@ -71,7 +74,7 @@ export class RecruitedFromComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Recruitment from has to be provided.',
+            message: 'Select where they were recruited from',
           },
         ],
       },

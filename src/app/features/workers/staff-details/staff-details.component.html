@@ -4,16 +4,15 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">{{ worker ? 'Edit' : 'Add' }} a staff record</h1>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Mandatory information</span>
+          <h1 class="govuk-fieldset__heading">{{ worker ? 'Update' : 'Add a' }} staff record</h1>
         </legend>
         <div
           class="govuk-form-group"
           [class.govuk-form-group--error]="submitted && (form.get('nameOrId').invalid || serverError)"
         >
-          <label class="govuk-label" for="nameOrId">
-            <b>Name or ID number</b>
-          </label>
+          <label class="govuk-label" for="nameOrId"> Name or ID number </label>
           <span *ngIf="submitted && form.get('nameOrId').errors" id="nameOrId-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFormErrorMessage('nameOrId', 'required') }}
@@ -33,9 +32,7 @@
             submitted && (form.get('mainJob').invalid || form.get('otherJobRole').invalid)
           "
         >
-          <label class="govuk-label" for="mainJob">
-            <b>Main job role</b>
-          </label>
+          <label class="govuk-label" for="mainJob"> Main job role </label>
           <span *ngIf="submitted && form.get('mainJob').errors" id="mainJob-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFormErrorMessage('mainJob', 'required') }}
@@ -58,9 +55,7 @@
             class="govuk-radios__conditional govuk-!-margin-top-4"
             [class.govuk-select__conditional--hidden]="!showInputTextforOtherRole"
           >
-            <label class="govuk-label" for="otherJobRole-conditional">
-              <b>What is the job role?</b>
-            </label>
+            <label class="govuk-label" for="otherJobRole-conditional"> What is the job role? </label>
             <span
               *ngIf="submitted && form.get('otherJobRole').invalid"
               id="otherJobRole-error"
@@ -70,6 +65,7 @@
               {{ getFormErrorMessage('otherJobRole', 'maxlength') }}
             </span>
             <input
+              data-testid="other-job-role"
               class="govuk-input govuk-!-width-two-thirds"
               [formControlName]="'otherJobRole'"
               id="otherJobRole-conditional"
@@ -101,10 +97,10 @@
                   id="contract-{{ idx }}"
                   name="contract"
                   type="radio"
-                  [value]="contract"
+                  [value]="contract.value"
                 />
                 <label class="govuk-label govuk-radios__label" for="contract-{{ idx }}">
-                  {{ contract }}
+                  {{ contract.tag }}
                 </label>
               </div>
             </div>
@@ -112,13 +108,25 @@
         </div>
       </fieldset>
     </div>
+
+    <div class="govuk-grid-column-one-third" *ngIf="!editFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="'Mandatory information'"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
   <app-submit-button
-    [return]="canReturn"
-    [canExit]="canExit"
-    [recordSummary]="false"
+    [summaryContinue]="summaryContinue"
     [callToAction]="submitTitle"
+    [recordSummary]="false"
+    [canExit]="canExit"
+    [return]="editFlow"
     [isExistingStaffRecord]="!!worker"
-    (clicked)="onSubmit($event)"
-  ></app-submit-button>
+    (clicked)="setSubmitAction($event)"
+  >
+  </app-submit-button>
 </form>

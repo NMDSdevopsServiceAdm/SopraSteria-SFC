@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -12,17 +13,22 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './social-care-qualification.component.html',
 })
 export class SocialCareQualificationComponent extends QuestionComponent {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+  public answersAvailable = [
+    { tag: 'Yes', value: 'Yes' },
+    { tag: 'No', value: 'No' },
+    { tag: 'I do not know', value: `Don't know` },
+  ];
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       qualificationInSocialCare: null,
@@ -31,15 +37,18 @@ export class SocialCareQualificationComponent extends QuestionComponent {
 
   init() {
     if (this.worker.qualificationInSocialCare) {
-      this.form.patchValue({
-        qualificationInSocialCare: this.worker.qualificationInSocialCare,
-      });
+      this.prefill();
     }
-
-    this.previous = this.getRoutePath('apprenticeship-training');
+    this.next = this.getRoutePath('other-qualifications');
   }
 
-  generateUpdateProps() {
+  private prefill(): void {
+    this.form.patchValue({
+      qualificationInSocialCare: this.worker.qualificationInSocialCare,
+    });
+  }
+
+  generateUpdateProps(): unknown {
     const { qualificationInSocialCare } = this.form.value;
 
     if (!qualificationInSocialCare) {
@@ -51,10 +60,19 @@ export class SocialCareQualificationComponent extends QuestionComponent {
     };
   }
 
-  onSuccess() {
-    this.next =
-      this.worker.qualificationInSocialCare === 'Yes'
-        ? this.getRoutePath('social-care-qualification-level')
-        : this.getRoutePath('other-qualifications');
+  onSuccess(): void {
+    const { qualificationInSocialCare } = this.form.value;
+
+    const summaryRecordUrl = this.getRoutePath('');
+    if (qualificationInSocialCare === 'Yes') {
+      if (this.insideFlow) {
+        this.next = this.getRoutePath('social-care-qualification-level');
+      } else {
+        this.next = summaryRecordUrl;
+        this.next.push('social-care-qualification-level');
+      }
+    } else {
+      !this.insideFlow && (this.next = summaryRecordUrl);
+    }
   }
 }

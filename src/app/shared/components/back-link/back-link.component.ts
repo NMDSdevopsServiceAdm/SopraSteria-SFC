@@ -15,9 +15,9 @@ export class BackLinkComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.backService.back$.subscribe(back => {
+      this.backService.back$.subscribe((back) => {
         this.back = back;
-      })
+      }),
     );
   }
 

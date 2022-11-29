@@ -1,53 +1,40 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Establishment } from '@core/model/establishment.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { PermissionType } from '@core/model/permissions.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { EligibilityIconComponent } from '@shared/components/eligibility-icon/eligibility-icon.component';
 import { InsetTextComponent } from '@shared/components/inset-text/inset-text.component';
+import { ProgressBarComponent } from '@shared/components/progress-bar/progress-bar.component';
 import { BasicRecordComponent } from '@shared/components/staff-record-summary/basic-record/basic-record.component';
 import { SummaryRecordChangeComponent } from '@shared/components/summary-record-change/summary-record-change.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
-import { render, within } from '@testing-library/angular';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { MandatoryDetailsComponent } from './mandatory-details.component';
 
 describe('MandatoryDetailsComponent', () => {
-  const sinon = require('sinon');
-  const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
-
-  const establishmentBuilder = build('Establishment', {
-    fields: {
-      id: sequence(),
-      uid: fake((f) => f.datatype.uuid()),
-      name: fake((f) => f.lorem.sentence()),
-    },
-  });
-
-  const establishment = establishmentBuilder() as Establishment;
-
-  const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-    can: sinon.stub().returns(true),
-  });
-
-  let setup;
-  beforeEach(async () => {
-    setup = await render(MandatoryDetailsComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+  const setup = async (canEditWorker = true, primaryUid = 123) => {
+    const permissions = canEditWorker ? ['canEditWorker'] : [];
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(MandatoryDetailsComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [
         InsetTextComponent,
         BasicRecordComponent,
         SummaryRecordValueComponent,
         EligibilityIconComponent,
         SummaryRecordChangeComponent,
+        ProgressBarComponent,
       ],
       providers: [
         {
@@ -60,22 +47,19 @@ describe('MandatoryDetailsComponent', () => {
         },
         {
           provide: PermissionsService,
-          useValue: mockPermissionsService,
+          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
+          deps: [HttpClient],
         },
-        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: {
-              url: [{ path: 1 }, { path: 2 }],
-              params: {
-                establishmentuid: establishment.uid,
-              },
-            },
             parent: {
               snapshot: {
                 data: {
-                  establishment,
+                  primaryWorkplace: { uid: primaryUid },
+                  establishment: {
+                    uid: 123,
+                  },
                 },
               },
             },
@@ -87,67 +71,88 @@ describe('MandatoryDetailsComponent', () => {
         },
       ],
     });
-  });
+
+    const component = fixture.componentInstance;
+    const router = TestBed.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    return {
+      component,
+      fixture,
+      getByText,
+      queryByText,
+      getByTestId,
+      queryByTestId,
+      routerSpy,
+    };
+  };
 
   it('should create', async () => {
-    const component = await setup;
+    const component = await setup();
 
     expect(component).toBeTruthy();
   });
 
-  it('should show Worker information in summary list', async () => {
-    const { getByTestId, fixture } = await setup;
+  it('should render the progress bar', async () => {
+    const { queryByTestId } = await setup();
 
-    fixture.detectChanges();
-
-    const container = within(getByTestId('summary'));
-    const expectedWorker = fixture.componentInstance.worker;
-
-    expect(container.getAllByText(expectedWorker.nameOrId));
-    expect(container.getAllByText(expectedWorker.mainJob.title));
-    expect(container.getAllByText(expectedWorker.contract));
+    expect(queryByTestId('progress-bar')).toBeTruthy();
   });
 
-  it('should show have the title mandatory details on summary', async () => {
-    const { getByTestId, fixture } = await setup;
+  it('should show Worker information in summary list', async () => {
+    const { getByText, component } = await setup();
 
-    fixture.detectChanges();
+    const expectedWorker = component.worker;
 
-    const container = within(getByTestId('summary'));
-
-    expect(container.getAllByText('Mandatory details'));
+    expect(getByText(expectedWorker.nameOrId));
+    expect(getByText(expectedWorker.mainJob.title));
+    expect(getByText(expectedWorker.contract));
   });
 
   it('should take you to the staff-details page when change link is clicked', async () => {
-    const { fixture, getByText } = await setup;
+    const { component, getByText } = await setup();
 
-    const worker = fixture.componentInstance.worker;
+    const worker = component.worker;
     const changeLink = getByText('Change');
 
     expect(changeLink.getAttribute('href')).toBe(
-      `/workplace/${establishment.uid}/staff-record/${worker.uid}/staff-details`,
+      `/workplace/${123}/staff-record/${worker.uid}/mandatory-details/staff-details`,
     );
   });
 
-  it('should submit and move to next page when add details button clicked', async () => {
-    const { getByTestId, fixture } = await setup;
+  it('should not show the change link if the user does not have edit permissions', async () => {
+    const { queryByText } = await setup(false);
 
-    fixture.detectChanges();
+    expect(queryByText('Change')).toBeFalsy();
+  });
 
-    const submission = spyOn(fixture.componentInstance, 'onSubmit');
+  it('should submit and navigate to date of birth page when add details button clicked', async () => {
+    const { getByTestId, component, routerSpy } = await setup();
+
+    const submission = spyOn(component, 'onSubmit').and.callThrough();
     const detailsButton = getByTestId('add-details-button');
     detailsButton.click();
     expect(submission).toHaveBeenCalled();
+    expect(routerSpy).toHaveBeenCalledWith(['', 'date-of-birth']);
   });
 
-  it('should take you to to dashboard', async () => {
-    const { getByTestId, fixture } = await setup;
+  it('should take you to to dashboard if adding a staff record to own establishment', async () => {
+    const { getByTestId, component, routerSpy } = await setup();
 
-    fixture.detectChanges();
-
-    const navDash = spyOn(fixture.componentInstance, 'navigateToDashboard');
+    const navDash = spyOn(component, 'navigateToDashboard').and.callThrough();
     const allWorkersButton = getByTestId('view-all-workers-button');
     userEvent.click(allWorkersButton);
     expect(navDash).toHaveBeenCalled();
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
+  });
+
+  it('should take you to to the workplace home page if adding a staff record to subsidiary establishment', async () => {
+    const { getByTestId, component, routerSpy } = await setup(true, 345);
+
+    const navDash = spyOn(component, 'navigateToDashboard').and.callThrough();
+    const allWorkersButton = getByTestId('view-all-workers-button');
+    userEvent.click(allWorkersButton);
+    expect(navDash).toHaveBeenCalled();
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 123], { fragment: 'staff-records' });
   });
 });

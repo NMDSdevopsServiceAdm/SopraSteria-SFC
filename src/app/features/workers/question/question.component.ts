@@ -5,9 +5,11 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import isNull from 'lodash/isNull';
 import { Subscription } from 'rxjs';
 
@@ -29,41 +31,57 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
-  protected initiated = false;
+  public initiated = false;
+
+  public staffRecordSections: string[] = ProgressBarUtil.staffRecordProgressBarSections();
+  public insideFlow: boolean;
+  public flow: string;
+  public submitAction: { action: string; save: boolean } = null;
+  public returnUrl: string[];
+  public submitTitle: string;
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
     this.return = this.workerService.returnTo;
     this.workplace = this.route.parent.snapshot.data.establishment;
-    this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary';
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
         this.worker = worker;
-
         if (!this.initiated) {
           this._init();
-
-          this.back = this.return
-            ? this.return
-            : {
+          this.back = this.previous
+            ? {
                 url: this.previous,
                 ...(!this.workerService.addStaffRecordInProgress$.value && { fragment: 'staff-records' }),
-              };
-          this.backService.setBackLink(this.back);
+              }
+            : this.return;
+
+          this.setBackLink();
         }
       }),
     );
 
+    if (this.worker && !this.returnUrl) {
+      this.returnUrl = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
+    }
+
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+  }
+
+  public setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   ngAfterViewInit() {
@@ -89,8 +107,16 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected setupServerErrorsMap() {}
   protected generateUpdateProps() {}
   protected onSuccess() {}
+  protected addErrorLinkFunctionality(): void {}
+  protected addAlert(): void {}
 
-  protected navigate(action): void {
+  protected navigate(): void {
+    const { action } = this.submitAction;
+
+    if (!action) {
+      return;
+    }
+
     switch (action) {
       case 'continue':
         this.router.navigate(this.next);
@@ -107,7 +133,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'return':
-        this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
+        this.router.navigate(this.returnUrl);
         break;
     }
   }
@@ -116,18 +142,25 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     if (name) {
       return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
     } else {
-      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
     }
   }
 
-  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
-    if (!payload.save) {
-      this.navigate(payload.action);
+  public setSubmitAction(payload: { action: string; save: boolean }): void {
+    this.submitAction = { action: payload.action, save: payload.save };
+
+    !payload.save && this.onSubmit();
+  }
+
+  public onSubmit() {
+    if (!this.submitAction.save) {
+      this.navigate();
       return;
     }
 
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.addErrorLinkFunctionality();
 
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
@@ -138,31 +171,32 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (isNull(props)) {
       this.onSuccess();
-      this.navigate(payload.action);
+      this.navigate();
       return;
     }
 
     if (!this.worker) {
       this.subscriptions.add(
         this.workerService.createWorker(this.workplace.uid, props).subscribe(
-          (data) => this._onSuccess(data, payload.action),
+          (data) => this._onSuccess(data),
           (error) => this.onError(error),
         ),
       );
     } else {
       this.subscriptions.add(
         this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
-          (data) => this._onSuccess(data, payload.action),
+          (data) => this._onSuccess(data),
           (error) => this.onError(error),
         ),
       );
     }
   }
 
-  _onSuccess(data, action) {
+  _onSuccess(data) {
     this.workerService.setState({ ...this.worker, ...data });
     this.onSuccess();
-    this.navigate(action);
+    this.navigate();
+    this.addAlert();
   }
 
   onError(error) {

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -12,17 +13,25 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './gender.component.html',
 })
 export class GenderComponent extends QuestionComponent {
-  public answersAvailable = ['Female', 'Male', 'Other', `Don't know`];
+  public answersAvailable = [
+    { value: 'Female', tag: 'Female' },
+    { value: 'Male', tag: 'Male' },
+    { value: 'Other', tag: 'Other' },
+    { value: `Don't know`, tag: 'I do not know' },
+  ];
+  public section = 'Personal details';
+  private disabilityPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected route: ActivatedRoute,
-    protected backService: BackService,
+    public route: ActivatedRoute,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       gender: null,
@@ -37,12 +46,10 @@ export class GenderComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('disability');
-    this.previous = this.getRoutePath('home-postcode');
   }
 
   generateUpdateProps() {
     const { gender } = this.form.controls;
-
     return gender.value
       ? {
           gender: gender.value,

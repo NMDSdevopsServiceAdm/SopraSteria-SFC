@@ -316,33 +316,6 @@ describe('YourDetailsComponent', () => {
     expect(cancelLink.getAttribute('href')).toEqual('/registration/confirm-details');
   });
 
-  describe('setBackLink()', () => {
-    it('should set the back link to select-main-service if return url is null', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'add-total-staff'],
-      });
-    });
-
-    it('should set the back link to confirm-details if return url is not null', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.return = { url: ['registration', 'confirm-details'] };
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['registration', 'confirm-details'],
-      });
-    });
-  });
-
   describe('progressBar', () => {
     it('should render the workplace and user account progress bars', async () => {
       const { component } = await setup();

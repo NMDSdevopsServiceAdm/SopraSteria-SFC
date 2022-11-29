@@ -1,25 +1,8 @@
 <h2 class="govuk-heading-m">Employment details</h2>
-<dl class="govuk-summary-list asc-summarylist-border-top govuk-!-margin-bottom-0">
-  <div class="govuk-summary-list__row" *ngIf="displayYearArrived">
-    <dt class="govuk-summary-list__key">Year arrived in the UK</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
-    </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' year arrived in UK'"
-        [link]="getRoutePath('year-arrived-uk')"
-        [hasData]="
-          !(worker.yearArrived === null || (worker.yearArrived?.value === null && worker.yearArrived?.year === null))
-        "
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-
+<dl class="govuk-summary-list asc-summarylist-border-top">
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Date started in main job role</dt>
-    <dd class="govuk-summary-list__value">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">Date started in main job role</dt>
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.mainJobStartDate"
@@ -59,7 +42,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayMentalHealthProfessional">
     <dt class="govuk-summary-list__key">Approved Mental Health Professional</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -72,37 +55,9 @@
     </dd>
   </div>
 
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Other job roles</dt>
-    <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="!worker.otherJobs"> - </ng-container>
-      <ng-container *ngIf="worker.otherJobs?.value === 'No'"> No </ng-container>
-      <ng-container *ngIf="worker.otherJobs?.value === 'Yes'">
-        <ul class="govuk-list govuk-!-margin-bottom-0">
-          <li *ngFor="let otherJob of worker.otherJobs.jobs">
-            <ng-container *ngIf="otherJob.other; else title">
-              <span>{{ otherJob.other }}</span>
-            </ng-container>
-            <ng-template #title>
-              <span>{{ otherJob.title }}</span>
-            </ng-template>
-          </li>
-        </ul>
-      </ng-container>
-    </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' other job roles'"
-        [link]="getRoutePath('other-job-roles')"
-        [hasData]="!!worker.otherJobs"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
     <dt class="govuk-summary-list__key">Nursing and Midwifery Council category</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{ (worker.registeredNurse | nursingCategoriesText) || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -117,10 +72,10 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
     <dt class="govuk-summary-list__key">Nursing specialisms used in current role</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <ng-container *ngIf="!worker.nurseSpecialisms"> - </ng-container>
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'No'"> Not using any of their specialisms </ng-container>
-      <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Don\'t know'"> Don't know </ng-container>
+      <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Don\'t know'">Not known</ng-container>
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Yes'">
         <ul class="govuk-list govuk-!-margin-bottom-0">
           <li *ngFor="let specialism of worker.nurseSpecialisms.specialisms">
@@ -141,7 +96,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Recruited from</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.recruitedFrom"
@@ -166,7 +121,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Year started in adult social care</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{
         worker.socialCareStartDate?.year
           ? worker.socialCareStartDate?.year
@@ -185,7 +140,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayDaysSickness">
     <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.daysSick"
@@ -221,7 +176,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Zero hours contract</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.zeroHoursContract"
@@ -261,7 +216,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayAverageWeeklyHours">
     <dt class="govuk-summary-list__key">Average weekly working hours</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.weeklyHoursAverage"
@@ -310,7 +265,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayWeeklyContractedHours">
     <dt class="govuk-summary-list__key">Contracted weekly hours</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.weeklyHoursContracted"
@@ -360,7 +315,7 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Hourly pay or annual salary</dt>
 
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.annualHourlyPay"

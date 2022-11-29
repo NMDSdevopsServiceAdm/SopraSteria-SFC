@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Nationality } from '@core/model/nationality.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { NationalityService } from '@core/services/nationality.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -15,17 +16,19 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class NationalityComponent extends QuestionComponent {
   public availableNationalities: Nationality[];
+  public section = 'Personal details';
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private nationalityService: NationalityService
+    protected establishmentService: EstablishmentService,
+    private nationalityService: NationalityService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.nationalityNameValidator = this.nationalityNameValidator.bind(this);
     this.nationalityNameFilter = this.nationalityNameFilter.bind(this);
@@ -37,23 +40,8 @@ export class NationalityComponent extends QuestionComponent {
   }
 
   init() {
-    this.subscriptions.add(
-      this.nationalityService
-        .getNationalities()
-        .subscribe(nationalities => (this.availableNationalities = nationalities))
-    );
-
-    this.subscriptions.add(
-      this.form.get('nationalityKnown').valueChanges.subscribe(value => {
-        this.form.get('nationalityName').clearValidators();
-
-        if (value === 'Other') {
-          this.form.get('nationalityName').setValidators([this.nationalityNameValidator]);
-        }
-
-        this.form.get('nationalityName').updateValueAndValidity();
-      })
-    );
+    this.availableNationalitiesList();
+    this.nationalityValidation();
 
     if (this.worker.nationality) {
       const { value, other } = this.worker.nationality;
@@ -64,7 +52,27 @@ export class NationalityComponent extends QuestionComponent {
       });
     }
 
-    this.previous = this.getRoutePath('ethnicity');
+    this.next = this.getRoutePath('british-citizenship');
+  }
+
+  private availableNationalitiesList(): void {
+    this.subscriptions.add(
+      this.nationalityService
+        .getNationalities()
+        .subscribe((nationalities) => (this.availableNationalities = nationalities)),
+    );
+  }
+
+  private nationalityValidation(): void {
+    this.subscriptions.add(
+      this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
+        this.form.get('nationalityName').clearValidators();
+        if (value === 'Other') {
+          this.form.get('nationalityName').setValidators([this.nationalityNameValidator]);
+        }
+        this.form.get('nationalityName').updateValueAndValidity();
+      }),
+    );
   }
 
   setupFormErrorsMap(): void {
@@ -74,7 +82,7 @@ export class NationalityComponent extends QuestionComponent {
         type: [
           {
             name: 'validNationality',
-            message: 'Invalid nationality.',
+            message: 'Enter a valid nationality',
           },
         ],
       },
@@ -102,11 +110,16 @@ export class NationalityComponent extends QuestionComponent {
       : null;
   }
 
-  onSuccess() {
-    this.next =
-      this.worker.nationality && this.worker.nationality.value === 'British'
-        ? this.getRoutePath('country-of-birth')
-        : this.getRoutePath('british-citizenship');
+  onSuccess(): void {
+    const { nationalityKnown } = this.form.value;
+    if (nationalityKnown === 'British') {
+      this.next = this.insideFlow ? this.getRoutePath('country-of-birth') : this.getRoutePath('');
+    } else {
+      if (!this.insideFlow) {
+        this.next = this.getRoutePath('');
+        this.next.push('british-citizenship');
+      }
+    }
   }
 
   nationalityNameValidator() {
@@ -116,7 +129,7 @@ export class NationalityComponent extends QuestionComponent {
       if (nationalityKnown.value === 'Other') {
         if (nationalityName.value) {
           const nationalityNameLowerCase = nationalityName.value.toLowerCase();
-          return this.availableNationalities.some(n => n.nationality.toLowerCase() === nationalityNameLowerCase)
+          return this.availableNationalities.some((n) => n.nationality.toLowerCase() === nationalityNameLowerCase)
             ? null
             : { validNationality: true };
         }
@@ -132,9 +145,9 @@ export class NationalityComponent extends QuestionComponent {
     if (this.availableNationalities && nationalityName && nationalityName.length) {
       const nationalityNameLowerCase = nationalityName.toLowerCase();
       return this.availableNationalities
-        .filter(n => n.nationality.toLowerCase().startsWith(nationalityNameLowerCase))
-        .filter(n => n.nationality.toLowerCase() !== nationalityNameLowerCase)
-        .map(n => n.nationality);
+        .filter((n) => n.nationality.toLowerCase().startsWith(nationalityNameLowerCase))
+        .filter((n) => n.nationality.toLowerCase() !== nationalityNameLowerCase)
+        .map((n) => n.nationality);
     }
 
     return [];

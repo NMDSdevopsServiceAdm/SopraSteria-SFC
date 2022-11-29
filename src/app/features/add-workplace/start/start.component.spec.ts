@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { SharedModule } from '@shared/shared.module';
@@ -17,7 +17,7 @@ describe('StartComponent', () => {
           provide: WorkplaceService,
           useClass: MockWorkplaceService,
         },
-        BackService,
+        BackLinkService,
       ],
     });
 
@@ -41,19 +41,5 @@ describe('StartComponent', () => {
     const continueButton = getByText('Continue');
 
     expect(continueButton.getAttribute('href')).toBe('/add-workplace/regulated-by-cqc');
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the correct back link', async () => {
-      const { component, fixture } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', 'view-all-workplaces'],
-      });
-    });
   });
 });

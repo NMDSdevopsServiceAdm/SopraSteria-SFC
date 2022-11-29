@@ -8,6 +8,7 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
@@ -30,6 +31,7 @@ export class EditAdminUserComponent extends AccountDetailsDirective {
   constructor(
     private breadcrumbService: BreadcrumbService,
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
@@ -38,7 +40,7 @@ export class EditAdminUserComponent extends AccountDetailsDirective {
     private userService: UserService,
     protected route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, fb, router, route);
+    super(backService, backLinkService, errorSummaryService, fb, router, route);
   }
 
   protected init(): void {

@@ -3,8 +3,9 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
@@ -21,11 +22,12 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
@@ -64,7 +66,6 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
     this.next = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
       ? this.getRoutePath('days-of-sickness')
       : this.getRoutePath('contract-with-zero-hours');
-    this.previous = this.getRoutePath('recruited-from');
   }
 
   setupFormErrorsMap(): void {
@@ -74,15 +75,15 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Year is required.',
+            message: 'Enter the year',
           },
           {
             name: 'min',
-            message: `Year can't be earlier than 100 years ago.`,
+            message: `Year cannot be more than 100 years ago`,
           },
           {
             name: 'max',
-            message: `Year can't be in future.`,
+            message: `Year cannot be in the future`,
           },
         ],
       },

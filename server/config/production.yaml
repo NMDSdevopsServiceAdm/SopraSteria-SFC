@@ -45,6 +45,9 @@ disbursement:
   region: eu-west-2
   bucketname: wdf-disbursement-prod
 
+certificate:
+  region: eu-west-2
+  bucketname: sfc-public-prod
 
 locks:
   region: eu-west-1

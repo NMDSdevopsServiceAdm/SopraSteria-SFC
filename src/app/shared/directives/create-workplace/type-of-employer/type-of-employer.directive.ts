@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
@@ -36,6 +37,7 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
   constructor(
     protected formBuilder: FormBuilder,
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected router: Router,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
@@ -70,13 +72,7 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
   protected navigateToNextPage(): void {}
 
   public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow] });
-      return;
-    }
-
-    const route = this.isRegulated ? this.getCQCRegulatedBackLink() : this.getNonCQCRegulatedBackLink();
-    this.backService.setBackLink({ url: [this.flow, route] });
+    this.backLinkService.showBackLink();
   }
 
   protected getCQCRegulatedBackLink(): string {

@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
@@ -32,7 +32,7 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private backService: BackService,
+    private backLinkService: BackLinkService,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService,
     private totalStaffFormService: TotalStaffFormService,
@@ -57,16 +57,7 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
       this.returnCopy = true;
     }
 
-    if (this.returnToDash) {
-      this.backService.setBackLink(this.return);
-    } else if (this.workerService.returnTo) {
-      this.backService.setBackLink(this.workerService.returnTo);
-      this.return = this.workerService.returnTo;
-    } else {
-      this.backService.setBackLink({
-        url: ['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen'],
-      });
-    }
+    this.backLinkService.showBackLink();
 
     this.setupFormErrors();
   }

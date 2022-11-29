@@ -8,6 +8,7 @@ export class InsetTextComponent {
   @Input() color: string;
   @Input() closable = false;
   @Input() removeBottomMargin = false;
+  @Input() removeTopMargin = false;
   @Output() closed = new EventEmitter();
 
   constructor() {}
