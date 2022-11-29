@@ -8,7 +8,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -89,13 +88,11 @@ describe('StaffDetailsComponent', () => {
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService);
-    const backService = injector.inject(BackService);
     const alertService = injector.inject(AlertService) as AlertService;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
-    const backLinkSpy = spyOn(backService, 'setBackLink');
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
     const setAddStaffRecordInProgressSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
@@ -113,7 +110,6 @@ describe('StaffDetailsComponent', () => {
       routerSpy,
       updateWorkerSpy,
       submitSpy,
-      backLinkSpy,
       alertSpy,
       setAddStaffRecordInProgressSpy,
     };
@@ -194,9 +190,10 @@ describe('StaffDetailsComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should set conditionalQuestionUrl when not in mandatory details flow or in the staff record flow and mainJobRole selected is 23`, async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, false);
+    it(`should navigate to the nursing-category page if the main job role has and id of 23 and outside of the flow`, async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
 
+      spyOn(workerService, 'hasJobRole').and.returnValues(false, true); // returns false the first time it is called and true the second time it is called
       userEvent.type(getByLabelText('Name or ID number'), 'Someone');
       userEvent.selectOptions(getByLabelText('Main job role'), ['23']);
       userEvent.click(getByLabelText('Permanent'));
@@ -209,14 +206,14 @@ describe('StaffDetailsComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
-        'registered-nurse-details',
         'nursing-category',
       ]);
     });
 
-    it(`should set conditionalQuestionUrl when not in mandatory details flow or in the staff record flow and mainJobRole selected is 23`, async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, false);
+    it(`should navigate to the mental-health-professional page if the main job role has and id of 27 and outside of the flow`, async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
 
+      spyOn(workerService, 'hasJobRole').and.returnValue(true);
       userEvent.type(getByLabelText('Name or ID number'), 'Someone');
       userEvent.selectOptions(getByLabelText('Main job role'), ['27']);
       userEvent.click(getByLabelText('Permanent'));
@@ -229,7 +226,7 @@ describe('StaffDetailsComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
-        'mental-health-professional-summary-flow',
+        'mental-health-professional',
       ]);
     });
 
@@ -365,7 +362,7 @@ describe('StaffDetailsComponent', () => {
         otherJobRole: null,
         contract: 'Temporary',
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
@@ -433,7 +430,7 @@ describe('StaffDetailsComponent', () => {
         otherJobRole: 'Admin',
         contract: 'Temporary',
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'saveAndContinueConditional', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
@@ -583,53 +580,6 @@ describe('StaffDetailsComponent', () => {
       fixture.detectChanges();
 
       expect(getAllByText('Select the type of contract they have').length).toEqual(2);
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the backlink to /workplace/workplace-uid, when in the flow and primary workplace id is different to workplace id', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: [`/workplace/${component.workplace.uid}`],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to /dasboard, when in the flow and primary workplace id is equal to workplace id', async () => {
-      const { component, fixture, backLinkSpy, establishmentService } = await setup();
-
-      spyOnProperty(establishmentService, 'primaryWorkplace').and.returnValue({ uid: component.workplace.uid });
-      component.initiated = false;
-      component.ngOnInit();
-
-      fixture.detectChanges();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to mandatory-details, when in the flow and accessed from mandatory details is true', async () => {
-      const { component, backLinkSpy } = await setup(true, true);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'mandatory-details'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
     });
   });
 });

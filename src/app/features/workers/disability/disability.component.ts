@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -19,18 +19,17 @@ export class DisabilityComponent extends QuestionComponent {
     { value: 'Undisclosed', tag: 'They preferred not to say' },
     { value: `Don't know`, tag: 'I do not know' },
   ];
-  private ethnicityPath: string[];
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     public route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       disability: null,
@@ -38,27 +37,12 @@ export class DisabilityComponent extends QuestionComponent {
   }
 
   init() {
-    this.insideFlow = this.route.snapshot.parent.url[0].path !== 'staff-record-summary';
     if (this.worker.disability) {
       this.form.patchValue({
         disability: this.worker.disability,
       });
     }
-
-    this.setUpPageRouting();
-  }
-
-  private setUpPageRouting() {
-    this.ethnicityPath = this.getRoutePath('ethnicity');
-    this.staffRecordSummaryPath = this.getRoutePath('staff-record-summary');
-
-    if (this.insideFlow) {
-      this.previous = this.getRoutePath('gender');
-      this.next = this.ethnicityPath;
-    } else {
-      this.return = { url: this.staffRecordSummaryPath };
-      this.previous = this.staffRecordSummaryPath;
-    }
+    this.next = this.getRoutePath('ethnicity');
   }
 
   generateUpdateProps() {

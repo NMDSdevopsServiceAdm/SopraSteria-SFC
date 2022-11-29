@@ -128,7 +128,9 @@ const editWorker = async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  PUT body will be updated (peristed)
+
       const isValidWorker = await thisWorker.load(req.body);
+
       // this is an update to an existing Worker, so no mandatory properties!
       if (isValidWorker) {
         await thisWorker.save(req.username);

@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -46,12 +45,10 @@ describe('NationalityComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService);
-    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -64,7 +61,6 @@ describe('NationalityComponent', () => {
       routerSpy,
       workerServiceSpy,
       submitSpy,
-      backLinkSpy,
     };
   }
 
@@ -99,7 +95,7 @@ describe('NationalityComponent', () => {
     it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup();
 
-      fireEvent.click(getByLabelText(`Don't know`));
+      fireEvent.click(getByLabelText('I do not know'));
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
 
@@ -167,7 +163,7 @@ describe('NationalityComponent', () => {
 
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
-      userEvent.type(getByLabelText('Nationality'), 'French');
+      userEvent.type(getByLabelText('Nationality (optional)'), 'French');
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
 
@@ -207,7 +203,7 @@ describe('NationalityComponent', () => {
       const { component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup();
 
       fireEvent.click(getByText('Skip this question'));
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         component.workplace.uid,
@@ -218,25 +214,25 @@ describe('NationalityComponent', () => {
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link if outside the flow`, async () => {
+    it(`should show 'Save' cta button and 'Cancel' link if outside the flow`, async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should call submit data and navigate with the correct url when 'British' radio button is selected and 'Save and return' is clicked`, async () => {
+    it(`should call submit data and navigate with the correct url when 'British' radio button is selected and 'Save' is clicked`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup(
         false,
       );
 
       fireEvent.click(getByLabelText('British'));
-      fireEvent.click(getByText('Save and return'));
+      fireEvent.click(getByText('Save'));
       fixture.detectChanges();
 
       const updatedFormData = component.form.value;
       expect(updatedFormData).toEqual({ nationalityKnown: 'British', nationalityName: null });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'British' },
       });
@@ -249,7 +245,7 @@ describe('NationalityComponent', () => {
       ]);
     });
 
-    it(`should call submit data and navigate with the correct url when 'Other' radio button is selected, dropdown input is filled out correctly and 'Save and return' is clicked`, async () => {
+    it(`should call submit data and navigate to british-citizenship-summary-flow when 'Other' radio button is selected, dropdown input is filled out correctly and 'Save' is clicked`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup(
         false,
       );
@@ -257,14 +253,14 @@ describe('NationalityComponent', () => {
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
-      userEvent.type(getByLabelText('Nationality'), 'French');
-      fireEvent.click(getByText('Save and return'));
+      userEvent.type(getByLabelText('Nationality (optional)'), 'French');
+      fireEvent.click(getByText('Save'));
       fixture.detectChanges();
 
       const updatedFormData = component.form.value;
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
       expect(updatedFormData).toEqual({ nationalityKnown: 'Other', nationalityName: 'French' });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'Other', other: { nationality: 'French' } },
       });
@@ -274,6 +270,7 @@ describe('NationalityComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
+        'british-citizenship',
       ]);
     });
 
@@ -300,33 +297,11 @@ describe('NationalityComponent', () => {
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
-      userEvent.type(getByLabelText('Nationality'), 'asdf');
-      fireEvent.click(getByText('Save and return'));
+      userEvent.type(getByLabelText('Nationality (optional)'), 'asdf');
+      fireEvent.click(getByText('Save'));
       fixture.detectChanges();
 
-      expect(getAllByText('Invalid nationality.').length).toEqual(2);
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the backlink to /ethnicity when in the flow', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'ethnicity'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
+      expect(getAllByText('Enter a valid nationality').length).toEqual(2);
     });
   });
 });

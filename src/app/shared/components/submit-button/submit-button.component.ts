@@ -1,11 +1,12 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-submit-button',
   templateUrl: './submit-button.component.html',
+  styleUrls: ['./submit-button.component.scss'],
 })
-export class SubmitButtonComponent {
-  @Input() showSaveAndCancelButton = false;
+export class SubmitButtonComponent implements OnInit {
+  @Input() showSaveAndCancelButton = false; // delete
   @Input() return: boolean;
   @Input() saveCallback: any;
   @Input() callToAction = 'Save and continue';
@@ -13,7 +14,15 @@ export class SubmitButtonComponent {
   @Input() canExit = false;
   @Input() exitText = 'Cancel';
   @Input() isExistingStaffRecord = true;
+  @Input() summaryContinue = false;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
+  public summaryActionType = 'return';
+
+  ngOnInit(): void {
+    if (this.summaryContinue) {
+      this.summaryActionType = 'continue';
+    }
+  }
 
   onLinkClick(event: Event, action: string, save: boolean): void {
     event.preventDefault();

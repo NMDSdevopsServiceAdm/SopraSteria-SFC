@@ -3,12 +3,10 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Contracts } from '@core/model/contracts.enum';
-import { BackService } from '@core/services/back.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByText, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SalaryComponent } from './salary.component';
@@ -47,12 +45,10 @@ describe('SalaryComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService);
-    const backService = injector.inject(BackService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
-    const backLinkSpy = spyOn(backService, 'setBackLink');
 
     return {
       component,
@@ -65,7 +61,6 @@ describe('SalaryComponent', () => {
       submitSpy,
       routerSpy,
       workerServiceSpy,
-      backLinkSpy,
       queryByText,
     };
   }
@@ -146,7 +141,7 @@ describe('SalaryComponent', () => {
       const { component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup();
 
       fireEvent.click(getByText('Skip this question'));
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: false });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         component.workplace.uid,
@@ -252,7 +247,6 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(true).toBeTruthy;
       expect(getAllByText('Enter their standard hourly rate').length).toEqual(2);
     });
 
@@ -269,8 +263,26 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(true).toBeTruthy;
       expect(getAllByText('Standard hourly rate must be between £2.50 and £200.00').length).toEqual(2);
+    });
+
+    it('returns an error if Hourly is selected and more than 2 decimal places are entered', async () => {
+      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+
+      const form = component.form;
+      form.controls.terms.setValue('');
+      form.controls.hourlyRate.setValue('4.444');
+      form.controls.annualRate.setValue('');
+
+      fixture.detectChanges();
+      fireEvent.click(getByLabelText('Hourly'));
+      fixture.detectChanges();
+      fireEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+      expect(
+        getAllByText('Standard hourly rate can only have 1 or 2 digits after the decimal point when you include pence')
+          .length,
+      ).toEqual(2);
     });
 
     it('returns an error if Annual salary is selected and no Annual salary is entered', async () => {
@@ -284,22 +296,7 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(getAllByText('Enter their standard annual rate').length).toEqual(2);
-    });
-
-    it('returns an error if Annual salary is selected and an out of range annual salary is entered when job role is not senior management', async () => {
-      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
-      const form = component.form;
-      form.controls.terms.setValue('');
-      form.controls.hourlyRate.setValue('');
-      form.controls.annualRate.setValue('5000000');
-      fixture.detectChanges();
-      fireEvent.click(getByLabelText('Annual salary'));
-      fixture.detectChanges();
-      fireEvent.click(getByText('Save and return'));
-      fixture.detectChanges();
-      expect(true).toBeTruthy;
-      expect(getAllByText('Standard annual rate must be between £500 and £200,000').length).toEqual(2);
+      expect(getAllByText('Enter their standard annual salary').length).toEqual(2);
     });
 
     it('returns an error if Annual salary is selected and an out of range annual salary is entered when job role is senior management', async () => {
@@ -317,8 +314,7 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
-      expect(true).toBeTruthy;
-      expect(getAllByText('Standard annual rate must be between £500 and £250,000').length).toEqual(2);
+      expect(getAllByText('Standard annual salary must be between £500 and £250,000').length).toEqual(2);
     });
 
     it('returns an error if Annual salary is selected and a decimal number is entered', async () => {
@@ -332,61 +328,7 @@ describe('SalaryComponent', () => {
       fixture.detectChanges();
       fireEvent.click(getByText('Save and continue'));
       fixture.detectChanges();
-      expect(true).toBeTruthy;
-      expect(getAllByText('Standard annual rate must not include pence').length).toEqual(2);
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should navigate to weekly-contarcted-hours when inside the flow and zero hours contract is not yes', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.worker.zeroHoursContract = `Don't know`;
-      component.worker.contract = Contracts.Permanent;
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'weekly-contracted-hours'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should navigate to average-weekly-hours when inside the flow and zero hours contract is yes', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.worker.zeroHoursContract = 'Yes';
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'average-weekly-hours'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should navigate to average-weekly-hours when inside the flow and zero hours contract is not yes, but the contract type is pool bank, agency, or other', async () => {
-      const { component, backLinkSpy } = await setup();
-
-      component.worker.zeroHoursContract = 'No';
-      component.worker.contract = Contracts.Agency;
-      component.initiated = false;
-      component.ngOnInit();
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'average-weekly-hours'],
-        fragment: 'staff-records',
-      });
-    });
-
-    it('should set the backlink to staff-record-summary, when not in the flow', async () => {
-      const { component, backLinkSpy } = await setup(false);
-
-      component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplace.uid, 'staff-record', component.worker.uid, 'staff-record-summary'],
-        fragment: 'staff-records',
-      });
+      expect(getAllByText('Standard annual salary must not include pence').length).toEqual(2);
     });
   });
 });

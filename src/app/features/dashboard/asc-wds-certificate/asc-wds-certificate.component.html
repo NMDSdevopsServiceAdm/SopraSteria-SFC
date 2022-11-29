@@ -1,4 +1,4 @@
-<div class="govuk-grid-row">
+<div class="govuk-grid-row govuk-!-margin-left-0">
   <div class="govuk-grid-column-two-thirds">
     <div class="govuk-grid-row govuk-!-margin-bottom-4">
       <h1 class="govuk-heading-l">Get your ASC-WDS certificate</h1>
@@ -15,15 +15,22 @@
 
       <img
         alt="An ASC-WDS certificate with sample data"
-        src="/public/download/certificates/sample-image/asc-wds+certificate+sample+23-24.png"
+        src="/public/download/certificates/sample-image/asc-wds+certificate+sample+22-23.png"
         width="300px"
         style="border: 1px solid #b1b4b6"
+        class="govuk-!-margin-bottom-4"
       />
-      <a class="govuk__flex govuk__align-items-center" (click)="downloadCertificate()" target="_blank"
-        ><img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1"
-          >Download your certificate</span
-        ></a
+      <a
+        class="govuk-list govuk-list--inline govuk__flex govuk__align-items-center govuk-button--link govuk-link"
+        (click)="downloadCertificate()"
+        target="_blank"
+        href="#"
+        onclick="return false;"
       >
+        <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1"
+          >Download your certificate (PDF, 90KB)</span
+        >
+      </a>
     </div>
     <div class="govuk-grid-row govuk-!-margin-bottom-8" data-testid="footerDownload">
       <h2 class="govuk-heading-s">ASC-WDS email signature</h2>
@@ -34,13 +41,14 @@
         src="public/download/certificates/footer/ASC-WDS_Footer+{{ years }}.jpg"
         width="300px"
         style="border: 1px solid #b1b4b6"
+        class="govuk-!-margin-bottom-4"
       />
       <a
-        class="govuk__flex govuk__align-items-center"
+        class="govuk-list govuk-list--inline govuk__flex govuk__align-items-center"
         href="public/download/certificates/footer/ASC-WDS_Footer+{{ years }}.jpg"
         target="_blank"
         ><img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1"
-          >Download your email signature</span
+          >Download your email signature (JPG, 96KB)</span
         ></a
       >
     </div>
@@ -55,13 +63,14 @@
         src="public/download/certificates/logo/ASC-WDS+logo_20{{ years }}.jpg"
         width="150px"
         style="border: 1px solid #b1b4b6"
+        class="govuk-!-margin-bottom-4"
       />
       <a
-        class="govuk__flex govuk__align-items-center"
+        class="govuk-list govuk-list--inline govuk__flex govuk__align-items-center"
         href="public/download/certificates/logo/ASC-WDS+logo_20{{ years }}.jpg"
         target="_blank"
         ><img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1"
-          >Download your logo</span
+          >Download your logo (JPG, 145KB)</span
         ></a
       >
     </div>

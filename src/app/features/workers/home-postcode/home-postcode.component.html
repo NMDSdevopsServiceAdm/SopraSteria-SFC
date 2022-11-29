@@ -13,7 +13,7 @@
             What's their home postcode?
           </label>
         </h1>
-        <label class="govuk-label govuk-date-input__label" for="dob-year"> Postcode </label>
+        <label class="govuk-label govuk-date-input__label" for="postcode"> Postcode </label>
         <span class="govuk-caption-m govuk-!-margin-bottom-4">For example, 'LS1 2RP'</span>
         <span *ngIf="submitted && form.get('postcode').errors" id="postcode-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
@@ -29,10 +29,10 @@
         />
       </div>
     </div>
-    <div class="govuk-grid-column-one-third-from-desktop">
+    <div class="govuk-grid-column-one-third-from-desktop" *ngIf="insideFlow">
       <div class="govuk-!-margin-left-8">
         <app-progress-bar
-          data-testid="progress-bar-1"
+          data-testid="progress-bar"
           [sections]="staffRecordSections"
           [currentSection]="'Personal details'"
         ></app-progress-bar>
@@ -40,5 +40,5 @@
     </div>
   </div>
 
-  <app-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-submit-button>
+  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>

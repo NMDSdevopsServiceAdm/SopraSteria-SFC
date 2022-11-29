@@ -43,13 +43,13 @@ const trainingCsv = async (establishments, responseSend) => {
   responseSend(trainingHeaders);
 
   establishments.map((establishment) =>
-    establishment.workers.map((worker) =>
+    establishment.workers.map((worker) => {
       worker.workerTraining.map((trainingRecord) =>
         responseSend(
           NEWLINE + TrainingCSV.toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord),
         ),
-      ),
-    ),
+      );
+    }),
   );
 };
 
@@ -101,7 +101,7 @@ const downloadGet = async (req, res) => {
         case 'training': {
           const trainingRecords = await models.establishment.downloadTrainingRecords(primaryEstablishmentId);
 
-          trainingCsv(trainingRecords, responseSend);
+          await trainingCsv(trainingRecords, responseSend);
           break;
         }
       }

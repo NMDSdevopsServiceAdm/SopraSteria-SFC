@@ -4,6 +4,7 @@
       type="submit"
       class="govuk-button govuk-!-margin-right-9"
       (click)="onButtonClick('saveAndContinueConditional', true)"
+      id="saveButtonInsideSummaryFlow"
     >
       Save
     </button>
@@ -24,7 +25,9 @@
 
         <div *ngIf="recordSummary" class="govuk-!-margin-left-9">
           <span class="govuk-visually-hidden">or</span>
-          <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'skip', false)">Skip this question</a>
+          <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'continue', false)"
+            >Skip this question</a
+          >
         </div>
         <div *ngIf="canExit" class="govuk-!-margin-left-9">
           <span class="govuk-visually-hidden">or</span>
@@ -42,8 +45,13 @@
     </ng-container>
   </ng-template>
   <ng-template #summary>
-    <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('return', true)">
-      Save and return
+    <button
+      type="submit"
+      class="govuk-button govuk-!-margin-right-9"
+      (click)="onButtonClick(summaryActionType, true)"
+      [ngClass]="{ additionalHorizontalPadding: summaryContinue }"
+    >
+      {{ summaryContinue ? 'Save' : 'Save and return' }}
     </button>
 
     <span class="govuk-visually-hidden">or</span>

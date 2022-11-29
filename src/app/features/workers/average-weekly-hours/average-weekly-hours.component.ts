@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FLOAT_PATTERN } from '@core/constants/constants';
-import { Contracts } from '@core/model/contracts.enum';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -23,12 +22,12 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
 
@@ -39,15 +38,6 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
   }
 
   init(): void {
-    if (
-      !(
-        this.worker.zeroHoursContract === 'Yes' ||
-        [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-      )
-    ) {
-      this.router.navigate(this.getRoutePath('weekly-contracted-hours'), { replaceUrl: true });
-    }
-
     this.subscriptions.add(
       this.form.get('hoursKnown').valueChanges.subscribe((value) => {
         this.form.get('hours').clearValidators();
@@ -70,7 +60,6 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('salary');
-    this.previous = this.insideFlow ? this.getRoutePath('contract-with-zero-hours') : this.getRoutePath('');
   }
 
   setupFormErrorsMap(): void {

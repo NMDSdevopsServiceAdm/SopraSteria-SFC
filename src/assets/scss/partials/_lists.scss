@@ -10,6 +10,58 @@
   }
 }
 
+.govuk-list--tab {
+  display: flex;
+  background-color: govuk-colour('light-grey');
+  margin: 0;
+  @include govuk-responsive-margin(4, 'bottom');
+  @include govuk-responsive-padding(3);
+
+  &__column {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    @include govuk-responsive-padding(1);
+    @include govuk-responsive-padding(3, 'right');
+
+    dt {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      margin-right: 5px;
+      @include govuk-font(19, 'bold');
+    }
+
+    dd {
+      margin: 0;
+      display: flex;
+      @include govuk-font(19);
+    }
+
+    dd:nth-of-type(2) {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+
+  @for $i from 1 through 3 {
+    div:nth-of-type(#{$i}) {
+      @if $i > 1 {
+        border-top: 1px solid $govuk-border-colour;
+      }
+
+      @include govuk-media-query($from: tablet) {
+        border-top: 0;
+        @if $i > 1 {
+          border-left: 1px solid $govuk-border-colour;
+          @include govuk-responsive-padding(3, 'left');
+        }
+      }
+    }
+  }
+}
+
 .govuk-list--definition {
   display: grid;
 

@@ -4,20 +4,20 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { EligibilityIconComponent } from '@shared/components/eligibility-icon/eligibility-icon.component';
 import { InsetTextComponent } from '@shared/components/inset-text/inset-text.component';
+import { ProgressBarComponent } from '@shared/components/progress-bar/progress-bar.component';
 import { BasicRecordComponent } from '@shared/components/staff-record-summary/basic-record/basic-record.component';
 import { SummaryRecordChangeComponent } from '@shared/components/summary-record-change/summary-record-change.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
+import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
@@ -27,13 +27,14 @@ describe('MandatoryDetailsComponent', () => {
   const setup = async (canEditWorker = true, primaryUid = 123) => {
     const permissions = canEditWorker ? ['canEditWorker'] : [];
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(MandatoryDetailsComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [
         InsetTextComponent,
         BasicRecordComponent,
         SummaryRecordValueComponent,
         EligibilityIconComponent,
         SummaryRecordChangeComponent,
+        ProgressBarComponent,
       ],
       providers: [
         {
@@ -49,7 +50,6 @@ describe('MandatoryDetailsComponent', () => {
           useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
           deps: [HttpClient],
         },
-        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -93,16 +93,10 @@ describe('MandatoryDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show have the title mandatory details on summary', async () => {
-    const { getByText } = await setup();
-
-    expect(getByText('Mandatory information'));
-  });
-
   it('should render the progress bar', async () => {
     const { queryByTestId } = await setup();
 
-    expect(queryByTestId('progress-bar-1')).toBeTruthy();
+    expect(queryByTestId('progress-bar')).toBeTruthy();
   });
 
   it('should show Worker information in summary list', async () => {
@@ -139,7 +133,7 @@ describe('MandatoryDetailsComponent', () => {
     const detailsButton = getByTestId('add-details-button');
     detailsButton.click();
     expect(submission).toHaveBeenCalled();
-    expect(routerSpy).toHaveBeenCalledWith(['', 'date-of-birth'], { state: { navigatedFrom: 'mandatory-details' } });
+    expect(routerSpy).toHaveBeenCalledWith(['', 'date-of-birth']);
   });
 
   it('should take you to to dashboard if adding a staff record to own establishment', async () => {
