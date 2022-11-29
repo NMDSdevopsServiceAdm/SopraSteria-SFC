@@ -131,8 +131,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       expires: null,
       notes: null,
     });
-    // GB fragment will need to be replaced with route for 'add-multiple-records-summary' 28/11/2022
-    // expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'training-and-qualifications' });
+    expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'add-multiple-records-summary' });
   });
 
   it('should clear selected staff and navigate when pressing cancel', async () => {

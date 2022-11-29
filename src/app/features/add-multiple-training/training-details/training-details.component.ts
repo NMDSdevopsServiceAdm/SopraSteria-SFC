@@ -78,7 +78,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.trainingService.resetSelectedStaff();
     this.trainingService.addMultipleTrainingInProgress$.next(false);
 
-    //AP + GB Will need changing to be whatever the new summary page url is 25/11/2022
     await this.router.navigate(['add-multiple-records-summary']);
   }
 
