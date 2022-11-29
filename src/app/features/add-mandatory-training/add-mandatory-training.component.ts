@@ -22,8 +22,9 @@ import { take } from 'rxjs/internal/operators/take';
 export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
-  public renderAsEditMandatoryTraning: boolean;
+  public renderAsEditMandatoryTraining: boolean;
   public submitted = false;
+  public preExistingTraining: any;
   public categories: TrainingCategory[];
   public filteredTrainingCategories: TrainingCategory[];
   private subscriptions: Subscription = new Subscription();
@@ -66,7 +67,8 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.establishment = this.route.parent.snapshot.data.establishment;
-    this.renderAsEditMandatoryTraning = this.route.snapshot.url[0].path === 'edit-mandatory-training';
+    this.renderAsEditMandatoryTraining = this.route.snapshot.url[0].path === 'edit-mandatory-training';
+    this.return = { url: ['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training'] };
 
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((existingMandatoryTraining) => {
@@ -88,6 +90,9 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe((trainings) => {
           this.trainings = this.filterTrainingCategories(trainings);
+          if (this.renderAsEditMandatoryTraining) {
+            this.prefill();
+          }
         }),
     );
   }
@@ -97,9 +102,18 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       (existingMandatoryTrainings) => existingMandatoryTrainings.trainingCategoryId,
     );
 
-    return trainings.filter((training) => {
-      return !preSelectedIds.includes(training.id);
-    });
+    if (this.renderAsEditMandatoryTraining) {
+      this.preExistingTraining = this.existingMandatoryTrainings.mandatoryTraining.find((mandatoryTrainingObject) => {
+        return mandatoryTrainingObject.trainingCategoryId === parseInt(this.route.snapshot.parent.url[0].path, 10);
+      });
+      return trainings.filter((training) => {
+        return this.preExistingTraining.trainingCategoryId === training.id || !preSelectedIds.includes(training.id);
+      });
+    } else {
+      return trainings.filter((training) => {
+        return !preSelectedIds.includes(training.id);
+      });
+    }
   }
 
   private getAllJobs(): void {
@@ -162,6 +176,25 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     });
   }
 
+  public prefill(): void {
+    this.form.patchValue({
+      trainingCategory: this.preExistingTraining.trainingCategoryId,
+      allOrSelectedJobRoles:
+        this.preExistingTraining.jobs.length === 29
+          ? mandatoryTrainingJobOption.all
+          : mandatoryTrainingJobOption.selected,
+      selectedJobRoles: this.prefillJobRoles(),
+    });
+  }
+
+  protected prefillJobRoles() {
+    return this.preExistingTraining.jobs.length === 29
+      ? null
+      : this.preExistingTraining.jobs.forEach((job) => {
+          this.selectedJobRolesArray.push(this.createVacancyControl(job.id));
+        });
+  }
+
   public addVacancy(): void {
     this.selectedJobRolesArray.push(this.createVacancyControl());
     this.setupFormErrorsMap();
@@ -198,8 +231,12 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   }
 
   protected updateMandatoryTraining(props): void {
+    console.log('Update Mandatory training >>>>>>>>>>>>>>');
+  }
+
+  protected createMandatoryTraining(props): void {
     this.subscriptions.add(
-      this.establishmentService.updateMandatoryTraining(this.establishment.uid, props).subscribe(
+      this.establishmentService.createMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
           this.router.navigate([
             '/workplace',
@@ -238,7 +275,9 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       return;
     }
     const props = this.generateUpdateProps();
-    this.updateMandatoryTraining(props);
+    this.renderAsEditMandatoryTraining === true
+      ? this.updateMandatoryTraining(props)
+      : this.createMandatoryTraining(props);
   }
 
   ngOnDestroy(): void {
