@@ -167,6 +167,7 @@ class MandatoryTraining extends EntityValidator {
 
   async save(savedBy, externalTransaction = null) {
     if (this._initialise()) {
+      this.checkIfMandatoryTrainingAlreadyExists();
       if (this.mandatorytrainingDetails.allJobRoles) {
         this.mandatorytrainingDetails.jobs = await this.findAllJobRoles();
       }
@@ -191,6 +192,16 @@ class MandatoryTraining extends EntityValidator {
     } else {
       return false;
     }
+  }
+
+  async checkIfMandatoryTrainingAlreadyExists() {
+    const fetchQuery = {
+      where: {
+        establishmentFK: this.establishmentId,
+        TrainingCategoryFK: this.mandatorytrainingDetails.trainingCategoryId,
+      },
+    };
+    await models.MandatoryTraining.destroy(fetchQuery);
   }
 
   async findAllJobRoles() {

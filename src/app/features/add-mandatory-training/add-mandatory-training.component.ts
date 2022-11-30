@@ -230,13 +230,9 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     };
   }
 
-  protected updateMandatoryTraining(props): void {
-    console.log('Update Mandatory training >>>>>>>>>>>>>>');
-  }
-
-  protected createMandatoryTraining(props): void {
+  protected createAndUpdateMandatoryTraining(props): void {
     this.subscriptions.add(
-      this.establishmentService.createMandatoryTraining(this.establishment.uid, props).subscribe(
+      this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
           this.router.navigate([
             '/workplace',
@@ -275,9 +271,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       return;
     }
     const props = this.generateUpdateProps();
-    this.renderAsEditMandatoryTraining === true
-      ? this.updateMandatoryTraining(props)
-      : this.createMandatoryTraining(props);
+    this.createAndUpdateMandatoryTraining(props);
   }
 
   ngOnDestroy(): void {
