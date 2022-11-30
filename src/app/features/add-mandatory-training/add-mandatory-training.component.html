@@ -18,28 +18,39 @@
       class="govuk-grid-row govuk-form-group govuk-!-margin-bottom-4"
       [class.govuk-form-group--error]="submitted && form.get('trainingCategory').invalid"
     >
-      <div class="govuk-grid-column-two-thirds">
-        <label class="govuk-label" for="trainingCategory"> Training category </label>
-        <span *ngIf="submitted" class="govuk-error-message">
-          <ng-container *ngIf="submitted && form.get('trainingCategory').invalid">
-            <label id="trainingCategory-error" for="trainingCategory">Select the mandatory training</label>
-          </ng-container>
-        </span>
-        <select
-          class="govuk-select govuk-!-width-three-quarters"
-          [class.govuk-select--error]="submitted && form.get('trainingCategory').invalid"
-          [formControlName]="'trainingCategory'"
-          id="trainingCategory"
-          name="trainingCategory"
-        >
-          <option [ngValue]="null">Select training category</option>
-          <option *ngFor="let training of trainings" [value]="training.id">
-            {{ training.category }}
-          </option>
-        </select>
-      </div>
-      <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
-        <a href="#" class="govuk-list govuk-list--inline govuk__nowrap">Remove this mandatory training category </a>
+      <div class="govuk-grid-column-three-quarters">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-three-quarters">
+            <label class="govuk-label" for="trainingCategory"> Training category </label>
+            <span *ngIf="submitted" class="govuk-error-message">
+              <ng-container *ngIf="submitted && form.get('trainingCategory').invalid">
+                <label id="trainingCategory-error" for="trainingCategory">Select the mandatory training</label>
+              </ng-container>
+            </span>
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-three-quarters">
+            <select
+              class="govuk-select govuk-!-width-full"
+              [class.govuk-select--error]="submitted && form.get('trainingCategory').invalid"
+              [formControlName]="'trainingCategory'"
+              id="trainingCategory"
+              name="trainingCategory"
+            >
+              <option [ngValue]="null">Select training category</option>
+              <option *ngFor="let training of trainings" [value]="training.id">
+                {{ training.category }}
+              </option>
+            </select>
+          </div>
+          <div
+            *ngIf="renderAsEditMandatoryTraining"
+            class="govuk-grid-column-one-quarter govuk-list govuk-list--inline govuk-!-margin-top-1 govuk-!-padding-left-1"
+          >
+            <a href="#" class="govuk__nowrap">Remove this mandatory training category </a>
+          </div>
+        </div>
       </div>
     </div>
     <div class="govuk-grid-row">
