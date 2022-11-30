@@ -404,6 +404,21 @@ class MandatoryTraining extends EntityValidator {
     delete mandatoryTrainingDetails.allJobRolesCount;
     return mandatoryTrainingDetails;
   }
+
+  async deleteAllMandatoryTraining() {
+    try {
+      const fetchQuery = {
+        where: {
+          EstablishmentFK: this.establishmentId,
+        },
+      };
+      return await models.MandatoryTraining.destroy(fetchQuery);
+    } catch (err) {
+      this._log(MandatoryTraining.LOG_ERROR, err);
+
+      throw new Error('Failed to delete Mandatory Training records');
+    }
+  }
 }
 
 module.exports.MandatoryTraining = MandatoryTraining;

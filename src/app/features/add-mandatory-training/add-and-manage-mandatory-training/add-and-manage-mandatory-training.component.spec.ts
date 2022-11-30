@@ -11,11 +11,11 @@ import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { ListMandatoryTrainingComponent } from './list-mandatory-training.component';
+import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training.component';
 
 describe('NewTrainingComponent', () => {
   async function setup() {
-    const { getByText, getByLabelText, getByTestId, fixture } = await render(ListMandatoryTrainingComponent, {
+    const { getByText, getByLabelText, getByTestId, fixture } = await render(AddAndManageMandatoryTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [

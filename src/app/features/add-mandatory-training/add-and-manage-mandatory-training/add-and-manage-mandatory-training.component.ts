@@ -9,10 +9,10 @@ import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-list-mandatory-training',
-  templateUrl: './list-mandatory-training.component.html',
+  selector: 'app-add-and-manage-mandatory-training',
+  templateUrl: './add-and-manage-mandatory-training.component.html',
 })
-export class ListMandatoryTrainingComponent implements OnInit {
+export class AddAndManageMandatoryTrainingComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public establishment: Establishment;
 

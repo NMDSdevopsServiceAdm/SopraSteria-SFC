@@ -57,6 +57,18 @@ const createAndUpdateMandatoryTraining = async (req, res) => {
   }
 };
 
+const deleteAllMandatoryTraining = async (req, res) => {
+  const thisTrainingRecord = new MandatoryTraining(req.establishmentId);
+  try {
+    await thisTrainingRecord.deleteAllMandatoryTraining();
+
+    res.status(200).send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send();
+  }
+};
+
 router.route('/').get(hasPermission('canAddWorker'), viewMandatoryTraining);
 router.route('/').post(hasPermission('canAddWorker'), createAndUpdateMandatoryTraining);
 
@@ -64,5 +76,6 @@ router.route('/').post(hasPermission('canAddWorker'), createAndUpdateMandatoryTr
 // There is a ViewAllMandatoryTrainingComponent on the FE but this may also not be used
 // as we have the same view when filtering Training & Quals by category.
 router.route('/all').get(hasPermission('canAddWorker'), viewAllMandatoryTraining);
+router.route('/delete').delete(hasPermission('canEditWorker'), deleteAllMandatoryTraining);
 
 module.exports = router;
