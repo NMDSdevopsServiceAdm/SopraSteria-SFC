@@ -3,7 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -22,7 +22,7 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
       declarations: [],
       providers: [
         AlertService,
-        BackService,
+        BackLinkService,
         TrainingService,
         {
           provide: WindowRef,
