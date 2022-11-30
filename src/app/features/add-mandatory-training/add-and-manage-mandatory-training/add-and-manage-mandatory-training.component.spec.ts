@@ -10,11 +10,11 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 
-import { ListMandatoryTrainingComponent } from './list-mandatory-training.component';
+import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training.component';
 
 describe('NewTrainingComponent', () => {
-  let component: ListMandatoryTrainingComponent;
-  let fixture: ComponentFixture<ListMandatoryTrainingComponent>;
+  let component: AddAndManageMandatoryTrainingComponent;
+  let fixture: ComponentFixture<AddAndManageMandatoryTrainingComponent>;
 
   const existingMandatoryTrainings = {
     mandatoryTrainingCount: 4,
@@ -191,7 +191,7 @@ describe('NewTrainingComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ListMandatoryTrainingComponent);
+    fixture = TestBed.createComponent(AddAndManageMandatoryTrainingComponent);
     component = fixture.componentInstance;
     component.existingMandatoryTrainings = existingMandatoryTrainings;
     fixture.detectChanges();
