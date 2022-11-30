@@ -1,10 +1,10 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Alert } from '@core/model/alert.model';
 import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
@@ -30,8 +30,18 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected workerService: WorkerService,
     private establishmentService: EstablishmentService,
     private alertService: AlertService,
+    public backLinkService: BackLinkService,
   ) {
-    super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
+    super(
+      formBuilder,
+      route,
+      router,
+      backService,
+      errorSummaryService,
+      trainingService,
+      workerService,
+      backLinkService,
+    );
   }
 
   protected init(): void {
@@ -41,18 +51,16 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
         : ['workplace', this.workplace.uid];
   }
 
+  protected setSection(): void {
+    this.section = 'Add multiple records';
+  }
+
   protected setTitle(): void {
-    this.title = 'Add training details';
+    this.title = 'Add training record details';
   }
 
   protected setButtonText(): void {
-    this.buttonText = 'Finish';
-  }
-
-  protected setBackLink(): void {
-    this.backService.setBackLink({
-      url: ['workplace', this.workplace.uid, 'add-multiple-training', 'select-staff'],
-    });
+    this.buttonText = 'Continue';
   }
 
   protected submit(record: TrainingRecordRequest): void {
@@ -70,11 +78,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.trainingService.resetSelectedStaff();
     this.trainingService.addMultipleTrainingInProgress$.next(false);
 
-    await this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
-    this.alertService.addAlert({
-      type: 'success',
-      message: `Training records have been added for ${response.savedRecords} staff`,
-    } as Alert);
+    await this.router.navigate(['add-multiple-records-summary']);
   }
 
   private onError(error) {

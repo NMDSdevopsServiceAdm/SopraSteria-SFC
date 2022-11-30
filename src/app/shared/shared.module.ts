@@ -291,6 +291,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
     NewBackLinkComponent,
+    AbsoluteNumberPipe,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
