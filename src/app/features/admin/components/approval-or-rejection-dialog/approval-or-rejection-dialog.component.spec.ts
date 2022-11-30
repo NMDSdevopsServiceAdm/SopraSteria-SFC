@@ -22,7 +22,7 @@ describe('ApprovalOrRejectionDialogComponent', () => {
           provide: Dialog,
           useValue: {
             close() {
-              return;
+              return null;
             },
           },
         },
