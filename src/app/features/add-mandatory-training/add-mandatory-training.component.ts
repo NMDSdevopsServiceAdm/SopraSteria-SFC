@@ -66,9 +66,15 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.establishment = this.route.parent.snapshot.data.establishment;
+    this.establishment = this.route.snapshot.parent.data.establishment;
+
     this.renderAsEditMandatoryTraining = this.route.snapshot.url[0].path === 'edit-mandatory-training';
     this.return = { url: ['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training'] };
+
+    this.getAllJobs();
+    this.setUpForm();
+    this.setupServerErrorsMap();
+    this.backLinkService.showBackLink();
 
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((existingMandatoryTraining) => {
@@ -76,11 +82,6 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         this.getAllTrainingCategories();
       }),
     );
-
-    this.getAllJobs();
-    this.setUpForm();
-    this.setupServerErrorsMap();
-    this.backLinkService.showBackLink();
   }
 
   private getAllTrainingCategories(): void {
@@ -101,11 +102,11 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     const preSelectedIds = this.existingMandatoryTrainings.mandatoryTraining.map(
       (existingMandatoryTrainings) => existingMandatoryTrainings.trainingCategoryId,
     );
-
     if (this.renderAsEditMandatoryTraining) {
       this.preExistingTraining = this.existingMandatoryTrainings.mandatoryTraining.find((mandatoryTrainingObject) => {
         return mandatoryTrainingObject.trainingCategoryId === parseInt(this.route.snapshot.parent.url[0].path, 10);
       });
+
       return trainings.filter((training) => {
         return this.preExistingTraining.trainingCategoryId === training.id || !preSelectedIds.includes(training.id);
       });
@@ -260,6 +261,8 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         this.selectedJobRolesArray.removeAt(0);
       }
       this.selectedJobRolesArray.reset([], { emitEvent: false });
+    } else if (this.renderAsEditMandatoryTraining) {
+      this.preExistingTraining.jobs.length === 29 ? this.addVacancy() : this.prefillJobRoles();
     } else {
       this.addVacancy();
     }
