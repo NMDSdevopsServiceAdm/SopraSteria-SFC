@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class SearchInputComponent {
   @Input() ref = 'search';
   @Input() searchButtonName = 'search';
+  @Input() label = 'Search';
   @Input() accessibleLabel: string;
   @Input() set prevSearch(value: string) {
     if (value.trim() !== this.searchTerm.trim()) {
@@ -16,6 +17,9 @@ export class SearchInputComponent {
       this.emitInput.emit(this.searchTerm);
     }
   }
+  // remove the clear search results from being shown in this component
+  @Input() showClearResults = true;
+
   @Output() emitInput = new EventEmitter<string>();
 
   public searched = false;

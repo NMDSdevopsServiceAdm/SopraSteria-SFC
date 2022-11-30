@@ -3,12 +3,8 @@
     <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
   </div>
   <div class="govuk-grid-column-one-third govuk-util__align-right">
-    <button
-      *ngIf="canEditWorker"
-      class="govuk-button"
-      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
-    >
-      Add training for multiple staff
+    <button *ngIf="canEditWorker" class="govuk-button" type="button" (click)="navigateToMultipleTraining()">
+      Add multiple training records
     </button>
   </div>
 </div>

@@ -5,7 +5,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 
 import { AddMultipleTrainingRoutingModule } from './add-multiple-training-routing.module';
+import { SelectStaffErrorSummaryComponent } from './select-staff-error-summary/select-staff-error-summary.component';
 import { SelectStaffComponent } from './select-staff/select-staff.component';
+import { SelectedStaffPanelComponent } from './selected-staff-panel/selected-staff-panel.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
 
 @NgModule({
@@ -17,7 +19,12 @@ import { MultipleTrainingDetailsComponent } from './training-details/training-de
     OverlayModule,
     AddMultipleTrainingRoutingModule,
   ],
-  declarations: [SelectStaffComponent, MultipleTrainingDetailsComponent],
+  declarations: [
+    SelectStaffComponent,
+    MultipleTrainingDetailsComponent,
+    SelectedStaffPanelComponent,
+    SelectStaffErrorSummaryComponent,
+  ],
   providers: [],
 })
 export class AddMultipleTrainingModule {}

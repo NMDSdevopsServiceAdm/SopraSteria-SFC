@@ -1,58 +1,106 @@
-<app-error-summary *ngIf="submitted && form?.invalid" [formErrorsMap]="formErrorsMap" [form]="form">
-</app-error-summary>
+<app-select-staff-error-summary *ngIf="submitted && error" [formErrorsMap]="errorsMap">
+</app-select-staff-error-summary>
 
-<form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div class="govuk-grid-row">
-    <fieldset class="govuk-fieldset">
-      <div class="govuk-grid-column-two-thirds-from-desktop">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
-          <h1 class="govuk-fieldset__heading">Select the staff who have completed the training</h1>
-        </legend>
-      </div>
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-        <span *ngIf="submitted && form?.invalid" id="selectStaff-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          {{ getFirstErrorMessage('selectStaff') }}
-        </span>
-        <div class="govuk-checkboxes">
-          <div class="govuk-grid-column-full">
-            <div class="govuk-checkboxes__item govuk-!-margin-bottom-2">
-              <input
-                class="govuk-checkboxes__input"
-                type="checkbox"
-                id="selectAll"
-                name="selectAll"
-                [(ngModel)]="selectAll"
-                [ngModelOptions]="{ standalone: true }"
-                (ngModelChange)="selectAllWorkers($event)"
-              />
-              <label for="selectAll" class="govuk-label govuk-checkboxes__label"> Select all </label>
-            </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-7">
+      <span class="govuk-caption-l">Add multiple records</span>
+      <h1 class="govuk-fieldset__heading">Select all those who you want to add a record for</h1>
+    </legend>
+
+    <div *ngIf="showSearchBar" class="govuk-!-margin-bottom-8">
+      <app-search-input
+        label="Search for staff"
+        (emitInput)="handleSearch($event)"
+        [showClearResults]="false"
+      ></app-search-input>
+    </div>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <ng-container *ngIf="searchResults">
+      <div class="govuk-!-margin-bottom-8" data-testid="searchResults">
+        <ng-container *ngIf="searchResults.length > 0; else noResults">
+          <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
+            <span class="govuk-!-font-weight-bold">Showing search results</span>
+            <a href="#" (click)="handleResetSearch($event)" class="govuk-util__float-right"> Clear search results</a>
           </div>
-          <ng-container *ngFor="let worker of selectStaff.controls; let i = index" formArrayName="selectStaff">
-            <div class="govuk-grid-column-one-third-from-desktop">
-              <div class="govuk-checkboxes__item govuk-!-margin-bottom-2">
-                <input
-                  class="govuk-checkboxes__input"
-                  type="checkbox"
-                  id="selectStaff-{{ i }}"
-                  name="selectStaff-{{ i }}"
-                  (change)="selectWorker(worker)"
-                  [checked]="worker.value.checked"
-                  [value]="worker.value.name"
-                />
-                <label for="selectStaff-{{ i }}" class="govuk-label govuk-checkboxes__label">
-                  {{ worker.value.name }}
-                </label>
+          <dl class="govuk-summary-list govuk-summary-list--top-border">
+            <ng-container *ngFor="let worker of searchResults">
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">{{ worker.nameOrId }}</dt>
+                <dd class="govuk-summary-list__value">{{ worker.mainJob.title }}</dd>
+                <dd class="govuk-summary-list__actions">
+                  <a href="#" (click)="selectWorker($event, worker.uid)">{{
+                    selectAll || selectedWorkers?.includes(worker.uid) ? 'Deselect' : 'Select'
+                  }}</a>
+                </dd>
               </div>
+            </ng-container>
+          </dl>
+        </ng-container>
+        <ng-template #noResults>
+          <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
+            <span class="govuk-!-font-weight-bold">There are no matching results</span>
+            <a href="#" (click)="handleResetSearch($event)" class="govuk-util__float-right"> Clear search results</a>
+          </div>
+          <dl class="govuk-summary-list govuk-summary-list--top-border">
+            <div class="govuk-summary-list__row">
+              <dd class="govuk-summary-list__value">Make sure that your spelling is correct.</dd>
+            </div>
+          </dl>
+        </ng-template>
+      </div>
+    </ng-container>
+
+    <div [class.govuk-form-group--error]="submitted && error" #table>
+      <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
+        <span class="govuk-!-font-weight-bold"
+          >Showing {{ paginatedWorkers?.length }} of {{ totalWorkerCount }} staff</span
+        >
+
+        <a href="#" (click)="selectAllWorkers($event)" class="govuk-util__float-right">
+          {{ selectAll ? 'Deselect all' : 'Select all' }}</a
+        >
+      </div>
+      <div>
+        <span *ngIf="submitted && error" class="govuk-error-message" id="selectStaff-error"
+          ><span class="govuk-visually-hidden">Error:</span> {{ this.errorsMap[0].type[0].message }}</span
+        >
+        <dl class="govuk-summary-list govuk-summary-list--top-border">
+          <ng-container *ngFor="let worker of paginatedWorkers">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">{{ worker.nameOrId }}</dt>
+              <dd class="govuk-summary-list__value">{{ worker.mainJob.title }}</dd>
+              <dd class="govuk-summary-list__actions">
+                <a href="#" name="selectStaff" (click)="selectWorker($event, worker.uid)">{{
+                  selectAll || selectedWorkers?.includes(worker.uid) ? 'Deselect' : 'Select'
+                }}</a>
+              </dd>
             </div>
           </ng-container>
-        </div>
+        </dl>
       </div>
-      <div class="govuk-button-group">
-        <button class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-7" type="submit">Continue</button>
-        <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel()">Cancel</a>
-      </div>
-    </fieldset>
+    </div>
+    <app-pagination
+      [itemsPerPage]="itemsPerPage"
+      [totalNoOfItems]="totalWorkerCount"
+      (currentPageIndexChange)="handlePageUpdate($event)"
+      [currentPageIndex]="currentPageIndex"
+    ></app-pagination>
+    <div class="govuk-button-group">
+      <button class="govuk-button govuk-!-margin-right-9" type="button" (click)="onSubmit()">Continue</button>
+      <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel()">Cancel</a>
+    </div>
   </div>
-</form>
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-!-margin-left-5 govuk-!-margin-top-8">
+      <app-selected-staff-panel
+        data-testid="selectedStaffPanel"
+        [selectedWorkerCount]="selectedWorkers.length"
+      ></app-selected-staff-panel>
+    </div>
+  </div>
+</div>
