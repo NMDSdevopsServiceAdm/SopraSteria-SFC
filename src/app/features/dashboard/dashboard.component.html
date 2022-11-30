@@ -1,49 +1,73 @@
-<app-dashboard-header></app-dashboard-header>
+<div style="background-color: #b1b4b6">
+  <div class="govuk-width-container">
+    <app-new-tabs>
+      <app-new-tab title="Home"></app-new-tab>
+      <app-new-tab title="Workplace"></app-new-tab>
+      <app-new-tab title="Staff records"></app-new-tab>
+      <app-new-tab title="Training and qualifications"></app-new-tab>
+      <app-new-tab title="Benchmarks"></app-new-tab>
+    </app-new-tabs>
+  </div>
+</div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <app-tabs (selectedTabClick)="tabClickEvent($event)">
-      <app-tab [title]="'Home'">
-        <app-home-tab [workplace]="workplace" [workerCount]="workerCount"></app-home-tab>
-      </app-tab>
+<div style="background-color: #f3f2f1">
+  <div class="govuk-width-container">
+    <app-back-link></app-back-link>
+    <app-new-back-link></app-new-back-link>
+    <app-breadcrumbs></app-breadcrumbs>
+    <app-alert></app-alert>
+    <div class="govuk-!-padding-top-9">
+      <app-dashboard-header></app-dashboard-header>
+    </div>
+  </div>
+</div>
 
-      <app-tab
-        *ngIf="workplace && canViewEstablishment"
-        [title]="'Workplace'"
-        [redAlert]="workplace?.employerType && (showCQCDetailsBanner || showSharingPermissionsBanner)"
-      >
-        <app-workplace-tab [workplace]="workplace" [workerCount]="workerCount"></app-workplace-tab>
-      </app-tab>
+<div class="govuk-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <app-tabs (selectedTabClick)="tabClickEvent($event)">
+        <app-tab [title]="'Home'">
+          <app-home-tab [workplace]="workplace" [workerCount]="workerCount"></app-home-tab>
+        </app-tab>
 
-      <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
-        <app-staff-records-tab
-          [workplace]="workplace"
-          [workers]="workers"
-          [workerCount]="workerCount"
-        ></app-staff-records-tab>
-      </app-tab>
+        <app-tab
+          *ngIf="workplace && canViewEstablishment"
+          [title]="'Workplace'"
+          [redAlert]="workplace?.employerType && (showCQCDetailsBanner || showSharingPermissionsBanner)"
+        >
+          <app-workplace-tab [workplace]="workplace" [workerCount]="workerCount"></app-workplace-tab>
+        </app-tab>
 
-      <app-tab
-        *ngIf="workplace && canViewListOfWorkers"
-        [alert]="trainingAlert === 1"
-        [redAlert]="trainingAlert === 2"
-        [title]="'Training and qualifications'"
-      >
-        <app-training-and-qualifications-tab
-          [workplace]="workplace"
-          [workers]="workers"
-          [workerCount]="workerCount"
-          [trainingCounts]="trainingCounts"
-        ></app-training-and-qualifications-tab>
-      </app-tab>
+        <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
+          <app-staff-records-tab
+            [workplace]="workplace"
+            [workers]="workers"
+            [workerCount]="workerCount"
+          ></app-staff-records-tab>
+        </app-tab>
 
-      <app-tab *ngIf="workplace && canViewBenchmarks" [title]="'Benchmarks'">
-        <app-benchmarks-tab class="asc-benchmarks-tab" [workplace]="workplace"></app-benchmarks-tab>
-      </app-tab>
+        <app-tab
+          *ngIf="workplace && canViewListOfWorkers"
+          [alert]="trainingAlert === 1"
+          [redAlert]="trainingAlert === 2"
+          [title]="'Training and qualifications'"
+        >
+          <app-training-and-qualifications-tab
+            [workplace]="workplace"
+            [workers]="workers"
+            [workerCount]="workerCount"
+            [trainingCounts]="trainingCounts"
+          ></app-training-and-qualifications-tab>
+        </app-tab>
 
-      <app-tab *ngIf="workplace && canViewEstablishment && wdfNewDesignFlag" [title]="'WDF'">
-        <app-wdf-tab [workplace]="workplace"></app-wdf-tab>
-      </app-tab>
-    </app-tabs>
+        <app-tab *ngIf="workplace && canViewBenchmarks" [title]="'Benchmarks'">
+          <app-benchmarks-tab class="asc-benchmarks-tab" [workplace]="workplace"></app-benchmarks-tab>
+        </app-tab>
+
+        <app-tab *ngIf="workplace && canViewEstablishment && wdfNewDesignFlag" [title]="'WDF'">
+          <app-wdf-tab [workplace]="workplace"></app-wdf-tab>
+        </app-tab>
+      </app-tabs>
+    </div>
   </div>
 </div>

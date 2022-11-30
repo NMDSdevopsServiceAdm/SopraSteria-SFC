@@ -2,7 +2,24 @@
   <a class="govuk-skip-link" href="#main-content" (click)="skip($event)">Skip to main content</a>
   <app-header></app-header>
 
-  <div
+  <!-- <div
+    id="content"
+    [class]="{ 'govuk-width-container': !isAdminSection, 'asc-width-container-admin-section': isAdminSection }"
+  > -->
+  <div id="content">
+    <main
+      id="main-content"
+      class="govuk-main-wrapper app-main-class govuk-util__no-focus govuk-!-padding-top-0"
+      #content
+      role="main"
+      tabindex="-1"
+    >
+      <router-outlet> </router-outlet>
+    </main>
+  </div>
+
+  <!-- OLD / EXISTING LAYOUT -->
+  <!-- <div
     id="content"
     [class]="{ 'govuk-width-container': !isAdminSection, 'asc-width-container-admin-section': isAdminSection }"
   >
@@ -19,9 +36,8 @@
       role="main"
       tabindex="-1"
     >
-      <router-outlet></router-outlet>
+      <router-outlet> </router-outlet>
     </main>
-  </div>
-
+  </div> -->
   <app-footer></app-footer>
 </div>
