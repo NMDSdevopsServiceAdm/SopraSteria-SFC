@@ -1,4 +1,4 @@
-<div class="govuk-grid-row">
+<!-- <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
   </div>
@@ -11,9 +11,13 @@
       Add training for multiple staff
     </button>
   </div>
-</div>
+</div> -->
 
-<app-training-link-panel [workplace]="workplace" [workers]="workers"></app-training-link-panel>
+<app-training-link-panel
+  [workplace]="workplace"
+  [workers]="workers"
+  [totalRecords]="totalRecords"
+></app-training-link-panel>
 <ng-container *ngIf="workers && workers.length; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">

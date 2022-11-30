@@ -16,9 +16,11 @@ import { Subscription } from 'rxjs';
 export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges {
   @Input() workplace: Establishment;
   @Input() workers: Worker[];
+  @Input() totalRecords: number;
 
   public establishmentUid: string;
   public canEditEstablishment: boolean;
+  public canEditWorker: boolean;
   public url: string;
   public fromStaffRecord: boolean;
   public lastUpdated: string;
@@ -38,6 +40,7 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
     this.establishmentUid = this.workplace.uid;
     this.isParent = this.workplace.isParent;
     this.canEditEstablishment = this.permissionsService.can(this.establishmentUid, 'canEditEstablishment');
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
