@@ -15,11 +15,11 @@
   <div class="govuk-grid-column-one-third">
     <a
       class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
+      role="button"
       draggable="false"
       *ngIf="qualificationId"
-      role="button"
-      href="#"
-      [routerLink]="['../delete']"
+      data-testid="delete-this-qualification-record"
+      (click)="navigateToDeleteQualificationRecord()"
     >
       <img src="/assets/images/bin.svg" alt="" />
       <span class="govuk-!-margin-left-1 govuk__nowrap"> Delete this qualification record </span></a

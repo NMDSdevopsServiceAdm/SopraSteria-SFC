@@ -258,8 +258,17 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   private onError(error): void {
     console.log(error);
   }
-  public navigateToPreviousPage(): void {
-    this.router.navigate([this.previousUrl]);
+
+  protected navigateToDeleteQualificationRecord(): void {
+    this.router.navigate([
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'qualification',
+      this.qualificationId,
+      'delete',
+    ]);
   }
 
   protected setBackLink(): void {

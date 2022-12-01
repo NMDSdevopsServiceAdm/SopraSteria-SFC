@@ -74,7 +74,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
 
         this.alertService.addAlert({
           type: 'success',
-          message: 'Qualification record deleted',
+          message: `${this.capitalizeFirstLetter(this.trainingOrQualification)} record deleted`,
         });
       }),
     );
