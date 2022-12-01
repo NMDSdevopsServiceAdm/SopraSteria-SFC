@@ -383,7 +383,7 @@ describe('AddMandatoryTrainingComponent', () => {
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: 'Mandatory training category changed',
+        message: 'Mandatory training category updated',
       });
     });
   });

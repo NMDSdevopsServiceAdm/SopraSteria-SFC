@@ -243,7 +243,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
           this.alertService.addAlert({
             type: 'success',
             message: this.renderAsEditMandatoryTraining
-              ? 'Mandatory training category changed'
+              ? 'Mandatory training category updated'
               : 'Mandatory training category added',
           });
         },
