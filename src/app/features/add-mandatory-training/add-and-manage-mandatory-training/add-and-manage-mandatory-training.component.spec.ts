@@ -108,7 +108,7 @@ describe('NewTrainingComponent', () => {
     expect(mandatoryTrainingTableHeading.textContent).toContain('Job roles');
   });
 
-  describe('mandatory training label records', () => {
+  describe('mandatory training table records', () => {
     it('should render a category  name for each training record category', async () => {
       const { getByTestId } = await setup();
 

@@ -159,7 +159,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Select the mandatory training',
+            message: 'Select the training category you want to be mandatory',
           },
         ],
       },

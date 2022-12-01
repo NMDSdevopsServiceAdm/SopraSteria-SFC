@@ -241,7 +241,7 @@ describe('AddMandatoryTrainingComponent', () => {
 
   describe('error messages', async () => {
     describe('mandatory training category', async () => {
-      it('Should display a Select the mandatory training error message if the form is submitted without a category input and all job roles is selected', async () => {
+      it('Should display a Select the training category you want to be mandatory error message if the form is submitted without a category input and all job roles is selected', async () => {
         const { createAndUpdateMandatoryTrainingSpy, component, fixture, getByLabelText, getByText, getAllByText } =
           await setup();
 
@@ -255,10 +255,10 @@ describe('AddMandatoryTrainingComponent', () => {
 
         expect(createAndUpdateMandatoryTrainingSpy).not.toHaveBeenCalled();
         expect(component.form.invalid).toBeTruthy();
-        expect(getAllByText('Select the mandatory training').length).toEqual(2);
+        expect(getAllByText('Select the training category you want to be mandatory').length).toEqual(2);
       });
 
-      it('Should display a Select the mandatory training error message if the form is submitted without a category input and only selected job roles is selected', async () => {
+      it('Should display a Select the training category you want to be mandatory error message if the form is submitted without a category input and only selected job roles is selected', async () => {
         const { createAndUpdateMandatoryTrainingSpy, component, fixture, getByLabelText, getByText, getAllByText } =
           await setup();
 
@@ -275,7 +275,7 @@ describe('AddMandatoryTrainingComponent', () => {
 
         expect(createAndUpdateMandatoryTrainingSpy).not.toHaveBeenCalled();
         expect(component.form.invalid).toBeTruthy();
-        expect(getAllByText('Select the mandatory training').length).toEqual(2);
+        expect(getAllByText('Select the training category you want to be mandatory').length).toEqual(2);
       });
     });
 
@@ -340,7 +340,7 @@ describe('AddMandatoryTrainingComponent', () => {
 
       expect(createAndUpdateMandatoryTrainingSpy).not.toHaveBeenCalled();
       expect(component.form.invalid).toBeTruthy();
-      expect(getAllByText('Select the mandatory training').length).toEqual(2);
+      expect(getAllByText('Select the training category you want to be mandatory').length).toEqual(2);
       expect(getByText('Select the job role')).toBeTruthy();
       expect(getByText('Select the job role (job role 1)')).toBeTruthy();
     });

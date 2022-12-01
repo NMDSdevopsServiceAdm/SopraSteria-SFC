@@ -22,7 +22,9 @@
               <label class="govuk-label" for="trainingCategory"> Training category </label>
               <span *ngIf="submitted" class="govuk-error-message">
                 <ng-container *ngIf="submitted && form.get('trainingCategory').invalid">
-                  <label id="trainingCategory-error" for="trainingCategory">Select the mandatory training</label>
+                  <label id="trainingCategory-error" for="trainingCategory"
+                    >Select the training category you want to be mandatory</label
+                  >
                 </ng-container>
               </span>
             </div>
