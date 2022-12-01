@@ -23,6 +23,7 @@ import { NewTabComponent } from './new-tab.component';
 })
 export class NewTabsComponent implements AfterContentInit, OnDestroy {
   @Output() selectedTabClick = new EventEmitter();
+  @Output() viewTab: EventEmitter<string> = new EventEmitter();
 
   private currentTab: number;
   private subscriptions: Subscription = new Subscription();
@@ -104,7 +105,7 @@ export class NewTabsComponent implements AfterContentInit, OnDestroy {
     tab.active = true;
 
     this.selectedTabClick.emit({ tabSlug: tab.slug });
-
+    this.viewTab.emit(tab.title);
     const path = hasCurrentTab ? this.location.path().split('?')[0] : this.location.path();
     this.location.replaceState(`${path}#${tab.slug}`);
 

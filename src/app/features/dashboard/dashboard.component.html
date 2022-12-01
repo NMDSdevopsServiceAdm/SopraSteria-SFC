@@ -1,6 +1,6 @@
 <div style="background-color: #b1b4b6">
   <div class="govuk-width-container">
-    <app-new-tabs (selectedTabClick)="tabClickEvent($event)">
+    <app-new-tabs (selectedTabClick)="tabClickEvent($event)" (viewTab)="handleTabChange($event)">
       <app-new-tab title="Home"></app-new-tab>
       <app-new-tab *ngIf="workplace && canViewEstablishment" title="Workplace"></app-new-tab>
       <app-new-tab *ngIf="workplace && canViewListOfWorkers" title="Staff records"></app-new-tab>
@@ -25,7 +25,31 @@
 <div class="govuk-width-container">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <app-tabs (selectedTabClick)="tabClickEvent($event)">
+      <app-home-tab *ngIf="selectedTab === 'Home'" [workplace]="workplace" [workerCount]="workerCount"></app-home-tab>
+      <app-workplace-tab
+        *ngIf="selectedTab === 'Workplace'"
+        [workplace]="workplace"
+        [workerCount]="workerCount"
+      ></app-workplace-tab>
+      <app-staff-records-tab
+        *ngIf="selectedTab === 'Staff records'"
+        [workplace]="workplace"
+        [workers]="workers"
+        [workerCount]="workerCount"
+      ></app-staff-records-tab>
+      <app-training-and-qualifications-tab
+        *ngIf="selectedTab === 'Training and qualifications'"
+        [workplace]="workplace"
+        [workers]="workers"
+        [workerCount]="workerCount"
+        [trainingCounts]="trainingCounts"
+      ></app-training-and-qualifications-tab>
+      <app-benchmarks-tab
+        *ngIf="selectedTab === 'Benchmarks'"
+        [workplace]="workplace"
+        class="asc-benchmarks-tab"
+      ></app-benchmarks-tab>
+      <!-- <app-tabs (selectedTabClick)="tabClickEvent($event)">
         <app-tab [title]="'Home'">
           <app-home-tab [workplace]="workplace" [workerCount]="workerCount"></app-home-tab>
         </app-tab>
@@ -67,7 +91,7 @@
         <app-tab *ngIf="workplace && canViewEstablishment && wdfNewDesignFlag" [title]="'WDF'">
           <app-wdf-tab [workplace]="workplace"></app-wdf-tab>
         </app-tab>
-      </app-tabs>
+      </app-tabs> -->
     </div>
   </div>
 </div>

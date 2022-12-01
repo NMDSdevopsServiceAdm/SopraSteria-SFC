@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public showSharingPermissionsBanner: boolean;
   private showBanner = false;
   public wdfNewDesignFlag: boolean;
+  public selectedTab = 'home';
 
   constructor(
     private authService: AuthService,
@@ -80,6 +81,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
     this.canAddUser = this.permissionsService.can(this.workplaceUid, 'canAddUser');
+  }
+
+  public handleTabChange(tabSelected: string): void {
+    this.selectedTab = tabSelected;
   }
 
   private setWorkersAndTrainingAlert(): void {
