@@ -20,12 +20,17 @@ li {
   padding: 0 40px;
   color: black;
   width: 100%;
+
   &--active {
     text-decoration: none;
   }
-  // &:focus {
-  // outline: none;
-  // background-color: govuk-colour('mid-grey');
-  // border-bottom: 3px solid transparent !important;
-  // }
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:focus {
+    outline: 4px solid govuk-colour('mid-grey');
+    background-color: govuk-colour('mid-grey');
+  }
 }

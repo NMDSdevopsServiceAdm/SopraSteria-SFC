@@ -110,7 +110,7 @@ export class NewTabsComponent implements AfterContentInit, OnDestroy {
 
     if (focus) {
       setTimeout(() => {
-        this.tablist.nativeElement.querySelector('.govuk-tabs__tab--selected').focus();
+        this.tablist.nativeElement.querySelector('.asc-active').focus();
       });
     }
   }

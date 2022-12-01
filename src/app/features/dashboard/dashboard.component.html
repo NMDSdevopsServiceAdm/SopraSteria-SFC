@@ -1,11 +1,11 @@
 <div style="background-color: #b1b4b6">
   <div class="govuk-width-container">
-    <app-new-tabs>
+    <app-new-tabs (selectedTabClick)="tabClickEvent($event)">
       <app-new-tab title="Home"></app-new-tab>
-      <app-new-tab title="Workplace"></app-new-tab>
-      <app-new-tab title="Staff records"></app-new-tab>
-      <app-new-tab title="Training and qualifications"></app-new-tab>
-      <app-new-tab title="Benchmarks"></app-new-tab>
+      <app-new-tab *ngIf="workplace && canViewEstablishment" title="Workplace"></app-new-tab>
+      <app-new-tab *ngIf="workplace && canViewListOfWorkers" title="Staff records"></app-new-tab>
+      <app-new-tab *ngIf="workplace && canViewListOfWorkers" title="Training and qualifications"></app-new-tab>
+      <app-new-tab *ngIf="workplace && canViewBenchmarks" title="Benchmarks"></app-new-tab>
     </app-new-tabs>
   </div>
 </div>
