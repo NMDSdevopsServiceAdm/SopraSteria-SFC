@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class TrainingService {
+  public selectedTraining: any;
   public selectedStaff = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
 

@@ -111,7 +111,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     ]);
   });
 
-  xit('should submit, navigate and add alert when complete', async () => {
+  it('should submit, navigate and add alert when complete', async () => {
     const { component, getByText, fixture, spy, alertSpy, workerSpy, trainingSpy } = await setup();
     component.form.markAsDirty();
     component.form.get('category').setValue('1');
@@ -132,7 +132,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       notes: null,
     });
     // GB fragment will need to be replaced with route for 'add-multiple-records-summary' 28/11/2022
-    // expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'training-and-qualifications' });
+    expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'training-and-qualifications' });
   });
 
   it('should clear selected staff and navigate when pressing cancel', async () => {

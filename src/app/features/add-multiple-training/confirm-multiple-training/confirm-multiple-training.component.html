@@ -1,0 +1,38 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <div class="govuk-grid-row">
+      <span class="govuk-caption-l">Add multiple records</span>
+      <h1 class="govuk-heading-xl">Summary</h1>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column">
+        <p>Check these details before you confirm them.</p>
+      </div>
+      <div class="govuk-grid-column">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9" data-testid="confirmButton">
+          Confirm details
+        </button>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <span class="govuk-heading-m">Selected staff</span>
+      <div class="govuk-summary-list" data-testid="selectedStaffSummary">
+        <app-combined-summary-row [content]="worker"> </app-combined-summary-row>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <span class="govuk-heading-m">Training record details</span>
+      <div class="govuk-summary-list">
+        <app-combined-summary-row [content]="trainingRecord"></app-combined-summary-row>
+      </div>
+    </div>
+    <!-- <a
+        href="#"
+        *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
+        (click)="removeAllCategories($event)"
+        class="govuk-list govuk-list--inline"
+      >
+        Remove all training selections</a
+      > -->
+  </div>
+</div>

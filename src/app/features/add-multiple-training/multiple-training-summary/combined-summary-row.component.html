@@ -1,0 +1,23 @@
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">
+    <div class="govuk-grid-column">
+      <ng-container *ngFor="let item of content">
+        <div class="govuk-grid-row govuk-!-margin-0">
+          {{ item.key }}
+        </div>
+      </ng-container>
+    </div>
+  </dt>
+  <dd class="govuk-summary-list__value">
+    <div class="govuk-grid-column">
+      <ng-container *ngFor="let item of content">
+        <div class="govuk-grid-row govuk-!-margin-0">
+          {{ item.value }}
+        </div>
+      </ng-container>
+    </div>
+  </dd>
+  <dd class="govuk-summary-list__actions">
+    <a class="govuk-link" href="#">Change</a>
+  </dd>
+</div>

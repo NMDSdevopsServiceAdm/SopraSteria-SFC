@@ -63,23 +63,22 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.buttonText = 'Continue';
   }
 
-  protected submit(record: TrainingRecordRequest): void {
-    this.subscriptions.add(
-      this.workerService
-        .createMultipleTrainingRecords(this.workplace.uid, this.trainingService.selectedStaff, record)
-        .subscribe(
-          (response: MultipleTrainingResponse) => this.onSuccess(response),
-          (error) => this.onError(error),
-        ),
-    );
+  protected async submit(record: TrainingRecordRequest) {
+    // this.subscriptions.add(
+    //   this.workerService
+    //     .createMultipleTrainingRecords(this.workplace.uid, this.trainingService.selectedStaff, record)
+    //     .subscribe(
+    //       (response: MultipleTrainingResponse) => this.onSuccess(response),
+    //       (error) => this.onError(error),
+    //     ),
+    // );
+    this.trainingService.selectedTraining = record;
+    await this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }
 
   private async onSuccess(response: MultipleTrainingResponse) {
-    this.trainingService.resetSelectedStaff();
-    this.trainingService.addMultipleTrainingInProgress$.next(false);
-
     //AP + GB Will need changing to be whatever the new summary page url is 25/11/2022
-    await this.router.navigate(['add-multiple-records-summary']);
+    await this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }
 
   private onError(error) {
