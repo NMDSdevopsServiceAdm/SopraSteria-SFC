@@ -1,33 +1,40 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MultipleTrainingResponse } from '@core/model/training.model';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-multiple-training',
   templateUrl: './confirm-multiple-training.component.html',
 })
 export class ConfirmMultipleTrainingComponent implements OnInit {
-  public worker: { key: string; value: string }[];
-  public trainingRecord: { key: string; value: string }[];
+  public workers: { key: string; value: string }[];
+  public trainingRecords: { key: string; value: string }[];
+  private workplaceUid: string;
+  public subscriptions: Subscription = new Subscription();
 
   constructor(
     protected route: ActivatedRoute,
+    protected router: Router,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
-  ) {}
+  ) {
+    this.workplaceUid = this.route.snapshot.data.establishment.uid;
+  }
 
   ngOnInit(): void {
     console.log(this.route);
     console.log(this.trainingService.selectedTraining);
     this.getStaffData();
     this.convertTrainingRecord();
-    console.log(this.trainingRecord);
+    console.log(this.trainingRecords);
   }
 
   convertTrainingRecord = () => {
     const training = this.trainingService.selectedTraining;
-    this.trainingRecord = [
+    this.trainingRecords = [
       { key: 'Training category', value: training.trainingCategory?.id },
       { key: 'Training name', value: training.title },
       { key: 'Training accredited', value: training.accredited },
@@ -39,11 +46,40 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
 
   getStaffData = () => {
     const staff = this.trainingService.selectedStaff;
-    this.worker = [];
+    this.workers = [];
     for (const id of staff) {
       this.workerService
-        .getWorker(this.route.snapshot.data.establishment.uid, id)
-        .subscribe((x) => this.worker.push({ key: x.nameOrId, value: x.mainJob.title }));
+        .getWorker(this.workplaceUid, id)
+        .subscribe((x) => this.workers.push({ key: x.nameOrId, value: x.mainJob.title }));
     }
+  };
+
+  public getRoutePath(pageName: string): Array<string> {
+    return ['workplace', this.workplaceUid, 'add-multiple-training', pageName];
+  }
+
+  public onSubmit(): void {
+    this.subscriptions.add(
+      this.workerService
+        .createMultipleTrainingRecords(
+          this.workplaceUid,
+          this.trainingService.selectedStaff,
+          this.trainingService.selectedTraining,
+        )
+        .subscribe(
+          (response: MultipleTrainingResponse) => this.onSuccess(),
+          (error) => this.onError(error),
+        ),
+    );
+  }
+
+  private onError = (x) => {
+    console.log(x);
+  };
+
+  private onSuccess = () => {
+    this.router.navigate([`dashboard`]).then(() => {
+      this.workerService.alert = { type: 'success', message: 'Training has been added.' };
+    });
   };
 }

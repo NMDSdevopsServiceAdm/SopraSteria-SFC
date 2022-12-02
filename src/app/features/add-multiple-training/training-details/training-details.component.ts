@@ -64,14 +64,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   protected async submit(record: TrainingRecordRequest) {
-    // this.subscriptions.add(
-    //   this.workerService
-    //     .createMultipleTrainingRecords(this.workplace.uid, this.trainingService.selectedStaff, record)
-    //     .subscribe(
-    //       (response: MultipleTrainingResponse) => this.onSuccess(response),
-    //       (error) => this.onError(error),
-    //     ),
-    // );
     this.trainingService.selectedTraining = record;
     await this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }

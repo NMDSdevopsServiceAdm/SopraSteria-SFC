@@ -6,7 +6,6 @@ import { SharedModule } from '@shared/shared.module';
 
 import { AddMultipleTrainingRoutingModule } from './add-multiple-training-routing.module';
 import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training/confirm-multiple-training.component';
-import { CombinedSummaryRowComponent } from './multiple-training-summary/combined-summary-row.component';
 import { SelectStaffComponent } from './select-staff/select-staff.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
 
@@ -19,12 +18,7 @@ import { MultipleTrainingDetailsComponent } from './training-details/training-de
     OverlayModule,
     AddMultipleTrainingRoutingModule,
   ],
-  declarations: [
-    SelectStaffComponent,
-    MultipleTrainingDetailsComponent,
-    CombinedSummaryRowComponent,
-    ConfirmMultipleTrainingComponent,
-  ],
+  declarations: [SelectStaffComponent, MultipleTrainingDetailsComponent, ConfirmMultipleTrainingComponent],
   providers: [],
 })
 export class AddMultipleTrainingModule {}
