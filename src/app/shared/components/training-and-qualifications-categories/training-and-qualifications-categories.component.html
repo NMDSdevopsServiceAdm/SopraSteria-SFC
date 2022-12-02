@@ -117,102 +117,13 @@
           </td>
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             <a
-              *ngIf="trainingCategory.training.length"
               class="govuk-link--no-visited-state"
+              (click)="viewTrainingCategory($event, trainingCategory)"
               href="#"
-              (click)="toggleDetails(trainingCategory.id, $event)"
               data-testid="more-link"
             >
-              {{ workerDetailsLabel[trainingCategory.id] ? workerDetailsLabel[trainingCategory.id] : 'Open' }}
+              View
             </a>
-          </td>
-        </tr>
-        <tr *ngIf="workerDetails[trainingCategory.id]" class="govuk-panel--gray govuk-!-margin-2">
-          <td colspan="4">
-            <div class="govuk-!-margin-2">
-              <table class="govuk-table">
-                <thead class="govuk-table__head">
-                  <tr class="govuk-table__row">
-                    <th class="govuk-table__header govuk-!-width-one-third" scope="col">Worker ID</th>
-                    <th class="govuk-table__header govuk-!-width-one-third" scope="col">Job role</th>
-                    <th class="govuk-table__header govuk-!-width-one-third" scope="col">Status</th>
-                    <th class="govuk-table__header govuk-!-width-one-third" scope="col"></th>
-                  </tr>
-                </thead>
-                <tbody class="govuk-table__body">
-                  <ng-container *ngFor="let training of trainingCategory.training">
-                    <tr class="govuk-table__row govuk-util__vertical-align-top">
-                      <td class="govuk-table__cell govuk-!-font-weight-regular">
-                        <ng-container *ngIf="canEditWorker; else nameOrId">
-                          <a
-                            [routerLink]="[
-                              '/workplace',
-                              this.workplace.uid,
-                              'training-and-qualifications-record',
-                              training.worker.uid,
-                              'training'
-                            ]"
-                          >
-                            {{ training.worker.NameOrIdValue }}</a
-                          >
-                        </ng-container>
-                        <ng-template #nameOrId>
-                          {{ training.worker.NameOrIdValue }}
-                        </ng-template>
-                      </td>
-                      <td class="govuk-table__cell govuk-!-font-weight-regular">
-                        {{ training.worker.mainJob?.title }}
-                      </td>
-                      <td class="govuk-table__cell">
-                        <div
-                          *ngIf="trainingStatus(training) === trainingStatusService.EXPIRED"
-                          class="govuk-!-margin-bottom-1"
-                        >
-                          <img
-                            src="/assets/images/flag-red.svg"
-                            alt=""
-                            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-                          />
-                          Expired
-                        </div>
-                        <div
-                          *ngIf="trainingStatus(training) === trainingStatusService.MISSING"
-                          class="govuk-!-margin-bottom-1"
-                        >
-                          <img
-                            src="/assets/images/flag-red.svg"
-                            alt=""
-                            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-                          />
-                          Missing
-                        </div>
-                        <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
-                          <img
-                            src="/assets/images/flag-orange.svg"
-                            alt=""
-                            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-                          />
-                          Expiring soon
-                        </div>
-
-                        <div *ngIf="trainingStatus(training) === trainingStatusService.ACTIVE">Up-to-date</div>
-                      </td>
-                      <td class="govuk-table__cell">
-                        <div
-                          *ngIf="
-                            (trainingStatus(training) == trainingStatusService.EXPIRED ||
-                              trainingStatus(training) == trainingStatusService.EXPIRING) &&
-                            canEditWorker
-                          "
-                        >
-                          <a (click)="updateTrainingRecord($event, training)" href="#">Update</a>
-                        </div>
-                      </td>
-                    </tr>
-                  </ng-container>
-                </tbody>
-              </table>
-            </div>
           </td>
         </tr>
       </ng-container>
