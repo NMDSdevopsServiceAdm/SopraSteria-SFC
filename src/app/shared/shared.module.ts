@@ -69,6 +69,7 @@ import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
 import { TotalStaffComponent } from './components/total-staff/total-staff.component';
 import { TrainingAndQualificationsCategoriesComponent } from './components/training-and-qualifications-categories/training-and-qualifications-categories.component';
+import { ViewTrainingAndQualifications } from './components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 import { TrainingAndQualificationsSummaryComponent } from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
 import { TrainingAndQualificationsTabComponent } from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
@@ -197,6 +198,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
     NewBackLinkComponent,
+    ViewTrainingAndQualifications,
   ],
   exports: [
     AlertComponent,
@@ -291,6 +293,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
     NewBackLinkComponent,
+    ViewTrainingAndQualifications,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
