@@ -1,10 +1,11 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-three-quarters">
     <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
       {{ worker.nameOrId }}
     </span>
     <h1 class="govuk-heading-l govuk-!-margin-bottom-7">
-      You're about to delete this {{ trainingOrQualification }} record
+      You're about to delete this <br />
+      {{ trainingOrQualification }} record
     </h1>
 
     <ng-container *ngIf="trainingView; else qualificationView">
@@ -43,7 +44,7 @@
           </dd>
         </div>
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Qualification name</dt>
+          <dt class="govuk-summary-list__key">{{ qualificationRecord.qualification.group }} name</dt>
           <dd class="govuk-summary-list__value" data-testid="qualificationName">
             {{ qualificationRecord.qualification.title }}
           </dd>
