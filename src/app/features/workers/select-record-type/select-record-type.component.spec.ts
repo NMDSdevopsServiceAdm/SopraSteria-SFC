@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { Observable } from 'rxjs';
 
 import { WorkersModule } from '../workers.module';
@@ -12,7 +12,7 @@ import { SelectRecordTypeComponent } from './select-record-type.component';
 
 describe('SelectRecordTypeComponent', () => {
   async function setup() {
-    const { fixture, getByText } = await render(SelectRecordTypeComponent, {
+    const { fixture, getByText, getAllByText } = await render(SelectRecordTypeComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
         BackService,
@@ -36,6 +36,7 @@ describe('SelectRecordTypeComponent', () => {
       fixture,
       routerSpy,
       getByText,
+      getAllByText,
     };
   }
 
@@ -56,6 +57,16 @@ describe('SelectRecordTypeComponent', () => {
 
       const returnUrl = 'workplace/establishmentUid/training-and-qualifications-record/1/training';
       expect(backLinkSpy).toHaveBeenCalledWith({ url: [returnUrl] });
+    });
+  });
+
+  describe('error messages', () => {
+    it('should display an error message if no record type is selected and Continue is pressed', async () => {
+      const { fixture, getByText, getAllByText } = await setup();
+
+      fireEvent.click(getByText('Continue'));
+      fixture.detectChanges();
+      expect(getAllByText('Select the type of record').length).toEqual(2);
     });
   });
 });

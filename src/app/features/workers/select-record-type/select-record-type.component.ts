@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { SelectRecordTypes } from '@core/model/worker.model';
+import { SelectRecordTypes, Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -13,6 +13,8 @@ import { WorkerService } from '@core/services/worker.service';
   templateUrl: './select-record-type.component.html',
 })
 export class SelectRecordTypeComponent implements OnInit {
+  public worker: Worker;
+  public previousUrl: string[];
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -33,6 +35,7 @@ export class SelectRecordTypeComponent implements OnInit {
   public navigateUrl: string;
 
   ngOnInit(): void {
+    this.worker = this.workerService.worker;
     this.route.params.subscribe((params) => {
       if (params) {
         this.establishmentuid = params.establishmentuid;
@@ -58,7 +61,7 @@ export class SelectRecordTypeComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: 'Select a record type',
+            message: 'Select the type of record',
           },
         ],
       },
@@ -104,5 +107,9 @@ export class SelectRecordTypeComponent implements OnInit {
         }
       });
     }
+  }
+
+  public onCancel(): void {
+    this.router.navigateByUrl(this.previousUrl[0]);
   }
 }
