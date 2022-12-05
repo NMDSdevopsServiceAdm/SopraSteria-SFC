@@ -6,6 +6,7 @@ import { TrainingRecord } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
@@ -30,6 +31,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private backService: BackService,
     private alertService: AlertService,
+    protected backLinkService: BackLinkService,
   ) {}
 
   ngOnInit(): void {
@@ -56,10 +58,8 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
     this.worker = this.route.snapshot.data.worker;
   }
 
-  private setBackLink(): void {
-    this.backService.setBackLink({
-      url: [this.trainingPageUrl, this.trainingOrQualification, this.recordUid],
-    });
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   public returnToEditPage(event: Event): void {
@@ -74,7 +74,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
 
         this.alertService.addAlert({
           type: 'success',
-          message: `${this.capitalizeFirstLetter(this.trainingOrQualification)} record has been deleted`,
+          message: `${this.capitalizeFirstLetter(this.trainingOrQualification)} record deleted`,
         });
       }),
     );

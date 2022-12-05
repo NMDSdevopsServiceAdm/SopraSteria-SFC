@@ -199,6 +199,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewBackLinkComponent,
   ],
   exports: [
+    AbsoluteNumberPipe,
     AlertComponent,
     AutoSuggestComponent,
     BackLinkComponent,
