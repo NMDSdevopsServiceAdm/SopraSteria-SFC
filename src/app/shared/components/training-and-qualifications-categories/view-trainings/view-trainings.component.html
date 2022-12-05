@@ -85,15 +85,8 @@
           </div>
         </td>
         <td class="govuk-table__cell">
-          <!-- <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
-              <a (click)="addTrainingRecord($event, training)" href="#">Add</a>
-            </div> -->
           <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
-            <app-missing-mandatory-training
-              [missingMandatoryTraining]="missingMandatoryTraining"
-              (addClicked)="addButtonClicked()"
-              [canEditWorker]="canEditWorker"
-            ></app-missing-mandatory-training>
+            <a (click)="addTrainingRecord($event, training)" href="#">Add</a>
           </div>
         </td>
       </tr>
@@ -125,3 +118,11 @@
     </a>
   </div>
 </div>-->
+
+<!-- <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
+  <app-missing-mandatory-training
+    [missingMandatoryTraining]="missingMandatoryTraining"
+    (addClicked)="addButtonClicked()"
+    [canEditWorker]="canEditWorker"
+  ></app-missing-mandatory-training>
+</div> -->

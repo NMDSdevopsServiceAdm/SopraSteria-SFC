@@ -7,7 +7,7 @@ import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
-import { ViewTrainingAndQualifications } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
+import { ViewTrainingAndQualificationsComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
@@ -79,7 +79,7 @@ const routes: Routes = [
   },
   {
     path: 'view-training-category/:categoryId',
-    component: ViewTrainingAndQualifications,
+    component: ViewTrainingAndQualificationsComponent,
 
     data: { title: 'View Training Categories' },
   },

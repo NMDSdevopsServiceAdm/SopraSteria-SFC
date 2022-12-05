@@ -1,44 +1,60 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingRecordCategory } from '@core/model/training.model';
-import { Worker } from '@core/model/worker.model';
+import { BackLinkService } from '@core/services/backLink.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-training-and-qualifications-categories-view',
   templateUrl: './view-trainings.component.html',
 })
-export class ViewTrainingAndQualifications implements OnInit {
-  public canEditWorker: boolean;
-  public canViewWorker: boolean;
-  public worker: Worker;
+export class ViewTrainingAndQualificationsComponent implements OnInit {
   public workplace: Establishment;
-  public trainingAndQualsCount: number;
-  public trainingAlert: number;
-  public qualificationsCount: number;
-  public mandatoryTrainingCount: number;
-  public nonMandatoryTrainingCount: number;
-  public nonMandatoryTraining: TrainingRecordCategory[];
-  public mandatoryTraining: TrainingRecordCategory[];
-  public expiredTraining: number;
-  public expiresSoonTraining: number;
-  public lastUpdatedDate: Date;
+  public trainingCategories: [];
+  public canEditWorker = false;
+  public trainingCategoryId;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
+    private permissionsService: PermissionsService,
+    protected trainingStatusService: TrainingStatusService,
     private workerService: WorkerService,
-    private trainingStatusService: TrainingStatusService,
+    private router: Router,
+    private establishmentService: EstablishmentService,
+    protected trainingCategoryService: TrainingCategoryService,
+    protected backLinkService: BackLinkService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit() {
-    this.workplace = this.route.parent.snapshot.data.establishment;
-    this.worker = this.route.snapshot.data.worker;
-    this.trainingStatusService.expiresSoonAlertDate$.next(
-      this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate,
+    this.workplace = this.establishmentService.primaryWorkplace;
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+
+    this.getAllTrainingByCategory();
+    this.setBackLink();
+
+    this.trainingCategoryId = this.route.snapshot.params.categoryId;
+  }
+
+  private getAllTrainingByCategory(): void {
+    this.subscriptions.add(
+      this.trainingCategoryService
+        .getCategoriesWithTraining(this.workplace.id)
+
+        .pipe(take(1))
+        .subscribe((trainingCategories) => {
+          this.trainingCategories = trainingCategories;
+        }),
     );
+  }
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   public updateTrainingRecord(event, training): void {
@@ -55,19 +71,18 @@ export class ViewTrainingAndQualifications implements OnInit {
     ]);
   }
 
-  public trainingIsComplete(training) {
-    return (
-      [
-        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRED),
-        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRING),
-        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.MISSING),
-      ].reduce((total, num) => {
-        return total + num;
-      }) === 0
-    );
+  public addTrainingRecord(event, training): void {
+    event.preventDefault();
+    this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
+
+    this.router.navigate(['/workplace', this.workplace.uid, 'add-mandatory-training']);
   }
 
   public trainingStatus(training) {
     return this.trainingStatusService.trainingStatusForRecord(training);
+  }
+
+  public returnToHome() {
+    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
 }
