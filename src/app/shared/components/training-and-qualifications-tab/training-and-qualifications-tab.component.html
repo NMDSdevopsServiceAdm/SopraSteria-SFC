@@ -5,7 +5,7 @@
   [totalRecords]="totalRecords"
 ></app-training-link-panel>
 <ng-container *ngIf="workers && workers.length; else noStaffRecords">
-  <div class="govuk-grid-row" *ngIf="totalRecords === 0">
+  <div class="govuk-grid-row" *ngIf="totalRecords === 0" data-testid="noRecords">
     <div class="govuk-grid-column-two-thirds">
       <app-inset-text color="warning">You have not added any training or qualification records yet.</app-inset-text>
       <p>
@@ -17,6 +17,7 @@
   </div>
   <app-training-info-panel
     *ngIf="workers"
+    data-testid="trainingInfoPanel"
     [totalExpiredTraining]="totalExpiredTraining"
     [totalExpiringTraining]="totalExpiringTraining"
     [totalStaffMissingMandatoryTraining]="staffMissingMandatoryTraining"
@@ -29,12 +30,14 @@
   </app-training-select-view-panel>
   <app-training-and-qualifications-summary
     *ngIf="!viewTrainingByCategory"
+    data-testid="trainingAndQualsSummary"
     [workplace]="workplace"
     [workers]="workers"
     [workerCount]="workerCount"
   ></app-training-and-qualifications-summary>
   <app-training-and-qualifications-categories
     *ngIf="viewTrainingByCategory && trainingCategories?.length > 0"
+    data-testid="trainingAndQualsCategories"
     [workplace]="workplace"
     [trainingCategories]="trainingCategories"
   ></app-training-and-qualifications-categories>
