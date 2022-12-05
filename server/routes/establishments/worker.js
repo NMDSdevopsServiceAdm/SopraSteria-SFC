@@ -352,6 +352,7 @@ router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
 router.route('/:workerId').delete(hasPermission('canDeleteWorker'), deleteWorker);
 
+router.use('/trainingAndQualifications', TrainingAndQualificationsRoutes);
 router.use('/:workerId/training', TrainingRoutes);
 router.use('/:workerId/qualification', QualificationRoutes);
 router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);

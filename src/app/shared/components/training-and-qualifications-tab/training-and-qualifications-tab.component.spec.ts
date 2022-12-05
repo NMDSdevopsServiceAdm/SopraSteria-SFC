@@ -1,18 +1,24 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { PermissionType } from '@core/model/permissions.model';
+import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
+import { TrainingLinkPanelComponent } from '../training-link-panel/training-link-panel.component';
 import { TrainingAndQualificationsTabComponent } from './training-and-qualifications-tab.component';
 
 const establishmentBuilder = build('Establishment', {
@@ -23,11 +29,12 @@ const establishmentBuilder = build('Establishment', {
   },
 });
 
-describe('TrainingAndQualificationsTabComponent', () => {
-  async function setup() {
-    const component = await render(TrainingAndQualificationsTabComponent, {
+fdescribe('TrainingAndQualificationsTabComponent', () => {
+  async function setup(permissions = ['canEditWorker'], withWorkers = true) {
+    const workers = withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
+    const { fixture, getByText, queryByText, getByTestId } = await render(TrainingAndQualificationsTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
+      declarations: [TrainingLinkPanelComponent],
       providers: [
         TrainingCategoryService,
         {
@@ -40,42 +47,75 @@ describe('TrainingAndQualificationsTabComponent', () => {
         },
         {
           provide: PermissionsService,
-          useClass: MockPermissionsService,
+          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
+          deps: [HttpClient, Router, UserService],
         },
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCounts: {},
+        workers: workers,
+        workerCount: workers.length,
       },
     });
 
+    const component = fixture.componentInstance;
+
     return {
       component,
+      fixture,
+      getByText,
+      queryByText,
+      getByTestId,
     };
   }
 
   it('should create', async () => {
-    const component = await setup();
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
-  it('should display the `Add training for multiple staff` button when the user has edit permission', async () => {
-    const { component } = await setup();
+  describe('add multiple training records button', () => {
+    it('should display the `Add multiple training records` button with the correct link when the user has edit permission', async () => {
+      const { component, getByText } = await setup();
 
-    component.fixture.componentInstance.canEditWorker = true;
-    component.fixture.detectChanges();
-    const multipleTrainingButton = component.getByText('Add training for multiple staff');
+      const workplaceUid = component.workplace.uid;
+      const multipleTrainingButton = getByText('Add multiple training records');
+      expect(multipleTrainingButton).toBeTruthy();
+      expect(multipleTrainingButton.getAttribute('href')).toEqual(
+        `/workplace/${workplaceUid}/add-multiple-training/select-staff`,
+      );
+    });
 
-    expect(multipleTrainingButton).toBeTruthy();
+    it('should not display the `Add multiple training records` button when the user does not have edit permission', async () => {
+      const { queryByText } = await setup([]);
+
+      const multipleTrainingButton = queryByText('Add multiple training records');
+      expect(multipleTrainingButton).toBeFalsy();
+    });
   });
 
-  it('should not display the `Add training for multiple staff` button when the user does not have edit permission', async () => {
-    const { component } = await setup();
+  it('renders the training link panel', async () => {
+    const { getByTestId } = await setup();
+    expect(getByTestId('trainingLinkPanel')).toBeTruthy();
+  });
 
-    component.fixture.componentInstance.canEditWorker = false;
-    component.fixture.detectChanges();
-    const multipleTrainingButton = component.queryByText('Add training for multiple staff');
+  fit('should display a correct message when there are no staff', async () => {
+    const { getByText } = await setup(['canEditWorker'], false);
 
-    expect(multipleTrainingButton).toBeFalsy();
+    expect(getByText('You need to start adding your staff records.')).toBeTruthy();
+  });
+
+  fdescribe('staff and training views when there are workers', () => {
+    it('should render the tab bar to show different views', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Staff')).toBeTruthy();
+      expect(getByText('Training')).toBeTruthy();
+    });
+
+    xit('shoud render a tab bar with the default table showing t and q by staff name', async () => {
+      const { getByText } = await setup();
+    });
   });
 });

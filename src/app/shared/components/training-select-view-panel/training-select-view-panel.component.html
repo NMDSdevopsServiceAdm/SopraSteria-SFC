@@ -1,0 +1,23 @@
+<div class="asc-tabs asc-tabs--border-bottom govuk-!-margin-top-5">
+  <ul class="asc-tabs__list" role="tablist" #tablist>
+    <ng-container *ngFor="let tab of tabs; let i = index">
+      <li class="asc-tabs__list-item" [class.asc-tabs__list-item--active]="tab.active">
+        <a
+          id="tab_{{ tab.slug }}"
+          class="govuk-link govuk-link--no-visited-state asc-tabs__link"
+          [class.asc-tabs__link--active]="tab.active"
+          href="#"
+          role="tab"
+          [attr.aria-controls]="tab.slug"
+          [attr.aria-selected]="tab.active"
+          [attr.tabindex]="tab.active ? 0 : -1"
+          (click)="selectTab($event, i)"
+          (keyup)="onKeyUp($event)"
+          (keydown)="onKeyDown($event)"
+          >{{ tab.title }}</a
+        >
+      </li>
+    </ng-container>
+  </ul>
+</div>
+<ng-content></ng-content>

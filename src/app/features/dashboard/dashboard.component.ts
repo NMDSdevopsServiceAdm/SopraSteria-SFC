@@ -84,7 +84,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private setWorkersAndTrainingAlert(): void {
     const { workers = [], workerCount = 0, trainingCounts } = this.route.snapshot.data.workers;
-
+    console.log('**** dashboard *****');
+    console.log(workers);
     this.workers = workers;
     this.workerCount = workerCount;
     this.trainingCounts = trainingCounts;

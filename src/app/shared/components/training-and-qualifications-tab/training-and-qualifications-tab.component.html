@@ -1,19 +1,5 @@
-<!-- <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h2 class="govuk-heading-m">Training and qualifications ({{ totalRecords || 0 }})</h2>
-  </div>
-  <div class="govuk-grid-column-one-third govuk-util__align-right">
-    <button
-      *ngIf="canEditWorker"
-      class="govuk-button"
-      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
-    >
-      Add training for multiple staff
-    </button>
-  </div>
-</div> -->
-
 <app-training-link-panel
+  data-testid="trainingLinkPanel"
   [workplace]="workplace"
   [workers]="workers"
   [totalRecords]="totalRecords"
@@ -36,21 +22,21 @@
     [totalStaffMissingMandatoryTraining]="staffMissingMandatoryTraining"
   ></app-training-info-panel>
 
-  <app-training-and-qualifications-categories
-    *ngIf="viewTrainingByCategory && trainingCategories?.length > 0"
-    [workplace]="workplace"
-    [trainingCategories]="trainingCategories"
-    (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
-  ></app-training-and-qualifications-categories>
-
-  <app-training-and-qualifications-summary
-    *ngIf="viewTrainingByCategory === false"
-    [workplace]="workplace"
-    [workers]="workers"
-    [workerCount]="workerCount"
-    [showViewByToggle]="trainingCategories?.length > 0"
-    (viewTrainingByCategory)="handleViewTrainingByCategory($event)"
-  ></app-training-and-qualifications-summary>
+  <app-training-select-view-panel>
+    <app-training-select-view [title]="'Staff'">
+      <app-training-and-qualifications-summary
+        [workplace]="workplace"
+        [workers]="workers"
+        [workerCount]="workerCount"
+      ></app-training-and-qualifications-summary>
+    </app-training-select-view>
+    <app-training-select-view [title]="'Training'">
+      <app-training-and-qualifications-categories
+        [workplace]="workplace"
+        [trainingCategories]="trainingCategories"
+      ></app-training-and-qualifications-categories>
+    </app-training-select-view>
+  </app-training-select-view-panel>
 </ng-container>
 <ng-template #noStaffRecords>
   <app-inset-text color="warning">You need to start adding your staff records.</app-inset-text>

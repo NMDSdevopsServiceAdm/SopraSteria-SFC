@@ -36,8 +36,8 @@
 </div>
 
 <div class="govuk-grid-row">
-  <ng-container *ngIf="canEditEstablishment">
-    <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-two-thirds">
+    <ng-container *ngIf="canEditEstablishment">
       <div class="govuk-!-margin-bottom-3">
         <a class="govuk-list" [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
           >Add and manage mandatory training categories
@@ -48,17 +48,17 @@
           >Manage expiry alerts
         </a>
       </div>
-    </div>
-    <div class="govuk-grid-column-one-third">
-      <a
-        *ngIf="canEditWorker"
-        role="button"
-        href="#"
-        class="govuk-button govuk-util__float-right govuk-!-margin-top-5"
-        [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
-      >
-        Add multiple training records
-      </a>
-    </div>
-  </ng-container>
+    </ng-container>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <a
+      *ngIf="canEditWorker"
+      role="button"
+      href="#"
+      class="govuk-button govuk-util__float-right govuk-!-margin-top-5"
+      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
+    >
+      Add multiple training records
+    </a>
+  </div>
 </div>

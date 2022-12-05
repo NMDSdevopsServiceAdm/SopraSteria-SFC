@@ -845,6 +845,8 @@ class Training extends EntityValidator {
           worker.trainingCount = trainings.length;
           for (let j = 0; j < trainings.length; j++) {
             const training = allTrainingRecords.training[j];
+            console.log('******************* getAllRequiredCounts **************');
+            console.log(worker.trainingLastUpdated);
             if (worker.trainingLastUpdated === undefined || worker.trainingLastUpdated < training.updated) {
               worker.trainingLastUpdated = training.updated;
             }
