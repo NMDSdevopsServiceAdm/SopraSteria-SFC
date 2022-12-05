@@ -108,7 +108,7 @@ describe('TrainingAndQualificationsTabComponent', () => {
     expect(getByText('You need to start adding your staff records.')).toBeTruthy();
   });
 
-  fdescribe('staff and training views when there are workers', () => {
+  describe('staff and training views when there are workers', () => {
     it('should render the tab bar to show different views', async () => {
       const { getByText } = await setup();
 
