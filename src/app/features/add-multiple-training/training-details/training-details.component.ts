@@ -69,8 +69,10 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   private async onSuccess(response: MultipleTrainingResponse) {
-    //AP + GB Will need changing to be whatever the new summary page url is 25/11/2022
-    await this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
+    this.trainingService.resetSelectedStaff();
+    this.trainingService.addMultipleTrainingInProgress$.next(false);
+
+    await this.router.navigate(['add-multiple-records-summary']);
   }
 
   private onError(error) {

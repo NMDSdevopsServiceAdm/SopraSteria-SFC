@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
+import { getTestBed } from '@angular/core/testing';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -11,7 +12,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { TrainingAndQualificationsTabComponent } from './training-and-qualifications-tab.component';
 
@@ -25,7 +26,7 @@ const establishmentBuilder = build('Establishment', {
 
 describe('TrainingAndQualificationsTabComponent', () => {
   async function setup() {
-    const component = await render(TrainingAndQualificationsTabComponent, {
+    const { fixture, getByText, queryByText } = await render(TrainingAndQualificationsTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -49,8 +50,19 @@ describe('TrainingAndQualificationsTabComponent', () => {
       },
     });
 
+    const component = fixture.componentInstance;
+
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
+      fixture,
+      getByText,
+      queryByText,
+      routerSpy,
     };
   }
 
@@ -59,23 +71,42 @@ describe('TrainingAndQualificationsTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the `Add training for multiple staff` button when the user has edit permission', async () => {
-    const { component } = await setup();
+  describe('Add multiple training records', () => {
+    it('should display the `Add multiple training records` button when the user has edit permission', async () => {
+      const { component, fixture, getByText } = await setup();
 
-    component.fixture.componentInstance.canEditWorker = true;
-    component.fixture.detectChanges();
-    const multipleTrainingButton = component.getByText('Add training for multiple staff');
+      component.canEditWorker = true;
+      fixture.detectChanges();
+      const multipleTrainingButton = getByText('Add multiple training records');
 
-    expect(multipleTrainingButton).toBeTruthy();
-  });
+      expect(multipleTrainingButton).toBeTruthy();
+    });
 
-  it('should not display the `Add training for multiple staff` button when the user does not have edit permission', async () => {
-    const { component } = await setup();
+    it('should navigate to the select staff page', async () => {
+      const { component, fixture, getByText, routerSpy } = await setup();
 
-    component.fixture.componentInstance.canEditWorker = false;
-    component.fixture.detectChanges();
-    const multipleTrainingButton = component.queryByText('Add training for multiple staff');
+      component.canEditWorker = true;
+      fixture.detectChanges();
 
-    expect(multipleTrainingButton).toBeFalsy();
+      const multipleTrainingButton = getByText('Add multiple training records');
+      fireEvent.click(multipleTrainingButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'add-multiple-training',
+        'select-staff',
+      ]);
+    });
+
+    it('should not display the `Add multiple training records` button when the user does not have edit permission', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.canEditWorker = false;
+      fixture.detectChanges();
+      const multipleTrainingButton = queryByText('Add multiple training records');
+
+      expect(multipleTrainingButton).toBeFalsy();
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { queryByText, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { TrainingInfoPanelComponent } from './training-info-panel.component';
 
