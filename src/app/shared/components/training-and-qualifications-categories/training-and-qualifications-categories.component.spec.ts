@@ -97,7 +97,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show Worker information when clicking the More link', async () => {
+  xit('should show Worker information when clicking the More link', async () => {
     const trainingCategory = trainingCategoryBuilder();
 
     const { getByTestId } = await setup([trainingCategory]);
@@ -107,7 +107,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(container.getAllByText(trainingCategory.training[0].worker.NameOrIdValue));
   });
 
-  it('should show an Update link for expired and expiring soon workers when clicking the More link', async () => {
+  xit('should show an Update link for expired and expiring soon workers when clicking the More link', async () => {
     const trainingCategory = trainingCategoryBuilder({
       overrides: {
         training: [

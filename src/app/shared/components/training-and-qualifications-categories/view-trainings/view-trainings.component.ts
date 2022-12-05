@@ -14,7 +14,7 @@ import { take } from 'rxjs/operators';
   selector: 'app-training-and-qualifications-categories-view',
   templateUrl: './view-trainings.component.html',
 })
-export class ViewTrainingAndQualificationsComponent implements OnInit {
+export class ViewTrainingComponent implements OnInit {
   public workplace: Establishment;
   public trainingCategories: [];
   public canEditWorker = false;
@@ -76,6 +76,18 @@ export class ViewTrainingAndQualificationsComponent implements OnInit {
     this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
 
     this.router.navigate(['/workplace', this.workplace.uid, 'add-mandatory-training']);
+  }
+
+  public trainingIsComplete(training) {
+    return (
+      [
+        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRED),
+        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRING),
+        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.MISSING),
+      ].reduce((total, num) => {
+        return total + num;
+      }) === 0
+    );
   }
 
   public trainingStatus(training) {
