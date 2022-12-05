@@ -29,7 +29,7 @@ const establishmentBuilder = build('Establishment', {
   },
 });
 
-fdescribe('TrainingAndQualificationsTabComponent', () => {
+describe('TrainingAndQualificationsTabComponent', () => {
   async function setup(permissions = ['canEditWorker'], withWorkers = true) {
     const workers = withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const { fixture, getByText, queryByText, getByTestId } = await render(TrainingAndQualificationsTabComponent, {
@@ -100,13 +100,13 @@ fdescribe('TrainingAndQualificationsTabComponent', () => {
     expect(getByTestId('trainingLinkPanel')).toBeTruthy();
   });
 
-  fit('should display a correct message when there are no staff', async () => {
+  it('should display a correct message when there are no staff', async () => {
     const { getByText } = await setup(['canEditWorker'], false);
 
     expect(getByText('You need to start adding your staff records.')).toBeTruthy();
   });
 
-  fdescribe('staff and training views when there are workers', () => {
+  describe('staff and training views when there are workers', () => {
     it('should render the tab bar to show different views', async () => {
       const { getByText } = await setup();
 

@@ -1,31 +1,16 @@
-import { AfterContentInit, Component, ContentChildren, ElementRef, QueryList, ViewChild } from '@angular/core';
-
-import { TrainingSelectViewComponent } from './training-select-view.component';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-training-select-view-panel',
   templateUrl: './training-select-view-panel.component.html',
   styleUrls: ['./training-select-view-panel.component.scss'],
 })
-export class TrainingSelectViewPanelComponent implements AfterContentInit {
-  @ContentChildren(TrainingSelectViewComponent) tabs: QueryList<TrainingSelectViewComponent>;
+export class TrainingSelectViewPanelComponent {
+  @Input() viewTrainingByCategory: boolean;
+  @Output() handleViewToggle: EventEmitter<boolean> = new EventEmitter();
 
-  @ViewChild('tablist') tablist: ElementRef;
-
-  ngAfterContentInit(): void {
-    this.selectTab(null, 0);
-  }
-
-  public selectTab(event: Event, index: number): void {
-    event?.preventDefault();
-
-    const tab = this.tabs.toArray()[index];
-
-    this.unselectTabs();
-    tab.active = true;
-  }
-
-  private unselectTabs() {
-    this.tabs.toArray().forEach((t) => (t.active = false));
+  public handleViewChange(event: Event): void {
+    event.preventDefault();
+    this.handleViewToggle.emit(!this.viewTrainingByCategory);
   }
 }

@@ -22,21 +22,22 @@
     [totalStaffMissingMandatoryTraining]="staffMissingMandatoryTraining"
   ></app-training-info-panel>
 
-  <app-training-select-view-panel>
-    <app-training-select-view [title]="'Staff'">
-      <app-training-and-qualifications-summary
-        [workplace]="workplace"
-        [workers]="workers"
-        [workerCount]="workerCount"
-      ></app-training-and-qualifications-summary>
-    </app-training-select-view>
-    <app-training-select-view [title]="'Training'">
-      <app-training-and-qualifications-categories
-        [workplace]="workplace"
-        [trainingCategories]="trainingCategories"
-      ></app-training-and-qualifications-categories>
-    </app-training-select-view>
+  <app-training-select-view-panel
+    [viewTrainingByCategory]="viewTrainingByCategory"
+    (handleViewToggle)="handleViewTrainingByCategory($event)"
+  >
   </app-training-select-view-panel>
+  <app-training-and-qualifications-summary
+    *ngIf="!viewTrainingByCategory"
+    [workplace]="workplace"
+    [workers]="workers"
+    [workerCount]="workerCount"
+  ></app-training-and-qualifications-summary>
+  <app-training-and-qualifications-categories
+    *ngIf="viewTrainingByCategory && trainingCategories?.length > 0"
+    [workplace]="workplace"
+    [trainingCategories]="trainingCategories"
+  ></app-training-and-qualifications-categories>
 </ng-container>
 <ng-template #noStaffRecords>
   <app-inset-text color="warning">You need to start adding your staff records.</app-inset-text>
