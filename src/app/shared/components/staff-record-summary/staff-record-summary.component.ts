@@ -135,8 +135,10 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     this.allFieldsConfirmed.emit();
   }
 
-  public getRoutePath(name: string): Array<string> {
-    return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'staff-record-summary', name];
+  public getRoutePath(name: string, isWdf: boolean = false): Array<string> {
+    return isWdf
+      ? ['/wdf', 'staff-record', this.worker.uid, name]
+      : ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'staff-record-summary', name];
   }
 
   public confirmField(dataField: string): void {
