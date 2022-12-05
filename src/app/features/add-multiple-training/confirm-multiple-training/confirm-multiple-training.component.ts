@@ -55,7 +55,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   };
 
   public getRoutePath(pageName: string): Array<string> {
-    return ['workplace', this.workplaceUid, 'add-multiple-training', pageName];
+    return ['/workplace', this.workplaceUid, 'add-multiple-training', pageName];
   }
 
   public onSubmit(): void {
