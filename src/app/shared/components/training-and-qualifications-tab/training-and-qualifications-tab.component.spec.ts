@@ -29,7 +29,7 @@ const establishmentBuilder = build('Establishment', {
   },
 });
 
-describe('TrainingAndQualificationsTabComponent', () => {
+fdescribe('TrainingAndQualificationsTabComponent', () => {
   async function setup(permissions = ['canEditWorker'], withWorkers = true) {
     const workers = withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const { fixture, getByText, queryByText, getByTestId } = await render(TrainingAndQualificationsTabComponent, {
