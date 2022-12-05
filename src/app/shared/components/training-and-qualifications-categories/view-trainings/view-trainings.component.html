@@ -42,6 +42,9 @@
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             {{ training.worker.mainJob?.title }}
           </td>
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            {{ training.expires ? (training.expires | date: 'dd MMM y') : '-' }}
+          </td>
           <td class="govuk-table__cell">
             <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRED" class="govuk-!-margin-bottom-1">
               <img
@@ -82,8 +85,15 @@
             </div>
           </td>
           <td class="govuk-table__cell">
-            <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
+            <!-- <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
               <a (click)="addTrainingRecord($event, training)" href="#">Add</a>
+            </div> -->
+            <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
+              <app-missing-mandatory-training
+                [missingMandatoryTraining]="missingMandatoryTraining"
+                (addClicked)="addButtonClicked()"
+                [canEditWorker]="canEditWorker"
+              ></app-missing-mandatory-training>
             </div>
           </td>
         </tr>
@@ -91,3 +101,23 @@
     </tbody>
   </table>
 </div>
+
+<!-- <div *ngIf="jobRoleMandatoryTraining.length === 0">
+  <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
+    <p>
+      No mandatory training has been set for the
+      {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }} job role yet.
+    </p>
+  </div>
+  <div class="govuk-grid-column-one-third govuk-!-padding-right-0">
+    <a
+      class="govuk-list govuk-util__float-right"
+      *ngIf="canEditWorker"
+      draggable="false"
+      role="button"
+      [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
+    >
+      Manage mandatory training
+    </a>
+  </div>
+</div>-->

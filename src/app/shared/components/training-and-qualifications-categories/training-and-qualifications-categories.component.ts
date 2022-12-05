@@ -113,7 +113,13 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   public viewTrainingCategory(event, trainingCategory): void {
     event.preventDefault();
 
-    this.router.navigate(['/workplace', this.workplace.uid, 'view-training-category', trainingCategory.id]);
+    this.router.navigate([
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      'view-training-category',
+      trainingCategory.id,
+    ]);
   }
 
   ngOnDestroy(): void {

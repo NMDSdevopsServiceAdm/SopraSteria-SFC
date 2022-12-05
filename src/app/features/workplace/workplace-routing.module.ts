@@ -20,7 +20,6 @@ import { UserAccountSavedComponent } from '@features/workplace/user-account-save
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
-import { ViewTrainingAndQualifications } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
@@ -487,12 +486,6 @@ const routes: Routes = [
           expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
         },
         data: { permissions: ['canEditEstablishment'], title: 'Change expires soon alerts' },
-      },
-      {
-        path: 'view-training-category/:categoryId',
-        component: ViewTrainingAndQualifications,
-        canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditWorker'], title: 'View Training Categories' },
       },
     ],
   },
