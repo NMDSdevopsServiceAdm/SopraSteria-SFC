@@ -78,12 +78,6 @@ describe('AddEditTrainingComponent', () => {
     expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
   });
 
-  it('should display the workers job role', async () => {
-    const { component, getByTestId } = await setup();
-
-    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.title);
-  });
-
   describe('Training category select/display', async () => {
     it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
       const { getByText } = await setup(true);
@@ -105,11 +99,11 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('title', () => {
-    it('should render the Enter training details title', async () => {
+    it('should render the Add training record details title', async () => {
       const trainingRecordId = null;
       const { getByText } = await setup(false, trainingRecordId);
 
-      expect(getByText('Enter training details')).toBeTruthy();
+      expect(getByText('Add training record details')).toBeTruthy();
     });
 
     it('should render the Training details title, when there is a training record id', async () => {

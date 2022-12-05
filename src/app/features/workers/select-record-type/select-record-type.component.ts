@@ -3,8 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { SelectRecordTypes, Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -14,7 +16,7 @@ import { WorkerService } from '@core/services/worker.service';
 })
 export class SelectRecordTypeComponent implements OnInit {
   public worker: Worker;
-  public previousUrl: string[];
+  public workplace: Establishment;
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -23,6 +25,7 @@ export class SelectRecordTypeComponent implements OnInit {
     private workerService: WorkerService,
     protected router: Router,
     private location: Location,
+    public backLinkService: BackLinkService,
   ) {}
   public formErrorsMap: ErrorDetails[];
   public form: FormGroup;
@@ -31,7 +34,7 @@ export class SelectRecordTypeComponent implements OnInit {
   public submitted = false;
   public serverError: string;
   public establishmentuid: string;
-  public id: string;
+  public workerId: string;
   public navigateUrl: string;
 
   ngOnInit(): void {
@@ -39,9 +42,10 @@ export class SelectRecordTypeComponent implements OnInit {
     this.route.params.subscribe((params) => {
       if (params) {
         this.establishmentuid = params.establishmentuid;
-        this.id = params.id;
+        this.workerId = params.id;
       }
     });
+
     this.selectRecordTypes = [SelectRecordTypes.Training, SelectRecordTypes.Qualification];
     this.setupForm();
     this.setupFormErrorsMap();
@@ -84,16 +88,14 @@ export class SelectRecordTypeComponent implements OnInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({
-      url: [`workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/training`],
-    });
+    this.backLinkService.showBackLink();
   }
 
   public addRecord(): void {
     if (this.form.value.selectRecordType === 'Qualification') {
-      this.navigateUrl = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/add-qualification`;
+      this.navigateUrl = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.workerId}/add-qualification`;
     } else if (this.form.value.selectRecordType === 'Training course') {
-      this.navigateUrl = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/add-training`;
+      this.navigateUrl = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.workerId}/add-training`;
     }
     if (this.navigateUrl && this.form.value.selectRecordType !== null) {
       this.router.navigate([this.navigateUrl]);
@@ -110,6 +112,12 @@ export class SelectRecordTypeComponent implements OnInit {
   }
 
   public onCancel(): void {
-    this.router.navigateByUrl(this.previousUrl[0]);
+    this.router.navigate([
+      '/workplace',
+      this.establishmentuid,
+      'training-and-qualifications-record',
+      this.workerId,
+      'training',
+    ]);
   }
 }

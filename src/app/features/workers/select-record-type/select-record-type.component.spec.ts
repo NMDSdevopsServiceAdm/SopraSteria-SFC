@@ -45,21 +45,6 @@ describe('SelectRecordTypeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('setBackLink', () => {
-    it('should return to the training page', async () => {
-      const { component, fixture } = await setup();
-
-      const backService = TestBed.inject(BackService) as BackService;
-      const backLinkSpy = spyOn(backService, 'setBackLink');
-
-      component.setBackLink();
-      fixture.detectChanges();
-
-      const returnUrl = 'workplace/establishmentUid/training-and-qualifications-record/1/training';
-      expect(backLinkSpy).toHaveBeenCalledWith({ url: [returnUrl] });
-    });
-  });
-
   describe('error messages', () => {
     it('should display an error message if no record type is selected and Continue is pressed', async () => {
       const { fixture, getByText, getAllByText } = await setup();
