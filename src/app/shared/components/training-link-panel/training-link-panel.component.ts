@@ -53,7 +53,6 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
     if (this.workers) {
       this.workers.forEach((worker: Worker) => {
         if (worker.trainingCount > 0) {
-          console.log(worker);
           if (this.lastUpdated === undefined || new Date(this.lastUpdated) < new Date(worker.trainingLastUpdated)) {
             this.lastUpdated = worker.trainingLastUpdated;
           }

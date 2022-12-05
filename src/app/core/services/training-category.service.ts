@@ -9,9 +9,12 @@ import { map } from 'rxjs/operators';
 export class TrainingCategoryService {
   constructor(private http: HttpClient) {}
 
-  getCategoriesWithTraining(establishmentId): Observable<[]> {
-    return this.http
-      .get<any>(`/api/trainingCategories/${establishmentId}/with-training`)
-      .pipe(map((res) => res.trainingCategories));
+  getCategoriesWithTraining(establishmentId): Observable<any[]> {
+    return this.http.get<any>(`/api/trainingCategories/${establishmentId}/with-training`).pipe(
+      map((res) => {
+        console.log(res.trainingCategories);
+        return res.trainingCategories;
+      }),
+    );
   }
 }

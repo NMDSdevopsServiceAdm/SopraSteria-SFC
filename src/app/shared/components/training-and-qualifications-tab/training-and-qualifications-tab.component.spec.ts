@@ -1,5 +1,4 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
@@ -64,20 +63,6 @@ describe('TrainingAndQualificationsTabComponent', () => {
 
     const component = fixture.componentInstance;
 
-    const injector = getTestBed();
-    // const trainingCategoryService = injector.inject(TrainingCategoryService) as TrainingCategoryService;
-    // const trainingCategoryServiceSpy = spyOn(trainingCategoryService, 'getCategoriesWithTraining').and.returnValue(
-    //   of([
-    //     {
-    //       category: 'training',
-    //       id: 1,
-    //       isMandatory: false,
-    //       seq: 10,
-    //       training: [],
-    //     },
-    //   ]),
-    // );
-
     return {
       component,
       fixture,
@@ -85,7 +70,6 @@ describe('TrainingAndQualificationsTabComponent', () => {
       queryByText,
       getByTestId,
       queryByTestId,
-      // trainingCategoryServiceSpy,
     };
   }
 
@@ -124,7 +108,7 @@ describe('TrainingAndQualificationsTabComponent', () => {
     expect(getByText('You need to start adding your staff records.')).toBeTruthy();
   });
 
-  describe('staff and training views when there are workers', () => {
+  fdescribe('staff and training views when there are workers', () => {
     it('should render the tab bar to show different views', async () => {
       const { getByText } = await setup();
 

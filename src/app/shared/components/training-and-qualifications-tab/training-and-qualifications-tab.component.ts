@@ -72,6 +72,9 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   }
 
   public handleViewTrainingByCategory(visible: boolean): void {
+    console.log('**** handle view toggle *****');
+    console.log(visible);
+    console.log(this.trainingCategories);
     this.viewTrainingByCategory = visible;
   }
 
