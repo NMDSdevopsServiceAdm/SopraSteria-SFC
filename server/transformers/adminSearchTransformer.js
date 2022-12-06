@@ -49,7 +49,9 @@ const EstablishmentTransformer = async (establishments) => {
 };
 
 const UserTransformer = async (users) => {
+  console.log('**** User Transformer ****');
   return users.map((user) => {
+    console.log(user.establishment);
     const parent = user.establishment.ParentID
       ? {
           nmdsId: user.establishment.Parent.nmdsId,
