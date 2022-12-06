@@ -2,7 +2,8 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -22,27 +23,28 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    protected alertService: AlertService,
   ) {
-    super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
+    super(
+      formBuilder,
+      route,
+      router,
+      backLinkService,
+      errorSummaryService,
+      trainingService,
+      workerService,
+      alertService,
+    );
   }
 
   protected init(): void {
     this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
 
-    this.workerService.getRoute$.subscribe((route) => {
-      if (route) {
-        this.previousUrl = [route];
-      } else {
-        this.previousUrl = [
-          `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`,
-        ];
-      }
-    });
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
 
     if (this.trainingRecordId) {
@@ -60,15 +62,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   protected setButtonText(): void {
     this.buttonText = this.trainingRecordId ? 'Save and return' : 'Add training';
-  }
-
-  protected setBackLink(): void {
-    const parsed = this.router.parseUrl(this.previousUrl[0]);
-    this.backService.setBackLink({
-      url: [parsed.root.children.primary.segments.map((seg) => seg.path).join('/')],
-      fragment: parsed.fragment,
-      queryParams: parsed.queryParams,
-    });
   }
 
   private fillForm(): void {
@@ -133,19 +126,32 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
+    const trainingCategoryId = localStorage.getItem('trainingCategoryId');
+
     let url: string[];
-    if (this.previousUrl.indexOf('dashboard') > -1) {
-      url = this.previousUrl;
+    if (trainingCategoryId) {
+      url = [
+        `/workplace/${this.workplace.uid}/training-and-qualifications-record/view-training-category/${trainingCategoryId}`,
+      ];
+
+      this.router.navigate(url).then(() => {
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'Training record updated',
+        });
+        localStorage.clear();
+      });
     } else {
-      url = [`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`];
+      url = [`workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`];
+
+      this.router.navigate(url).then(() => {
+        if (this.trainingRecordId) {
+          this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
+        } else {
+          this.workerService.alert = { type: 'success', message: 'Training has been added.' };
+        }
+      });
     }
-    this.router.navigate(url).then(() => {
-      if (this.trainingRecordId) {
-        this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
-      } else {
-        this.workerService.alert = { type: 'success', message: 'Training has been added.' };
-      }
-    });
   }
 
   private onError(error) {

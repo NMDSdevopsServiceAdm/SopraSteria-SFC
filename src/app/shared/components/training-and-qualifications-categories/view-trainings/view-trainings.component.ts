@@ -23,7 +23,7 @@ export class ViewTrainingComponent implements OnInit {
 
   constructor(
     private permissionsService: PermissionsService,
-    protected trainingStatusService: TrainingStatusService,
+    public trainingStatusService: TrainingStatusService,
     private workerService: WorkerService,
     private router: Router,
     private establishmentService: EstablishmentService,
@@ -50,6 +50,7 @@ export class ViewTrainingComponent implements OnInit {
         .pipe(take(1))
         .subscribe((trainingCategories) => {
           this.trainingCategories = trainingCategories;
+          console.log(this.trainingCategories);
         }),
     );
   }
@@ -59,7 +60,8 @@ export class ViewTrainingComponent implements OnInit {
 
   public updateTrainingRecord(event, training): void {
     event.preventDefault();
-    this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
+    localStorage.setItem('trainingCategoryId', this.trainingCategoryId);
+    // this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
 
     this.router.navigate([
       '/workplace',
@@ -73,9 +75,14 @@ export class ViewTrainingComponent implements OnInit {
 
   public addTrainingRecord(event, training): void {
     event.preventDefault();
-    this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
 
-    this.router.navigate(['/workplace', this.workplace.uid, 'add-mandatory-training']);
+    this.router.navigate([
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      training.worker.uid,
+      'add-training',
+    ]);
   }
 
   public trainingIsComplete(training) {

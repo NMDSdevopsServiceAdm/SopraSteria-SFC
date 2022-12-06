@@ -45,6 +45,7 @@
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           {{ training.expires ? (training.expires | date: 'dd MMM y') : '-' }}
         </td>
+
         <td class="govuk-table__cell">
           <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRED" class="govuk-!-margin-bottom-1">
             <img
@@ -62,6 +63,7 @@
             />
             Missing
           </div>
+
           <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
             <img
               src="/assets/images/flag-orange.svg"
@@ -83,8 +85,7 @@
           >
             <a (click)="updateTrainingRecord($event, training)" href="#">Update</a>
           </div>
-        </td>
-        <td class="govuk-table__cell">
+
           <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
             <a (click)="addTrainingRecord($event, training)" href="#">Add</a>
           </div>
@@ -98,26 +99,6 @@
     <button type="button" class="govuk-button govuk-!-margin-top-4" (click)="returnToHome()">Return to home</button>
   </div>
 </div>
-
-<!-- <div *ngIf="jobRoleMandatoryTraining.length === 0">
-  <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
-    <p>
-      No mandatory training has been set for the
-      {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }} job role yet.
-    </p>
-  </div>
-  <div class="govuk-grid-column-one-third govuk-!-padding-right-0">
-    <a
-      class="govuk-list govuk-util__float-right"
-      *ngIf="canEditWorker"
-      draggable="false"
-      role="button"
-      [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
-    >
-      Manage mandatory training
-    </a>
-  </div>
-</div>-->
 
 <!-- <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
   <app-missing-mandatory-training
