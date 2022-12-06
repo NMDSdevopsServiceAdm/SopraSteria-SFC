@@ -25,6 +25,7 @@ import { MultipleTrainingDetailsComponent } from './training-details/training-de
     MultipleTrainingDetailsComponent,
     SelectedStaffPanelComponent,
     SelectStaffErrorSummaryComponent,
+    ConfirmMultipleTrainingComponent,
   ],
   providers: [],
 })

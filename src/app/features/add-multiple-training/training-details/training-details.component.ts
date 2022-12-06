@@ -45,6 +45,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   protected init(): void {
+    console.log(this.trainingService.selectedStaff);
     this.previousUrl =
       this.establishmentService.primaryWorkplace?.uid === this.workplace.uid
         ? ['/dashboard']
@@ -65,6 +66,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
 
   protected async submit(record: TrainingRecordRequest) {
     this.trainingService.selectedTraining = record;
+
     await this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }
 

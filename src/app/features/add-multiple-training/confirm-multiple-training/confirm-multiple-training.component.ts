@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MultipleTrainingResponse } from '@core/model/training.model';
+import { AlertService } from '@core/services/alert.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -20,16 +21,14 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     protected router: Router,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    protected alertService: AlertService,
   ) {
     this.workplaceUid = this.route.snapshot.data.establishment.uid;
   }
 
   ngOnInit(): void {
-    console.log(this.route);
-    console.log(this.trainingService.selectedTraining);
     this.getStaffData();
     this.convertTrainingRecord();
-    console.log(this.trainingRecords);
   }
 
   convertTrainingRecord = () => {
@@ -48,9 +47,9 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     const staff = this.trainingService.selectedStaff;
     this.workers = [];
     for (const id of staff) {
-      this.workerService
-        .getWorker(this.workplaceUid, id)
-        .subscribe((x) => this.workers.push({ key: x.nameOrId, value: x.mainJob.title }));
+      this.workerService.getWorker(this.workplaceUid, id).subscribe((x) => {
+        this.workers.push({ key: x.nameOrId, value: x.mainJob.title });
+      });
     }
   };
 
@@ -78,8 +77,11 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   };
 
   private onSuccess = () => {
-    this.router.navigate([`dashboard`]).then(() => {
-      this.workerService.alert = { type: 'success', message: 'Training has been added.' };
+    this.router.navigate([`dashboard`], { fragment: 'training-and-qualifications' }).then(() => {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Training has been added.',
+      });
     });
   };
 }
