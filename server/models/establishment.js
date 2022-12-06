@@ -1581,6 +1581,7 @@ module.exports = function (sequelize, DataTypes) {
       'updatedBy',
       'lastWdfEligibility',
       'wdfEligible',
+      [sequelize.literal(``)],
       [
         sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
         'trainingCount',
