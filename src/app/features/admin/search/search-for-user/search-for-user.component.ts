@@ -34,19 +34,13 @@ export class SearchForUserComponent extends SearchDirective {
   }
 
   public onSubmit(): void {
-    console.log('****** onSubmit ********');
-    console.log(this.form.value);
     this.subscriptions.add(
       this.searchService.searchUsers(this.form.value).subscribe(
         (response) => {
           this.results = response;
           this.submitted = true;
         },
-        (error) => {
-          console.error('Error:');
-          console.error(error);
-          this.errorMessage();
-        },
+        () => this.errorMessage(),
       ),
     );
   }
