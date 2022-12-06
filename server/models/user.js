@@ -361,9 +361,13 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   User.searchUsers = async function (where) {
+    console.log('********* search users ************');
     const userQuery = buildSearchQuery(where.name, 'FullNameValue');
     const emailQuery = buildSearchQuery(where.emailAddress, 'EmailValue');
     const loginQuery = buildSearchQuery(where.username, 'username');
+    console.log('userQuery:', userQuery);
+    console.log('emailQuery:', emailQuery);
+    console.log('loginQuery:', loginQuery);
 
     return await this.findAll({
       attributes: [

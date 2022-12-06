@@ -23,6 +23,8 @@ export class SearchService {
   }
 
   public searchUsers(data: UserSearchRequest): Observable<UserSearchItem[]> {
+    console.log('****** search service ********');
+    console.log(data);
     return this.http
       .post<UserSearchItem[]>('/api/admin/search/users', data, { observe: 'response' })
       .pipe(map((response) => response.body));
