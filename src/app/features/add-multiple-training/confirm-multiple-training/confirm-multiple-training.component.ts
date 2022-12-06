@@ -77,6 +77,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   };
 
   private onSuccess = () => {
+    this.trainingService.addMultipleTrainingInProgress$.next(false);
     this.router.navigate([`dashboard`], { fragment: 'training-and-qualifications' }).then(() => {
       this.alertService.addAlert({
         type: 'success',
