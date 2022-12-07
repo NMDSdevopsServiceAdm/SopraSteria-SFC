@@ -32,7 +32,7 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="qualification-conditional-hint" role="group">
           <span id="qualification-conditional-hint" class="govuk-label govuk-!-margin-bottom-3"
-            >Select type of qualification</span
+            >Select the type of qualification</span
           >
           <span *ngIf="submitted && form.get('type').invalid" id="type-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('type') }}
