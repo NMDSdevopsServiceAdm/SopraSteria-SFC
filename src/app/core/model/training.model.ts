@@ -64,3 +64,10 @@ export interface MandatoryTraining {
 export interface MultipleTrainingResponse {
   savedRecords: number;
 }
+
+export interface MandatoryTrainingWorker {
+  uid: string;
+}
+export interface Training {
+  worker: MandatoryTrainingWorker;
+}
