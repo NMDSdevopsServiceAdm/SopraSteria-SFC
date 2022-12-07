@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { DisabilityComponent } from './disability.component';
 
 describe('DisabilityComponent', () => {
-  async function setup(insideFlow = true) {
+  async function setup(insideFlow = true, wdfEditPageFlag = false) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       DisabilityComponent,
       {
@@ -26,6 +26,11 @@ describe('DisabilityComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
+                parent: {
+                  snapshot: {
+                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
+                  },
+                },
                 snapshot: {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
@@ -79,6 +84,14 @@ describe('DisabilityComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
+    it(`should show 'Save and return' cta button and 'Cancel' when in wdf version of the page`, async () => {
+      const { getByText } = await setup(false, true);
+
+      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
+  });
+  describe('navigation', async () => {
     it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
       const { component, getByText, routerSpy } = await setup();
 
@@ -158,6 +171,28 @@ describe('DisabilityComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    it('should navigate to the wdf staff-summary-page page when pressing save and return in wdf version of the page', async () => {
+      const { component, routerSpy, getByText } = await setup(false, true);
+
+      const workerId = component.worker.uid;
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to the wdf staff-summary-page page when pressing cancel and in wdf version of the page', async () => {
+      const { component, routerSpy, getByText } = await setup(false, true);
+
+      const workerId = component.worker.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
     });
   });
 

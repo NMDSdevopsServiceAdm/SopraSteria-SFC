@@ -110,16 +110,30 @@ export class NationalityComponent extends QuestionComponent {
       : null;
   }
 
-  onSuccess(): void {
-    const { nationalityKnown } = this.form.value;
-    if (nationalityKnown === 'British') {
-      this.next = this.insideFlow ? this.getRoutePath('country-of-birth') : this.getRoutePath('');
-    } else {
-      if (!this.insideFlow) {
-        this.next = this.getRoutePath('');
-        this.next.push('british-citizenship');
-      }
+  private determineBaseRoute(): string[] {
+    if (this.wdfEditPageFlag) {
+      return ['wdf', 'staff-record', this.worker.uid];
     }
+    if (!this.insideFlow) {
+      return this.getRoutePath('');
+    } else {
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+    }
+  }
+
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
+    const { nationalityKnown } = this.form.value;
+    if (nationalityKnown === 'British' && this.insideFlow) {
+      nextRoute.push('country-of-birth');
+    } else if (nationalityKnown !== 'British') {
+      nextRoute.push('british-citizenship');
+    }
+    return nextRoute;
+  }
+
+  onSuccess(): void {
+    this.next = this.determineConditionalRouting();
   }
 
   nationalityNameValidator() {
