@@ -135,10 +135,18 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       ];
 
       this.router.navigate(url).then(() => {
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Training record updated',
-        });
+        if (this.mandatoryTraining) {
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Mandatory training record added',
+          });
+        } else {
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Training record updated',
+          });
+        }
+
         localStorage.clear();
       });
     } else {
