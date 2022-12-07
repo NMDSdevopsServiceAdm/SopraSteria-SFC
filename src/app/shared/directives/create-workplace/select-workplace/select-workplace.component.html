@@ -50,7 +50,7 @@
         </p>
 
         <app-workplace-submit-button
-          [return]="!!return"
+          [return]="!insideFlow"
           (clicked)="setSubmitAction($event)"
         ></app-workplace-submit-button>
       </ng-container>
