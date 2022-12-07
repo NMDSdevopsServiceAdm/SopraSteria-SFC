@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 export class TrainingCategoryService {
   constructor(private http: HttpClient) {}
 
-  getCategoriesWithTraining(establishmentId): Observable<[]> {
+  getCategoriesWithTraining(establishmentId): Observable<any[]> {
     return this.http
       .get<any>(`/api/trainingCategories/${establishmentId}/with-training`)
       .pipe(map((res) => res.trainingCategories));

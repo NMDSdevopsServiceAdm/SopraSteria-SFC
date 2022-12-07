@@ -1,0 +1,38 @@
+@import '~govuk-frontend/govuk/base';
+
+.asc-tabs {
+  &__list {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__list-item {
+    padding: 10px 0;
+
+    &--active {
+      border-bottom: 8px solid govuk-colour('blue');
+    }
+  }
+
+  &__link {
+    padding: 0 70px;
+    width: 100%;
+    font-size: 19px;
+
+    &--active {
+      text-decoration: none;
+      color: black;
+    }
+
+    &:focus {
+      outline: 4px solid govuk-colour('white');
+      background-color: govuk-colour('white');
+    }
+  }
+
+  &--border-bottom {
+    border-bottom: 1px solid $govuk-border-colour;
+  }
+}
