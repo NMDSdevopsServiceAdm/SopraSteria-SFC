@@ -95,6 +95,7 @@ export interface Worker {
   jobRole?: string;
   trainingCount: number;
   trainingLastUpdated?: string;
+  qualificationsLastUpdated?: string;
   expiredTrainingCount: number;
   expiringTrainingCount: number;
   missingMandatoryTrainingCount: number;

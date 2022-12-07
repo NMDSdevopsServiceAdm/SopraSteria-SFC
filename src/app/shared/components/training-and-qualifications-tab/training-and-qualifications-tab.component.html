@@ -3,6 +3,7 @@
   [workplace]="workplace"
   [workers]="workers"
   [totalRecords]="totalRecords"
+  [tAndQsLastUpdated]="tAndQsLastUpdated"
 ></app-training-link-panel>
 <ng-container *ngIf="workers && workers.length; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0" data-testid="noRecords">

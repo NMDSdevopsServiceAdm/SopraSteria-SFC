@@ -283,6 +283,8 @@ const viewAllWorkers = async (req, res) => {
               expiredTrainingCount: parseInt(worker.get('expiredTrainingCount')),
               expiringTrainingCount: parseInt(worker.get('expiringTrainingCount')),
               missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
+              trainingLastUpdated: worker.get('trainingLastUpdated'),
+              qualificationsLastUpdated: worker.get('qualificationsLastUpdated'),
               longTermAbsence: worker.LongTermAbsence,
             };
           })
@@ -352,7 +354,6 @@ router.route('/:workerId').get(hasPermission('canViewWorker'), viewWorker);
 router.route('/:workerId').put(hasPermission('canEditWorker'), editWorker);
 router.route('/:workerId').delete(hasPermission('canDeleteWorker'), deleteWorker);
 
-router.use('/trainingAndQualifications', TrainingAndQualificationsRoutes);
 router.use('/:workerId/training', TrainingRoutes);
 router.use('/:workerId/qualification', QualificationRoutes);
 router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);

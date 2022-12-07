@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
@@ -13,10 +13,11 @@ import { Subscription } from 'rxjs';
   selector: 'app-training-link-panel',
   templateUrl: './training-link-panel.component.html',
 })
-export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges {
+export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() workers: Worker[];
   @Input() totalRecords: number;
+  @Input() tAndQsLastUpdated: string;
 
   public establishmentUid: string;
   public canEditEstablishment: boolean;
@@ -41,27 +42,6 @@ export class TrainingLinkPanelComponent implements OnInit, OnDestroy, OnChanges 
     this.isParent = this.workplace.isParent;
     this.canEditEstablishment = this.permissionsService.can(this.establishmentUid, 'canEditEstablishment');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if ('workers' in changes) {
-      this.lastUpdatedCheck();
-    }
-  }
-
-  public lastUpdatedCheck(): void {
-    if (this.workers) {
-      console.log('**** lastUpdatedCheck ****');
-      console.log(this.workers);
-      this.workers.forEach((worker: Worker) => {
-        if (worker.trainingCount > 0) {
-          if (this.lastUpdated === undefined || new Date(this.lastUpdated) < new Date(worker.trainingLastUpdated)) {
-            console.log('*************');
-            this.lastUpdated = worker.trainingLastUpdated;
-          }
-        }
-      });
-    }
   }
 
   //Download Training Report

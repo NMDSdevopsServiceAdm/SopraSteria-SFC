@@ -1581,7 +1581,6 @@ module.exports = function (sequelize, DataTypes) {
       'updatedBy',
       'lastWdfEligibility',
       'wdfEligible',
-      [sequelize.literal(``)],
       [
         sequelize.literal('(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
         'trainingCount',
@@ -1621,6 +1620,14 @@ module.exports = function (sequelize, DataTypes) {
             `,
         ),
         'missingMandatoryTrainingCount',
+      ],
+      [
+        sequelize.literal('(SELECT MAX("updated") FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID")'),
+        'trainingLastUpdated',
+      ],
+      [
+        sequelize.literal('(SELECT MAX("updated") FROM cqc."WorkerQualifications" WHERE "WorkerFK" = "workers"."ID")'),
+        'qualificationsLastUpdated',
       ],
       'LongTermAbsence',
     ];

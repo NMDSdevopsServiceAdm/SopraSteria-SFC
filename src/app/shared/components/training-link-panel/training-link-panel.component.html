@@ -2,7 +2,9 @@
   <div class="govuk-grid-column-two-thirds">
     <div class="govuk-!-margin-bottom-8">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Training and qualifications ({{ totalRecords || 0 }})</h2>
-      <p class="govuk-!-font-size-16 govuk-!-margin-top-2">Last update, {{ now | date: 'dd MMMM yyyy' }}</p>
+      <p *ngIf="tAndQsLastUpdated" class="govuk-!-font-size-16 govuk-!-margin-top-2">
+        Last update, {{ tAndQsLastUpdated | date: 'dd MMMM yyyy' }}
+      </p>
     </div>
   </div>
   <div class="govuk-grid-column-one-third govuk-!-padding-right-0 govuk">

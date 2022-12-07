@@ -17,6 +17,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   @Input() workers: Worker[];
   @Input() workerCount: number;
   @Input() trainingCounts: TrainingCounts;
+  @Input() tAndQsLastUpdated: string;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -42,6 +43,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
         this.viewTrainingByCategory = true;
       }
     });
+
     this.getAllTrainingByCategory();
     this.trainingTotals();
   }

@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public showSharingPermissionsBanner: boolean;
   private showBanner = false;
   public wdfNewDesignFlag: boolean;
+  public tAndQsLastUpdated: string;
 
   constructor(
     private authService: AuthService,
@@ -83,7 +84,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private setWorkersAndTrainingAlert(): void {
-    const { workers = [], workerCount = 0, trainingCounts } = this.route.snapshot.data.workers;
+    const { workers = [], workerCount = 0, trainingCounts, tAndQsLastUpdated } = this.route.snapshot.data.workers;
     this.workers = workers;
     this.workerCount = workerCount;
     this.trainingCounts = trainingCounts;
@@ -91,6 +92,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (workers.length > 0) {
       this.trainingAlert = workers[0].trainingAlert;
     }
+    this.tAndQsLastUpdated = tAndQsLastUpdated;
   }
 
   private setShowSecondUserBanner(): void {
