@@ -6,7 +6,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
-import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -24,7 +23,6 @@ export class ViewTrainingComponent implements OnInit {
   constructor(
     private permissionsService: PermissionsService,
     public trainingStatusService: TrainingStatusService,
-    private workerService: WorkerService,
     private router: Router,
     private establishmentService: EstablishmentService,
     protected trainingCategoryService: TrainingCategoryService,
@@ -40,6 +38,7 @@ export class ViewTrainingComponent implements OnInit {
     this.setBackLink();
 
     this.trainingCategoryId = this.route.snapshot.params.categoryId;
+    localStorage.setItem('trainingCategoryId', this.trainingCategoryId);
   }
 
   private getAllTrainingByCategory(): void {
@@ -60,8 +59,6 @@ export class ViewTrainingComponent implements OnInit {
 
   public updateTrainingRecord(event, training): void {
     event.preventDefault();
-    localStorage.setItem('trainingCategoryId', this.trainingCategoryId);
-    // this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
 
     this.router.navigate([
       '/workplace',
@@ -71,30 +68,6 @@ export class ViewTrainingComponent implements OnInit {
       'training',
       training.uid,
     ]);
-  }
-
-  public addTrainingRecord(event, training): void {
-    event.preventDefault();
-
-    this.router.navigate([
-      '/workplace',
-      this.workplace.uid,
-      'training-and-qualifications-record',
-      training.worker.uid,
-      'add-training',
-    ]);
-  }
-
-  public trainingIsComplete(training) {
-    return (
-      [
-        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRED),
-        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.EXPIRING),
-        this.trainingStatusService.trainingStatusCount(training, this.trainingStatusService.MISSING),
-      ].reduce((total, num) => {
-        return total + num;
-      }) === 0
-    );
   }
 
   public trainingStatus(training) {

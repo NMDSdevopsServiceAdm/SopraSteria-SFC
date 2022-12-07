@@ -16,7 +16,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
-fdescribe('AddEditTrainingComponent', () => {
+describe('AddEditTrainingComponent', () => {
   async function setup(isMandatory = false, trainingRecordId = '1') {
     if (isMandatory) {
       window.history.pushState({ training: 'mandatory', missingRecord: { category: 'testCategory', id: 5 } }, '');

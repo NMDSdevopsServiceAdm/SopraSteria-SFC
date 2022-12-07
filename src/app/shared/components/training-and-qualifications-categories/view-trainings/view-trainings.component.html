@@ -43,7 +43,7 @@
           {{ training.worker.mainJob?.title }}
         </td>
         <td class="govuk-table__cell govuk-!-font-weight-regular">
-          {{ training.expires ? (training.expires | date: 'dd MMM y') : '-' }}
+          {{ training.expires ? (training.expires | date: 'd MMM y') : '-' }}
         </td>
 
         <td class="govuk-table__cell">
@@ -53,7 +53,7 @@
               alt=""
               class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
             />
-            Expired
+            1 expired
           </div>
           <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
             <img
@@ -61,7 +61,7 @@
               alt=""
               class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
             />
-            Missing
+            1 missing
           </div>
 
           <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
@@ -70,7 +70,7 @@
               alt=""
               class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
             />
-            Expiring soon
+            1 expires soon
           </div>
 
           <div *ngIf="trainingStatus(training) === trainingStatusService.ACTIVE">OK</div>
@@ -87,7 +87,11 @@
           </div>
 
           <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
-            <a (click)="addTrainingRecord($event, training)" href="#">Add</a>
+            <app-missing-mandatory-training
+              [missingRecord]="trainingCategory"
+              [training]="training"
+              [canEditWorker]="canEditWorker"
+            ></app-missing-mandatory-training>
           </div>
         </td>
       </tr>
@@ -99,11 +103,3 @@
     <button type="button" class="govuk-button govuk-!-margin-top-4" (click)="returnToHome()">Return to home</button>
   </div>
 </div>
-
-<!-- <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
-  <app-missing-mandatory-training
-    [missingMandatoryTraining]="missingMandatoryTraining"
-    (addClicked)="addButtonClicked()"
-    [canEditWorker]="canEditWorker"
-  ></app-missing-mandatory-training>
-</div> -->
