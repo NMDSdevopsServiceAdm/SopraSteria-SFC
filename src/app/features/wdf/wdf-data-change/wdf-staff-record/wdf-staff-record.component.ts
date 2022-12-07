@@ -46,6 +46,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
+    this.workerService.setState(this.route.snapshot.data.worker);
     this.setExitUrl();
     this.refreshSubscription();
     this.getEstablishment();

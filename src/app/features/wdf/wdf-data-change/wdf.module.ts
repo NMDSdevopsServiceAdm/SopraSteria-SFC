@@ -2,6 +2,8 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { WorkerResolver } from '@core/resolvers/worker.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { SharedModule } from '@shared/shared.module';
 
 import { WdfDataStatusMessageComponent } from './wdf-data-status-message/wdf-data-status-message.component';
@@ -32,5 +34,6 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
     WdfParentStatusMessageComponent,
     WdfOverviewComponent,
   ],
+  providers: [WorkerResolver, WorkplaceResolver],
 })
 export class WdfModule {}
