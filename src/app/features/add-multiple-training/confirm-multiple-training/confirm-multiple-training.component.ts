@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MultipleTrainingResponse } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -22,6 +25,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
+    protected backService: BackLinkService,
   ) {
     this.workplaceUid = this.route.snapshot.data.establishment.uid;
   }
@@ -29,6 +33,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   ngOnInit(): void {
     this.getStaffData();
     this.convertTrainingRecord();
+    this.backService.showBackLink();
   }
 
   convertTrainingRecord = () => {
@@ -37,9 +42,9 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
       { key: 'Training category', value: training.trainingCategory?.id },
       { key: 'Training name', value: training.title },
       { key: 'Training accredited', value: training.accredited },
-      { key: 'Date completed', value: training.completed },
-      { key: 'Exiry date', value: training.expires },
-      { key: 'Notes', value: training.notes },
+      { key: 'Date completed', value: training.completed ? dayjs(training.completed).format('D MMMM YYYY') : '-' },
+      { key: 'Exiry date', value: training.expires ? dayjs(training.expires).format('D MMMM YYYY') : '-' },
+      { key: 'Notes', value: training.notes ? training.notes : 'No notes added' },
     ];
   };
 
@@ -77,11 +82,15 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   };
 
   private onSuccess = () => {
+    const message = `${this.workers.length} training records added`;
     this.trainingService.addMultipleTrainingInProgress$.next(false);
+    this.trainingService.resetSelectedStaff();
+    this.trainingService.resetSelectedTraining();
+
     this.router.navigate([`dashboard`], { fragment: 'training-and-qualifications' }).then(() => {
       this.alertService.addAlert({
         type: 'success',
-        message: 'Training has been added.',
+        message: message,
       });
     });
   };

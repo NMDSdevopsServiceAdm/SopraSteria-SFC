@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class TrainingService {
-  public selectedTraining: any;
+  public selectedTraining = null;
   public selectedStaff = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
 
@@ -20,12 +20,20 @@ export class TrainingService {
       .pipe(map((res) => res.trainingCategories));
   }
 
-  public updateSelectedStaff(formValue) {
+  public updateSelectedStaff(formValue): void {
     this.selectedStaff = formValue;
   }
 
   public resetSelectedStaff(): void {
     this.selectedStaff = [];
+  }
+
+  public updateSelectedTraining(formValue): void {
+    this.selectedTraining = formValue;
+  }
+
+  public resetSelectedTraining(): void {
+    this.selectedTraining = null;
   }
 
   //get all mandatory training

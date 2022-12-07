@@ -65,7 +65,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   protected async submit(record: TrainingRecordRequest) {
-    this.trainingService.selectedTraining = record;
+    this.trainingService.updateSelectedTraining(record);
 
     await this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }
