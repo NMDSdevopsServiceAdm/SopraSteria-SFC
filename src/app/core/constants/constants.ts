@@ -15,3 +15,5 @@ export const ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES = /^[A-Za-z0-9_-]*$/;
 export const FILE_UPLOAD_TYPES = ['CSV', 'ZIP'];
 export const EMAIL_PATTERN = /^[A-Za-z0-9._'%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/;
 export const PHONE_PATTERN = /^[0-9 x(?=ext 0-9+)]{8,50}$/;
+export const DATE_DAY_VALID = /^(0?[1-9]|[12][0-9]|3[01])$/;
+export const DATE_MONTH_VALID = /^(0?[1-9]|[1][0-2])$/;

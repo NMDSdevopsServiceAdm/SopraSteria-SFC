@@ -8,6 +8,7 @@ import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
@@ -32,6 +33,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public previousUrl: string;
 
   constructor(
+    private trainingService: TrainingService,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
@@ -44,6 +46,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    this.trainingService.trainingOrQualificationPreviouslySelected = 'qualification';
+
     this.form = this.formBuilder.group({
       type: [null, Validators.required],
     });

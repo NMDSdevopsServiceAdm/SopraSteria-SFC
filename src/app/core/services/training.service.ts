@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
 export class TrainingService {
   public selectedStaff = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
+  private _trainingOrQualificationPreviouslySelected: string = null;
 
   constructor(private http: HttpClient) {}
 
@@ -25,5 +26,20 @@ export class TrainingService {
 
   public resetSelectedStaff(): void {
     this.selectedStaff = [];
+  }
+
+  public get trainingOrQualificationPreviouslySelected(): string {
+    if (!this._trainingOrQualificationPreviouslySelected) {
+      this._trainingOrQualificationPreviouslySelected = localStorage.getItem(
+        'trainingOrQualificationPreviouslySelected',
+      );
+    }
+
+    return this._trainingOrQualificationPreviouslySelected;
+  }
+
+  public set trainingOrQualificationPreviouslySelected(value: string) {
+    this._trainingOrQualificationPreviouslySelected = value;
+    localStorage.setItem('trainingOrQualificationPreviouslySelected', value);
   }
 }
