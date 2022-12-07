@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
 import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -25,7 +24,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
@@ -37,7 +35,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
       formBuilder,
       route,
       router,
-      backService,
       errorSummaryService,
       trainingService,
       workerService,

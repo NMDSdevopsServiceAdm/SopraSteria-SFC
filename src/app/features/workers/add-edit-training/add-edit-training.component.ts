@@ -33,7 +33,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       formBuilder,
       route,
       router,
-      backService,
       errorSummaryService,
       trainingService,
       workerService,

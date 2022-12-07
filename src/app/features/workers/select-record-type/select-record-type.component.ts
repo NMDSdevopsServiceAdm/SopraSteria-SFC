@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { SelectRecordTypes, Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
@@ -21,7 +20,6 @@ export class SelectRecordTypeComponent implements OnInit, AfterViewInit {
   public workplace: Establishment;
   public trainingOrQualificationPreviouslySelected: string;
   constructor(
-    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
