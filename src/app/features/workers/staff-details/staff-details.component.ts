@@ -64,7 +64,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
     this.getJobs();
     this.getReturnPath();
-    this.editFlow = this.inMandatoryDetailsFlow || !this.insideFlow;
+    this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
   }
 
   public setupFormErrorsMap(): void {
@@ -171,15 +171,19 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
   }
 
+  private determineConditionalRouting(): string[] {
+    const nextRoute = !this.wdfEditPageFlag ? this.getRoutePath('') : ['wdf', 'staff-record', this.worker.uid];
+    if (this.workerService.hasJobRole(this.worker, 27)) {
+      nextRoute.push('mental-health-professional');
+    } else if (this.workerService.hasJobRole(this.worker, 23)) {
+      nextRoute.push('nursing-category');
+    }
+    return nextRoute;
+  }
+
   protected onSuccess(): void {
     if (this.editFlow) {
-      const nextRoute = this.getRoutePath('');
-      if (this.workerService.hasJobRole(this.worker, 27)) {
-        nextRoute.push('mental-health-professional');
-      } else if (this.workerService.hasJobRole(this.worker, 23)) {
-        nextRoute.push('nursing-category');
-      }
-      this.next = nextRoute;
+      this.next = this.determineConditionalRouting();
     } else {
       this.next = this.getRoutePath('mandatory-details');
     }

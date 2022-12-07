@@ -27,7 +27,7 @@ import { workerBuilder } from '../../../../../server/test/factories/models';
 import { StaffDetailsComponent } from './staff-details.component';
 
 describe('StaffDetailsComponent', () => {
-  async function setup(insideFlow = true, returnToMandatoryDetails = false) {
+  async function setup(insideFlow = true, returnToMandatoryDetails = false, wdfEditPageFlag = false) {
     let path;
     if (returnToMandatoryDetails) {
       path = 'mandatory-details';
@@ -69,6 +69,11 @@ describe('StaffDetailsComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
+                parent: {
+                  snapshot: {
+                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
+                  },
+                },
                 snapshot: {
                   url: [{ path }],
                   data: {

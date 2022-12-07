@@ -35,6 +35,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public staffRecordSections: string[] = ProgressBarUtil.staffRecordProgressBarSections();
   public insideFlow: boolean;
+  public wdfEditPageFlag: boolean;
   public flow: string;
   public submitAction: { action: string; save: boolean } = null;
   public returnUrl: string[];
@@ -54,10 +55,11 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.return = this.workerService.returnTo;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary';
+    this.wdfEditPageFlag = this.route.parent.parent.snapshot.url[0].path === 'wdf';
+    this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary' && !this.wdfEditPageFlag;
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
-        this.worker = worker;
+        this.worker = worker ? worker : this.route.snapshot.data.worker;
         if (!this.initiated) {
           this._init();
           this.back = this.previous
@@ -73,7 +75,9 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     if (this.worker && !this.returnUrl) {
-      this.returnUrl = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
+      this.returnUrl = !this.wdfEditPageFlag
+        ? ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary']
+        : ['wdf', 'staff-record', this.worker.uid];
     }
 
     this.setupFormErrorsMap();
