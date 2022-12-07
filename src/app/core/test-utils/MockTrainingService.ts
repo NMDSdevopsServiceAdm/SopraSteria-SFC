@@ -6,6 +6,15 @@ import { Observable, of } from 'rxjs';
 @Injectable()
 export class MockTrainingService extends TrainingService {
   public selectedStaff = [];
+  public _mockTrainingOrQualificationPreviouslySelected: string = null;
+
+  public get trainingOrQualificationPreviouslySelected() {
+    return null;
+  }
+
+  public set trainingOrQualificationPreviouslySelected(value: string) {
+    this._mockTrainingOrQualificationPreviouslySelected = value;
+  }
 
   getCategories(): Observable<TrainingCategory[]> {
     return of([
@@ -18,4 +27,7 @@ export class MockTrainingService extends TrainingService {
 @Injectable()
 export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService {
   public selectedStaff = ['1234'];
+  public get trainingOrQualificationPreviouslySelected() {
+    return 'training';
+  }
 }

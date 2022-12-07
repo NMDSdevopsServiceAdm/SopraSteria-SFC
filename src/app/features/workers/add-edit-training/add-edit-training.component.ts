@@ -42,6 +42,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected init(): void {
+    this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
     this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
 
