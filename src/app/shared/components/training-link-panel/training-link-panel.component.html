@@ -40,7 +40,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <ng-container *ngIf="canEditEstablishment">
-      <div class="govuk-!-margin-bottom-3">
+      <div class="govuk-!-margin-bottom-4">
         <a class="govuk-list" [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
           >Add and manage mandatory training categories
         </a>
@@ -57,7 +57,7 @@
       *ngIf="canEditWorker"
       role="button"
       href="#"
-      class="govuk-button govuk-util__float-right govuk-!-margin-top-5"
+      class="govuk-button govuk-util__float-right govuk-!-margin-top-7 govuk-!-margin-bottom-6"
       [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
     >
       Add multiple training records
