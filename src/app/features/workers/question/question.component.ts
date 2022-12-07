@@ -59,7 +59,11 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary' && !this.wdfEditPageFlag;
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
-        this.worker = worker ? worker : this.route.snapshot.data.worker;
+        if (worker) {
+          this.worker = worker;
+        } else if (this.wdfEditPageFlag) {
+          this.worker = this.route.snapshot.data.worker;
+        }
         if (!this.initiated) {
           this._init();
           this.back = this.previous

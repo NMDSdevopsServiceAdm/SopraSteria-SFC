@@ -24,7 +24,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' date of birth'"
-        [link]="getRoutePath('date-of-birth')"
+        [link]="getRoutePath('date-of-birth', wdfView)"
         [hasData]="!!worker.dateOfBirth"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
