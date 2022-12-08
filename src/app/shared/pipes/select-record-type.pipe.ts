@@ -8,9 +8,9 @@ export class SelectRecordTypePipe implements PipeTransform {
   transform(value: SelectRecordTypes): string {
     switch (value) {
       case SelectRecordTypes.Training:
-        return 'Training course';
+        return 'Training record';
       case SelectRecordTypes.Qualification:
-        return 'Qualification';
+        return 'Qualification record';
     }
     return null;
   }

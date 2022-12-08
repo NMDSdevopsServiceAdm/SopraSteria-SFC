@@ -5,12 +5,22 @@
   [serverError]="serverError"
 >
 </app-error-summary>
+<ng-container *ngIf="worker">
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
+        {{ worker.nameOrId }}
+      </span>
+    </div>
+  </div>
+</ng-container>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <h1 class="govuk-fieldset__heading">Select the type of record</h1>
+          <h1 class="govuk-fieldset__heading govuk-!-margin-bottom-3">Select the type of record you want to add</h1>
         </legend>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
@@ -21,7 +31,7 @@
           >
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('selectRecordType') }}
           </span>
-          <div class="govuk-radios">
+          <div class="govuk-radios govuk-body govuk-!-margin-bottom-9">
             <div class="govuk-radios__item" *ngFor="let selectRecordType of selectRecordTypes; let i = index">
               <input
                 class="govuk-radios__input"
@@ -39,7 +49,15 @@
         </div>
       </fieldset>
 
-      <button class="govuk-button" type="submit" (click)="addRecord()">Continue</button>
+      <button class="govuk-button govuk-!-margin-right-7" type="submit" (click)="addRecord()">Continue</button>
+      <a
+        class="govuk-button govuk-button--link govuk-!-margin-left-9"
+        role="button"
+        draggable="false"
+        (click)="onCancel()"
+      >
+        Cancel
+      </a>
     </form>
   </div>
 </div>

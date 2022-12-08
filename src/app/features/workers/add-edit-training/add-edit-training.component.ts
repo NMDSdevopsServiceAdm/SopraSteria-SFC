@@ -42,6 +42,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected init(): void {
+    this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
     this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
 
@@ -56,12 +57,12 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     if (this.mandatoryTraining) {
       this.title = this.trainingRecordId ? 'Mandatory training record' : 'Add mandatory training record';
     } else {
-      this.title = this.trainingRecordId ? 'Training details' : 'Enter training details';
+      this.title = this.trainingRecordId ? 'Training details' : 'Add training record details';
     }
   }
 
   protected setButtonText(): void {
-    this.buttonText = this.trainingRecordId ? 'Save and return' : 'Add training';
+    this.buttonText = this.trainingRecordId ? 'Save and return' : 'Save record';
   }
 
   private fillForm(): void {

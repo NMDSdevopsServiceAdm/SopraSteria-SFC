@@ -33,8 +33,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public subscriptions: Subscription = new Subscription();
   public previousUrl: string[];
   public title: string;
+  public section: string;
   public buttonText: string;
   public showWorkerCount = false;
+  public remainingCharacterCount: number = this.notesMaxLength;
+  public notesValue = '';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -54,6 +57,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.init();
     this.setupForm();
     this.setTitle();
+    this.setSection();
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
@@ -64,8 +68,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  protected setBackLink(): void {
-    this.backLinkService.showBackLink();
+  public handleOnInput(event: Event) {
+    this.notesValue = (<HTMLInputElement>event.target).value;
+    this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
   }
 
   protected init(): void {}
@@ -73,6 +78,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   protected submit(record: any): void {}
 
   protected setTitle(): void {}
+
+  protected setSection(): void {}
 
   protected setButtonText(): void {}
 
@@ -127,7 +134,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Select a training category',
+            message: 'Select the training category',
           },
         ],
       },
@@ -251,6 +258,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       }
     }
     return null;
+  }
+
+  public setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   public onCancel(): void {
