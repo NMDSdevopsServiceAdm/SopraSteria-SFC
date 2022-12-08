@@ -67,7 +67,7 @@ const trainingCategoryBuilder = build('TrainingCategory', {
   },
 });
 
-describe('TrainingAndQualificationsCategoriesComponent', () => {
+fdescribe('TrainingAndQualificationsCategoriesComponent', () => {
   let component: RenderResult<TrainingAndQualificationsCategoriesComponent>;
   const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
     can: sinon.stub().returns(true),

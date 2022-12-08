@@ -1,11 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsCat } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
@@ -16,15 +15,13 @@ import { Subscription } from 'rxjs';
 export class TrainingAndQualificationsCategoriesComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() trainingCategories: Array<any>;
-  @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
   public workerDetails = [];
   public workerDetailsLabel = [];
   public canEditWorker = false;
-  public filterByDefault: string;
-  public filterValue: string;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
+  public showMandatoryTraining = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -32,14 +29,11 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     protected trainingStatusService: TrainingStatusService,
     private workerService: WorkerService,
     private router: Router,
-    private featureFlagsService: FeatureFlagsService,
     private establishmentService: EstablishmentService,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-    this.filterByDefault = 'all';
-    this.filterValue = 'all';
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsCat;
     this.sortByDefault = '0_expired';
     this.orderTrainingCategories(this.sortByDefault);
@@ -54,8 +48,8 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     );
   }
 
-  public toggleFilter(filterValue): void {
-    this.filterValue = filterValue;
+  public toggleCheckbox(target: HTMLInputElement): void {
+    this.showMandatoryTraining = target.checked;
   }
 
   public orderTrainingCategories(dropdownValue: string): void {
