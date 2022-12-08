@@ -1,8 +1,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
-import { AlertService } from '@core/services/alert.service';
+import { TrainingRecordRequest } from '@core/model/training.model';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -29,7 +28,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
     private establishmentService: EstablishmentService,
-    private alertService: AlertService,
     public backLinkService: BackLinkService,
   ) {
     super(
@@ -63,21 +61,10 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.buttonText = 'Continue';
   }
 
-  protected async submit(record: TrainingRecordRequest) {
+  protected submit(record: TrainingRecordRequest) {
     this.trainingService.updateSelectedTraining(record);
 
-    await this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
-  }
-
-  private async onSuccess(response: MultipleTrainingResponse) {
-    this.trainingService.resetSelectedStaff();
-    this.trainingService.addMultipleTrainingInProgress$.next(false);
-
-    await this.router.navigate(['add-multiple-records-summary']);
-  }
-
-  private onError(error) {
-    console.error(error);
+    this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }
 
   public onCancel(): void {

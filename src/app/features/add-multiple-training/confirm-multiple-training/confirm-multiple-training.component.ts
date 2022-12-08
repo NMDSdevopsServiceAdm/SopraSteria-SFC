@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MultipleTrainingResponse } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingService } from '@core/services/training.service';
@@ -35,7 +34,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     this.backService.showBackLink();
   }
 
-  convertTrainingRecord = () => {
+  private convertTrainingRecord(): void {
     const training = this.trainingService.selectedTraining;
     this.trainingRecords = [
       { key: 'Training category', value: training.trainingCategory?.id },
@@ -45,40 +44,31 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
       { key: 'Exiry date', value: training.expires ? dayjs(training.expires).format('D MMMM YYYY') : '-' },
       { key: 'Notes', value: training.notes ? training.notes : 'No notes added' },
     ];
-  };
+  }
 
-  getStaffData = () => {
+  private getStaffData(): void {
     const staff = this.trainingService.selectedStaff;
     this.workers = [];
     for (const id of staff) {
-      this.workerService.getWorker(this.workplaceUid, id).subscribe((x) => {
-        this.workers.push({ key: x.nameOrId, value: x.mainJob.title });
+      this.workerService.getWorker(this.workplaceUid, id).subscribe((worker) => {
+        this.workers.push({ key: worker.nameOrId, value: worker.mainJob.title });
       });
     }
-  };
+  }
 
   public getRoutePath(pageName: string): Array<string> {
     return ['/workplace', this.workplaceUid, 'add-multiple-training', pageName];
   }
 
   public onSubmit(): void {
-    this.subscriptions.add(
-      this.workerService
-        .createMultipleTrainingRecords(
-          this.workplaceUid,
-          this.trainingService.selectedStaff,
-          this.trainingService.selectedTraining,
-        )
-        .subscribe(
-          (response: MultipleTrainingResponse) => this.onSuccess(),
-          (error) => this.onError(error),
-        ),
-    );
+    this.workerService
+      .createMultipleTrainingRecords(
+        this.workplaceUid,
+        this.trainingService.selectedStaff,
+        this.trainingService.selectedTraining,
+      )
+      .subscribe(() => this.onSuccess());
   }
-
-  private onError = (x) => {
-    console.log(x);
-  };
 
   private onSuccess = () => {
     const message = `${this.workers.length} training records added`;
