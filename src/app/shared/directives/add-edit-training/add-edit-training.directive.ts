@@ -6,7 +6,8 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { MandatoryTraining, TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -32,17 +33,21 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public subscriptions: Subscription = new Subscription();
   public previousUrl: string[];
   public title: string;
+  public section: string;
   public buttonText: string;
   public showWorkerCount = false;
+  public remainingCharacterCount: number = this.notesMaxLength;
+  public notesValue = '';
 
   constructor(
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    protected alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -52,6 +57,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.init();
     this.setupForm();
     this.setTitle();
+    this.setSection();
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
@@ -62,13 +68,18 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  protected setBackLink(): void {}
+  public handleOnInput(event: Event) {
+    this.notesValue = (<HTMLInputElement>event.target).value;
+    this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
+  }
 
   protected init(): void {}
 
   protected submit(record: any): void {}
 
   protected setTitle(): void {}
+
+  protected setSection(): void {}
 
   protected setButtonText(): void {}
 
@@ -123,7 +134,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Select a training category',
+            message: 'Select the training category',
           },
         ],
       },
@@ -247,6 +258,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       }
     }
     return null;
+  }
+
+  public setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   public onCancel(): void {

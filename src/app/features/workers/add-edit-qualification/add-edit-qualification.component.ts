@@ -6,7 +6,9 @@ import { Establishment } from '@core/model/establishment.model';
 import { QualificationRequest, QualificationResponse, QualificationType } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
@@ -31,17 +33,21 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public previousUrl: string;
 
   constructor(
+    private trainingService: TrainingService,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,
+    protected backLinkService: BackLinkService,
   ) {
     this.yearValidators = [Validators.max(dayjs().year()), Validators.min(dayjs().subtract(100, 'years').year())];
   }
 
   async ngOnInit(): Promise<void> {
+    this.trainingService.trainingOrQualificationPreviouslySelected = 'qualification';
+
     this.form = this.formBuilder.group({
       type: [null, Validators.required],
     });
@@ -122,7 +128,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
     this.setupFormErrorsMap();
 
-    this.setTrainingPathAndBackLink();
+    this.setBackLink();
   }
 
   ngOnDestroy(): void {
@@ -256,20 +262,20 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   private onError(error): void {
     console.log(error);
   }
-  public navigateToPreviousPage(): void {
-    this.router.navigate([this.previousUrl]);
+
+  protected navigateToDeleteQualificationRecord(): void {
+    this.router.navigate([
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'qualification',
+      this.qualificationId,
+      'delete',
+    ]);
   }
 
-  private setTrainingPathAndBackLink(): void {
-    this.workerService.getRoute$.subscribe((route) => {
-      if (route) {
-        this.previousUrl = route;
-      } else {
-        this.previousUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`;
-      }
-    });
-    this.backService.setBackLink({
-      url: [this.previousUrl],
-    });
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 }

@@ -10,6 +10,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -54,6 +55,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private router: Router,
     private workerService: WorkerService,
     private trainingStatusService: TrainingStatusService,
+    private trainingService: TrainingService,
   ) {}
 
   ngOnInit() {
@@ -81,6 +83,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
     this.getFilterByStatus(this.filterTrainingByDefault);
     this.setReturnRoute();
+    this.trainingService.trainingOrQualificationPreviouslySelected = null;
   }
 
   public setTrainingAndQualifications(): void {
