@@ -65,9 +65,26 @@ export interface MultipleTrainingResponse {
   savedRecords: number;
 }
 
-export interface MandatoryTrainingWorker {
-  uid: string;
-}
 export interface Training {
-  worker: MandatoryTrainingWorker;
+  id: number;
+  uid: string;
+  title: string;
+  expires: Date;
+  worker: {
+    id: number;
+    uid: string;
+    NameOrIdValue: string;
+    mainJob: {
+      id: number;
+      title: string;
+    };
+  };
+}
+
+export interface TrainingRecordCategories {
+  id: number;
+  seq: number;
+  category: string;
+  training: Training[];
+  isMandatory: boolean;
 }

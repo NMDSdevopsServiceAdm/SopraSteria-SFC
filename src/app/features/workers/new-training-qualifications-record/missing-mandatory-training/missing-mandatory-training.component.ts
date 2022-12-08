@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { MandatoryTraining, Training } from '@core/model/training.model';
+import { MandatoryTraining } from '@core/model/training.model';
 
 @Component({
   selector: 'app-missing-mandatory-training',
@@ -10,7 +10,7 @@ import { MandatoryTraining, Training } from '@core/model/training.model';
 export class MissingMandatoryTrainingComponent implements OnInit {
   public workplace: Establishment;
   @Input() public missingRecord: MandatoryTraining[];
-  @Input() public training: Training;
+  @Input() public training;
   @Input() public canEditWorker: boolean;
   constructor(private route: ActivatedRoute) {}
 
