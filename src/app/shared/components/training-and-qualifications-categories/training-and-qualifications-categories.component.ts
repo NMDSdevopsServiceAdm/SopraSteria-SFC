@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsCat } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-training-and-qualifications-categories',
   templateUrl: './training-and-qualifications-categories.component.html',
 })
-export class TrainingAndQualificationsCategoriesComponent implements OnInit {
+export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() trainingCategories: Array<any>;
 
