@@ -16,7 +16,7 @@ export class MockTrainingCategoryService extends TrainingCategoryService {
             id: 14387,
             uid: '9ee484af-1f86-415c-a5f2-26ef1cdf2d1e',
             title: 'Autism',
-            expires: new Date('4-12-2022'),
+            expires: new Date('9-8-2022'),
             worker: {
               id: 11561,
               uid: '16117998-fffc-4ff4-9ee1-aecc1cd0be8b',

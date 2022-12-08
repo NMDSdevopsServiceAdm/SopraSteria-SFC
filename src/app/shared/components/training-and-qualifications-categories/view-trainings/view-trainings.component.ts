@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingRecordCategories } from '@core/model/training.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -15,7 +16,7 @@ import { take } from 'rxjs/operators';
 })
 export class ViewTrainingComponent implements OnInit {
   public workplace: Establishment;
-  public trainingCategories: [];
+  public trainingCategories: TrainingRecordCategories[];
   public canEditWorker = false;
   public trainingCategoryId;
   private subscriptions: Subscription = new Subscription();
@@ -49,7 +50,6 @@ export class ViewTrainingComponent implements OnInit {
         .pipe(take(1))
         .subscribe((trainingCategories) => {
           this.trainingCategories = trainingCategories;
-          console.log(this.trainingCategories);
         }),
     );
   }
