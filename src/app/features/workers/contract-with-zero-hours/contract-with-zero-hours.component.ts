@@ -62,15 +62,35 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     };
   }
 
-  onSuccess() {
-    const { zeroHoursContract } = this.form.controls;
-    if (!this.insideFlow) {
-      const staffSummaryUrl = this.getRoutePath('');
-      zeroHoursContract.value === 'Yes' ||
-      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-        ? staffSummaryUrl.push('average-weekly-hours')
-        : staffSummaryUrl.push('weekly-contracted-hours');
-      this.next = staffSummaryUrl;
+  private determineBaseRoute(): string[] {
+    if (this.wdfEditPageFlag) {
+      return ['wdf', 'staff-record', this.worker.uid];
     }
+    if (!this.insideFlow) {
+      return this.getRoutePath('');
+    } else {
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+    }
+  }
+
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
+    const { zeroHoursContract } = this.form.controls;
+    if (
+      zeroHoursContract.value === 'Yes' ||
+      ([Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract) && this.insideFlow)
+    ) {
+      nextRoute.push('average-weekly-hours');
+    } else if (
+      zeroHoursContract.value !== 'Yes' ||
+      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
+    ) {
+      nextRoute.push('weekly-contracted-hours');
+    }
+    return nextRoute;
+  }
+
+  onSuccess() {
+    this.next = this.determineConditionalRouting();
   }
 }

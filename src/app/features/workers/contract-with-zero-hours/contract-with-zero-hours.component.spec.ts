@@ -27,7 +27,7 @@ const noPermanentContract = () =>
   });
 
 describe('ContractWithZeroHoursComponent', () => {
-  async function setup(insideFlow = true, contractType = 'permanent') {
+  async function setup(insideFlow = true, contractType = 'permanent', wdfEditPageFlag = false) {
     let contract;
 
     if (contractType === 'permanent') {
@@ -46,6 +46,11 @@ describe('ContractWithZeroHoursComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
+                parent: {
+                  snapshot: {
+                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
+                  },
+                },
                 snapshot: {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
@@ -69,10 +74,8 @@ describe('ContractWithZeroHoursComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const workerService = injector.inject(WorkerService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
     return {
       component,
@@ -102,6 +105,13 @@ describe('ContractWithZeroHoursComponent', () => {
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup(false);
+
+      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should show 'Save and return' cta button and 'Cancel' link if in wdf version of the page`, async () => {
+      const { getByText } = await setup(false, 'permanent', true);
 
       expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -208,7 +218,7 @@ describe('ContractWithZeroHoursComponent', () => {
     });
 
     it('should navigate to contracted-weekly-hours when no is selected and save is clicked', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+      const { component, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -229,7 +239,7 @@ describe('ContractWithZeroHoursComponent', () => {
     });
 
     it('should navigate to contracted-weekly-hours when I do not know is selected and save is clicked', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+      const { component, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -265,6 +275,57 @@ describe('ContractWithZeroHoursComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    it('should navigate to wdf average-weekly hours when yes is selected and save is clicked in wdf version of page', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, 'permanent', true);
+
+      const workerId = component.worker.uid;
+
+      const radioButton = getByLabelText('Yes');
+      fireEvent.click(radioButton);
+      const link = getByText('Save');
+      fireEvent.click(link);
+
+      fixture.detectChanges();
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId, 'average-weekly-hours']);
+    });
+
+    it('should navigate to wdf contracted-weekly-hours when no is selected and save is clicked in wdf version of page', async () => {
+      const { component, routerSpy, getByText, getByLabelText } = await setup(false, 'permanent', true);
+
+      const workerId = component.worker.uid;
+
+      const radioButton = getByLabelText('No');
+      fireEvent.click(radioButton);
+      const link = getByText('Save');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId, 'weekly-contracted-hours']);
+    });
+
+    it('should navigate to wdf contracted-weekly-hours when I do not know is selected and save is clicked in wdf version of page', async () => {
+      const { component, routerSpy, getByText, getByLabelText } = await setup(false, 'permanent', true);
+
+      const workerId = component.worker.uid;
+
+      const radioButton = getByLabelText('I do not know');
+      fireEvent.click(radioButton);
+      const link = getByText('Save');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId, 'weekly-contracted-hours']);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+      const { component, routerSpy, getByText } = await setup(false, 'permanent', true);
+
+      const workerId = component.worker.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
     });
   });
 
