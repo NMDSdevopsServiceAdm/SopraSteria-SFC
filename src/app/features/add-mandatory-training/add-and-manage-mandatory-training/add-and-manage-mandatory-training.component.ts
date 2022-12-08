@@ -9,10 +9,10 @@ import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-list-mandatory-training',
-  templateUrl: './list-mandatory-training.component.html',
+  selector: 'app-add-and-manage-mandatory-training',
+  templateUrl: './add-and-manage-mandatory-training.component.html',
 })
-export class ListMandatoryTrainingComponent implements OnInit {
+export class AddAndManageMandatoryTrainingComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public establishment: Establishment;
 
@@ -29,7 +29,6 @@ export class ListMandatoryTrainingComponent implements OnInit {
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
     this.establishment = this.route.parent.snapshot.data.establishment;
-
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((trainings) => {
         this.existingMandatoryTrainings = trainings;

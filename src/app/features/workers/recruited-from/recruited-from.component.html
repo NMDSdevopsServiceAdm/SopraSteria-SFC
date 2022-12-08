@@ -47,7 +47,7 @@
                   id="recruitedFromId"
                   name="recruitedFromId"
                 >
-                  <option [ngValue]="null">Select recruitment source</option>
+                  <option [ngValue]="null">Select where from</option>
                   <option *ngFor="let recruitment of availableRecruitments" [value]="recruitment.id">
                     {{ recruitment.from }}
                   </option>

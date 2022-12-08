@@ -59,6 +59,6 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   }
 
   get mainStartDate() {
-    return dayjs(this.worker.mainJobStartDate).format('DD MMMM YYYY');
+    return dayjs(this.worker.mainJobStartDate).format('D MMMM YYYY');
   }
 }

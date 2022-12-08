@@ -75,6 +75,12 @@
     <h3 class="govuk-heading-s govuk-!-margin-top-1">Other links</h3>
     <ul class="govuk-list govuk-!-margin-bottom-6">
       <li class="govuk-!-margin-bottom-3">
+        <a [routerLink]="['/asc-wds-certificate']"
+          ><p class="govuk-tag govuk-tag--blue govuk-!-margin-right-8 asc-tag" style="float: right">NEW</p>
+          Get your ASC-WDS certificate</a
+        >
+      </li>
+      <li class="govuk-!-margin-bottom-3">
         <a [routerLink]="['/about-ascwds']">About ASC-WDS</a>
       </li>
       <li *ngIf="canViewWorkplaces" class="govuk-!-margin-bottom-3">
@@ -115,9 +121,6 @@
       </li>
       <li class="govuk-!-margin-bottom-3">
         <a [routerLink]="['/first-login-wizard']">Help to get you started</a>
-      </li>
-      <li class="govuk-!-margin-bottom-3">
-        <a [routerLink]="['/asc-wds-certificate']">Get your ASC-WDS certificate</a>
       </li>
     </ul>
     <div *ngIf="canRunLocalAuthorityReport && workplace">

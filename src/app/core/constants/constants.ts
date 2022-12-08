@@ -6,8 +6,10 @@ export const NIN_PATTERN =
 export const POSTCODE_PATTERN =
   /^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$/;
 export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,50}$/;
-export const INT_PATTERN = /^[0-9]*$/;
+export const INT_PATTERN = /^-?[0-9]*$/;
 export const FLOAT_PATTERN = /^([0-9]*[.])?[0-9]+$/;
+// export const SALARY_PATTERN = /^\d*$|^\d*\.\d{0,2}$/;
+export const SALARY_PATTERN = /^-?\d*$|^-?\d*\.\d{0,2}$/;
 export const API_PATTERN = /^\/api\//;
 export const ADD_USER_API = '/api/user/add';
 export const ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES = /^[A-Za-z0-9_-]*$/;

@@ -5,7 +5,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -39,7 +39,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     public breadcrumbService: BreadcrumbService,
   ) {}
 
@@ -60,7 +60,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         : JourneyType.ALL_WORKPLACES;
       this.breadcrumbService.show(journey);
     } else {
-      this.backService.setBackLink(this.backLinkNavigation());
+      this.backLinkService.showBackLink();
     }
 
     this.subscriptions.add(

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_DEFAULT, DATE_PARSE_FORMAT } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -18,20 +18,20 @@ import { QuestionComponent } from '../question/question.component';
 export class DateOfBirthComponent extends QuestionComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
-  private minDate = dayjs().subtract(100, 'years').add(1, 'days');
-  private maxDate = dayjs().subtract(14, 'years');
+  public minDate = dayjs().subtract(100, 'years').add(1, 'days');
+  public maxDate = dayjs().subtract(14, 'years');
   public section = 'Personal details';
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     public workerService: WorkerService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group(
       {
@@ -56,7 +56,6 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
       });
     }
     this.next = this.getRoutePath('national-insurance-number');
-    this.previous = this.getReturnPath();
   }
 
   public setupFormErrorsMap(): void {
@@ -66,13 +65,13 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
         type: [
           {
             name: 'dateValid',
-            message: 'The date you entered is in the wrong format',
+            message: 'Enter a valid date of birth, like 31 3 1980',
           },
           {
             name: 'dateBetween',
-            message: `The date has to be between ${this.minDate.format(DATE_DISPLAY_DEFAULT)} and ${this.maxDate.format(
+            message: `Date of birth must to be between ${this.minDate.format(
               DATE_DISPLAY_DEFAULT,
-            )}.`,
+            )} and ${this.maxDate.format(DATE_DISPLAY_DEFAULT)}`,
           },
         ],
       },
@@ -90,16 +89,5 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
     }
 
     return { dateOfBirth: null };
-  }
-
-  private getReturnPath() {
-    if (this.insideFlow && this.workerService.addStaffRecordInProgress) {
-      return this.getRoutePath('mandatory-details');
-    }
-
-    if (this.insideFlow) {
-      return this.workplace?.uid === this.primaryWorkplace?.uid ? ['/dashboard'] : [`/workplace/${this.workplace.uid}`];
-    }
-    return this.getRoutePath('');
   }
 }

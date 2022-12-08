@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Nationality } from '@core/model/nationality.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NationalityService } from '@core/services/nationality.service';
@@ -22,13 +22,13 @@ export class NationalityComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     private nationalityService: NationalityService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService, establishmentService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.nationalityNameValidator = this.nationalityNameValidator.bind(this);
     this.nationalityNameFilter = this.nationalityNameFilter.bind(this);
@@ -40,23 +40,8 @@ export class NationalityComponent extends QuestionComponent {
   }
 
   init() {
-    this.subscriptions.add(
-      this.nationalityService
-        .getNationalities()
-        .subscribe((nationalities) => (this.availableNationalities = nationalities)),
-    );
-
-    this.subscriptions.add(
-      this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
-        this.form.get('nationalityName').clearValidators();
-
-        if (value === 'Other') {
-          this.form.get('nationalityName').setValidators([this.nationalityNameValidator]);
-        }
-
-        this.form.get('nationalityName').updateValueAndValidity();
-      }),
-    );
+    this.availableNationalitiesList();
+    this.nationalityValidation();
 
     if (this.worker.nationality) {
       const { value, other } = this.worker.nationality;
@@ -67,8 +52,27 @@ export class NationalityComponent extends QuestionComponent {
       });
     }
 
-    this.previous = this.insideFlow ? this.getRoutePath('ethnicity') : this.getRoutePath('');
     this.next = this.getRoutePath('british-citizenship');
+  }
+
+  private availableNationalitiesList(): void {
+    this.subscriptions.add(
+      this.nationalityService
+        .getNationalities()
+        .subscribe((nationalities) => (this.availableNationalities = nationalities)),
+    );
+  }
+
+  private nationalityValidation(): void {
+    this.subscriptions.add(
+      this.form.get('nationalityKnown').valueChanges.subscribe((value) => {
+        this.form.get('nationalityName').clearValidators();
+        if (value === 'Other') {
+          this.form.get('nationalityName').setValidators([this.nationalityNameValidator]);
+        }
+        this.form.get('nationalityName').updateValueAndValidity();
+      }),
+    );
   }
 
   setupFormErrorsMap(): void {
@@ -78,7 +82,7 @@ export class NationalityComponent extends QuestionComponent {
         type: [
           {
             name: 'validNationality',
-            message: 'Invalid nationality.',
+            message: 'Enter a valid nationality',
           },
         ],
       },
@@ -106,9 +110,16 @@ export class NationalityComponent extends QuestionComponent {
       : null;
   }
 
-  onSuccess() {
-    const { nationalityKnown } = this.form.controls;
-    nationalityKnown.value === 'British' && (this.next = this.getRoutePath('country-of-birth'));
+  onSuccess(): void {
+    const { nationalityKnown } = this.form.value;
+    if (nationalityKnown === 'British') {
+      this.next = this.insideFlow ? this.getRoutePath('country-of-birth') : this.getRoutePath('');
+    } else {
+      if (!this.insideFlow) {
+        this.next = this.getRoutePath('');
+        this.next.push('british-citizenship');
+      }
+    }
   }
 
   nationalityNameValidator() {

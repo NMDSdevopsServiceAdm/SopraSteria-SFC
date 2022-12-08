@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -7,7 +7,7 @@ import { Job } from '@core/model/job.model';
 import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
@@ -20,8 +20,11 @@ import { take } from 'rxjs/internal/operators/take';
   templateUrl: './add-mandatory-training.component.html',
 })
 export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
+  public renderAsEditMandatoryTraining: boolean;
   public submitted = false;
+  public preExistingTraining: any;
   public categories: TrainingCategory[];
   public filteredTrainingCategories: TrainingCategory[];
   private subscriptions: Subscription = new Subscription();
@@ -35,7 +38,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   public serverErrorsMap: Array<ErrorDefinition> = [];
   public return: URLStructure;
   public existingMandatoryTrainings: allMandatoryTrainingCategories;
-  public vacanciesOptions = [
+  public allOrSelectedJobRoleOptions = [
     {
       label: 'All job roles',
       value: mandatoryTrainingJobOption.all,
@@ -46,7 +49,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     },
   ];
   constructor(
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     private trainingService: TrainingService,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
@@ -57,9 +60,21 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
   ) {}
 
+  get selectedJobRolesArray(): FormArray {
+    return this.form.get('selectedJobRoles') as FormArray;
+  }
+
   ngOnInit(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.establishment = this.route.parent.snapshot.data.establishment;
+    this.establishment = this.route.snapshot.parent.data.establishment;
+
+    this.renderAsEditMandatoryTraining = this.route.snapshot.url[0].path === 'edit-mandatory-training';
+    this.return = { url: ['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training'] };
+
+    this.getAllJobs();
+    this.setUpForm();
+    this.setupServerErrorsMap();
+    this.backLinkService.showBackLink();
 
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((existingMandatoryTraining) => {
@@ -67,11 +82,6 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         this.getAllTrainingCategories();
       }),
     );
-
-    this.getAllJobs();
-    this.setUpForm();
-    this.setupServerErrorsMap();
-    this.setBackLink();
   }
 
   private getAllTrainingCategories(): void {
@@ -81,6 +91,9 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe((trainings) => {
           this.trainings = this.filterTrainingCategories(trainings);
+          if (this.renderAsEditMandatoryTraining) {
+            this.prefill();
+          }
         }),
     );
   }
@@ -89,10 +102,19 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     const preSelectedIds = this.existingMandatoryTrainings.mandatoryTraining.map(
       (existingMandatoryTrainings) => existingMandatoryTrainings.trainingCategoryId,
     );
+    if (this.renderAsEditMandatoryTraining) {
+      this.preExistingTraining = this.existingMandatoryTrainings.mandatoryTraining.find((mandatoryTrainingObject) => {
+        return mandatoryTrainingObject.trainingCategoryId === parseInt(this.route.snapshot.parent.url[0].path, 10);
+      });
 
-    return trainings.filter((training) => {
-      return !preSelectedIds.includes(training.id);
-    });
+      return trainings.filter((training) => {
+        return this.preExistingTraining.trainingCategoryId === training.id || !preSelectedIds.includes(training.id);
+      });
+    } else {
+      return trainings.filter((training) => {
+        return !preSelectedIds.includes(training.id);
+      });
+    }
   }
 
   private getAllJobs(): void {
@@ -107,34 +129,8 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   private setUpForm(trainingId = null, vType = mandatoryTrainingJobOption.all): void {
     this.form = this.formBuilder.group({
       trainingCategory: [trainingId, [Validators.required]],
-      vacancyType: [vType, [Validators.required]],
-      vacancies: this.formBuilder.array([]),
-    });
-  }
-
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'trainingCategory',
-        type: [
-          {
-            name: 'required',
-            message: 'Select the mandatory training',
-          },
-        ],
-      },
-    ];
-    const vacanciesArray = this.form.get('vacancies') as FormArray;
-    vacanciesArray.controls.forEach((vacanciesItem, index) => {
-      this.formErrorsMap.push({
-        item: `vacancies.id.${index}`,
-        type: [
-          {
-            name: 'required',
-            message: `Select the job role (job role ${index + 1})`,
-          },
-        ],
-      });
+      allOrSelectedJobRoles: [vType],
+      selectedJobRoles: this.formBuilder.array([]),
     });
   }
 
@@ -156,34 +152,69 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     ];
   }
 
-  public setBackLink(): void {
-    this.return = {
-      url: ['/workplace', this.establishmentService.primaryWorkplace.uid, 'add-and-manage-mandatory-training'],
-    };
-    this.backService.setBackLink(this.return);
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'trainingCategory',
+        type: [
+          {
+            name: 'required',
+            message: 'Select the training category you want to be mandatory',
+          },
+        ],
+      },
+    ];
+    this.selectedJobRolesArray.controls.forEach((selectedJobRolesItem, index) => {
+      this.formErrorsMap.push({
+        item: `selectedJobRoles.id.${index}`,
+        type: [
+          {
+            name: 'required',
+            message: `Select the job role (job role ${index + 1})`,
+          },
+        ],
+      });
+    });
+  }
+
+  public prefill(): void {
+    this.form.patchValue({
+      trainingCategory: this.preExistingTraining.trainingCategoryId,
+      allOrSelectedJobRoles:
+        this.preExistingTraining.jobs.length === 29
+          ? mandatoryTrainingJobOption.all
+          : mandatoryTrainingJobOption.selected,
+      selectedJobRoles: this.prefillJobRoles(),
+    });
+  }
+
+  protected prefillJobRoles() {
+    return this.preExistingTraining.jobs.length === 29
+      ? null
+      : this.preExistingTraining.jobs.forEach((job) => {
+          this.selectedJobRolesArray.push(this.createVacancyControl(job.id));
+        });
   }
 
   public addVacancy(): void {
-    const vacancyArray = <FormArray>(<FormGroup>this.form).controls.vacancies;
-    vacancyArray.push(this.createVacancyControl());
+    this.selectedJobRolesArray.push(this.createVacancyControl());
     this.setupFormErrorsMap();
-    this.filteredJobs.push(this.filterJobList());
   }
 
-  public filterJobList(): Job[] {
-    const vacanciesArray = this.form.get('vacancies') as FormArray;
-    const vacanciesArrayNumbers = vacanciesArray.value.map((str) => {
-      return parseInt(str.id, 10);
-    });
-    return this.jobs.filter((job) => {
-      return !vacanciesArrayNumbers.includes(job.id);
-    });
+  public filterJobList(jobIndex): Job[] {
+    return this.jobs.filter(
+      (job) =>
+        !this.selectedJobRolesArray.controls.some(
+          (jobRole) =>
+            jobRole !== this.selectedJobRolesArray.controls[jobIndex] &&
+            parseInt(jobRole.get('id').value, 10) === job.id,
+        ),
+    );
   }
 
   public removeVacancy(event: Event, jobIndex): void {
     event.preventDefault();
-    const vacanciesArray = <FormArray>(<FormGroup>this.form).controls.vacancies;
-    vacanciesArray.removeAt(jobIndex);
+    this.selectedJobRolesArray.removeAt(jobIndex);
   }
 
   private createVacancyControl(jobId = null): FormGroup {
@@ -195,19 +226,25 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   protected generateUpdateProps(): any {
     return {
       trainingCategoryId: parseInt(this.form.get('trainingCategory').value, 10),
-      allJobRoles: this.form.get('vacancyType').value === mandatoryTrainingJobOption.all ? true : false,
-      jobs: this.form.get('vacancies').value,
+      allJobRoles: this.form.get('allOrSelectedJobRoles').value === mandatoryTrainingJobOption.all ? true : false,
+      jobs: this.form.get('selectedJobRoles').value,
     };
   }
 
-  protected updateMandatoryTraining(props): void {
+  protected createAndUpdateMandatoryTraining(props): void {
     this.subscriptions.add(
-      this.establishmentService.updateMandatoryTraining(this.establishment.uid, props).subscribe(
+      this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
-          this.router.navigate(this.return.url, { fragment: this.return.fragment });
+          this.router.navigate([
+            '/workplace',
+            this.establishmentService.primaryWorkplace.uid,
+            'add-and-manage-mandatory-training',
+          ]);
           this.alertService.addAlert({
             type: 'success',
-            message: 'Mandatory training category added',
+            message: this.renderAsEditMandatoryTraining
+              ? 'Mandatory training category updated'
+              : 'Mandatory training category added',
           });
         },
         (error) => {
@@ -218,13 +255,14 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   }
 
   public onVacancyTypeSelectionChange(): void {
-    const vacancyType = this.form.get('vacancyType').value;
-    const vacanciesArray = <FormArray>(<FormGroup>this.form).controls.vacancies;
-    if (vacancyType === mandatoryTrainingJobOption.all) {
-      while (vacanciesArray.length > 0) {
-        vacanciesArray.removeAt(0);
+    const allOrSelectedJobRoles = this.form.get('allOrSelectedJobRoles').value;
+    if (allOrSelectedJobRoles === mandatoryTrainingJobOption.all) {
+      while (this.selectedJobRolesArray.length > 0) {
+        this.selectedJobRolesArray.removeAt(0);
       }
-      vacanciesArray.reset([], { emitEvent: false });
+      this.selectedJobRolesArray.reset([], { emitEvent: false });
+    } else if (this.renderAsEditMandatoryTraining) {
+      this.preExistingTraining.jobs.length === 29 ? this.addVacancy() : this.prefillJobRoles();
     } else {
       this.addVacancy();
     }
@@ -238,7 +276,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       return;
     }
     const props = this.generateUpdateProps();
-    this.updateMandatoryTraining(props);
+    this.createAndUpdateMandatoryTraining(props);
   }
 
   ngOnDestroy(): void {
