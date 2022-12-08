@@ -23,6 +23,20 @@ const getAllTraining = async function (_req, res) {
   }
 };
 
+const getTrainingCategoryById = async (req, res) => {
+  try {
+    let results = await models.workerTrainingCategories
+      .findAll({
+        order: [['seq', 'ASC']],
+      })
+      .filter((x) => x.id === req.params.categoryId);
+
+    return res.status(200).send(results);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const getTrainingByCategory = async (req, res) => {
   try {
     const establishmentId = req.params.establishmentId;
@@ -49,6 +63,7 @@ const getTrainingByCategory = async (req, res) => {
 };
 
 router.route('/').get([refCacheMiddleware.refcache, getAllTraining]);
+router.route('/:categoryId').get([refCacheMiddleware.refcache, getTrainingCategoryById]);
 router.route('/:establishmentId/with-training').get([cacheMiddleware.nocache, getTrainingByCategory]);
 
 module.exports = router;

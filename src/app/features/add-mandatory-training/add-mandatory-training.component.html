@@ -48,7 +48,9 @@
               *ngIf="renderAsEditMandatoryTraining"
               class="govuk-grid-column-one-quarter govuk-list govuk-!-margin-top-1 govuk-!-padding-left-1"
             >
-              <a href="#" class="govuk__nowrap">Remove this mandatory training category </a>
+              <a href="#" class="govuk__nowrap" [routerLink]="['../', 'delete-mandatory-training-category']"
+                >Remove this mandatory training category
+              </a>
             </div>
           </div>
         </div>

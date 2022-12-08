@@ -19,6 +19,12 @@ export class TrainingService {
       .pipe(map((res) => res.trainingCategories));
   }
 
+  getCategoryById(categoryId): Observable<TrainingCategory[]> {
+    return this.http
+      .get<TrainingCategoryResponse>(`/api/trainingCategories/${categoryId}`)
+      .pipe(map((res) => res.trainingCategories));
+  }
+
   public updateSelectedStaff(formValue) {
     this.selectedStaff = formValue;
   }
