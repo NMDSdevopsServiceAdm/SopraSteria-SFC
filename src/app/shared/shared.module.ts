@@ -10,6 +10,9 @@ import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import {
+  MissingMandatoryTrainingComponent,
+} from '@features/workers/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
+import {
   DeleteWorkplaceDialogComponent,
 } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
@@ -91,6 +94,9 @@ import { TotalStaffComponent } from './components/total-staff/total-staff.compon
 import {
   TrainingAndQualificationsCategoriesComponent,
 } from './components/training-and-qualifications-categories/training-and-qualifications-categories.component';
+import {
+  ViewTrainingComponent,
+} from './components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 import {
   TrainingAndQualificationsSummaryComponent,
 } from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
@@ -227,6 +233,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
     NewBackLinkComponent,
+    ViewTrainingComponent,
+    MissingMandatoryTrainingComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -322,6 +330,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
     NewBackLinkComponent,
+    ViewTrainingComponent,
+    MissingMandatoryTrainingComponent,
     AbsoluteNumberPipe,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],

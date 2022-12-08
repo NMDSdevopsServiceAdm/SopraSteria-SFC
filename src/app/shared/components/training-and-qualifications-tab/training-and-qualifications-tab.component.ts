@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingRecordCategories } from '@core/model/training.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -21,7 +22,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
 
   private subscriptions: Subscription = new Subscription();
 
-  public trainingCategories: [];
+  public trainingCategories: TrainingRecordCategories[];
   public totalRecords: number;
   public totalExpiredTraining: number;
   public totalExpiringTraining: number;

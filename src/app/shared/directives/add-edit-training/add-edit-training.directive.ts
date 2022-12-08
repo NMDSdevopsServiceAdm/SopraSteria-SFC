@@ -6,6 +6,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { MandatoryTraining, TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
@@ -42,10 +43,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
-    protected backLinkService: BackLinkService,
+    protected alertService: AlertService,
   ) {}
 
   ngOnInit(): void {

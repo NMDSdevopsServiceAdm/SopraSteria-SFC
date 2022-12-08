@@ -110,17 +110,15 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit {
     return this.trainingStatusService.trainingStatusForRecord(training);
   }
 
-  public updateTrainingRecord(event, training): void {
+  public viewTrainingCategory(event, trainingCategory): void {
     event.preventDefault();
-    this.workerService.getRoute$.next('/dashboard?view=categories#training-and-qualifications');
 
     this.router.navigate([
       '/workplace',
       this.workplace.uid,
       'training-and-qualifications-record',
-      training.worker.uid,
-      'training',
-      training.uid,
+      'view-training-category',
+      trainingCategory.id,
     ]);
   }
 

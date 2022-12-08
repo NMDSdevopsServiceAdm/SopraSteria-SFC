@@ -24,21 +24,22 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
     private establishmentService: EstablishmentService,
-    private alertService: AlertService,
-    public backLinkService: BackLinkService,
+    protected alertService: AlertService,
   ) {
     super(
       formBuilder,
       route,
       router,
+      backLinkService,
       errorSummaryService,
       trainingService,
       workerService,
-      backLinkService,
+      alertService,
     );
   }
 
