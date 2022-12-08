@@ -106,4 +106,37 @@ describe('WorkersResolver', () => {
 
     expect(workerService.getAllWorkers).not.toHaveBeenCalled();
   });
+
+  it('should return the training last updated value when it is greater than the qualifications last updated value', () => {
+    const { resolver } = setup('paramUid');
+
+    const training = new Date('2020/04/10').toISOString();
+    const qualifications = new Date('2019/02/25').toISOString();
+
+    const result = resolver.getLastUpdatedTrainingOrQualifications(training, qualifications);
+
+    expect(result).toEqual(training);
+  });
+
+  it('should return the qualification last updated value when it is greater than the training last updated value', () => {
+    const { resolver } = setup('paramUid');
+
+    const qualifications = new Date('2020/04/10').toISOString();
+    const training = new Date('2019/02/25').toISOString();
+
+    const result = resolver.getLastUpdatedTrainingOrQualifications(training, qualifications);
+
+    expect(result).toEqual(qualifications);
+  });
+
+  it('should return nothing when there is not a qualification or training last updated value', () => {
+    const { resolver } = setup('paramUid');
+
+    const training = null;
+    const qualifications = null;
+
+    const result = resolver.getLastUpdatedTrainingOrQualifications(training, qualifications);
+
+    expect(result).toBeFalsy();
+  });
 });

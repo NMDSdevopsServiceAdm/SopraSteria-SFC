@@ -1,47 +1,66 @@
-<div class="govuk-grid-row govuk-!-margin-bottom-5">
-  <div *ngIf="canEditEstablishment" class="govuk-grid-column-one-third">
-    <a
-      class="govuk-list govuk-list--inline govuk-!-margin-right-5"
-      [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
-      >Manage mandatory training
-    </a>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-!-margin-bottom-8">
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Training and qualifications ({{ totalRecords || 0 }})</h2>
+      <p *ngIf="tAndQsLastUpdated" class="govuk-!-font-size-16 govuk-!-margin-top-2">
+        Last update, {{ tAndQsLastUpdated | date: 'dd MMMM yyyy' }}
+      </p>
+    </div>
   </div>
-  <div *ngIf="canEditEstablishment" class="govuk-grid-column-one-third">
-    <a
-      class="govuk-list govuk-list--inline govuk-!-margin-right-5"
-      [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
-      >Change when you get 'expires soon' alerts
-    </a>
-  </div>
-  <div class="govuk-grid-column-one-third">
-    <a
-      class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
-      role="button"
-      draggable="false"
-      href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
-      (click)="downloadTrainingReport($event)"
-    >
-      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
-        Download training report
-      </span>
-    </a>
-  </div>
-  <ng-container *ngIf="isParent">
-    <div class="govuk-grid-column-one-third govuk-!-padding-right-0">
+  <div class="govuk-grid-column-one-third govuk-!-padding-right-0 govuk">
+    <div class="govuk-!-margin-bottom-8">
       <a
         class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
         role="button"
         draggable="false"
-        href="/download/{{ now | date: 'yyyy-MM-dd' }}-parent-training-report.xls"
-        (click)="downloadParentTrainingReport($event)"
+        href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
+        (click)="downloadTrainingReport($event)"
       >
         <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
-          Download parent training report
+          Download training report
         </span>
       </a>
+      <ng-container *ngIf="isParent">
+        <a
+          class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+          role="button"
+          draggable="false"
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-parent-training-report.xls"
+          (click)="downloadParentTrainingReport($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+            Download parent training report
+          </span>
+        </a>
+      </ng-container>
     </div>
-  </ng-container>
-  <div *ngIf="lastUpdated" class="govuk-grid-column-one-third govuk-util__align-right govuk-util__float-right">
-    <p>Updated {{ lastUpdated | date: 'd MMMM yyyy' }}</p>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <ng-container *ngIf="canEditEstablishment">
+      <div class="govuk-!-margin-bottom-4">
+        <a class="govuk-list" [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
+          >Add and manage mandatory training categories
+        </a>
+      </div>
+      <div>
+        <a class="govuk-list" [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
+          >Manage expiry alerts
+        </a>
+      </div>
+    </ng-container>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <a
+      *ngIf="canEditWorker"
+      role="button"
+      href="#"
+      class="govuk-button govuk-util__float-right govuk-!-margin-top-7 govuk-!-margin-bottom-6"
+      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
+    >
+      Add multiple training records
+    </a>
   </div>
 </div>

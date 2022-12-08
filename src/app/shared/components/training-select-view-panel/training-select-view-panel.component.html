@@ -1,0 +1,34 @@
+<div class="asc-tabs asc-tabs--border-bottom govuk-!-margin-top-5 govuk-!-margin-bottom-5">
+  <ul class="asc-tabs__list" role="tablist">
+    <li
+      class="asc-tabs__list-item"
+      data-testid="staffListItem"
+      [class.asc-tabs__list-item--active]="!viewTrainingByCategory"
+    >
+      <a
+        id="tab_"
+        class="govuk-link govuk-link--no-visited-state asc-tabs__link"
+        [class.asc-tabs__link--active]="!viewTrainingByCategory"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event)"
+        >Staff</a
+      >
+    </li>
+    <li
+      class="asc-tabs__list-item"
+      data-testid="trainingListItem"
+      [class.asc-tabs__list-item--active]="viewTrainingByCategory"
+    >
+      <a
+        id="tab_"
+        class="govuk-link govuk-link--no-visited-state asc-tabs__link"
+        [class.asc-tabs__link--active]="viewTrainingByCategory"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event)"
+        >Training</a
+      >
+    </li>
+  </ul>
+</div>
