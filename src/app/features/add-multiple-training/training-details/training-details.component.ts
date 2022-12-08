@@ -45,7 +45,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   protected init(): void {
-    console.log(this.trainingService.selectedStaff);
     this.previousUrl =
       this.establishmentService.primaryWorkplace?.uid === this.workplace.uid
         ? ['/dashboard']
