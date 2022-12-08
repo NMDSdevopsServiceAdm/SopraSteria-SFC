@@ -63,15 +63,10 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.buttonText = 'Continue';
   }
 
-  protected submit(record: TrainingRecordRequest): void {
-    this.subscriptions.add(
-      this.workerService
-        .createMultipleTrainingRecords(this.workplace.uid, this.trainingService.selectedStaff, record)
-        .subscribe(
-          (response: MultipleTrainingResponse) => this.onSuccess(response),
-          (error) => this.onError(error),
-        ),
-    );
+  protected async submit(record: TrainingRecordRequest) {
+    this.trainingService.updateSelectedTraining(record);
+
+    await this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }
 
   private async onSuccess(response: MultipleTrainingResponse) {

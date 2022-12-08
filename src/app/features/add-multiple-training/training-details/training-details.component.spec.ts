@@ -111,7 +111,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     ]);
   });
 
-  xit('should submit, navigate and add alert when complete', async () => {
+  it('should submit, navigate and add alert when complete', async () => {
     const { component, getByText, fixture, spy, alertSpy, workerSpy, trainingSpy } = await setup();
     component.form.markAsDirty();
     component.form.get('category').setValue('1');

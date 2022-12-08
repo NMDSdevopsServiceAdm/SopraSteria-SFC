@@ -6,6 +6,7 @@ import { SharedModule } from '@shared/shared.module';
 
 import { AddMultipleTrainingRoutingModule } from './add-multiple-training-routing.module';
 import { SelectStaffErrorSummaryComponent } from './select-staff-error-summary/select-staff-error-summary.component';
+import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training/confirm-multiple-training.component';
 import { SelectStaffComponent } from './select-staff/select-staff.component';
 import { SelectedStaffPanelComponent } from './selected-staff-panel/selected-staff-panel.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
@@ -24,6 +25,7 @@ import { MultipleTrainingDetailsComponent } from './training-details/training-de
     MultipleTrainingDetailsComponent,
     SelectedStaffPanelComponent,
     SelectStaffErrorSummaryComponent,
+    ConfirmMultipleTrainingComponent,
   ],
   providers: [],
 })
