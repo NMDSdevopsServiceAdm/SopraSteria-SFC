@@ -7,27 +7,43 @@ import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training/co
 import { SelectStaffComponent } from './select-staff/select-staff.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
 
+const selectStaffRoute = {
+  path: 'select-staff',
+  component: SelectStaffComponent,
+  data: { title: 'Select staff', workerPagination: false },
+  resolve: {
+    workers: WorkersResolver,
+  },
+};
+
+const trainingDetailsRoute = {
+  path: 'training-details',
+  component: MultipleTrainingDetailsComponent,
+  data: {
+    title: 'Training details',
+  },
+};
+
+const trainingDetailsRouteWithGuard = {
+  ...trainingDetailsRoute,
+  canActivate: [AddMultipleTrainingInProgressGuard],
+};
+
 const routes: Routes = [
-  {
-    path: 'select-staff',
-    component: SelectStaffComponent,
-    data: { title: 'Select staff', workerPagination: false },
-    resolve: {
-      workers: WorkersResolver,
-    },
-  },
-  {
-    path: 'training-details',
-    component: MultipleTrainingDetailsComponent,
-    data: {
-      title: 'Training details',
-    },
-    canActivate: [AddMultipleTrainingInProgressGuard],
-  },
+  selectStaffRoute,
+  trainingDetailsRouteWithGuard,
   {
     path: 'confirm-training',
-    component: ConfirmMultipleTrainingComponent,
     canActivate: [AddMultipleTrainingInProgressGuard],
+    children: [
+      {
+        path: '',
+        component: ConfirmMultipleTrainingComponent,
+        data: { title: 'Confirm multiple training' },
+      },
+      selectStaffRoute,
+      trainingDetailsRoute,
+    ],
   },
 ];
 
