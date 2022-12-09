@@ -59,19 +59,28 @@ export class OtherQualificationsComponent extends QuestionComponent {
     };
   }
 
-  onSuccess(): void {
+  private determineBaseRoute(): string[] {
+    if (this.wdfEditPageFlag) {
+      return ['wdf', 'staff-record', this.worker.uid];
+    }
+    if (!this.insideFlow) {
+      return this.getRoutePath('');
+    } else {
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+    }
+  }
+
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
     const { otherQualification } = this.form.value;
 
-    const summaryRecordUrl = this.getRoutePath('');
     if (otherQualification === 'Yes') {
-      if (this.insideFlow) {
-        this.next = this.getRoutePath('other-qualifications-level');
-      } else {
-        this.next = summaryRecordUrl;
-        this.next.push('other-qualifications-level');
-      }
-    } else {
-      !this.insideFlow && (this.next = summaryRecordUrl);
+      nextRoute.push('other-qualifications-level');
     }
+    return nextRoute;
+  }
+
+  onSuccess(): void {
+    this.next = this.determineConditionalRouting();
   }
 }

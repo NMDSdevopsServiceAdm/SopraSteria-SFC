@@ -4,17 +4,14 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { SocialCareQualificationLevelComponent } from './social-care-qualification-level.component';
 
 describe('SocialCareQualificationLevelComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(returnUrl = true, wdfEditPageFlag = false) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       SocialCareQualificationLevelComponent,
       {
@@ -25,6 +22,11 @@ describe('SocialCareQualificationLevelComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
+                parent: {
+                  snapshot: {
+                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
+                  },
+                },
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
@@ -91,6 +93,13 @@ describe('SocialCareQualificationLevelComponent', () => {
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup();
+
+      expect(getByText('Save and return')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
+      const { getByText } = await setup(false, true);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -178,6 +187,33 @@ describe('SocialCareQualificationLevelComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version', async () => {
+      const { component, fixture, routerSpy, getByText } = await setup(false, true);
+
+      const workerId = component.worker.uid;
+
+      component.form.controls.qualification.setValue('2');
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save and return')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing cancel when in wdf version of page', async () => {
+      const { component, routerSpy, getByText } = await setup(false, true);
+
+      const workerId = component.worker.uid;
+
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
     });
   });
 });

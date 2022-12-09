@@ -46,7 +46,7 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   private getSummaryRoute(): string[] {
-    const summaryUrl = this.getRoutePath('');
+    const summaryUrl = !this.wdfEditPageFlag ? this.getRoutePath('') : ['wdf', 'staff-record', this.worker.uid];
     summaryUrl.push('nursing-specialism');
     return summaryUrl;
   }

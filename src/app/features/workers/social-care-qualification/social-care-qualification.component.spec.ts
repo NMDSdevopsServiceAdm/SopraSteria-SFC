@@ -4,17 +4,14 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { SocialCareQualificationComponent } from './social-care-qualification.component';
 
 describe('SocialCareQualificationComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(returnUrl = true, wdfEditPageFlag = false) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       SocialCareQualificationComponent,
       {
@@ -24,12 +21,12 @@ describe('SocialCareQualificationComponent', () => {
           {
             provide: ActivatedRoute,
             useValue: {
-              snapshot: {
-                parent: {
-                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
-                },
-              },
               parent: {
+                parent: {
+                  snapshot: {
+                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
+                  },
+                },
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
@@ -96,6 +93,13 @@ describe('SocialCareQualificationComponent', () => {
 
     it(`should show 'Save' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup();
+
+      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
+
+    it(`should show 'Save' cta button and 'Cancel' link if in wdf version of page`, async () => {
+      const { getByText } = await setup(false, true);
 
       expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -288,6 +292,71 @@ describe('SocialCareQualificationComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing save and no is entered in wdf version of page', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, true);
+
+      const workerId = component.worker.uid;
+
+      const radioButtonNo = getByLabelText('No');
+      fireEvent.click(radioButtonNo);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing save and I do not know is entered in wdf version of page', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, true);
+
+      const workerId = component.worker.uid;
+
+      const radioButtonNo = getByLabelText('I do not know');
+      fireEvent.click(radioButtonNo);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to wdf social-care-qualification-level-summary-flow page when pressing save and Yes is entered in wdf version of page', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, true);
+
+      const workerId = component.worker.uid;
+
+      const radioButtonNo = getByLabelText('Yes');
+      fireEvent.click(radioButtonNo);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId, 'social-care-qualification-level']);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+      const { component, routerSpy, getByText } = await setup(false, true);
+
+      const workerId = component.worker.uid;
+
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
     });
   });
 });
