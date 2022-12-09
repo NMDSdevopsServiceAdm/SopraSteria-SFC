@@ -55,8 +55,8 @@ describe('WdfPagination', () => {
 
     expect(component.previousID).toEqual('1');
     expect(component.nextID).toEqual('3');
-    expect(previousHref).toEqual('../1');
-    expect(nextHref).toEqual('../3');
+    expect(previousHref).toEqual('/wdf,staff-record,1');
+    expect(nextHref).toEqual('/wdf,staff-record,3');
   });
   it('should only show Next staff record', async () => {
     const { fixture, queryByText } = await setup('1');
