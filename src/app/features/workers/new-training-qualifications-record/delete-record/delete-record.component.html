@@ -1,14 +1,15 @@
-<div class="govuk-grid-row govuk-!-margin-bottom-0">
-  <div class="govuk-grid-column-two-thirds">
+<div class="govuk-grid-row govuk-!-margin-bottom-">
+  <div class="govuk-grid-column-three-quarters">
     <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
-      {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
+      {{ worker.nameOrId }}
     </span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-9">
-      You're about to delete this {{ trainingOrQualification }} record
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">
+      You're about to delete this <br />
+      {{ trainingOrQualification }} record
     </h1>
 
     <ng-container *ngIf="trainingView; else qualificationView">
-      <dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wide-key">
+      <dl class="govuk-summary-list govuk-summary-list--top-border govuk-summary-list--wide-key">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Name or ID number</dt>
           <dd class="govuk-summary-list__value" data-testid="workerName">
@@ -29,7 +30,7 @@
     </ng-container>
 
     <ng-template #qualificationView>
-      <dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wide-key">
+      <dl class="govuk-summary-list govuk-summary-list--top-border govuk-summary-list--wide-key">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Name or ID number</dt>
           <dd class="govuk-summary-list__value" data-testid="workerName">
@@ -43,7 +44,7 @@
           </dd>
         </div>
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Qualification name</dt>
+          <dt class="govuk-summary-list__key">{{ qualificationRecord.qualification.group }} name</dt>
           <dd class="govuk-summary-list__value" data-testid="qualificationName">
             {{ qualificationRecord.qualification.title }}
           </dd>
@@ -51,9 +52,9 @@
       </dl>
     </ng-template>
 
-    <div class="govuk-button-group govuk-!-margin-top-7">
-      <button type="button" class="govuk-button govuk-button--warning govuk-!-margin-right-2" (click)="deleteRecord()">
-        Delete this {{ trainingOrQualification }} record
+    <div class="govuk-button-group govuk-!-margin-top-8">
+      <button type="button" class="govuk-button govuk-button--warning govuk-!-margin-right-7" (click)="deleteRecord()">
+        Delete record
       </button>
       <a
         class="govuk-button govuk-button--link govuk-!-margin-left-9"

@@ -112,8 +112,8 @@
           </td>
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             <a
-              *ngIf="trainingCategory.training.length"
               class="govuk-link--no-visited-state"
+              (click)="viewTrainingCategory($event, trainingCategory)"
               href="#"
               data-testid="more-link"
               [routerLink]="['/view-training-category']"

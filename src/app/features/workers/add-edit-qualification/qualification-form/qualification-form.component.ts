@@ -26,6 +26,8 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
   public qualifications: Qualification[];
   public intPattern = INT_PATTERN.toString();
   private subscriptions: Subscription = new Subscription();
+  public notesValue = '';
+  public remainingCharacterCount: number;
 
   get group() {
     return this.form.get(this.type.key);
@@ -36,6 +38,7 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.remainingCharacterCount = this.notesMaxLength;
     this.subscriptions.add(
       this.workerService
         .getAvailableQualifcations(this.workplace.uid, this.worker.uid, this.type.value as QualificationType)
@@ -50,6 +53,11 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
           },
         ),
     );
+  }
+
+  public handleOnInput(event: Event): void {
+    this.notesValue = (<HTMLInputElement>event.target).value;
+    this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
   }
 
   public getFirstErrorMessage(item: string): string {

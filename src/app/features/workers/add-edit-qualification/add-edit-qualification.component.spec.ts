@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { getTestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -8,7 +9,7 @@ import { qualificationRecord } from '@core/test-utils/MockWorkerService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
 
@@ -40,6 +41,9 @@ describe('AddEditQualificationComponent', () => {
     });
 
     const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
@@ -47,6 +51,7 @@ describe('AddEditQualificationComponent', () => {
       getByText,
       getByTestId,
       queryByText,
+      routerSpy,
     };
   }
 
@@ -58,12 +63,6 @@ describe('AddEditQualificationComponent', () => {
   it('should display the workers name', async () => {
     const { component, getByText } = await setup();
     expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
-  });
-
-  it('should display the workers job role', async () => {
-    const { component, getByTestId } = await setup();
-
-    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.title);
   });
 
   describe('title', () => {
@@ -82,27 +81,43 @@ describe('AddEditQualificationComponent', () => {
       component.record = qualificationRecord;
       fixture.detectChanges();
 
-      expect(getByText('Qualification details')).toBeTruthy();
+      expect(getByText('Qualification record details')).toBeTruthy();
     });
   });
 
-  describe('delete button', () => {
-    it('should render the delete button when editing qualification', async () => {
+  describe('delete link', () => {
+    it('should render the delete link when editing qualification', async () => {
       const { component, fixture, getByText } = await setup();
 
       component.record = qualificationRecord;
       fixture.detectChanges();
 
-      expect(getByText('Delete')).toBeTruthy();
+      expect(getByText('Delete this qualification record')).toBeTruthy();
     });
 
-    it('should not render the delete button when there is no qualification id', async () => {
+    it('should not render the delete link when there is no qualification id', async () => {
       const { component, fixture, queryByText } = await setup();
 
       component.qualificationId = null;
       fixture.detectChanges();
 
-      expect(queryByText('Delete')).toBeFalsy();
+      expect(queryByText('Delete this qualification record')).toBeFalsy();
+    });
+
+    it('should navigate to delete confirmation page', async () => {
+      const { component, routerSpy, getByTestId } = await setup();
+      const deleteQualificationRecord = getByTestId('delete-this-qualification-record');
+
+      fireEvent.click(deleteQualificationRecord);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'training-and-qualifications-record',
+        component.worker.uid,
+        'qualification',
+        component.qualificationId,
+        'delete',
+      ]);
     });
   });
 });

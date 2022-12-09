@@ -97,36 +97,6 @@ fdescribe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show Worker information when clicking the More link', async () => {
-    const trainingCategory = trainingCategoryBuilder();
-
-    const { getByTestId } = await setup([trainingCategory]);
-    const container = within(getByTestId('training-category-table'));
-
-    fireEvent.click(container.getAllByTestId('more-link')[0]);
-    expect(container.getAllByText(trainingCategory.training[0].worker.NameOrIdValue));
-  });
-
-  it('should show an Update link for expired and expiring soon workers when clicking the More link', async () => {
-    const trainingCategory = trainingCategoryBuilder({
-      overrides: {
-        training: [
-          trainingBuilder({
-            overrides: {
-              expires: dayjs().subtract(1, 'month').toISOString(),
-            },
-          }),
-        ],
-      },
-    });
-    const { getByTestId } = await setup([trainingCategory]);
-
-    const container = within(getByTestId('training-category-table'));
-
-    fireEvent.click(container.getAllByTestId('more-link')[0]);
-    expect(container.getAllByText('Update'));
-  });
-
   it('should not display an Update link if you do not have permissions to edit workers', async () => {
     sinon.restore();
     const mockPermissionsService = sinon.createStubInstance(PermissionsService, {

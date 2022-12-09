@@ -3,8 +3,10 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
@@ -23,6 +25,8 @@ describe('AddEditTrainingComponent', () => {
     const { fixture, getByText, getByTestId, queryByText, queryByTestId } = await render(AddEditTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
+        AlertService,
+        WindowRef,
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
@@ -78,12 +82,6 @@ describe('AddEditTrainingComponent', () => {
     expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
   });
 
-  it('should display the workers job role', async () => {
-    const { component, getByTestId } = await setup();
-
-    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.title);
-  });
-
   describe('Training category select/display', async () => {
     it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
       const { getByText } = await setup(true);
@@ -105,11 +103,11 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('title', () => {
-    it('should render the Enter training details title', async () => {
+    it('should render the Add training record details title', async () => {
       const trainingRecordId = null;
       const { getByText } = await setup(false, trainingRecordId);
 
-      expect(getByText('Enter training details')).toBeTruthy();
+      expect(getByText('Add training record details')).toBeTruthy();
     });
 
     it('should render the Training details title, when there is a training record id', async () => {

@@ -1,5 +1,5 @@
 import { FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { DATE_PARSE_FORMAT } from '@core/constants/constants';
+import { DATE_DAY_VALID, DATE_MONTH_VALID, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { FormatUtil } from '@core/utils/format-util';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -32,6 +32,10 @@ export abstract class DateValidator {
   static dateValid(): ValidatorFn {
     return (formGroup: FormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
+
+      if (day.value == !DATE_DAY_VALID || month.value == !DATE_MONTH_VALID) {
+        return { dateValid: true };
+      }
 
       if (!day.value && !month.value && !year.value) {
         return null;
