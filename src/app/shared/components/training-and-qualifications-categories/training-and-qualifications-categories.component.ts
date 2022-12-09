@@ -1,10 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsCat } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
-import { WorkerService } from '@core/services/worker.service';
 import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
@@ -18,22 +15,17 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnD
 
   public workerDetails = [];
   public workerDetailsLabel = [];
-  public canEditWorker = false;
   public sortTrainingAndQualsOptions;
   public sortByDefault: string;
   public showMandatoryTraining = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private permissionsService: PermissionsService,
     protected trainingStatusService: TrainingStatusService,
-    private workerService: WorkerService,
-    private router: Router,
     private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsCat;
     this.sortByDefault = '0_expired';
     this.orderTrainingCategories(this.sortByDefault);
@@ -102,18 +94,6 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnD
 
   public trainingStatus(training) {
     return this.trainingStatusService.trainingStatusForRecord(training);
-  }
-
-  public viewTrainingCategory(event, trainingCategory): void {
-    event.preventDefault();
-
-    this.router.navigate([
-      '/workplace',
-      this.workplace.uid,
-      'training-and-qualifications-record',
-      'view-training-category',
-      trainingCategory.id,
-    ]);
   }
 
   ngOnDestroy(): void {

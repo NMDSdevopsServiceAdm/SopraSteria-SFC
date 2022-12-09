@@ -17,7 +17,7 @@
         </div>
       </div>
     </div>
-    <div class="govuk-!-margin-bottom-0 govuk-grid-column-one-quarter govuk-!-padding-top-0 govuk-!-padding-bottom-2">
+    <div class="govuk-!-margin-bottom-0 govuk-grid-column-one-quarter govuk-!-padding-top-2 govuk-!-padding-bottom-2">
       <label class="govuk-label" for="sortByTrainingCategory"> Sort by </label>
       <select
         class="govuk-select govuk-!-width-full"
@@ -113,10 +113,15 @@
           <td class="govuk-table__cell govuk-!-font-weight-regular">
             <a
               class="govuk-link--no-visited-state"
-              (click)="viewTrainingCategory($event, trainingCategory)"
               href="#"
               data-testid="more-link"
-              [routerLink]="['/view-training-category']"
+              [routerLink]="[
+                '/workplace',
+                this.workplace.uid,
+                'training-and-qualifications-record',
+                'view-training-category',
+                trainingCategory.id
+              ]"
             >
               View
             </a>
