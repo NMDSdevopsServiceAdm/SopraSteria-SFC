@@ -28,10 +28,10 @@
         <ng-container *ngFor="let worker of workers; index as i">
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
-              {{ worker.key }}
+              {{ worker.nameOrId }}
             </dt>
             <dd class="govuk-summary-list__value">
-              {{ worker.value }}
+              {{ worker.mainJob.title }}
             </dd>
             <ng-container *ngIf="i === 0">
               <dd class="govuk-summary-list__actions">

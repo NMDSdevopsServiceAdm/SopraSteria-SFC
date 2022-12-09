@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingService } from '@core/services/training.service';
@@ -12,7 +13,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './confirm-multiple-training.component.html',
 })
 export class ConfirmMultipleTrainingComponent implements OnInit {
-  public workers: { key: string; value: string }[];
+  public workers: Worker[];
   public trainingRecords: { key: string; value: string }[];
   private workplaceUid: string;
   public subscriptions: Subscription = new Subscription();
@@ -47,13 +48,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   }
 
   private getStaffData(): void {
-    const staff = this.trainingService.selectedStaff;
-    this.workers = [];
-    for (const id of staff) {
-      this.workerService.getWorker(this.workplaceUid, id).subscribe((worker) => {
-        this.workers.push({ key: worker.nameOrId, value: worker.mainJob.title });
-      });
-    }
+    this.workers = this.trainingService.selectedStaff;
   }
 
   public getRoutePath(pageName: string): Array<string> {
@@ -61,12 +56,9 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   }
 
   public onSubmit(): void {
+    const selectedStaff = this.trainingService.selectedStaff.map((worker) => worker.uid);
     this.workerService
-      .createMultipleTrainingRecords(
-        this.workplaceUid,
-        this.trainingService.selectedStaff,
-        this.trainingService.selectedTraining,
-      )
+      .createMultipleTrainingRecords(this.workplaceUid, selectedStaff, this.trainingService.selectedTraining)
       .subscribe(() => this.onSuccess());
   }
 

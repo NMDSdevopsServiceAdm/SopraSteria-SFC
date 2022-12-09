@@ -91,7 +91,9 @@
       [currentPageIndex]="currentPageIndex"
     ></app-pagination>
     <div class="govuk-button-group">
-      <button class="govuk-button govuk-!-margin-right-9" type="button" (click)="onSubmit()">Continue</button>
+      <button class="govuk-button govuk-!-margin-right-9" type="button" (click)="onSubmit()">
+        {{ submitButtonText }}
+      </button>
       <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel()">Cancel</a>
     </div>
   </div>
