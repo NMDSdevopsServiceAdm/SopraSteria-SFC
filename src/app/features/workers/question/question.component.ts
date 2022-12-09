@@ -154,6 +154,17 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  public determineBaseRoute(): string[] {
+    if (this.wdfEditPageFlag) {
+      return ['wdf', 'staff-record', this.worker.uid];
+    }
+    if (!this.insideFlow) {
+      return this.getRoutePath('');
+    } else {
+      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+    }
+  }
+
   public setSubmitAction(payload: { action: string; save: boolean }): void {
     this.submitAction = { action: payload.action, save: payload.save };
 

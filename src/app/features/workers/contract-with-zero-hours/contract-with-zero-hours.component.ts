@@ -62,17 +62,6 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     };
   }
 
-  private determineBaseRoute(): string[] {
-    if (this.wdfEditPageFlag) {
-      return ['wdf', 'staff-record', this.worker.uid];
-    }
-    if (!this.insideFlow) {
-      return this.getRoutePath('');
-    } else {
-      return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
-    }
-  }
-
   private determineConditionalRouting(): string[] {
     const nextRoute = this.determineBaseRoute();
     const { zeroHoursContract } = this.form.controls;
