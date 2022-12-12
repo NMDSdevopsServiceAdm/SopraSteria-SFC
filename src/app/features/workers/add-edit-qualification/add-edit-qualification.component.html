@@ -9,7 +9,7 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-3">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">
-      {{ qualificationId ? 'Qualification record details' : 'Add qualification details' }}
+      {{ qualificationId ? 'Qualification record details' : 'Add qualification record details' }}
     </h1>
   </div>
   <div class="govuk-grid-column-one-third">
@@ -32,7 +32,7 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="qualification-conditional-hint" role="group">
           <span id="qualification-conditional-hint" class="govuk-label govuk-!-margin-bottom-3"
-            >Select type of qualification</span
+            >Select the type of qualification</span
           >
           <span *ngIf="submitted && form.get('type').invalid" id="type-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('type') }}
@@ -77,9 +77,7 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-button-group govuk-!-margin-top-4">
-      <button type="submit" class="govuk-button govuk-!-margin-right-5">
-        {{ qualificationId ? 'Save and return' : 'Add qualification' }}
-      </button>
+      <button type="submit" class="govuk-button govuk-!-margin-right-5">Save record</button>
       <a
         class="govuk-button govuk-button--link govuk-!-margin-left-9"
         role="button"

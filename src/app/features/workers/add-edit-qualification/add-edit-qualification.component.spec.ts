@@ -72,7 +72,7 @@ describe('AddEditQualificationComponent', () => {
       component.qualificationId = null;
       fixture.detectChanges();
 
-      expect(getByText('Add qualification details')).toBeTruthy();
+      expect(getByText('Add qualification record details')).toBeTruthy();
     });
 
     it('should render the Qualification details title when there is a qualification id and record', async () => {
