@@ -51,7 +51,7 @@
     <tbody class="govuk-table__body" *ngFor="let records of existingMandatoryTrainings.mandatoryTraining">
       <tr class="govuk-table__row govuk-util__vertical-align-top">
         <td class="govuk-table__cell" [attr.data-testid]="'category-' + records.category">
-          <a href="#">
+          <a [routerLink]="[records.trainingCategoryId, 'edit-mandatory-training']">
             {{ records.category }}
           </a>
         </td>

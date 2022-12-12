@@ -1,172 +1,35 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training.component';
 
 describe('NewTrainingComponent', () => {
-  let component: AddAndManageMandatoryTrainingComponent;
-  let fixture: ComponentFixture<AddAndManageMandatoryTrainingComponent>;
-
-  const existingMandatoryTrainings = {
-    mandatoryTrainingCount: 4,
-    allJobRolesCount: 29,
-    lastUpdated: '2022-11-16T14:26:03.651Z',
-    mandatoryTraining: [
-      {
-        establishmentId: 2341,
-        trainingCategoryId: 2,
-        category: 'Autism',
-        jobs: [
-          {
-            id: 1,
-            title: 'Activities worker, coordinator',
-          },
-        ],
-      },
-      {
-        establishmentId: 2341,
-        trainingCategoryId: 9,
-        category: 'Coshh',
-        jobs: [
-          {
-            id: 21,
-            title: 'Other (not directly involved in providing care)',
-          },
-          {
-            id: 20,
-            title: 'Other (directly involved in providing care)',
-          },
-          {
-            id: 29,
-            title: 'Technician',
-          },
-          {
-            id: 28,
-            title: 'Supervisor',
-          },
-          {
-            id: 27,
-            title: 'Social worker',
-          },
-          {
-            id: 26,
-            title: 'Senior management',
-          },
-          {
-            id: 25,
-            title: 'Senior care worker',
-          },
-          {
-            id: 24,
-            title: 'Safeguarding and reviewing officer',
-          },
-          {
-            id: 23,
-            title: 'Registered Nurse',
-          },
-          {
-            id: 22,
-            title: 'Registered Manager',
-          },
-          {
-            id: 19,
-            title: 'Occupational therapist assistant',
-          },
-          {
-            id: 18,
-            title: 'Occupational therapist',
-          },
-          {
-            id: 17,
-            title: 'Nursing associate',
-          },
-          {
-            id: 16,
-            title: 'Nursing assistant',
-          },
-          {
-            id: 15,
-            title: 'Middle management',
-          },
-          {
-            id: 14,
-            title: 'Managers and staff (care-related, but not care-providing)',
-          },
-          {
-            id: 13,
-            title: 'First-line manager',
-          },
-          {
-            id: 12,
-            title: 'Employment support',
-          },
-          {
-            id: 11,
-            title: 'Community, support and outreach work',
-          },
-          {
-            id: 10,
-            title: 'Care worker',
-          },
-          {
-            id: 9,
-            title: 'Care navigator',
-          },
-          {
-            id: 8,
-            title: 'Care coordinator',
-          },
-          {
-            id: 7,
-            title: 'Assessment officer',
-          },
-          {
-            id: 6,
-            title: "Any children's, young people's job role",
-          },
-          {
-            id: 5,
-            title: 'Ancillary staff (non care-providing)',
-          },
-          {
-            id: 4,
-            title: 'Allied health professional (not occupational therapist)',
-          },
-          {
-            id: 3,
-            title: 'Advice, guidance and advocacy',
-          },
-          {
-            id: 2,
-            title: 'Administrative, office staff (non care-providing)',
-          },
-          {
-            id: 1,
-            title: 'Activities worker, coordinator',
-          },
-        ],
-      },
-    ],
-  };
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  async function setup() {
+    const { getByText, getByLabelText, getByTestId, fixture } = await render(AddAndManageMandatoryTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
-        TrainingService,
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
+        },
+        {
+          provide: WindowRef,
+          useClass: WindowRef,
+        },
+        {
+          provide: TrainingService,
+          useClass: MockTrainingService,
         },
         {
           provide: EstablishmentService,
@@ -175,6 +38,9 @@ describe('NewTrainingComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
+            snapshot: {
+              url: [{ path: 'add-and-manage-mandatory-training' }],
+            },
             parent: {
               snapshot: {
                 data: {
@@ -187,31 +53,30 @@ describe('NewTrainingComponent', () => {
           },
         },
       ],
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AddAndManageMandatoryTrainingComponent);
-    component = fixture.componentInstance;
-    component.existingMandatoryTrainings = existingMandatoryTrainings;
-    fixture.detectChanges();
-  });
+    });
+    const component = fixture.componentInstance;
+    return {
+      getByText,
+      getByLabelText,
+      getByTestId,
+      fixture,
+      component,
+    };
+  }
 
   it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
   it('should show header, paragraph and links for manage mandatory training', async () => {
-    const mandatoryTrainingHeader = fixture.debugElement.query(By.css('[data-testid="heading"]')).nativeElement;
+    const { getByTestId } = await setup();
 
-    const mandatoryTrainingInfo = fixture.debugElement.query(
-      By.css('[data-testid="mandatoryTrainingInfo"]'),
-    ).nativeElement;
+    const mandatoryTrainingHeader = getByTestId('heading');
 
-    const addMandatoryTrainingButton = fixture.debugElement.query(
-      By.css('[data-testid="mandatoryTrainingButton"]'),
-    ).nativeElement;
+    const mandatoryTrainingInfo = getByTestId('mandatoryTrainingInfo');
 
+    const addMandatoryTrainingButton = getByTestId('mandatoryTrainingButton');
     expect(mandatoryTrainingHeader.textContent).toContain('Add and manage mandatory training categories');
     expect(mandatoryTrainingInfo.textContent).toContain(
       'Add the training categories you want to make mandatory for your staff. It will help you identify who is missing training and let you know when training expires.',
@@ -220,51 +85,45 @@ describe('NewTrainingComponent', () => {
   });
 
   it('should show the Remove all mandatory training categories link', async () => {
-    existingMandatoryTrainings.mandatoryTrainingCount > 0;
-    fixture.detectChanges();
+    const { getByTestId } = await setup();
 
-    const removeMandatoryTrainingLink = fixture.debugElement.query(
-      By.css('[data-testid="removeMandatoryTrainingLink"]'),
-    );
+    const removeMandatoryTrainingLink = getByTestId('removeMandatoryTrainingLink');
     expect(removeMandatoryTrainingLink).toBeTruthy();
   });
 
   it('should show the manage mandatory training table', async () => {
-    component.existingMandatoryTrainings.mandatoryTrainingCount > 0;
-    fixture.detectChanges();
-    const mandatoryTrainingTable = fixture.debugElement.query(By.css('[data-testid="training-table"]')).nativeElement;
+    const { getByTestId } = await setup();
+
+    const mandatoryTrainingTable = getByTestId('training-table');
 
     expect(mandatoryTrainingTable).toBeTruthy();
   });
 
   it('should show the manage mandatory training table heading', async () => {
-    component.existingMandatoryTrainings.mandatoryTrainingCount > 0;
-    fixture.detectChanges();
+    const { getByTestId } = await setup();
 
-    const mandatoryTrainingTableHeading = fixture.debugElement.query(
-      By.css('[data-testid="training-table-heading"]'),
-    ).nativeElement;
+    const mandatoryTrainingTableHeading = getByTestId('training-table-heading');
 
     expect(mandatoryTrainingTableHeading.textContent).toContain('Mandatory training categories');
     expect(mandatoryTrainingTableHeading.textContent).toContain('Job roles');
   });
 
-  describe('mandatory training tabel records', () => {
+  describe('mandatory training table records', () => {
     it('should render a category  name for each training record category', async () => {
-      existingMandatoryTrainings.mandatoryTrainingCount > 0;
-      fixture.detectChanges();
+      const { getByTestId } = await setup();
 
-      const coshCategory = fixture.debugElement.query(By.css('[data-testid="category-Coshh"]')).nativeElement;
-      const autismCategory = fixture.debugElement.query(By.css('[data-testid="category-Autism"]')).nativeElement;
+      const coshCategory = getByTestId('category-Coshh');
+      const autismCategory = getByTestId('category-Autism');
 
       expect(autismCategory.textContent).toContain('Autism');
       expect(coshCategory.textContent).toContain('Coshh');
     });
 
     it('should render a job name for each training record category', async () => {
-      const coshCategory = fixture.debugElement.query(By.css('[data-testid="titleAll"]')).nativeElement;
+      const { getByTestId } = await setup();
+      const coshCategory = getByTestId('titleAll');
 
-      const autismCategory = fixture.debugElement.query(By.css('[data-testid="titleJob"]')).nativeElement;
+      const autismCategory = getByTestId('titleJob');
       expect(coshCategory.textContent).toContain('All');
       expect(autismCategory.textContent).toContain('Activities worker, coordinator');
     });

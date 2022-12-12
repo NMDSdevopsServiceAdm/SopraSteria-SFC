@@ -91,7 +91,7 @@ export class MockEstablishmentService extends EstablishmentService {
     return of(null);
   }
 
-  public updateMandatoryTraining(establishmentId, data: mandatoryTraining[]): Observable<any> {
+  public createAndUpdateMandatoryTraining(establishmentId, data: mandatoryTraining[]): Observable<any> {
     return of(null);
   }
 

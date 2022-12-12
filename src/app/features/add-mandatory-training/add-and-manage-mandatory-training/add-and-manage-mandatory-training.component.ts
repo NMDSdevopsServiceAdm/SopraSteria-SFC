@@ -29,7 +29,6 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
     this.establishment = this.route.parent.snapshot.data.establishment;
-
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((trainings) => {
         this.existingMandatoryTrainings = trainings;

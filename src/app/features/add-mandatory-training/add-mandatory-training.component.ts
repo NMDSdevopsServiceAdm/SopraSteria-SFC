@@ -22,7 +22,9 @@ import { take } from 'rxjs/internal/operators/take';
 export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
+  public renderAsEditMandatoryTraining: boolean;
   public submitted = false;
+  public preExistingTraining: any;
   public categories: TrainingCategory[];
   public filteredTrainingCategories: TrainingCategory[];
   private subscriptions: Subscription = new Subscription();
@@ -64,7 +66,15 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.establishment = this.route.parent.snapshot.data.establishment;
+    this.establishment = this.route.snapshot.parent.data.establishment;
+
+    this.renderAsEditMandatoryTraining = this.route.snapshot.url[0].path === 'edit-mandatory-training';
+    this.return = { url: ['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training'] };
+
+    this.getAllJobs();
+    this.setUpForm();
+    this.setupServerErrorsMap();
+    this.backLinkService.showBackLink();
 
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((existingMandatoryTraining) => {
@@ -72,11 +82,6 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         this.getAllTrainingCategories();
       }),
     );
-
-    this.getAllJobs();
-    this.setUpForm();
-    this.setupServerErrorsMap();
-    this.backLinkService.showBackLink();
   }
 
   private getAllTrainingCategories(): void {
@@ -86,6 +91,9 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe((trainings) => {
           this.trainings = this.filterTrainingCategories(trainings);
+          if (this.renderAsEditMandatoryTraining) {
+            this.prefill();
+          }
         }),
     );
   }
@@ -94,10 +102,19 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     const preSelectedIds = this.existingMandatoryTrainings.mandatoryTraining.map(
       (existingMandatoryTrainings) => existingMandatoryTrainings.trainingCategoryId,
     );
+    if (this.renderAsEditMandatoryTraining) {
+      this.preExistingTraining = this.existingMandatoryTrainings.mandatoryTraining.find((mandatoryTrainingObject) => {
+        return mandatoryTrainingObject.trainingCategoryId === parseInt(this.route.snapshot.parent.url[0].path, 10);
+      });
 
-    return trainings.filter((training) => {
-      return !preSelectedIds.includes(training.id);
-    });
+      return trainings.filter((training) => {
+        return this.preExistingTraining.trainingCategoryId === training.id || !preSelectedIds.includes(training.id);
+      });
+    } else {
+      return trainings.filter((training) => {
+        return !preSelectedIds.includes(training.id);
+      });
+    }
   }
 
   private getAllJobs(): void {
@@ -142,7 +159,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Select the mandatory training',
+            message: 'Select the training category you want to be mandatory',
           },
         ],
       },
@@ -158,6 +175,25 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         ],
       });
     });
+  }
+
+  public prefill(): void {
+    this.form.patchValue({
+      trainingCategory: this.preExistingTraining.trainingCategoryId,
+      allOrSelectedJobRoles:
+        this.preExistingTraining.jobs.length === 29
+          ? mandatoryTrainingJobOption.all
+          : mandatoryTrainingJobOption.selected,
+      selectedJobRoles: this.prefillJobRoles(),
+    });
+  }
+
+  protected prefillJobRoles() {
+    return this.preExistingTraining.jobs.length === 29
+      ? null
+      : this.preExistingTraining.jobs.forEach((job) => {
+          this.selectedJobRolesArray.push(this.createVacancyControl(job.id));
+        });
   }
 
   public addVacancy(): void {
@@ -195,9 +231,9 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     };
   }
 
-  protected updateMandatoryTraining(props): void {
+  protected createAndUpdateMandatoryTraining(props): void {
     this.subscriptions.add(
-      this.establishmentService.updateMandatoryTraining(this.establishment.uid, props).subscribe(
+      this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
           this.router.navigate([
             '/workplace',
@@ -206,7 +242,9 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
           ]);
           this.alertService.addAlert({
             type: 'success',
-            message: 'Mandatory training category added',
+            message: this.renderAsEditMandatoryTraining
+              ? 'Mandatory training category updated'
+              : 'Mandatory training category added',
           });
         },
         (error) => {
@@ -223,6 +261,8 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         this.selectedJobRolesArray.removeAt(0);
       }
       this.selectedJobRolesArray.reset([], { emitEvent: false });
+    } else if (this.renderAsEditMandatoryTraining) {
+      this.preExistingTraining.jobs.length === 29 ? this.addVacancy() : this.prefillJobRoles();
     } else {
       this.addVacancy();
     }
@@ -236,7 +276,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       return;
     }
     const props = this.generateUpdateProps();
-    this.updateMandatoryTraining(props);
+    this.createAndUpdateMandatoryTraining(props);
   }
 
   ngOnDestroy(): void {
