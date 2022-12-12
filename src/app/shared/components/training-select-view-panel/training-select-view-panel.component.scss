@@ -9,7 +9,8 @@
   }
 
   &__list-item {
-    padding: 10px 0;
+    padding: 10px 70px;
+    background-color: govuk-colour('white');
 
     &--active {
       border-bottom: 8px solid govuk-colour('blue');
@@ -17,18 +18,12 @@
   }
 
   &__link {
-    padding: 0 70px;
-    width: 100%;
     font-size: 19px;
+    color: govuk-colour('blue') !important;
 
     &--active {
       text-decoration: none;
-      color: black;
-    }
-
-    &:focus {
-      outline: 4px solid govuk-colour('white');
-      background-color: govuk-colour('white');
+      color: black !important;
     }
   }
 

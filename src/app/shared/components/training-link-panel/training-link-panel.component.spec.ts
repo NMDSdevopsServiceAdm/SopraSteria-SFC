@@ -75,7 +75,7 @@ describe('TrainingLinkPanelComponent', () => {
 
   it('should show the latest date of any training record (1/1/20)', async () => {
     const { getByText } = await setup();
-    expect(getByText('Last update, 01 January 2020')).toBeTruthy();
+    expect(getByText('Last update, 1 January 2020')).toBeTruthy();
   });
 
   it('should show the `Add and manage mandatory training categories` link when canEditEstablishment in permissions service is true', async () => {

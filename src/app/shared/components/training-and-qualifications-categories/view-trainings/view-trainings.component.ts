@@ -31,7 +31,7 @@ export class ViewTrainingComponent implements OnInit {
     private route: ActivatedRoute,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
 
@@ -74,7 +74,7 @@ export class ViewTrainingComponent implements OnInit {
     return this.trainingStatusService.trainingStatusForRecord(training);
   }
 
-  public returnToHome() {
+  public returnToHome(): void {
     this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
 }
