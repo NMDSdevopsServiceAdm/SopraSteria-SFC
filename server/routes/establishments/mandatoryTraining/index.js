@@ -79,3 +79,4 @@ router.route('/all').get(hasPermission('canAddWorker'), viewAllMandatoryTraining
 router.route('/delete').delete(hasPermission('canEditWorker'), deleteAllMandatoryTraining);
 
 module.exports = router;
+module.exports.createAndUpdateMandatoryTraining = createAndUpdateMandatoryTraining;
