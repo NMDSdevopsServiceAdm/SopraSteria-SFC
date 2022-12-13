@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TrainingCategory } from '@core/model/training.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-delete-mandatory-training-category',
@@ -11,11 +14,17 @@ import { TrainingService } from '@core/services/training.service';
 })
 export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
   public categories: TrainingCategory[];
+  public selectedCategory: TrainingCategory;
   public form: FormGroup;
+  private establishmentId;
+  private subscriptions: Subscription = new Subscription();
   constructor(
     protected backLinkService: BackLinkService,
     protected trainingService: TrainingService,
     protected route: ActivatedRoute,
+    protected router: Router,
+    private alertService: AlertService,
+    protected establishmentService: EstablishmentService,
   ) {}
 
   get categoriesArray(): FormArray {
@@ -25,12 +34,27 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
   ngOnInit(): void {
     this.setBackLink();
     const id = parseInt(this.route.snapshot.parent.url[0].path, 10);
-    this.trainingService.getCategoryById(id).subscribe((x) => console.log(x));
+    this.establishmentId = this.route.parent.snapshot.data.establishment.id;
+    this.trainingService.getCategories().subscribe((x) => (this.selectedCategory = x.find((y) => y.id === id)));
   }
 
   public removeCategory(event: Event, index): void {
     event.preventDefault();
     this.categoriesArray.removeAt(index);
+  }
+
+  public onDelete() {
+    this.trainingService.deleteCategoryById(this.establishmentId, this.selectedCategory.id).subscribe(() => {
+      this.router.navigate([
+        '/workplace',
+        this.establishmentService.primaryWorkplace.uid,
+        'add-and-manage-mandatory-training',
+      ]);
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Mandatory training category removed',
+      });
+    });
   }
 
   public setBackLink(): void {

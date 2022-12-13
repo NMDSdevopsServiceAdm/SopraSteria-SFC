@@ -25,6 +25,10 @@ export class TrainingService {
       .pipe(map((res) => res.trainingCategories));
   }
 
+  public deleteCategoryById(establishmentId, categoryId) {
+    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining/${categoryId}`);
+  }
+
   public updateSelectedStaff(formValue) {
     this.selectedStaff = formValue;
   }
@@ -39,6 +43,6 @@ export class TrainingService {
   }
 
   public deleteAllMandatoryTraining(establishmentId: number) {
-    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining/delete`);
+    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining`);
   }
 }
