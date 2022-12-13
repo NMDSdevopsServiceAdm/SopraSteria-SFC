@@ -159,6 +159,10 @@ export class MockTrainingService extends TrainingService {
       mandatoryTrainingCount: 2,
     });
   }
+
+  public deleteCategoryById(establishmentId, categoryId) {
+    return of({});
+  }
 }
 
 @Injectable()

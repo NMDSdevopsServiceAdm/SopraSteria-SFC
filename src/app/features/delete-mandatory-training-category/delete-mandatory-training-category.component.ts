@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { TrainingCategory } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -16,7 +17,7 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
   public categories: TrainingCategory[];
   public selectedCategory: TrainingCategory;
   public form: FormGroup;
-  private establishmentId;
+  public establishment: Establishment;
   private subscriptions: Subscription = new Subscription();
   constructor(
     protected backLinkService: BackLinkService,
@@ -34,7 +35,7 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
   ngOnInit(): void {
     this.setBackLink();
     const id = parseInt(this.route.snapshot.parent.url[0].path, 10);
-    this.establishmentId = this.route.parent.snapshot.data.establishment.id;
+    this.establishment = this.route.snapshot.parent.data.establishment;
     this.trainingService.getCategories().subscribe((x) => (this.selectedCategory = x.find((y) => y.id === id)));
   }
 
@@ -44,17 +45,17 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
   }
 
   public onDelete() {
-    this.trainingService.deleteCategoryById(this.establishmentId, this.selectedCategory.id).subscribe(() => {
-      this.router.navigate([
-        '/workplace',
-        this.establishmentService.primaryWorkplace.uid,
-        'add-and-manage-mandatory-training',
-      ]);
+    this.trainingService.deleteCategoryById(this.establishment.id, this.selectedCategory.id).subscribe(() => {
+      this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
       this.alertService.addAlert({
         type: 'success',
         message: 'Mandatory training category removed',
       });
     });
+  }
+
+  public onCancel() {
+    this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
   }
 
   public setBackLink(): void {
