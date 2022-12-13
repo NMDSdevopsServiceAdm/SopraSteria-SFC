@@ -53,17 +53,15 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.return = this.workerService.returnTo;
+
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.wdfEditPageFlag = this.route.parent.parent.snapshot.url[0].path === 'wdf';
+
+    this.wdfEditPageFlag = this.router.url.includes('wdf');
     this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary' && !this.wdfEditPageFlag;
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
-        if (worker) {
-          this.worker = worker;
-        } else if (this.wdfEditPageFlag) {
-          this.worker = this.route.snapshot.data.worker;
-        }
+        this.worker = worker ? worker : this.route.snapshot.data.worker;
         if (!this.initiated) {
           this._init();
           this.back = this.previous
@@ -79,11 +77,14 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     if (this.worker && !this.returnUrl) {
-      this.returnUrl = !this.wdfEditPageFlag
-        ? ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary']
-        : ['wdf', 'staff-record', this.worker.uid];
+      if (!this.wdfEditPageFlag) {
+        this.returnUrl = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
+      } else {
+        this.returnUrl = this.route.snapshot.params.establishmentuid
+          ? ['/wdf', 'workplaces', this.workplace.uid, 'staff-record', this.worker.uid]
+          : ['/wdf', 'staff-record', this.worker.uid];
+      }
     }
-
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
@@ -156,7 +157,9 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public determineBaseRoute(): string[] {
     if (this.wdfEditPageFlag) {
-      return ['wdf', 'staff-record', this.worker.uid];
+      return this.route.snapshot.params.establishmentuid
+        ? ['/wdf', 'workplaces', this.workplace.uid, 'staff-record', this.worker.uid]
+        : ['/wdf', 'staff-record', this.worker.uid];
     }
     if (!this.insideFlow) {
       return this.getRoutePath('');
