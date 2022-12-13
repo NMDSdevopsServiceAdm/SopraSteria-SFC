@@ -65,21 +65,18 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
   private determineConditionalRouting(): string[] {
     const nextRoute = this.determineBaseRoute();
     const { zeroHoursContract } = this.form.controls;
-    if (
+
+    const conditionalRoute =
       zeroHoursContract.value === 'Yes' ||
-      ([Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract) && this.insideFlow)
-    ) {
-      nextRoute.push('average-weekly-hours');
-    } else if (
-      zeroHoursContract.value !== 'Yes' ||
       [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-    ) {
-      nextRoute.push('weekly-contracted-hours');
-    }
+        ? 'average-weekly-hours'
+        : 'weekly-contracted-hours';
+
+    nextRoute.push(conditionalRoute);
     return nextRoute;
   }
 
-  onSuccess() {
+  onSuccess(): void {
     this.next = this.determineConditionalRouting();
   }
 }
