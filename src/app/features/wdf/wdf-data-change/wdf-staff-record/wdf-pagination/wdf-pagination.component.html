@@ -3,7 +3,11 @@
     <a
       *ngIf="!isFirst"
       class="asc-chevron-before govuk-button--link govuk-!-margin-top-3"
-      [routerLink]="['/wdf', 'staff-record', previousID]"
+      [routerLink]="
+        this.route.snapshot.params.establishmentuid
+          ? ['/wdf', 'workplaces', workplaceUid, 'staff-record', previousID]
+          : ['/wdf', 'staff-record', previousID]
+      "
       [fragment]=""
       >Previous staff record</a
     >
@@ -12,7 +16,11 @@
     <a
       *ngIf="!isLast"
       class="asc-chevron-after govuk-button--link govuk-!-margin-top-3 margin-left-6"
-      [routerLink]="['/wdf', 'staff-record', nextID]"
+      [routerLink]="
+        this.route.snapshot.params.establishmentuid
+          ? ['/wdf', 'workplaces', workplaceUid, 'staff-record', nextID]
+          : ['/wdf', 'staff-record', nextID]
+      "
       [fragment]=""
       >Next staff record</a
     >

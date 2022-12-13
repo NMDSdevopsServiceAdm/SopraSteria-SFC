@@ -30,7 +30,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
-  public isPrimaryAccount: boolean;
   public inMandatoryDetailsFlow: boolean;
   public summaryContinue: boolean;
 
@@ -60,7 +59,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
-    this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
     this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
     this.getJobs();
     this.getReturnPath();
@@ -172,7 +170,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   private determineConditionalRouting(): string[] {
-    const nextRoute = !this.wdfEditPageFlag ? this.getRoutePath('') : ['wdf', 'staff-record', this.worker.uid];
+    const nextRoute = this.determineBaseRoute();
     if (this.workerService.hasJobRole(this.worker, 27)) {
       nextRoute.push('mental-health-professional');
     } else if (this.workerService.hasJobRole(this.worker, 23)) {

@@ -39,8 +39,6 @@ export class OtherQualificationsComponent extends QuestionComponent {
     if (this.worker.otherQualification) {
       this.prefill();
     }
-
-    this.next = this.getRoutePath('confirm-staff-record');
   }
 
   private prefill(): void {
@@ -65,6 +63,8 @@ export class OtherQualificationsComponent extends QuestionComponent {
 
     if (otherQualification === 'Yes') {
       nextRoute.push('other-qualifications-level');
+    } else if (this.insideFlow) {
+      nextRoute.push('confirm-staff-record');
     }
     return nextRoute;
   }
