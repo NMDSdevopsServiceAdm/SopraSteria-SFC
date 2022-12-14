@@ -92,3 +92,4 @@ router.route('/').delete(hasPermission('canEditWorker'), deleteAllMandatoryTrain
 router.route('/:categoryId').delete(deleteMandatoryTrainingById);
 
 module.exports = router;
+module.exports.createAndUpdateMandatoryTraining = createAndUpdateMandatoryTraining;
