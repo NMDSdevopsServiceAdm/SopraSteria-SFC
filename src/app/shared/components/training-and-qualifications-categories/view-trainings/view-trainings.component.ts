@@ -6,7 +6,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
-import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -90,31 +89,25 @@ export class ViewTrainingComponent implements OnInit {
 
   public sortByTrainingStatus() {
     const missings = this.trainings.filter((t: any) => t.missing);
-    const expired = this.trainings.filter((t: any) => {
-      if (t.expires) {
-        const expiringDate = dayjs(t.expires);
-        const currentDate = dayjs();
-        const daysDifference = expiringDate.diff(currentDate, 'days');
-        return daysDifference < 0;
-      }
-      return false;
-    });
 
-    const expireSoon = this.trainings.filter((t: any) => {
-      if (t.expires) {
-        const expiringDate = dayjs(t.expires);
-        const currentDate = dayjs();
-        const daysDifference = expiringDate.diff(currentDate, 'days');
-        return daysDifference >= 0 && daysDifference <= 90 ? true : false;
-      }
-      return false;
-    });
+    const expired = this.trainings.filter(
+      (t: any) => t.expires && this.trainingStatusService.getDaysDifference(t.expires) < 0,
+    );
 
-    const mergeA = expired.concat(expireSoon).concat(missings);
-    const ok = this.trainings.filter((t: any) => mergeA.every((f: any) => f.id !== t.id));
+    const expireSoon = this.trainings.filter(
+      (t: any) =>
+        t.expires &&
+        this.trainingStatusService.getDaysDifference(t.expires) >= 0 &&
+        this.trainingStatusService.getDaysDifference(t.expires) <=
+          parseInt(this.trainingStatusService.expiresSoonAlertDate$.value),
+    );
 
-    this.trainings = mergeA.concat(ok);
+    const sortedStatus = expired.concat(expireSoon).concat(missings);
+    const active = this.trainings.filter((t: any) => sortedStatus.every((f: any) => f.id !== t.id));
+
+    this.trainings = sortedStatus.concat(active);
   }
+
   public returnToHome(): void {
     this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }

@@ -36,7 +36,6 @@ describe('MissingMandatoryTrainingComponent', () => {
     });
 
     const component = fixture.componentInstance;
-    const workplaceUid = component.workplace.uid;
 
     return {
       component,
@@ -56,7 +55,7 @@ describe('MissingMandatoryTrainingComponent', () => {
 
     const addMissingRecord = getByTestId('addMissingRecord');
     expect(addMissingRecord.getAttribute('href')).toBe(
-      `/workplace/${component.workplace.uid}/training-and-qualifications-record/${component.training.worker.uid}/add-training`,
+      `/workplace/${component.workplace.uid}/training-and-qualifications-record/${component.training.uid}/add-training`,
     );
   });
 });

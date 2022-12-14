@@ -78,7 +78,7 @@
           <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
             <app-missing-mandatory-training
               [missingRecord]="category"
-              [training]="training"
+              [training]="training.worker"
               [canEditWorker]="canEditWorker"
             ></app-missing-mandatory-training>
           </div>
