@@ -48,7 +48,7 @@ const createWorker = (id) =>
   });
 
 describe('MainJobStartDateComponent', () => {
-  const setup = async (insideFlow = true, worker = workerBuilder(), wdfEditPageFlag = false) => {
+  const setup = async (insideFlow = true, worker = workerBuilder()) => {
     const { fixture, getByText, getByLabelText, getAllByText, getByTestId, queryByTestId } = await render(
       MainJobStartDateComponent,
       {
@@ -72,11 +72,6 @@ describe('MainJobStartDateComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   data: {
                     workplace: { uid: 123 },
@@ -87,6 +82,9 @@ describe('MainJobStartDateComponent', () => {
                   },
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -111,6 +109,7 @@ describe('MainJobStartDateComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -162,13 +161,6 @@ describe('MainJobStartDateComponent', () => {
 
   it(`should show 'Save and return' cta button and 'Cancel' link if outside the flow`, async () => {
     const { getByText } = await setup(false);
-
-    expect(getByText('Save and return')).toBeTruthy();
-    expect(getByText('Cancel')).toBeTruthy();
-  });
-
-  it(`should show 'Save and return' cta button and 'Cancel' link when in wdf version of page`, async () => {
-    const { getByText } = await setup(false, workerBuilder(), true);
 
     expect(getByText('Save and return')).toBeTruthy();
     expect(getByText('Cancel')).toBeTruthy();
@@ -375,12 +367,12 @@ describe('MainJobStartDateComponent', () => {
   });
 
   it('allows the user to complete the fields and update the form data and then navigate back to the wdf staff record summary page when in wdf version of the page', async () => {
-    const { getByText, getByLabelText, component, submitSpy, workerServiceSpy, navigateSpy } = await setup(
-      false,
-      workerBuilder(),
-      true,
-    );
-
+    const { getByText, fixture, router, getByLabelText, component, submitSpy, workerServiceSpy, navigateSpy } =
+      await setup(false, workerBuilder());
+    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    component.returnUrl = undefined;
+    component.ngOnInit();
+    fixture.detectChanges();
     const formData = component.form.value;
     expect(formData).toEqual({ mainJobStartDate: { day: null, month: null, year: null } });
 
@@ -397,15 +389,21 @@ describe('MainJobStartDateComponent', () => {
     expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
       mainJobStartDate: '1999-11-11',
     });
-    expect(navigateSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid]);
+    expect(navigateSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
   });
 
   it('allows the user to exit when not in the flow and navigate to wdf staff record summary page when in wdf version of the page', async () => {
-    const { fixture, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup(false, workerBuilder(), true);
-
+    const { fixture, router, component, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup(
+      false,
+      workerBuilder(),
+    );
+    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    component.returnUrl = undefined;
+    component.ngOnInit();
+    fixture.detectChanges();
     userEvent.click(getByText('Cancel'));
     expect(submitSpy).toHaveBeenCalledOnceWith({ action: 'return', save: false });
-    expect(navigateSpy).toHaveBeenCalledWith(['wdf', 'staff-record', fixture.componentInstance.worker.uid]);
+    expect(navigateSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', fixture.componentInstance.worker.uid]);
     expect(workerServiceSpy).not.toHaveBeenCalled();
   });
 

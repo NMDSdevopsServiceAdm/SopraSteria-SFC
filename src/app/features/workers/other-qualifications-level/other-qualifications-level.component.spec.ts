@@ -14,7 +14,7 @@ import { WorkersModule } from '../workers.module';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level.component';
 
 describe('OtherQualificationsLevelComponent', () => {
-  async function setup(returnUrl = true, wdfEditPageFlag = false) {
+  async function setup(returnUrl = true) {
     const { fixture, getByText, queryByTestId, getByLabelText, getByTestId } = await render(
       OtherQualificationsLevelComponent,
       {
@@ -25,11 +25,6 @@ describe('OtherQualificationsLevelComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   url: [{ path: returnUrl ? 'staff-record-summary' : 'staff-uid' }],
                   data: {
@@ -37,6 +32,9 @@ describe('OtherQualificationsLevelComponent', () => {
                     primaryWorkplace: {},
                   },
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -61,6 +59,7 @@ describe('OtherQualificationsLevelComponent', () => {
     return {
       component,
       fixture,
+      router,
       routerSpy,
       getByText,
       queryByTestId,
@@ -98,16 +97,6 @@ describe('OtherQualificationsLevelComponent', () => {
 
     it('should render the page with a save and return button and an cancel link when there is a return value', async () => {
       const { getByText } = await setup();
-
-      const button = getByText('Save and return');
-      const exitLink = getByText('Cancel');
-
-      expect(button).toBeTruthy();
-      expect(exitLink).toBeTruthy();
-    });
-
-    it('should render the page with a save and return button and an cancel link when in a wdf version of page', async () => {
-      const { getByText } = await setup(false, true);
 
       const button = getByText('Save and return');
       const exitLink = getByText('Cancel');
@@ -213,8 +202,11 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, true);
-
+      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const select = getByLabelText('Qualification level', { exact: false });
@@ -224,18 +216,21 @@ describe('OtherQualificationsLevelComponent', () => {
       fireEvent.click(skipButton);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, true);
-
+      const { component, routerSpy, getByText, router, fixture } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const skipButton = getByText('Cancel');
       fireEvent.click(skipButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 });

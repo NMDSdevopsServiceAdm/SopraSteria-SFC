@@ -39,6 +39,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
     if (this.worker.otherQualification) {
       this.prefill();
     }
+    this.next = this.getRoutePath('confirm-staff-record');
   }
 
   private prefill(): void {

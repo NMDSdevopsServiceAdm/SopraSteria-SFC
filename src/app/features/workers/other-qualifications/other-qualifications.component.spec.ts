@@ -29,7 +29,7 @@ const noQualificationInSocialCare = () =>
   });
 
 describe('OtherQualificationsComponent', () => {
-  async function setup(insideFlow = true, qualificationInSocial = 'Yes', wdfEditPageFlag = false) {
+  async function setup(insideFlow = true, qualificationInSocial = 'Yes') {
     let qualification;
 
     if (qualificationInSocial === 'Yes') {
@@ -44,11 +44,6 @@ describe('OtherQualificationsComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             parent: {
-              parent: {
-                snapshot: {
-                  url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                },
-              },
               snapshot: {
                 url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 data: {
@@ -56,6 +51,9 @@ describe('OtherQualificationsComponent', () => {
                   primaryWorkplace: {},
                 },
               },
+            },
+            snapshot: {
+              params: {},
             },
           },
         },
@@ -78,6 +76,7 @@ describe('OtherQualificationsComponent', () => {
       component,
       fixture,
       routerSpy,
+      router,
       getByText,
       getByTestId,
       queryByTestId,
@@ -100,13 +99,6 @@ describe('OtherQualificationsComponent', () => {
 
     it('should render the page with a save button and a cancel link when not in the flow', async () => {
       const { getByText } = await setup(false);
-
-      expect(getByText('Save')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
-    it('should render the page with a save button and a cancel link when in wdf version page', async () => {
-      const { getByText } = await setup(false, 'Yes', true);
 
       expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -249,8 +241,11 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to wdf staff-summary-page page when pressing save and not know is entered in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup(false, 'yes', true);
-
+      const { component, fixture, routerSpy, getByText, router } = await setup(false, 'yes');
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const radioButton = getByText('I do not know');
@@ -261,12 +256,15 @@ describe('OtherQualificationsComponent', () => {
 
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing save and No is entered in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup(false, 'yes', true);
-
+      const { component, fixture, routerSpy, getByText, router } = await setup(false, 'yes');
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const radioButton = getByText('No');
@@ -277,12 +275,15 @@ describe('OtherQualificationsComponent', () => {
 
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf other-qualifications-level page when pressing save and Yes is entered in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup(false, 'yes', true);
-
+      const { component, fixture, routerSpy, getByText, router } = await setup(false, 'yes');
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const radioButton = getByText('Yes');
@@ -293,18 +294,21 @@ describe('OtherQualificationsComponent', () => {
 
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId, 'other-qualifications-level']);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'other-qualifications-level']);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, 'yes', true);
-
+      const { component, routerSpy, getByText, fixture, router } = await setup(false, 'yes');
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const link = getByText('Cancel');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 

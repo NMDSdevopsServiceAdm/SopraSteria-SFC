@@ -12,7 +12,7 @@ import userEvent from '@testing-library/user-event';
 import { CountryOfBirthComponent } from './country-of-birth.component';
 
 describe('CountryOfBirthComponent', () => {
-  async function setup(insideFlow = true, wdfEditPageFlag = false) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       CountryOfBirthComponent,
       {
@@ -27,17 +27,15 @@ describe('CountryOfBirthComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -65,6 +63,7 @@ describe('CountryOfBirthComponent', () => {
       routerSpy,
       submitSpy,
       workerServiceSpy,
+      router,
     };
   }
 
@@ -98,13 +97,6 @@ describe('CountryOfBirthComponent', () => {
 
     it(`should show 'Save' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup(false);
-
-      expect(getByText('Save')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
-    it(`should show 'Save' cta button and 'Cancel' link if in wdf version of the page`, async () => {
-      const { getByText } = await setup(false, true);
 
       expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -341,19 +333,25 @@ describe('CountryOfBirthComponent', () => {
     });
 
     it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of the page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, true);
-
+      const { component, router, fixture, routerSpy, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const link = getByText('Cancel');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf year-arrived-uk page when pressing Save and I do not know is selected in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, true);
-
+      const { component, fixture, router, routerSpy, getByText, getByLabelText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const radioButton = getByLabelText('I do not know');
@@ -363,24 +361,30 @@ describe('CountryOfBirthComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId, 'year-arrived-uk']);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'year-arrived-uk']);
     });
 
     it(`should navigate to wdf year-arrived-uk page when pressing Save and Other is selected with optional input in wdf version of the page`, async () => {
-      const { component, fixture, getByText, getByLabelText, routerSpy } = await setup(false, true);
-
+      const { component, fixture, router, getByText, getByLabelText, routerSpy } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       component.availableCountries = [{ id: 1, country: 'France' }];
       fireEvent.click(getByLabelText('Other'));
       fixture.detectChanges();
       userEvent.type(getByLabelText('Country (optional)'), 'France');
       fireEvent.click(getByText('Save'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'year-arrived-uk']);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid, 'year-arrived-uk']);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing Save and United Kingdom is selected in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByLabelText, getByText } = await setup(false, true);
-
+      const { component, router, fixture, routerSpy, getByLabelText, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const radioButton = getByLabelText('United Kingdom');
@@ -390,12 +394,15 @@ describe('CountryOfBirthComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf year-arrived-uk-summary page when pressing Save and other country is selected in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByLabelText, getByText } = await setup(false, true);
-
+      const { component, router, fixture, routerSpy, getByLabelText, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const radioButton = getByLabelText('Other');
@@ -405,7 +412,7 @@ describe('CountryOfBirthComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId, 'year-arrived-uk']);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'year-arrived-uk']);
     });
   });
 

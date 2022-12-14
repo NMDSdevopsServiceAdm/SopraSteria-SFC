@@ -12,7 +12,7 @@ import userEvent from '@testing-library/user-event';
 import { NationalityComponent } from './nationality.component';
 
 describe('NationalityComponent', () => {
-  async function setup(insideFlow = true, wdfEditPageFlag = false) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       NationalityComponent,
       {
@@ -23,17 +23,15 @@ describe('NationalityComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -58,6 +56,7 @@ describe('NationalityComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -294,18 +293,13 @@ describe('NationalityComponent', () => {
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
-    it(`should show 'Save' cta button and 'Cancel' link if in wdf vecrsion of the page`, async () => {
-      const { getByText } = await setup(false, true);
-
-      expect(getByText('Save')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
     it(`should call submit data and navigate with the wdf url when 'British' radio button is selected and 'Save' is clicked`, async () => {
-      const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup(
-        false,
-        true,
-      );
+      const { component, fixture, router, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } =
+        await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
 
       fireEvent.click(getByLabelText('British'));
       fireEvent.click(getByText('Save'));
@@ -317,14 +311,16 @@ describe('NationalityComponent', () => {
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'British' },
       });
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
     });
 
     it(`should call submit data and navigate to the wdf british-citizenship-summary-flow when 'Other' radio button is selected, dropdown input is filled out correctly and 'Save' is clicked`, async () => {
-      const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup(
-        false,
-        true,
-      );
+      const { component, router, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } =
+        await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
 
       component.availableNationalities = [{ id: 1, nationality: 'French' }];
       fireEvent.click(getByLabelText('Other'));
@@ -340,15 +336,19 @@ describe('NationalityComponent', () => {
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'Other', other: { nationality: 'French' } },
       });
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'british-citizenship']);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid, 'british-citizenship']);
     });
 
     it('return to the wdf staff record summary when cancel is clicked', async () => {
-      const { component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup(false, true);
+      const { component, fixture, router, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
 
       userEvent.click(getByText('Cancel'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
   });

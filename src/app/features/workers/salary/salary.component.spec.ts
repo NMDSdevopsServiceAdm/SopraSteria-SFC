@@ -12,7 +12,7 @@ import userEvent from '@testing-library/user-event';
 import { SalaryComponent } from './salary.component';
 
 describe('SalaryComponent', () => {
-  async function setup(insideFlow = true, wdfEditPageFlag = false) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       SalaryComponent,
       {
@@ -23,17 +23,15 @@ describe('SalaryComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -58,6 +56,7 @@ describe('SalaryComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -239,18 +238,13 @@ describe('SalaryComponent', () => {
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link if in wdf version of page`, async () => {
-      const { getByText } = await setup(false, true);
-
-      expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
     it('should call submit data and return to the wdf staff record summary when Annual salary is selected, in-range annual salary is entered and save and return is clicked in wdf version of page', async () => {
-      const { fixture, getByLabelText, component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup(
-        false,
-        true,
-      );
+      const { fixture, router, getByLabelText, component, getByText, submitSpy, routerSpy, workerServiceSpy } =
+        await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
 
       const form = component.form;
       form.controls.terms.setValue('');
@@ -268,15 +262,19 @@ describe('SalaryComponent', () => {
         annualHourlyPay: { value: 'Annually', rate: '20000' },
       });
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
     });
 
     it('return to the wdf staff record summary when cancel is clicked in wdf version of page', async () => {
-      const { component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup(false, true);
+      const { component, getByText, submitSpy, routerSpy, workerServiceSpy, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
 
       userEvent.click(getByText('Cancel'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
   });
