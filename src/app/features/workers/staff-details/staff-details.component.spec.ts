@@ -77,6 +77,9 @@ describe('StaffDetailsComponent', () => {
                   },
                 },
               },
+              snapshot: {
+                params: {},
+              },
             },
           },
         ],
@@ -210,6 +213,26 @@ describe('StaffDetailsComponent', () => {
       ]);
     });
 
+    it(`should navigate to the nursing-category page if the main job role has and id of 23 and in the wdf edit version of the page`, async () => {
+      const { component, fixture, router, routerSpy, getByText, getByLabelText, workerService } = await setup(
+        false,
+        false,
+      );
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      spyOn(workerService, 'hasJobRole').and.returnValues(false, true); // returns false the first time it is called and true the second time it is called
+      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
+      userEvent.selectOptions(getByLabelText('Main job role'), ['23']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save'));
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid, 'nursing-category']);
+    });
+
     it(`should navigate to the mental-health-professional page if the main job role has and id of 27 and outside of the flow`, async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
 
@@ -226,6 +249,31 @@ describe('StaffDetailsComponent', () => {
         'staff-record',
         component.worker.uid,
         'staff-record-summary',
+        'mental-health-professional',
+      ]);
+    });
+
+    it(`should navigate to the mental-health-professional page if the main job role has and id of 27 and in wdf version of page`, async () => {
+      const { component, fixture, routerSpy, router, getByText, getByLabelText, workerService } = await setup(
+        false,
+        false,
+      );
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      spyOn(workerService, 'hasJobRole').and.returnValue(true);
+      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
+      userEvent.selectOptions(getByLabelText('Main job role'), ['27']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save'));
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/wdf',
+        'staff-record',
+        component.worker.uid,
         'mental-health-professional',
       ]);
     });
@@ -345,6 +393,35 @@ describe('StaffDetailsComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
+    it(`should call submit data and navigate to the wdf staff record summary page when 'Save' is clicked in WDF version of the page`, async () => {
+      const { component, router, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } =
+        await setup(false, false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Temporary'));
+      userEvent.click(getByText('Save'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({
+        nameOrId: component.worker.nameOrId,
+        mainJob: '2',
+        otherJobRole: null,
+        contract: 'Temporary',
+      });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        nameOrId: component.worker.nameOrId,
+        contract: 'Temporary',
+        mainJob: { jobId: 2 },
+      });
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', fixture.componentInstance.worker.uid]);
+    });
+
     it(`should call submit data and navigate to the the staff record summary page when 'Save' is clicked outside of mandatory details flow`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
         false,
@@ -460,7 +537,29 @@ describe('StaffDetailsComponent', () => {
       expect(alertSpy).not.toHaveBeenCalled();
     });
 
-    it('should not call setAddStaffRecordInProgress when clicking save and return', async () => {
+    it('should not show a banner when updating a staff record in WDF version of the page', async () => {
+      const { component, router, fixture, getByText, getByLabelText, workerService, alertSpy } = await setup(
+        false,
+        false,
+      );
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker.contract = 'Permanent' as Contracts;
+      });
+
+      userEvent.selectOptions(getByLabelText('Main job role'), ['2']);
+      userEvent.click(getByLabelText('Permanent'));
+      userEvent.click(getByText('Save'));
+      fixture.detectChanges();
+
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not call setAddStaffRecordInProgress when clicking save', async () => {
       const { component, fixture, getByText, getByLabelText, workerService, setAddStaffRecordInProgressSpy } =
         await setup(false);
 
@@ -487,6 +586,21 @@ describe('StaffDetailsComponent', () => {
         component.worker.uid,
         'staff-record-summary',
       ]);
+      expect(updateWorkerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return the user to the wdf record summary page when clicking cancel when in WDF version of the page', async () => {
+      const { component, router, fixture, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
+        false,
+        false,
+      );
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      userEvent.click(getByText('Cancel'));
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
       expect(updateWorkerSpy).not.toHaveBeenCalled();
     });
 

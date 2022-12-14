@@ -83,6 +83,9 @@ describe('MainJobStartDateComponent', () => {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
               },
+              snapshot: {
+                params: {},
+              },
             },
           },
           {
@@ -106,6 +109,7 @@ describe('MainJobStartDateComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -359,6 +363,47 @@ describe('MainJobStartDateComponent', () => {
       fixture.componentInstance.worker.uid,
       'staff-record-summary',
     ]);
+    expect(workerServiceSpy).not.toHaveBeenCalled();
+  });
+
+  it('allows the user to complete the fields and update the form data and then navigate back to the wdf staff record summary page when in wdf version of the page', async () => {
+    const { getByText, fixture, router, getByLabelText, component, submitSpy, workerServiceSpy, navigateSpy } =
+      await setup(false, workerBuilder());
+    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    component.returnUrl = undefined;
+    component.ngOnInit();
+    fixture.detectChanges();
+    const formData = component.form.value;
+    expect(formData).toEqual({ mainJobStartDate: { day: null, month: null, year: null } });
+
+    userEvent.type(getByLabelText('Day'), '11');
+    userEvent.type(getByLabelText('Month'), '11');
+    userEvent.type(getByLabelText('Year'), '1999');
+
+    userEvent.click(getByText('Save and return'));
+
+    const updatedFormData = component.form.value;
+    expect(updatedFormData).toEqual({ mainJobStartDate: { day: 11, month: 11, year: 1999 } });
+
+    expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+    expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+      mainJobStartDate: '1999-11-11',
+    });
+    expect(navigateSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
+  });
+
+  it('allows the user to exit when not in the flow and navigate to wdf staff record summary page when in wdf version of the page', async () => {
+    const { fixture, router, component, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup(
+      false,
+      workerBuilder(),
+    );
+    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    component.returnUrl = undefined;
+    component.ngOnInit();
+    fixture.detectChanges();
+    userEvent.click(getByText('Cancel'));
+    expect(submitSpy).toHaveBeenCalledOnceWith({ action: 'return', save: false });
+    expect(navigateSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', fixture.componentInstance.worker.uid]);
     expect(workerServiceSpy).not.toHaveBeenCalled();
   });
 

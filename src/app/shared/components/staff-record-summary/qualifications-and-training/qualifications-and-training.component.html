@@ -36,7 +36,7 @@
           )
         "
         [explanationText]="' care certificate'"
-        [link]="getRoutePath('care-certificate')"
+        [link]="getRoutePath('care-certificate', wdfView)"
         [hasData]="!!worker.careCertificate"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -51,7 +51,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' apprenticeship training'"
-        [link]="getRoutePath('apprenticeship-training')"
+        [link]="getRoutePath('apprenticeship-training', wdfView)"
         [hasData]="!!worker.apprenticeshipTraining"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -93,7 +93,7 @@
           )
         "
         [explanationText]="' relevant social care qualification'"
-        [link]="getRoutePath('social-care-qualification')"
+        [link]="getRoutePath('social-care-qualification', wdfView)"
         [hasData]="!!worker.qualificationInSocialCare"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -135,7 +135,7 @@
           )
         "
         [explanationText]="' social care qualification level'"
-        [link]="getRoutePath('social-care-qualification-level')"
+        [link]="getRoutePath('social-care-qualification-level', wdfView)"
         [hasData]="!!worker.socialCareQualification"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -169,7 +169,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' other qualifications'"
-        [link]="getRoutePath('other-qualifications')"
+        [link]="getRoutePath('other-qualifications', wdfView)"
         [hasData]="!!worker.otherQualification"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -209,7 +209,7 @@
           )
         "
         [explanationText]="' other qualification level'"
-        [link]="getRoutePath('other-qualifications-level')"
+        [link]="getRoutePath('other-qualifications-level', wdfView)"
         [hasData]="!!worker.highestQualification"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>

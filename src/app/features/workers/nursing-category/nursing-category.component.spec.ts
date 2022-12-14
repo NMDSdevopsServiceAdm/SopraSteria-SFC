@@ -30,6 +30,9 @@ describe('NursingCategoryComponent', () => {
                   },
                 },
               },
+              snapshot: {
+                params: {},
+              },
             },
           },
           {
@@ -50,6 +53,7 @@ describe('NursingCategoryComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -161,6 +165,20 @@ describe('NursingCategoryComponent', () => {
       workerId,
       'staff-record-summary',
     ]);
+  });
+
+  it('should navigate to wdf staff-summary-page page when pressing cancel inside wdf version of page', async () => {
+    const { component, router, fixture, routerSpy, getByText } = await setup(false);
+    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    component.returnUrl = undefined;
+    component.ngOnInit();
+    fixture.detectChanges();
+    const workerId = component.worker.uid;
+
+    const link = getByText('Cancel');
+    fireEvent.click(link);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
   });
 
   describe('progress bar', () => {

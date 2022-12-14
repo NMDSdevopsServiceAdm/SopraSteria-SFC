@@ -60,19 +60,19 @@ export class SocialCareQualificationComponent extends QuestionComponent {
     };
   }
 
-  onSuccess(): void {
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
     const { qualificationInSocialCare } = this.form.value;
 
-    const summaryRecordUrl = this.getRoutePath('');
     if (qualificationInSocialCare === 'Yes') {
-      if (this.insideFlow) {
-        this.next = this.getRoutePath('social-care-qualification-level');
-      } else {
-        this.next = summaryRecordUrl;
-        this.next.push('social-care-qualification-level');
-      }
-    } else {
-      !this.insideFlow && (this.next = summaryRecordUrl);
+      nextRoute.push('social-care-qualification-level');
+    } else if (qualificationInSocialCare !== 'Yes' && this.insideFlow) {
+      nextRoute.push('other-qualifications');
     }
+    return nextRoute;
+  }
+
+  onSuccess(): void {
+    this.next = this.determineConditionalRouting();
   }
 }

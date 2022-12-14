@@ -16,14 +16,14 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByTestId, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
 
 describe('StaffRecordComponent', () => {
-  async function setup() {
+  async function setup(isParent = true) {
     const workplace = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
@@ -55,7 +55,7 @@ describe('StaffRecordComponent', () => {
             establishmentId: 'mock-uid',
             isOwnWorkplace: () => true,
             primaryWorkplace: {
-              isParent: true,
+              isParent,
             },
           },
         },
@@ -269,6 +269,48 @@ describe('StaffRecordComponent', () => {
         fragment: 'staff-records',
         state: { showBanner: true },
       });
+    });
+  });
+
+  describe('transfer staff record link', () => {
+    it('should show the link when the primary workplace is a parent and has canEdit permissions', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.worker.completed = true;
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      expect(getByText('Transfer staff record')).toBeTruthy();
+    });
+
+    it('should not show the link when there are no canEditWorker permissions', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.worker.completed = true;
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
+      expect(queryByText('Transfer staff record')).toBeFalsy();
+    });
+
+    it('should not show the link when the workplace is not a parent', async () => {
+      const { component, fixture, queryByText } = await setup(false);
+
+      component.worker.completed = true;
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      expect(queryByText('Transfer staff record')).toBeFalsy();
+    });
+
+    it('should not show the link if the worker details have not been completed', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.worker.completed = false;
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      expect(queryByText('Transfer staff record')).toBeFalsy();
     });
   });
 });

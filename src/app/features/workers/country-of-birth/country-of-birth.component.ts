@@ -96,16 +96,19 @@ export class CountryOfBirthComponent extends QuestionComponent {
       : null;
   }
 
-  onSuccess() {
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
     const { countryOfBirthKnown } = this.form.value;
-    if (countryOfBirthKnown === 'United Kingdom') {
-      this.next = this.insideFlow ? this.getRoutePath('main-job-start-date') : this.getRoutePath('');
-    } else {
-      if (!this.insideFlow) {
-        this.next = this.getRoutePath('');
-        this.next.push('year-arrived-uk');
-      }
+    if (countryOfBirthKnown === 'United Kingdom' && this.insideFlow) {
+      nextRoute.push('main-job-start-date');
+    } else if (countryOfBirthKnown !== 'United Kingdom') {
+      nextRoute.push('year-arrived-uk');
     }
+    return nextRoute;
+  }
+
+  onSuccess() {
+    this.next = this.determineConditionalRouting();
   }
 
   countryOfBirthNameValidator() {

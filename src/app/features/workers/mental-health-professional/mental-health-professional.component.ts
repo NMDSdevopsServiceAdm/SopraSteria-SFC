@@ -13,7 +13,11 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './mental-health-professional.component.html',
 })
 export class MentalHealthProfessionalComponent extends QuestionComponent implements OnInit, OnDestroy {
-  public answersAvailable = ['Yes', 'No', 'I do not know'];
+  public answersAvailable = [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+    { label: 'I do not know', value: `Don't know` },
+  ];
   public section = 'Employment details';
   public insideMentalHealthProfessionalSummaryFlow: boolean;
 
