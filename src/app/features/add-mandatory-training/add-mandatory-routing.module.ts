@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { DeleteMandatoryTrainingCategoryComponent } from '@features/delete-mandatory-training-category/delete-mandatory-training-category.component';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training/add-and-manage-mandatory-training.component';
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
@@ -33,6 +34,11 @@ const routes: Routes = [
         path: 'edit-mandatory-training',
         component: AddMandatoryTrainingComponent,
         data: { title: 'Edit Mandatory Training' },
+      },
+      {
+        path: 'delete-mandatory-training-category',
+        component: DeleteMandatoryTrainingCategoryComponent,
+        data: { title: 'Delete Mandatory Training Category' },
       },
     ],
   },
