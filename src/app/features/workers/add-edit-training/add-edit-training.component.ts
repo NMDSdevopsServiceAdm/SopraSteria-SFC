@@ -148,7 +148,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
           });
         }
 
-        localStorage.clear();
+        localStorage.removeItem('trainingCategoryId');
       });
     } else {
       url = [`workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`];
