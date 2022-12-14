@@ -67,6 +67,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     this.subscriptions.add(
       this.establishmentService.updateLocationDetails(this.workplace.uid, selectedLocation).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
+        this.navigateToNextPage();
       }),
     );
   }
