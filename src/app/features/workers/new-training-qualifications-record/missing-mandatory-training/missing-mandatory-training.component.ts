@@ -9,7 +9,7 @@ import { MandatoryTraining } from '@core/model/training.model';
 })
 export class MissingMandatoryTrainingComponent implements OnInit {
   public workplace: Establishment;
-  @Input() public missingRecord: MandatoryTraining[];
+  @Input() public missingRecord: MandatoryTraining;
   @Input() public training;
   @Input() public canEditWorker: boolean;
   constructor(private route: ActivatedRoute) {}

@@ -58,7 +58,7 @@ describe('ViewTrainingComponent', () => {
     const trainingCategoriesSpy = spyOn(trainingCategories, 'getCategoriesWithTraining');
     trainingCategoriesSpy.and.callThrough();
 
-    const trainingID = component.trainingCategories[0].training[0].worker.uid;
+    const workerUID = component.trainings[0].worker.uid;
 
     return {
       component,
@@ -68,7 +68,7 @@ describe('ViewTrainingComponent', () => {
       getByTestId,
       routerSpy,
       trainingCategoriesSpy,
-      trainingID,
+      workerUID,
     };
   }
 
@@ -84,9 +84,9 @@ describe('ViewTrainingComponent', () => {
 
   it('should display the category', async () => {
     const { getByText, component } = await setup();
-    const trainingCategoryId = component.trainingCategories[0].id;
+    const trainingCategoryId = component.category.id;
     trainingCategoryId == component.trainingCategoryId;
-    expect(getByText(component.trainingCategories[0].category)).toBeTruthy();
+    expect(getByText(component.category.category)).toBeTruthy();
   });
 
   it('should display the table of users for specific training category', async () => {
@@ -107,34 +107,34 @@ describe('ViewTrainingComponent', () => {
 
   it('should display the name of staff for specific category', async () => {
     const { getByText, component } = await setup();
-
-    expect(getByText(component.trainingCategories[0].training[0].worker.NameOrIdValue)).toBeTruthy();
+    expect(getByText(component.trainings[0].worker.NameOrIdValue)).toBeTruthy();
   });
 
   it('should display a link for each user name to navigate to training and qualification page', async () => {
-    const { getByText, component, fixture, trainingID } = await setup();
+    const { getByText, component, fixture, workerUID } = await setup();
 
     component.canEditWorker = true;
     fixture.detectChanges();
 
-    const nameAndValue = getByText(component.trainingCategories[0].training[0].worker.NameOrIdValue);
+    const nameAndValue = getByText(component.trainings[0].worker.NameOrIdValue);
+
     expect(nameAndValue.getAttribute('href')).toEqual(
-      `/workplace/${component.workplace.uid}/training-and-qualifications-record/${trainingID}/training`,
+      `/workplace/${component.workplace.uid}/training-and-qualifications-record/${workerUID}/training`,
     );
   });
 
   it('should display the job role of users for specific category', async () => {
     const { getByText, component } = await setup();
 
-    expect(getByText(component.trainingCategories[0].training[0].worker.mainJob.title)).toBeTruthy();
+    expect(getByText(component.trainings[0].worker.mainJob.title)).toBeTruthy();
   });
 
   it(`should `, async () => {
-    const { component, routerSpy, getByText, fixture, trainingID } = await setup();
-    const trainingUid = component.trainingCategories[0].training[0].uid;
+    const { component, routerSpy, getByText, fixture, workerUID } = await setup();
+    const trainingUid = component.trainings[0].uid;
 
     component.canEditWorker = true;
-    const expired = component.trainingCategories[0].training[0].expires;
+    const expired = component.trainings[0].expires;
     fixture.detectChanges();
 
     const updateTrainingRecord = getByText('Update');
@@ -145,7 +145,7 @@ describe('ViewTrainingComponent', () => {
       '/workplace',
       `${component.workplace.uid}`,
       'training-and-qualifications-record',
-      `${trainingID}`,
+      `${workerUID}`,
       'training',
       `${trainingUid}`,
     ]);

@@ -1,9 +1,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-xl"> Training category </span>
-    <span data-testid="workerNameAndRole" *ngFor="let trainingCategory of trainingCategories">
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-8" *ngIf="trainingCategory.id == trainingCategoryId">
-        {{ trainingCategory.category }}
+    <span *ngIf="category">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
+        {{ category.category }}
       </h1>
     </span>
   </div>
@@ -11,16 +11,16 @@
 <table class="govuk-table" data-testid="userTable">
   <thead class="govuk-table__head" data-testid="userTable-Heading">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Name or ID number</th>
-      <th class="govuk-table__header" scope="col">Job role</th>
-      <th class="govuk-table__header" scope="col">Expiry date</th>
-      <th class="govuk-table__header" scope="col">Status</th>
-      <th class="govuk-table__header" scope="col"></th>
+      <th class="govuk-table__header" scope="col" style="width: 30%">Name or ID number</th>
+      <th class="govuk-table__header" scope="col" style="width: 22%">Job role</th>
+      <th class="govuk-table__header" scope="col" style="width: 18%">Expiry date</th>
+      <th class="govuk-table__header" scope="col" style="width: 20%">Status</th>
+      <th class="govuk-table__header" scope="col" style="width: 10%"></th>
     </tr>
   </thead>
-  <tbody class="govuk-table__body" *ngFor="let trainingCategory of trainingCategories">
-    <ng-container *ngIf="trainingCategory.id == trainingCategoryId">
-      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let training of trainingCategory.training">
+  <tbody class="govuk-table__body" *ngIf="category">
+    <ng-container>
+      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let training of trainings">
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           <ng-container *ngIf="canEditWorker; else nameOrId">
             <a
@@ -55,6 +55,14 @@
             />
             1 expired
           </div>
+          <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
+            <img
+              src="/assets/images/flag-orange.svg"
+              alt=""
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
+            1 expires soon
+          </div>
           <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
             <img
               src="/assets/images/flag-red.svg"
@@ -64,18 +72,17 @@
             1 missing
           </div>
 
-          <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
-            <img
-              src="/assets/images/flag-orange.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            1 expires soon
-          </div>
-
           <div *ngIf="trainingStatus(training) === trainingStatusService.ACTIVE">OK</div>
         </td>
         <td class="govuk-table__cell">
+          <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
+            <app-missing-mandatory-training
+              [missingRecord]="category"
+              [training]="training.worker"
+              [canEditWorker]="canEditWorker"
+            ></app-missing-mandatory-training>
+          </div>
+
           <div
             *ngIf="
               (trainingStatus(training) == trainingStatusService.EXPIRED ||
@@ -84,14 +91,6 @@
             "
           >
             <a (click)="updateTrainingRecord($event, training)" href="#">Update</a>
-          </div>
-
-          <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
-            <app-missing-mandatory-training
-              [missingRecord]="trainingCategory"
-              [training]="training"
-              [canEditWorker]="canEditWorker"
-            ></app-missing-mandatory-training>
           </div>
         </td>
       </tr>
