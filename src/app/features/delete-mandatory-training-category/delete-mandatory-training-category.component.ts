@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCategory } from '@core/model/training.model';
@@ -28,10 +28,6 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
     protected establishmentService: EstablishmentService,
   ) {}
 
-  get categoriesArray(): FormArray {
-    return this.form.get('categories') as FormArray;
-  }
-
   ngOnInit(): void {
     this.setBackLink();
     const id = parseInt(this.route.snapshot.parent.url[0].path, 10);
@@ -39,12 +35,7 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
     this.trainingService.getCategories().subscribe((x) => (this.selectedCategory = x.find((y) => y.id === id)));
   }
 
-  public removeCategory(event: Event, index): void {
-    event.preventDefault();
-    this.categoriesArray.removeAt(index);
-  }
-
-  public onDelete() {
+  public onDelete(): void {
     this.trainingService.deleteCategoryById(this.establishment.id, this.selectedCategory.id).subscribe(() => {
       this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
       this.alertService.addAlert({
@@ -54,7 +45,7 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
     });
   }
 
-  public onCancel() {
+  public onCancel(): void {
     this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
   }
 
