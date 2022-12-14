@@ -64,11 +64,6 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
 
   protected init(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
-  protected save(): void {
-    this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
-    this.workplaceInterfaceService.selectedLocationAddress$.next(this.getSelectedLocation());
-  }
-
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
   }
@@ -166,12 +161,17 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
             });
           } else {
             this.save();
-            this.navigateToNextPage();
           }
         },
         () => this.router.navigate(['/problem-with-the-service']),
       ),
     );
+  }
+
+  protected save(): void {
+    this.workplaceInterfaceService.manuallyEnteredWorkplace$.next(false);
+    this.workplaceInterfaceService.selectedLocationAddress$.next(this.getSelectedLocation());
+    this.navigateToNextPage();
   }
 
   protected navigateToNextPage(): void {
