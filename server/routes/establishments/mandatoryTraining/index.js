@@ -58,7 +58,6 @@ const createAndUpdateMandatoryTraining = async (req, res) => {
 };
 
 const deleteMandatoryTrainingById = async (req, res) => {
-  console.log('HERE');
   const thisTrainingRecord = new MandatoryTraining(req.establishmentId);
   try {
     await thisTrainingRecord.deleteMandatoryTrainingById(req.params.categoryId);
@@ -93,3 +92,4 @@ router.route('/:categoryId').delete(deleteMandatoryTrainingById);
 
 module.exports = router;
 module.exports.createAndUpdateMandatoryTraining = createAndUpdateMandatoryTraining;
+module.exports.deleteMandatoryTrainingById = deleteMandatoryTrainingById;
