@@ -69,13 +69,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     await this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }
 
-  private async onSuccess(response: MultipleTrainingResponse) {
-    this.trainingService.resetSelectedStaff();
-    this.trainingService.addMultipleTrainingInProgress$.next(false);
-
-    await this.router.navigate(['add-multiple-records-summary']);
-  }
-
   private onError(error) {
     console.error(error);
   }

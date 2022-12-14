@@ -1,11 +1,12 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -38,6 +39,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     protected establishmentService: EstablishmentService,
     protected trainingCategoryService: TrainingCategoryService,
     private permissionsService: PermissionsService,
+    private workerService: WorkerService,
   ) {}
 
   ngOnInit(): void {
@@ -59,6 +61,11 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
 
   public navigateToMultipleTraining(): void {
     this.router.navigate(['/workplace', this.workplace.uid, 'add-multiple-training', 'select-staff']);
+  }
+
+  public navigateToStaffRecords(event: Event): void {
+    event.preventDefault();
+    this.workerService.tabChanged.next(true);
   }
 
   private getAllTrainingByCategory(): void {
