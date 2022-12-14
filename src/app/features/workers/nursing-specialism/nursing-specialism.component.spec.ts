@@ -47,7 +47,7 @@ const workerWithNurseSpecialisms = (hasSpecialisms) =>
   });
 
 describe('NursingSpecialismComponent', () => {
-  async function setup(worker, insideFlow = true, wdfEditPageFlag = false) {
+  async function setup(worker, insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, getAllByRole } = await render(
       NursingSpecialismComponent,
       {
@@ -68,17 +68,15 @@ describe('NursingSpecialismComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -99,6 +97,7 @@ describe('NursingSpecialismComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -212,14 +211,6 @@ describe('NursingSpecialismComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should show 'Save and return' cta button and 'Cancel' link if in wdf version of page`, async () => {
-      const worker = workerBuilder();
-      const { getByText } = await setup(worker, false, true);
-
-      expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
     it(`should call submit data and navigate with to correct url when 'Save and continue' is clicked`, async () => {
       const worker = workerWithNurseSpecialisms(true);
       const { component, getByText, routerSpy } = await setup(worker);
@@ -305,26 +296,32 @@ describe('NursingSpecialismComponent', () => {
 
     it(`should navigate with to wdf staff-record-summary when 'Save and return' is clicked in wdf version of page`, async () => {
       const worker = workerWithNurseSpecialisms(true);
-      const { component, getByText, routerSpy } = await setup(worker, false, true);
-
+      const { component, getByText, routerSpy, router, fixture } = await setup(worker, false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const button = getByText('Save and return');
       fireEvent.click(button);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
       const worker = workerBuilder();
-      const { component, routerSpy, getByText } = await setup(worker, false, true);
-
+      const { component, routerSpy, getByText, router, fixture } = await setup(worker, false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const link = getByText('Cancel');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 

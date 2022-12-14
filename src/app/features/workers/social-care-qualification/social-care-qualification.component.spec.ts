@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { SocialCareQualificationComponent } from './social-care-qualification.component';
 
 describe('SocialCareQualificationComponent', () => {
-  async function setup(returnUrl = true, wdfEditPageFlag = false) {
+  async function setup(returnUrl = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       SocialCareQualificationComponent,
       {
@@ -22,17 +22,15 @@ describe('SocialCareQualificationComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
                   url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -54,6 +52,7 @@ describe('SocialCareQualificationComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -93,13 +92,6 @@ describe('SocialCareQualificationComponent', () => {
 
     it(`should show 'Save' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup();
-
-      expect(getByText('Save')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
-    it(`should show 'Save' cta button and 'Cancel' link if in wdf version of page`, async () => {
-      const { getByText } = await setup(false, true);
 
       expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -295,8 +287,11 @@ describe('SocialCareQualificationComponent', () => {
     });
 
     it('should navigate to wdf staff-summary-page page when pressing save and no is entered in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, true);
-
+      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const radioButtonNo = getByLabelText('No');
@@ -309,12 +304,15 @@ describe('SocialCareQualificationComponent', () => {
 
       expect(getByText('Save')).toBeTruthy();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing save and I do not know is entered in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, true);
-
+      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const radioButtonNo = getByLabelText('I do not know');
@@ -327,12 +325,15 @@ describe('SocialCareQualificationComponent', () => {
 
       expect(getByText('Save')).toBeTruthy();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf social-care-qualification-level-summary-flow page when pressing save and Yes is entered in wdf version of page', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false, true);
-
+      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const radioButtonNo = getByLabelText('Yes');
@@ -345,18 +346,21 @@ describe('SocialCareQualificationComponent', () => {
 
       expect(getByText('Save')).toBeTruthy();
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId, 'social-care-qualification-level']);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'social-care-qualification-level']);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, true);
-
+      const { component, routerSpy, getByText, router, fixture } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 });

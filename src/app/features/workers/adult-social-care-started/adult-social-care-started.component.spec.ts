@@ -27,7 +27,7 @@ const noPermanentContract = () =>
   });
 
 describe('AdultSocialCareStartedComponent', () => {
-  async function setup(insideFlow = true, contractType = 'permanent', wdfEditPageFlag = false) {
+  async function setup(insideFlow = true, contractType = 'permanent') {
     let contract;
 
     if (contractType === 'permanent') {
@@ -53,11 +53,6 @@ describe('AdultSocialCareStartedComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
@@ -65,6 +60,9 @@ describe('AdultSocialCareStartedComponent', () => {
                     primaryWorkplace: {},
                   },
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -89,6 +87,7 @@ describe('AdultSocialCareStartedComponent', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      router,
       routerSpy,
       getByTestId,
       queryByTestId,
@@ -111,13 +110,6 @@ describe('AdultSocialCareStartedComponent', () => {
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup(false);
-
-      expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
-    it(`should show 'Save and return' cta button and 'Cancel' link if in wdf version of page`, async () => {
-      const { getByText } = await setup(false, 'permanent', true);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -239,25 +231,31 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   it('should navigate to wdf staff-summary-page page when pressing save and return in wdf page version', async () => {
-    const { component, routerSpy, getByText } = await setup(false, 'permanent', true);
-
+    const { component, router, fixture, routerSpy, getByText } = await setup(false, 'permanent');
+    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    component.returnUrl = undefined;
+    component.ngOnInit();
+    fixture.detectChanges();
     const workerId = component.worker.uid;
 
     const link = getByText('Save and return');
     fireEvent.click(link);
 
-    expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+    expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
   });
 
   it('should navigate to wdf staff-summary-page page when pressing cancel in wdf page version', async () => {
-    const { component, routerSpy, getByText } = await setup(false, 'permanent', true);
-
+    const { component, router, routerSpy, getByText, fixture } = await setup(false, 'permanent');
+    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    component.returnUrl = undefined;
+    component.ngOnInit();
+    fixture.detectChanges();
     const workerId = component.worker.uid;
 
     const link = getByText('Cancel');
     fireEvent.click(link);
 
-    expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+    expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
   });
 
   describe('progress bar', () => {

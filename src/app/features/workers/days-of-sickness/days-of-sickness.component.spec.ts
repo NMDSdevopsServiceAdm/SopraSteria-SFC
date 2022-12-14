@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { DaysOfSicknessComponent } from './days-of-sickness.component';
 
 describe('DaysOfSicknessComponent', () => {
-  async function setup(insideFlow = true, wdfEditPageFlag = false) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       DaysOfSicknessComponent,
       {
@@ -28,11 +28,6 @@ describe('DaysOfSicknessComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
@@ -40,6 +35,9 @@ describe('DaysOfSicknessComponent', () => {
                     primaryWorkplace: {},
                   },
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -60,6 +58,7 @@ describe('DaysOfSicknessComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -85,13 +84,6 @@ describe('DaysOfSicknessComponent', () => {
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup(false);
-
-      expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
-    it(`should show 'Save and return' cta button and 'Cancel' link if in wdf version of page`, async () => {
-      const { getByText } = await setup(false, true);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -182,25 +174,31 @@ describe('DaysOfSicknessComponent', () => {
     });
 
     it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, true);
-
+      const { component, routerSpy, getByText, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const link = getByText('Save and return');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, true);
-
+      const { component, routerSpy, getByText, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const link = getByText('Cancel');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 

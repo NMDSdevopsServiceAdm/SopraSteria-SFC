@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { MentalHealthProfessionalComponent } from './mental-health-professional.component';
 
 describe('MentalHealtProfessionalComponent', () => {
-  async function setup(insideFlow = true, wdfEditPageFlag = false) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       MentalHealthProfessionalComponent,
       {
@@ -22,17 +22,15 @@ describe('MentalHealtProfessionalComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   data: {
                     establishment: { uid: 'mocked-uid' },
                   },
                   url: [{ path: insideFlow ? 'mocked-uid' : 'staff-record-summary' }],
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -57,6 +55,7 @@ describe('MentalHealtProfessionalComponent', () => {
     return {
       component,
       fixture,
+      router,
       routerSpy,
       submitSpy,
       workerServiceSpy,
@@ -93,13 +92,6 @@ describe('MentalHealtProfessionalComponent', () => {
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup(false);
-
-      expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
-    it(`should show 'Save and return' cta button and 'Cancel' link if in wdf version of page`, async () => {
-      const { getByText } = await setup(false, true);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -306,25 +298,31 @@ describe('MentalHealtProfessionalComponent', () => {
     });
 
     it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, true);
-
+      const { component, routerSpy, getByText, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const skipButton = getByText('Save and return');
       fireEvent.click(skipButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, true);
-
+      const { component, routerSpy, getByText, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
       const workerId = component.worker.uid;
 
       const skipButton = getByText('Cancel');
       fireEvent.click(skipButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 });

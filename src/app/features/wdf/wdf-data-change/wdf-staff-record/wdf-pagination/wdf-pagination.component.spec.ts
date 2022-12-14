@@ -3,7 +3,9 @@ import { getTestBed } from '@angular/core/testing';
 import { BrowserModule, By } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { WdfPaginationComponent } from '@features/wdf/wdf-data-change/wdf-staff-record/wdf-pagination/wdf-pagination.component';
+import {
+  WdfPaginationComponent,
+} from '@features/wdf/wdf-data-change/wdf-staff-record/wdf-pagination/wdf-pagination.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable, Subject } from 'rxjs';
@@ -17,7 +19,11 @@ describe('WdfPagination', () => {
           provide: ActivatedRoute,
           useValue: {
             params: Observable.from([{ id: id }]),
+
             snapshot: {
+              params: {
+                establishmentuid: '',
+              },
               paramMap: {
                 get(id) {
                   return '123';

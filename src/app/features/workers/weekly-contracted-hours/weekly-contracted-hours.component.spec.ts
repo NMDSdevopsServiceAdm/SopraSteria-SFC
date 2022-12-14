@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours.component';
 
 describe('WeeklyContractedHoursComponent', () => {
-  async function setup(insideFlow = true, wdfEditPageFlag = false) {
+  async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       WeeklyContractedHoursComponent,
       {
@@ -22,11 +22,6 @@ describe('WeeklyContractedHoursComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
@@ -34,6 +29,9 @@ describe('WeeklyContractedHoursComponent', () => {
                     primaryWorkplace: {},
                   },
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -49,7 +47,6 @@ describe('WeeklyContractedHoursComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
@@ -59,6 +56,7 @@ describe('WeeklyContractedHoursComponent', () => {
       getAllByText,
       getByLabelText,
       routerSpy,
+      router,
       getByTestId,
       queryByTestId,
     };
@@ -80,13 +78,6 @@ describe('WeeklyContractedHoursComponent', () => {
 
     it(`should show 'Save and return' cta button and 'Cancel' link if not in the flow`, async () => {
       const { getByText } = await setup(false);
-
-      expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
-    it(`should show 'Save and return' cta button and 'Cancel' link if in wdf version of page`, async () => {
-      const { getByText } = await setup(false, true);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -178,25 +169,32 @@ describe('WeeklyContractedHoursComponent', () => {
     });
 
     it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, true);
+      const { component, router, fixture, routerSpy, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
 
       const workerId = component.worker.uid;
-
       const link = getByText('Save and return');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
     it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
-      const { component, routerSpy, getByText } = await setup(false, true);
+      const { component, router, fixture, routerSpy, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
 
       const workerId = component.worker.uid;
 
       const link = getByText('Cancel');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 

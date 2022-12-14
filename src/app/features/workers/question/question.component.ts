@@ -121,7 +121,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   protected navigate(): void {
     const { action } = this.submitAction;
-
     if (!action) {
       return;
     }

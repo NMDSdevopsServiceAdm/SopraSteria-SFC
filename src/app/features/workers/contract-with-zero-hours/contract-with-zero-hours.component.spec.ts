@@ -30,7 +30,7 @@ const worker = (contract) => {
 };
 
 describe('ContractWithZeroHoursComponent', () => {
-  async function setup(insideFlow = true, contractType = Contracts.Permanent, wdfEditPageFlag = false) {
+  async function setup(insideFlow = true, contractType = Contracts.Permanent) {
     const workerWithContract = worker(contractType) as Worker;
 
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
@@ -43,11 +43,6 @@ describe('ContractWithZeroHoursComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               parent: {
-                parent: {
-                  snapshot: {
-                    url: [{ path: wdfEditPageFlag ? 'wdf' : '' }],
-                  },
-                },
                 snapshot: {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                   data: {
@@ -55,6 +50,9 @@ describe('ContractWithZeroHoursComponent', () => {
                     primaryWorkplace: {},
                   },
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -81,6 +79,7 @@ describe('ContractWithZeroHoursComponent', () => {
       component,
       fixture,
       routerSpy,
+      router,
       submitSpy,
       workerServiceSpy,
       getByText,
@@ -1267,28 +1266,23 @@ describe('ContractWithZeroHoursComponent', () => {
     });
 
     describe('wdf', () => {
-      it(`should show 'Save' cta button and 'Cancel' link if outside the flow`, async () => {
-        const { getByText } = await setup(false, Contracts.Permanent, true);
-
-        expect(getByText('Save')).toBeTruthy();
-        expect(getByText('Cancel')).toBeTruthy();
-      });
-
       describe('contract type is Permanent', () => {
         it(`should call submit data and navigate with the 'weekly-contracted-hours' url when 'Save' is clicked, all radios unselected`, async () => {
-          const { component, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
+          const { component, router, fixture, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
             true,
             Contracts.Permanent,
-            true,
           );
-
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
           const button = getByText('Save');
           fireEvent.click(button);
 
           expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
           expect(workerServiceSpy).not.toHaveBeenCalled();
           expect(routerSpy).toHaveBeenCalledWith([
-            'wdf',
+            '/wdf',
             'staff-record',
             component.worker.uid,
             'weekly-contracted-hours',
@@ -1296,11 +1290,12 @@ describe('ContractWithZeroHoursComponent', () => {
         });
 
         it(`should call submit data and navigate with the 'weekly-contracted-hours' url when 'Save' is clicked, 'No' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Permanent,
-            true,
-          );
+          const { component, fixture, router, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Permanent);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('No');
           fireEvent.click(radio);
@@ -1316,7 +1311,7 @@ describe('ContractWithZeroHoursComponent', () => {
             zeroHoursContract: 'No',
           });
           expect(routerSpy).toHaveBeenCalledWith([
-            'wdf',
+            '/wdf',
             'staff-record',
             component.worker.uid,
             'weekly-contracted-hours',
@@ -1324,11 +1319,12 @@ describe('ContractWithZeroHoursComponent', () => {
         });
 
         it(`should call submit data and navigate with the 'weekly-contracted-hours' url when 'Save' is clicked, 'I do not know' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Permanent,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Permanent);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('I do not know');
           fireEvent.click(radio);
@@ -1344,7 +1340,7 @@ describe('ContractWithZeroHoursComponent', () => {
             zeroHoursContract: `Don't know`,
           });
           expect(routerSpy).toHaveBeenCalledWith([
-            'wdf',
+            '/wdf',
             'staff-record',
             component.worker.uid,
             'weekly-contracted-hours',
@@ -1352,11 +1348,12 @@ describe('ContractWithZeroHoursComponent', () => {
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'Yes' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Permanent,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Permanent);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('Yes');
           fireEvent.click(radio);
@@ -1371,17 +1368,25 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: 'Yes',
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
       });
 
       describe('contract type is Temporary', () => {
         it(`should call submit data and navigate with the 'weekly-contracted-hours' url when 'Save' is clicked, all radios unselected`, async () => {
-          const { component, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
+          const { component, router, fixture, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
             true,
             Contracts.Temporary,
-            true,
           );
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const button = getByText('Save');
           fireEvent.click(button);
@@ -1389,7 +1394,7 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
           expect(workerServiceSpy).not.toHaveBeenCalled();
           expect(routerSpy).toHaveBeenCalledWith([
-            'wdf',
+            '/wdf',
             'staff-record',
             component.worker.uid,
             'weekly-contracted-hours',
@@ -1397,11 +1402,12 @@ describe('ContractWithZeroHoursComponent', () => {
         });
 
         it(`should call submit data and navigate with the 'weekly-contracted-hours' url when 'Save' is clicked, 'No' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Temporary,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Temporary);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('No');
           fireEvent.click(radio);
@@ -1417,7 +1423,7 @@ describe('ContractWithZeroHoursComponent', () => {
             zeroHoursContract: 'No',
           });
           expect(routerSpy).toHaveBeenCalledWith([
-            'wdf',
+            '/wdf',
             'staff-record',
             component.worker.uid,
             'weekly-contracted-hours',
@@ -1425,11 +1431,12 @@ describe('ContractWithZeroHoursComponent', () => {
         });
 
         it(`should call submit data and navigate with the 'weekly-contracted-hours' url when 'Save' is clicked, 'I do not know' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Temporary,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Temporary);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('I do not know');
           fireEvent.click(radio);
@@ -1445,7 +1452,7 @@ describe('ContractWithZeroHoursComponent', () => {
             zeroHoursContract: `Don't know`,
           });
           expect(routerSpy).toHaveBeenCalledWith([
-            'wdf',
+            '/wdf',
             'staff-record',
             component.worker.uid,
             'weekly-contracted-hours',
@@ -1453,11 +1460,12 @@ describe('ContractWithZeroHoursComponent', () => {
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'Yes' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Temporary,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Temporary);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('Yes');
           fireEvent.click(radio);
@@ -1472,32 +1480,46 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: 'Yes',
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
       });
 
       describe('contract type is Pool/Bank', () => {
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, all radios unselected`, async () => {
-          const { component, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
+          const { component, router, fixture, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
             true,
             Contracts.Pool_Bank,
-            true,
           );
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const button = getByText('Save');
           fireEvent.click(button);
 
           expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
           expect(workerServiceSpy).not.toHaveBeenCalled();
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'No' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Pool_Bank,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Pool_Bank);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('No');
           fireEvent.click(radio);
@@ -1512,15 +1534,21 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: 'No',
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'I do not know' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Pool_Bank,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Pool_Bank);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('I do not know');
           fireEvent.click(radio);
@@ -1535,15 +1563,21 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: `Don't know`,
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'Yes' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Pool_Bank,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Pool_Bank);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('Yes');
           fireEvent.click(radio);
@@ -1558,32 +1592,47 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: 'Yes',
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
       });
 
       describe('contract type is Agency', () => {
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, all radios unselected`, async () => {
-          const { component, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
+          const { component, router, fixture, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
             true,
             Contracts.Agency,
-            true,
           );
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const button = getByText('Save');
           fireEvent.click(button);
 
           expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
           expect(workerServiceSpy).not.toHaveBeenCalled();
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'No' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Agency,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Agency);
+
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('No');
           fireEvent.click(radio);
@@ -1598,15 +1647,21 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: 'No',
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'I do not know' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Agency,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Agency);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('I do not know');
           fireEvent.click(radio);
@@ -1621,15 +1676,21 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: `Don't know`,
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'Yes' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Agency,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Agency);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('Yes');
           fireEvent.click(radio);
@@ -1644,32 +1705,47 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: 'Yes',
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
       });
 
       describe('contract type is Other', () => {
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, all radios unselected`, async () => {
-          const { component, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
+          const { component, router, fixture, getByText, routerSpy, submitSpy, workerServiceSpy } = await setup(
             true,
             Contracts.Other,
-            true,
           );
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const button = getByText('Save');
           fireEvent.click(button);
 
           expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
           expect(workerServiceSpy).not.toHaveBeenCalled();
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'No' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Other,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Other);
+
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('No');
           fireEvent.click(radio);
@@ -1684,15 +1760,21 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: 'No',
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'I do not know' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Other,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Other);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('I do not know');
           fireEvent.click(radio);
@@ -1707,15 +1789,21 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: `Don't know`,
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
 
         it(`should call submit data and navigate with the 'average-weekly-hours' url when 'Save' is clicked, 'Yes' is selected`, async () => {
-          const { component, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } = await setup(
-            true,
-            Contracts.Other,
-            true,
-          );
+          const { component, router, fixture, getByText, getByLabelText, routerSpy, submitSpy, workerServiceSpy } =
+            await setup(true, Contracts.Other);
+          spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+          component.returnUrl = undefined;
+          component.ngOnInit();
+          fixture.detectChanges();
 
           const radio = getByLabelText('Yes');
           fireEvent.click(radio);
@@ -1730,19 +1818,27 @@ describe('ContractWithZeroHoursComponent', () => {
           expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
             zeroHoursContract: 'Yes',
           });
-          expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', component.worker.uid, 'average-weekly-hours']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/wdf',
+            'staff-record',
+            component.worker.uid,
+            'average-weekly-hours',
+          ]);
         });
       });
 
       it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
-        const { component, routerSpy, getByText } = await setup(false, Contracts.Permanent, true);
-
+        const { component, router, fixture, routerSpy, getByText } = await setup(false, Contracts.Permanent);
+        spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+        component.returnUrl = undefined;
+        component.ngOnInit();
+        fixture.detectChanges();
         const workerId = component.worker.uid;
 
         const link = getByText('Cancel');
         fireEvent.click(link);
 
-        expect(routerSpy).toHaveBeenCalledWith(['wdf', 'staff-record', workerId]);
+        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
       });
     });
   });
