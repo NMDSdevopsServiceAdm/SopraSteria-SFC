@@ -44,5 +44,8 @@
   ></app-training-and-qualifications-categories>
 </ng-container>
 <ng-template #noStaffRecords>
-  <app-inset-text color="warning">You need to start adding your staff records.</app-inset-text>
+  <app-inset-text data-testid="noStaffRecordsWarningBanner" color="warning" [removeTopMargin]="true"
+    >You need to <a href="#" (click)="navigateToStaffRecords($event)">add staff records</a> before you start to add
+    training and qualifications.</app-inset-text
+  >
 </ng-template>
