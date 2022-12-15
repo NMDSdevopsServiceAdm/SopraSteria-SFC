@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Establishment, UpdateJobsRequest } from '@core/model/establishment.model';
+import { Establishment, mandatoryTraining, UpdateJobsRequest } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -88,6 +88,10 @@ export class MockEstablishmentService extends EstablishmentService {
   }
 
   public updateWorkplace(workplaceUid: string, data): Observable<any> {
+    return of(null);
+  }
+
+  public createAndUpdateMandatoryTraining(establishmentId, data: mandatoryTraining[]): Observable<any> {
     return of(null);
   }
 

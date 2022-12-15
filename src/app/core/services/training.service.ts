@@ -20,6 +20,16 @@ export class TrainingService {
       .pipe(map((res) => res.trainingCategories));
   }
 
+  getCategoryById(categoryId): Observable<TrainingCategory[]> {
+    return this.http
+      .get<TrainingCategoryResponse>(`/api/trainingCategories/${categoryId}`)
+      .pipe(map((res) => res.trainingCategories));
+  }
+
+  public deleteCategoryById(establishmentId, categoryId) {
+    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining/${categoryId}`);
+  }
+
   public updateSelectedStaff(formValue): void {
     this.selectedStaff = formValue;
   }
@@ -39,5 +49,9 @@ export class TrainingService {
   //get all mandatory training
   public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
     return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
+  }
+
+  public deleteAllMandatoryTraining(establishmentId: number) {
+    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining`);
   }
 }

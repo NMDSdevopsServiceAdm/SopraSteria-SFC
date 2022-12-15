@@ -15,7 +15,9 @@
     </p>
   </div>
   <div class="govuk-grid-column-one-half govuk-util__align-right" data-testid="mandatoryTrainingButton">
-    <button class="govuk-button">Add a mandatory training category</button>
+    <button (click)="navigateToAddNewMandatoryTraining()" class="govuk-button">
+      Add a mandatory training category
+    </button>
   </div>
 </div>
 <div class="govuk-grid-row">
@@ -23,7 +25,18 @@
     class="govuk-grid-column-one-thirds govuk-!-margin-bottom-6 govuk-!-margin-right-4 govuk-util__align-right govuk-list govuk-list--inline"
     *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
   >
-    <a data-testid="removeMandatoryTrainingLink" href="#">Remove all mandatory training categories</a>
+    <a
+      data-testid="removeMandatoryTrainingLink"
+      draggable="false"
+      role="button"
+      [routerLink]="[
+        '/workplace',
+        establishment.uid,
+        'add-and-manage-mandatory-training',
+        'remove-all-mandatory-training'
+      ]"
+      >Remove all mandatory training categories</a
+    >
   </div>
 </div>
 
@@ -38,7 +51,7 @@
     <tbody class="govuk-table__body" *ngFor="let records of existingMandatoryTrainings.mandatoryTraining">
       <tr class="govuk-table__row govuk-util__vertical-align-top">
         <td class="govuk-table__cell" [attr.data-testid]="'category-' + records.category">
-          <a href="#">
+          <a [routerLink]="[records.trainingCategoryId, 'edit-mandatory-training']">
             {{ records.category }}
           </a>
         </td>
