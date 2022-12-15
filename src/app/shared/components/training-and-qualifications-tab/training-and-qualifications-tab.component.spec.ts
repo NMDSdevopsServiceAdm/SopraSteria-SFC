@@ -103,9 +103,9 @@ describe('TrainingAndQualificationsTabComponent', () => {
   });
 
   it('should display a correct message when there are no staff', async () => {
-    const { getByText } = await setup(false);
+    const { getByTestId } = await setup(false);
 
-    expect(getByText('You need to start adding your staff records.')).toBeTruthy();
+    expect(getByTestId('noStaffRecordsWarningBanner')).toBeTruthy();
   });
 
   describe('staff and training views when there are workers', () => {

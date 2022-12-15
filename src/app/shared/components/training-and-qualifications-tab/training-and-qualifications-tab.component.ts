@@ -6,6 +6,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -34,6 +35,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
 
   constructor(
     private route: ActivatedRoute,
+    private workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     protected trainingCategoryService: TrainingCategoryService,
   ) {}
@@ -64,6 +66,11 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
           this.trainingCategories = trainingCategories;
         }),
     );
+  }
+
+  public navigateToStaffRecords(event: Event): void {
+    event.preventDefault();
+    this.workerService.tabChanged.next(true);
   }
 
   private trainingTotals(): void {
