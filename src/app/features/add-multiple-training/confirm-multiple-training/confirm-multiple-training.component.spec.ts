@@ -1,14 +1,35 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { render } from '@testing-library/angular';
 import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training.component';
 
-fdescribe('ConfirmMultipleTrainingComponent', () => {
+describe('ConfirmMultipleTrainingComponent', () => {
   async function setup() {
     const { fixture, getByTestId, getByText } = await render(ConfirmMultipleTrainingComponent, {
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule, RouterModule, RouterTestingModule],
       providers: [
+        AlertService,
+        {
+          provide: WindowRef,
+          useClass: WindowRef,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                establishment: {
+                  uid: '123',
+                },
+              },
+            },
+          },
+        },
         {
           provide: TrainingService,
           useClass: MockTrainingServiceWithPreselectedStaff,
@@ -44,6 +65,6 @@ fdescribe('ConfirmMultipleTrainingComponent', () => {
 
   it('should display the MultipleTrainingSummaryComponent', async () => {
     const { getByTestId } = await setup();
-    expect(getByTestId('summaryComponent')).toBeTruthy();
+    expect(getByTestId('selectedStaffSummary')).toBeTruthy();
   });
 });

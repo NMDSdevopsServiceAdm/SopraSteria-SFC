@@ -13,6 +13,7 @@ import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { Worker } from '@core/model/worker.model';
 
 import { TrainingAndQualificationsTabComponent } from './training-and-qualifications-tab.component';
 
@@ -25,7 +26,7 @@ const establishmentBuilder = build('Establishment', {
 });
 
 describe('TrainingAndQualificationsTabComponent', () => {
-  async function setup() {
+  async function setup(withWorkers = true) {
     const { fixture, getByText, queryByText } = await render(TrainingAndQualificationsTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -46,6 +47,14 @@ describe('TrainingAndQualificationsTabComponent', () => {
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
+        workers: !withWorkers
+          ? []
+          : ([
+              {
+                trainingCount: 1,
+                trainingLastUpdated: new Date('2020-01-01').toISOString(),
+              },
+            ] as Worker[]),
         trainingCounts: {},
       },
     });
@@ -103,6 +112,16 @@ describe('TrainingAndQualificationsTabComponent', () => {
       const { component, fixture, queryByText } = await setup();
 
       component.canEditWorker = false;
+      fixture.detectChanges();
+      const multipleTrainingButton = queryByText('Add multiple training records');
+
+      expect(multipleTrainingButton).toBeFalsy();
+    });
+
+    it('should not display the `Add multiple training records` button when there are no staff records', async () => {
+      const { component, fixture, queryByText } = await setup(false);
+
+      component.canEditWorker = true;
       fixture.detectChanges();
       const multipleTrainingButton = queryByText('Add multiple training records');
 

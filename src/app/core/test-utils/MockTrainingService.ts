@@ -6,6 +6,16 @@ import { Observable, of } from 'rxjs';
 @Injectable()
 export class MockTrainingService extends TrainingService {
   public selectedStaff = [];
+  public selectedTraining = {
+    trainingCategory: {
+      id: 1,
+    },
+    title: 'Title',
+    accredited: 1,
+    completed: null,
+    expires: null,
+    notes: null,
+  };
 
   getCategories(): Observable<TrainingCategory[]> {
     return of([
