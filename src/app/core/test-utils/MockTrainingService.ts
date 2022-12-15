@@ -11,7 +11,7 @@ export class MockTrainingService extends TrainingService {
       id: 1,
     },
     title: 'Title',
-    accredited: 1,
+    accredited: true,
     completed: null,
     expires: null,
     notes: null,

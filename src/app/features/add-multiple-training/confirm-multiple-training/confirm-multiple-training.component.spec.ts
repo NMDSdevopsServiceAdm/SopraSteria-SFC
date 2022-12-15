@@ -1,11 +1,15 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { getTestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { MultipleTrainingResponse } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
 import { MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
+import { Observable } from 'rxjs';
 import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training.component';
 
 describe('ConfirmMultipleTrainingComponent', () => {
@@ -37,8 +41,16 @@ describe('ConfirmMultipleTrainingComponent', () => {
       ],
     });
     const component = fixture.componentInstance;
+    const injector = getTestBed();
 
-    return { component, getByTestId, getByText };
+    const workerService = injector.inject(WorkerService) as WorkerService;
+
+    const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords');
+    workerSpy.and.callFake(() => {
+      return new Observable<MultipleTrainingResponse>();
+    });
+
+    return { component, fixture, getByTestId, getByText, workerSpy };
   }
 
   it('should render', async () => {
@@ -66,5 +78,22 @@ describe('ConfirmMultipleTrainingComponent', () => {
   it('should display the MultipleTrainingSummaryComponent', async () => {
     const { getByTestId } = await setup();
     expect(getByTestId('selectedStaffSummary')).toBeTruthy();
+  });
+
+  it('should submit when complete', async () => {
+    const { component, getByText, fixture, workerSpy } = await setup();
+
+    const finishButton = getByText('Confirm details');
+    fireEvent.click(finishButton);
+    fixture.detectChanges();
+
+    expect(workerSpy).toHaveBeenCalledWith('123', ['1234'], {
+      trainingCategory: { id: 1 },
+      title: 'Title',
+      accredited: true,
+      completed: null,
+      expires: null,
+      notes: null,
+    });
   });
 });

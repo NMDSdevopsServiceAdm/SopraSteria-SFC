@@ -12,7 +12,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByTestId, render } from '@testing-library/angular';
 import { Worker } from '@core/model/worker.model';
 
 import { TrainingAndQualificationsTabComponent } from './training-and-qualifications-tab.component';
@@ -27,7 +27,7 @@ const establishmentBuilder = build('Establishment', {
 
 describe('TrainingAndQualificationsTabComponent', () => {
   async function setup(withWorkers = true) {
-    const { fixture, getByText, queryByText } = await render(TrainingAndQualificationsTabComponent, {
+    const { fixture, getByTestId, getByText, queryByText } = await render(TrainingAndQualificationsTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -48,13 +48,14 @@ describe('TrainingAndQualificationsTabComponent', () => {
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         workers: !withWorkers
-          ? []
+          ? undefined
           : ([
               {
                 trainingCount: 1,
                 trainingLastUpdated: new Date('2020-01-01').toISOString(),
               },
             ] as Worker[]),
+        workerCount: !withWorkers ? 0 : 1,
         trainingCounts: {},
       },
     });
@@ -69,6 +70,7 @@ describe('TrainingAndQualificationsTabComponent', () => {
     return {
       component,
       fixture,
+      getByTestId,
       getByText,
       queryByText,
       routerSpy,
@@ -126,6 +128,16 @@ describe('TrainingAndQualificationsTabComponent', () => {
       const multipleTrainingButton = queryByText('Add multiple training records');
 
       expect(multipleTrainingButton).toBeFalsy();
+    });
+
+    it('should display the warning banner when there are no staff records', async () => {
+      const { component, fixture, getByTestId } = await setup(false);
+
+      component.canEditWorker = true;
+      fixture.detectChanges();
+      const noStaffWarning = getByTestId('noStaffRecordsWarningBanner');
+
+      expect(noStaffWarning).toBeTruthy();
     });
   });
 });

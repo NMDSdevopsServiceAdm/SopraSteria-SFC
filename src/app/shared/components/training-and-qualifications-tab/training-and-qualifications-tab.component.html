@@ -4,7 +4,7 @@
   </div>
   <div class="govuk-grid-column-one-third govuk-util__align-right">
     <button
-      *ngIf="workers.length && canEditWorker"
+      *ngIf="workers && workers.length && canEditWorker"
       class="govuk-button"
       type="button"
       (click)="navigateToMultipleTraining()"
@@ -14,8 +14,12 @@
   </div>
 </div>
 
-<app-training-link-panel *ngIf="workers.length" [workplace]="workplace" [workers]="workers"></app-training-link-panel>
-<ng-container *ngIf="workers.length; else noStaffRecords">
+<app-training-link-panel
+  *ngIf="workers && workers.length"
+  [workplace]="workplace"
+  [workers]="workers"
+></app-training-link-panel>
+<ng-container *ngIf="workers && workers.length; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0">
     <div class="govuk-grid-column-two-thirds">
       <app-inset-text color="warning">You have not added any training or qualification records yet.</app-inset-text>
@@ -50,7 +54,7 @@
   ></app-training-and-qualifications-summary>
 </ng-container>
 <ng-template #noStaffRecords>
-  <app-inset-text color="warning" [removeTopMargin]="true"
+  <app-inset-text data-testid="noStaffRecordsWarningBanner" color="warning" [removeTopMargin]="true"
     >You need to <a href="#" (click)="navigateToStaffRecords($event)">add staff records</a> before you start to add
     training and qualifications.</app-inset-text
   >

@@ -122,16 +122,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     fixture.detectChanges();
 
     expect(component.form.valid).toBeTruthy();
-    expect(trainingSpy).toHaveBeenCalled();
-    expect(workerSpy).toHaveBeenCalledWith('1', ['1234'], {
-      trainingCategory: { id: 1 },
-      title: null,
-      accredited: null,
-      completed: null,
-      expires: null,
-      notes: null,
-    });
-    expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'add-multiple-records-summary' });
+    expect(spy).toHaveBeenCalledWith(['workplace', '1', 'add-multiple-training', 'confirm-training']);
   });
 
   it('should clear selected staff and navigate when pressing cancel', async () => {
