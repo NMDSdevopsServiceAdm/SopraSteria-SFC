@@ -18,14 +18,14 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
 export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public showWorkerCount = true;
   public workerCount: number = this.trainingService.selectedStaff.length;
-
+  private accessedFromSummary = false;
   constructor(
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected trainingService: TrainingService,
+    public trainingService: TrainingService,
     protected workerService: WorkerService,
     private establishmentService: EstablishmentService,
     public backLinkService: BackLinkService,
@@ -47,6 +47,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
       this.establishmentService.primaryWorkplace?.uid === this.workplace.uid
         ? ['/dashboard']
         : ['workplace', this.workplace.uid];
+    this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
   }
 
   protected setSection(): void {
@@ -57,8 +58,32 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.title = 'Add training record details';
   }
 
+  protected prefill(): void {
+    if (this.trainingService.selectedTraining) {
+      const { accredited, trainingCategory, completed, expires, notes, title } = this.trainingService.selectedTraining;
+      const completedArr = completed?.split('-');
+      const expiresArr = expires?.split('-');
+      this.form.patchValue({
+        accredited,
+        completed: completedArr && {
+          day: +completedArr[2],
+          month: +completedArr[1],
+          year: +completedArr[0],
+        },
+        expires: expiresArr && {
+          day: +expiresArr[2],
+          month: +expiresArr[1],
+          year: +expiresArr[0],
+        },
+        notes,
+        title,
+        category: trainingCategory.id,
+      });
+    }
+  }
+
   protected setButtonText(): void {
-    this.buttonText = 'Continue';
+    this.buttonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
   }
 
   protected submit(record: TrainingRecordRequest) {

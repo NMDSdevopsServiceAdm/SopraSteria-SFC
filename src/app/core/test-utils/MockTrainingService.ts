@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 @Injectable()
 export class MockTrainingService extends TrainingService {
   public selectedStaff = [];
-
+  public selectedTraining = null;
   getCategories(): Observable<TrainingCategory[]> {
     return of([
       { id: 1, seq: 10, category: 'Activity provision/Well-being' },
@@ -18,4 +18,12 @@ export class MockTrainingService extends TrainingService {
 @Injectable()
 export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService {
   public selectedStaff = ['1234'];
+  public selectedTraining = {
+    accredited: 'Yes',
+    trainingCategory: { id: 1 },
+    completed: '2020-01-01',
+    expires: '2021-01-01',
+    notes: 'This is a note',
+    title: 'Title',
+  };
 }

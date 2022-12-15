@@ -57,6 +57,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     this.init();
     this.setupForm();
+    this.prefill();
     this.setTitle();
     this.setSection();
     this.setButtonText();
@@ -75,6 +76,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   protected init(): void {}
+
+  protected prefill(): void {}
 
   protected submit(record: any): void {}
 
@@ -216,7 +219,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     const completedDate = this.dateGroupToDayjs(completed as FormGroup);
     const expiresDate = this.dateGroupToDayjs(expires as FormGroup);
 
-    console.log(this.form.value);
     const record: TrainingRecordRequest = {
       trainingCategory: {
         id: !this.missingTrainingRecord ? parseInt(category.value) : this.missingTrainingRecord.id,

@@ -13,78 +13,83 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByLabelText, render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
 
 describe('MultipleTrainingDetailsComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText } = await render(MultipleTrainingDetailsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
-      providers: [
-        AlertService,
-        WindowRef,
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
-        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        {
-          provide: ActivatedRoute,
-          useValue: new MockActivatedRoute({
-            snapshot: {
-              params: { trainingRecordId: '1' },
-            },
-            parent: {
+  async function setup(inFlow = true, prefill = false) {
+    const { fixture, getByText, getAllByText, getByTestId, getByLabelText } = await render(
+      MultipleTrainingDetailsComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
+        providers: [
+          AlertService,
+          WindowRef,
+          { provide: EstablishmentService, useClass: MockEstablishmentService },
+          { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+          {
+            provide: ActivatedRoute,
+            useValue: new MockActivatedRoute({
               snapshot: {
-                data: {
-                  establishment: {
-                    uid: '1',
+                params: { trainingRecordId: '1' },
+                parent: {
+                  url: [{ path: '' }],
+                },
+              },
+              parent: {
+                snapshot: {
+                  data: {
+                    establishment: {
+                      uid: '1',
+                    },
                   },
                 },
               },
-            },
-          }),
-        },
-        FormBuilder,
-        ErrorSummaryService,
-        { provide: TrainingService, useClass: MockTrainingServiceWithPreselectedStaff },
-        { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-      ],
-    });
+            }),
+          },
+          FormBuilder,
+          ErrorSummaryService,
+          {
+            provide: TrainingService,
+            useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
+          },
+          { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
-
     const alert = injector.inject(AlertService) as AlertService;
-
-    const alertSpy = spyOn(alert, 'addAlert');
-    alertSpy.and.callThrough();
-
     const workerService = injector.inject(WorkerService) as WorkerService;
-
-    const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords');
-    workerSpy.and.callThrough();
-
     const trainingService = injector.inject(TrainingService) as TrainingService;
 
-    const trainingSpy = spyOn(trainingService, 'resetSelectedStaff');
-    trainingSpy.and.callThrough();
+    const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
+    const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.callThrough();
+    const trainingSpy = spyOn(trainingService, 'resetSelectedStaff').and.callThrough();
+    const updateSelectedTrainingSpy = spyOn(trainingService, 'updateSelectedTraining');
 
     return {
       component,
       fixture,
       getByText,
+      getByLabelText,
       getAllByText,
+      getByTestId,
       spy,
       alertSpy,
       workerSpy,
+      trainingService,
       trainingSpy,
+      updateSelectedTrainingSpy,
     };
   }
 
@@ -111,27 +116,44 @@ describe('MultipleTrainingDetailsComponent', () => {
     ]);
   });
 
-  it('should submit, navigate and add alert when complete', async () => {
-    const { component, getByText, fixture, spy, alertSpy, workerSpy, trainingSpy } = await setup();
-    component.form.markAsDirty();
-    component.form.get('category').setValue('1');
-    component.form.get('category').markAsDirty();
+  it('should store the selected training in training service and navigate to the next page when filling out the form and clicking continue', async () => {
+    const { component, getByText, getByLabelText, getByTestId, fixture, updateSelectedTrainingSpy, spy } =
+      await setup();
+
+    const categoryOption = component.categories[0].id.toString();
+
+    userEvent.selectOptions(getByLabelText('Training category'), categoryOption);
+    userEvent.type(getByLabelText('Training name'), 'Training');
+    userEvent.click(getByLabelText('Yes'));
+    const completedDate = getByTestId('completedDate');
+    userEvent.type(within(completedDate).getByLabelText('Day'), '1');
+    userEvent.type(within(completedDate).getByLabelText('Month'), '1');
+    userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+    const expiryDate = getByTestId('expiryDate');
+    userEvent.type(within(expiryDate).getByLabelText('Day'), '1');
+    userEvent.type(within(expiryDate).getByLabelText('Month'), '1');
+    userEvent.type(within(expiryDate).getByLabelText('Year'), '2022');
+    userEvent.type(getByLabelText('Add notes'), 'Notes for training');
 
     const finishButton = getByText('Continue');
-    fireEvent.click(finishButton);
+    userEvent.click(finishButton);
     fixture.detectChanges();
 
     expect(component.form.valid).toBeTruthy();
-    expect(trainingSpy).toHaveBeenCalled();
-    expect(workerSpy).toHaveBeenCalledWith('1', ['1234'], {
+    expect(updateSelectedTrainingSpy).toHaveBeenCalledWith({
       trainingCategory: { id: 1 },
-      title: null,
-      accredited: null,
-      completed: null,
-      expires: null,
-      notes: null,
+      title: 'Training',
+      accredited: 'Yes',
+      completed: '2020-01-01',
+      expires: '2022-01-01',
+      notes: 'Notes for training',
     });
-    expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'add-multiple-records-summary' });
+    expect(spy).toHaveBeenCalledWith([
+      'workplace',
+      component.workplace.uid,
+      'add-multiple-training',
+      'confirm-training',
+    ]);
   });
 
   it('should clear selected staff and navigate when pressing cancel', async () => {
@@ -142,6 +164,25 @@ describe('MultipleTrainingDetailsComponent', () => {
 
     expect(trainingSpy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'training-and-qualifications' });
+  });
+
+  it('should prefill the form if it has already been filled out', async () => {
+    const { component } = await setup(false, true);
+
+    const form = component.form;
+    const { trainingCategory, title, accredited, completed, expires, notes } =
+      component.trainingService.selectedTraining;
+    const completedArr = completed.split('-');
+    const expiresArr = expires.split('-');
+
+    expect(form.value).toEqual({
+      category: trainingCategory.id,
+      title,
+      accredited,
+      completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
+      expires: { day: +expiresArr[2], month: +expiresArr[1], year: +expiresArr[0] },
+      notes,
+    });
   });
 
   describe('errors', () => {

@@ -2,9 +2,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TrainingService } from '@core/services/training.service';
 import { MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { render } from '@testing-library/angular';
+
 import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training.component';
 
-fdescribe('ConfirmMultipleTrainingComponent', () => {
+describe('ConfirmMultipleTrainingComponent', () => {
   async function setup() {
     const { fixture, getByTestId, getByText } = await render(ConfirmMultipleTrainingComponent, {
       imports: [HttpClientTestingModule],

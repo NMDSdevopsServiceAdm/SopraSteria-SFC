@@ -41,4 +41,10 @@ export class TrainingService {
   public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
     return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
   }
+
+  public resetState(): void {
+    this.addMultipleTrainingInProgress$.next(false);
+    this.resetSelectedStaff();
+    this.resetSelectedTraining();
+  }
 }

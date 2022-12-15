@@ -57,6 +57,9 @@ describe('SelectStaffComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
+              parent: {
+                url: [{ path: '' }],
+              },
               data: {
                 workers: {
                   workers: workers,
@@ -383,9 +386,7 @@ describe('SelectStaffComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      const selectedStaffIds = workers.map((worker) => worker.uid);
-
-      expect(updateSelectedStaffSpy).toHaveBeenCalledWith(selectedStaffIds);
+      expect(updateSelectedStaffSpy).toHaveBeenCalledWith(workers);
     });
 
     it('should store the selected staff in the training service when selecting individual staff and pressing continue', async () => {
@@ -401,7 +402,7 @@ describe('SelectStaffComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(updateSelectedStaffSpy).toHaveBeenCalledWith([workers[0].uid]);
+      expect(updateSelectedStaffSpy).toHaveBeenCalledWith([workers[0]]);
     });
 
     it('should navigate to the training details page when pressing continue', async () => {
@@ -444,8 +445,7 @@ describe('SelectStaffComponent', () => {
     it('should show all staff selected if rendering this page having already selected all staff', async () => {
       const { component, fixture, getByText, getAllByText, getByTestId, workers } = await setup();
 
-      const selectedStaffIds = workers.map((worker) => worker.uid);
-      component.trainingService.selectedStaff = selectedStaffIds;
+      component.trainingService.selectedStaff = workers;
       component.ngOnInit();
       component.paginatedWorkers = workers;
       fixture.detectChanges();
@@ -460,8 +460,7 @@ describe('SelectStaffComponent', () => {
     it('should show the staff selected if rendering this page having already selected some staff', async () => {
       const { component, fixture, getByText, getAllByText, getByTestId, workers } = await setup();
 
-      const selectedStaffId = workers[0].uid;
-      component.trainingService.selectedStaff = [selectedStaffId];
+      component.trainingService.selectedStaff = [workers[0]];
       component.ngOnInit();
       component.paginatedWorkers = workers;
       fixture.detectChanges();
