@@ -185,7 +185,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   }
 
   private getNextRoute(): string {
-    return this.trainingService.addMultipleTrainingInProgress$.value ? 'confirm-training' : 'training-details';
+    return this.accessedFromSummary ? 'confirm-training' : 'training-details';
   }
 
   handleSearch(searchTerm: string): void {
@@ -204,9 +204,14 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     });
   }
 
-  public onCancel(): void {
-    this.trainingService.resetSelectedStaff();
-    this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
+  public onCancel(event: Event): void {
+    event.preventDefault();
+    if (this.accessedFromSummary) {
+      this.router.navigate(['../'], { relativeTo: this.route });
+    } else {
+      this.trainingService.resetSelectedStaff();
+      this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
+    }
   }
 
   public handleResetSearch(event: Event): void {

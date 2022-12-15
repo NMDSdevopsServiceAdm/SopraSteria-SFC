@@ -94,7 +94,9 @@
       <button class="govuk-button govuk-!-margin-right-9" type="button" (click)="onSubmit()">
         {{ submitButtonText }}
       </button>
-      <a role="button" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel()">Cancel</a>
+      <a role="button" href="#" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel($event)"
+        >Cancel</a
+      >
     </div>
   </div>
   <div class="govuk-grid-column-one-third">
