@@ -86,8 +86,9 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.buttonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
   }
 
-  protected submit(record: TrainingRecordRequest) {
-    this.trainingService.updateSelectedTraining(record);
+  protected submit(record: TrainingRecordRequest): void {
+    const trainingCategory = this.categories.find((category) => category.id === record.trainingCategory.id);
+    this.trainingService.updateSelectedTraining({ ...record, trainingCategory });
 
     this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }

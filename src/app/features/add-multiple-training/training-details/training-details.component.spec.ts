@@ -3,20 +3,16 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AlertService } from '@core/services/alert.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
-import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByLabelText, render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
@@ -29,10 +25,8 @@ describe('MultipleTrainingDetailsComponent', () => {
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
         providers: [
-          AlertService,
-          WindowRef,
           { provide: EstablishmentService, useClass: MockEstablishmentService },
-          { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+
           {
             provide: ActivatedRoute,
             useValue: new MockActivatedRoute({
@@ -67,12 +61,10 @@ describe('MultipleTrainingDetailsComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const alert = injector.inject(AlertService) as AlertService;
     const workerService = injector.inject(WorkerService) as WorkerService;
     const trainingService = injector.inject(TrainingService) as TrainingService;
 
     const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
     const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.callThrough();
     const trainingSpy = spyOn(trainingService, 'resetSelectedStaff').and.callThrough();
     const updateSelectedTrainingSpy = spyOn(trainingService, 'updateSelectedTraining');
@@ -85,7 +77,6 @@ describe('MultipleTrainingDetailsComponent', () => {
       getAllByText,
       getByTestId,
       spy,
-      alertSpy,
       workerSpy,
       trainingService,
       trainingSpy,
@@ -141,7 +132,7 @@ describe('MultipleTrainingDetailsComponent', () => {
 
     expect(component.form.valid).toBeTruthy();
     expect(updateSelectedTrainingSpy).toHaveBeenCalledWith({
-      trainingCategory: { id: 1 },
+      trainingCategory: component.categories[0],
       title: 'Training',
       accredited: 'Yes',
       completed: '2020-01-01',

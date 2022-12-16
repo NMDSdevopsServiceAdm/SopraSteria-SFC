@@ -25,7 +25,7 @@ const createWorkers = (noOfWorkers) => {
   return workers;
 };
 
-fdescribe('SelectStaffComponent', () => {
+describe('SelectStaffComponent', () => {
   async function setup(noOfWorkers = 3, accessedFromSummary = false) {
     const workers = createWorkers(noOfWorkers);
     const {

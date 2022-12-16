@@ -9,12 +9,7 @@
         <p>Check these details before you confirm them.</p>
       </div>
       <div class="govuk-grid-column">
-        <button
-          type="submit"
-          class="govuk-button govuk-util__float-right govuk-!-margin-bottom-4"
-          data-testid="confirmButton"
-          (click)="onSubmit()"
-        >
+        <button type="submit" class="govuk-button govuk-util__float-right govuk-!-margin-bottom-4" (click)="onSubmit()">
           Confirm details
         </button>
       </div>
@@ -49,6 +44,7 @@
       <h2 class="govuk-heading-m">Training record details</h2>
       <dl
         class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summarylist-border-bottom govuk-!-width-full"
+        data-testid="trainingRecordDetails"
       >
         <ng-container *ngFor="let record of trainingRecords; index as i">
           <div class="govuk-summary-list__row">
