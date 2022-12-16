@@ -184,7 +184,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
   });
 
-  it('should reset training service state and navigate when pressing cancel when in the flow but not the primary user', async () => {
+  it('should reset training service state and navigate to sub workplace home page åwhen pressing cancel when in the flow but not the primary user', async () => {
     const { getByText, spy, trainingSpy } = await setup(false, false, false);
 
     const cancelButton = getByText('Cancel');
