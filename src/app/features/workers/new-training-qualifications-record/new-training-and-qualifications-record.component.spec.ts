@@ -181,18 +181,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
   });
 
-  it('should display the worker job role', async () => {
-    const { component, getByTestId } = await setup();
-
-    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.title);
-  });
-
-  it('should display the other worker job role', async () => {
-    const { component, getByTestId } = await setup(true);
-
-    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.other);
-  });
-
   it('should display the last updated date in the correct format', async () => {
     const { component, getByText, fixture } = await setup();
 
@@ -200,7 +188,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     fixture.detectChanges();
 
-    expect(getByText('Last updated 1 January 2020', { exact: false })).toBeTruthy();
+    expect(getByText('Last update, 1 January 2020', { exact: false })).toBeTruthy();
   });
 
   it('should display the View staff record button', async () => {
@@ -245,11 +233,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
     expect(getByText('Not answered', { exact: false })).toBeTruthy();
-  });
-
-  it('should display number of training records in the title', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Training and qualifications (6)')).toBeTruthy();
   });
 
   describe('Long-Term Absence', () => {
@@ -429,7 +412,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       component.getLastUpdatedDate([new Date('2021/01/01'), null]);
       fixture.detectChanges();
 
-      expect(getByText('Last updated 1 January 2021', { exact: false })).toBeTruthy();
+      expect(getByText('Last update, 1 January 2021', { exact: false })).toBeTruthy();
     });
 
     it('should set last updated date to valid date when null passed in (in case of no training records)', async () => {
@@ -438,7 +421,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       component.getLastUpdatedDate([null, new Date('2021/05/01')]);
       fixture.detectChanges();
 
-      expect(getByText('Last updated 1 May 2021', { exact: false })).toBeTruthy();
+      expect(getByText('Last update, 1 May 2021', { exact: false })).toBeTruthy();
     });
 
     it('should set last updated date to null when there is no lastUpdated date for training or quals', async () => {

@@ -1,15 +1,8 @@
 <ng-container *ngIf="worker">
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-one-third">
-      <div class="govuk-list--inline govuk-list govuk__flex">
-        <span class="govuk-caption-xl" data-testid="workerNameAndRole">
-          {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
-        </span>
-      </div>
-    </div>
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-list--inline govuk-list">
-        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey govuk-!-margin-top-1 asc-tag">
+        <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey asc-tag govuk-!-margin-bottom-0">
           Long-term absent
           <a
             [routerLink]="[
@@ -28,64 +21,67 @@
       </div>
     </div>
   </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-xl" data-testid="workerNameAndRole"> {{ worker.nameOrId }} </span>
+    </div>
+  </div>
   <div class="govuk-grid-row govuk-!-margin-bottom-5">
-    <div class="govuk-grid-column-one-half">
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
-        Training and qualifications ({{
-          this.mandatoryTrainingCount + this.nonMandatoryTrainingCount + this.qualificationsCount
-        }})
-      </h1>
-      <span *ngIf="lastUpdatedDate" class="govuk-caption-m govuk-!-margin-bottom-3">
-        Last updated {{ lastUpdatedDate | date: 'd MMMM yyyy' }}
-      </span>
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-3">Training and qualifications</h1>
+      <p *ngIf="lastUpdatedDate">Last update, {{ lastUpdatedDate | date: 'd MMMM yyyy' }}</p>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div class="govuk-button-group govuk-util__float-right govuk-!-margin-top-3 govuk-!-margin-bottom-0">
+        <a
+          class="govuk-list govuk-list--inline govuk-!-margin-bottom-0"
+          *ngIf="canEditWorker && worker.longTermAbsence === null"
+          draggable="false"
+          role="button"
+          data-testid="flagLongTermAbsence"
+          [routerLink]="[
+            '/workplace',
+            workplace.uid,
+            'training-and-qualifications-record',
+            worker.uid,
+            'long-term-absence'
+          ]"
+          >Flag long-term absence</a
+        >
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-bottom-5">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-body govuk-!-font-size-24">
+        <span class="govuk-!-font-weight-bold">Care Certificate:</span>
+        {{ worker.careCertificate ? worker.careCertificate : 'Not answered' }}
+      </p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half govuk-!-margin-top-2">
       <a
         *ngIf="canEditWorker"
-        class="govuk-list govuk-list--inline govuk-!-padding-left-0"
+        class="govuk-list govuk-list--inline"
         role="button"
         draggable="false"
         [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid, 'staff-record-summary']"
       >
+        <!-- <p class="govuk-!-margin-top-3">View staff record</p> -->
         View staff record
       </a>
     </div>
     <div class="govuk-grid-column-one-half">
-      <div class="govuk-!-margin-bottom-3">
-        <div class="govuk-button-group govuk-util__float-right govuk-!-margin-top-0">
-          <a
-            class="govuk-list govuk-list--inline govuk-!-margin-left-5"
-            *ngIf="canEditWorker && worker.longTermAbsence === null"
-            draggable="false"
-            role="button"
-            data-testid="flagLongTermAbsence"
-            [routerLink]="[
-              '/workplace',
-              workplace.uid,
-              'training-and-qualifications-record',
-              worker.uid,
-              'long-term-absence'
-            ]"
-            >Flag long-term absence</a
-          >
-          <a
-            *ngIf="canEditWorker"
-            class="govuk-button govuk-util__float-right govuk-!-margin-left-9"
-            role="button"
-            draggable="false"
-            [routerLink]="['../select-record-type']"
-          >
-            Add a record
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <p class="govuk-body govuk-!-font-size-24 govuk-!-margin-bottom-4 govuk-!-margin-top-4">
-        <span class="govuk-!-font-weight-bold">Care Certificate:</span>
-        {{ worker.careCertificate ? worker.careCertificate : 'Not answered' }}
-      </p>
+      <a
+        *ngIf="canEditWorker"
+        class="govuk-button govuk-util__float-right"
+        role="button"
+        draggable="false"
+        [routerLink]="['../select-record-type']"
+      >
+        Add a record
+      </a>
     </div>
   </div>
 
