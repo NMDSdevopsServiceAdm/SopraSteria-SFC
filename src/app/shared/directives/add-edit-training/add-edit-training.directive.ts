@@ -268,7 +268,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.backLinkService.showBackLink();
   }
 
-  public onCancel(): void {
+  public onCancel(event: Event): void {
+    event.preventDefault();
     this.router.navigateByUrl(this.previousUrl[0]);
   }
 }

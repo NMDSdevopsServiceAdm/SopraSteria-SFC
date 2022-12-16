@@ -19,7 +19,7 @@ import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
 
 describe('MultipleTrainingDetailsComponent', () => {
-  async function setup(inFlow = true, prefill = false) {
+  async function setup(accessedFromSummary = false, prefill = false, isPrimaryWorkplace = true) {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText } = await render(
       MultipleTrainingDetailsComponent,
       {
@@ -33,14 +33,14 @@ describe('MultipleTrainingDetailsComponent', () => {
               snapshot: {
                 params: { trainingRecordId: '1' },
                 parent: {
-                  url: [{ path: '' }],
+                  url: [{ path: accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
                 },
               },
               parent: {
                 snapshot: {
                   data: {
                     establishment: {
-                      uid: '1',
+                      uid: isPrimaryWorkplace ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : 'mock-uid',
                     },
                   },
                 },
@@ -66,7 +66,7 @@ describe('MultipleTrainingDetailsComponent', () => {
 
     const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.callThrough();
-    const trainingSpy = spyOn(trainingService, 'resetSelectedStaff').and.callThrough();
+    const trainingSpy = spyOn(trainingService, 'resetState').and.callThrough();
     const updateSelectedTrainingSpy = spyOn(trainingService, 'updateSelectedTraining');
 
     return {
@@ -89,14 +89,18 @@ describe('MultipleTrainingDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the correct title', async () => {
+  it('should render `Continue` and `Cancel` buttons when it is not accessed from the confirm training page', async () => {
     const { getByText } = await setup();
-    expect(getByText('Add training record details')).toBeTruthy();
+
+    expect(getByText('Continue')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
-  it('should show the Continue button', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Continue')).toBeTruthy();
+  it('should render `Save and return` and `Cancel` buttons when it is accessed from the confirm training page', async () => {
+    const { getByText } = await setup(true);
+
+    expect(getByText('Save and return')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
   it('should show a dropdown with the correct categories in', async () => {
@@ -147,14 +151,57 @@ describe('MultipleTrainingDetailsComponent', () => {
     ]);
   });
 
-  it('should clear selected staff and navigate when pressing cancel', async () => {
+  it('should navigate to the confirm training page when page has been accessed from that page and pressing Save and return', async () => {
+    const { component, fixture, getByText, updateSelectedTrainingSpy, spy } = await setup(true, true);
+
+    const button = getByText('Save and return');
+    fireEvent.click(button);
+    fixture.detectChanges();
+
+    expect(updateSelectedTrainingSpy).toHaveBeenCalledWith({
+      trainingCategory: component.categories[0],
+      title: 'Title',
+      accredited: 'Yes',
+      completed: '2020-01-01',
+      expires: '2021-01-01',
+      notes: 'This is a note',
+    });
+    expect(spy).toHaveBeenCalledWith([
+      'workplace',
+      component.workplace.uid,
+      'add-multiple-training',
+      'confirm-training',
+    ]);
+  });
+
+  it('should reset training service state and navigate to dashboard when pressing cancel when in the flow and primary user', async () => {
     const { getByText, spy, trainingSpy } = await setup();
 
     const cancelButton = getByText('Cancel');
     fireEvent.click(cancelButton);
 
     expect(trainingSpy).toHaveBeenCalled();
-    expect(spy).toHaveBeenCalledWith(['workplace', '1'], { fragment: 'training-and-qualifications' });
+    expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+  });
+
+  it('should reset training service state and navigate when pressing cancel when in the flow but not the primary user', async () => {
+    const { getByText, spy, trainingSpy } = await setup(false, false, false);
+
+    const cancelButton = getByText('Cancel');
+    fireEvent.click(cancelButton);
+
+    expect(trainingSpy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith(['workplace', 'mock-uid'], { fragment: 'training-and-qualifications' });
+  });
+
+  it('should not clear selected staff and navigate when pressing cancel when in the flow', async () => {
+    const { getByText, spy, trainingSpy } = await setup(true);
+
+    const cancelButton = getByText('Cancel');
+    fireEvent.click(cancelButton);
+
+    expect(trainingSpy).not.toHaveBeenCalled();
+    expect(spy.calls.mostRecent().args[0]).toEqual(['../']);
   });
 
   it('should prefill the form if it has already been filled out', async () => {

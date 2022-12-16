@@ -19,6 +19,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   public showWorkerCount = true;
   public workerCount: number = this.trainingService.selectedStaff.length;
   private accessedFromSummary = false;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
@@ -49,6 +50,11 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
         : ['workplace', this.workplace.uid];
     this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
   }
+
+  // public setReturnLink(): void {
+  //   this.previousUrl =
+  //     this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
+  // }
 
   protected setSection(): void {
     this.section = 'Add multiple records';
@@ -93,8 +99,13 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }
 
-  public onCancel(): void {
-    this.trainingService.resetSelectedStaff();
-    this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
+  public onCancel(event: Event): void {
+    event.preventDefault();
+    if (this.accessedFromSummary) {
+      this.router.navigate(['../'], { relativeTo: this.route });
+    } else {
+      this.trainingService.resetState();
+      this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
+    }
   }
 }
