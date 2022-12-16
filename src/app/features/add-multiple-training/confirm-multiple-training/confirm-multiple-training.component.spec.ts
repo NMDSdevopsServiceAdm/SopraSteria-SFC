@@ -5,10 +5,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Alert } from '@core/model/alert.model';
 import { AlertService } from '@core/services/alert.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
@@ -18,7 +20,7 @@ import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training.component';
 
 describe('MultipleTrainingDetailsComponent', () => {
-  async function setup(incompleteTraining = false) {
+  async function setup(incompleteTraining = false, isPrimaryWorkplace = true) {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText } = await render(
       ConfirmMultipleTrainingComponent,
       {
@@ -27,12 +29,16 @@ describe('MultipleTrainingDetailsComponent', () => {
           AlertService,
           WindowRef,
           {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
             provide: ActivatedRoute,
             useValue: new MockActivatedRoute({
               snapshot: {
                 data: {
                   establishment: {
-                    uid: 'mock-uid',
+                    uid: isPrimaryWorkplace ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : 'mock-uid',
                   },
                 },
               },
@@ -106,7 +112,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const changeLink = within(selectedStaffSummary).getByText('Change');
 
       expect(changeLink.getAttribute('href')).toEqual(
-        '/workplace/mock-uid/add-multiple-training/confirm-training/select-staff',
+        '/workplace/98a83eef-e1e1-49f3-89c5-b1287a3cc8de/add-multiple-training/confirm-training/select-staff',
       );
     });
   });
@@ -141,7 +147,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const changeLink = within(trainingRecordDetails).getByText('Change');
 
       expect(changeLink.getAttribute('href')).toEqual(
-        '/workplace/mock-uid/add-multiple-training/confirm-training/training-details',
+        '/workplace/98a83eef-e1e1-49f3-89c5-b1287a3cc8de/add-multiple-training/confirm-training/training-details',
       );
     });
   });
@@ -157,7 +163,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(workerSpy).toHaveBeenCalledWith('mock-uid', selectedStaff, selectedTraining);
+      expect(workerSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de', selectedStaff, selectedTraining);
     });
 
     it('should call resetState in the training service when successfully confirming details', async () => {
@@ -170,14 +176,29 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(trainingSpy).toHaveBeenCalled();
     });
 
-    it('should navigate back to the training and qualifications tab and add an alert', async () => {
+    it('should navigate back to the dashboard and add an alert when it is the primary workplace', async () => {
       const { fixture, getByText, routerSpy, alertSpy } = await setup();
 
       const button = getByText('Confirm details');
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'training-and-qualifications' });
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+      await fixture.whenStable();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: '2 training records added',
+      } as Alert);
+    });
+
+    it('should navigate back to the sub workplace home page and add an alert when it is not the primary workplace', async () => {
+      const { fixture, getByText, routerSpy, alertSpy } = await setup(false, false);
+
+      const button = getByText('Confirm details');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mock-uid'], { fragment: 'training-and-qualifications' });
       await fixture.whenStable();
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',

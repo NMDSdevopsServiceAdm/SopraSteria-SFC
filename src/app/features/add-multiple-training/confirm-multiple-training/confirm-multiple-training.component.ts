@@ -4,6 +4,7 @@ import { Alert } from '@core/model/alert.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
@@ -15,6 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class ConfirmMultipleTrainingComponent implements OnInit {
   public workers: Worker[];
+  public returnLink: string[];
   public trainingRecords: { key: string; value: string }[];
   private workplaceUid: string;
   public subscriptions: Subscription = new Subscription();
@@ -26,12 +28,14 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     public workerService: WorkerService,
     private alertService: AlertService,
     public backLinkService: BackLinkService,
+    private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.data.establishment.uid;
     this.getStaffData();
     this.convertTrainingRecord();
+    this.setReturnLink();
     this.backLinkService.showBackLink();
   }
 
@@ -51,6 +55,13 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     this.workers = this.trainingService.selectedStaff;
   }
 
+  public setReturnLink(): void {
+    this.returnLink =
+      this.workplaceUid === this.establishmentService.primaryWorkplace?.uid
+        ? ['/dashboard']
+        : ['/workplace', this.workplaceUid];
+  }
+
   public getRoutePath(pageName: string): Array<string> {
     return ['/workplace', this.workplaceUid, 'add-multiple-training', 'confirm-training', pageName];
   }
@@ -66,7 +77,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     const message = `${this.workers.length} training records added`;
     this.trainingService.resetState();
 
-    await this.router.navigate([`dashboard`], { fragment: 'training-and-qualifications' });
+    await this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
     this.alertService.addAlert({
       type: 'success',
       message: message,

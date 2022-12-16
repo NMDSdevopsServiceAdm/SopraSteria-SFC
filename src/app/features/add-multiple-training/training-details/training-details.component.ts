@@ -51,11 +51,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
   }
 
-  // public setReturnLink(): void {
-  //   this.previousUrl =
-  //     this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
-  // }
-
   protected setSection(): void {
     this.section = 'Add multiple records';
   }
