@@ -39,7 +39,6 @@ export class OtherQualificationsComponent extends QuestionComponent {
     if (this.worker.otherQualification) {
       this.prefill();
     }
-
     this.next = this.getRoutePath('confirm-staff-record');
   }
 
@@ -59,19 +58,19 @@ export class OtherQualificationsComponent extends QuestionComponent {
     };
   }
 
-  onSuccess(): void {
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
     const { otherQualification } = this.form.value;
 
-    const summaryRecordUrl = this.getRoutePath('');
     if (otherQualification === 'Yes') {
-      if (this.insideFlow) {
-        this.next = this.getRoutePath('other-qualifications-level');
-      } else {
-        this.next = summaryRecordUrl;
-        this.next.push('other-qualifications-level');
-      }
-    } else {
-      !this.insideFlow && (this.next = summaryRecordUrl);
+      nextRoute.push('other-qualifications-level');
+    } else if (this.insideFlow) {
+      nextRoute.push('confirm-staff-record');
     }
+    return nextRoute;
+  }
+
+  onSuccess(): void {
+    this.next = this.determineConditionalRouting();
   }
 }

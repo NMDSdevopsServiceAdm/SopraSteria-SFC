@@ -6,7 +6,7 @@
         Staff record
       </h1>
     </div>
-    <div class="govuk-grid-column-one-third govuk-!-margin-top-8">
+    <div class="govuk-grid-column-one-third govuk-!-margin-top-8 govuk__nowrap">
       <p>Last updated on {{ worker.updated | date: 'longDate' }}</p>
     </div>
   </div>
@@ -39,7 +39,7 @@
       >
     </div>
     <div class="govuk-grid-column-one-half">
-      <app-wdf-pagination [workerList]="workerList"></app-wdf-pagination>
+      <app-wdf-pagination [workplaceUid]="workplaceUid" [workerList]="workerList"></app-wdf-pagination>
     </div>
   </div>
 </ng-container>

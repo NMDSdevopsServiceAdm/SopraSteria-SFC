@@ -30,7 +30,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
-  public isPrimaryAccount: boolean;
   public inMandatoryDetailsFlow: boolean;
   public summaryContinue: boolean;
 
@@ -60,11 +59,10 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
-    this.isPrimaryAccount = this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid;
     this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
     this.getJobs();
     this.getReturnPath();
-    this.editFlow = this.inMandatoryDetailsFlow || !this.insideFlow;
+    this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
   }
 
   public setupFormErrorsMap(): void {
@@ -171,15 +169,19 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
   }
 
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
+    if (this.workerService.hasJobRole(this.worker, 27)) {
+      nextRoute.push('mental-health-professional');
+    } else if (this.workerService.hasJobRole(this.worker, 23)) {
+      nextRoute.push('nursing-category');
+    }
+    return nextRoute;
+  }
+
   protected onSuccess(): void {
     if (this.editFlow) {
-      const nextRoute = this.getRoutePath('');
-      if (this.workerService.hasJobRole(this.worker, 27)) {
-        nextRoute.push('mental-health-professional');
-      } else if (this.workerService.hasJobRole(this.worker, 23)) {
-        nextRoute.push('nursing-category');
-      }
-      this.next = nextRoute;
+      this.next = this.determineConditionalRouting();
     } else {
       this.next = this.getRoutePath('mandatory-details');
     }

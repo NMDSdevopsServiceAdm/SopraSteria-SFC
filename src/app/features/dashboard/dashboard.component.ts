@@ -73,6 +73,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.showBanner && this.showStaffRecordBanner();
     this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
+    this.workerService.setState(null);
   }
 
   private getPermissions(): void {

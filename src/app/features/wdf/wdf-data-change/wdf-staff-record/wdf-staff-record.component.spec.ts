@@ -29,6 +29,9 @@ describe('WdfStaffRecordComponent', () => {
           useValue: {
             params: Observable.from([{ id: id }]),
             snapshot: {
+              data: {
+                worker: {},
+              },
               params: [{ id: id }],
               paramMap: {
                 get(id) {
