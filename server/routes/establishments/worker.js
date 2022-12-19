@@ -283,6 +283,8 @@ const viewAllWorkers = async (req, res) => {
               expiredTrainingCount: parseInt(worker.get('expiredTrainingCount')),
               expiringTrainingCount: parseInt(worker.get('expiringTrainingCount')),
               missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
+              trainingLastUpdated: worker.get('trainingLastUpdated'),
+              qualificationsLastUpdated: worker.get('qualificationsLastUpdated'),
               longTermAbsence: worker.LongTermAbsence,
             };
           })

@@ -237,7 +237,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       fixture.componentInstance.showSearchBar = true;
       fixture.detectChanges();
 
-      const searchInput = getByLabelText('Search staff training records');
+      const searchInput = getByLabelText('Search by name or ID number staff training records');
       expect(searchInput).toBeTruthy();
 
       userEvent.type(searchInput, 'search term here{enter}');
@@ -259,7 +259,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       fixture.componentInstance.currentPageIndex = 1;
       fixture.detectChanges();
 
-      userEvent.type(getByLabelText('Search staff training records'), 'search term here{enter}');
+      userEvent.type(getByLabelText('Search by name or ID number staff training records'), 'search term here{enter}');
       expect(workerServiceSpy.calls.mostRecent().args[1].pageIndex).toEqual(0);
     });
 
@@ -276,7 +276,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
         } as WorkersResponse),
       );
 
-      const searchInput = getByLabelText('Search staff training records');
+      const searchInput = getByLabelText('Search by name or ID number staff training records');
       expect(searchInput).toBeTruthy();
 
       userEvent.type(searchInput, 'search term here{enter}');
@@ -293,7 +293,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       fixture.componentInstance.showSearchBar = true;
       fixture.detectChanges();
 
-      userEvent.type(getByLabelText('Search staff training records'), 'search term here{enter}');
+      userEvent.type(getByLabelText('Search by name or ID number staff training records'), 'search term here{enter}');
       expect(spy).toHaveBeenCalledWith([], {
         fragment: 'training-and-qualifications',
         queryParams: { search: 'search term here', tab: 'training' },
@@ -311,7 +311,9 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       fixture.componentInstance.showSearchBar = true;
       fixture.detectChanges();
 
-      expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
+      expect((getByLabelText('Search by name or ID number staff training records') as HTMLInputElement).value).toBe(
+        'mysupersearch',
+      );
     });
   });
 });

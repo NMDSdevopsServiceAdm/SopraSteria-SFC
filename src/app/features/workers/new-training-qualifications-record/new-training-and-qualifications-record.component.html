@@ -147,8 +147,8 @@
 
       <div *ngIf="missingJobRoleMandatoryTrainingCount > 0">
         <app-missing-mandatory-training
-          [missingMandatoryTraining]="missingMandatoryTraining"
-          (addClicked)="addButtonClicked()"
+          [missingRecord]="missingMandatoryTraining"
+          [training]="worker"
           [canEditWorker]="canEditWorker"
         ></app-missing-mandatory-training>
       </div>

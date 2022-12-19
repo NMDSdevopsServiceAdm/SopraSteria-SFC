@@ -1,31 +1,12 @@
-<div class="govuk-form-group govuk-!-margin-bottom-6">
+<div class="govuk-!-margin-bottom-6">
   <div
     [ngClass]="
       showSearchBar ? 'govuk-grid-row' : 'govuk__flex-stack govuk__align-items-flex-end govuk__justify-content-end'
     "
   >
-    <div
-      *ngIf="showViewByToggle"
-      [ngClass]="
-        showSearchBar
-          ? 'govuk-grid-column-full govuk-!-margin-bottom-4 govuk-!-margin-top-4'
-          : 'govuk-grid-column-three-quarters govuk-!-padding-0 govuk-!-padding-bottom-3'
-      "
-    >
-      <span class="govuk-list govuk-list--inline govuk-!-margin-bottom-1 govuk-!-margin-right-6"
-        >View by staff name</span
-      >
-      <a
-        class="govuk-list govuk-list--inline govuk-!-margin-bottom-1"
-        href="#"
-        (click)="this.viewTrainingByCategory.emit(true); (false)"
-      >
-        View by training category
-      </a>
-    </div>
-
     <div *ngIf="showSearchBar" class="govuk-grid-column-three-quarters">
       <app-search-input
+        label="Search by name or ID number"
         accessibleLabel="staff training records"
         [prevSearch]="searchTerm"
         (emitInput)="handleSearch($event)"
@@ -56,7 +37,7 @@
 <table *ngIf="workerCount; else noWorkersFoundInSearch" class="govuk-table" data-testid="training-worker-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Staff name</th>
+      <th class="govuk-table__header" scope="col">Name or ID number</th>
       <th class="govuk-table__header" scope="col">Records</th>
       <th class="govuk-table__header" scope="col">Status</th>
     </tr>

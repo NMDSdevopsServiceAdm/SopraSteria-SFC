@@ -1,26 +1,33 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { SelectRecordTypes } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
+import { Establishment } from '@core/model/establishment.model';
+import { SelectRecordTypes, Worker } from '@core/model/worker.model';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-select-record-type',
   templateUrl: './select-record-type.component.html',
 })
-export class SelectRecordTypeComponent implements OnInit {
+export class SelectRecordTypeComponent implements OnInit, AfterViewInit {
+  @ViewChild('formEl') formEl: ElementRef;
+  public worker: Worker;
+  public workplace: Establishment;
+  public trainingOrQualificationPreviouslySelected: string;
   constructor(
-    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     private workerService: WorkerService,
     protected router: Router,
     private location: Location,
+    public backLinkService: BackLinkService,
+    private trainingService: TrainingService,
   ) {}
   public formErrorsMap: ErrorDetails[];
   public form: FormGroup;
@@ -29,21 +36,27 @@ export class SelectRecordTypeComponent implements OnInit {
   public submitted = false;
   public serverError: string;
   public establishmentuid: string;
-  public id: string;
+  public workerId: string;
   public navigateUrl: string;
 
   ngOnInit(): void {
+    this.trainingOrQualificationPreviouslySelected = this.trainingService.trainingOrQualificationPreviouslySelected;
+    this.worker = this.workerService.worker;
     this.route.params.subscribe((params) => {
       if (params) {
         this.establishmentuid = params.establishmentuid;
-        this.id = params.id;
+        this.workerId = params.id;
       }
     });
+
     this.selectRecordTypes = [SelectRecordTypes.Training, SelectRecordTypes.Qualification];
     this.setupForm();
     this.setupFormErrorsMap();
 
     this.setBackLink();
+    if (this.trainingOrQualificationPreviouslySelected) {
+      this.prefill(this.getPrefillValue());
+    }
   }
 
   private setupForm(): void {
@@ -51,6 +64,7 @@ export class SelectRecordTypeComponent implements OnInit {
       selectRecordType: [null, Validators.required],
     });
   }
+
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -58,7 +72,7 @@ export class SelectRecordTypeComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: 'Select a record type',
+            message: 'Select the type of record',
           },
         ],
       },
@@ -81,16 +95,28 @@ export class SelectRecordTypeComponent implements OnInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({
-      url: [`workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/training`],
+    this.backLinkService.showBackLink();
+  }
+
+  private getPrefillValue(): string {
+    if (this.trainingOrQualificationPreviouslySelected === 'training') {
+      return SelectRecordTypes.Training;
+    } else if (this.trainingOrQualificationPreviouslySelected === 'qualification') {
+      return SelectRecordTypes.Qualification;
+    }
+  }
+
+  private prefill(recordType): void {
+    this.form.patchValue({
+      selectRecordType: recordType,
     });
   }
 
   public addRecord(): void {
     if (this.form.value.selectRecordType === 'Qualification') {
-      this.navigateUrl = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/add-qualification`;
+      this.navigateUrl = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.workerId}/add-qualification`;
     } else if (this.form.value.selectRecordType === 'Training course') {
-      this.navigateUrl = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.id}/add-training`;
+      this.navigateUrl = `workplace/${this.establishmentuid}/training-and-qualifications-record/${this.workerId}/add-training`;
     }
     if (this.navigateUrl && this.form.value.selectRecordType !== null) {
       this.router.navigate([this.navigateUrl]);
@@ -104,5 +130,19 @@ export class SelectRecordTypeComponent implements OnInit {
         }
       });
     }
+  }
+
+  public onCancel(): void {
+    this.router.navigate([
+      '/workplace',
+      this.establishmentuid,
+      'training-and-qualifications-record',
+      this.workerId,
+      'training',
+    ]);
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 }

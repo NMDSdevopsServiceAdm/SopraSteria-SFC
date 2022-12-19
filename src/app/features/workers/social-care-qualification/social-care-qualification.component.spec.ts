@@ -4,10 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -24,11 +21,6 @@ describe('SocialCareQualificationComponent', () => {
           {
             provide: ActivatedRoute,
             useValue: {
-              snapshot: {
-                parent: {
-                  url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
-                },
-              },
               parent: {
                 snapshot: {
                   data: {
@@ -36,6 +28,9 @@ describe('SocialCareQualificationComponent', () => {
                   },
                   url: [{ path: returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
                 },
+              },
+              snapshot: {
+                params: {},
               },
             },
           },
@@ -57,6 +52,7 @@ describe('SocialCareQualificationComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -288,6 +284,83 @@ describe('SocialCareQualificationComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing save and no is entered in wdf version of page', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const radioButtonNo = getByLabelText('No');
+      fireEvent.click(radioButtonNo);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing save and I do not know is entered in wdf version of page', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const radioButtonNo = getByLabelText('I do not know');
+      fireEvent.click(radioButtonNo);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to wdf social-care-qualification-level-summary-flow page when pressing save and Yes is entered in wdf version of page', async () => {
+      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const radioButtonNo = getByLabelText('Yes');
+      fireEvent.click(radioButtonNo);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(getByText('Save')).toBeTruthy();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'social-care-qualification-level']);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+      const { component, routerSpy, getByText, router, fixture } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 });

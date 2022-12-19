@@ -1517,14 +1517,14 @@ class WorkerCsvValidator {
           column: 'SALARYINT',
         });
         return false;
-      } else if (isNaN(mySalary) || mySalary <= 500 || mySalary >= MAX_VALUE) {
+      } else if (isNaN(mySalary) || mySalary < 500 || mySalary > MAX_VALUE) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: WorkerCsvValidator.SALARY_ERROR,
           errType: 'SALARY_ERROR',
-          error: `Salary (SALARY) must be an integer between £500 and £${MAX_VALUE}`,
+          error: `SALARY must be between £500 and £${MAX_VALUE}`,
           source: this._currentLine.SALARY,
           column: 'SALARY',
         });

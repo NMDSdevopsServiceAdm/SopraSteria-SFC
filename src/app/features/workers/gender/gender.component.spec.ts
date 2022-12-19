@@ -32,6 +32,9 @@ describe('GenderComponent', () => {
                 },
               },
             },
+            snapshot: {
+              params: {},
+            },
           },
         },
       ],
@@ -46,6 +49,7 @@ describe('GenderComponent', () => {
 
     return {
       component,
+      router,
       fixture,
       routerSpy,
       getByText,
@@ -181,6 +185,34 @@ describe('GenderComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    it('should navigate to the wdf staff-summary-page page when pressing save and return and in wdf version of page', async () => {
+      const { component, routerSpy, getByText, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to the wdf staff-summary-page page when pressing cancel and in wdf version of page', async () => {
+      const { component, routerSpy, getByText, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 });

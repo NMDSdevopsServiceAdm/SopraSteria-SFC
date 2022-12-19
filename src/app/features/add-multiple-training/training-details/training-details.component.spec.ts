@@ -171,7 +171,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(component.form.invalid).toBeTruthy();
-      expect(getAllByText('Select a training category').length).toEqual(3);
+      expect(getAllByText('Select the training category').length).toEqual(3);
     });
 
     it('should show an error when training name less than 3 characters', async () => {

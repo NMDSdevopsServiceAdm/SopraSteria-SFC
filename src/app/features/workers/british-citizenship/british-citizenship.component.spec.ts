@@ -30,6 +30,9 @@ describe('BritishCitizenshipComponent', () => {
                   },
                 },
               },
+              snapshot: {
+                params: {},
+              },
             },
           },
           {
@@ -50,6 +53,7 @@ describe('BritishCitizenshipComponent', () => {
       component,
       fixture,
       routerSpy,
+      router,
       getByText,
       queryByTestId,
       getByLabelText,
@@ -182,6 +186,34 @@ describe('BritishCitizenshipComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing save and return when in wdf version of the page', async () => {
+      const { component, router, fixture, routerSpy, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const skipButton = getByText('Save and return');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing cancel when in wdf version of the page', async () => {
+      const { component, router, fixture, routerSpy, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const skipButton = getByText('Cancel');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 });

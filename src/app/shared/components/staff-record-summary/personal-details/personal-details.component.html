@@ -24,7 +24,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' date of birth'"
-        [link]="getRoutePath('date-of-birth')"
+        [link]="getRoutePath('date-of-birth', wdfView)"
         [hasData]="!!worker.dateOfBirth"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -54,7 +54,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' national insurance number'"
-        [link]="getRoutePath('national-insurance-number')"
+        [link]="getRoutePath('national-insurance-number', wdfView)"
         [hasData]="!!worker.nationalInsuranceNumber"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -69,7 +69,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' home postcode'"
-        [link]="getRoutePath('home-postcode')"
+        [link]="getRoutePath('home-postcode', wdfView)"
         [hasData]="!!worker.postcode"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -91,7 +91,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' gender'"
-        [link]="getRoutePath('gender')"
+        [link]="getRoutePath('gender', wdfView)"
         [hasData]="!!worker.gender"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -106,7 +106,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' disability'"
-        [link]="getRoutePath('disability')"
+        [link]="getRoutePath('disability', wdfView)"
         [hasData]="!!worker.disability"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -121,7 +121,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' ethnicity'"
-        [link]="getRoutePath('ethnicity')"
+        [link]="getRoutePath('ethnicity', wdfView)"
         [hasData]="!!ethnicGroupData"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -136,7 +136,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' ethnicity'"
-        [link]="getRoutePath('ethnicity')"
+        [link]="getRoutePath('ethnicity', wdfView)"
         [hasData]="!!worker.ethnicity"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -161,7 +161,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' nationality'"
-        [link]="getRoutePath('nationality')"
+        [link]="getRoutePath('nationality', wdfView)"
         [hasData]="!!worker.nationality"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -176,7 +176,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' british citizenship'"
-        [link]="getRoutePath('british-citizenship')"
+        [link]="getRoutePath('british-citizenship', wdfView)"
         [hasData]="!!worker.britishCitizenship"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -195,7 +195,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' country of birth'"
-        [link]="getRoutePath('country-of-birth')"
+        [link]="getRoutePath('country-of-birth', wdfView)"
         [hasData]="!!worker.countryOfBirth"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -210,7 +210,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' year arrived in UK'"
-        [link]="getRoutePath('year-arrived-uk')"
+        [link]="getRoutePath('year-arrived-uk', wdfView)"
         [hasData]="
           !(worker.yearArrived === null || (worker.yearArrived?.value === null && worker.yearArrived?.year === null))
         "

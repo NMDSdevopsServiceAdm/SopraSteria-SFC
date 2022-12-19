@@ -26,23 +26,20 @@ const getCertificate = async (req, res) => {
   const fileName = `${fileNameBase} ${req.params.years}.pdf`;
   const establishmentFileName = `${req.params.id} ${fileName}`;
   Key = `${filePathBase}/${establishmentFileName}`;
-  const exists = await fileExists();
   try {
-    if (!exists) {
-      const thisEstablishment = new Establishment.Establishment(req.username);
-      await thisEstablishment.restore(req.params.id);
+    const thisEstablishment = new Establishment.Establishment(req.username);
+    await thisEstablishment.restore(req.params.id);
 
-      const newFile = await modifyPdf(thisEstablishment.name, fileName);
+    const newFile = await modifyPdf(thisEstablishment.name, fileName);
 
-      const uploadParams = {
-        Bucket,
-        Key,
-        Body: newFile,
-        ContentDisposition: `attachment; filename="${fileName}"`,
-      };
+    const uploadParams = {
+      Bucket,
+      Key,
+      Body: newFile,
+      ContentDisposition: `attachment; filename="${fileName}"`,
+    };
 
-      await uploadToS3(uploadParams);
-    }
+    await uploadToS3(uploadParams);
 
     const url = await getSignedUrl();
     res.status(200).send({ data: url });
@@ -58,15 +55,6 @@ const getSignedUrl = async () => {
       resolve(url);
     });
   });
-};
-
-const fileExists = async () => {
-  try {
-    await s3.getObject(params()).promise();
-    return true;
-  } catch (error) {
-    return false;
-  }
 };
 
 const modifyPdf = async (establishmentName, fileName) => {

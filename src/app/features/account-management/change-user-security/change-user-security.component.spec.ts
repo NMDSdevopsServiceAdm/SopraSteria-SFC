@@ -48,8 +48,9 @@ describe('ChangeUserSecurityComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const userService = injector.inject(UserService) as UserService;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const updateUserSpy = spyOn(userService, 'updateUserDetails').and.callThrough();
     const updateAdminUserSpy = spyOn(userService, 'updateAdminUserDetails').and.callThrough();
 
