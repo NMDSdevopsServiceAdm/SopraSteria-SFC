@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -56,6 +57,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     this.init();
     this.setupForm();
+    this.prefill();
     this.setTitle();
     this.setSection();
     this.setButtonText();
@@ -74,6 +76,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   protected init(): void {}
+
+  protected prefill(): void {}
 
   protected submit(record: any): void {}
 
@@ -264,7 +268,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.backLinkService.showBackLink();
   }
 
-  public onCancel(): void {
+  public onCancel(event: Event): void {
+    event.preventDefault();
     this.router.navigateByUrl(this.previousUrl[0]);
   }
 }

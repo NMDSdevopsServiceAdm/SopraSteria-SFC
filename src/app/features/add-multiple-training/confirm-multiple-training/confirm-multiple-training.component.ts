@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MultipleTrainingResponse } from '@core/model/training.model';
+import { Alert } from '@core/model/alert.model';
+import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
@@ -13,84 +15,72 @@ import { Subscription } from 'rxjs';
   templateUrl: './confirm-multiple-training.component.html',
 })
 export class ConfirmMultipleTrainingComponent implements OnInit {
-  public workers: { key: string; value: string }[];
+  public workers: Worker[];
+  public returnLink: string[];
   public trainingRecords: { key: string; value: string }[];
   private workplaceUid: string;
   public subscriptions: Subscription = new Subscription();
 
   constructor(
-    protected route: ActivatedRoute,
-    protected router: Router,
-    protected trainingService: TrainingService,
-    protected workerService: WorkerService,
-    protected alertService: AlertService,
-    protected backService: BackLinkService,
-  ) {
-    this.workplaceUid = this.route.snapshot.data.establishment.uid;
-  }
+    public route: ActivatedRoute,
+    public router: Router,
+    private trainingService: TrainingService,
+    public workerService: WorkerService,
+    private alertService: AlertService,
+    public backLinkService: BackLinkService,
+    private establishmentService: EstablishmentService,
+  ) {}
 
   ngOnInit(): void {
+    this.workplaceUid = this.route.snapshot.data.establishment.uid;
     this.getStaffData();
     this.convertTrainingRecord();
-    this.backService.showBackLink();
+    this.setReturnLink();
+    this.backLinkService.showBackLink();
   }
 
-  convertTrainingRecord = () => {
+  private convertTrainingRecord(): void {
     const training = this.trainingService.selectedTraining;
     this.trainingRecords = [
-      { key: 'Training category', value: training.trainingCategory?.id },
+      { key: 'Training category', value: training.trainingCategory.category },
       { key: 'Training name', value: training.title },
       { key: 'Training accredited', value: training.accredited },
       { key: 'Date completed', value: training.completed ? dayjs(training.completed).format('D MMMM YYYY') : '-' },
-      { key: 'Exiry date', value: training.expires ? dayjs(training.expires).format('D MMMM YYYY') : '-' },
+      { key: 'Expiry date', value: training.expires ? dayjs(training.expires).format('D MMMM YYYY') : '-' },
       { key: 'Notes', value: training.notes ? training.notes : 'No notes added' },
     ];
-  };
+  }
 
-  getStaffData = () => {
-    const staff = this.trainingService.selectedStaff;
-    this.workers = [];
-    for (const id of staff) {
-      this.workerService.getWorker(this.workplaceUid, id).subscribe((x) => {
-        this.workers.push({ key: x.nameOrId, value: x.mainJob.title });
-      });
-    }
-  };
+  private getStaffData(): void {
+    this.workers = this.trainingService.selectedStaff;
+  }
+
+  public setReturnLink(): void {
+    this.returnLink =
+      this.workplaceUid === this.establishmentService.primaryWorkplace?.uid
+        ? ['/dashboard']
+        : ['/workplace', this.workplaceUid];
+  }
 
   public getRoutePath(pageName: string): Array<string> {
-    return ['/workplace', this.workplaceUid, 'add-multiple-training', pageName];
+    return ['/workplace', this.workplaceUid, 'add-multiple-training', 'confirm-training', pageName];
   }
 
   public onSubmit(): void {
-    this.subscriptions.add(
-      this.workerService
-        .createMultipleTrainingRecords(
-          this.workplaceUid,
-          this.trainingService.selectedStaff,
-          this.trainingService.selectedTraining,
-        )
-        .subscribe(
-          (response: MultipleTrainingResponse) => this.onSuccess(),
-          (error) => this.onError(error),
-        ),
-    );
+    const selectedStaff = this.workers.map((worker) => worker.uid);
+    this.workerService
+      .createMultipleTrainingRecords(this.workplaceUid, selectedStaff, this.trainingService.selectedTraining)
+      .subscribe(() => this.onSuccess());
   }
 
-  private onError = (x) => {
-    console.log(x);
-  };
-
-  private onSuccess = () => {
+  private async onSuccess() {
     const message = `${this.workers.length} training records added`;
-    this.trainingService.addMultipleTrainingInProgress$.next(false);
-    this.trainingService.resetSelectedStaff();
-    this.trainingService.resetSelectedTraining();
+    this.trainingService.resetState();
 
-    this.router.navigate([`dashboard`], { fragment: 'training-and-qualifications' }).then(() => {
-      this.alertService.addAlert({
-        type: 'success',
-        message: message,
-      });
-    });
-  };
+    await this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
+    this.alertService.addAlert({
+      type: 'success',
+      message: message,
+    } as Alert);
+  }
 }

@@ -37,7 +37,8 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   public searchResults: Worker[];
   public errorMessage = 'Select the staff who have completed the training';
   public error = false;
-
+  public submitButtonText: string;
+  public accessedFromSummary = false;
   public selectedWorkers: string[] = [];
 
   constructor(
@@ -61,6 +62,8 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     this.setupErrorsMap();
     this.setReturnLink();
     this.setBackLink();
+    this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
+    this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
   }
 
   ngAfterViewInit(): void {
@@ -68,7 +71,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   }
 
   private prefill(): void {
-    this.selectedWorkers = this.trainingService.selectedStaff;
+    this.selectedWorkers = this.trainingService.selectedStaff.map((worker) => worker.uid);
     this.updateSelectAllLinks();
   }
 
@@ -158,7 +161,11 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   }
 
   private updateSelectedStaff(): void {
-    this.trainingService.updateSelectedStaff(this.selectedWorkers);
+    const workers = this.selectAll
+      ? this.workers
+      : this.workers.filter((worker) => this.selectedWorkers.includes(worker.uid));
+
+    this.trainingService.updateSelectedStaff(workers);
   }
 
   public onSubmit(): void {
@@ -168,12 +175,17 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
 
     if (this.selectedWorkers.length > 0) {
       this.updateSelectedStaff();
+      const nextRoute = this.getNextRoute();
       this.trainingService.addMultipleTrainingInProgress$.next(true);
-      this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
+      this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', nextRoute]);
     } else {
       this.error = true;
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  private getNextRoute(): string {
+    return this.accessedFromSummary ? 'confirm-training' : 'training-details';
   }
 
   handleSearch(searchTerm: string): void {
@@ -192,9 +204,14 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     });
   }
 
-  public onCancel(): void {
-    this.trainingService.resetSelectedStaff();
-    this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
+  public onCancel(event: Event): void {
+    event.preventDefault();
+    if (this.accessedFromSummary) {
+      this.router.navigate(['../'], { relativeTo: this.route });
+    } else {
+      this.trainingService.resetSelectedStaff();
+      this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
+    }
   }
 
   public handleResetSearch(event: Event): void {

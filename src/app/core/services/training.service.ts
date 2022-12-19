@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -9,7 +10,7 @@ import { map } from 'rxjs/operators';
 })
 export class TrainingService {
   public selectedTraining = null;
-  public selectedStaff = [];
+  public selectedStaff: Worker[] = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
@@ -39,5 +40,11 @@ export class TrainingService {
   //get all mandatory training
   public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
     return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
+  }
+
+  public resetState(): void {
+    this.addMultipleTrainingInProgress$.next(false);
+    this.resetSelectedStaff();
+    this.resetSelectedTraining();
   }
 }
