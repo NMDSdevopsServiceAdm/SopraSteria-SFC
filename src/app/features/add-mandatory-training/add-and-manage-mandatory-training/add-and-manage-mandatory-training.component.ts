@@ -32,8 +32,15 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((trainings) => {
         this.existingMandatoryTrainings = trainings;
+        this.sortTrainingAlphabetically(trainings.mandatoryTraining);
       }),
     );
+  }
+
+  public sortTrainingAlphabetically(training) {
+    training.sort((categoryA: any, categoryB: any) => {
+      return categoryA.category.localeCompare(categoryB.category);
+    });
   }
 
   public navigateToAddNewMandatoryTraining() {
