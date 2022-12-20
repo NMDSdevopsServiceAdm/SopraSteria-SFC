@@ -36,22 +36,26 @@ describe('TrainingInfoPanelComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the number of missing, expired and expiring soon records', async () => {
-    const { getByText, getAllByText } = await setup(1, 1, 1);
+  it('should not show the summary box if there are no expired, expiring soon or missing mandatory training records', async () => {
+    const { queryByTestId } = await setup();
 
-    expect(getAllByText('1').length).toEqual(3);
-    expect(getByText('staff is missing mandatory training')).toBeTruthy();
-    expect(getByText('record has expired')).toBeTruthy();
-    expect(getByText('record expires soon')).toBeTruthy();
+    expect(queryByTestId('summary-box')).toBeFalsy();
+  });
+
+  it('should show the number of missing, expired and expiring soon records', async () => {
+    const { getByText } = await setup(1, 1, 1);
+
+    expect(getByText('1 staff is missing mandatory training')).toBeTruthy();
+    expect(getByText('1 record has expired')).toBeTruthy();
+    expect(getByText('1 record expires soon')).toBeTruthy();
   });
 
   it('should show the number of missing, expired and expiring soon records pluralised when multiple records fit the criteria', async () => {
-    const { getByText, getAllByText } = await setup(2, 2, 2);
+    const { getByText } = await setup(2, 2, 2);
 
-    expect(getAllByText('2').length).toEqual(3);
-    expect(getByText('staff are missing mandatory training')).toBeTruthy();
-    expect(getByText('records have expired')).toBeTruthy();
-    expect(getByText('records expire soon')).toBeTruthy();
+    expect(getByText('2 staff are missing mandatory training')).toBeTruthy();
+    expect(getByText('2 records have expired')).toBeTruthy();
+    expect(getByText('2 records expire soon')).toBeTruthy();
   });
 
   it('should not show any summary when there are no missing, expired or expiring soon records', async () => {
