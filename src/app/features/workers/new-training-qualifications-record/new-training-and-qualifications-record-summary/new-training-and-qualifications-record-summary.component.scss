@@ -1,10 +1,9 @@
 @import '~govuk-frontend/govuk/base';
 
 .asc-summary-box {
-  border: 1px solid $govuk-border-colour;
   background-color: govuk-colour('light-grey');
   display: flex;
-  padding: 30px 40px;
+  padding: 20px 30px;
   font-size: 19px;
 
   @media only screen and (max-width: 830px) {
@@ -17,67 +16,14 @@
   }
 }
 
-.asc-column {
-  margin-top: 20px;
-
-  &:first-of-type {
-    margin-top: 0px;
-    width: 30%;
-
-    @media only screen and (max-width: 690px) {
-      width: 40%;
-    }
-
-    @media only screen and (max-width: 510px) {
-      width: 80%;
-      align-self: center;
-    }
-  }
-
-  &:last-of-type {
-    border-left: 1px solid $govuk-border-colour;
-    flex: 1;
-    display: flex;
-
-    @media only screen and (max-width: 510px) {
-      border-left: 0px;
-      margin-top: 0px;
-    }
-  }
-
-  @media only screen and (max-width: 690px) {
-    flex-direction: column;
-  }
-}
-
-.asc-individual-training-columns {
-  flex: 1;
-  padding-left: 60px;
-
-  @media only screen and (max-width: 950px) {
-    padding-left: 30px;
-  }
-
-  @media only screen and (max-width: 690px) {
-    padding-left: 0;
-    width: 80%;
-    align-self: center;
-  }
-
-  &:last-of-type {
-    @media only screen and (max-width: 865px) {
-      padding-left: 0;
-    }
-  }
-}
-
 .asc-total-records {
-  font-weight: bold;
+  margin-bottom: 0px;
 
   &--text {
-    font-weight: inherit;
     font-size: 22px;
-    margin-bottom: 0px;
+    font-weight: 900;
+    color: $govuk-text-colour;
+    align-self: center;
 
     @media only screen and (max-width: 690px) {
       padding-top: 20px;
@@ -85,78 +31,12 @@
   }
 
   &--count {
+    font-size: 60px;
+    font-weight: 600;
     color: govuk-colour('turquoise');
-    font-size: 100px;
-    padding-left: 50px;
 
     @media only screen and (max-width: 690px) {
       display: block;
     }
   }
-}
-
-hr {
-  color: $govuk-border-colour;
-  display: none;
-
-  &.asc-top-line {
-    margin: 30px 50px 40px 50px;
-
-    @media only screen and (max-width: 510px) {
-      display: block;
-    }
-  }
-
-  &.asc-bottom-line {
-    margin: 20px 80px;
-
-    @media only screen and (max-width: 690px) {
-      display: block;
-    }
-
-    @media only screen and (max-width: 510px) {
-      margin: 40px 100px;
-    }
-  }
-}
-
-.asc-flex-container {
-  display: flex;
-  gap: 3%;
-}
-
-.asc-records-count {
-  justify-self: end;
-  font-weight: bold;
-
-  &--count {
-    font-size: 50px;
-    color: govuk-colour('turquoise');
-  }
-}
-
-.asc-records-text {
-  font-weight: bold;
-  font-size: 19px;
-  color: $govuk-text-colour;
-  align-self: center;
-}
-
-.asc-record-status {
-  justify-self: end;
-
-  &--image-container {
-    display: flex;
-    align-items: center;
-  }
-
-  &--count {
-    font-size: 30px;
-    font-weight: bold;
-    margin-left: 8px;
-  }
-}
-
-.asc-record-status-text {
-  align-self: center;
 }

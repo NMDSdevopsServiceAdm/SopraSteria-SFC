@@ -1,139 +1,22 @@
-<div class="govuk-grid-row govuk-!-margin-bottom-5">
-  <div class="govuk-grid-column-full">
-    <div class="asc-summary-box">
-      <div class="asc-total-records asc-column">
-        <p class="asc-total-records--text">Number of <br />records added:</p>
-        <span class="asc-total-records--count">{{ trainingCount + qualificationsCount }}</span>
-      </div>
-      <hr class="asc-top-line" />
-      <div class="asc-column">
-        <div class="govuk-grid-row" style="width: 100%">
-          <div class="govuk-grid-column-full">
-            <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-half">
-                <div class="asc-records-count" data-testid="trainingCount">
-                  <div class="asc-flex-container">
-                    <span class="asc-records-count--count govuk-!-margin-left-9">{{ trainingCount }}</span>
-                    <div class="asc-records-text" data-testid="trainingText">
-                      <ng-container [ngPlural]="trainingCount">
-                        <ng-template ngPluralCase="=1">
-                          <span>training record</span>
-                        </ng-template>
-                        <ng-template ngPluralCase="other">
-                          <span>training records</span>
-                        </ng-template>
-                      </ng-container>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <hr class="asc-bottom-line" />
-              <div class="govuk-grid-column-one-half">
-                <div class="asc-flex-container">
-                  <div class="asc-records-count" data-testid="qualificationsCount">
-                    <span class="asc-records-count--count">{{ qualificationsCount }}</span>
-                  </div>
-                  <div class="asc-records-text" data-testid="qualificationsText">
-                    <ng-container [ngPlural]="qualificationsCount">
-                      <ng-template ngPluralCase="=1">
-                        <span>qualification record</span>
-                      </ng-template>
-                      <ng-template ngPluralCase="other">
-                        <span>qualification records</span>
-                      </ng-template>
-                    </ng-container>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="govuk-grid-row">
-              <div class="govuk-grid-column-full">
-                <div class="govuk-grid-row">
-                  <div class="govuk-grid-column-full">
-                    <div class="asc-flex-container govuk-!-margin-left-9">
-                      <div class="asc-record-status" *ngIf="missingMandatoryTraining">
-                        <div class="asc-record-status--image-container" data-testid="mandatoryTrainingCount">
-                          <img src="/assets/images/flag-red.svg" alt="" />
-                          <span class="asc-record-status--count">{{ missingMandatoryTraining }}</span>
-                        </div>
-                      </div>
-                      <div
-                        class="asc-record-status-text"
-                        *ngIf="missingMandatoryTraining"
-                        data-testid="mandatoryTrainingText"
-                      >
-                        <ng-container [ngPlural]="missingMandatoryTraining">
-                          <ng-template ngPluralCase="=1">
-                            <span>mandatory training record needs to be added</span>
-                          </ng-template>
-                          <ng-template ngPluralCase="other">
-                            <span>mandatory training records need to be added</span>
-                          </ng-template>
-                        </ng-container>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="govuk-grid-row">
-                  <div class="govuk-grid-column-full">
-                    <div class="asc-flex-container govuk-!-margin-left-9">
-                      <div class="asc-record-status" *ngIf="expiredTrainingCount">
-                        <div class="asc-record-status--image-container" data-testid="expiredTrainingCount">
-                          <img src="/assets/images/flag-red.svg" alt="" />
-                          <span class="asc-record-status--count">{{ expiredTrainingCount }}</span>
-                        </div>
-                      </div>
-                      <div
-                        class="asc-record-status-text"
-                        *ngIf="expiredTrainingCount"
-                        data-testid="expiredTrainingText"
-                      >
-                        <ng-container [ngPlural]="expiredTrainingCount">
-                          <ng-template ngPluralCase="=1">
-                            <span>record has expired</span>
-                          </ng-template>
-                          <ng-template ngPluralCase="other">
-                            <span>records have expired</span>
-                          </ng-template>
-                        </ng-container>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="govuk-grid-row">
-                  <div class="govuk-grid-column-full">
-                    <div class="asc-flex-container govuk-!-margin-left-9">
-                      <div class="asc-record-status" *ngIf="expiresSoonTrainingCount">
-                        <div class="asc-record-status--image-container" data-testid="expiresSoonTrainingCount">
-                          <img src="/assets/images/flag-orange.svg" alt="" />
-                          <span class="asc-record-status--count">{{ expiresSoonTrainingCount }}</span>
-                        </div>
-                      </div>
-                      <div
-                        class="asc-record-status-text"
-                        *ngIf="expiresSoonTrainingCount"
-                        data-testid="expiresSoonTrainingText"
-                      >
-                        <ng-container [ngPlural]="expiresSoonTrainingCount">
-                          <ng-template ngPluralCase="=1">
-                            <span>record expires soon</span>
-                          </ng-template>
-                          <ng-template ngPluralCase="other">
-                            <span>records expire soon</span>
-                          </ng-template>
-                        </ng-container>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="row govuk-!-margin-bottom-5">
+  <div class="asc-summary-box">
+    <div class="govuk-grid-column-one-third asc-total-records">
+      <p class="govuk-!-margin-bottom-0">
+        <span class="asc-total-records--count govuk-!-margin-right-2">10</span
+        ><span class="asc-total-records--text">records added</span>
+      </p>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <p class="govuk-!-margin-bottom-0">
+        <span class="asc-total-records--count govuk-!-margin-right-2">8</span
+        ><span class="asc-total-records--text">training records</span>
+      </p>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <p class="govuk-!-margin-bottom-0">
+        <span class="asc-total-records--count govuk-!-margin-right-2">2</span
+        ><span class="asc-total-records--text">qualification records</span>
+      </p>
     </div>
   </div>
 </div>

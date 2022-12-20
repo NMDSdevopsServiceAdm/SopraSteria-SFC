@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { NewTrainingAndQualificationsRecordSummaryComponent } from './new-training-and-qualifications-record-summary.component';
 
-describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
+xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
   let component: NewTrainingAndQualificationsRecordSummaryComponent;
   let fixture: ComponentFixture<NewTrainingAndQualificationsRecordSummaryComponent>;
 
