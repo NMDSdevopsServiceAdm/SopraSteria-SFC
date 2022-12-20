@@ -1,24 +1,25 @@
 @import '~govuk-frontend/govuk/base';
 
-.asc-full-width {
-  display: flex;
-}
+// .asc-full-width {
+//   display: flex;
+// }
 
-.asc-partial-width {
-  display: inline-flex;
+// .asc-partial-width {
+//   display: inline-flex;
 
-  @media only screen and (max-width: 680px) {
-    display: flex;
-  }
-}
+//   @media only screen and (max-width: 680px) {
+//     display: flex;
+//   }
+// }
 
 .asc-summary-box {
-  border: 1px solid $govuk-border-colour;
+  display: flex;
+
   background-color: govuk-colour('light-grey');
   font-size: 19px;
   color: $govuk-text-colour;
   padding: 15px 0;
-  margin-bottom: 10px;
+  margin-bottom: 40px;
 
   @media only screen and (max-width: 680px) {
     justify-content: center;
@@ -40,7 +41,7 @@
     flex-direction: column;
     justify-content: flex-end;
     border-right: 1px solid $govuk-border-colour;
-    padding: 0 25px;
+    padding: 10px 20px;
     box-sizing: border-box;
 
     @media only screen and (max-width: 680px) {
@@ -53,50 +54,22 @@
   }
 }
 
-.asc-columns-full-width {
-  @media only screen and (max-width: 850px) {
-    flex: 1;
-  }
-
-  &:first-of-type {
-    min-width: 340px;
-
-    @media only screen and (max-width: 850px) {
-      min-width: 250px;
-    }
-  }
-
-  &:not(:first-of-type) {
-    flex: 1;
-  }
-}
-
-.asc-columns-partial-width {
-  min-width: 320px;
-
-  @media only screen and (max-width: 680px) {
-    min-width: 250px;
-  }
-}
-
-.asc-title {
-  font-weight: bold;
-  padding-bottom: 20px;
-}
-
 .asc-content {
   display: flex;
+  align-items: center;
 
   &--phrase {
-    margin-top: 1px;
+    // margin-top: 1px;
   }
 
   &--image {
-    margin-right: 5px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
   }
 
   &--count {
-    margin-right: 5px;
+    // margin-right: 5px;
   }
 }
 

@@ -12,6 +12,9 @@ export class TrainingInfoPanelComponent implements OnInit {
   public summaryColumns: number;
 
   ngOnInit(): void {
+    this.totalExpiredTraining = 2;
+    this.totalExpiringTraining = 2;
+    this.totalStaffMissingMandatoryTraining = 2;
     this.summaryColumns = this.countColumns();
   }
 
