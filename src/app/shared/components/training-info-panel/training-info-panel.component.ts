@@ -6,6 +6,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./training-info-panel.component.scss'],
 })
 export class TrainingInfoPanelComponent {
+  @Input() public workplaceUid: string;
   @Input() public totalExpiredTraining = 0;
   @Input() public totalExpiringTraining = 0;
   @Input() public totalStaffMissingMandatoryTraining = 0;
