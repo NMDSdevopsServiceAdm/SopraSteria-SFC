@@ -1,54 +1,47 @@
 <div class="asc-summary-box" data-testid="summary-box">
   <div class="asc-container">
-    <!-- <hr *ngIf="totalExpiredTraining && totalStaffMissingMandatoryTraining" /> -->
-    <div class="asc-container--column" *ngIf="totalExpiredTraining" data-testid="expired-column">
-      <div class="asc-content">
-        <div class="asc-content--image">
-          <img src="/assets/images/flag-red.svg" alt="" />
-        </div>
-        <div class="asc-content--phrase">
-          <a href="#" class="govuk-link govuk-link--no-visited-state"
-            ><strong>{{ totalExpiredTraining }}</strong>
-            <ng-container [ngPlural]="totalExpiredTraining">
-              <ng-template ngPluralCase="=1"> record has expired </ng-template>
-              <ng-template ngPluralCase="other"> records have expired </ng-template>
-            </ng-container>
-          </a>
-        </div>
+    <div class="asc-content" *ngIf="totalExpiredTraining" data-testid="expired-column">
+      <div class="asc-content--image">
+        <img src="/assets/images/flag-red.svg" alt="" />
+      </div>
+      <div>
+        <a href="#" class="govuk-link govuk-link--no-visited-state"
+          ><strong>{{ totalExpiredTraining }}</strong>
+          <ng-container [ngPlural]="totalExpiredTraining">
+            <ng-template ngPluralCase="=1"> record has expired </ng-template>
+            <ng-template ngPluralCase="other"> records have expired </ng-template>
+          </ng-container>
+        </a>
       </div>
     </div>
-    <!-- <hr *ngIf="totalExpiringTraining && (totalExpiredTraining || totalStaffMissingMandatoryTraining)" /> -->
-    <div class="asc-container--column" *ngIf="totalExpiringTraining" data-testid="expiring-column">
-      <div class="asc-content">
-        <div class="asc-content--image">
-          <img src="/assets/images/flag-orange.svg" alt="" />
-        </div>
-        <div class="asc-content--phrase">
-          <a href="#" class="govuk-link govuk-link--no-visited-state">
-            <strong>{{ totalExpiringTraining }}</strong>
-            <ng-container [ngPlural]="totalExpiringTraining">
-              <ng-template ngPluralCase="=1"> record expires soon </ng-template>
-              <ng-template ngPluralCase="other"> records expire soon </ng-template>
-            </ng-container>
-          </a>
-        </div>
+    <hr *ngIf="totalExpiredTraining && (totalExpiringTraining || totalStaffMissingMandatoryTraining)" />
+    <div class="asc-content" *ngIf="totalExpiringTraining" data-testid="expiring-column">
+      <div class="asc-content--image">
+        <img src="/assets/images/flag-orange.svg" alt="" />
+      </div>
+      <div>
+        <a href="#" class="govuk-link govuk-link--no-visited-state">
+          <strong>{{ totalExpiringTraining }}</strong>
+          <ng-container [ngPlural]="totalExpiringTraining">
+            <ng-template ngPluralCase="=1"> record expires soon </ng-template>
+            <ng-template ngPluralCase="other"> records expire soon </ng-template>
+          </ng-container>
+        </a>
       </div>
     </div>
-    <!-- <hr *ngIf="totalExpiredTraining && totalStaffMissingMandatoryTraining" /> -->
-    <div class="asc-container--column" *ngIf="totalStaffMissingMandatoryTraining" data-testid="missing-column">
-      <div class="asc-content">
-        <div class="asc-content--image">
-          <img src="/assets/images/flag-red.svg" alt="" />
-        </div>
-        <div class="asc-content--phrase">
-          <a href="#" class="govuk-link govuk-link--no-visited-state">
-            <strong>{{ totalStaffMissingMandatoryTraining }}</strong>
-            <ng-container [ngPlural]="totalStaffMissingMandatoryTraining">
-              <ng-template ngPluralCase="=1"> staff is missing mandatory training </ng-template>
-              <ng-template ngPluralCase="other"> staff are missing mandatory training </ng-template>
-            </ng-container>
-          </a>
-        </div>
+    <hr *ngIf="totalExpiringTraining && totalStaffMissingMandatoryTraining" />
+    <div class="asc-content" *ngIf="totalStaffMissingMandatoryTraining" data-testid="missing-column">
+      <div class="asc-content--image">
+        <img src="/assets/images/flag-red.svg" alt="" />
+      </div>
+      <div>
+        <a href="#" class="govuk-link govuk-link--no-visited-state">
+          <strong>{{ totalStaffMissingMandatoryTraining }}</strong>
+          <ng-container [ngPlural]="totalStaffMissingMandatoryTraining">
+            <ng-template ngPluralCase="=1"> staff is missing mandatory training </ng-template>
+            <ng-template ngPluralCase="other"> staff are missing mandatory training </ng-template>
+          </ng-container>
+        </a>
       </div>
     </div>
   </div>

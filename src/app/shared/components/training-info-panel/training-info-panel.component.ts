@@ -1,28 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-training-info-panel',
   templateUrl: './training-info-panel.component.html',
   styleUrls: ['./training-info-panel.component.scss'],
 })
-export class TrainingInfoPanelComponent implements OnInit {
+export class TrainingInfoPanelComponent {
   @Input() public totalExpiredTraining = 0;
   @Input() public totalExpiringTraining = 0;
   @Input() public totalStaffMissingMandatoryTraining = 0;
-  public summaryColumns: number;
-
-  ngOnInit(): void {
-    this.totalExpiredTraining = 2;
-    this.totalExpiringTraining = 2;
-    this.totalStaffMissingMandatoryTraining = 2;
-    this.summaryColumns = this.countColumns();
-  }
-
-  private countColumns() {
-    let count = 0;
-    count = this.totalExpiredTraining ? count + 1 : count;
-    count = this.totalExpiringTraining ? count + 1 : count;
-    count = this.totalStaffMissingMandatoryTraining ? count + 1 : count;
-    return count;
-  }
 }
