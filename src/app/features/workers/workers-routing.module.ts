@@ -7,9 +7,7 @@ import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
-import {
-  ViewTrainingComponent,
-} from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
+import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
@@ -36,6 +34,7 @@ import { NationalInsuranceNumberComponent } from './national-insurance-number/na
 import { NationalityComponent } from './nationality/nationality.component';
 import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
+import { SummaryPanelMissingMandatoryTraining } from './new-training-qualifications-record/summary-panel-missing-mandatory-training/summary-panel-missing-mandatory-training.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
@@ -84,6 +83,15 @@ const routes: Routes = [
     component: ViewTrainingComponent,
 
     data: { title: 'View Training Categories' },
+  },
+  {
+    path: 'summary-panel-missing-mandatory-training',
+    component: SummaryPanelMissingMandatoryTraining,
+
+    data: {
+      permissions: ['canAddWorker'],
+      title: 'View Summary Panel Missing Training',
+    },
   },
   {
     path: ':id',
