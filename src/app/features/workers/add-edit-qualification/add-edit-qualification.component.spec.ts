@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
@@ -9,36 +10,41 @@ import { qualificationRecord } from '@core/test-utils/MockWorkerService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
+import { QualificationFormComponent } from './qualification-form/qualification-form.component';
 
-describe('AddEditQualificationComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getByTestId, queryByText } = await render(AddEditQualificationComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: new MockActivatedRoute({
-            snapshot: {
-              params: { qualificationId: '1' },
-            },
-            parent: {
+fdescribe('AddEditQualificationComponent', () => {
+  async function setup(qualificationId = '1') {
+    const { fixture, getByText, getByTestId, queryByText, getByLabelText } = await render(
+      AddEditQualificationComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          {
+            provide: ActivatedRoute,
+            useValue: new MockActivatedRoute({
               snapshot: {
-                data: {
-                  establishment: {
-                    uid: '1',
+                params: { qualificationId: qualificationId },
+              },
+              parent: {
+                snapshot: {
+                  data: {
+                    establishment: {
+                      uid: '1',
+                    },
                   },
                 },
               },
-            },
-          }),
-        },
-        { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-      ],
-    });
+            }),
+          },
+          { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        ],
+        declarations: [QualificationFormComponent],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -51,6 +57,7 @@ describe('AddEditQualificationComponent', () => {
       getByText,
       getByTestId,
       queryByText,
+      getByLabelText,
       routerSpy,
     };
   }
@@ -118,6 +125,20 @@ describe('AddEditQualificationComponent', () => {
         component.qualificationId,
         'delete',
       ]);
+    });
+  });
+
+  describe('textArea', async () => {
+    fit('should show label', async () => {
+      const { fixture, getByLabelText, getByTestId } = await setup(null);
+
+      const degreeRadio = getByLabelText('Degree');
+      const conditionalForm = getByTestId('Degree');
+
+      fireEvent.click(degreeRadio);
+
+      fixture.detectChanges();
+      expect(within(conditionalForm).getByText('You have 500 characters remaining')).toBeTruthy();
     });
   });
 });

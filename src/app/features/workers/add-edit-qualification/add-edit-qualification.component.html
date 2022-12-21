@@ -57,6 +57,7 @@
                 class="govuk-radios__conditional govuk-!-margin-bottom-2"
                 [class.govuk-radios__conditional--hidden]="form.get('type').value !== item.value"
                 id="conditional-terms-conditional-{{ item.key }}"
+                [attr.data-testid]="item.value"
               >
                 <app-qualification-form
                   [form]="form"
