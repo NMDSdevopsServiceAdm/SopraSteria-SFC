@@ -16,9 +16,7 @@ const getAllTrainingByStatus = async (req, res) => {
     const date = new Date();
 
     const training = await Training.getAllEstablishmentTrainingByStatus(establishmentId, date);
-    console.log('*******************');
-    console.log(training);
-    console.log(training.length);
+
     return res.status(200).json({ training });
   } catch (error) {
     console.error('Training::root getAllTrainingByStatus - failed', error);
