@@ -11,13 +11,14 @@ import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceW
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
 import { QualificationFormComponent } from './qualification-form/qualification-form.component';
 
-fdescribe('AddEditQualificationComponent', () => {
+describe('AddEditQualificationComponent', () => {
   async function setup(qualificationId = '1') {
-    const { fixture, getByText, getByTestId, queryByText, getByLabelText } = await render(
+    const { fixture, getByText, getByTestId, queryByText, getByLabelText, getAllByText } = await render(
       AddEditQualificationComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -59,6 +60,7 @@ fdescribe('AddEditQualificationComponent', () => {
       queryByText,
       getByLabelText,
       routerSpy,
+      getAllByText,
     };
   }
 
@@ -128,8 +130,8 @@ fdescribe('AddEditQualificationComponent', () => {
     });
   });
 
-  describe('textArea', async () => {
-    fit('should show label', async () => {
+  describe('notes', async () => {
+    it('should show label', async () => {
       const { fixture, getByLabelText, getByTestId } = await setup(null);
 
       const degreeRadio = getByLabelText('Degree');
@@ -139,6 +141,81 @@ fdescribe('AddEditQualificationComponent', () => {
 
       fixture.detectChanges();
       expect(within(conditionalForm).getByText('You have 500 characters remaining')).toBeTruthy();
+    });
+
+    it('should show a count of how many characters there are remaining until the limit of the notes input', async () => {
+      const { fixture, getByLabelText, getByTestId } = await setup(null);
+
+      const degreeRadio = getByLabelText('Degree');
+      const conditionalForm = getByTestId('Degree');
+
+      fireEvent.click(degreeRadio);
+      fixture.detectChanges();
+      userEvent.type(within(conditionalForm).getByLabelText('Notes'), 'aaaaa');
+      fixture.detectChanges();
+      expect(within(conditionalForm).getByText('You have 495 characters remaining')).toBeTruthy();
+    });
+
+    it('should show by how many characters the user has exceeded the limit of the notes input', async () => {
+      const { fixture, getByLabelText, getByTestId } = await setup(null);
+
+      const degreeRadio = getByLabelText('Degree');
+      const conditionalForm = getByTestId('Degree');
+
+      fireEvent.click(degreeRadio);
+      fixture.detectChanges();
+      userEvent.type(
+        within(conditionalForm).getByLabelText('Notes'),
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      );
+      fixture.detectChanges();
+      expect(within(conditionalForm).getByText('You have 1 character too many')).toBeTruthy();
+    });
+  });
+
+  describe('error messages', async () => {
+    it('should show error messages if no qualification type is selected', async () => {
+      const { getByText, getAllByText } = await setup(null);
+
+      fireEvent.click(getByText('Save record'));
+      expect(getAllByText('Select the qualification type').length).toEqual(2);
+    });
+
+    it('should show error messages if no qualification name is selected', async () => {
+      const { fixture, getByLabelText, getByText, getAllByText } = await setup(null);
+
+      const degreeRadio = getByLabelText('Degree');
+      fireEvent.click(degreeRadio);
+      fixture.detectChanges();
+      fireEvent.click(getByText('Save record'));
+      expect(getAllByText('Select the qualification name').length).toEqual(2);
+    });
+
+    it('should show error messages if year achieved is out of acceptable range', async () => {
+      const { fixture, getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
+
+      const degreeRadio = getByLabelText('Degree');
+      const conditionalForm = getByTestId('Degree');
+      fireEvent.click(degreeRadio);
+      fixture.detectChanges();
+      userEvent.type(within(conditionalForm).getByLabelText('Year achieved'), '1000');
+      fireEvent.click(getByText('Save record'));
+      expect(getAllByText('Year achieved must be this year or fewer than 100 years in the past').length).toEqual(2);
+    });
+
+    it('should show error messages if too many characters are entered into the notes input', async () => {
+      const { fixture, getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
+
+      const degreeRadio = getByLabelText('Degree');
+      const conditionalForm = getByTestId('Degree');
+      fireEvent.click(degreeRadio);
+      fixture.detectChanges();
+      userEvent.type(
+        within(conditionalForm).getByLabelText('Notes'),
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      );
+      fireEvent.click(getByText('Save record'));
+      expect(getAllByText('Notes must be 500 characters or fewer').length).toEqual(2);
     });
   });
 });
