@@ -1,1 +1,97 @@
-<div>Expired training</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l"> Training and qualifications </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
+      {{ title }}
+    </h1>
+  </div>
+</div>
+<table class="govuk-table" data-testid="userTable">
+  <thead class="govuk-table__head" data-testid="userTable-Heading">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col" style="width: 22%">Name or ID number</th>
+      <th class="govuk-table__header" scope="col" style="width: 40%">Training category</th>
+      <th class="govuk-table__header" scope="col" style="width: 15%">Expiry date</th>
+      <th class="govuk-table__header" scope="col" style="width: 15%">Status</th>
+      <th class="govuk-table__header" scope="col" style="width: 8%"></th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <ng-container>
+      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let training of expiredTraining">
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          <ng-container *ngIf="canEditWorker; else nameOrId">
+            <a [routerLink]="['../../training-and-qualifications-record', training.worker.uid, 'training']">
+              {{ training.worker.NameOrIdValue }}</a
+            >
+          </ng-container>
+          <ng-template #nameOrId>
+            {{ training.worker.NameOrIdValue }}
+          </ng-template>
+        </td>
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          {{ training.category.category }}
+        </td>
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          {{ training.expires ? (training.expires | date: 'd MMM y') : '-' }}
+        </td>
+
+        <td class="govuk-table__cell">
+          <div class="govuk-!-margin-bottom-1">
+            <img
+              src="/assets/images/flag-red.svg"
+              alt=""
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
+            1 expired
+          </div>
+          <!-- <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
+            <img
+              src="/assets/images/flag-orange.svg"
+              alt=""
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
+            1 expires soon
+          </div>
+          <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
+            <img
+              src="/assets/images/flag-red.svg"
+              alt=""
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
+            1 missing
+          </div> -->
+        </td>
+        <td class="govuk-table__cell">
+          <!-- <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
+            <app-missing-mandatory-training
+              [missingRecord]="category"
+              [training]="training.worker"
+              [canEditWorker]="canEditWorker"
+            ></app-missing-mandatory-training>
+          </div> -->
+
+          <!-- <div
+            *ngIf="
+              (trainingStatus(training) == trainingStatusService.EXPIRED ||
+                trainingStatus(training) == trainingStatusService.EXPIRING) &&
+              canEditWorker
+            "
+          > -->
+          <div *ngIf="canEditWorker">
+            <a
+              [routerLink]="['../../training-and-qualifications-record', training.worker.uid, 'training', training.uid]"
+              href="#"
+              >Update</a
+            >
+          </div>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <button type="button" class="govuk-button govuk-!-margin-top-4" (click)="returnToHome()">Return to home</button>
+  </div>
+</div>

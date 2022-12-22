@@ -2,6 +2,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { GetTrainingByStatusResolver } from '@core/resolvers/get-training-by-status.resolver';
 import { SharedModule } from '@shared/shared.module';
 
 import { ExpiredTrainingComponent } from './expired-training/expired-training.component';
@@ -17,6 +18,6 @@ import { TrainingAndQualificationsRoutingModule } from './training-and-qualifica
     TrainingAndQualificationsRoutingModule,
   ],
   declarations: [ExpiredTrainingComponent],
-  providers: [],
+  providers: [GetTrainingByStatusResolver],
 })
 export class TrainingAndQualificationsModule {}
