@@ -6,8 +6,8 @@
     </h1>
   </div>
 </div>
-<table class="govuk-table" data-testid="userTable">
-  <thead class="govuk-table__head" data-testid="userTable-Heading">
+<table class="govuk-table" data-testid="table">
+  <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col" style="width: 22%">Name or ID number</th>
       <th class="govuk-table__header" scope="col" style="width: 40%">Training category</th>
@@ -18,15 +18,30 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container>
-      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let training of expiredTraining">
+      <tr
+        class="govuk-table__row govuk-util__vertical-align-top"
+        *ngFor="let training of expiredTraining; let i = index"
+        [attr.data-testid]="'table-row-' + i"
+      >
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           <ng-container *ngIf="canEditWorker; else nameOrId">
-            <a [routerLink]="['../../training-and-qualifications-record', training.worker.uid, 'training']">
+            <a
+              class="govuk-link--no-visited-state"
+              [attr.data-testid]="'worker-' + i"
+              href="#"
+              [routerLink]="[
+                '/workplace',
+                workplaceUid,
+                'training-and-qualifications-record',
+                training.worker.uid,
+                'training'
+              ]"
+            >
               {{ training.worker.NameOrIdValue }}</a
             >
           </ng-container>
           <ng-template #nameOrId>
-            {{ training.worker.NameOrIdValue }}
+            <span [attr.data-testid]="'worker-' + i + '-noLink'">{{ training.worker.NameOrIdValue }}</span>
           </ng-template>
         </td>
         <td class="govuk-table__cell govuk-!-font-weight-regular">
@@ -43,7 +58,7 @@
               alt=""
               class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
             />
-            1 expired
+            Expired
           </div>
           <!-- <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
             <img
@@ -80,7 +95,14 @@
           > -->
           <div *ngIf="canEditWorker">
             <a
-              [routerLink]="['../../training-and-qualifications-record', training.worker.uid, 'training', training.uid]"
+              [routerLink]="[
+                '/workplace',
+                workplaceUid,
+                'training-and-qualifications-record',
+                training.worker.uid,
+                'training',
+                training.uid
+              ]"
               href="#"
               >Update</a
             >

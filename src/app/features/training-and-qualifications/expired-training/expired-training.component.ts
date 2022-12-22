@@ -13,9 +13,10 @@ export class ExpiredTrainingComponent implements OnInit {
   public expiredTraining: any[];
   public workplaceUid: string;
   public canEditWorker: boolean;
+  public primaryWorkplaceUid: string;
 
   constructor(
-    public backLinkService: BackLinkService,
+    private backLinkService: BackLinkService,
     private router: Router,
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
@@ -23,15 +24,18 @@ export class ExpiredTrainingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('Expired Training compoennt');
     this.expiredTraining = this.route.snapshot.data.expiredTraining.training;
-    this.workplaceUid = this.establishmentService.establishmentId;
+    this.workplaceUid = this.route.snapshot.params.establishmentuid;
+    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
-    console.log(this.expiredTraining);
     this.backLinkService.showBackLink();
   }
 
   public returnToHome(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
+    console.log(this.workplaceUid);
+    console.log(this.primaryWorkplaceUid);
+    const returnLink =
+      this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
+    this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });
   }
 }
