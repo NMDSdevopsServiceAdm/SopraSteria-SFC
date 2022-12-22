@@ -17,6 +17,7 @@ const models = require('../index');
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
 const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
 const { TrainingCategoriesCache } = require('../cache/singletons/trainingCategories');
+const { Op } = require('sequelize');
 
 class Training extends EntityValidator {
   constructor(establishmentId, workerUid) {
@@ -696,6 +697,32 @@ class Training extends EntityValidator {
 
       throw new Error(`Failed to delete Training record with uid (${this.uid})`);
     }
+  }
+
+  static async getAllEstablishmentTrainingByStatus(establishmentId, date) {
+    return await models.workerTraining.findAll({
+      include: [
+        {
+          model: models.worker,
+          as: 'worker',
+          attributes: ['id', 'uid', 'NameOrIdValue'],
+          where: {
+            EstablishmentFK: establishmentId,
+            archived: false,
+          },
+        },
+        {
+          model: models.workerTrainingCategories,
+          as: 'category',
+          attributes: ['id', 'category'],
+        },
+      ],
+      where: {
+        expires: { [Op.lt]: date },
+      },
+      attributes: ['categoryFk', 'expires', 'uid'],
+      order: [['expires', 'asc']],
+    });
   }
 
   // returns a set of Workers' Training Records based on given filter criteria (all if no filters defined) - restricted to the given Worker
