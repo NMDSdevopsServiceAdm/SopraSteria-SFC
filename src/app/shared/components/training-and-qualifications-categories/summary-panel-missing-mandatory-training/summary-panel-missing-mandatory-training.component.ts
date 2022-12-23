@@ -15,9 +15,8 @@ import { take } from 'rxjs/operators';
 })
 export class SummaryPanelMissingMandatoryTraining implements OnInit {
   public workplace: Establishment;
-  public category: any;
+
   public canEditWorker = false;
-  public trainingCategoryId;
   private subscriptions: Subscription = new Subscription();
 
   public trainings;
@@ -35,8 +34,6 @@ export class SummaryPanelMissingMandatoryTraining implements OnInit {
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-
-    this.trainingCategoryId = this.route.snapshot.params.categoryId;
     this.getAllTrainingByCategory();
     this.setBackLink();
   }
@@ -44,11 +41,12 @@ export class SummaryPanelMissingMandatoryTraining implements OnInit {
   private getAllTrainingByCategory(): void {
     this.subscriptions.add(
       this.trainingCategoryService
-        .getCategoriesWithTraining(this.workplace.id)
+        .getCategoriesForMissingTraining(this.workplace.id)
         .pipe(take(1))
         .subscribe((categories: any) => {
-          this.trainings = categories;
-          console.log({ categories });
+          // this.category = categories.find((t: any) => t.isMandatory == true );
+          this.trainings = categories.missingTrainings;
+          console.log(this.trainings);
         }),
     );
   }

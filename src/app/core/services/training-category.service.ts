@@ -15,4 +15,7 @@ export class TrainingCategoryService {
       .get<any>(`/api/trainingCategories/${establishmentId}/with-training`)
       .pipe(map((res) => res.trainingCategories));
   }
+  getCategoriesForMissingTraining(establishmentId): Observable<TrainingRecordCategories[]> {
+    return this.http.get<any>(`/api/trainingCategories/${establishmentId}/missing-training`);
+  }
 }

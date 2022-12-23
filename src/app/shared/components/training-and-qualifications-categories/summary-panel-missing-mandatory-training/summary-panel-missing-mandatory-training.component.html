@@ -17,7 +17,7 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container>
-      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let training of trainings.training">
+      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let training of trainings">
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           <ng-container *ngIf="canEditWorker; else nameOrId">
             <a
@@ -25,18 +25,21 @@
                 '/workplace',
                 this.workplace.uid,
                 'training-and-qualifications-record',
-                training.worker.uid,
+                training.workerUid,
                 'training'
               ]"
             >
-              {{ training.worker.NameOrIdValue }}</a
+              {{ training.workerName }}</a
             >
           </ng-container>
           <ng-template #nameOrId>
-            {{ training.worker.NameOrIdValue }}
+            {{ training.workerName }}
           </ng-template>
         </td>
 
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          {{ training.category }}
+        </td>
         <td class="govuk-table__cell">
           <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
             <img
@@ -44,7 +47,7 @@
               alt=""
               class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
             />
-            1 missing
+            Missing
           </div>
 
           <div *ngIf="trainingStatus(training) === trainingStatusService.ACTIVE">OK</div>
@@ -52,8 +55,8 @@
         <td class="govuk-table__cell">
           <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
             <app-missing-mandatory-training
-              [missingRecord]="category"
-              [training]="training.worker"
+              [missingRecord]="training"
+              [training]="training"
               [canEditWorker]="canEditWorker"
             ></app-missing-mandatory-training>
           </div>

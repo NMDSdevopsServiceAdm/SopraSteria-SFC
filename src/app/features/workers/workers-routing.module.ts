@@ -34,7 +34,6 @@ import { NationalInsuranceNumberComponent } from './national-insurance-number/na
 import { NationalityComponent } from './nationality/nationality.component';
 import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
-import { SummaryPanelMissingMandatoryTraining } from './new-training-qualifications-record/summary-panel-missing-mandatory-training/summary-panel-missing-mandatory-training.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
@@ -84,15 +83,7 @@ const routes: Routes = [
 
     data: { title: 'View Training Categories' },
   },
-  {
-    path: 'summary-panel-missing-mandatory-training',
-    component: SummaryPanelMissingMandatoryTraining,
 
-    data: {
-      permissions: ['canAddWorker'],
-      title: 'View Summary Panel Missing Training',
-    },
-  },
   {
     path: ':id',
     canActivate: [CheckPermissionsGuard],
