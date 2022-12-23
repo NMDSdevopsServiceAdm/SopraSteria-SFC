@@ -76,14 +76,48 @@ const transformTrainingCategoriesWithMandatoryTraining = function (establishment
         seq: trainingCategory.seq,
         category: trainingCategory.category,
         training: training,
-        isMandatory: trainingCategory.MandatoryTraining && trainingCategory.MandatoryTraining.length > 0
+        isMandatory: trainingCategory.MandatoryTraining && trainingCategory.MandatoryTraining.length > 0,
       };
     })
     .filter((trainingCategory) => {
       return trainingCategory.training.length > 0;
     });
+};
 
+const transformWorkersWithissingMandatoryCategiries = function (establishment, trainingCategories) {
+  let missingTraining = [];
+  trainingCategories.map((category) => {
+    if (category.MandatoryTraining?.length) {
+      establishment.workers.forEach((worker) => {
+        const missing = category.MandatoryTraining.filter((mandatoryTraining) => {
+          if (worker.mainJob !== undefined && worker.mainJob.id !== mandatoryTraining.jobFK) {
+            return false;
+          }
+
+          return (
+            worker.workerTraining.filter((workerTraining) => {
+              return workerTraining.categoryFk == mandatoryTraining.trainingCategoryFK;
+            }).length == 0
+          );
+        });
+        if (missing.length) {
+          const missingMandatoryTraining = {
+            missing: missing.length,
+            id: category.id,
+            category: category.category,
+            workerName: worker.NameOrIdValue,
+            workerId: worker.id,
+            uid: worker.uid,
+          };
+
+          missingTraining.push(missingMandatoryTraining);
+        }
+      });
+    }
+  });
+  return missingTraining;
 };
 
 module.exports.transformTrainingCategories = transformTrainingCategories;
 module.exports.transformTrainingCategoriesWithMandatoryTraining = transformTrainingCategoriesWithMandatoryTraining;
+module.exports.transformWorkersWithissingMandatoryCategiries = transformWorkersWithissingMandatoryCategiries;

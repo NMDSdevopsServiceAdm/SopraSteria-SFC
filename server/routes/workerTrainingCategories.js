@@ -5,6 +5,7 @@ const refCacheMiddleware = require('../utils/middleware/refCache');
 const models = require('../models/index');
 const {
   transformTrainingCategories,
+  transformWorkersWithissingMandatoryCategiries,
   transformTrainingCategoriesWithMandatoryTraining,
 } = require('../transformers/trainingCategoryTransformer');
 
@@ -35,7 +36,6 @@ const getTrainingByCategory = async (req, res) => {
     }
 
     const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
-
     res.json({
       trainingCategories: transformTrainingCategoriesWithMandatoryTraining(
         establishmentWithWorkersAndTraining,
@@ -48,8 +48,34 @@ const getTrainingByCategory = async (req, res) => {
   }
 };
 
+const getMissingMandatoryForWorkers = async (req, res) => {
+  try {
+    const establishmentId = req.params.establishmentId;
+
+    const establishmentWithWorkersAndTraining = await models.establishment.findWithWorkersAndTraining(establishmentId);
+    if (establishmentWithWorkersAndTraining === null) {
+      return res.json({
+        trainingCategories: [],
+      });
+    }
+
+    const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
+    res.json({
+      missingTrainings: transformWorkersWithissingMandatoryCategiries(
+        establishmentWithWorkersAndTraining,
+        trainingCategories,
+      ),
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json();
+  }
+};
+
 router.route('/').get([refCacheMiddleware.refcache, getAllTraining]);
 router.route('/:establishmentId/with-training').get([cacheMiddleware.nocache, getTrainingByCategory]);
+router.route('/:establishmentId/missing-training').get([cacheMiddleware.nocache, getMissingMandatoryForWorkers]);
 
 module.exports = router;
 module.exports.getTrainingByCategory = getTrainingByCategory;
+module.exports.getMissingMandatoryForWorkers = getMissingMandatoryForWorkers;

@@ -894,8 +894,8 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.findWithWorkersAndTraining = function (establishmentId) {
-    return this.findByPk(establishmentId, {
+  Establishment.findWithWorkersAndTraining = async function (establishmentId) {
+    return await this.findByPk(establishmentId, {
       attributes: ['id'],
       include: {
         model: sequelize.models.worker,
