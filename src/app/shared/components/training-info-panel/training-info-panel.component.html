@@ -9,7 +9,9 @@
         <img src="/assets/images/flag-red.svg" alt="" />
       </div>
       <div>
-        <a href="#" class="govuk-link govuk-link--no-visited-state"
+        <a
+          class="govuk-link govuk-link--no-visited-state"
+          [routerLink]="['/workplace', workplaceUid, 'training-and-qualifications', 'expired-training']"
           >{{ totalExpiredTraining }}
           <ng-container [ngPlural]="totalExpiredTraining">
             <ng-template ngPluralCase="=1"> record has expired </ng-template>

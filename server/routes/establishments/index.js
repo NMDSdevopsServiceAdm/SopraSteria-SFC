@@ -37,6 +37,7 @@ const WdfClaims = require('./wdfClaims');
 const ChildWorkplaces = require('./childWorkplaces');
 const UpdateSingleEstablishmentField = require('./updateSingleEstablishmentField');
 const Certificates = require('./certificates');
+const TrainingAndQualifications = require('./trainingSummary');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -92,6 +93,7 @@ router.use('/:id/wdfClaims', WdfClaims);
 router.use('/:id/childWorkplaces', ChildWorkplaces);
 router.use('/:id/updateSingleEstablishmentField', UpdateSingleEstablishmentField);
 router.use('/:id/certificate', Certificates);
+router.use('/:id/trainingAndQualifications', TrainingAndQualifications);
 
 const addEstablishment = async (req, res) => {
   if (!req.body.isRegulated) {

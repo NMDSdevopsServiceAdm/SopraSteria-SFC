@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -18,6 +19,12 @@ export class TrainingService {
     return this.http
       .get<TrainingCategoryResponse>('/api/trainingCategories')
       .pipe(map((res) => res.trainingCategories));
+  }
+
+  getAllTrainingByStatus(workplaceUid: string, status: string): Observable<TrainingAndQualificationRecords> {
+    return this.http.get<TrainingAndQualificationRecords>(
+      `/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`,
+    );
   }
 
   public updateSelectedStaff(formValue) {
