@@ -15,7 +15,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { ExpiredTrainingComponent } from './expired-training.component';
 
-fdescribe('ExiredTrainingComponent', () => {
+describe('ExiredTrainingComponent', () => {
   async function setup(addPermissions = true) {
     const permissions = addPermissions ? ['canEditWorker'] : [];
     const { fixture, getByText, getByTestId } = await render(ExpiredTrainingComponent, {
