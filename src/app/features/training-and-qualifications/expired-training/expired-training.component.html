@@ -60,39 +60,8 @@
             />
             Expired
           </div>
-          <!-- <div *ngIf="trainingStatus(training) === trainingStatusService.EXPIRING">
-            <img
-              src="/assets/images/flag-orange.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            1 expires soon
-          </div>
-          <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
-            <img
-              src="/assets/images/flag-red.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            1 missing
-          </div> -->
         </td>
         <td class="govuk-table__cell">
-          <!-- <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
-            <app-missing-mandatory-training
-              [missingRecord]="category"
-              [training]="training.worker"
-              [canEditWorker]="canEditWorker"
-            ></app-missing-mandatory-training>
-          </div> -->
-
-          <!-- <div
-            *ngIf="
-              (trainingStatus(training) == trainingStatusService.EXPIRED ||
-                trainingStatus(training) == trainingStatusService.EXPIRING) &&
-              canEditWorker
-            "
-          > -->
           <div *ngIf="canEditWorker">
             <a
               [routerLink]="[
