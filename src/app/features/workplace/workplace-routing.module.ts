@@ -20,6 +20,7 @@ import { UserAccountSavedComponent } from '@features/workplace/user-account-save
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
+import { SummaryPanelMissingMandatoryTraining } from '@shared/components/training-and-qualifications-categories/summary-panel-missing-mandatory-training/summary-panel-missing-mandatory-training.component';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
@@ -486,6 +487,14 @@ const routes: Routes = [
           expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
         },
         data: { permissions: ['canEditEstablishment'], title: 'Change expires soon alerts' },
+      },
+      {
+        path: 'summary-panel-missing-mandatory-training',
+        component: SummaryPanelMissingMandatoryTraining,
+
+        data: {
+          title: 'View Summary Panel Missing Training',
+        },
       },
     ],
   },
