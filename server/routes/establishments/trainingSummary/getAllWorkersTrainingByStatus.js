@@ -13,9 +13,7 @@ const getAllTrainingByStatus = async (req, res) => {
       return res.status(400).send('The establishment id and status must be given');
     }
 
-    const date = new Date();
-
-    const training = await Training.getAllEstablishmentTrainingByStatus(establishmentId, date);
+    const training = await Training.getAllEstablishmentTrainingByStatus(establishmentId, status);
 
     return res.status(200).json({ training });
   } catch (error) {

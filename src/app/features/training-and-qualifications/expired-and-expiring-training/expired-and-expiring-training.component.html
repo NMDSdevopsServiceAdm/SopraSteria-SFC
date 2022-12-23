@@ -10,9 +10,9 @@
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col" style="width: 22%">Name or ID number</th>
-      <th class="govuk-table__header" scope="col" style="width: 40%">Training category</th>
+      <th class="govuk-table__header" scope="col" style="width: 37%">Training category</th>
       <th class="govuk-table__header" scope="col" style="width: 15%">Expiry date</th>
-      <th class="govuk-table__header" scope="col" style="width: 15%">Status</th>
+      <th class="govuk-table__header" scope="col" style="width: 18%">Status</th>
       <th class="govuk-table__header" scope="col" style="width: 8%"></th>
     </tr>
   </thead>
@@ -53,12 +53,8 @@
 
         <td class="govuk-table__cell">
           <div class="govuk-!-margin-bottom-1">
-            <img
-              src="/assets/images/flag-red.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            Expired
+            <img src="{{ img }}" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
+            {{ flagText }}
           </div>
         </td>
         <td class="govuk-table__cell">

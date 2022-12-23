@@ -699,7 +699,17 @@ class Training extends EntityValidator {
     }
   }
 
-  static async getAllEstablishmentTrainingByStatus(establishmentId, date) {
+  static async getAllEstablishmentTrainingByStatus(establishmentId, status) {
+    const today = new Date();
+
+    let filter = { [Op.lt]: today };
+
+    if (status === 'expiring') {
+      const threeMonthsFromNow = new Date();
+      threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+      filter = { [Op.gt]: today, [Op.lt]: threeMonthsFromNow };
+    }
+
     return await models.workerTraining.findAll({
       include: [
         {
@@ -718,7 +728,7 @@ class Training extends EntityValidator {
         },
       ],
       where: {
-        expires: { [Op.lt]: date },
+        expires: filter,
       },
       attributes: ['categoryFk', 'expires', 'uid'],
       order: [['expires', 'asc']],
