@@ -20,7 +20,7 @@
     <ng-container>
       <tr
         class="govuk-table__row govuk-util__vertical-align-top"
-        *ngFor="let training of expiredTraining; let i = index"
+        *ngFor="let training of trainingList; let i = index"
         [attr.data-testid]="'table-row-' + i"
       >
         <td class="govuk-table__cell govuk-!-font-weight-regular">
