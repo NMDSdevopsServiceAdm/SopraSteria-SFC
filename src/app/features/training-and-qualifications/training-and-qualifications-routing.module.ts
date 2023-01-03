@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { GetTrainingByStatusResolver } from '@core/resolvers/get-training-by-status.resolver';
 
 import { ExpiredTrainingComponent } from './expired-training/expired-training.component';
+import { ExpiringSoonTrainingComponent } from './expiring-soon-training/expiring-soon-training.component';
 
 const routes: Routes = [
   {
@@ -12,6 +13,14 @@ const routes: Routes = [
       expiredTraining: GetTrainingByStatusResolver,
     },
     data: { title: 'Expired training', training: 'expired' },
+  },
+  {
+    path: 'expires-soon-training',
+    component: ExpiringSoonTrainingComponent,
+    resolve: {
+      expiringTraining: GetTrainingByStatusResolver,
+    },
+    data: { title: 'Expiring training', training: 'expiring' },
   },
 ];
 

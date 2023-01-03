@@ -26,7 +26,11 @@
         <img src="/assets/images/flag-orange.svg" alt="" />
       </div>
       <div>
-        <a href="#" class="govuk-link govuk-link--no-visited-state">
+        <a
+          href="#"
+          class="govuk-link govuk-link--no-visited-state"
+          [routerLink]="['/workplace', workplaceUid, 'training-and-qualifications', 'expires-soon-training']"
+        >
           {{ totalExpiringTraining }}
           <ng-container [ngPlural]="totalExpiringTraining">
             <ng-template ngPluralCase="=1"> record expires soon </ng-template>

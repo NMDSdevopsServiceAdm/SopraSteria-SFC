@@ -6,6 +6,7 @@ import { GetTrainingByStatusResolver } from '@core/resolvers/get-training-by-sta
 import { SharedModule } from '@shared/shared.module';
 
 import { ExpiredTrainingComponent } from './expired-training/expired-training.component';
+import { ExpiringSoonTrainingComponent } from './expiring-soon-training/expiring-soon-training.component';
 import { TrainingAndQualificationsRoutingModule } from './training-and-qualifications-routing.module';
 
 @NgModule({
@@ -17,7 +18,7 @@ import { TrainingAndQualificationsRoutingModule } from './training-and-qualifica
     OverlayModule,
     TrainingAndQualificationsRoutingModule,
   ],
-  declarations: [ExpiredTrainingComponent],
+  declarations: [ExpiredTrainingComponent, ExpiringSoonTrainingComponent],
   providers: [GetTrainingByStatusResolver],
 })
 export class TrainingAndQualificationsModule {}

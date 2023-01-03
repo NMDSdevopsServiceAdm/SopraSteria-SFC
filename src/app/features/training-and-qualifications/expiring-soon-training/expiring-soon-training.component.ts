@@ -9,10 +9,10 @@ import {
 } from '../expired-and-expiring-training/expired-and-expiring-training.directive';
 
 @Component({
-  selector: 'app-expired-training',
+  selector: 'app-expiring-soon-training',
   templateUrl: '../expired-and-expiring-training/expired-and-expiring-training.component.html',
 })
-export class ExpiredTrainingComponent extends ExpiredAndExpiringTrainingDirective {
+export class ExpiringSoonTrainingComponent extends ExpiredAndExpiringTrainingDirective {
   constructor(
     protected backLinkService: BackLinkService,
     protected router: Router,
@@ -24,9 +24,9 @@ export class ExpiredTrainingComponent extends ExpiredAndExpiringTrainingDirectiv
   }
 
   protected init(): void {
-    this.title = 'Expired training records';
-    this.trainingList = this.route.snapshot.data.expiredTraining.training;
-    this.flagText = 'Expired';
-    this.img = '/assets/images/flag-red.svg';
+    this.title = 'Records that expire soon';
+    this.trainingList = this.route.snapshot.data.expiringTraining.training;
+    this.flagText = 'Expires soon';
+    this.img = '/assets/images/flag-orange.svg';
   }
 }
