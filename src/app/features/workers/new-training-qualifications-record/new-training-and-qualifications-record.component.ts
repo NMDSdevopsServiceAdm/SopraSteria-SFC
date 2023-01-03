@@ -78,7 +78,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     this.filterTrainingByDefault = '0_showall';
     this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
-    this.getFilterByStatus(this.filterTrainingByDefault);
+    // this.getFilterByStatus(this.filterTrainingByDefault);
     this.setReturnRoute();
     this.trainingService.trainingOrQualificationPreviouslySelected = null;
   }
@@ -162,41 +162,41 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     return count;
   }
 
-  getFilterByStatus(dropdownValue) {
-    if (dropdownValue === '0_showall') {
-      this.nonMandatoryTraining = this.allTrainings.nonMandatory;
-      this.mandatoryTraining = this.allTrainings.mandatory;
-      return;
-    }
+  // getFilterByStatus(dropdownValue) {
+  //   if (dropdownValue === '0_showall') {
+  //     this.nonMandatoryTraining = this.allTrainings.nonMandatory;
+  //     this.mandatoryTraining = this.allTrainings.mandatory;
+  //     return;
+  //   }
 
-    const filterValue = dropdownValue === '1_expired' ? 3 : 1;
-    this.filterTraining = this.allTrainings;
-    const mandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.mandatory);
-    const nonMandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.nonMandatory);
+  //   const filterValue = dropdownValue === '1_expired' ? 3 : 1;
+  //   this.filterTraining = this.allTrainings;
+  //   const mandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.mandatory);
+  //   const nonMandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.nonMandatory);
 
-    this.filterTraining = { mandatory, nonMandatory };
-    this.nonMandatoryTraining = nonMandatory;
-    this.mandatoryTraining = mandatory;
-  }
+  //   this.filterTraining = { mandatory, nonMandatory };
+  //   this.nonMandatoryTraining = nonMandatory;
+  //   this.mandatoryTraining = mandatory;
+  // }
 
-  private filterNonMandatoryAndMandatoryByStatus(filterValue, trainings) {
-    const filteredTrainings = [];
-    trainings.filter((training) => {
-      this.pushMandatoryAndNonMandatoryInArray(training, filterValue, filteredTrainings);
-    });
-    return filteredTrainings;
-  }
+  // private filterNonMandatoryAndMandatoryByStatus(filterValue, trainings) {
+  //   const filteredTrainings = [];
+  //   trainings.filter((training) => {
+  //     this.pushMandatoryAndNonMandatoryInArray(training, filterValue, filteredTrainings);
+  //   });
+  //   return filteredTrainings;
+  // }
 
-  private pushMandatoryAndNonMandatoryInArray(training, filterValue, arrayTraining) {
-    const filterdStatus = training.trainingRecords.filter((status) => status.trainingStatus === filterValue);
-    if (filterdStatus && filterdStatus.length) {
-      arrayTraining.push({
-        category: training.category,
-        id: training.id,
-        trainingRecords: filterdStatus,
-      });
-    }
-  }
+  // private pushMandatoryAndNonMandatoryInArray(training, filterValue, arrayTraining) {
+  //   const filterdStatus = training.trainingRecords.filter((status) => status.trainingStatus === filterValue);
+  //   if (filterdStatus && filterdStatus.length) {
+  //     arrayTraining.push({
+  //       category: training.category,
+  //       id: training.id,
+  //       trainingRecords: filterdStatus,
+  //     });
+  //   }
+  // }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {
     return training.sort((categoryA, categoryB) =>

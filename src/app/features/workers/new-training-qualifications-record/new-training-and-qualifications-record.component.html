@@ -84,12 +84,67 @@
     </div>
   </div>
 
-  <app-new-training-and-qualifications-record-summary
-    [trainingCount]="mandatoryTrainingCount + nonMandatoryTrainingCount"
-    [qualificationsCount]="qualificationsCount"
-  ></app-new-training-and-qualifications-record-summary>
-
   <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <app-new-training-and-qualifications-record-summary
+        [trainingCount]="mandatoryTrainingCount + nonMandatoryTrainingCount"
+        [qualificationsCount]="qualificationsCount"
+      ></app-new-training-and-qualifications-record-summary>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-top-6">
+    <div class="govuk-grid-column-full">
+      <table class="govuk-table">
+        <caption class="govuk-table__caption govuk-table__caption--m">
+          Actions list
+        </caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header govuk-!-width-one-half">Training category</th>
+            <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Training type</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+            <th scope="col" class="govuk-table__header"></th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <!-- MockData currently in here, this will most likley be a *ngFor looping through all actionables creating a table row for each iteration AP 03/1/2023 -->
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Sensory disability</td>
+            <td class="govuk-table__cell">Non-mandatory</td>
+            <td class="govuk-table__cell">Expired</td>
+            <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Update</a></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Supervision, performance management</td>
+            <td class="govuk-table__cell">Non-mandatory</td>
+            <td class="govuk-table__cell">Expired</td>
+            <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Update</a></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Medication safe handling and awareness</td>
+            <td class="govuk-table__cell">Non-mandatory</td>
+            <td class="govuk-table__cell">Expires soon</td>
+            <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Update</a></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Control and restraint</td>
+            <td class="govuk-table__cell">Mndatory</td>
+            <td class="govuk-table__cell">Missing</td>
+            <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Add</a></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">Equality, diversity and human rights training</td>
+            <td class="govuk-table__cell">Mandatory</td>
+            <td class="govuk-table__cell">Missing</td>
+            <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Add</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-quarter"></div>
     <div class="govuk-grid-column-one-quarter govuk-util__float-right">
       <div class="govuk-list govuk-list--inline govuk-!-margin-bottom-7">
@@ -110,12 +165,9 @@
         </select>
       </div>
     </div>
-  </div>
+  </div> -->
 
-  <div class="govuk-grid-row govuk-!-margin-bottom-5">
-    <div class="govuk-grid-column-two-thirds">
-      <h2 class="govuk-heading-m">Mandatory training records ({{ mandatoryTrainingCount }})</h2>
-    </div>
+  <!-- <div class="govuk-grid-row govuk-!-margin-bottom-5">
     <div class="govuk-grid-column-full">
       <div *ngIf="jobRoleMandatoryTraining.length === 0">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
@@ -193,5 +245,5 @@
         </app-new-qualifications>
       </ng-template>
     </div>
-  </div>
+  </div> -->
 </ng-container>
