@@ -224,7 +224,7 @@ describe('AddMandatoryTrainingComponent', () => {
       expect(queryByText('Job role 1', { exact: true })).toBeFalsy();
     });
 
-    it('Should display a job role selection when All job roles is selected', async () => {
+    it('Should display a job role selection when All job roles is not selected selected', async () => {
       const { component, fixture, getByLabelText, queryByText } = await setup();
 
       const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
@@ -276,6 +276,25 @@ describe('AddMandatoryTrainingComponent', () => {
         expect(createAndUpdateMandatoryTrainingSpy).not.toHaveBeenCalled();
         expect(component.form.invalid).toBeTruthy();
         expect(getAllByText('Select the training category you want to be mandatory').length).toEqual(2);
+      });
+    });
+
+    describe('allOrSelectedJobRoles', async () => {
+      it('Should display a Select which job roles need this training error message if the form is submitted without a job role radio button selected', async () => {
+        const { createAndUpdateMandatoryTrainingSpy, component, fixture, getByLabelText, getByText, getAllByText } =
+          await setup();
+
+        const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
+        fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
+
+        fixture.detectChanges();
+
+        const submitButton = getByText('Save and return');
+        fireEvent.click(submitButton);
+
+        expect(createAndUpdateMandatoryTrainingSpy).not.toHaveBeenCalled();
+        expect(component.form.invalid).toBeTruthy();
+        expect(getAllByText('Select which job roles need this training').length).toEqual(2);
       });
     });
 

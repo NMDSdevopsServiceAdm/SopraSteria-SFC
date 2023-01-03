@@ -126,10 +126,10 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     );
   }
 
-  private setUpForm(trainingId = null, vType = mandatoryTrainingJobOption.all): void {
+  private setUpForm(trainingId = null): void {
     this.form = this.formBuilder.group({
       trainingCategory: [trainingId, [Validators.required]],
-      allOrSelectedJobRoles: [vType],
+      allOrSelectedJobRoles: [null, [Validators.required]],
       selectedJobRoles: this.formBuilder.array([]),
     });
   }
@@ -160,6 +160,15 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
           {
             name: 'required',
             message: 'Select the training category you want to be mandatory',
+          },
+        ],
+      },
+      {
+        item: 'allOrSelectedJobRoles',
+        type: [
+          {
+            name: 'required',
+            message: 'Select which job roles need this training',
           },
         ],
       },
