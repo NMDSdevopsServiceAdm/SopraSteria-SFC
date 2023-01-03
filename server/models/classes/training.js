@@ -706,7 +706,7 @@ class Training extends EntityValidator {
 
     if (status === 'expiring') {
       const threeMonthsFromNow = new Date();
-      threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+      threeMonthsFromNow.setMonth(today.getMonth() + 3);
       filter = { [Op.gt]: today, [Op.lt]: threeMonthsFromNow };
     }
 
