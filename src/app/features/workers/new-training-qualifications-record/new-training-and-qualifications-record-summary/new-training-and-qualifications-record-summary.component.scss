@@ -3,7 +3,7 @@
 .asc-summary-box {
   background-color: govuk-colour('light-grey');
   display: flex;
-  padding: 20px 30px;
+  padding: 10px 20px;
   font-size: 19px;
 
   @media only screen and (max-width: 830px) {
@@ -20,7 +20,7 @@
   margin-bottom: 0px;
 
   &--text {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 900;
     color: $govuk-text-colour;
     align-self: center;
@@ -31,7 +31,7 @@
   }
 
   &--count {
-    font-size: 60px;
+    font-size: 50px;
     font-weight: 600;
     color: govuk-colour('turquoise');
 

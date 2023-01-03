@@ -97,7 +97,6 @@ xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
   });
   describe('Mandatory training records to be added', () => {
     it('should show the number of mandatory training records to be added when greater than 0', async () => {
-      component.missingMandatoryTraining = 1;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -114,7 +113,6 @@ xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     });
 
     it('should show the number of mandatory training records to be added when greater than 0, and pluralized if mandatory training count to be added is greater than 1', async () => {
-      component.missingMandatoryTraining = 2;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -131,7 +129,6 @@ xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     });
 
     it('should not show the number of mandatory training records to be added, when equal to 0', async () => {
-      component.missingMandatoryTraining = 0;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -143,7 +140,6 @@ xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
 
   describe('Expired training records', () => {
     it('should show the number of expired training records when greater than 0', async () => {
-      component.expiredTrainingCount = 1;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -160,7 +156,6 @@ xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     });
 
     it('should show the number of expired training records when greater than 0, and pluralized if expired training count is greater than 1', async () => {
-      component.expiredTrainingCount = 2;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -177,7 +172,6 @@ xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     });
 
     it('should not show the number of expired training records when equal to 0', async () => {
-      component.expiredTrainingCount = 0;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -189,7 +183,6 @@ xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
 
   describe('Expires soon training records', () => {
     it('should show the number of expiring soon training records when greater than 0', async () => {
-      component.expiresSoonTrainingCount = 1;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -206,7 +199,6 @@ xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     });
 
     it('should show the number of expiring soon training records when greater than 0, and pluralized if expired training count is greater than 1', async () => {
-      component.expiresSoonTrainingCount = 2;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
@@ -223,7 +215,6 @@ xdescribe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     });
 
     it('should not show the number of expiring soon training records when equal to 0', async () => {
-      component.expiresSoonTrainingCount = 0;
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();

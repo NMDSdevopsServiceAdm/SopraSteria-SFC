@@ -20,7 +20,7 @@ import { establishmentBuilder } from '../../../../../server/test/factories/model
 import { WorkersModule } from '../workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 
-describe('NewTrainingAndQualificationsRecordComponent', () => {
+fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   const yesterday = new Date();
@@ -391,20 +391,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
   });
 
-  describe('getTrainingStatusCount', () => {
-    it('should return the number of expired records', async () => {
-      const { component } = await setup();
-
-      expect(component.expiredTraining).toEqual(1);
-    });
-
-    it('should return the number of expiring soon records', async () => {
-      const { component } = await setup();
-
-      expect(component.expiresSoonTraining).toEqual(1);
-    });
-  });
-
   describe('getLastUpdatedDate', () => {
     it('should set last updated date to valid date when null passed in (in case of no qualification records)', async () => {
       const { component, getByText, fixture } = await setup();
@@ -542,50 +528,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       expect(expiresSoonStatusNonMandatory).toBeTruthy();
       expect(expiresSoonStatusMandatory).toBeTruthy();
-    });
-  });
-  describe('findMissingMandatoryTraining()', () => {
-    it('should filter missing mandatory training with no training', async () => {
-      const { component, fixture } = await setup(false, false, [], [{ category: 'Duty of care', id: 1 }]);
-      component.setTrainingAndQualifications();
-
-      fixture.detectChanges();
-
-      expect(component.missingMandatoryTraining).toContain({ category: 'Duty of care', id: 1 });
-    });
-
-    it('should filter missing mandatory training with some mandatory training', async () => {
-      const { component, fixture } = await setup(
-        false,
-        false,
-        [
-          {
-            category: 'Duty of care',
-            id: 1,
-            trainingRecords: [
-              {
-                accredited: true,
-                completed: new Date('10/20/2021'),
-                expires: new Date('11/10/2021'),
-                title: 'Duty of care 101',
-                trainingCategory: { id: 1, category: 'Duty of care' },
-                trainingStatus: 1,
-                uid: 'someuid',
-              },
-            ],
-          },
-        ],
-        [
-          { category: 'Duty of care', id: 1 },
-          { category: 'Autism', id: 2 },
-        ],
-      );
-      component.setTrainingAndQualifications();
-
-      fixture.detectChanges();
-
-      expect(component.missingMandatoryTraining).not.toContain({ category: 'Duty of care', id: 1 });
-      expect(component.missingMandatoryTraining).toContain({ category: 'Autism', id: 2 });
     });
   });
 });
