@@ -58,10 +58,20 @@
     </div>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-form-group govuk-!-margin-bottom-1">
+        <div
+          class="govuk-form-group govuk-!-margin-bottom-1"
+          [class.govuk-form-group--error]="submitted && form.get('allOrSelectedJobRoles').invalid"
+        >
           <legend class="govuk-fieldset__legend">
             <span class="govuk-label"> Which job roles need this training? </span>
           </legend>
+          <span *ngIf="submitted" class="govuk-error-message">
+            <ng-container *ngIf="submitted && form.get('allOrSelectedJobRoles').invalid">
+              <label id="allOrSelectedJobRoles-error" for="allOrSelectedJobRoles-0"
+                >Select which job roles need this training</label
+              >
+            </ng-container>
+          </span>
           <div class="govuk-radios govuk-radios--inline">
             <div class="govuk-radios__item" *ngFor="let option of allOrSelectedJobRoleOptions; let i = index">
               <input
