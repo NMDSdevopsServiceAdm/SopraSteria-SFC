@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-new-training-and-qualifications-record',
   templateUrl: './new-training-and-qualifications-record.component.html',
+  styleUrls: ['./new-training-and-qualification.component.scss'],
 })
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   public canEditWorker: boolean;
@@ -42,6 +43,12 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public filterTraining;
   public allTrainings;
   public returnToRecord: URLStructure;
+  public tabOptions: any = {
+    allRounds: true,
+    mandatoryTraining: false,
+    nonMandatoryTraining: false,
+    qualifications: false,
+  };
 
   constructor(
     private alertService: AlertService,
@@ -81,6 +88,16 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     // this.getFilterByStatus(this.filterTrainingByDefault);
     this.setReturnRoute();
     this.trainingService.trainingOrQualificationPreviouslySelected = null;
+  }
+
+  public handleViewChange(tabClickedName): void {
+    for (const tabName in this.tabOptions) {
+      if (tabName === tabClickedName) {
+        this.tabOptions[tabName] = true;
+      } else {
+        this.tabOptions[tabName] = false;
+      }
+    }
   }
 
   public setTrainingAndQualifications(): void {

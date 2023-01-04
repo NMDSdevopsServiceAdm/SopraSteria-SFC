@@ -108,40 +108,127 @@
           </tr>
         </thead>
         <tbody class="govuk-table__body">
-          <!-- MockData currently in here, this will most likley be a *ngFor looping through all actionables creating a table row for each iteration AP 03/1/2023 -->
+          <!-- MockData currently in here, this will most likely be a *ngFor looping through all actionables creating a table row for each iteration AP 03/1/2023 -->
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">Sensory disability</td>
             <td class="govuk-table__cell">Non-mandatory</td>
-            <td class="govuk-table__cell">Expired</td>
+            <td class="govuk-table__cell">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt=""
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Expired
+            </td>
             <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Update</a></td>
           </tr>
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">Supervision, performance management</td>
             <td class="govuk-table__cell">Non-mandatory</td>
-            <td class="govuk-table__cell">Expired</td>
+            <td class="govuk-table__cell">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt=""
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Expired
+            </td>
             <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Update</a></td>
           </tr>
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">Medication safe handling and awareness</td>
             <td class="govuk-table__cell">Non-mandatory</td>
-            <td class="govuk-table__cell">Expires soon</td>
+            <td class="govuk-table__cell">
+              <img
+                src="/assets/images/flag-orange.svg"
+                alt=""
+                class="govuk-!-margin-right-2 govuk-util__vertical-align-top"
+              />Expires soon
+            </td>
             <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Update</a></td>
           </tr>
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">Control and restraint</td>
             <td class="govuk-table__cell">Mndatory</td>
-            <td class="govuk-table__cell">Missing</td>
+            <td class="govuk-table__cell">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt=""
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Missing
+            </td>
             <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Add</a></td>
           </tr>
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">Equality, diversity and human rights training</td>
             <td class="govuk-table__cell">Mandatory</td>
-            <td class="govuk-table__cell">Missing</td>
+            <td class="govuk-table__cell">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt=""
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Missing
+            </td>
             <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Add</a></td>
           </tr>
         </tbody>
       </table>
     </div>
+  </div>
+  <div class="asc-tabs asc-tabs--border-bottom govuk-!-margin-top-5 govuk-!-margin-bottom-5">
+    <ul class="govuk-tabs__list asc-tabs__list" role="tablist">
+      <li class="govuk-tabs__list-item asc-tabs__list-item" [class.asc-tabs__list-item--active]="tabOptions.allRounds">
+        <a
+          class="govuk-tabs__tab asc-tabs__link"
+          role="tab"
+          href="javascript:void(0)"
+          (click)="this.handleViewChange('allRounds')"
+          [class.asc-tabs__link--active]="tabOptions.allRounds"
+          >All records</a
+        >
+      </li>
+      <li
+        class="govuk-tabs__list-item asc-tabs__list-item"
+        [class.asc-tabs__list-item--active]="tabOptions.mandatoryTraining"
+      >
+        <a
+          class="govuk-tabs__tab asc-tabs__link"
+          role="tab"
+          href="javascript:void(0)"
+          [class.asc-tabs__link--active]="tabOptions.mandatoryTraining"
+          (click)="this.handleViewChange('mandatoryTraining')"
+          >Mandatory training</a
+        >
+      </li>
+      <li
+        class="govuk-tabs__list-item asc-tabs__list-item"
+        [class.asc-tabs__list-item--active]="tabOptions.nonMandatoryTraining"
+      >
+        <a
+          class="govuk-tabs__tab asc-tabs__link"
+          role="tab"
+          href="javascript:void(0)"
+          (click)="this.handleViewChange('nonMandatoryTraining')"
+          [class.asc-tabs__link--active]="tabOptions.nonMandatoryTraining"
+          >Non-mandatory training</a
+        >
+      </li>
+      <li
+        class="govuk-tabs__list-item asc-tabs__list-item"
+        [class.asc-tabs__list-item--active]="tabOptions.qualifications"
+      >
+        <a
+          class="govuk-tabs__tab asc-tabs__link"
+          role="tab"
+          href="javascript:void(0)"
+          (click)="this.handleViewChange('qualifications')"
+          [class.asc-tabs__link--active]="tabOptions.qualifications"
+          >Qualifications</a
+        >
+      </li>
+    </ul>
   </div>
 
   <!-- <div class="govuk-grid-row">
@@ -166,8 +253,8 @@
       </div>
     </div>
   </div> -->
-
   <!-- <div class="govuk-grid-row govuk-!-margin-bottom-5">
+
     <div class="govuk-grid-column-full">
       <div *ngIf="jobRoleMandatoryTraining.length === 0">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
