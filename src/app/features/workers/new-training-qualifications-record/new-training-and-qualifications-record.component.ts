@@ -44,7 +44,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public allTrainings;
   public returnToRecord: URLStructure;
   public tabOptions: any = {
-    allRounds: true,
+    allRecords: true,
     mandatoryTraining: false,
     nonMandatoryTraining: false,
     qualifications: false,

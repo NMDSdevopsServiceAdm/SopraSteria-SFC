@@ -179,13 +179,13 @@
   </div>
   <div class="asc-tabs asc-tabs--border-bottom govuk-!-margin-top-5 govuk-!-margin-bottom-5">
     <ul class="govuk-tabs__list asc-tabs__list" role="tablist">
-      <li class="govuk-tabs__list-item asc-tabs__list-item" [class.asc-tabs__list-item--active]="tabOptions.allRounds">
+      <li class="govuk-tabs__list-item asc-tabs__list-item" [class.asc-tabs__list-item--active]="tabOptions.allRecords">
         <a
           class="govuk-tabs__tab asc-tabs__link"
           role="tab"
           href="javascript:void(0)"
-          (click)="this.handleViewChange('allRounds')"
-          [class.asc-tabs__link--active]="tabOptions.allRounds"
+          (click)="this.handleViewChange('allRecords')"
+          [class.asc-tabs__link--active]="tabOptions.allRecords"
           >All records</a
         >
       </li>
@@ -231,30 +231,60 @@
     </ul>
   </div>
 
-  <!-- <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-quarter"></div>
-    <div class="govuk-grid-column-one-quarter govuk-util__float-right">
-      <div class="govuk-list govuk-list--inline govuk-!-margin-bottom-7">
-        <label class="govuk-label" for="filterByTrainingStatus">Filter training by</label>
-        <select
-          class="govuk-select govuk-!-width-full"
-          id="filterByTrainingStatus"
-          name="filterByTrainingStatus"
-          [value]="filterByDefault"
-          (change)="getFilterByStatus($event.target.value)"
-        >
-          <option
-            *ngFor="let filterTrainingOption of filterTrainingByStatus | keyvalue"
-            value="{{ filterTrainingOption.key }}"
-          >
-            {{ filterTrainingOption.value }}
-          </option>
-        </select>
-      </div>
+  <div class="govuk-grid-row" *ngIf="tabOptions.allRecords">
+    <div class="govuk-grid-column-full">
+      <ng-container *ngIf="mandatoryTrainingCount > 0; noMandatoryTraining">
+        <h1 class="govuk-heading-l govuk-!-font-size-27">Mandatory Training</h1>
+        <div *ngFor="let mandatoryTrainingCategory of mandatoryTraining">
+          <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--m">
+              {{
+                mandatoryTrainingCategory.category
+              }}
+            </caption>
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header govuk-!-width-one-third">Training Name</th>
+                <th scope="col" class="govuk-table__header">Accredited</th>
+                <th scope="col" class="govuk-table__header">Completion date</th>
+                <th scope="col" class="govuk-table__header">Expriy date</th>
+                <th scope="col" class="govuk-table__header">Status</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              <tr class="govuk-table__row" *ngFor="let trainingRecord of mandatoryTrainingCategory.trainingRecords">
+                <td class="govuk-table__cell">
+                  <a href="javascript:void(0)">{{ trainingRecord.title }}</a>
+                </td>
+                <td class="govuk-table__cell">{{ trainingRecord.accredited }}</td>
+                <td class="govuk-table__cell">{{ trainingRecord.completed }}</td>
+                <td class="govuk-table__cell">{{ trainingRecord.expires }}</td>
+                <td class="govuk-table__cell">{{ trainingRecord.trainingStatus }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+      <ng-template #noMandatoryTraining> No mandatory training </ng-template>
     </div>
-  </div> -->
-  <!-- <div class="govuk-grid-row govuk-!-margin-bottom-5">
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="tabOptions.mandatoryTraining">
+    <div class="govuk-grid-column-full">
+      <div>Mandatory training</div>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="tabOptions.nonMandatoryTraining">
+    <div class="govuk-grid-column-full">
+      <div>Non-mandatory training</div>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="tabOptions.qualifications">
+    <div class="govuk-grid-column-full">
+      <div>Qualifications</div>
+    </div>
+  </div>
 
+  <!-- <div class="govuk-grid-row govuk-!-margin-bottom-5">
     <div class="govuk-grid-column-full">
       <div *ngIf="jobRoleMandatoryTraining.length === 0">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
