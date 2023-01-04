@@ -11,7 +11,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import { SharedModule } from '@shared/shared.module';
-import { getByTestId, getByText, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { ViewTrainingComponent } from './view-trainings.component';
@@ -134,7 +134,7 @@ describe('ViewTrainingComponent', () => {
     const trainingUid = component.trainings[0].uid;
 
     component.canEditWorker = true;
-    const expired = component.trainings[0].expires;
+    component.trainings[0].expires;
     fixture.detectChanges();
 
     const updateTrainingRecord = getByText('Update');
@@ -152,11 +152,22 @@ describe('ViewTrainingComponent', () => {
   });
 
   it(`should navigate back to training-and-qualification page`, async () => {
-    const { component, routerSpy, getByText } = await setup();
+    const { component, fixture, routerSpy, getByText } = await setup();
+
+    component.primaryWorkplaceUid = 'mocked-uid';
+    const returnToHome = getByText('Return to home');
+    userEvent.click(returnToHome);
+    fixture.detectChanges();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+  });
+
+  it(`should navigate back to sub workplace page when clicking the return home button when accessing a sub account from a parent`, async () => {
+    const { routerSpy, getByText } = await setup();
 
     const returnToHome = getByText('Return to home');
     userEvent.click(returnToHome);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid'], { fragment: 'training-and-qualifications' });
   });
 });
