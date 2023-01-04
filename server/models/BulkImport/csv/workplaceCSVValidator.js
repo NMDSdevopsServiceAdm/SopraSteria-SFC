@@ -23,12 +23,6 @@ function isRegManager(worker) {
   if (worker.mainJobRoleId === registeredManagerJobID) {
     // 4 is reg manager in csv
     return true;
-  } else {
-    worker.otherJobIds.map((otherJobId) => {
-      if (otherJobId === registeredManagerJobID) {
-        return true;
-      }
-    });
   }
 }
 function isPerm(worker) {
