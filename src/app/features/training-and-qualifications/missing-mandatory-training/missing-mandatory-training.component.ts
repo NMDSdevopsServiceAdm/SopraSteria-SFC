@@ -10,10 +10,10 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-summary-panel-missing-mandatory-training',
-  templateUrl: './summary-panel-missing-mandatory-training.component.html',
+  selector: 'app-missing-mandatory-training',
+  templateUrl: './missing-mandatory-training.component.html',
 })
-export class SummaryPanelMissingMandatoryTraining implements OnInit {
+export class MissingMandatoryTrainingComponent implements OnInit {
   public workplace: Establishment;
 
   public canEditWorker = false;

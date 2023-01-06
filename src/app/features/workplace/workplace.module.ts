@@ -15,7 +15,6 @@ import { StartComponent } from '@features/workplace/start/start.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
-import { SummaryPanelMissingMandatoryTraining } from '@shared/components/training-and-qualifications-categories/summary-panel-missing-mandatory-training/summary-panel-missing-mandatory-training.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
@@ -109,7 +108,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
     PensionsComponent,
-    SummaryPanelMissingMandatoryTraining,
   ],
   providers: [
     DialogService,
