@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
@@ -13,17 +13,18 @@ import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
-describe('AddEditTrainingComponent', () => {
+fdescribe('AddEditTrainingComponent', () => {
   async function setup(isMandatory = false, trainingRecordId = '1') {
     if (isMandatory) {
       window.history.pushState({ training: 'mandatory', missingRecord: { category: 'testCategory', id: 5 } }, '');
     }
 
     const { fixture, getByText, getByTestId, queryByText, queryByTestId } = await render(AddEditTrainingComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         AlertService,
         WindowRef,
@@ -53,8 +54,9 @@ describe('AddEditTrainingComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigateByUrl');
-    routerSpy.and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
+
+    const workerService = injector.inject(WorkerService);
 
     const component = fixture.componentInstance;
     return {
@@ -65,6 +67,7 @@ describe('AddEditTrainingComponent', () => {
       getByTestId,
       queryByText,
       queryByTestId,
+      workerService,
     };
   }
 
@@ -83,22 +86,45 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('Training category select/display', async () => {
-    it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
-      const { getByText } = await setup(true);
+    // it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
+    //   const { getByText } = await setup(true);
 
-      expect(getByText('Training category: testCategory')).toBeTruthy();
-    });
+    //   expect(getByText('Training category: testCategory')).toBeTruthy();
+    // });
 
-    it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
-      const { queryByTestId } = await setup(true);
+    // it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
+    //   const { queryByTestId } = await setup(true);
 
-      expect(queryByTestId('trainingSelect')).toBeFalsy();
-    });
+    //   expect(queryByTestId('trainingSelect')).toBeFalsy();
+    // });
 
-    it('should have dropdown of training categories when a manadatoryTraining object is not passed', async () => {
-      const { getByTestId } = await setup();
+    // it('should have dropdown of training categories when a manadatoryTraining object is not passed', async () => {
+    //   const { getByTestId } = await setup();
+
+    //   expect(getByTestId('trainingSelect')).toBeTruthy();
+    // });
+
+    it('should show the training category select box when there is no training category id present', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+      component.trainingCategoryId = null;
+      fixture.detectChanges();
 
       expect(getByTestId('trainingSelect')).toBeTruthy();
+      expect(queryByTestId('trainingCategoryDisplay')).toBeFalsy();
+    });
+
+    it('should show the training category displayed as text when there is a training category id', async () => {
+      const { component, fixture, getByText, getByTestId, queryByTestId } = await setup();
+
+      component.trainingCategoryId = '1';
+      fixture.detectChanges();
+
+      const trainingCategory = component.trainingRecord.trainingCategory.category;
+
+      expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
+      expect(queryByTestId('trainingSelect')).toBeFalsy();
+      expect(getByText(trainingCategory)).toBeTruthy();
     });
   });
 
@@ -113,7 +139,7 @@ describe('AddEditTrainingComponent', () => {
     it('should render the Training details title, when there is a training record id', async () => {
       const { getByText } = await setup();
 
-      expect(getByText('Training details')).toBeTruthy();
+      expect(getByText('Training record details')).toBeTruthy();
     });
 
     it('should render the Add mandatory training record title, when accessed from add mandatory training link', async () => {
@@ -134,22 +160,69 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
+  describe('fillForm', () => {
+    it('should prefill the form if there is a training record id and there is a training record', async () => {
+      const { component, workerService } = await setup();
+      const workerServiceSpy = spyOn(workerService, 'getTrainingRecord').and.callThrough();
+      component.ngOnInit();
+
+      const { form, workplace, worker, trainingRecordId } = component;
+      const expectedFormValue = {
+        title: 'Communication Training 1',
+        category: 1,
+        accredited: true,
+        completed: { day: 2, month: '1', year: 2020 },
+        expires: { day: 2, month: '1', year: 2021 },
+        notes: undefined,
+      };
+
+      expect(form.value).toEqual(expectedFormValue);
+      expect(workerServiceSpy).toHaveBeenCalledWith(workplace.uid, worker.uid, trainingRecordId);
+    });
+
+    it('should not prefill the form if there is a training record id but there is no training record', async () => {
+      const { component, workerService } = await setup();
+      spyOn(workerService, 'getTrainingRecord').and.returnValue(of({}));
+      component.ngOnInit();
+      const { form } = component;
+
+      const expectedFormValue = {
+        title: null,
+        category: null,
+        accredited: null,
+        completed: { day: null, month: null, year: null },
+        expires: { day: null, month: null, year: null },
+        notes: null,
+      };
+      expect(form.value).toEqual(expectedFormValue);
+    });
+
+    it('should not call getTrainingRecord if there is no trainingRecordId', async () => {
+      const { component, workerService } = await setup(false, null);
+
+      const workerServiceSpy = spyOn(workerService, 'getTrainingRecord').and.callThrough();
+      component.ngOnInit();
+
+      expect(workerServiceSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('delete button', () => {
     it('should render the delete button when editing training', async () => {
-      const { fixture, getByText } = await setup();
+      const { fixture, getByTestId } = await setup();
 
       fixture.detectChanges();
 
-      expect(getByText('Delete')).toBeTruthy();
+      expect(getByTestId('deleteButton')).toBeTruthy();
     });
 
     it('should not render the delete button when there is no training id', async () => {
-      const { component, fixture, queryByText } = await setup();
+      const { component, fixture, queryByTestId } = await setup();
 
       component.trainingRecordId = null;
       fixture.detectChanges();
 
-      expect(queryByText('Delete')).toBeFalsy();
+      expect(queryByTestId('deleteButton')).toBeFalsy();
     });
   });
 

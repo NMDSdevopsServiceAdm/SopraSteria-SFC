@@ -39,6 +39,7 @@ export class ViewTrainingComponent implements OnInit {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.trainingCategoryId = this.route.snapshot.params.categoryId;
     localStorage.setItem('trainingCategoryId', this.trainingCategoryId);
+    localStorage.setItem('previousUrl', this.router.url);
     this.setExpiresSoonAlertDates();
     this.getAllTrainingByCategory();
     this.setBackLink();

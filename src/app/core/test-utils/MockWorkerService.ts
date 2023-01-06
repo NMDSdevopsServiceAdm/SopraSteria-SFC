@@ -281,6 +281,10 @@ export class MockWorkerService extends WorkerService {
   getLongTermAbsenceReasons(): Observable<Array<string>> {
     return of(['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other']);
   }
+
+  getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string): Observable<any> {
+    return of(trainingRecord);
+  }
 }
 
 @Injectable()

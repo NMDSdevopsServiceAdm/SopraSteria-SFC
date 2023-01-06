@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -16,13 +16,14 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Directive({})
-export class AddEditTrainingDirective implements OnInit, AfterViewInit {
+export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
+  public trainingCategoryId: string;
   public worker: Worker;
   public workplace: Establishment;
   public missingTrainingRecord: MandatoryTraining;
@@ -53,9 +54,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.missingTrainingRecord = history.state?.missingRecord;
+    this.trainingCategoryId = localStorage.getItem('trainingCategoryId');
+    this.previousUrl = [localStorage.getItem('previousUrl')];
 
-    this.init();
     this.setupForm();
+    this.init();
     this.setTitle();
     this.setSection();
     this.setButtonText();
@@ -266,5 +269,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   public onCancel(): void {
     this.router.navigateByUrl(this.previousUrl[0]);
+  }
+
+  ngOnDestroy(): void {
+    localStorage.removeItem('trainingCategoryId');
+    localStorage.removeItem('previousUrl');
   }
 }
