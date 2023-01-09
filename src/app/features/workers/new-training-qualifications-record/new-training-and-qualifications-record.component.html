@@ -174,6 +174,7 @@
             <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Add</a></td>
           </tr>
         </tbody>
+        <!-- MockData End AP 03/1/2023 -->
       </table>
     </div>
   </div>
@@ -231,41 +232,115 @@
     </ul>
   </div>
 
-  <div class="govuk-grid-row" *ngIf="tabOptions.allRecords">
+  <div *ngIf="tabOptions.allRecords">
     <div class="govuk-grid-column-full">
-      <ng-container *ngIf="mandatoryTrainingCount > 0; noMandatoryTraining">
-        <h1 class="govuk-heading-l govuk-!-font-size-27">Mandatory Training</h1>
-        <div *ngFor="let mandatoryTrainingCategory of mandatoryTraining">
-          <table class="govuk-table">
-            <caption class="govuk-table__caption govuk-table__caption--m">
-              {{
-                mandatoryTrainingCategory.category
-              }}
-            </caption>
-            <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header govuk-!-width-one-third">Training Name</th>
-                <th scope="col" class="govuk-table__header">Accredited</th>
-                <th scope="col" class="govuk-table__header">Completion date</th>
-                <th scope="col" class="govuk-table__header">Expriy date</th>
-                <th scope="col" class="govuk-table__header">Status</th>
-              </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-              <tr class="govuk-table__row" *ngFor="let trainingRecord of mandatoryTrainingCategory.trainingRecords">
-                <td class="govuk-table__cell">
-                  <a href="javascript:void(0)">{{ trainingRecord.title }}</a>
-                </td>
-                <td class="govuk-table__cell">{{ trainingRecord.accredited }}</td>
-                <td class="govuk-table__cell">{{ trainingRecord.completed }}</td>
-                <td class="govuk-table__cell">{{ trainingRecord.expires }}</td>
-                <td class="govuk-table__cell">{{ trainingRecord.trainingStatus }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </ng-container>
-      <ng-template #noMandatoryTraining> No mandatory training </ng-template>
+      <div class="govuk-grid-row">
+        <ng-container *ngIf="mandatoryTrainingCount > 0; noMandatoryTraining">
+          <h1 class="govuk-heading-l govuk-!-font-size-27">Mandatory Training</h1>
+          <div *ngFor="let mandatoryTrainingCategory of mandatoryTraining">
+            <table class="govuk-table">
+              <caption class="govuk-table__caption govuk-table__caption--m">
+                {{
+                  mandatoryTrainingCategory.category
+                }}
+              </caption>
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header govuk-!-width-one-third">Training Name</th>
+                  <th scope="col" class="govuk-table__header">Accredited</th>
+                  <th scope="col" class="govuk-table__header">Completion date</th>
+                  <th scope="col" class="govuk-table__header">Expriy date</th>
+                  <th scope="col" class="govuk-table__header">Status</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row" *ngFor="let trainingRecord of mandatoryTrainingCategory.trainingRecords">
+                  <td class="govuk-table__cell">
+                    <a href="javascript:void(0)">{{ trainingRecord.title }}</a>
+                  </td>
+                  <td class="govuk-table__cell">{{ trainingRecord.accredited }}</td>
+                  <td class="govuk-table__cell">{{ trainingRecord.completed }}</td>
+                  <td class="govuk-table__cell">{{ trainingRecord.expires }}</td>
+                  <td class="govuk-table__cell">{{ trainingRecord.trainingStatus }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+        <ng-template #noMandatoryTraining> No mandatory training </ng-template>
+      </div>
+
+      <div class="govuk-grid-row">
+        <ng-container *ngIf="nonMandatoryTrainingCount > 0; noNonMandatoryTraining">
+          <h1 class="govuk-heading-l govuk-!-font-size-27">Non-mandatory training</h1>
+          <div *ngFor="let nonMandatoryTrainingCategory of nonMandatoryTraining">
+            <table class="govuk-table">
+              <caption class="govuk-table__caption govuk-table__caption--m">
+                {{
+                  nonMandatoryTrainingCategory.category
+                }}
+              </caption>
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header govuk-!-width-one-third">Training Name</th>
+                  <th scope="col" class="govuk-table__header">Accredited</th>
+                  <th scope="col" class="govuk-table__header">Completion date</th>
+                  <th scope="col" class="govuk-table__header">Expriy date</th>
+                  <th scope="col" class="govuk-table__header">Status</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr
+                  class="govuk-table__row"
+                  *ngFor="let nonMandatoryTrainingRecord of nonMandatoryTrainingCategory.trainingRecords"
+                >
+                  <td class="govuk-table__cell">
+                    <a href="javascript:void(0)">{{ nonMandatoryTrainingRecord.title }}</a>
+                  </td>
+                  <td class="govuk-table__cell">{{ nonMandatoryTrainingRecord.accredited }}</td>
+                  <td class="govuk-table__cell">{{ nonMandatoryTrainingRecord.completed }}</td>
+                  <td class="govuk-table__cell">{{ nonMandatoryTrainingRecord.expires }}</td>
+                  <td class="govuk-table__cell">{{ nonMandatoryTrainingRecord.trainingStatus }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+        <ng-template #noNonMandatoryTraining>No Non-mandatory training</ng-template>
+      </div>
+      <div class="govuk-grid-row">
+        <ng-container *ngIf="qualificationsByGroup.count > 0; noQualifications">
+          <h1 class="govuk-heading-l govuk-!-font-size-27">Qualification</h1>
+          <div *ngFor="let qualificationType of qualificationsByGroup.groups">
+            <table class="govuk-table">
+              <caption class="govuk-table__caption govuk-table__caption--m">
+                {{
+                  qualificationType.group
+                }}
+              </caption>
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header govuk-!-width-one-half">Certificate Name</th>
+                  <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Year achieved</th>
+                  <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Notes</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row" *ngFor="let qualificationRecord of qualificationType.records">
+                  <td class="govuk-table__cell">
+                    <a href="javascript:void(0)">{{ qualificationRecord.title }}</a>
+                  </td>
+                  <td class="govuk-table__cell">{{ qualificationRecord.year }}</td>
+                  <td class="govuk-table__cell">
+                    {{ qualificationRecord.notes ? qualificationRecord.notes : 'None' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+        <ng-template #noQualifications>No Qualifications</ng-template>
+      </div>
     </div>
   </div>
   <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="tabOptions.mandatoryTraining">
@@ -283,84 +358,4 @@
       <div>Qualifications</div>
     </div>
   </div>
-
-  <!-- <div class="govuk-grid-row govuk-!-margin-bottom-5">
-    <div class="govuk-grid-column-full">
-      <div *ngIf="jobRoleMandatoryTraining.length === 0">
-        <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
-          <p>
-            No mandatory training has been set for the
-            {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }} job role yet.
-          </p>
-        </div>
-        <div class="govuk-grid-column-one-third govuk-!-padding-right-0">
-          <a
-            class="govuk-list govuk-util__float-right"
-            *ngIf="canEditWorker"
-            draggable="false"
-            role="button"
-            [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
-          >
-            Manage mandatory training
-          </a>
-        </div>
-      </div>
-
-      <div *ngIf="missingJobRoleMandatoryTrainingCount > 0">
-        <app-missing-mandatory-training
-          [missingRecord]="missingMandatoryTraining"
-          [training]="worker"
-          [canEditWorker]="canEditWorker"
-        ></app-missing-mandatory-training>
-      </div>
-
-      <div *ngIf="mandatoryTrainingCount > 0">
-        <app-new-training
-          [trainingRecords]="mandatoryTraining"
-          [trainingType]="'mandatory'"
-          [setReturnRoute]="setReturnRoute"
-          [canEditWorker]="canEditWorker"
-          data-testid="mandatory-training"
-        ></app-new-training>
-      </div>
-    </div>
-  </div>
-
-  <div class="govuk-grid-row govuk-!-margin-bottom-5">
-    <div class="govuk-grid-column-two-thirds">
-      <h2 class="govuk-heading-m">Non-mandatory training records ({{ nonMandatoryTrainingCount }})</h2>
-    </div>
-    <div class="govuk-grid-column-full">
-      <p *ngIf="nonMandatoryTrainingCount === 0; else nonMandatoryTrainingTable">
-        No non-mandatory training records have been added for this person yet.
-      </p>
-      <ng-template #nonMandatoryTrainingTable>
-        <app-new-training
-          [trainingRecords]="nonMandatoryTraining"
-          [trainingType]="'nonMandatory'"
-          [setReturnRoute]="setReturnRoute"
-          [canEditWorker]="canEditWorker"
-          data-testid="non-mandatory-training"
-        ></app-new-training>
-      </ng-template>
-    </div>
-  </div>
-  <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-two-thirds">
-      <h2 class="govuk-heading-m">Qualification records ({{ qualificationsByGroup.count }})</h2>
-    </div>
-    <div class="govuk-grid-column-full">
-      <p *ngIf="qualificationsByGroup.count === 0; else qualificationTable">
-        No qualification records have been added for this person yet.
-      </p>
-      <ng-template #qualificationTable>
-        <app-new-qualifications
-          [canEditWorker]="canEditWorker"
-          [qualificationsByGroup]="qualificationsByGroup"
-          data-testid="qualification"
-        >
-        </app-new-qualifications>
-      </ng-template>
-    </div>
-  </div> -->
 </ng-container>
