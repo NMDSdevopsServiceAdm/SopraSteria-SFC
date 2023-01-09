@@ -20,6 +20,7 @@ export class MissingMandatoryTrainingComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
 
   public trainings;
+  public gropByName;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -45,12 +46,19 @@ export class MissingMandatoryTrainingComponent implements OnInit {
         .getMissingMandatoryTraining(this.workplace.id)
         .pipe(take(1))
         .subscribe((categories: any) => {
-          // this.category = categories.find((t: any) => t.isMandatory == true );
           this.trainings = categories.missingTrainings;
-          console.log(this.trainings);
+          this.gropByName = this.groupBy(this.trainings, 'workerName');
+
+          console.log(this.gropByName);
         }),
     );
   }
+
+  groupBy = (array, key: string) =>
+    array.reduce((result, currentValue) => {
+      (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
+      return result;
+    }, {});
 
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
