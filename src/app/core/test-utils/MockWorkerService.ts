@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { MultipleTrainingResponse } from '@core/model/training.model';
+import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
@@ -283,6 +283,15 @@ export class MockWorkerService extends WorkerService {
   }
 
   getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string): Observable<any> {
+    return of(trainingRecord);
+  }
+
+  updateTrainingRecord(
+    workplaceUid: string,
+    workerId: string,
+    trainingRecordId: string,
+    record: TrainingRecordRequest,
+  ): Observable<TrainingRecordRequest> {
     return of(trainingRecord);
   }
 }

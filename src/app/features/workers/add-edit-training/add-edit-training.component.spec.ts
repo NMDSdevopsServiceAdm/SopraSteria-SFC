@@ -13,48 +13,52 @@ import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
-fdescribe('AddEditTrainingComponent', () => {
+describe('AddEditTrainingComponent', () => {
   async function setup(isMandatory = false, trainingRecordId = '1') {
     if (isMandatory) {
       window.history.pushState({ training: 'mandatory', missingRecord: { category: 'testCategory', id: 5 } }, '');
     }
 
-    const { fixture, getByText, getByTestId, queryByText, queryByTestId } = await render(AddEditTrainingComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        AlertService,
-        WindowRef,
-        {
-          provide: ActivatedRoute,
-          useValue: new MockActivatedRoute({
-            snapshot: {
-              params: { trainingRecordId },
-            },
-            parent: {
+    const { fixture, getByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
+      AddEditTrainingComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          AlertService,
+          WindowRef,
+          {
+            provide: ActivatedRoute,
+            useValue: new MockActivatedRoute({
               snapshot: {
-                data: {
-                  establishment: {
-                    uid: '1',
+                params: { trainingRecordId },
+              },
+              parent: {
+                snapshot: {
+                  data: {
+                    establishment: {
+                      uid: '1',
+                    },
                   },
                 },
               },
-            },
-          }),
-        },
-        FormBuilder,
-        ErrorSummaryService,
-        { provide: TrainingService, useClass: MockTrainingService },
-        { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-      ],
-    });
+            }),
+          },
+          FormBuilder,
+          ErrorSummaryService,
+          { provide: TrainingService, useClass: MockTrainingService },
+          { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+        ],
+      },
+    );
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     const workerService = injector.inject(WorkerService);
 
@@ -67,6 +71,7 @@ fdescribe('AddEditTrainingComponent', () => {
       getByTestId,
       queryByText,
       queryByTestId,
+      getByLabelText,
       workerService,
     };
   }
@@ -209,9 +214,7 @@ fdescribe('AddEditTrainingComponent', () => {
 
   describe('delete button', () => {
     it('should render the delete button when editing training', async () => {
-      const { fixture, getByTestId } = await setup();
-
-      fixture.detectChanges();
+      const { getByTestId } = await setup();
 
       expect(getByTestId('deleteButton')).toBeTruthy();
     });
@@ -229,14 +232,77 @@ fdescribe('AddEditTrainingComponent', () => {
   describe('Cancel button', () => {
     it('should call navigateByUrl when pressing cancel', async () => {
       const { component, fixture, getByText, routerSpy } = await setup();
-
       component.previousUrl = ['/dashboard?view=categories#training-and-qualifications'];
-
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
       fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith('/dashboard?view=categories#training-and-qualifications');
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard?view=categories#training-and-qualifications']);
     });
+  });
+
+  describe('submitting form', () => {
+    it('should call the updateTrainingRecord function if editing existing training, and navigate away from page', async () => {
+      const { component, fixture, getByText, getByLabelText, workerService, routerSpy } = await setup();
+
+      component.previousUrl = ['/goToPreviousUrl'];
+      fixture.detectChanges();
+      const spy = spyOn(workerService, 'updateTrainingRecord').and.callThrough();
+      userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+      fireEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+
+      const expectedFormValue = {
+        title: 'Communication Training 1',
+        category: 1,
+        accredited: true,
+        completed: { day: 2, month: '1', year: 2020 },
+        expires: { day: 2, month: '1', year: 2021 },
+        notes: 'Some notes added to this training',
+      };
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual(expectedFormValue);
+      expect(spy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, component.trainingRecordId, {
+        trainingCategory: { id: 1 },
+        title: 'Communication Training 1',
+        accredited: true,
+        completed: '2020-01-02',
+        expires: '2021-01-02',
+        notes: 'Some notes added to this training',
+      });
+      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+    });
+  });
+
+  xit('should call the createTrainingRecord function if adding a new training record, and navigate away from page', async () => {
+    const { component, fixture, getByText, getByLabelText, workerService, routerSpy } = await setup(false, null);
+
+    component.previousUrl = ['/goToPreviousUrl'];
+    fixture.detectChanges();
+    const spy = spyOn(workerService, 'updateTrainingRecord').and.callThrough();
+    userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+    fireEvent.click(getByText('Save and return'));
+    fixture.detectChanges();
+
+    const expectedFormValue = {
+      title: 'Communication Training 1',
+      category: 1,
+      accredited: true,
+      completed: { day: 2, month: '1', year: 2020 },
+      expires: { day: 2, month: '1', year: 2021 },
+      notes: 'Some notes added to this training',
+    };
+
+    const updatedFormData = component.form.value;
+    expect(updatedFormData).toEqual(expectedFormValue);
+    expect(spy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, component.trainingRecordId, {
+      trainingCategory: { id: 1 },
+      title: 'Communication Training 1',
+      accredited: true,
+      completed: '2020-01-02',
+      expires: '2021-01-02',
+      notes: 'Some notes added to this training',
+    });
+    expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
   });
 });

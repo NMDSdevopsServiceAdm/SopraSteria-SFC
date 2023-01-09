@@ -268,7 +268,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
   }
 
   public onCancel(): void {
-    this.router.navigateByUrl(this.previousUrl[0]);
+    this.router.navigate(this.previousUrl);
   }
 
   ngOnDestroy(): void {
