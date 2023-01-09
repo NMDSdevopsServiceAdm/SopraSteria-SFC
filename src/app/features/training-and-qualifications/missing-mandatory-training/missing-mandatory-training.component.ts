@@ -4,13 +4,13 @@ import { Establishment } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-missing-mandatory-training',
+  selector: 'app-missing-mandatory-training-status',
   templateUrl: './missing-mandatory-training.component.html',
 })
 export class MissingMandatoryTrainingComponent implements OnInit {
@@ -26,13 +26,14 @@ export class MissingMandatoryTrainingComponent implements OnInit {
     public trainingStatusService: TrainingStatusService,
     private router: Router,
     private establishmentService: EstablishmentService,
-    protected trainingCategoryService: TrainingCategoryService,
+    private trainingService: TrainingService,
     protected backLinkService: BackLinkService,
     private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
+
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.getAllTrainingByCategory();
     this.setBackLink();
@@ -40,8 +41,8 @@ export class MissingMandatoryTrainingComponent implements OnInit {
 
   private getAllTrainingByCategory(): void {
     this.subscriptions.add(
-      this.trainingCategoryService
-        .getCategoriesForMissingTraining(this.workplace.id)
+      this.trainingService
+        .getMissingMandatoryTraining(this.workplace.id)
         .pipe(take(1))
         .subscribe((categories: any) => {
           // this.category = categories.find((t: any) => t.isMandatory == true );

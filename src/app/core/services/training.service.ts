@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import { TrainingCategory, TrainingCategoryResponse, TrainingRecordCategories } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -25,6 +25,10 @@ export class TrainingService {
     return this.http.get<TrainingAndQualificationRecords>(
       `/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`,
     );
+  }
+
+  getMissingMandatoryTraining(workplaceId): Observable<TrainingRecordCategories[]> {
+    return this.http.get<any>(`/api/establishment/${workplaceId}/trainingAndQualifications/missing-training`);
   }
 
   public updateSelectedStaff(formValue) {

@@ -5,7 +5,9 @@ const models = require('../../../models/index');
 
 const router = express.Router({ mergeParams: true });
 const { hasPermission } = require('../../../utils/security/hasPermission');
-const { transformWorkersWithissingMandatoryCategiries } = require('../../../transformers/trainingCategoryTransformer');
+const {
+  transformTrainingCategoriesWithMandatoryTraining,
+} = require('../../../transformers/trainingCategoryTransformer');
 
 const getAllTrainingByStatus = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -26,7 +28,7 @@ const getAllTrainingByStatus = async (req, res) => {
   }
 };
 
-const getMissingMandatoryTrainingForWorkers = async (req, res) => {
+const getMissingMandatoryTraining = async (req, res) => {
   try {
     const establishmentId = req.params.id;
 
@@ -39,7 +41,7 @@ const getMissingMandatoryTrainingForWorkers = async (req, res) => {
 
     const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
     res.json({
-      missingTrainings: transformWorkersWithissingMandatoryCategiries(
+      missingTrainings: transformTrainingCategoriesWithMandatoryTraining(
         establishmentWithWorkersAndTraining,
         trainingCategories,
       ),
@@ -49,10 +51,10 @@ const getMissingMandatoryTrainingForWorkers = async (req, res) => {
     return res.status(500).json();
   }
 };
-router.route('/missing-training').get(hasPermission('canViewWorker'), getMissingMandatoryTrainingForWorkers);
+router.route('/missing-training').get(hasPermission('canViewWorker'), getMissingMandatoryTraining);
 
 router.route('/:status').get(hasPermission('canViewWorker'), getAllTrainingByStatus);
 
 module.exports = router;
 module.exports.getAllTrainingByStatus = getAllTrainingByStatus;
-module.exports.getMissingMandatoryForWorkers = getMissingMandatoryTrainingForWorkers;
+module.exports.getMissingMandatoryForWorkers = getMissingMandatoryTraining;
