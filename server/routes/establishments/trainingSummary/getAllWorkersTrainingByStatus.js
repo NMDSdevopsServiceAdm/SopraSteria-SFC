@@ -5,9 +5,7 @@ const models = require('../../../models/index');
 
 const router = express.Router({ mergeParams: true });
 const { hasPermission } = require('../../../utils/security/hasPermission');
-const {
-  transformTrainingCategoriesWithMandatoryTraining,
-} = require('../../../transformers/trainingCategoryTransformer');
+const { transformWorkersWithissingMandatoryCategiries } = require('../../../transformers/trainingCategoryTransformer');
 
 const getAllTrainingByStatus = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -41,7 +39,7 @@ const getMissingMandatoryTraining = async (req, res) => {
 
     const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
     res.json({
-      missingTrainings: transformTrainingCategoriesWithMandatoryTraining(
+      missingTrainings: transformWorkersWithissingMandatoryCategiries(
         establishmentWithWorkersAndTraining,
         trainingCategories,
       ),
