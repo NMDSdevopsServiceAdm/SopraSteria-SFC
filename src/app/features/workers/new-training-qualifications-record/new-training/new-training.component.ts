@@ -7,10 +7,10 @@ import { TrainingStatusService } from '@core/services/trainingStatus.service';
   templateUrl: './new-training.component.html',
 })
 export class NewTrainingComponent {
-  @Input() public trainingRecords: TrainingRecordCategory[];
+  @Input() public trainingCategories: TrainingRecordCategory[];
   @Input() public trainingType: string;
   @Input() public setReturnRoute: () => void;
   @Input() public canEditWorker: boolean;
 
-  constructor(private trainingStatusService: TrainingStatusService) {}
+  constructor(protected trainingStatusService: TrainingStatusService) {}
 }

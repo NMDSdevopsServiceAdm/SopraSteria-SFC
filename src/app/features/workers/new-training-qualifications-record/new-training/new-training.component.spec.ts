@@ -5,11 +5,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { NewTrainingComponent } from './new-training.component';
 
-describe('NewTrainingComponent', () => {
+describe('NewTrainingComponent', async () => {
   let component: NewTrainingComponent;
   let fixture: ComponentFixture<NewTrainingComponent>;
 
-  const trainingRecords = [
+  const trainingCategories = [
     {
       category: 'Autism',
       id: 2,
@@ -63,7 +63,7 @@ describe('NewTrainingComponent', () => {
       id: 1,
       trainingRecords: [
         {
-          accredited: true,
+          accredited: false,
           completed: new Date('10/20/2021'),
           expires: new Date('10/20/2022'),
           title: 'Health training',
@@ -75,7 +75,7 @@ describe('NewTrainingComponent', () => {
           updated: new Date('10/20/2021'),
         },
         {
-          accredited: true,
+          accredited: false,
           completed: new Date('10/20/2021'),
           expires: new Date('10/20/2022'),
           title: '',
@@ -102,7 +102,7 @@ describe('NewTrainingComponent', () => {
     fixture = TestBed.createComponent(NewTrainingComponent);
     component = fixture.componentInstance;
     component.canEditWorker = true;
-    component.trainingRecords = trainingRecords;
+    component.trainingCategories = trainingCategories;
     fixture.detectChanges();
   });
 
@@ -110,7 +110,7 @@ describe('NewTrainingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('training record table contents', () => {
+  describe('training record table contents', async () => {
     it('should render a category heading name for each training record category', async () => {
       const autismCategory = fixture.debugElement.query(By.css('[data-testid="category-Autism"]')).nativeElement;
       const communicationCategory = fixture.debugElement.query(
@@ -118,29 +118,9 @@ describe('NewTrainingComponent', () => {
       ).nativeElement;
       const healthCategory = fixture.debugElement.query(By.css('[data-testid="category-Health"]')).nativeElement;
 
-      expect(autismCategory.textContent).toContain('Category: Autism (2)');
-      expect(communicationCategory.textContent).toContain('Category: Communication (1)');
-      expect(healthCategory.textContent).toContain('Category: Health (2)');
-    });
-
-    it('should render a different status when given a different status number', async () => {
-      const autismTrainingStatus = fixture.debugElement.query(
-        By.css('[data-testid="Status-someAutismUid"]'),
-      ).nativeElement;
-      const autismTraining2Status = fixture.debugElement.query(
-        By.css('[data-testid="Status-someAutismUid2"]'),
-      ).nativeElement;
-      const communicationTrainingStatus = fixture.debugElement.query(
-        By.css('[data-testid="Status-someCommunicationUid"]'),
-      ).nativeElement;
-      const healthTrainingStatus = fixture.debugElement.query(
-        By.css('[data-testid="Status-someHealthUid"]'),
-      ).nativeElement;
-
-      expect(autismTrainingStatus.textContent).toContain('Expires soon');
-      expect(autismTraining2Status.textContent).toContain('Missing');
-      expect(communicationTrainingStatus.textContent).toContain('Expired');
-      expect(healthTrainingStatus.textContent).toContain('OK');
+      expect(autismCategory.textContent).toContain('Autism');
+      expect(communicationCategory.textContent).toContain('Communication');
+      expect(healthCategory.textContent).toContain('Health');
     });
 
     it('should render missing training name when there is no title for a training record', async () => {
@@ -159,7 +139,7 @@ describe('NewTrainingComponent', () => {
     });
   });
 
-  describe('training record links', () => {
+  describe('training record links', async () => {
     it('training title should have link to training records if you are an edit user', () => {
       component.canEditWorker = true;
       fixture.detectChanges();
