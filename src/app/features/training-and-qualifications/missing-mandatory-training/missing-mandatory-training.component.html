@@ -15,7 +15,7 @@
       <th class="govuk-table__header" scope="col" style="width: 10%"></th>
     </tr>
   </thead>
-  <tbody class="govuk-table__body">
+  <tbody class="govuk-table__body" *ngIf="gropByName">
     <ng-container>
       <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of getKeys()">
         <td class="govuk-table__cell govuk-!-font-weight-regular">
@@ -29,11 +29,11 @@
                 'training'
               ]"
             >
-              {{ worker }}</a
+              {{ removeIdFromKey(worker) }}</a
             >
           </ng-container>
           <ng-template #nameOrId>
-            {{ worker }}
+            {{ removeIdFromKey(worker) }}
           </ng-template>
         </td>
 

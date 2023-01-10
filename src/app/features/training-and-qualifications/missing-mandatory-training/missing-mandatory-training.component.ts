@@ -47,20 +47,24 @@ export class MissingMandatoryTrainingComponent implements OnInit {
         .pipe(take(1))
         .subscribe((categories: any) => {
           this.trainings = categories.missingTrainings;
-          this.gropByName = this.groupBy(this.trainings, 'workerName');
+
+          this.gropByName = this.trainings.groupBy((item) => item.workerName + item.workerId);
+          console.log(this.gropByName);
+
+          this.getKeys().forEach((key) => {
+            console.log({ g: this.gropByName[key] });
+          });
         }),
     );
+  }
+
+  removeIdFromKey(key: string) {
+    return key.replace(/[0-9]/g, '');
   }
 
   getKeys() {
     return Object.keys(this.gropByName);
   }
-
-  groupBy = (array, key: string) =>
-    array.reduce((result, currentValue) => {
-      (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
-      return result;
-    }, {});
 
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
