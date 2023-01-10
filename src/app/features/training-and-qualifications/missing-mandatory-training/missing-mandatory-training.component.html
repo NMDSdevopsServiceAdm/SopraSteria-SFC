@@ -17,7 +17,7 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container>
-      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let training of trainings">
+      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of getKeys()">
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           <ng-container *ngIf="canEditWorker; else nameOrId">
             <a
@@ -25,40 +25,46 @@
                 '/workplace',
                 this.workplace.uid,
                 'training-and-qualifications-record',
-                training.workerUid,
+                worker.uid,
                 'training'
               ]"
             >
-              {{ training.workerName }}</a
+              {{ worker }}</a
             >
           </ng-container>
           <ng-template #nameOrId>
-            {{ training.workerName }}
+            {{ worker }}
           </ng-template>
         </td>
 
         <td class="govuk-table__cell govuk-!-font-weight-regular">
-          {{ training.category }}
-        </td>
-        <td class="govuk-table__cell">
-          <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
-            <img
-              src="/assets/images/flag-red.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            Missing
+          <div *ngFor="let training of gropByName[worker]">
+            {{ training.category }}
           </div>
-
-          <div *ngIf="trainingStatus(training) === trainingStatusService.ACTIVE">OK</div>
         </td>
+
         <td class="govuk-table__cell">
-          <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
-            <app-missing-mandatory-training
-              [missingRecord]="training"
-              [training]="training"
-              [canEditWorker]="canEditWorker"
-            ></app-missing-mandatory-training>
+          <div *ngFor="let training of gropByName[worker]">
+            <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
+              <img
+                src="/assets/images/flag-red.svg"
+                alt=""
+                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+              />
+              Missing
+            </div>
+          </div>
+        </td>
+
+        <td class="govuk-table__cell">
+          <div *ngFor="let training of gropByName[worker]">
+            <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
+              <app-missing-mandatory-training
+                [missingRecord]="training"
+                [training]="training"
+                [canEditWorker]="canEditWorker"
+              ></app-missing-mandatory-training>
+            </div>
           </div>
         </td>
       </tr>

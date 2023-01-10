@@ -48,10 +48,12 @@ export class MissingMandatoryTrainingComponent implements OnInit {
         .subscribe((categories: any) => {
           this.trainings = categories.missingTrainings;
           this.gropByName = this.groupBy(this.trainings, 'workerName');
-
-          console.log(this.gropByName);
         }),
     );
+  }
+
+  getKeys() {
+    return Object.keys(this.gropByName);
   }
 
   groupBy = (array, key: string) =>
