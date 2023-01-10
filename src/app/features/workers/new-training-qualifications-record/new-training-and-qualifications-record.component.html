@@ -180,59 +180,62 @@
   </div>
   <div class="asc-tabs asc-tabs--border-bottom govuk-!-margin-top-5 govuk-!-margin-bottom-5">
     <ul class="govuk-tabs__list asc-tabs__list" role="tablist">
-      <li class="govuk-tabs__list-item asc-tabs__list-item" [class.asc-tabs__list-item--active]="tabOptions.allRecords">
+      <li
+        class="govuk-tabs__list-item asc-tabs__list-item"
+        [class.asc-tabs__list-item--active]="currentFragment === fragmentsObject.allRecords"
+      >
         <a
           class="govuk-tabs__tab asc-tabs__link"
           role="tab"
-          href="javascript:void(0)"
-          (click)="this.handleViewChange('allRecords')"
-          [class.asc-tabs__link--active]="tabOptions.allRecords"
+          [routerLink]="['../training']"
+          fragment="all-records"
+          [class.asc-tabs__link--active]="currentFragment === fragmentsObject.allRecords"
           >All records</a
         >
       </li>
       <li
         class="govuk-tabs__list-item asc-tabs__list-item"
-        [class.asc-tabs__list-item--active]="tabOptions.mandatoryTraining"
+        [class.asc-tabs__list-item--active]="currentFragment === fragmentsObject.mandatoryTraining"
       >
         <a
           class="govuk-tabs__tab asc-tabs__link"
           role="tab"
-          href="javascript:void(0)"
-          [class.asc-tabs__link--active]="tabOptions.mandatoryTraining"
-          (click)="this.handleViewChange('mandatoryTraining')"
+          [routerLink]="['../training']"
+          fragment="mandatory-training"
+          [class.asc-tabs__link--active]="currentFragment === fragmentsObject.mandatoryTraining"
           >Mandatory training</a
         >
       </li>
       <li
         class="govuk-tabs__list-item asc-tabs__list-item"
-        [class.asc-tabs__list-item--active]="tabOptions.nonMandatoryTraining"
+        [class.asc-tabs__list-item--active]="currentFragment === fragmentsObject.nonMandatoryTraining"
       >
         <a
           class="govuk-tabs__tab asc-tabs__link"
           role="tab"
-          href="javascript:void(0)"
-          (click)="this.handleViewChange('nonMandatoryTraining')"
-          [class.asc-tabs__link--active]="tabOptions.nonMandatoryTraining"
+          [routerLink]="['../training']"
+          fragment="non-mandatory-training"
+          [class.asc-tabs__link--active]="currentFragment === fragmentsObject.nonMandatoryTraining"
           >Non-mandatory training</a
         >
       </li>
       <li
         class="govuk-tabs__list-item asc-tabs__list-item"
-        [class.asc-tabs__list-item--active]="tabOptions.qualifications"
+        [class.asc-tabs__list-item--active]="currentFragment === fragmentsObject.qualifications"
       >
         <a
           class="govuk-tabs__tab asc-tabs__link"
           role="tab"
-          href="javascript:void(0)"
-          (click)="this.handleViewChange('qualifications')"
-          [class.asc-tabs__link--active]="tabOptions.qualifications"
+          [routerLink]="['../training']"
+          fragment="qualifications"
+          [class.asc-tabs__link--active]="currentFragment === fragmentsObject.qualifications"
           >Qualifications</a
         >
       </li>
     </ul>
   </div>
 
-  <div *ngIf="tabOptions.allRecords">
+  <div *ngIf="currentFragment === fragmentsObject.allRecords">
     <div class="govuk-grid-column-full">
       <div class="govuk-grid-row">
         <ng-container *ngIf="mandatoryTrainingCount > 0; noMandatoryTraining">
@@ -254,14 +257,21 @@
                 </tr>
               </thead>
               <tbody class="govuk-table__body">
-                <tr class="govuk-table__row" *ngFor="let trainingRecord of mandatoryTrainingCategory.trainingRecords">
+                <tr
+                  class="govuk-table__row"
+                  *ngFor="let mandatoryTrainingRecord of mandatoryTrainingCategory.trainingRecords"
+                >
                   <td class="govuk-table__cell">
-                    <a href="javascript:void(0)">{{ trainingRecord.title }}</a>
+                    <a
+                      class="govuk-link--no-visited-state"
+                      [routerLink]="['../training', mandatoryTrainingRecord.uid]"
+                      >{{ mandatoryTrainingRecord.title }}</a
+                    >
                   </td>
-                  <td class="govuk-table__cell">{{ trainingRecord.accredited }}</td>
-                  <td class="govuk-table__cell">{{ trainingRecord.completed }}</td>
-                  <td class="govuk-table__cell">{{ trainingRecord.expires }}</td>
-                  <td class="govuk-table__cell">{{ trainingRecord.trainingStatus }}</td>
+                  <td class="govuk-table__cell">{{ mandatoryTrainingRecord.accredited }}</td>
+                  <td class="govuk-table__cell">{{ mandatoryTrainingRecord.completed }}</td>
+                  <td class="govuk-table__cell">{{ mandatoryTrainingRecord.expires }}</td>
+                  <td class="govuk-table__cell">{{ mandatoryTrainingRecord.trainingStatus }}</td>
                 </tr>
               </tbody>
             </table>
@@ -295,7 +305,11 @@
                   *ngFor="let nonMandatoryTrainingRecord of nonMandatoryTrainingCategory.trainingRecords"
                 >
                   <td class="govuk-table__cell">
-                    <a href="javascript:void(0)">{{ nonMandatoryTrainingRecord.title }}</a>
+                    <a
+                      class="govuk-link--no-visited-state"
+                      [routerLink]="['../training', nonMandatoryTrainingRecord.uid]"
+                      >{{ nonMandatoryTrainingRecord.title }}</a
+                    >
                   </td>
                   <td class="govuk-table__cell">{{ nonMandatoryTrainingRecord.accredited }}</td>
                   <td class="govuk-table__cell">{{ nonMandatoryTrainingRecord.completed }}</td>
@@ -328,7 +342,11 @@
               <tbody class="govuk-table__body">
                 <tr class="govuk-table__row" *ngFor="let qualificationRecord of qualificationType.records">
                   <td class="govuk-table__cell">
-                    <a href="javascript:void(0)">{{ qualificationRecord.title }}</a>
+                    <a
+                      class="govuk-link--no-visited-state"
+                      [routerLink]="['../qualification', qualificationRecord.uid]"
+                      >{{ qualificationRecord.title }}</a
+                    >
                   </td>
                   <td class="govuk-table__cell">{{ qualificationRecord.year }}</td>
                   <td class="govuk-table__cell">
@@ -343,17 +361,17 @@
       </div>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="tabOptions.mandatoryTraining">
+  <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="currentFragment === fragmentsObject.mandatoryTraining">
     <div class="govuk-grid-column-full">
       <div>Mandatory training</div>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="tabOptions.nonMandatoryTraining">
+  <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="currentFragment === fragmentsObject.nonMandatoryTraining">
     <div class="govuk-grid-column-full">
       <div>Non-mandatory training</div>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="tabOptions.qualifications">
+  <div class="govuk-grid-row govuk-!-margin-top-9" *ngIf="currentFragment === fragmentsObject.qualifications">
     <div class="govuk-grid-column-full">
       <div>Qualifications</div>
     </div>

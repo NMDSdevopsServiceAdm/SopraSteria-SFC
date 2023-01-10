@@ -43,13 +43,13 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public filterTraining;
   public allTrainings;
   public returnToRecord: URLStructure;
-  public tabOptions: any = {
-    allRecords: true,
-    mandatoryTraining: false,
-    nonMandatoryTraining: false,
-    qualifications: false,
+  protected currentFragment: string;
+  public fragmentsObject: any = {
+    allRecords: 'all-records',
+    mandatoryTraining: 'mandatory-training',
+    nonMandatoryTraining: 'non-mandatory-training',
+    qualifications: 'qualifications',
   };
-
   constructor(
     private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
@@ -85,19 +85,14 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     this.filterTrainingByDefault = '0_showall';
     this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
-    // this.getFilterByStatus(this.filterTrainingByDefault);
     this.setReturnRoute();
     this.trainingService.trainingOrQualificationPreviouslySelected = null;
-  }
 
-  public handleViewChange(tabClickedName): void {
-    for (const tabName in this.tabOptions) {
-      if (tabName === tabClickedName) {
-        this.tabOptions[tabName] = true;
-      } else {
-        this.tabOptions[tabName] = false;
-      }
-    }
+    this.subscriptions.add(
+      this.route.fragment.subscribe((fragment) => {
+        this.currentFragment = fragment ? fragment : 'all-records';
+      }),
+    );
   }
 
   public setTrainingAndQualifications(): void {
