@@ -101,24 +101,6 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('Training category select/display', async () => {
-    // it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
-    //   const { getByText } = await setup(true);
-
-    //   expect(getByText('Training category: testCategory')).toBeTruthy();
-    // });
-
-    // it('should display the missing mandatory training category as text when a manadatoryTraining object is passed', async () => {
-    //   const { queryByTestId } = await setup(true);
-
-    //   expect(queryByTestId('trainingSelect')).toBeFalsy();
-    // });
-
-    // it('should have dropdown of training categories when a manadatoryTraining object is not passed', async () => {
-    //   const { getByTestId } = await setup();
-
-    //   expect(getByTestId('trainingSelect')).toBeTruthy();
-    // });
-
     it('should show the training category select box when there is no training category id present', async () => {
       const { getByTestId, queryByTestId } = await setup(false, null);
 
@@ -191,7 +173,7 @@ describe('AddEditTrainingComponent', () => {
 
     it('should not prefill the form if there is a training record id but there is no training record', async () => {
       const { component, workerService } = await setup();
-      spyOn(workerService, 'getTrainingRecord').and.returnValue(of({}));
+      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
       component.ngOnInit();
       const { form } = component;
 

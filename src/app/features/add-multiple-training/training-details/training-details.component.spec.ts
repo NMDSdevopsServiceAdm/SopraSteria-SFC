@@ -248,17 +248,21 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
     });
 
-    it('should show an error when expiry date is more than 100 years ago', async () => {
+    it('should show an error when expiry date is before the completed date', async () => {
       const { component, getByText, fixture, getAllByText } = await setup();
       component.form.markAsDirty();
       const today = new Date();
-      const todayDate = { day: 31, month: 12, year: today.getFullYear() - 101 };
-      component.form.get('expires').setValue(todayDate);
+      const completedDate = { day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear() };
+      const expiresDate = { day: today.getDate() - 1, month: today.getMonth() + 1, year: today.getFullYear() };
+
+      component.form.get('completed').setValue(completedDate);
+      component.form.get('completed').markAsDirty();
+      component.form.get('expires').setValue(expiresDate);
       component.form.get('expires').markAsDirty();
       const finishButton = getByText('Finish');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
+      expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
     });
   });
 });

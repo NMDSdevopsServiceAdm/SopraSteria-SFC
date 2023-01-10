@@ -54,6 +54,9 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.title = 'Add training details';
   }
 
+  protected setSectionHeading(): void {
+    this.section = 'Add multiple records';
+  }
   protected setButtonText(): void {
     this.buttonText = 'Finish';
   }

@@ -58,6 +58,10 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     }
   }
 
+  protected setSectionHeading(): void {
+    this.section = this.worker.nameOrId;
+  }
+
   protected setButtonText(): void {
     this.buttonText = this.trainingRecordId ? 'Save and return' : 'Save record';
   }

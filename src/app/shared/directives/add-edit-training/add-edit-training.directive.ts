@@ -60,7 +60,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
     this.setupForm();
     this.init();
     this.setTitle();
-    this.setSection();
+    this.setSectionHeading();
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
@@ -82,7 +82,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
 
   protected setTitle(): void {}
 
-  protected setSection(): void {}
+  protected setSectionHeading(): void {}
 
   protected setButtonText(): void {}
 
@@ -184,10 +184,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
             name: 'dateValid',
             message: 'Expiry date must be a valid date',
           },
-          // {
-          //   name: 'dateMin',
-          //   message: 'Expiry date cannot be more than 100 years ago',
-          // },
           {
             name: 'beforeStartDate',
             message: 'Expiry date must be after date completed',
