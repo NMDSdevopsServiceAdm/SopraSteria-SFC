@@ -17,7 +17,7 @@
   </thead>
   <tbody class="govuk-table__body" *ngIf="gropByName">
     <ng-container>
-      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of getKeys()">
+      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of missingTrainingArray">
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           <ng-container *ngIf="canEditWorker; else nameOrId">
             <a
@@ -29,22 +29,22 @@
                 'training'
               ]"
             >
-              {{ removeIdFromKey(worker) }}</a
+              {{ worker.name }}</a
             >
           </ng-container>
           <ng-template #nameOrId>
-            {{ removeIdFromKey(worker) }}
+            {{ worker.name }}
           </ng-template>
         </td>
 
         <td class="govuk-table__cell govuk-!-font-weight-regular">
-          <div *ngFor="let training of gropByName[worker]">
+          <div *ngFor="let training of worker.value">
             {{ training.category }}
           </div>
         </td>
 
         <td class="govuk-table__cell">
-          <div *ngFor="let training of gropByName[worker]">
+          <div *ngFor="let training of worker.value">
             <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
               <img
                 src="/assets/images/flag-red.svg"
@@ -57,7 +57,7 @@
         </td>
 
         <td class="govuk-table__cell">
-          <div *ngFor="let training of gropByName[worker]">
+          <div *ngFor="let training of worker.value">
             <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
               <app-missing-mandatory-training
                 [missingRecord]="training"

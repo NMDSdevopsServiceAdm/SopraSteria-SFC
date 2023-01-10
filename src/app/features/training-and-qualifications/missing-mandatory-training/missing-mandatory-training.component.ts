@@ -22,6 +22,8 @@ export class MissingMandatoryTrainingComponent implements OnInit {
   public trainings;
   public gropByName;
 
+  missingTrainingArray = [];
+
   constructor(
     private permissionsService: PermissionsService,
     public trainingStatusService: TrainingStatusService,
@@ -36,23 +38,27 @@ export class MissingMandatoryTrainingComponent implements OnInit {
     this.workplace = this.establishmentService.primaryWorkplace;
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-    this.getAllTrainingByCategory();
+    this.getAllMissingMandatoryTrainings();
     this.setBackLink();
   }
 
-  private getAllTrainingByCategory(): void {
+  private getAllMissingMandatoryTrainings(): void {
     this.subscriptions.add(
       this.trainingService
         .getMissingMandatoryTraining(this.workplace.id)
         .pipe(take(1))
         .subscribe((categories: any) => {
           this.trainings = categories.missingTrainings;
-
           this.gropByName = this.trainings.groupBy((item) => item.workerName + item.workerId);
-          console.log(this.gropByName);
-
           this.getKeys().forEach((key) => {
-            console.log({ g: this.gropByName[key] });
+            const newValue = {
+              key,
+              name: this.removeIdFromKey(key),
+              uid: this.findUidForWorker(key),
+              value: this.gropByName[key],
+            };
+
+            this.missingTrainingArray.push(newValue);
           });
         }),
     );
@@ -64,6 +70,10 @@ export class MissingMandatoryTrainingComponent implements OnInit {
 
   getKeys() {
     return Object.keys(this.gropByName);
+  }
+
+  findUidForWorker(key) {
+    return this.gropByName[key].find((u) => u.uid).uid;
   }
 
   protected setBackLink(): void {
