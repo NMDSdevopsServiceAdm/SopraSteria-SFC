@@ -38,10 +38,10 @@ export class ViewTrainingComponent implements OnInit {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.trainingCategoryId = this.route.snapshot.params.categoryId;
-    localStorage.setItem('previousUrl', this.router.url);
     this.setExpiresSoonAlertDates();
     this.getAllTrainingByCategory();
     this.setBackLink();
+    localStorage.setItem('previousUrl', this.router.url);
   }
 
   private setExpiresSoonAlertDates(): void {
@@ -59,7 +59,7 @@ export class ViewTrainingComponent implements OnInit {
         .pipe(take(1))
         .subscribe((categories: any) => {
           this.category = categories.find((t: any) => t.id == this.trainingCategoryId);
-
+          localStorage.setItem('trainingCategory', this.category.category);
           this.trainings = this.category.training;
 
           this.sortByTrainingStatus();

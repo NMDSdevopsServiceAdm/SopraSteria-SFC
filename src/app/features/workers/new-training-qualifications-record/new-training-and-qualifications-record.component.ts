@@ -76,14 +76,14 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       }),
     );
     localStorage.setItem('previousUrl', this.router.url);
-    // this.currentUrl = this.router.url;
+
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
 
     this.filterTrainingByDefault = '0_showall';
     this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
     this.getFilterByStatus(this.filterTrainingByDefault);
-    // this.setReturnRoute();
+
     this.trainingService.trainingOrQualificationPreviouslySelected = null;
   }
 
@@ -217,18 +217,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
-  // public setReturnRoute(): void {
-  //   this.returnToRecord = {
-  //     url: [this.currentUrl],
-  //   };
-  //   this.workerService.setReturnTo(this.returnToRecord);
-  // }
-
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
-  // addButtonClicked(): void {
-  //   this.setReturnRoute();
-  // }
 }

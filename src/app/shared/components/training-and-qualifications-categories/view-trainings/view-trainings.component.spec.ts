@@ -136,8 +136,9 @@ describe('ViewTrainingComponent', () => {
     const localStorageSpy = spyOn(localStorage, 'setItem');
     component.ngOnInit();
 
-    expect(localStorageSpy).toHaveBeenCalledTimes(1);
-    expect(localStorageSpy.calls.all()[0].args).toEqual(['previousUrl', '/view-training']);
+    expect(localStorageSpy).toHaveBeenCalledTimes(2);
+    expect(localStorageSpy.calls.all()[0].args).toEqual(['trainingCategory', 'Autism']);
+    expect(localStorageSpy.calls.all()[1].args).toEqual(['previousUrl', '/view-training']);
   });
 
   it(`should navigate to the the training record when clicking update link`, async () => {

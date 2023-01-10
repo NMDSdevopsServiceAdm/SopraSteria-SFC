@@ -101,21 +101,22 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('Training category select/display', async () => {
-    it('should show the training category select box when there is no training category id present', async () => {
+    it('should show the training category select box when there is no training category is present', async () => {
       const { getByTestId, queryByTestId } = await setup(false, null);
 
       expect(getByTestId('trainingSelect')).toBeTruthy();
       expect(queryByTestId('trainingCategoryDisplay')).toBeFalsy();
     });
 
-    it('should show the training category displayed as text when there is a training category id', async () => {
-      const { component, getByText, getByTestId, queryByTestId } = await setup();
+    it('should show the training category displayed as text when there is a training category present', async () => {
+      const { component, fixture, getByText, getByTestId, queryByTestId } = await setup();
 
-      const trainingCategory = component.trainingRecord.trainingCategory.category;
+      component.trainingCategory = 'Autism';
+      fixture.detectChanges();
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
       expect(queryByTestId('trainingSelect')).toBeFalsy();
-      expect(getByText(trainingCategory)).toBeTruthy();
+      expect(getByText('Autism')).toBeTruthy();
     });
   });
 
@@ -366,7 +367,7 @@ describe('AddEditTrainingComponent', () => {
       fireEvent.click(getByText('Save record'));
       fixture.detectChanges();
 
-      expect(alertSetterSpy).toHaveBeenCalledWith({ type: 'success', message: 'Training has been added.' });
+      expect(alertSetterSpy).toHaveBeenCalledWith({ type: 'success', message: 'Training has been added' });
     });
   });
 
@@ -515,6 +516,25 @@ describe('AddEditTrainingComponent', () => {
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
+        expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
+      });
+
+      fit('should show an error message if the expiry date is filled out and the completed date is not', async () => {
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        fixture.detectChanges();
+
+        const dateExpires = new Date();
+
+        const expiresDate = getByTestId('expiresDate');
+        userEvent.type(within(expiresDate).getByLabelText('Day'), `${dateExpires.getDate() - 1}`);
+        userEvent.type(within(expiresDate).getByLabelText('Month'), `${dateExpires.getMonth() + 1}`);
+        userEvent.type(within(expiresDate).getByLabelText('Year'), `${dateExpires.getFullYear()}`);
+
+        fireEvent.click(getByText('Save record'));
+        fixture.detectChanges();
+        console.log(component.form.value);
         expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
       });
     });

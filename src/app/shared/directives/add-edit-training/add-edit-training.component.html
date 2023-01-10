@@ -14,7 +14,7 @@
           <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
           <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
         </p>
-        <ng-container *ngIf="!trainingRecordId; else noDropdown">
+        <ng-container *ngIf="!trainingCategory; else noDropdown">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
             <label class="govuk-label" for="category"> Training category </label>
             <span *ngIf="submitted && form.get('category').invalid" id="category-error" class="govuk-error-message">
@@ -36,9 +36,9 @@
           </div>
         </ng-container>
         <ng-template #noDropdown>
-          <p class="govuk-body govuk-!-margin-bottom-8" data-testid="trainingCategoryDisplay">
+          <p class="govuk-body govuk-!-margin-bottom-6" data-testid="trainingCategoryDisplay">
             <span class="govuk-util__block"><b>Training category</b></span>
-            <span class="govuk-util__block govuk-!-margin-top-2">{{ trainingRecord?.trainingCategory.category }}</span>
+            <span class="govuk-util__block govuk-!-margin-top-2">{{ trainingCategory }}</span>
           </p>
         </ng-template>
 
@@ -57,12 +57,10 @@
           />
         </div>
 
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('accredited').invalid">
+        <div class="govuk-form-group">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend">Is the training accredited?</legend>
-            <span *ngIf="submitted && form.get('accredited').invalid" id="accredited-error" class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('accredited') }}
-            </span>
+
             <div class="govuk-radios govuk-!-margin-bottom-2">
               <div class="govuk-radios__item">
                 <input

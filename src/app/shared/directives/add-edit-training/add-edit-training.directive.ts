@@ -23,7 +23,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
-  public trainingCategoryId: string;
+  public trainingCategory: string;
   public worker: Worker;
   public workplace: Establishment;
   public missingTrainingRecord: MandatoryTraining;
@@ -54,9 +54,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.missingTrainingRecord = history.state?.missingRecord;
-    this.trainingCategoryId = localStorage.getItem('trainingCategoryId');
+    this.trainingCategory = localStorage.getItem('trainingCategory');
     this.previousUrl = [localStorage.getItem('previousUrl')];
-
+    console.log(this.previousUrl);
     this.setupForm();
     this.init();
     this.setTitle();
@@ -114,11 +114,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
       .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(minDate)]);
     this.form
       .get('expires')
-      .setValidators([
-        DateValidator.dateValid(),
-        DateValidator.min(minDate),
-        DateValidator.beforeStartDate('completed', true),
-      ]);
+      .setValidators([DateValidator.dateValid(), DateValidator.beforeStartDate('completed', true)]);
   }
 
   private getCategories(): void {
@@ -274,7 +270,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnDestroy(): void {
-    // localStorage.removeItem('trainingCategoryId');
+    localStorage.removeItem('trainingCategory');
     localStorage.removeItem('previousUrl');
   }
 }

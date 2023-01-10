@@ -28,8 +28,8 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
-    private establishmentService: EstablishmentService,
     protected alertService: AlertService,
+    private establishmentService: EstablishmentService,
   ) {
     super(
       formBuilder,
