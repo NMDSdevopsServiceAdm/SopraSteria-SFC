@@ -45,7 +45,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
-
     if (this.trainingRecordId) {
       this.fillForm();
     }
@@ -124,28 +123,26 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
-    if (this.trainingCategoryId) {
-      this.router.navigate(this.previousUrl).then(() => {
-        if (this.mandatoryTraining) {
-          this.alertService.addAlert({
-            type: 'success',
-            message: 'Mandatory training record added',
-          });
-        } else {
-          this.alertService.addAlert({
-            type: 'success',
-            message: 'Training record updated',
-          });
-        }
-      });
+    if (this.trainingRecordId) {
+      this.router.navigate(this.previousUrl);
+      if (this.mandatoryTraining) {
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'Mandatory training record added',
+        });
+      } else {
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'Training record updated',
+        });
+      }
     } else {
-      this.router.navigate(this.previousUrl).then(() => {
-        if (this.trainingRecordId) {
-          this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
-        } else {
-          this.workerService.alert = { type: 'success', message: 'Training has been added.' };
-        }
-      });
+      this.router.navigate(this.previousUrl);
+      if (this.trainingRecordId) {
+        this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
+      } else {
+        this.workerService.alert = { type: 'success', message: 'Training has been added.' };
+      }
     }
   }
 

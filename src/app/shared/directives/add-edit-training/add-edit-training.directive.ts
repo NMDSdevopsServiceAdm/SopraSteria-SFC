@@ -112,7 +112,13 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
     this.form
       .get('completed')
       .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(minDate)]);
-    this.form.get('expires').setValidators([DateValidator.dateValid(), DateValidator.min(minDate)]);
+    this.form
+      .get('expires')
+      .setValidators([
+        DateValidator.dateValid(),
+        DateValidator.min(minDate),
+        DateValidator.beforeStartDate('completed', true),
+      ]);
   }
 
   private getCategories(): void {
@@ -178,12 +184,12 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
             name: 'dateValid',
             message: 'Expiry date must be a valid date',
           },
+          // {
+          //   name: 'dateMin',
+          //   message: 'Expiry date cannot be more than 100 years ago',
+          // },
           {
-            name: 'dateMin',
-            message: 'Expiry date cannot be more than 100 years ago',
-          },
-          {
-            name: 'expiresBeforeCompleted',
+            name: 'beforeStartDate',
             message: 'Expiry date must be after date completed',
           },
         ],
@@ -272,7 +278,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnDestroy(): void {
-    localStorage.removeItem('trainingCategoryId');
+    // localStorage.removeItem('trainingCategoryId');
     localStorage.removeItem('previousUrl');
   }
 }

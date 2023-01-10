@@ -16,7 +16,7 @@ import userEvent from '@testing-library/user-event';
 
 import { ViewTrainingComponent } from './view-trainings.component';
 
-fdescribe('ViewTrainingComponent', () => {
+describe('ViewTrainingComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId } = await render(ViewTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -130,15 +130,14 @@ fdescribe('ViewTrainingComponent', () => {
     expect(getByText(component.trainings[0].worker.mainJob.title)).toBeTruthy();
   });
 
-  it('should set the training category id and the current url in local storage', async () => {
+  it('should set the current url in local storage', async () => {
     const { component, router } = await setup();
     spyOnProperty(router, 'url').and.returnValue('/view-training');
     const localStorageSpy = spyOn(localStorage, 'setItem');
     component.ngOnInit();
 
-    expect(localStorageSpy).toHaveBeenCalledTimes(2);
-    expect(localStorageSpy.calls.all()[0].args).toEqual(['trainingCategoryId', '2']);
-    expect(localStorageSpy.calls.all()[1].args).toEqual(['previousUrl', '/view-training']);
+    expect(localStorageSpy).toHaveBeenCalledTimes(1);
+    expect(localStorageSpy.calls.all()[0].args).toEqual(['previousUrl', '/view-training']);
   });
 
   it(`should navigate to the the training record when clicking update link`, async () => {

@@ -39,7 +39,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public missingJobRoleMandatoryTrainingCount: number;
   public missingMandatoryTraining: MandatoryTraining[];
   private subscriptions: Subscription = new Subscription();
-  private currentUrl: string;
   public filterTrainingByStatus;
   public filterTrainingByDefault: string;
   public filterTraining;
@@ -61,6 +60,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
+
     this.trainingStatusService.expiresSoonAlertDate$.next(
       this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate,
     );
@@ -75,14 +75,15 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         }
       }),
     );
-    this.currentUrl = this.router.url;
+    localStorage.setItem('previousUrl', this.router.url);
+    // this.currentUrl = this.router.url;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
 
     this.filterTrainingByDefault = '0_showall';
     this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
     this.getFilterByStatus(this.filterTrainingByDefault);
-    this.setReturnRoute();
+    // this.setReturnRoute();
     this.trainingService.trainingOrQualificationPreviouslySelected = null;
   }
 
@@ -216,18 +217,18 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
-  public setReturnRoute(): void {
-    this.returnToRecord = {
-      url: [this.currentUrl],
-    };
-    this.workerService.setReturnTo(this.returnToRecord);
-  }
+  // public setReturnRoute(): void {
+  //   this.returnToRecord = {
+  //     url: [this.currentUrl],
+  //   };
+  //   this.workerService.setReturnTo(this.returnToRecord);
+  // }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  addButtonClicked(): void {
-    this.setReturnRoute();
-  }
+  // addButtonClicked(): void {
+  //   this.setReturnRoute();
+  // }
 }

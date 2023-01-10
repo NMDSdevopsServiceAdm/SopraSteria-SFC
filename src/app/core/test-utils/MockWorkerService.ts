@@ -207,7 +207,7 @@ export const trainingRecord = {
   updatedBy: 'admin',
   trainingCategory: { id: 1, category: 'Communication' },
   title: 'Communication Training 1',
-  accredited: true,
+  accredited: 'Yes',
   completed: '01/02/2020',
   expires: '01/02/2021',
 };
@@ -229,6 +229,7 @@ export const qualificationRecord = {
 @Injectable()
 export class MockWorkerService extends WorkerService {
   public _worker;
+  public _alert;
 
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
@@ -290,6 +291,14 @@ export class MockWorkerService extends WorkerService {
     workplaceUid: string,
     workerId: string,
     trainingRecordId: string,
+    record: TrainingRecordRequest,
+  ): Observable<TrainingRecordRequest> {
+    return of(trainingRecord);
+  }
+
+  createTrainingRecord(
+    workplaceUid: string,
+    workerId: string,
     record: TrainingRecordRequest,
   ): Observable<TrainingRecordRequest> {
     return of(trainingRecord);

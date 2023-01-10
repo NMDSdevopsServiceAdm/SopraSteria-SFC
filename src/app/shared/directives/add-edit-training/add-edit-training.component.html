@@ -14,7 +14,7 @@
           <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
           <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
         </p>
-        <ng-container *ngIf="!trainingCategoryId; else noDropdown">
+        <ng-container *ngIf="!trainingRecordId; else noDropdown">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
             <label class="govuk-label" for="category"> Training category </label>
             <span *ngIf="submitted && form.get('category').invalid" id="category-error" class="govuk-error-message">
@@ -99,6 +99,7 @@
         </div>
 
         <div
+          data-testid="completedDate"
           class="govuk-form-group govuk-!-margin-bottom-7"
           [class.govuk-form-group--error]="submitted && form.get('completed').invalid"
         >
@@ -113,6 +114,7 @@
         </div>
 
         <div
+          data-testid="expiresDate"
           class="govuk-form-group govuk-!-margin-bottom-7"
           [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
         >
