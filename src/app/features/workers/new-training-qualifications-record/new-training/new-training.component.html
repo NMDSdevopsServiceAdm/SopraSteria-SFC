@@ -1,10 +1,10 @@
 <div class="govuk-grid-row">
-  <ng-container *ngIf="trainingCategories.length > 0; noTraining">
+  <ng-container *ngIf="trainingCategories.length > 0; else noTraining">
     <h1 class="govuk-heading-l govuk-!-font-size-27">{{ trainingType }}</h1>
     <div *ngFor="let trainingCategory of trainingCategories">
-      <table class="govuk-table">
+      <table class="govuk-table govuk-!-margin-bottom-7">
         <caption
-          class="govuk-table__caption govuk-table__caption--m"
+          class="govuk-table__caption govuk-table__caption--m govuk-!-margin-bottom-2"
           [attr.data-testid]="'category-' + trainingCategory.category"
         >
           {{
@@ -30,7 +30,7 @@
                   class="govuk-link--no-visited-state"
                   [attr.data-testid]="'Title-' + trainingRecord.uid"
                   [routerLink]="['../training', trainingRecord.uid]"
-                  >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name - Add' }}</a
+                  >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
                 >
               </ng-container>
               <ng-template #viewOnly>
@@ -75,5 +75,30 @@
       </table>
     </div>
   </ng-container>
-  <ng-template #noTraining>No {{ trainingType }}</ng-template>
+  <ng-template #noTraining>
+    <ng-container *ngIf="isMandatoryTraining; else notMandatoryTraining">
+      <div class="govuk-!-margin-bottom-8">
+        <h1 class="govuk-heading-l govuk-!-font-size-27 govuk-!-margin-bottom-3">Mandatory training</h1>
+        <p class="govuk-body">No mandatory training records have been added for this person yet.</p>
+        <a
+          class="govuk-link--no-visited-state"
+          [attr.data-testid]="'no-mandatory-training-link'"
+          [routerLink]="['../select-record-type']"
+          >Add and manage mandatory training records</a
+        >
+      </div>
+    </ng-container>
+    <ng-template #notMandatoryTraining>
+      <div class="govuk-!-margin-bottom-8">
+        <h1 class="govuk-heading-l govuk-!-font-size-27 govuk-!-margin-bottom-3">Non-mandatory training</h1>
+        <p class="govuk-body">No non-mandatory training records have been added for this person yet.</p>
+        <a
+          class="govuk-link--no-visited-state"
+          [attr.data-testid]="'no-training-link'"
+          [routerLink]="['../select-record-type']"
+          >Add a training record</a
+        >
+      </div>
+    </ng-template>
+  </ng-template>
 </div>

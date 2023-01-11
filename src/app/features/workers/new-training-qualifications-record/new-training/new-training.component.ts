@@ -8,6 +8,7 @@ import { TrainingStatusService } from '@core/services/trainingStatus.service';
 })
 export class NewTrainingComponent {
   @Input() public trainingCategories: TrainingRecordCategory[];
+  @Input() public isMandatoryTraining = false;
   @Input() public trainingType: string;
   @Input() public setReturnRoute: () => void;
   @Input() public canEditWorker: boolean;

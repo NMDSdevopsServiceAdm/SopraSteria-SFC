@@ -65,6 +65,33 @@ describe('NewQualificationsComponent', () => {
     expect(getByText('These are some more notes in the second row of the cert table')).toBeTruthy();
   });
 
+  describe('no qualifications', async () => {
+    it('should navigate to select record type to add page when Add a qualification record is clicked when there are no records', async () => {
+      const { component, getByText } = await setup();
+      component.qualificationsByGroup = {
+        count: 0,
+        lastUpdated: null,
+        groups: null,
+      };
+
+      const addAQualifcationLink = getByText('Add a qualification record');
+      expect(addAQualifcationLink.getAttribute('href')).toEqual('/select-record-type');
+    });
+
+    it('should display a title, no qualifications found and add a qualification link if there are no records', async () => {
+      const { component, getByText } = await setup();
+      component.qualificationsByGroup = {
+        count: 0,
+        lastUpdated: null,
+        groups: null,
+      };
+
+      expect(getByText('Qualifications')).toBeTruthy();
+      expect(getByText('No qualification records have been added for this person yet.')).toBeTruthy();
+      expect(getByText('Add a qualification record')).toBeTruthy();
+    });
+  });
+
   describe('Link titles', () => {
     it('should contain link in qualification name in first Health table row', async () => {
       const { component, fixture } = await setup();

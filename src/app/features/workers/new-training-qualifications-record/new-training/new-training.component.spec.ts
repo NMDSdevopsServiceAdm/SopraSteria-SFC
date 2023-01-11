@@ -103,6 +103,7 @@ describe('NewTrainingComponent', async () => {
     component = fixture.componentInstance;
     component.canEditWorker = true;
     component.trainingCategories = trainingCategories;
+    component.isMandatoryTraining = false;
     fixture.detectChanges();
   });
 
@@ -135,7 +136,7 @@ describe('NewTrainingComponent', async () => {
       ).nativeElement;
 
       expect(healthTrainingTitle.textContent).toContain('Health training');
-      expect(healthTraining2Title.textContent).toContain('Missing training name - Add');
+      expect(healthTraining2Title.textContent).toContain('Missing training name (Add)');
     });
   });
 
@@ -189,6 +190,27 @@ describe('NewTrainingComponent', async () => {
       expect(communicationTrainingTitleLink).toBeTruthy();
       expect(healthTrainingTitleLink).toBeTruthy();
       expect(healthTraining2TitleLink).toBeTruthy();
+    });
+  });
+
+  describe('no training', async () => {
+    it('should display a no training found link when there is no training and isMandatoryTraining is false', async () => {
+      component.trainingCategories = [];
+      fixture.detectChanges();
+      const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
+      expect(noTrainingLink).toBeTruthy();
+      expect(noTrainingLink.getAttribute('href')).toBe('/select-record-type');
+    });
+
+    it('should display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true', async () => {
+      component.trainingCategories = [];
+      component.isMandatoryTraining = true;
+      fixture.detectChanges();
+      const noMandatoryTrainingLink = fixture.debugElement.query(
+        By.css('[data-testid="no-mandatory-training-link"]'),
+      ).nativeElement;
+      expect(noMandatoryTrainingLink).toBeTruthy();
+      expect(noMandatoryTrainingLink.getAttribute('href')).toBe('/select-record-type');
     });
   });
 });
