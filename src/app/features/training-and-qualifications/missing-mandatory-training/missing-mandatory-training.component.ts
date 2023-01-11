@@ -20,7 +20,7 @@ export class MissingMandatoryTrainingComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
 
   public trainings;
-  public gropByName;
+  public groupByName;
 
   missingTrainingArray = [];
 
@@ -49,13 +49,13 @@ export class MissingMandatoryTrainingComponent implements OnInit {
         .pipe(take(1))
         .subscribe((categories: any) => {
           this.trainings = categories.missingTrainings;
-          this.gropByName = this.trainings.groupBy((item) => item.workerName + item.workerId);
+          this.groupByName = this.trainings.groupBy((item) => item.workerName + item.workerId);
           this.getKeys().forEach((key) => {
             const newValue = {
               key,
               name: this.removeIdFromKey(key),
               uid: this.findUidForWorker(key),
-              value: this.gropByName[key],
+              value: this.groupByName[key],
             };
 
             this.missingTrainingArray.push(newValue);
@@ -69,11 +69,11 @@ export class MissingMandatoryTrainingComponent implements OnInit {
   }
 
   getKeys() {
-    return Object.keys(this.gropByName);
+    return Object.keys(this.groupByName);
   }
 
   findUidForWorker(key) {
-    return this.gropByName[key].find((u) => u.uid).uid;
+    return this.groupByName[key].find((u) => u.uid).uid;
   }
 
   protected setBackLink(): void {
