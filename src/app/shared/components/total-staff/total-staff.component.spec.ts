@@ -23,16 +23,4 @@ describe('TotalStaffComponent', () => {
     const component = await setup();
     expect(component).toBeTruthy();
   });
-
-  it('should show the hint if show hint is true', async () => {
-    const { getByTestId } = await setup();
-
-    expect(getByTestId('hint')).toBeTruthy();
-  });
-
-  it('should not show the hint if showHint is set to false', async () => {
-    const { queryByTestId } = await setup(false);
-
-    expect(queryByTestId('hint')).toBeFalsy();
-  });
 });

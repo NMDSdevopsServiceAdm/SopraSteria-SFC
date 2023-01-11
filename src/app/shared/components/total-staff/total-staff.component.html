@@ -7,14 +7,6 @@
     The number should include all staff (care-providing and none care-providing, those on permanent or temporary
     contracts, pool, bank and agency workers).
   </p>
-  <ng-container *ngIf="showHint">
-    <app-details data-testid="hint" [title]="'Not sure how many members of staff your workplace has?'">
-      <p>
-        You can enter an estimate to save time, but remember to update this number in ASC-WDS once this account has been
-        validated by Skills for Care.
-      </p>
-    </app-details>
-  </ng-container>
   <div class="govuk-form-group" [formGroup]="form" [class.govuk-form-group--error]="submitted && form.invalid">
     <label class="govuk-label" for="totalStaff"> Number of staff</label>
     <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
