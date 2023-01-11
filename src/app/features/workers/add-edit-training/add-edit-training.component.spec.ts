@@ -292,7 +292,7 @@ describe('AddEditTrainingComponent', () => {
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: 'Mandatory training record added',
+        message: 'Training record updated',
       });
     });
 
@@ -344,9 +344,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should show an alert when successfully adding a training record', async () => {
-      const { component, fixture, getByText, getByLabelText, getByTestId, workerService } = await setup(false, null);
-
-      const alertSetterSpy = spyOnProperty(workerService, 'alert', 'set').and.callThrough();
+      const { component, fixture, getByText, getByLabelText, getByTestId, alertSpy } = await setup(false, null);
 
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
@@ -367,7 +365,7 @@ describe('AddEditTrainingComponent', () => {
       fireEvent.click(getByText('Save record'));
       fixture.detectChanges();
 
-      expect(alertSetterSpy).toHaveBeenCalledWith({ type: 'success', message: 'Training has been added' });
+      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: 'Training record added' });
     });
   });
 
@@ -519,7 +517,7 @@ describe('AddEditTrainingComponent', () => {
         expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
       });
 
-      fit('should show an error message if the expiry date is filled out and the completed date is not', async () => {
+      it('should show an error message if the expiry date is filled out and the completed date is not', async () => {
         const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
 
         component.previousUrl = ['/goToPreviousUrl'];
@@ -534,7 +532,7 @@ describe('AddEditTrainingComponent', () => {
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
-        console.log(component.form.value);
+
         expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
       });
     });

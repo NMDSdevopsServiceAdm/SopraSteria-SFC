@@ -67,14 +67,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();
-    this.subscriptions.add(
-      this.workerService.alert$.subscribe((alert) => {
-        if (alert) {
-          this.alertService.addAlert(alert);
-          this.workerService.alert = null;
-        }
-      }),
-    );
     localStorage.setItem('previousUrl', this.router.url);
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
@@ -219,5 +211,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public resetLocalStorage(): void {
+    localStorage.removeItem('trainingCategory');
   }
 }

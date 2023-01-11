@@ -56,7 +56,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
     this.missingTrainingRecord = history.state?.missingRecord;
     this.trainingCategory = localStorage.getItem('trainingCategory');
     this.previousUrl = [localStorage.getItem('previousUrl')];
-    console.log(this.previousUrl);
     this.setupForm();
     this.init();
     this.setTitle();

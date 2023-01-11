@@ -127,30 +127,12 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
-    console.log('**** onSuccess ****');
-    console.log('trainingRecordId:', this.trainingRecordId);
-    console.log('mandatoryTraining:', this.mandatoryTraining);
-    if (this.trainingRecordId) {
-      this.router.navigate(this.previousUrl);
-      if (this.mandatoryTraining) {
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Mandatory training record added',
-        });
-      } else {
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Training record updated',
-        });
-      }
-    } else {
-      this.router.navigate(this.previousUrl);
-      if (this.trainingRecordId) {
-        this.workerService.alert = { type: 'success', message: 'Training has been saved' };
-      } else {
-        this.workerService.alert = { type: 'success', message: 'Training has been added' };
-      }
-    }
+    const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
+    this.router.navigate(this.previousUrl);
+    this.alertService.addAlert({
+      type: 'success',
+      message,
+    });
   }
 
   private onError(error) {
