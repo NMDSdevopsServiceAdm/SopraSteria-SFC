@@ -42,7 +42,7 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
 
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    const primaryWorkplaceUid = this.route.snapshot.data.primaryWorkplace?.uid;
+    const primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
 
     this.return =
       this.workplace.uid === primaryWorkplaceUid
