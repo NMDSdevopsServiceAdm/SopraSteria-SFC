@@ -5,5 +5,5 @@ applications:
     buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git
     services:
       - sfcstaging-db
-      - sfcstaging-redis
+      - sfcstaging-redis-new
 stack: cflinuxfs3
