@@ -20,7 +20,7 @@ describe.only('server/routes/establishments/trainingAndQualifications/getAllTrai
     beforeEach(() => {
       const request = {
         method: 'GET',
-        url: '/api/establishment/mocked-uid/trainingAndQualifications',
+        url: '/api/establishment/mocked-uid/trainingAndQualifications/expired',
         params: { status: 'expired' },
         establishmentId: 'mocked-uid',
       };

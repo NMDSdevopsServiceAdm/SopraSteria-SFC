@@ -38,12 +38,12 @@ const getMissingMandatoryTraining = async (req, res) => {
     }
 
     const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
-    res.json({
-      missingTrainings: transformWorkersWithissingMandatoryCategiries(
-        establishmentWithWorkersAndTraining,
-        trainingCategories,
-      ),
-    });
+    // res.json({
+    //   missingTrainings: transformWorkersWithissingMandatoryCategiries(
+    //     establishmentWithWorkersAndTraining,
+    //     trainingCategories,
+    //   ),
+    // });
   } catch (err) {
     console.error(err);
     return res.status(500).json();
