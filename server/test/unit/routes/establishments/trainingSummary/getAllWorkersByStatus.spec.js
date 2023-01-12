@@ -8,7 +8,7 @@ const {
   getAllTrainingByStatus,
 } = require('../../../../../routes/establishments/trainingSummary/getAllWorkersTrainingByStatus');
 
-describe.only('server/routes/establishments/trainingAndQualifications/getAllTrainingAndQualifications.js', () => {
+describe('server/routes/establishments/trainingAndQualifications/getAllTrainingAndQualifications.js', () => {
   afterEach(() => {
     sinon.restore();
   });
