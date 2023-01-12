@@ -12,4 +12,9 @@ export class NewTrainingComponent {
   @Input() public canEditWorker: boolean;
 
   constructor(private trainingStatusService: TrainingStatusService) {}
+
+  public setLocalStorage(event: Event, category: string): void {
+    event.preventDefault();
+    localStorage.setItem('trainingCategory', category);
+  }
 }

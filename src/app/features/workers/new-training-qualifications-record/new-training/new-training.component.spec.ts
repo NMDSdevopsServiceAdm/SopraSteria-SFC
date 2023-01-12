@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { fireEvent } from '@testing-library/angular';
 
 import { NewTrainingComponent } from './new-training.component';
 
@@ -185,6 +186,21 @@ describe('NewTrainingComponent', () => {
       expect(communicationTrainingTitleLink.getAttribute('href')).toBe('/training/someCommunicationUid');
       expect(healthTrainingTitleLink.getAttribute('href')).toBe('/training/someHealthUid');
       expect(healthTraining2TitleLink.getAttribute('href')).toBe('/training/someHealthUid2');
+    });
+
+    it('should save the trainingCategory into local storage when clicking a link', async () => {
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      const localStorageSpy = spyOn(localStorage, 'setItem').and.callThrough();
+
+      const autismTrainingTitleLink = fixture.debugElement.query(
+        By.css('[data-testid="Title-someAutismUid"]'),
+      ).nativeElement;
+
+      fireEvent.click(autismTrainingTitleLink);
+
+      expect(localStorageSpy).toHaveBeenCalledWith('trainingCategory', 'Autism');
     });
 
     it('training title should not link to training records if you are a read only user', () => {

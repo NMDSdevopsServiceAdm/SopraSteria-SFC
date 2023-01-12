@@ -6,13 +6,11 @@ import { QualificationsByGroup } from '@core/model/qualification.model';
 import { MandatoryTraining, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
-import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -46,13 +44,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public returnToRecord: URLStructure;
 
   constructor(
-    private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
-    private workerService: WorkerService,
     private trainingStatusService: TrainingStatusService,
     private trainingService: TrainingService,
   ) {}

@@ -27,6 +27,7 @@
                   [routerLink]="['../training', records.uid]"
                   [attr.data-testid]="'Title-' + records.uid"
                   [state]="trainingType === 'mandatory' && { training: 'mandatory' }"
+                  (click)="setLocalStorage($event, records.trainingCategory.category)"
                   >{{ records.title ? records.title : 'Missing training name - Add' }}</a
                 >
               </ng-container>
