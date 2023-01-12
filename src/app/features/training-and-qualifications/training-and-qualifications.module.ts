@@ -7,7 +7,7 @@ import { SharedModule } from '@shared/shared.module';
 
 import { ExpiredTrainingComponent } from './expired-training/expired-training.component';
 import { ExpiringSoonTrainingComponent } from './expiring-soon-training/expiring-soon-training.component';
-import { MissingMandatoryTrainingComponent } from './missing-mandatory-training/missing-mandatory-training.component';
+import { MissingMandatoryTrainingComponent } from './missing-mandatory-training/missing-mandatory-training-status.component';
 import { TrainingAndQualificationsRoutingModule } from './training-and-qualifications-routing.module';
 
 @NgModule({

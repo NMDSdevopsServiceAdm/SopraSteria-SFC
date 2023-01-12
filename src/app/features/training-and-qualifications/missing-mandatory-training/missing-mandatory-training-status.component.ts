@@ -11,7 +11,7 @@ import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-missing-mandatory-training-status',
-  templateUrl: './missing-mandatory-training.component.html',
+  templateUrl: './missing-mandatory-training-status.component.html',
 })
 export class MissingMandatoryTrainingComponent implements OnInit {
   public workplace: Establishment;
