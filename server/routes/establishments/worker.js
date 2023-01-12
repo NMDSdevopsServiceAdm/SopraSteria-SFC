@@ -128,7 +128,9 @@ const editWorker = async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  PUT body will be updated (peristed)
+
       const isValidWorker = await thisWorker.load(req.body);
+
       // this is an update to an existing Worker, so no mandatory properties!
       if (isValidWorker) {
         await thisWorker.save(req.username);
@@ -281,6 +283,8 @@ const viewAllWorkers = async (req, res) => {
               expiredTrainingCount: parseInt(worker.get('expiredTrainingCount')),
               expiringTrainingCount: parseInt(worker.get('expiringTrainingCount')),
               missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
+              trainingLastUpdated: worker.get('trainingLastUpdated'),
+              qualificationsLastUpdated: worker.get('qualificationsLastUpdated'),
               longTermAbsence: worker.LongTermAbsence,
             };
           })

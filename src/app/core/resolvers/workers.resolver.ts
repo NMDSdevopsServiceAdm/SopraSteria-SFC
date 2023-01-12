@@ -16,6 +16,14 @@ export class WorkersResolver implements Resolve<any> {
     private permissionsService: PermissionsService,
   ) {}
 
+  getLastUpdatedTrainingOrQualifications(training: string, qualifications: string): string {
+    if (training && (!qualifications || training > qualifications)) {
+      return training;
+    } else if (qualifications && (!training || qualifications > training)) {
+      return qualifications;
+    }
+  }
+
   resolve(route: ActivatedRouteSnapshot): Observable<WorkersResponse | null> {
     const workplaceUid = route.paramMap.get('establishmentuid')
       ? route.paramMap.get('establishmentuid')
@@ -30,6 +38,7 @@ export class WorkersResolver implements Resolve<any> {
       missingMandatoryTraining: 0,
       staffMissingMandatoryTraining: 0,
     };
+    let tAndQsLastUpdated;
 
     const paginationParams = route.data.workerPagination ? { pageIndex: 0, itemsPerPage: 15 } : {};
 
@@ -51,10 +60,22 @@ export class WorkersResolver implements Resolve<any> {
             trainingCounts.totalExpiringTraining += worker.expiringTrainingCount;
             trainingCounts.missingMandatoryTraining += worker.missingMandatoryTrainingCount;
             if (worker.missingMandatoryTrainingCount > 0) trainingCounts.staffMissingMandatoryTraining += 1;
+
+            const { trainingLastUpdated, qualificationsLastUpdated } = worker;
+            if (trainingLastUpdated || qualificationsLastUpdated) {
+              const mostRecent = this.getLastUpdatedTrainingOrQualifications(
+                trainingLastUpdated,
+                qualificationsLastUpdated,
+              );
+
+              tAndQsLastUpdated =
+                (!tAndQsLastUpdated && mostRecent) || mostRecent > tAndQsLastUpdated ? mostRecent : tAndQsLastUpdated;
+            }
           });
           return {
             ...paginatedResponse,
             trainingCounts,
+            tAndQsLastUpdated,
           };
         }),
         catchError(() => {

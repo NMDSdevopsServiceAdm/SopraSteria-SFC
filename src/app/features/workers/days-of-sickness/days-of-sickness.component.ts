@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FLOAT_PATTERN } from '@core/constants/constants';
-import { Contracts } from '@core/model/contracts.enum';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import isNull from 'lodash/isNull';
 
@@ -16,18 +16,19 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class DaysOfSicknessComponent extends QuestionComponent {
   public daysSicknessMin = 0;
-  public daysSicknessMax = 366;
+  public daysSicknessMax = 365;
   public floatPattern = FLOAT_PATTERN.toString();
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       daysKnown: null,
@@ -38,10 +39,6 @@ export class DaysOfSicknessComponent extends QuestionComponent {
   }
 
   init() {
-    if (![Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
-      this.router.navigate(this.getRoutePath('adult-social-care-started'), { replaceUrl: true });
-    }
-
     this.subscriptions.add(
       this.form.get('daysKnown').valueChanges.subscribe((value) => {
         this.form.get('days').clearValidators();
@@ -68,7 +65,6 @@ export class DaysOfSicknessComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('contract-with-zero-hours');
-    this.previous = this.getRoutePath('adult-social-care-started');
   }
 
   setupFormErrorsMap(): void {
@@ -78,15 +74,15 @@ export class DaysOfSicknessComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Number of days is required.',
+            message: 'Enter the number of days',
           },
           {
             name: 'min',
-            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}.`,
+            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}`,
           },
           {
             name: 'max',
-            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}.`,
+            message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}`,
           },
           {
             name: 'pattern',

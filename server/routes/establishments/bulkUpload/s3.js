@@ -162,6 +162,7 @@ const saveLastBulkUpload = async (establishmentId) => {
 
   await moveFolders(originFolder, destinationFolder);
 };
+
 const purgeBulkUploadS3Objects = async (establishmentId) => {
   const listParams = params(establishmentId);
   let deleteKeys = [];
@@ -183,10 +184,18 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
   listParams.Prefix = `${establishmentId}/intermediary/`;
   deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
 
-  deleteParams.Delete.Objects = deleteKeys;
-
   if (deleteKeys.length > 0) {
-    await s3.deleteObjects(deleteParams).promise();
+    if (deleteKeys.length < 1000) {
+      deleteParams.Delete.Objects = deleteKeys;
+      await s3.deleteObjects(deleteParams).promise();
+    } else {
+      const noOfFiles = 1000;
+      for (let i = 0; i < deleteKeys.length; i += noOfFiles) {
+        const fileKeys = deleteKeys.slice(i, i + noOfFiles);
+        deleteParams.Delete.Objects = fileKeys;
+        await s3.deleteObjects(deleteParams).promise();
+      }
+    }
   }
 };
 

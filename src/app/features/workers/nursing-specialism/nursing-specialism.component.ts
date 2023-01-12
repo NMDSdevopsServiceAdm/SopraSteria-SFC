@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { FormArray, FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -25,54 +26,66 @@ export class NursingSpecialismComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = formBuilder.group({
-      hasNurseSpecialism: null,
-      selectedNurseSpecialisms: formBuilder.array([]),
+      hasNurseSpecialism: [null, null],
+      selectedNurseSpecialisms: [[], null],
     });
   }
 
-  get selectedNurseSpecialismsArray() {
-    return this.form.get('selectedNurseSpecialisms') as FormArray;
+  init() {
+    this.next = this.getRoutePath('recruited-from');
+    this.subscriptions.add(
+      this.form.get('hasNurseSpecialism').valueChanges.subscribe((value) => {
+        const { selectedNurseSpecialisms } = this.form.controls;
+        selectedNurseSpecialisms.clearValidators();
+        if (value === 'Yes') {
+          selectedNurseSpecialisms.setValidators(this.oneCheckboxRequired());
+        }
+        selectedNurseSpecialisms.updateValueAndValidity();
+      }),
+    );
+
+    if (this.worker.nurseSpecialisms) {
+      this.prefill();
+    }
   }
 
-  init() {
-    if (!this.workerService.hasJobRole(this.worker, 23)) {
-      this.router.navigate(this.getRoutePath('other-job-roles'), { replaceUrl: true });
+  private oneCheckboxRequired(): ValidatorFn {
+    return (formGroup: FormGroup): ValidationErrors | null => {
+      if (formGroup.value.length === 0) {
+        return { oneCheckboxRequired: true };
+      }
+      return null;
+    };
+  }
+
+  public onCheckBoxClick(target: HTMLInputElement): void {
+    const specialism = target.value;
+    const selectedNurseSpecialismsControl = this.form.get('selectedNurseSpecialisms');
+    const nurseSpecialismsValues = selectedNurseSpecialismsControl.value;
+
+    if (target.checked) {
+      nurseSpecialismsValues.push(specialism);
+    } else {
+      const index = nurseSpecialismsValues.indexOf(specialism);
+      nurseSpecialismsValues.splice(index, 1);
     }
+    selectedNurseSpecialismsControl.setValue(nurseSpecialismsValues);
+  }
 
-    this.next = this.workerService.hasJobRole(this.worker, 27)
-      ? this.getRoutePath('mental-health-professional')
-      : this.getRoutePath('national-insurance-number');
-    this.previous = this.getRoutePath('nursing-category');
-
-    let checkedSpecialisms = [];
-    if (this.worker.nurseSpecialisms) {
-      this.form.patchValue({
-        hasNurseSpecialism: this.worker.nurseSpecialisms.value,
-      });
-
-      checkedSpecialisms = this.worker.nurseSpecialisms.specialisms
-        ? this.worker.nurseSpecialisms.specialisms
-            .filter((specialism) => this.nursingSpecialisms.includes(specialism.specialism))
-            .map((specialism) => specialism.specialism)
-        : [];
-    }
-
-    for (const specialism of this.nursingSpecialisms) {
-      const checked = checkedSpecialisms.includes(specialism);
-      this.selectedNurseSpecialismsArray.push(
-        this.formBuilder.control({
-          specialism,
-          checked,
-        }),
-      );
-    }
+  private prefill(): void {
+    this.form.patchValue({
+      hasNurseSpecialism: this.worker.nurseSpecialisms.value,
+      selectedNurseSpecialisms:
+        this.worker.nurseSpecialisms.specialisms?.map((specialism) => specialism.specialism) || [],
+    });
   }
 
   generateUpdateProps() {
@@ -81,12 +94,22 @@ export class NursingSpecialismComponent extends QuestionComponent {
     return {
       nurseSpecialisms: {
         value: hasNurseSpecialism,
-        specialisms: selectedNurseSpecialisms
-          .filter((j) => j.checked)
-          .map((j) => {
-            return { specialism: j.specialism };
-          }),
+        specialisms: selectedNurseSpecialisms.map((specialism) => ({ specialism })),
       },
     };
+  }
+
+  setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'selectedNurseSpecialisms',
+        type: [
+          {
+            name: 'oneCheckboxRequired',
+            message: `Select which specialisms they're using`,
+          },
+        ],
+      },
+    ];
   }
 }

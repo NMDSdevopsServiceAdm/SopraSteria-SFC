@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -19,6 +20,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
 
   constructor(
     public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -26,7 +28,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
   ) {
-    super(backService, errorSummaryService, formBuilder, router, workplaceService);
+    super(backService, backLinkService, errorSummaryService, formBuilder, router, workplaceService);
   }
 
   protected init(): void {
@@ -37,7 +39,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     this.isParent = this.workplace?.isParent;
     this.returnToConfirmDetails = this.workplaceService.returnTo$.value;
 
-    this.setBackLink();
+    // this.setBackLink();
   }
 
   protected getServiceCategories(): void {
@@ -76,14 +78,5 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   protected navigateToNextPage(): void {
     const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
     this.router.navigate(url);
-  }
-
-  public setBackLink(): void {
-    if (this.returnToConfirmDetails) {
-      this.backService.setBackLink({ url: [this.flow] });
-      return;
-    }
-
-    this.backService.setBackLink({ url: [this.flow, 'type-of-employer'] });
   }
 }

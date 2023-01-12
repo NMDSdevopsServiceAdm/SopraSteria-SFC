@@ -7,6 +7,7 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
@@ -37,6 +38,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
 
   constructor(
     protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
@@ -73,6 +75,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
     this.setupServerErrorsMap();
     this.init();
     this.setCallToActionLabel();
+    this.setBackLink();
   }
 
   ngAfterViewInit() {

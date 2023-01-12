@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -18,9 +19,11 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public primaryWorkplace: Establishment;
   public subscriptions: Subscription = new Subscription();
+  public staffRecordSections: ProgressBarUtil;
 
   constructor(
-    private breadcrumbService: BreadcrumbService,
+    private backService: BackService,
+    protected backLinkService: BackLinkService,
     private route: ActivatedRoute,
     private workerService: WorkerService,
     private router: Router,
@@ -30,6 +33,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
+    this.staffRecordSections = ProgressBarUtil.staffRecordProgressBarSections();
 
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
@@ -37,8 +41,11 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
       }),
     );
 
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
-    this.breadcrumbService.show(journey);
+    this.setBackLink();
+  }
+
+  public setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   navigateToDashboard(event: Event): void {
@@ -51,11 +58,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
     event.preventDefault();
     const urlArr = this.router.url.split('/');
     const url = urlArr.slice(0, urlArr.length - 1).join('/');
-    this.router.navigate([url, 'main-job-start-date'], {
-      state: {
-        navigatedFrom: 'mandatory-details',
-      },
-    });
+    this.router.navigate([url, 'date-of-birth']);
   }
 
   ngOnDestroy(): void {

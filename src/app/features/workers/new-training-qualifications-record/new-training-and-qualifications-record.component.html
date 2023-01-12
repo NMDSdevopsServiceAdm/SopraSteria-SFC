@@ -43,7 +43,7 @@
         class="govuk-list govuk-list--inline govuk-!-padding-left-0"
         role="button"
         draggable="false"
-        [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid]"
+        [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid, 'staff-record-summary']"
       >
         View staff record
       </a>
@@ -138,7 +138,7 @@
             *ngIf="canEditWorker"
             draggable="false"
             role="button"
-            [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
+            [routerLink]="['/workplace', workplace.uid, 'add-and-manage-mandatory-training']"
           >
             Manage mandatory training
           </a>
@@ -147,8 +147,8 @@
 
       <div *ngIf="missingJobRoleMandatoryTrainingCount > 0">
         <app-missing-mandatory-training
-          [missingMandatoryTraining]="missingMandatoryTraining"
-          (addClicked)="addButtonClicked()"
+          [missingRecord]="missingMandatoryTraining"
+          [training]="worker"
           [canEditWorker]="canEditWorker"
         ></app-missing-mandatory-training>
       </div>

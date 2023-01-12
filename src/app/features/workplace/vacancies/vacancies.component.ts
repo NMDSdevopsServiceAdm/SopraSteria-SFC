@@ -121,7 +121,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [];
 
-    this.vacanciesArray.controls.forEach((control, index) => {
+    this.vacanciesArray.controls.forEach((_, index) => {
       this.formErrorsMap.push(
         {
           item: `vacancies.jobRole.${index}`,
@@ -148,7 +148,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   private newFormErrorsMap(): void {
     this.formErrorsMap = [];
 
-    this.vacanciesArray.controls.forEach((control, index) => {
+    this.vacanciesArray.controls.forEach((_, index) => {
       this.formErrorsMap.push(
         {
           item: `vacancies.jobRole.${index}`,

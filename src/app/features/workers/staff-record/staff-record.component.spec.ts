@@ -16,14 +16,14 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, screen } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
 
 describe('StaffRecordComponent', () => {
-  async function setup() {
+  async function setup(isParent = true) {
     const workplace = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
@@ -39,6 +39,7 @@ describe('StaffRecordComponent', () => {
                 data: {
                   establishment: workplace,
                 },
+                url: [{ path: '' }],
               },
             },
             snapshot: {},
@@ -54,7 +55,7 @@ describe('StaffRecordComponent', () => {
             establishmentId: 'mock-uid',
             isOwnWorkplace: () => true,
             primaryWorkplace: {
-              isParent: true,
+              isParent,
             },
           },
         },
@@ -105,25 +106,23 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the Complete record button and correct text when worker.completed is false', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, getByText, queryByText } = await setup();
 
     component.worker.completed = false;
     fixture.detectChanges();
-    const button = screen.getByText('Confirm record details');
-    const text = screen.getByText(`Check the record details you've added before you confirm them.`);
-    const flagLongTermAbsenceLink = screen.queryByText('Flag long-term absence');
-    const deleteRecordLink = screen.queryByText('Delete staff record');
-    const trainingAndQualsLink = screen.queryByText('Training and qualifications');
+    const button = getByText('Confirm record details');
+    const text = getByText(`Check these details before you confirm them.`);
+    const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
+    const deleteRecordLink = queryByText('Delete staff record');
 
     expect(button).toBeTruthy();
     expect(text).toBeTruthy();
     expect(flagLongTermAbsenceLink).toBeFalsy();
     expect(deleteRecordLink).toBeFalsy();
-    expect(trainingAndQualsLink).toBeFalsy();
   });
 
-  it('should render the completed state text, delete record link, add training link and flag long term absence link when worker.completed is true', async () => {
-    const { component, fixture } = await setup();
+  it('should render the delete record link, add training link and flag long term absence link, and not correct text when worker.completed is true', async () => {
+    const { component, fixture, queryByText, getByText, getByTestId } = await setup();
 
     component.canEditWorker = true;
     component.canDeleteWorker = true;
@@ -132,14 +131,14 @@ describe('StaffRecordComponent', () => {
 
     fixture.detectChanges();
 
-    const button = screen.queryByText('Confirm record details');
-    const text = screen.getByText(`Check the record details you've added are correct.`);
-    const flagLongTermAbsenceLink = screen.getByText('Flag long-term absence');
-    const deleteRecordLink = screen.getByText('Delete staff record');
-    const trainingAndQualsLink = screen.getByText('Training and qualifications');
+    const button = queryByText('Confirm record details');
+    const text = queryByText(`Check the record details you've added are correct.`);
+    const flagLongTermAbsenceLink = getByText('Flag long-term absence');
+    const deleteRecordLink = getByText('Delete staff record');
+    const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
 
     expect(button).toBeFalsy();
-    expect(text).toBeTruthy();
+    expect(text).toBeFalsy();
     expect(flagLongTermAbsenceLink).toBeTruthy();
     expect(deleteRecordLink).toBeTruthy();
     expect(trainingAndQualsLink).toBeTruthy();
@@ -157,7 +156,7 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the training and qualifications link with the correct href', async () => {
-    const { getByText, component, fixture } = await setup();
+    const { getByTestId, component, fixture } = await setup();
 
     component.canEditWorker = true;
     component.worker.completed = true;
@@ -165,7 +164,7 @@ describe('StaffRecordComponent', () => {
 
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
-    const link = getByText('Training and qualifications');
+    const link = getByTestId('training-and-qualifications-link');
     expect(link.getAttribute('href')).toEqual(
       `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/training`,
     );
@@ -226,7 +225,7 @@ describe('StaffRecordComponent', () => {
 
   describe('saveAndComplete', () => {
     it('should call updateWorker on the worker service when button is clicked', async () => {
-      const { component, fixture, workerService } = await setup();
+      const { component, fixture, workerService, getByText } = await setup();
 
       component.worker.completed = false;
       fixture.detectChanges();
@@ -235,20 +234,20 @@ describe('StaffRecordComponent', () => {
       const workplaceUid = component.workplace.uid;
       const workerUid = component.worker.uid;
 
-      const button = screen.getByText('Confirm record details');
+      const button = getByText('Confirm record details');
       fireEvent.click(button);
 
       expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
     });
 
     it('should redirect back to the dashboard when worker is confirmed if workplace and establishment are the same', async () => {
-      const { component, fixture, routerSpy } = await setup();
+      const { component, fixture, routerSpy, getByText } = await setup();
 
       component.workplace.uid = 'mock-uid';
       component.worker.completed = false;
       fixture.detectChanges();
 
-      const button = screen.getByText('Confirm record details');
+      const button = getByText('Confirm record details');
       fireEvent.click(button);
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
@@ -258,18 +257,60 @@ describe('StaffRecordComponent', () => {
     });
 
     it('should redirect back to the child workplace when the worker is confirmed if a parent is in a child workplace', async () => {
-      const { component, fixture, routerSpy } = await setup();
+      const { component, fixture, routerSpy, getByText } = await setup();
 
       component.worker.completed = false;
       fixture.detectChanges();
 
-      const button = screen.getByText('Confirm record details');
+      const button = getByText('Confirm record details');
       fireEvent.click(button);
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
         fragment: 'staff-records',
         state: { showBanner: true },
       });
+    });
+  });
+
+  describe('transfer staff record link', () => {
+    it('should show the link when the primary workplace is a parent and has canEdit permissions', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.worker.completed = true;
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      expect(getByText('Transfer staff record')).toBeTruthy();
+    });
+
+    it('should not show the link when there are no canEditWorker permissions', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.worker.completed = true;
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
+      expect(queryByText('Transfer staff record')).toBeFalsy();
+    });
+
+    it('should not show the link when the workplace is not a parent', async () => {
+      const { component, fixture, queryByText } = await setup(false);
+
+      component.worker.completed = true;
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      expect(queryByText('Transfer staff record')).toBeFalsy();
+    });
+
+    it('should not show the link if the worker details have not been completed', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.worker.completed = false;
+      component.canEditWorker = true;
+      fixture.detectChanges();
+
+      expect(queryByText('Transfer staff record')).toBeFalsy();
     });
   });
 });

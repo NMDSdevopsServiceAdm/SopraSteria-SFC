@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { Ethnicity } from '@core/model/ethnicity.model';
 import { Worker } from '@core/model/worker.model';
+import { EthnicityService } from '@core/services/ethnicity.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -25,23 +28,35 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   @Output() allFieldsConfirmed = new EventEmitter();
 
   private _worker: Worker;
-  private workplaceUid: string;
+  public workplaceUid: string;
   private subscriptions: Subscription = new Subscription();
   public canEditWorker: boolean;
   public canViewNinoDob: boolean;
+  public showPoolBankTag: boolean;
+  public showDisability: string;
+  public ethnicGroupData: string;
+  public ethnicityData: string;
+  private ethnicityObject: Ethnicity;
 
   constructor(
     private permissionsService: PermissionsService,
     public workerService: WorkerService,
     private wdfConfirmFieldsService: WdfConfirmFieldsService,
+    protected route: ActivatedRoute,
+    public ethnicityService: EthnicityService,
   ) {}
 
   ngOnInit(): void {
     this.workplaceUid = this.workplace.uid;
+    this.showPoolBankTag = this.worker.contract === 'Pool/Bank' ? true : false;
+    this.showDisability =
+      this.worker.disability === 'Undisclosed' ? 'They preferred not to say' : this.worker.disability;
 
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.canViewNinoDob = this.permissionsService.can(this.workplaceUid, 'canViewNinoDob');
-
+    if (this.worker.ethnicity) {
+      this.getAndSetEthnicityData();
+    }
     if (this.canEditWorker && this.wdfView) {
       if (this.allRequiredFieldsUpdatedAndEligible()) {
         this.updateFieldsWhichDontRequireConfirmation();
@@ -58,6 +73,61 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     this.wdfConfirmFieldsService.clearConfirmFields();
   }
 
+  getAndSetEthnicityData() {
+    const incorrectEthnicityGroupArray = [
+      'English / Welsh / Scottish / Northern Irish / British',
+      'Any other Mixed/ multiple ethnic background',
+      'Any other Black / African / Caribbean background',
+    ];
+
+    this.subscriptions.add(
+      this.ethnicityService.getEthnicities().subscribe((ethnicityData) => {
+        this.ethnicityObject = ethnicityData.list.find(
+          (ethnicityObject) => ethnicityObject.id === this.worker.ethnicity?.ethnicityId,
+        );
+        this.ethnicGroupData = this.formatEthnicityGroup(this.ethnicityObject.group);
+        this.ethnicityData = this.ethnicityObject.ethnicity;
+
+        if (incorrectEthnicityGroupArray.includes(this.ethnicityObject.ethnicity)) {
+          this.ethnicityData = this.formatEthnicities(this.ethnicityObject.ethnicity, incorrectEthnicityGroupArray);
+        }
+      }),
+    );
+  }
+
+  //text ethnicity pulled from DB can't currently be changed due to LA but needs changing on frontend hence temporary transform function AP 17/10/22
+  public formatEthnicityGroup(workerEthnicityGroup: string): string {
+    const ethnicityGroupOptions = [
+      { value: 'White', tag: 'White' },
+      { value: 'Mixed / multiple ethnic groups', tag: 'Mixed or Multiple ethnic groups' },
+      { value: 'Asian / Asian British', tag: 'Asian or Asian British' },
+      { value: 'Black / African / Caribbean / Black British', tag: 'Black, African, Caribbean or Black British' },
+      { value: 'Other ethnic group', tag: 'Other ethnic group' },
+      { value: `Don't know`, tag: `Don't know` },
+    ];
+    const workerEthnicityObj = ethnicityGroupOptions.find(
+      (typeOfEthnicityGroup) => typeOfEthnicityGroup.value === workerEthnicityGroup,
+    );
+    return workerEthnicityObj.tag;
+  }
+
+  //text ethnicity pulled from DB can't currently be changed due to LA but needs changing on frontend hence temporary transform function AP 17/10/22
+  public formatEthnicities(workerEthnicity: string, incorrectEthnicityGroupArray: string[]): string {
+    const ethnicityOptions = [
+      {
+        value: incorrectEthnicityGroupArray[0],
+        tag: 'English, Welsh, Scottish, Northen Irish or British',
+      },
+      { value: incorrectEthnicityGroupArray[1], tag: 'Any other Mixed or Multiple ethnic background' },
+      {
+        value: incorrectEthnicityGroupArray[2],
+        tag: 'Any other Black, African or Caribbean background',
+      },
+    ];
+    const workerEthnicityObj = ethnicityOptions.find((typeOfEthnicity) => typeOfEthnicity.value === workerEthnicity);
+    return workerEthnicityObj.tag;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   setReturn(): void {}
 
@@ -65,8 +135,14 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     this.allFieldsConfirmed.emit();
   }
 
-  public getRoutePath(name: string): Array<string> {
-    return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, name];
+  public getRoutePath(name: string, isWdf: boolean = false): Array<string> {
+    if (isWdf) {
+      return this.route.snapshot.params.establishmentuid
+        ? ['/wdf', 'workplaces', this.workplaceUid, 'staff-record', this.worker.uid, name]
+        : ['/wdf', 'staff-record', this.worker.uid, name];
+    } else {
+      return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'staff-record-summary', name];
+    }
   }
 
   public confirmField(dataField: string): void {

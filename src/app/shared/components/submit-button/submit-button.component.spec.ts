@@ -5,7 +5,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { SubmitButtonComponent } from './submit-button.component';
 
 describe('SubmitButtonComponent', () => {
-  const setup = async (shouldReturn = false) =>
+  const setup = async (shouldReturn = false, summaryContinue = false) =>
     render(SubmitButtonComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       componentProperties: {
@@ -15,6 +15,7 @@ describe('SubmitButtonComponent', () => {
         canExit: false,
         exitText: 'Cancel',
         isExistingStaffRecord: true,
+        summaryContinue: summaryContinue,
       },
     });
 
@@ -24,22 +25,12 @@ describe('SubmitButtonComponent', () => {
   });
 
   describe('return is false', () => {
-    it(`should render the 'Save and continue' button and 'View this staff record' link when in staff flow`, async () => {
+    it(`should render the 'Save and continue' button, 'View this staff record' and 'Skip this question' link when in staff flow`, async () => {
       const { getByText, queryByText } = await setup();
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
-      expect(queryByText('Cancel')).toBeFalsy();
-    });
-
-    it(`should render the 'Save and continue' button and 'View workplace details' link when in workplace flow`, async () => {
-      const { fixture, getByText, queryByText } = await setup();
-
-      fixture.componentInstance.isExistingStaffRecord = false;
-      fixture.detectChanges();
-
-      expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('View workplace details')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
       expect(queryByText('Cancel')).toBeFalsy();
     });
 
@@ -83,6 +74,13 @@ describe('SubmitButtonComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
+    it(`should render the 'Save' button and 'Cancel' link when submitContinue is true`, async () => {
+      const { getByText } = await setup(true, true);
+
+      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Cancel')).toBeTruthy();
+    });
+
     it('should render the correct cancel text with a fallback', async () => {
       const { rerender, getByText } = await setup(true);
 
@@ -94,7 +92,7 @@ describe('SubmitButtonComponent', () => {
     });
   });
 
-  it(`should emit the 'continue' and save event on button click`, async () => {
+  it(`should emit the 'continue' and save event on Save and continue button click`, async () => {
     const { fixture, getByText } = await setup();
 
     const spy = spyOn(fixture.componentInstance.clicked, 'emit');
@@ -104,7 +102,7 @@ describe('SubmitButtonComponent', () => {
     expect(spy).toHaveBeenCalledWith({ action: 'continue', save: true });
   });
 
-  it(`should emit 'summary' event on button click`, async () => {
+  it(`should emit 'summary' event on View this staff record button click`, async () => {
     const { fixture, getByText } = await setup();
 
     const spy = spyOn(fixture.componentInstance.clicked, 'emit');
@@ -114,7 +112,17 @@ describe('SubmitButtonComponent', () => {
     expect(spy).toHaveBeenCalledWith({ action: 'summary', save: false });
   });
 
-  it(`should emit the 'exit' event on button click`, async () => {
+  it(`should emit 'continue' event on Skip this question button click`, async () => {
+    const { fixture, getByText } = await setup();
+
+    const spy = spyOn(fixture.componentInstance.clicked, 'emit');
+    expect(spy).not.toHaveBeenCalled();
+
+    fireEvent.click(getByText('Skip this question'));
+    expect(spy).toHaveBeenCalledWith({ action: 'continue', save: false });
+  });
+
+  it(`should emit the 'exit' event on cancel button click`, async () => {
     const { fixture, getByText } = await setup();
 
     fixture.componentInstance.canExit = true;
@@ -125,5 +133,38 @@ describe('SubmitButtonComponent', () => {
 
     fireEvent.click(getByText('Cancel'));
     expect(spy).toHaveBeenCalledWith({ action: 'exit', save: false });
+  });
+
+  it(`should emit the 'return' and save event on Save and return button click`, async () => {
+    const { fixture, getByText } = await setup(true);
+
+    const spy = spyOn(fixture.componentInstance.clicked, 'emit');
+    expect(spy).not.toHaveBeenCalled();
+
+    fireEvent.click(getByText('Save and return'));
+    expect(spy).toHaveBeenCalledWith({ action: 'return', save: true });
+  });
+
+  it(`should emit the 'continue' and save event on Save button click`, async () => {
+    const { fixture, getByText } = await setup(true, true);
+
+    const spy = spyOn(fixture.componentInstance.clicked, 'emit');
+    expect(spy).not.toHaveBeenCalled();
+
+    fireEvent.click(getByText('Save'));
+    expect(spy).toHaveBeenCalledWith({ action: 'continue', save: true });
+  });
+
+  it(`should emit the 'return' event on cancel button click when return is true`, async () => {
+    const { fixture, getByText } = await setup(true);
+
+    fixture.componentInstance.canExit = true;
+    fixture.detectChanges();
+
+    const spy = spyOn(fixture.componentInstance.clicked, 'emit');
+    expect(spy).not.toHaveBeenCalled();
+
+    fireEvent.click(getByText('Cancel'));
+    expect(spy).toHaveBeenCalledWith({ action: 'return', save: false });
   });
 });

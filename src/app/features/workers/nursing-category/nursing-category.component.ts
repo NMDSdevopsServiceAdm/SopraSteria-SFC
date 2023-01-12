@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -24,11 +25,12 @@ export class NursingCategoryComponent extends QuestionComponent {
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       nursingCategory: null,
@@ -36,18 +38,23 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   init() {
-    if (!this.workerService.hasJobRole(this.worker, 23)) {
-      this.router.navigate(this.getRoutePath('other-job-roles'), { replaceUrl: true });
-    }
-
     if (this.worker.registeredNurse) {
-      this.form.patchValue({
-        nursingCategory: this.worker.registeredNurse,
-      });
+      this.prefill();
     }
 
-    this.next = this.getRoutePath('nursing-specialism');
-    this.previous = this.getRoutePath('other-job-roles');
+    this.next = this.insideFlow ? this.getRoutePath('nursing-specialism') : this.getSummaryRoute();
+  }
+
+  private getSummaryRoute(): string[] {
+    const summaryUrl = this.determineBaseRoute();
+    summaryUrl.push('nursing-specialism');
+    return summaryUrl;
+  }
+
+  private prefill(): void {
+    this.form.patchValue({
+      nursingCategory: this.worker.registeredNurse,
+    });
   }
 
   generateUpdateProps() {

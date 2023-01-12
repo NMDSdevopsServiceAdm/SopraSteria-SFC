@@ -83,7 +83,7 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
 
   it('should display the title', async () => {
     const { getByText } = await setup();
-    expect(getByText(`Change when you get 'expires soon' alerts`)).toBeTruthy();
+    expect(getByText(`Manage expiry alerts`)).toBeTruthy();
   });
 
   it('should display the different radio options', async () => {

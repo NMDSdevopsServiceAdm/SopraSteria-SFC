@@ -61,6 +61,45 @@ export interface MandatoryTraining {
   category: string;
 }
 
+export interface mandatoryJobs {
+  id: number;
+}
+
+export interface mandatoryTraining {
+  trainingCategoryId: number;
+  allJobRoles: boolean;
+  selectedJobRoles?: boolean;
+  jobs: mandatoryJobs[];
+}
+export interface allMandatoryTrainingCategories {
+  mandatoryTrainingCount: number;
+  allJobRolesCount: number;
+  mandatoryTraining: mandatoryTraining[];
+}
 export interface MultipleTrainingResponse {
   savedRecords: number;
+}
+
+export interface Training {
+  id: number;
+  uid: string;
+  title: string;
+  expires: Date;
+  worker: {
+    id: number;
+    uid: string;
+    NameOrIdValue: string;
+    mainJob: {
+      id: number;
+      title: string;
+    };
+  };
+}
+
+export interface TrainingRecordCategories {
+  id: number;
+  seq: number;
+  category: string;
+  training: Training[];
+  isMandatory: boolean;
 }

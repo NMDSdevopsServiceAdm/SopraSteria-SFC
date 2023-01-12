@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
@@ -15,16 +16,20 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class YearArrivedUkComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();
+  public section = 'Personal details';
+  private mainJobStartDatePath: string[];
+  public insideYearArrivedUkMiniFlow: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
@@ -35,10 +40,41 @@ export class YearArrivedUkComponent extends QuestionComponent {
   }
 
   init() {
-    if (this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom') {
-      this.router.navigate(this.getRoutePath('country-of-birth'), { replaceUrl: true });
-    }
+    this.next = this.getRoutePath('main-job-start-date');
 
+    this.setupFormValidation();
+    if (this.worker.yearArrived) {
+      this.prefill();
+    }
+  }
+
+  setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'year',
+        type: [
+          {
+            name: 'required',
+            message: 'Enter the year',
+          },
+          {
+            name: 'min',
+            message: 'Year cannot be more than 100 years ago',
+          },
+          {
+            name: 'max',
+            message: 'Year cannot be in the future',
+          },
+          {
+            name: 'pattern',
+            message: 'Enter a valid year, like 2021',
+          },
+        ],
+      },
+    ];
+  }
+
+  private setupFormValidation() {
     this.subscriptions.add(
       this.form.get('yearKnown').valueChanges.subscribe((value) => {
         this.form.get('year').clearValidators();
@@ -50,48 +86,25 @@ export class YearArrivedUkComponent extends QuestionComponent {
               Validators.required,
               Validators.min(dayjs().subtract(100, 'years').year()),
               Validators.max(dayjs().year()),
+              Validators.pattern('^[0-9]*$'),
             ]);
         }
 
         this.form.get('year').updateValueAndValidity();
       }),
     );
-
-    if (this.worker.yearArrived) {
-      this.form.patchValue({
-        yearKnown: this.worker.yearArrived.value,
-        year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
-      });
-    }
-
-    this.next = this.getRoutePath('recruited-from');
-    this.previous = this.getRoutePath('country-of-birth');
   }
 
-  setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'year',
-        type: [
-          {
-            name: 'required',
-            message: 'Year is required.',
-          },
-          {
-            name: 'min',
-            message: `Year can't be earlier than 100 years ago.`,
-          },
-          {
-            name: 'max',
-            message: `Year can't be in future.`,
-          },
-        ],
-      },
-    ];
+  private prefill(): void {
+    this.form.patchValue({
+      yearKnown: this.worker.yearArrived.value,
+      year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
+    });
   }
 
   generateUpdateProps() {
-    const { yearKnown, year } = this.form.value;
+    const yearKnown = this.form.value.yearKnown;
+    const year = Number(this.form.value.year);
 
     if (yearKnown) {
       return {

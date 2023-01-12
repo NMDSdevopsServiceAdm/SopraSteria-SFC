@@ -1,4 +1,3 @@
-const Sqreen = process.env.SQREEN_APP_NAME ? require('sqreen') : require('./server/utils/middleware/sqreen.mock');
 var config = require('./server/config/config');
 const Sentry = require('@sentry/node');
 const Tracing = require('@sentry/tracing');
@@ -91,8 +90,6 @@ AWSsns.initialise(config.get('aws.region'));
 
 var app = express();
 
-app.use(Sqreen.middleware);
-
 if (config.get('sentry.dsn')) {
   Sentry.init({
     dsn: config.get('sentry.dsn'),
@@ -137,7 +134,7 @@ app.use(
   proxy(publicDownloadBaseUrl, {
     proxyReqPathResolver: function (req) {
       const updatedPath = publicDownloadBaseUrl + req.url;
-      //console.log("public/download proxy API request to: ", `${updatedPath}`)
+      // console.log('public/download proxy API request to: ', `${updatedPath}`);
       return updatedPath;
     },
   }),
@@ -224,7 +221,7 @@ app.use(unless('/api', 'test', xssClean()));
 app.set('views', path.join(__dirname, '/server/views'));
 app.set('view engine', 'pug');
 
-app.use(favicon(path.join(__dirname, 'dist/favicon.ico')));
+app.use(favicon(path.join(__dirname, 'src/favicon.ico')));
 app.use(
   morgan('short', {
     stream: {

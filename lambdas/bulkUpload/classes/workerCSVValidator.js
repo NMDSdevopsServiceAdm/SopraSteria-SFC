@@ -1499,7 +1499,8 @@ class WorkerCsvValidator {
 
   _validateSalary() {
     const mySalary = parseInt(this._currentLine.SALARY, 10);
-    const digitRegex = /^[0-9]{1,9}$/;
+    const mainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
+    const MAX_VALUE = mainJobRole === 1 ? 250000 : 200000;
 
     // optional
     if (this._currentLine.SALARY.length > 0) {
@@ -1516,14 +1517,14 @@ class WorkerCsvValidator {
           column: 'SALARYINT',
         });
         return false;
-      } else if (isNaN(mySalary) || !digitRegex.test(this._currentLine.SALARY)) {
+      } else if (isNaN(mySalary) || mySalary < 500 || mySalary > MAX_VALUE) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: WorkerCsvValidator.SALARY_ERROR,
           errType: 'SALARY_ERROR',
-          error: 'Salary (SALARY) must be an integer upto 9 digits',
+          error: `SALARY must be between £500 and £${MAX_VALUE}`,
           source: this._currentLine.SALARY,
           column: 'SALARY',
         });

@@ -682,7 +682,6 @@ class Establishment extends EntityValidator {
             );
           });
         }
-
         this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisEstablishmentIsValid.toString()}`);
         return false;
       }
@@ -1492,6 +1491,7 @@ class Establishment extends EntityValidator {
         });
 
         fetchResults.capacity = capacity;
+
         fetchResults.jobs = jobs;
 
         fetchResults.mainService = { ...mainService, other: fetchResults.MainServiceFkOther };

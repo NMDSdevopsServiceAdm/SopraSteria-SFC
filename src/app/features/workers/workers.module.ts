@@ -41,14 +41,12 @@ import { MoveWorkerDialogComponent } from './move-worker-dialog/move-worker-dial
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
-import { MissingMandatoryTrainingComponent } from './new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
 import { NewQualificationsComponent } from './new-training-qualifications-record/new-qualifications/new-qualifications.component';
 import { NewTrainingAndQualificationsRecordSummaryComponent } from './new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NewTrainingComponent } from './new-training-qualifications-record/new-training/new-training.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
-import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
@@ -93,7 +91,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     NationalityComponent,
     NursingCategoryComponent,
     NursingSpecialismComponent,
-    OtherJobRolesComponent,
     OtherQualificationsComponent,
     OtherQualificationsLevelComponent,
     QualificationFormComponent,
@@ -114,7 +111,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     NewTrainingComponent,
     NewQualificationsComponent,
     NewTrainingAndQualificationsRecordSummaryComponent,
-    MissingMandatoryTrainingComponent,
   ],
   providers: [
     DialogService,

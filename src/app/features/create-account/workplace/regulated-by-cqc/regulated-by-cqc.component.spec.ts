@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
-import { ReactiveFormsModule } from '@angular/forms';
+
 import { RegistrationModule } from '../../../registration/registration.module';
 import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
@@ -122,20 +123,6 @@ describe('RegulatedByCqcComponent', () => {
       expect(form.invalid).toBeTruthy();
       expect(form.value.regulatedByCQC).not.toBe('yes');
       expect(form.value.regulatedByCQC).not.toBe('no');
-    });
-  });
-
-  describe('setBackLink()', () => {
-    it('should set the correct back link when in the registration flow', async () => {
-      const { component } = await setup();
-      const backLinkSpy = spyOn(component.fixture.componentInstance.backService, 'setBackLink');
-
-      component.fixture.componentInstance.setBackLink();
-      component.fixture.detectChanges();
-
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['/registration', 'create-account'],
-      });
     });
   });
 });

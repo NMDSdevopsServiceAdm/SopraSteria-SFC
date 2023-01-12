@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Establishment, UpdateJobsRequest } from '@core/model/establishment.model';
+import { Establishment, mandatoryTraining, UpdateJobsRequest } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -88,6 +88,10 @@ export class MockEstablishmentService extends EstablishmentService {
   }
 
   public updateWorkplace(workplaceUid: string, data): Observable<any> {
+    return of(null);
+  }
+
+  public createAndUpdateMandatoryTraining(establishmentId, data: mandatoryTraining[]): Observable<any> {
     return of(null);
   }
 
@@ -192,25 +196,25 @@ export class MockEstablishmentService extends EstablishmentService {
     return of({
       allServiceCapacities: [
         {
-          service: 'Main Service - Some kind of service',
+          service: 'Main Service: Some kind of service',
           questions: [
             { question: 'How many places do you have at the moment?', questionId: 101, seq: 1 },
             { question: 'Number of those places being used?', questionId: 107, seq: 2 },
           ],
         },
         {
-          service: 'Adult - Residential care',
+          service: 'Adult: Residential care',
           questions: [
             { question: 'How many beds do you have?', questionId: 102, seq: 1 },
             { question: 'How many of those beds are being used?', questionId: 105, seq: 2 },
           ],
         },
         {
-          service: 'Domiciliary - Home services',
+          service: 'Domiciliary: Home services',
           questions: [{ question: 'Number of people receiving care at the moment', questionId: 109, seq: 1 }],
         },
         {
-          service: 'Extra Care - Housing services',
+          service: 'Extra Care: Housing services',
           questions: [{ question: 'Number of people using the service at the moment', questionId: 111, seq: 1 }],
         },
       ],

@@ -10,6 +10,9 @@ import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import {
+  MissingMandatoryTrainingComponent,
+} from '@features/workers/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
+import {
   DeleteWorkplaceDialogComponent,
 } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
@@ -44,6 +47,7 @@ import {
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
+import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
 import {
   OwnershipChangeMessageDialogComponent,
 } from './components/ownership-change-message/ownership-change-message-dialog.component';
@@ -91,6 +95,9 @@ import {
   TrainingAndQualificationsCategoriesComponent,
 } from './components/training-and-qualifications-categories/training-and-qualifications-categories.component';
 import {
+  ViewTrainingComponent,
+} from './components/training-and-qualifications-categories/view-trainings/view-trainings.component';
+import {
   TrainingAndQualificationsSummaryComponent,
 } from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
 import {
@@ -98,6 +105,9 @@ import {
 } from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
+import {
+  TrainingSelectViewPanelComponent,
+} from './components/training-select-view-panel/training-select-view-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { UserTableComponent } from './components/users-table/user.table.component';
@@ -225,8 +235,13 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
+    NewBackLinkComponent,
+    ViewTrainingComponent,
+    MissingMandatoryTrainingComponent,
+    TrainingSelectViewPanelComponent,
   ],
   exports: [
+    AbsoluteNumberPipe,
     AlertComponent,
     AutoSuggestComponent,
     BackLinkComponent,
@@ -318,6 +333,11 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
+    NewBackLinkComponent,
+    ViewTrainingComponent,
+    MissingMandatoryTrainingComponent,
+    AbsoluteNumberPipe,
+    TrainingSelectViewPanelComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

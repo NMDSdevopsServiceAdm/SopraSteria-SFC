@@ -26,6 +26,7 @@ export interface Capacity {
   questionId: number;
   seq: number;
   answer: number;
+  serviceName: string;
 }
 
 export interface ShareWith {
@@ -236,11 +237,6 @@ export interface mandatoryTraining {
   jobs: mandatoryJobs[];
 }
 
-export interface allMandatoryTrainingCategories {
-  mandatoryTrainingCount: number;
-  allJobRolesCount: number;
-  mandatoryTraining: mandatoryTraining[];
-}
 export interface mandatoryTrainingCategories {
   categories: mandatoryTraining[];
 }

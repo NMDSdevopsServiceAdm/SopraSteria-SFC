@@ -4,8 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { Job } from '@core/model/job.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -16,75 +17,52 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './staff-details.component.html',
 })
 export class StaffDetailsComponent extends QuestionComponent implements OnInit, OnDestroy {
-  public contractsAvailable: Array<string> = [];
+  public contractsAvailable = [
+    { value: Contracts.Permanent, tag: 'Permanent' },
+    { value: Contracts.Temporary, tag: 'Temporary' },
+    { value: Contracts.Pool_Bank, tag: 'Pool, Bank' },
+    { value: Contracts.Agency, tag: 'Agency' },
+    { value: Contracts.Other, tag: 'Other' },
+  ];
   public jobsAvailable: Job[] = [];
+  public submitTitle = 'Save this staff record';
   public showInputTextforOtherRole: boolean;
-  public submitTitle = 'Save staff record';
-  public canReturn = false;
   public canExit = true;
   public editFlow: boolean;
   private otherJobRoleCharacterLimit = 120;
+  public inMandatoryDetailsFlow: boolean;
+  public summaryContinue: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     public workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
     protected alertService: AlertService,
     private jobService: JobService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      nameOrId: [null, Validators.required],
-      mainJob: [null, Validators.required],
-      otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
-      contract: [null, Validators.required],
-    });
+    this.form = this.formBuilder.group(
+      {
+        nameOrId: [null, Validators.required],
+        mainJob: [null, Validators.required],
+        otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
+        contract: [null, Validators.required],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   init(): void {
-    this.contractsAvailable = Object.values(Contracts);
-    this.editFlow = !!this.worker;
-    this.subscriptions.add(
-      this.jobService.getJobs().subscribe((jobs) => {
-        if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
-          this.worker.otherJobs.jobs.map((otherjob) => {
-            jobs = jobs.filter((j) => j.id !== otherjob.jobId);
-          });
-        }
-        this.jobsAvailable = jobs;
-        if (this.worker) {
-          this.renderInEditMode();
-        }
-      }),
-    );
-
-    this.previous =
-      this.primaryWorkplace && this.workplace.uid === this.primaryWorkplace.uid
-        ? ['/dashboard']
-        : ['/workplace', this.workplace.uid];
-  }
-
-  renderInEditMode(): void {
-    this.form.patchValue({
-      nameOrId: this.worker.nameOrId,
-      mainJob: this.worker.mainJob.jobId,
-      otherJobRole: this.worker.mainJob.other,
-      contract: this.worker.contract,
-    });
-
-    this.selectedJobRole(this.worker.mainJob.jobId);
-
-    if (this.workerService.returnTo === null) {
-      const mandatoryDetailsURL = { url: this.getRoutePath('mandatory-details') };
-      this.workerService.setReturnTo(mandatoryDetailsURL);
-      this.return = mandatoryDetailsURL;
-    }
-
-    this.canReturn = true;
+    this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
+    this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
+    this.getJobs();
+    this.getReturnPath();
+    this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
   }
 
   public setupFormErrorsMap(): void {
@@ -128,6 +106,22 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     ];
   }
 
+  getJobs() {
+    this.subscriptions.add(
+      this.jobService.getJobs().subscribe((jobs) => {
+        if (this.worker && this.worker.otherJobs && this.worker.otherJobs.jobs) {
+          this.worker.otherJobs.jobs.map((otherjob) => {
+            jobs = jobs.filter((j) => j.id !== otherjob.jobId);
+          });
+        }
+        this.jobsAvailable = jobs;
+        if (this.worker) {
+          this.renderInEditMode();
+        }
+      }),
+    );
+  }
+
   generateUpdateProps() {
     const { nameOrId, contract, mainJob, otherJobRole } = this.form.controls;
 
@@ -157,33 +151,48 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
   }
 
-  protected navigate(): void {
-    const currentUrl = this.router.url;
-
-    if (!this.worker) {
-      return this.onCancel();
-    }
-
-    if (!this.next) {
-      this.next = this.getRoutePath('');
-    }
-
-    this.router.navigate(this.next).then(() => {
-      if (currentUrl.endsWith('create-staff-record')) {
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Staff record saved',
-        });
-      }
+  renderInEditMode(): void {
+    this.form.patchValue({
+      nameOrId: this.worker.nameOrId,
+      mainJob: this.worker.mainJob.jobId,
+      otherJobRole: this.worker.mainJob.other,
+      contract: this.worker.contract,
     });
+
+    this.selectedJobRole(this.worker.mainJob.jobId);
   }
 
-  onSuccess() {
-    const path = this.editFlow ? '' : 'mandatory-details';
-    this.next = this.getRoutePath(path);
+  private getReturnPath() {
+    if (this.inMandatoryDetailsFlow) {
+      this.returnUrl = this.getRoutePath('mandatory-details');
+      return;
+    }
   }
 
-  private onCancel(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
+    if (this.workerService.hasJobRole(this.worker, 27)) {
+      nextRoute.push('mental-health-professional');
+    } else if (this.workerService.hasJobRole(this.worker, 23)) {
+      nextRoute.push('nursing-category');
+    }
+    return nextRoute;
+  }
+
+  protected onSuccess(): void {
+    if (this.editFlow) {
+      this.next = this.determineConditionalRouting();
+    } else {
+      this.next = this.getRoutePath('mandatory-details');
+    }
+    !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
+  }
+
+  protected addAlert(): void {
+    !this.editFlow &&
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Staff record saved',
+      });
   }
 }

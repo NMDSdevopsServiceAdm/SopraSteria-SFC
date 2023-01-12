@@ -3,11 +3,15 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('days').invalid">
+      <div
+        class="govuk-form-group govuk-!-margin-bottom-4"
+        [class.govuk-form-group--error]="submitted && form.get('days').invalid"
+      >
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l">Employment details</span>
             <h1 class="govuk-fieldset__heading">
-              Do you know how many days sickness they've taken in the last 12 months?
+              Do you know how many days sickness they've taken in the last <br />12 months?
             </h1>
           </legend>
           <div class="govuk-radios govuk-radios--conditional">
@@ -24,7 +28,7 @@
               <label class="govuk-label govuk-radios__label" for="daysKnown-conditional-1"> Yes </label>
             </div>
             <div
-              class="govuk-radios__conditional govuk-input--width-20"
+              class="govuk-radios__conditional govuk-input--width-40"
               [class.govuk-radios__conditional--hidden]="form.get('daysKnown').value !== 'Yes'"
               id="conditional-daysKnown-conditional-1"
             >
@@ -71,7 +75,16 @@
         </fieldset>
       </div>
     </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="'Employment details'"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
 
-  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
+  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>

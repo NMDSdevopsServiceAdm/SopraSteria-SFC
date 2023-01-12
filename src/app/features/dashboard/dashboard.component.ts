@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public showSharingPermissionsBanner: boolean;
   private showBanner = false;
   public wdfNewDesignFlag: boolean;
+  public tAndQsLastUpdated: string;
 
   constructor(
     private authService: AuthService,
@@ -63,12 +64,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.getPermissions();
       this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;
 
-      if (this.workplace.locationId) {
-        this.setCheckCQCDetailsBannerInEstablishmentService();
-      }
-
-      this.getShowCQCDetailsBanner();
-
       if (this.canViewListOfWorkers) {
         this.setWorkersAndTrainingAlert();
       }
@@ -78,6 +73,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.showBanner && this.showStaffRecordBanner();
     this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
+    this.workerService.setState(null);
   }
 
   private getPermissions(): void {
@@ -89,8 +85,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private setWorkersAndTrainingAlert(): void {
-    const { workers = [], workerCount = 0, trainingCounts } = this.route.snapshot.data.workers;
-
+    const { workers = [], workerCount = 0, trainingCounts, tAndQsLastUpdated } = this.route.snapshot.data.workers;
     this.workers = workers;
     this.workerCount = workerCount;
     this.trainingCounts = trainingCounts;
@@ -98,24 +93,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (workers.length > 0) {
       this.trainingAlert = workers[0].trainingAlert;
     }
+    this.tAndQsLastUpdated = tAndQsLastUpdated;
   }
 
   private setShowSecondUserBanner(): void {
     const users = this.route.snapshot.data.users ? this.route.snapshot.data.users : [];
     this.showSecondUserBanner = this.canAddUser && users.length === 1;
-  }
-
-  private setCheckCQCDetailsBannerInEstablishmentService(): void {
-    this.subscriptions.add(
-      this.establishmentService
-        .getCQCRegistrationStatus(this.workplace.locationId, {
-          postcode: this.workplace.postcode,
-          mainService: this.workplace.mainService.name,
-        })
-        .subscribe((response) => {
-          this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
-        }),
-    );
   }
 
   private getEstablishmentUsers(): void {
@@ -124,18 +107,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getShowCQCDetailsBanner(): void {
-    this.subscriptions.add(
-      this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
-        this.showCQCDetailsBanner = showBanner;
-      }),
-    );
-  }
-
   private showStaffRecordBanner(): void {
     this.alertService.addAlert({
       type: 'success',
-      message: `You've confirmed the details of the staff record you added`,
+      message: 'Staff record saved',
     });
   }
 

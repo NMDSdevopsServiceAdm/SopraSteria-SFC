@@ -93,18 +93,6 @@ describe('DeleteRecordComponent', () => {
     expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.nameOrId);
   });
 
-  it('should display the worker job role', async () => {
-    const { component, getByTestId } = await setup();
-
-    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.title);
-  });
-
-  it('should display the other worker job role', async () => {
-    const { component, getByTestId } = await setup(true, true);
-
-    expect(getByTestId('workerNameAndRole').textContent).toContain(component.worker.mainJob.other);
-  });
-
   describe('Training', () => {
     it('should display the correct title', async () => {
       const { getByText } = await setup();
@@ -151,13 +139,13 @@ describe('DeleteRecordComponent', () => {
       it('should display the delete button', async () => {
         const { getByText } = await setup();
 
-        expect(getByText('Delete this training record')).toBeTruthy();
+        expect(getByText('Delete record')).toBeTruthy();
       });
 
       it('should call the deleteTrainingRecord function when pressing the delete button', async () => {
         const { component, getByText, workerTrainingSpy } = await setup();
 
-        const deleteButton = getByText('Delete this training record');
+        const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
 
         expect(workerTrainingSpy).toHaveBeenCalledWith(
@@ -170,7 +158,7 @@ describe('DeleteRecordComponent', () => {
       it('should navigate to the training page when pressing the delete button', async () => {
         const { component, getByText, routerSpy } = await setup();
 
-        const deleteButton = getByText('Delete this training record');
+        const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
 
         expect(routerSpy).toHaveBeenCalledWith([
@@ -182,12 +170,12 @@ describe('DeleteRecordComponent', () => {
       it('should display an alert when the delete button is clicked', async () => {
         const { getByText, alertSpy } = await setup();
 
-        const deleteButton = getByText('Delete this training record');
+        const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: 'Training record has been deleted',
+          message: 'Training record deleted',
         });
       });
     });
@@ -241,13 +229,13 @@ describe('DeleteRecordComponent', () => {
       it('should display the delete button', async () => {
         const { getByText } = await setup(false);
 
-        expect(getByText('Delete this qualification record')).toBeTruthy();
+        expect(getByText('Delete record')).toBeTruthy();
       });
 
       it('should call the deleteQualificationRecord function when pressing the delete button', async () => {
         const { component, getByText, workerQualificationSpy } = await setup(false);
 
-        const deleteButton = getByText('Delete this qualification record');
+        const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
 
         expect(workerQualificationSpy).toHaveBeenCalledWith(
@@ -260,7 +248,7 @@ describe('DeleteRecordComponent', () => {
       it('should navigate to the training page when pressing the delete button', async () => {
         const { component, getByText, routerSpy } = await setup(false);
 
-        const deleteButton = getByText('Delete this qualification record');
+        const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
 
         expect(routerSpy).toHaveBeenCalledWith([
@@ -272,12 +260,12 @@ describe('DeleteRecordComponent', () => {
       it('should display an alert when the delete button is clicked', async () => {
         const { getByText, alertSpy } = await setup(false);
 
-        const deleteButton = getByText('Delete this qualification record');
+        const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: 'Qualification record has been deleted',
+          message: 'Qualification record deleted',
         });
       });
     });

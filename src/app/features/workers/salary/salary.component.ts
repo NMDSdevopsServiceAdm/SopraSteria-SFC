@@ -2,10 +2,10 @@ import { DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FLOAT_PATTERN, INT_PATTERN } from '@core/constants/constants';
-import { Contracts } from '@core/model/contracts.enum';
-import { BackService } from '@core/services/back.service';
+import { INT_PATTERN, SALARY_PATTERN } from '@core/constants/constants';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -17,23 +17,25 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class SalaryComponent extends QuestionComponent {
   public hourly = { min: 2.5, max: 200 };
-  public annually = { min: 500, max: 200000 };
+  public annually: any;
   public intPattern = INT_PATTERN.toString();
-  public floatPattern = FLOAT_PATTERN.toString();
+  public salaryPattern = SALARY_PATTERN.toString();
+  public section = 'Employment details';
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private decimalPipe: DecimalPipe
+    protected establishmentService: EstablishmentService,
+    private decimalPipe: DecimalPipe,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
-    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
+    this.salaryPattern = this.salaryPattern.substring(1, this.salaryPattern.length - 1);
 
     this.form = this.formBuilder.group({
       terms: null,
@@ -43,8 +45,20 @@ export class SalaryComponent extends QuestionComponent {
   }
 
   init() {
+    this.annually = { min: 500, max: this.worker.mainJob.jobId === 26 ? 250000 : 200000 };
+    this.setValidators();
+    this.setAnnualHourlyPay();
+    this.next = this.getRoutePath('care-certificate');
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private setValidators(): void {
     this.subscriptions.add(
-      this.form.get('terms').valueChanges.subscribe(value => {
+      this.form.get('terms').valueChanges.subscribe((value) => {
         const { annualRate, hourlyRate } = this.form.controls;
         annualRate.clearValidators();
         hourlyRate.clearValidators();
@@ -54,7 +68,7 @@ export class SalaryComponent extends QuestionComponent {
             Validators.required,
             Validators.min(this.hourly.min),
             Validators.max(this.hourly.max),
-            Validators.pattern(this.floatPattern),
+            Validators.pattern(this.salaryPattern),
           ]);
         } else if (value === 'Annually') {
           annualRate.setValidators([
@@ -67,9 +81,17 @@ export class SalaryComponent extends QuestionComponent {
 
         annualRate.updateValueAndValidity();
         hourlyRate.updateValueAndValidity();
-      })
+      }),
     );
 
+    this.subscriptions.add(
+      this.form.get('terms').valueChanges.subscribe(() => {
+        this.submitted = false;
+      }),
+    );
+  }
+
+  private setAnnualHourlyPay(): void {
     if (this.worker.annualHourlyPay) {
       this.form.patchValue({
         terms: this.worker.annualHourlyPay.value,
@@ -78,13 +100,6 @@ export class SalaryComponent extends QuestionComponent {
           this.worker.annualHourlyPay.value === 'Annually' ? this.worker.annualHourlyPay.rate.toFixed(0) : null,
       });
     }
-
-    this.next = this.getRoutePath('care-certificate');
-    this.previous =
-      this.worker.zeroHoursContract === 'Yes' ||
-      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-        ? this.getRoutePath('average-weekly-hours')
-        : this.getRoutePath('weekly-contracted-hours');
   }
 
   setupFormErrorsMap(): void {
@@ -94,25 +109,25 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Annual salary is required.',
+            message: 'Enter their standard annual salary',
           },
           {
             name: 'pattern',
-            message: 'Annual salary must be rounded to the nearest £.',
+            message: 'Standard annual salary must not include pence',
           },
           {
             name: 'min',
-            message: `Annual salary must be between &pound;${this.decimalPipe.transform(
+            message: `Standard annual salary must be between £${this.decimalPipe.transform(
               this.annually.min,
-              '1.0-0'
-            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
+              '1.0-0',
+            )} and £${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
           },
           {
             name: 'max',
-            message: `Annual salary must be between &pound;${this.decimalPipe.transform(
+            message: `Standard annual salary must be between £${this.decimalPipe.transform(
               this.annually.min,
-              '1.0-0'
-            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
+              '1.0-0',
+            )} and £${this.decimalPipe.transform(this.annually.max, '1.0-0')}`,
           },
         ],
       },
@@ -121,21 +136,25 @@ export class SalaryComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Hourly rate is required.',
+            message: 'Enter their standard hourly rate',
+          },
+          {
+            name: 'pattern',
+            message: 'Standard hourly rate can only have 1 or 2 digits after the decimal point when you include pence',
           },
           {
             name: 'min',
-            message: `Hourly rate must be between &pound;${this.decimalPipe.transform(
+            message: `Standard hourly rate must be between £${this.decimalPipe.transform(
               this.hourly.min,
-              '1.2-2'
-            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
+              '1.2-2',
+            )} and £${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
           },
           {
             name: 'max',
-            message: `Hourly rate must be between &pound;${this.decimalPipe.transform(
+            message: `Standard hourly rate must be between £${this.decimalPipe.transform(
               this.hourly.min,
-              '1.2-2'
-            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
+              '1.2-2',
+            )} and £${this.decimalPipe.transform(this.hourly.max, '1.2-2')}`,
           },
         ],
       },
@@ -157,5 +176,11 @@ export class SalaryComponent extends QuestionComponent {
         rate,
       },
     };
+  }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
   }
 }

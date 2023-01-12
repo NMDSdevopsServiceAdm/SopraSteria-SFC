@@ -17,8 +17,10 @@ import { Subscription } from 'rxjs';
 })
 export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   private _workplace: any;
+  public resp: any;
   protected subscriptions: Subscription = new Subscription();
   public hasCapacity: boolean;
+  private capacities: any;
   public capacityMessages = [];
   public pluralMap = [];
   public canEditEstablishment: boolean;
@@ -40,22 +42,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   set workplace(workplace: any) {
     this._workplace = workplace;
     this.capacityMessages = [];
-
-    if (this._workplace && this._workplace.capacities) {
-      const temp = [];
-      this._workplace.capacities.forEach((capacity) => {
-        temp[capacity.question] = temp[capacity.question] ? temp[capacity.question] + capacity.answer : capacity.answer;
-      });
-
-      if (Object.keys(temp).length) {
-        Object.keys(temp).forEach((key) => {
-          if (this.pluralMap[key]) {
-            const message = this.i18nPluralPipe.transform(temp[key], this.pluralMap[key]);
-            this.capacityMessages.push(message);
-          }
-        });
-      }
-    }
 
     if (this._workplace.employerType) {
       this._workplace.employerType.value = WorkplaceUtil.formatTypeOfEmployer(this._workplace.employerType.value);
@@ -132,6 +118,29 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
         this.hasCapacity = response.allServiceCapacities && response.allServiceCapacities.length ? true : false;
+        this.capacities = response.allServiceCapacities;
+
+        const temp = [{}];
+        this.capacities.forEach((capacity) => {
+          capacity.questions.forEach((question) => {
+            temp[question.questionId] = {
+              question: question.question,
+              value: temp[question.questionId] ? question.question + question.answer : question.answer,
+              service: ` (${capacity.service.split(':')[1].trim().toLowerCase()})`,
+            };
+          });
+        });
+
+        if (Object.keys(temp).length) {
+          Object.keys(temp).forEach((key) => {
+            if (this.pluralMap[temp[key].question]) {
+              const message =
+                this.i18nPluralPipe.transform(temp[key].value, this.pluralMap[temp[key].question]) +
+                (temp[key].value ? temp[key].service : '');
+              this.capacityMessages.push(message);
+            }
+          });
+        }
       }),
     );
 

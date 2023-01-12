@@ -77,6 +77,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   public getWorker(data): void {
     this.subscriptions.add(
       this.workerService.getWorker(this.workplaceUid, data.id, true).subscribe((worker) => {
+        this.workerService.setState(worker);
         this.worker = worker;
         this.updatedWorker = worker;
       }),
@@ -161,6 +162,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.getWorker(this.workplaceUid, this.route.snapshot.params.id, true).subscribe((worker) => {
         this.updatedWorker = worker;
+        this.workerService.setState(worker);
       }),
     );
     this.getOverallWdfEligibility();

@@ -125,7 +125,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [];
 
-    this.leavers.controls.forEach((control, index) => {
+    this.leavers.controls.forEach((_, index) => {
       this.formErrorsMap.push(
         {
           item: `leavers.jobRole.${index}`,
@@ -152,7 +152,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   private newFormErrorsMap(): void {
     this.formErrorsMap = [];
 
-    this.leavers.controls.forEach((control, index) => {
+    this.leavers.controls.forEach((_, index) => {
       this.formErrorsMap.push(
         {
           item: `leavers.jobRole.${index}`,

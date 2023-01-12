@@ -62,9 +62,33 @@
           id="{{ type.key }}-notes"
           name="notes"
           rows="5"
+          [value]="notesValue"
+          (input)="handleOnInput($event)"
         ></textarea>
       </div>
-      <span class="govuk-character-count__message govuk-hint" aria-live="polite"> 500 characters or fewer </span>
+      <span
+        class="govuk-character-count__message govuk-hint"
+        [ngClass]="{
+          'govuk-hint': remainingCharacterCount >= 0,
+          'govuk-error-message': remainingCharacterCount < 0
+        }"
+        aria-live="polite"
+        ><noscript> You can enter up to {{ notesMaxLength }} characters }} </noscript>
+        <ng-container>
+          You have {{ remainingCharacterCount | absoluteNumber | number }}
+          {{
+            remainingCharacterCount
+              | absoluteNumber
+              | i18nPlural
+                : {
+                    '=1': 'character',
+                    other: 'characters'
+                  }
+          }}
+
+          {{ remainingCharacterCount >= 0 ? 'remaining' : 'too many' }}
+        </ng-container>
+      </span>
     </div>
   </fieldset>
 </ng-container>

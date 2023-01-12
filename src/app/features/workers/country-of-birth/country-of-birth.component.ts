@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { CountryResponse, CountryService } from '@core/services/country.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -18,13 +19,14 @@ export class CountryOfBirthComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
-    protected route: ActivatedRoute,
-    protected backService: BackService,
+    public route: ActivatedRoute,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
-    private countryService: CountryService
+    protected establishmentService: EstablishmentService,
+    private countryService: CountryService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.countryOfBirthNameValidator = this.countryOfBirthNameValidator.bind(this);
     this.countryOfBirthNameFilter = this.countryOfBirthNameFilter.bind(this);
@@ -36,10 +38,9 @@ export class CountryOfBirthComponent extends QuestionComponent {
   }
 
   init() {
-    this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableCountries = res)));
-
+    this.subscriptions.add(this.countryService.getCountries().subscribe((res) => (this.availableCountries = res)));
     this.subscriptions.add(
-      this.form.get('countryOfBirthKnown').valueChanges.subscribe(value => {
+      this.form.get('countryOfBirthKnown').valueChanges.subscribe((value) => {
         this.form.get('countryOfBirthName').clearValidators();
 
         if (value === 'Other') {
@@ -47,22 +48,22 @@ export class CountryOfBirthComponent extends QuestionComponent {
         }
 
         this.form.get('countryOfBirthName').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.countryOfBirth) {
-      const { value, other } = this.worker.countryOfBirth;
-
-      this.form.patchValue({
-        countryOfBirthKnown: value,
-        countryOfBirthName: other ? other.country : null,
-      });
+      this.prefill();
     }
 
-    this.previous =
-      this.worker.nationality && this.worker.nationality.value === 'British'
-        ? this.getRoutePath('nationality')
-        : this.getRoutePath('british-citizenship');
+    this.next = this.getRoutePath('year-arrived-uk');
+  }
+
+  private prefill(): void {
+    const { value, other } = this.worker.countryOfBirth;
+    this.form.patchValue({
+      countryOfBirthKnown: value,
+      countryOfBirthName: other ? other.country : null,
+    });
   }
 
   setupFormErrorsMap(): void {
@@ -72,7 +73,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
         type: [
           {
             name: 'validCountryOfBirth',
-            message: 'Invalid country of birth.',
+            message: 'Enter a valid country',
           },
         ],
       },
@@ -81,7 +82,6 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
   generateUpdateProps() {
     const { countryOfBirthName, countryOfBirthKnown } = this.form.value;
-
     return countryOfBirthKnown
       ? {
           countryOfBirth: {
@@ -96,11 +96,19 @@ export class CountryOfBirthComponent extends QuestionComponent {
       : null;
   }
 
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
+    const { countryOfBirthKnown } = this.form.value;
+    if (countryOfBirthKnown === 'United Kingdom' && this.insideFlow) {
+      nextRoute.push('main-job-start-date');
+    } else if (countryOfBirthKnown !== 'United Kingdom') {
+      nextRoute.push('year-arrived-uk');
+    }
+    return nextRoute;
+  }
+
   onSuccess() {
-    this.next =
-      this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-        ? this.getRoutePath('recruited-from')
-        : this.getRoutePath('year-arrived-uk');
+    this.next = this.determineConditionalRouting();
   }
 
   countryOfBirthNameValidator() {
@@ -110,7 +118,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
       if (countryOfBirthKnown.value === 'Other') {
         if (countryOfBirthName.value) {
           const countryOfBirthNameLowerCase = countryOfBirthName.value.toLowerCase();
-          return this.availableCountries.some(c => c.country.toLowerCase() === countryOfBirthNameLowerCase)
+          return this.availableCountries.some((c) => c.country.toLowerCase() === countryOfBirthNameLowerCase)
             ? null
             : { validCountryOfBirth: true };
         }
@@ -126,9 +134,9 @@ export class CountryOfBirthComponent extends QuestionComponent {
     if (this.availableCountries && countryOfBirthName.value && countryOfBirthName.value.length) {
       const countryOfBirthNameLowerCase = countryOfBirthName.value.toLowerCase();
       return this.availableCountries
-        .filter(c => c.country.toLowerCase().startsWith(countryOfBirthNameLowerCase))
-        .filter(c => c.country.toLowerCase() !== countryOfBirthNameLowerCase)
-        .map(c => c.country);
+        .filter((c) => c.country.toLowerCase().startsWith(countryOfBirthNameLowerCase))
+        .filter((c) => c.country.toLowerCase() !== countryOfBirthNameLowerCase)
+        .map((c) => c.country);
     }
 
     return [];

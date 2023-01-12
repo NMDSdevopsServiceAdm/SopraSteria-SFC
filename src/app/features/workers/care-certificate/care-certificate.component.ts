@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -12,17 +13,23 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './care-certificate.component.html',
 })
 export class CareCertificateComponent extends QuestionComponent {
-  public answersAvailable = ['Yes, completed', 'Yes, in progress or partially completed', 'No'];
+  public answersAvailable = [
+    { value: 'Yes, completed', tag: 'Yes, completed' },
+    { value: 'Yes, in progress or partially completed', tag: 'Yes, started or partially completed' },
+    { value: 'No', tag: 'No' },
+  ];
+  public section = 'Training and qualifications';
 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       careCertificate: null,
@@ -30,23 +37,23 @@ export class CareCertificateComponent extends QuestionComponent {
   }
 
   init() {
-    if (this.worker.careCertificate) {
-      this.form.patchValue({
-        careCertificate: this.worker.careCertificate,
-      });
-    }
-
     this.next = this.getRoutePath('apprenticeship-training');
-    this.previous = this.getRoutePath('salary');
+    if (this.worker.careCertificate) {
+      this.prefill();
+    }
+  }
+
+  private prefill() {
+    this.form.patchValue({
+      careCertificate: this.worker.careCertificate,
+    });
   }
 
   generateUpdateProps() {
     const { careCertificate } = this.form.value;
-
     if (!careCertificate) {
       return null;
     }
-
     return {
       careCertificate,
     };

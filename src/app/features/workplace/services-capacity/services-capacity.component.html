@@ -1,7 +1,7 @@
 <app-error-summary
   *ngIf="(submitted && form.invalid) || serverError"
   [form]="form"
-  [formErrorsMap]="formErrorsMap"
+  [formErrorsMap]="errorsSummaryErrorsMap"
   [serverError]="serverError"
 ></app-error-summary>
 
@@ -63,6 +63,7 @@
                       submitted &&
                       form.get(groupName).invalid &&
                       this.capacityUtilisationValidator(form.get(groupName)) &&
+                      form.get(groupName).get(controlName).valid &&
                       idx === 1
                     "
                     id="{{ groupName }}-error"

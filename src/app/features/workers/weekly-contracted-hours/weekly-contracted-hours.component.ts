@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FLOAT_PATTERN } from '@core/constants/constants';
-import { Contracts } from '@core/model/contracts.enum';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -16,35 +16,28 @@ import { QuestionComponent } from '../question/question.component';
 export class WeeklyContractedHoursComponent extends QuestionComponent {
   public floatPattern = FLOAT_PATTERN.toString();
   public contractedMaxHours = 75;
-
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
+    protected establishmentService: EstablishmentService,
   ) {
-    super(formBuilder, router, route, backService, errorSummaryService, workerService);
-
-    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       hoursKnown: null,
       hours: null,
     });
+
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
   }
 
   init() {
-    if (
-      this.worker.zeroHoursContract === 'Yes' ||
-      [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-    ) {
-      this.router.navigate(this.getRoutePath('average-weekly-hours'), { replaceUrl: true });
-    }
-
     this.subscriptions.add(
-      this.form.get('hoursKnown').valueChanges.subscribe(value => {
+      this.form.get('hoursKnown').valueChanges.subscribe((value) => {
         this.form.get('hours').clearValidators();
 
         if (value === 'Yes') {
@@ -54,7 +47,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
         }
 
         this.form.get('hours').updateValueAndValidity();
-      })
+      }),
     );
 
     if (this.worker.weeklyHoursContracted) {
@@ -65,7 +58,6 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
     }
 
     this.next = this.getRoutePath('salary');
-    this.previous = this.getRoutePath('contract-with-zero-hours');
   }
 
   setupFormErrorsMap(): void {
@@ -75,19 +67,19 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
         type: [
           {
             name: 'required',
-            message: 'Contracted weekly hours is required.',
+            message: 'Enter their contracted weekly hours',
           },
           {
             name: 'min',
-            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}.`,
+            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}`,
           },
           {
             name: 'max',
-            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}.`,
+            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}`,
           },
           {
             name: 'pattern',
-            message: 'Contracted weekly hours must contain only numbers.',
+            message: 'Contracted weekly hours must contain only numbers',
           },
         ],
       },

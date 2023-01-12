@@ -54,13 +54,7 @@
         <a
           *ngIf="canEditWorker && !worker.completed"
           class="govuk-util__float-right"
-          [routerLink]="[
-            '/workplace',
-            workplace.uid,
-            'staff-record',
-            worker.uid,
-            worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
-          ]"
+          [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid, 'date-of-birth']"
           [state]="{ navigatedFrom: 'staff-records' }"
           >Add more details <span class="govuk-visually-hidden"> for {{ worker.nameOrId }}</span></a
         >

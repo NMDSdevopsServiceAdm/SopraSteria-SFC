@@ -856,7 +856,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator._validationErrors.length).to.equal(1);
       });
 
-      it('should add LOCAL_ID_ERROR error when LOCALESTID is oveer 50 characters', async () => {
+      it('should add LOCAL_ID_ERROR error when LOCALESTID is over 50 characters', async () => {
         const worker = buildWorkerCsv({
           overrides: {
             STATUS: 'NEW',
@@ -879,6 +879,128 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             error: 'LOCALESTID is longer than 50 characters',
             source: worker.LOCALESTID,
             column: 'LOCALESTID',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
+
+    describe('_validateSalary()', () => {
+      it('should not error when the worker is not a senior manager and the salary is between £500 and £200000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '20000',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should not error when the worker is a senior manager and the salary entered is over £200000 and under £250000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '240000',
+            MAINJOBROLE: '1',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should error when salary entered is below £500', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '300',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.SALARY_ERROR,
+            errType: 'SALARY_ERROR',
+            error: 'SALARY must be between £500 and £200000',
+            source: worker.SALARY,
+            column: 'SALARY',
+            name: 'MARMA',
+            worker: '3',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it('should error when worker is not a senior manager and salary is over £200000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '250000',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.SALARY_ERROR,
+            errType: 'SALARY_ERROR',
+            error: 'SALARY must be between £500 and £200000',
+            source: worker.SALARY,
+            column: 'SALARY',
+            name: 'MARMA',
+            worker: '3',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it('should error when the worker is a senior manager and the salary entered is over £250000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '260000',
+            MAINJOBROLE: '1',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.SALARY_ERROR,
+            errType: 'SALARY_ERROR',
+            error: 'SALARY must be between £500 and £250000',
+            source: worker.SALARY,
+            column: 'SALARY',
+            name: 'MARMA',
+            worker: '3',
           },
         ]);
         expect(validator._validationErrors.length).to.equal(1);

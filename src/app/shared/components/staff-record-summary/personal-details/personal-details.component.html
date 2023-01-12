@@ -1,12 +1,43 @@
 <h2 class="govuk-heading-m">Personal details</h2>
 <dl class="govuk-summary-list asc-summarylist-border-top">
   <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-!-width-one-half">Date of birth</dt>
+    <dd class="govuk-summary-list__value govuk-list--inline govuk-!-padding-left-9">
+      <app-summary-record-value
+        [wdfView]="wdfView"
+        [wdfValue]="worker.wdf?.dateOfBirth"
+        [overallWdfEligibility]="overallWdfEligibility"
+      >
+        <div class="govuk-!-display-inline-block govuk-!-width-one-half">
+          <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
+          <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
+        </div>
+        <ng-container *ngIf="canViewNinoDob">
+          <div class="govuk-!-display-inline-block govuk-!-width-one-half">
+            <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
+              >{{ dobHidden ? 'Show' : 'Hide' }}
+            </a>
+          </div>
+        </ng-container>
+      </app-summary-record-value>
+    </dd>
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+      <app-summary-record-change
+        [explanationText]="' date of birth'"
+        [link]="getRoutePath('date-of-birth', wdfView)"
+        [hasData]="!!worker.dateOfBirth"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">National Insurance number</dt>
     <ng-container *ngIf="!worker.nationalInsuranceNumber; else hasNino">
-      <dd class="govuk-summary-list__value">-</dd>
+      <dd class="govuk-summary-list__value govuk-!-padding-left-9">-</dd>
     </ng-container>
     <ng-template #hasNino>
-      <dd class="govuk-summary-list__value">
+      <dd class="govuk-summary-list__value govuk-!-padding-left-9">
         <div class="govuk-!-display-inline-block govuk-!-width-one-third">
           {{ ninoHidden ? '*********' : worker.nationalInsuranceNumber }}
         </div>
@@ -23,7 +54,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' national insurance number'"
-        [link]="getRoutePath('national-insurance-number')"
+        [link]="getRoutePath('national-insurance-number', wdfView)"
         [hasData]="!!worker.nationalInsuranceNumber"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -31,45 +62,14 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Date of birth</dt>
-    <dd class="govuk-summary-list__value govuk-list--inline">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.dateOfBirth"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        <div class="govuk-!-display-inline-block govuk-!-width-one-third">
-          <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
-          <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
-        </div>
-        <ng-container *ngIf="canViewNinoDob">
-          <div class="govuk-!-display-inline-block govuk-!-width-two-thirds">
-            <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
-              >{{ dobHidden ? 'Show' : 'Hide' }}
-            </a>
-          </div>
-        </ng-container>
-      </app-summary-record-value>
-    </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' date of birth'"
-        [link]="getRoutePath('date-of-birth')"
-        [hasData]="!!worker.dateOfBirth"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-
-  <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Home postcode</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{ worker.postcode || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' home postcode'"
-        [link]="getRoutePath('home-postcode')"
+        [link]="getRoutePath('home-postcode', wdfView)"
         [hasData]="!!worker.postcode"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -77,9 +77,9 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Gender</dt>
+    <dt class="govuk-summary-list__key">Gender identity</dt>
 
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.gender"
@@ -91,7 +91,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' gender'"
-        [link]="getRoutePath('gender')"
+        [link]="getRoutePath('gender', wdfView)"
         [hasData]="!!worker.gender"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -100,13 +100,13 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Disabled</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.disability || '-' | closedEndedAnswer }}
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+      {{ showDisability || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' disability'"
-        [link]="getRoutePath('disability')"
+        [link]="getRoutePath('disability', wdfView)"
         [hasData]="!!worker.disability"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -114,14 +114,29 @@
   </div>
 
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Ethnicity</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.ethnicity?.ethnicity | closedEndedAnswer }}
+    <dt class="govuk-summary-list__key">Ethnic group</dt>
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+      {{ ethnicGroupData || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' ethnicity'"
-        [link]="getRoutePath('ethnicity')"
+        [link]="getRoutePath('ethnicity', wdfView)"
+        [hasData]="!!ethnicGroupData"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Ethnic background</dt>
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+      {{ ethnicityData || '-' }}
+    </dd>
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+      <app-summary-record-change
+        [explanationText]="' ethnicity'"
+        [link]="getRoutePath('ethnicity', wdfView)"
         [hasData]="!!worker.ethnicity"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -130,7 +145,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Nationality</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.nationality"
@@ -146,7 +161,7 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' nationality'"
-        [link]="getRoutePath('nationality')"
+        [link]="getRoutePath('nationality', wdfView)"
         [hasData]="!!worker.nationality"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -155,13 +170,13 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayBritishCitizenship">
     <dt class="govuk-summary-list__key">British citizenship</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{ worker.britishCitizenship | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' british citizenship'"
-        [link]="getRoutePath('british-citizenship')"
+        [link]="getRoutePath('british-citizenship', wdfView)"
         [hasData]="!!worker.britishCitizenship"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -170,7 +185,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Country of birth</dt>
-    <dd class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{
         worker.countryOfBirth?.other?.country !== null
           ? worker.countryOfBirth?.other?.country
@@ -180,8 +195,25 @@
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' country of birth'"
-        [link]="getRoutePath('country-of-birth')"
+        [link]="getRoutePath('country-of-birth', wdfView)"
         [hasData]="!!worker.countryOfBirth"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayYearArrived">
+    <dt class="govuk-summary-list__key">Year arrived in the UK</dt>
+    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+      {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
+    </dd>
+    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+      <app-summary-record-change
+        [explanationText]="' year arrived in UK'"
+        [link]="getRoutePath('year-arrived-uk', wdfView)"
+        [hasData]="
+          !(worker.yearArrived === null || (worker.yearArrived?.value === null && worker.yearArrived?.year === null))
+        "
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
