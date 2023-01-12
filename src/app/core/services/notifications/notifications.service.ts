@@ -15,13 +15,16 @@ export class NotificationsService {
 
   public getAllNotifications(establishmentId) {
     const notificationsUser = this.getUserNotifications();
-    const notificationsEstablishment = this.getEstablishmentNotifications(establishmentId);
+    if (establishmentId) {
+      const notificationsEstablishment = this.getEstablishmentNotifications(establishmentId);
+      return zip(notificationsUser, notificationsEstablishment).pipe(map((x) => x[0].concat(x[1])));
+    } else {
+      return notificationsUser;
+    }
 
-    const output = zip(notificationsUser, notificationsEstablishment).pipe(map((x) => x[0].concat(x[1])));
+    // console.log(output.subscribe((x) => x));
 
-    console.log(output.subscribe((x) => x));
-
-    return output;
+    // return output;
   }
 
   set notifications(notifications: Notification[]) {
@@ -45,7 +48,6 @@ export class NotificationsService {
   }
 
   public getEstablishmentNotifications(establishmentUid): Observable<Notification[]> {
-    console.log(establishmentUid);
     return this.http.get<any>(`/api/notification/establishment/${establishmentUid}`);
   }
 
