@@ -10,7 +10,7 @@ const getListQuery = `
     "isViewed",
     "createdByUserUID"
   FROM cqc."Notifications"
-  WHERE cqc."Notifications"."userUid" = :recipientUserUid
+  WHERE cqc."Notifications"."recipientUserUid" = :recipientUserUid
   LIMIT :limit
   OFFSET :offset;
   `;
