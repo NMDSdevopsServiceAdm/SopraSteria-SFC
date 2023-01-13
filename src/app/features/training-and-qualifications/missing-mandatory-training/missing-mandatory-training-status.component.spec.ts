@@ -98,6 +98,13 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     expect(missingMandatoryTraining).toBeTruthy();
   });
 
+  it('should render the correct table with heading', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('userTable')).toBeTruthy();
+    expect(getByTestId('userTable-Heading')).toBeTruthy();
+  });
+
   it('should navigate back to the dashboard when clicking the return to home button in a parent or stand alone account', async () => {
     const { getByText, component, fixture, routerSpy } = await setup();
     component.workplace.uid = '1234-5678';
