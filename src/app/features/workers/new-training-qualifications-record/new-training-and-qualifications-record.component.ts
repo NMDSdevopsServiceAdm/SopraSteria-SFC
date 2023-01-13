@@ -6,13 +6,11 @@ import { QualificationsByGroup } from '@core/model/qualification.model';
 import { MandatoryTraining, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
-import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -39,7 +37,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public missingJobRoleMandatoryTrainingCount: number;
   public missingMandatoryTraining: MandatoryTraining[];
   private subscriptions: Subscription = new Subscription();
-  private currentUrl: string;
   public filterTrainingByStatus;
   public filterTrainingByDefault: string;
   public filterTraining;
@@ -47,13 +44,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public returnToRecord: URLStructure;
 
   constructor(
-    private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
-    private workerService: WorkerService,
     private trainingStatusService: TrainingStatusService,
     private trainingService: TrainingService,
   ) {}
@@ -61,28 +56,22 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
+
     this.trainingStatusService.expiresSoonAlertDate$.next(
       this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate,
     );
     const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
     this.breadcrumbService.show(journey);
     this.setTrainingAndQualifications();
-    this.subscriptions.add(
-      this.workerService.alert$.subscribe((alert) => {
-        if (alert) {
-          this.alertService.addAlert(alert);
-          this.workerService.alert = null;
-        }
-      }),
-    );
-    this.currentUrl = this.router.url;
+    localStorage.setItem('previousUrl', this.router.url);
+
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
 
     this.filterTrainingByDefault = '0_showall';
     this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
     this.getFilterByStatus(this.filterTrainingByDefault);
-    this.setReturnRoute();
+
     this.trainingService.trainingOrQualificationPreviouslySelected = null;
   }
 
@@ -216,18 +205,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
-  public setReturnRoute(): void {
-    this.returnToRecord = {
-      url: [this.currentUrl],
-    };
-    this.workerService.setReturnTo(this.returnToRecord);
-  }
-
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  addButtonClicked(): void {
-    this.setReturnRoute();
+  public resetLocalStorage(): void {
+    localStorage.removeItem('trainingCategory');
   }
 }

@@ -1,4 +1,5 @@
-import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -16,13 +17,14 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Directive({})
-export class AddEditTrainingDirective implements OnInit, AfterViewInit {
+export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
+  public trainingCategory: string;
   public worker: Worker;
   public workplace: Establishment;
   public missingTrainingRecord: MandatoryTraining;
@@ -53,11 +55,12 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.missingTrainingRecord = history.state?.missingRecord;
-
-    this.init();
+    this.trainingCategory = localStorage.getItem('trainingCategory');
+    this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
+    this.init();
     this.setTitle();
-    this.setSection();
+    this.setSectionHeading();
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
@@ -79,7 +82,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   protected setTitle(): void {}
 
-  protected setSection(): void {}
+  protected setSectionHeading(): void {}
 
   protected setButtonText(): void {}
 
@@ -109,7 +112,13 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form
       .get('completed')
       .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(minDate)]);
-    this.form.get('expires').setValidators([DateValidator.dateValid(), DateValidator.min(minDate)]);
+    this.form
+      .get('expires')
+      .setValidators([
+        DateValidator.dateValid(),
+        DateValidator.min(minDate),
+        DateValidator.beforeStartDate('completed', true, true),
+      ]);
   }
 
   private getCategories(): void {
@@ -180,7 +189,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
             message: 'Expiry date cannot be more than 100 years ago',
           },
           {
-            name: 'expiresBeforeCompleted',
+            name: 'beforeStartDate',
             message: 'Expiry date must be after date completed',
           },
         ],
@@ -265,6 +274,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onCancel(): void {
-    this.router.navigateByUrl(this.previousUrl[0]);
+    this.router.navigate(this.previousUrl);
+  }
+
+  ngOnDestroy(): void {
+    localStorage.removeItem('trainingCategory');
+    localStorage.removeItem('previousUrl');
   }
 }

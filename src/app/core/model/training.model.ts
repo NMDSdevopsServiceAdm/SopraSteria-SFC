@@ -13,7 +13,7 @@ export interface TrainingRecordRequest {
     id: number;
   };
   title: string;
-  accredited?: boolean;
+  accredited?: string;
   completed?: string;
   expires?: string;
   notes?: string;

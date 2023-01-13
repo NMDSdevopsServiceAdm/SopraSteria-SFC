@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { MultipleTrainingResponse } from '@core/model/training.model';
+import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
@@ -207,7 +207,7 @@ export const trainingRecord = {
   updatedBy: 'admin',
   trainingCategory: { id: 1, category: 'Communication' },
   title: 'Communication Training 1',
-  accredited: true,
+  accredited: 'Yes',
   completed: '01/02/2020',
   expires: '01/02/2021',
 };
@@ -229,6 +229,7 @@ export const qualificationRecord = {
 @Injectable()
 export class MockWorkerService extends WorkerService {
   public _worker;
+  public _alert;
 
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
@@ -280,6 +281,27 @@ export class MockWorkerService extends WorkerService {
 
   getLongTermAbsenceReasons(): Observable<Array<string>> {
     return of(['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other']);
+  }
+
+  getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string): Observable<any> {
+    return of(trainingRecord);
+  }
+
+  updateTrainingRecord(
+    workplaceUid: string,
+    workerId: string,
+    trainingRecordId: string,
+    record: TrainingRecordRequest,
+  ): Observable<TrainingRecordRequest> {
+    return of(trainingRecord);
+  }
+
+  createTrainingRecord(
+    workplaceUid: string,
+    workerId: string,
+    record: TrainingRecordRequest,
+  ): Observable<TrainingRecordRequest> {
+    return of(trainingRecord);
   }
 }
 
