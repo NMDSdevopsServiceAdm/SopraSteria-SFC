@@ -4,7 +4,7 @@ import { GetTrainingByStatusResolver } from '@core/resolvers/get-training-by-sta
 
 import { ExpiredTrainingComponent } from './expired-training/expired-training.component';
 import { ExpiringSoonTrainingComponent } from './expiring-soon-training/expiring-soon-training.component';
-import { MissingMandatoryTrainingComponent } from './missing-mandatory-training/missing-mandatory-training-status.component';
+import { MissingMandatoryTrainingStatusComponent } from './missing-mandatory-training/missing-mandatory-training-status.component';
 
 const routes: Routes = [
   {
@@ -25,7 +25,7 @@ const routes: Routes = [
   },
   {
     path: 'missing-mandatory-training',
-    component: MissingMandatoryTrainingComponent,
+    component: MissingMandatoryTrainingStatusComponent,
 
     data: { title: 'Missing mandatory training', training: 'missing' },
   },
