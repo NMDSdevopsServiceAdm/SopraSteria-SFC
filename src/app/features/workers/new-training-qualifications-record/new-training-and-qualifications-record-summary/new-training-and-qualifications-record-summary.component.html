@@ -8,8 +8,10 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <p class="govuk-!-margin-bottom-0">
-        <span class="asc-total-records--count govuk-!-margin-right-2">{{ trainingCount }}</span
-        ><span class="asc-total-records--text"
+        <span class="asc-total-records--count govuk-!-margin-right-2" data-testid="trainingCount">{{
+          trainingCount
+        }}</span
+        ><span class="asc-total-records--text" data-testid="trainingText"
           ><ng-container [ngPlural]="trainingCount">
             <ng-template ngPluralCase="=1">
               <span>training record</span>
@@ -23,8 +25,10 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <p class="govuk-!-margin-bottom-0">
-        <span class="asc-total-records--count govuk-!-margin-right-2">{{ qualificationsCount }}</span
-        ><span class="asc-total-records--text">
+        <span class="asc-total-records--count govuk-!-margin-right-2" data-testid="qualificationsCount">{{
+          qualificationsCount
+        }}</span
+        ><span class="asc-total-records--text" data-testid="qualificationsText">
           <ng-container [ngPlural]="qualificationsCount">
             <ng-template ngPluralCase="=1">
               <span>qualification record</span>
