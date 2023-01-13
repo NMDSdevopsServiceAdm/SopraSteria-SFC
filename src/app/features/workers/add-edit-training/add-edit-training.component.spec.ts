@@ -514,7 +514,7 @@ describe('AddEditTrainingComponent', () => {
         expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
       });
 
-      it('should show an error message if the expiry date is before in the completed', async () => {
+      it('should show the min date error message if expiry date is over a hundred years ago and the expiry date is before the completed date', async () => {
         const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup(false, null);
 
         component.previousUrl = ['/goToPreviousUrl'];
@@ -538,11 +538,11 @@ describe('AddEditTrainingComponent', () => {
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
-        expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
-        expect(queryByText('Expiry date cannot be more than 100 years ago')).toBeFalsy();
+        expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
+        expect(queryByText('Expiry date must be after date completed')).toBeFalsy();
       });
 
-      it('should show the before completed date error message when there is valid completed date and the expires date is over 100 years ago', async () => {
+      it('should an error message when the expiry date is before the completed date', async () => {
         const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
 
         component.previousUrl = ['/goToPreviousUrl'];

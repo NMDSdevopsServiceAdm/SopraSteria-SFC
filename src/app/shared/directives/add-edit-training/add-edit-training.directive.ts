@@ -116,8 +116,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
       .get('expires')
       .setValidators([
         DateValidator.dateValid(),
-        DateValidator.beforeStartDate('completed', true, true),
         DateValidator.min(minDate),
+        DateValidator.beforeStartDate('completed', true, true),
       ]);
   }
 
