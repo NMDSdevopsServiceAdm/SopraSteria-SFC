@@ -114,7 +114,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
       .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(minDate)]);
     this.form
       .get('expires')
-      .setValidators([DateValidator.dateValid(), DateValidator.beforeStartDate('completed', true)]);
+      .setValidators([
+        DateValidator.dateValid(),
+        DateValidator.beforeStartDate('completed', true, true),
+        DateValidator.min(minDate),
+      ]);
   }
 
   private getCategories(): void {
@@ -179,6 +183,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
           {
             name: 'dateValid',
             message: 'Expiry date must be a valid date',
+          },
+          {
+            name: 'dateMin',
+            message: 'Expiry date cannot be more than 100 years ago',
           },
           {
             name: 'beforeStartDate',

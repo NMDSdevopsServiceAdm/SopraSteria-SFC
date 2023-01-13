@@ -494,7 +494,55 @@ describe('AddEditTrainingComponent', () => {
         expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
       });
 
+      it('should show an error message if the expiry date is more than 100 years ago', async () => {
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        fixture.detectChanges();
+
+        const pastDate = new Date();
+        pastDate.setFullYear(pastDate.getFullYear() - 101);
+
+        const expiresDate = getByTestId('expiresDate');
+        userEvent.type(within(expiresDate).getByLabelText('Day'), `${pastDate.getDate()}`);
+        userEvent.type(within(expiresDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
+        userEvent.type(within(expiresDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
+
+        fireEvent.click(getByText('Save record'));
+        fixture.detectChanges();
+
+        expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
+      });
+
       it('should show an error message if the expiry date is before in the completed', async () => {
+        const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup(false, null);
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        fixture.detectChanges();
+
+        const dateCompleted = new Date();
+
+        const completedDate = getByTestId('completedDate');
+        userEvent.type(within(completedDate).getByLabelText('Day'), `${dateCompleted.getDate()}`);
+        userEvent.type(within(completedDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
+        userEvent.type(within(completedDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
+
+        const pastDate = new Date();
+        pastDate.setFullYear(pastDate.getFullYear() - 101);
+
+        const expiresDate = getByTestId('expiresDate');
+        userEvent.type(within(expiresDate).getByLabelText('Day'), `${pastDate.getDate()}`);
+        userEvent.type(within(expiresDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
+        userEvent.type(within(expiresDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
+
+        fireEvent.click(getByText('Save record'));
+        fixture.detectChanges();
+
+        expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
+        expect(queryByText('Expiry date cannot be more than 100 years ago')).toBeFalsy();
+      });
+
+      it('should show the before completed date error message when there is valid completed date and the expires date is over 100 years ago', async () => {
         const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
 
         component.previousUrl = ['/goToPreviousUrl'];
@@ -510,25 +558,6 @@ describe('AddEditTrainingComponent', () => {
         userEvent.type(within(expiresDate).getByLabelText('Day'), `${dateCompleted.getDate() - 1}`);
         userEvent.type(within(expiresDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
         userEvent.type(within(expiresDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
-
-        fireEvent.click(getByText('Save record'));
-        fixture.detectChanges();
-
-        expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
-      });
-
-      it('should show an error message if the expiry date is filled out and the completed date is not', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
-
-        component.previousUrl = ['/goToPreviousUrl'];
-        fixture.detectChanges();
-
-        const dateExpires = new Date();
-
-        const expiresDate = getByTestId('expiresDate');
-        userEvent.type(within(expiresDate).getByLabelText('Day'), `${dateExpires.getDate() - 1}`);
-        userEvent.type(within(expiresDate).getByLabelText('Month'), `${dateExpires.getMonth() + 1}`);
-        userEvent.type(within(expiresDate).getByLabelText('Year'), `${dateExpires.getFullYear()}`);
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
