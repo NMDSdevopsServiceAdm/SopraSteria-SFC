@@ -101,7 +101,6 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
 
   public getWorkerTrainingAndQualificationsPath(event: Event, worker: Worker): void {
     event.preventDefault();
-    this.addQueryParams();
     const path = this.wdfView
       ? ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training', 'wdf-summary']
       : ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];

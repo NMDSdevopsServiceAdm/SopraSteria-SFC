@@ -9,12 +9,14 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -37,6 +39,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     mandatoryTraining = [],
     jobRoleMandatoryTraining = [],
     noQualifications = false,
+    fragment = 'all-records',
   ) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
@@ -47,7 +50,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           WindowRef,
           {
             provide: ActivatedRoute,
-            useValue: {
+            useValue: new MockActivatedRoute({
+              fragment: of(fragment),
               parent: {
                 snapshot: {
                   data: {
@@ -128,7 +132,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                   },
                 },
               },
-            },
+            }),
           },
           {
             provide: WorkerService,
@@ -170,72 +174,74 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     };
   }
 
-  it('should render a TrainingAndQualificationsRecordComponent', async () => {
-    const { component } = await setup();
-    expect(component).toBeTruthy();
+  describe('page rendering', async () => {
+    it('should render a TrainingAndQualificationsRecordComponent', async () => {
+      const { component } = await setup();
+      expect(component).toBeTruthy();
+    });
+
+    it('should display the worker name', async () => {
+      const { component, getByText } = await setup();
+
+      expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
+    });
+
+    it('should display the last updated date in the correct format', async () => {
+      const { component, getByText, fixture } = await setup();
+
+      component.lastUpdatedDate = new Date('2020-01-01');
+
+      fixture.detectChanges();
+
+      expect(getByText('Last update, 1 January 2020', { exact: false })).toBeTruthy();
+    });
+
+    it('should display the View staff record button', async () => {
+      const { component, getByText, fixture } = await setup();
+
+      component.canEditWorker = true;
+
+      fixture.detectChanges();
+
+      expect(getByText('View staff record', { exact: false })).toBeTruthy();
+    });
+
+    it('should have correct href on the View staff record button', async () => {
+      const { component, getByText, fixture } = await setup();
+
+      component.canEditWorker = true;
+
+      fixture.detectChanges();
+
+      const viewStaffRecordButton = getByText('View staff record', { exact: false });
+
+      expect(viewStaffRecordButton.getAttribute('href')).toEqual(
+        `/workplace/${component.workplace.uid}/staff-record/123/staff-record-summary`,
+      );
+    });
+
+    it('should get the latest update date', async () => {
+      const { component } = await setup();
+
+      expect(component.lastUpdatedDate).toEqual(new Date('2020-01-02'));
+    });
+
+    it('should show the care certificate value', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
+      expect(getByText('Yes, in progress or partially completed', { exact: false })).toBeTruthy();
+    });
+
+    it('should show not answered if no care certificate value', async () => {
+      const { getByText } = await setup(false, false);
+
+      expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
+      expect(getByText('Not answered', { exact: false })).toBeTruthy();
+    });
   });
 
-  it('should display the worker name', async () => {
-    const { component, getByText } = await setup();
-
-    expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
-  });
-
-  it('should display the last updated date in the correct format', async () => {
-    const { component, getByText, fixture } = await setup();
-
-    component.lastUpdatedDate = new Date('2020-01-01');
-
-    fixture.detectChanges();
-
-    expect(getByText('Last update, 1 January 2020', { exact: false })).toBeTruthy();
-  });
-
-  it('should display the View staff record button', async () => {
-    const { component, getByText, fixture } = await setup();
-
-    component.canEditWorker = true;
-
-    fixture.detectChanges();
-
-    expect(getByText('View staff record', { exact: false })).toBeTruthy();
-  });
-
-  it('should have correct href on the View staff record button', async () => {
-    const { component, getByText, fixture } = await setup();
-
-    component.canEditWorker = true;
-
-    fixture.detectChanges();
-
-    const viewStaffRecordButton = getByText('View staff record', { exact: false });
-
-    expect(viewStaffRecordButton.getAttribute('href')).toEqual(
-      `/workplace/${component.workplace.uid}/staff-record/123/staff-record-summary`,
-    );
-  });
-
-  it('should get the latest update date', async () => {
-    const { component } = await setup();
-
-    expect(component.lastUpdatedDate).toEqual(new Date('2020-01-02'));
-  });
-
-  it('should show the care certificate value', async () => {
-    const { getByText } = await setup();
-
-    expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
-    expect(getByText('Yes, in progress or partially completed', { exact: false })).toBeTruthy();
-  });
-
-  it('should show not answered if no care certificate value', async () => {
-    const { getByText } = await setup(false, false);
-
-    expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
-    expect(getByText('Not answered', { exact: false })).toBeTruthy();
-  });
-
-  describe('Long-Term Absence', () => {
+  describe('Long-Term Absence', async () => {
     it('should display the Long-Term Absence if the worker is currently flagged as long term absent', async () => {
       const { component, fixture, getByText, queryByText } = await setup();
 
@@ -259,7 +265,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
   });
 
-  describe('Flag long-term absence', () => {
+  describe('Flag long-term absence', async () => {
     it('should display the "Flag long-term absence" link if the worker is not currently flagged as long term absent', async () => {
       const { component, fixture, getByText } = await setup();
 
@@ -284,114 +290,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
   });
 
-  describe('Mandatory training', () => {
-    it('should display the mandatory training count', async () => {
-      const mandatoryTraining = [
-        {
-          category: 'Management',
-          id: 1,
-          trainingRecords: [
-            {
-              accredited: true,
-              completed: new Date('10/20/2021'),
-              expires: new Date('10/20/2022'),
-              title: 'Management training',
-              trainingCategory: { id: 1, category: 'Management' },
-              uid: 'someManagementuid',
-            },
-          ],
-        },
-      ];
-      const { getByText } = await setup(false, true, mandatoryTraining);
-      expect(getByText('Mandatory training records (1)')).toBeTruthy();
-    });
-
-    it('should display the message and link if no mandatory training has been set', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.canEditWorker = true;
-      fixture.detectChanges();
-
-      const message = `No mandatory training has been set for the ${component.worker.mainJob.title} job role yet.`;
-
-      expect(getByText(message)).toBeTruthy();
-      expect(getByText('Manage mandatory training')).toBeTruthy();
-    });
-
-    it('should render the manage mandatory training link the correct href', async () => {
-      const { component, fixture, getByText, workplaceUid } = await setup();
-
-      component.canEditWorker = true;
-      fixture.detectChanges();
-
-      const link = getByText('Manage mandatory training');
-      expect(link.getAttribute('href')).toBe(`/workplace/${workplaceUid}/add-mandatory-training`);
-    });
-
-    it('should display the mandatory training table when training exists', async () => {
-      const mandatoryTraining = [
-        {
-          category: 'Management',
-          id: 1,
-          trainingRecords: [
-            {
-              accredited: true,
-              completed: new Date('10/20/2021'),
-              expires: new Date('10/20/2022'),
-              title: 'Management training',
-              trainingCategory: { id: 1, category: 'Management' },
-              uid: 'someManagementuid',
-            },
-          ],
-        },
-      ];
-      const { getByTestId } = await setup(false, true, mandatoryTraining);
-
-      expect(getByTestId('mandatory-training')).toBeTruthy();
-    });
-  });
-
-  describe('Non mandatory training', () => {
-    it('should display the non mandatory count', async () => {
-      const { getByText } = await setup();
-      expect(getByText('Non-mandatory training records (3)')).toBeTruthy();
-    });
-
-    it('should render non-mandatory training component', async () => {
-      const { getByTestId } = await setup();
-      expect(getByTestId('non-mandatory-training')).toBeTruthy();
-    });
-
-    it('should render message wihen there is no non-mandatory training', async () => {
-      const { component, fixture, getByText } = await setup();
-      component.nonMandatoryTrainingCount = 0;
-      fixture.detectChanges();
-
-      const expectedText = 'No non-mandatory training records have been added for this person yet.';
-      expect(getByText(expectedText)).toBeTruthy();
-    });
-  });
-
-  describe('Qualifications', () => {
-    describe('No qualification records', () => {
-      it('should show qualification record count as 0 when no qualification records', async () => {
-        const { getByText } = await setup(false, true, [], [], true);
-        expect(getByText('Qualification records (0)')).toBeTruthy();
-      });
-
-      it('should show 0 qualifications message when no qualification records', async () => {
-        const { getByText } = await setup(false, false, [], [], true);
-        expect(getByText('No qualification records have been added for this person yet.')).toBeTruthy();
-      });
-    });
-
-    it('should show qualification record count', async () => {
-      const { getByText } = await setup();
-      expect(getByText('Qualification records (3)')).toBeTruthy();
-    });
-  });
-
-  describe('getLastUpdatedDate', () => {
+  describe('getLastUpdatedDate', async () => {
     it('should set last updated date to valid date when null passed in (in case of no qualification records)', async () => {
       const { component, getByText, fixture } = await setup();
 
@@ -416,6 +315,161 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       component.getLastUpdatedDate([null, null]);
 
       expect(component.lastUpdatedDate).toBe(null);
+    });
+  });
+
+  describe('records summary', async () => {
+    it('should render the training and qualifications summary component', async () => {
+      const { fixture } = await setup();
+      expect(
+        fixture.debugElement.nativeElement.querySelector('app-new-training-and-qualifications-record-summary'),
+      ).not.toBe(null);
+    });
+  });
+
+  describe('actions list', async () => {
+    it('should render the actions list heading', async () => {
+      const { getByText } = await setup();
+      expect(getByText('Actions list')).toBeTruthy();
+    });
+
+    it('should render a actions table with the correct headers', async () => {
+      const { fixture } = await setup();
+      const headerRow = fixture.nativeElement.querySelectorAll('tr')[0];
+      expect(headerRow.cells['0'].innerHTML).toBe('Training category');
+      expect(headerRow.cells['1'].innerHTML).toBe('Training type');
+      expect(headerRow.cells['2'].innerHTML).toBe('Status');
+      expect(headerRow.cells['3'].innerHTML).toBe('');
+    });
+  });
+
+  describe('tabs', async () => {
+    it('should render the 4 training and quals tabs', async () => {
+      const { getByTestId } = await setup();
+      expect(getByTestId('allRecordsTab'));
+      expect(getByTestId('mandatoryTrainingTab'));
+      expect(getByTestId('nonMandatoryTrainingTab'));
+      expect(getByTestId('qualificationsTab'));
+    });
+
+    describe('all records tab', async () => {
+      it('should show the all records tab as active when on training record page with fragment all-records', async () => {
+        const { getByTestId } = await setup();
+
+        expect(getByTestId('allRecordsTab').getAttribute('class')).toContain('asc-tabs__list-item--active');
+        expect(getByTestId('allRecordsTabLink').getAttribute('class')).toContain('asc-tabs__link--active');
+        expect(getByTestId('mandatoryTrainingTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+        expect(getByTestId('mandatoryTrainingTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
+        expect(getByTestId('nonMandatoryTrainingTab').getAttribute('class')).not.toContain(
+          'asc-tabs__list-item--active',
+        );
+        expect(getByTestId('nonMandatoryTrainingTabLink').getAttribute('class')).not.toContain(
+          'asc-tabs__link--active',
+        );
+        expect(getByTestId('qualificationsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+        expect(getByTestId('qualificationsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
+      });
+
+      it('should render 2 instances of the new-training component and 1 instance of the qualification component when on all record tab', async () => {
+        const { fixture } = await setup();
+        expect(fixture.debugElement.nativeElement.querySelectorAll('app-new-training').length).toBe(2);
+        expect(fixture.debugElement.nativeElement.querySelector('app-new-qualifications')).not.toBe(null);
+      });
+
+      it('should navigate to the training page with fragment all-records when clicking on all-records tab', async () => {
+        const { getByTestId } = await setup();
+        const allRecordsTabLink = getByTestId('allRecordsTabLink');
+        expect(allRecordsTabLink.getAttribute('href')).toEqual('/#all-records');
+      });
+    });
+
+    describe('mandatory training tab', async () => {
+      it('should show the Mandatory training tab as active when on training record page with fragment mandatory-training', async () => {
+        const { getByTestId } = await setup(false, true, [], [], false, 'mandatory-training');
+
+        expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+        expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
+        expect(getByTestId('mandatoryTrainingTab').getAttribute('class')).toContain('asc-tabs__list-item--active');
+        expect(getByTestId('mandatoryTrainingTabLink').getAttribute('class')).toContain('asc-tabs__link--active');
+        expect(getByTestId('nonMandatoryTrainingTab').getAttribute('class')).not.toContain(
+          'asc-tabs__list-item--active',
+        );
+        expect(getByTestId('nonMandatoryTrainingTabLink').getAttribute('class')).not.toContain(
+          'asc-tabs__link--active',
+        );
+        expect(getByTestId('qualificationsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+        expect(getByTestId('qualificationsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
+      });
+
+      it('should render 1 instances of the new-training component when on mandatory training tab', async () => {
+        const { fixture } = await setup(false, true, [], [], false, 'mandatory-training');
+
+        expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
+      });
+
+      it('should navigate to the training page with the fragment mandatory-training when clicking on mandatory training tab', async () => {
+        const { getByTestId } = await setup();
+        const mandatoryTrainingTabLink = getByTestId('mandatoryTrainingTabLink');
+        expect(mandatoryTrainingTabLink.getAttribute('href')).toEqual('/#mandatory-training');
+      });
+    });
+
+    describe('non mandatory training tab', async () => {
+      it('should show the non Mandatory training tab as active when on training record page with fragment non-mandatory-training', async () => {
+        const { getByTestId } = await setup(false, true, [], [], false, 'non-mandatory-training');
+
+        expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+        expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
+        expect(getByTestId('mandatoryTrainingTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+        expect(getByTestId('mandatoryTrainingTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
+        expect(getByTestId('nonMandatoryTrainingTab').getAttribute('class')).toContain('asc-tabs__list-item--active');
+        expect(getByTestId('nonMandatoryTrainingTabLink').getAttribute('class')).toContain('asc-tabs__link--active');
+        expect(getByTestId('qualificationsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+        expect(getByTestId('qualificationsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
+      });
+
+      it('should render 1 instances of the new-training component when on non mandatory training tab', async () => {
+        const { fixture } = await setup(false, true, [], [], false, 'non-mandatory-training');
+
+        expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
+      });
+
+      it('should navigate to the training page with the fragment mandatory-training when clicking on non mandatory training tab', async () => {
+        const { getByTestId } = await setup();
+        const mandatoryTrainingTabLink = getByTestId('nonMandatoryTrainingTabLink');
+        expect(mandatoryTrainingTabLink.getAttribute('href')).toEqual('/#non-mandatory-training');
+      });
+    });
+
+    describe('qualifications tab', async () => {
+      it('should show the qualifications tab as active when on training record page with fragment qualifications', async () => {
+        const { getByTestId } = await setup(false, true, [], [], false, 'qualifications');
+
+        expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+        expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
+        expect(getByTestId('mandatoryTrainingTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+        expect(getByTestId('mandatoryTrainingTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
+        expect(getByTestId('nonMandatoryTrainingTab').getAttribute('class')).not.toContain(
+          'asc-tabs__list-item--active',
+        );
+        expect(getByTestId('nonMandatoryTrainingTabLink').getAttribute('class')).not.toContain(
+          'asc-tabs__link--active',
+        );
+        expect(getByTestId('qualificationsTab').getAttribute('class')).toContain('asc-tabs__list-item--active');
+        expect(getByTestId('qualificationsTabLink').getAttribute('class')).toContain('asc-tabs__link--active');
+      });
+
+      it('should render 1 instances of the new-qualifications component when on qualification tab', async () => {
+        const { fixture } = await setup(false, true, [], [], false, 'non-mandatory-training');
+
+        expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
+      });
+
+      it('should navigate to the training page with the fragment qualifications when clicking on qualification tab', async () => {
+        const { getByTestId } = await setup();
+        const mandatoryTrainingTabLink = getByTestId('qualificationsTabLink');
+        expect(mandatoryTrainingTabLink.getAttribute('href')).toEqual('/#qualifications');
+      });
     });
   });
 });

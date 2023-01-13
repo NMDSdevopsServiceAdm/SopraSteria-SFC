@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment, FilterTrainingAndQualsOptions } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { MandatoryTraining, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
+import { MandatoryTraining, TrainingRecordCategory } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -132,23 +132,23 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     return count;
   }
 
-  public getTrainingStatusCount(training: TrainingRecords, status: number): number {
-    let count = 0;
+  // public getTrainingStatusCount(training: TrainingRecords, status: number): number {
+  //   let count = 0;
 
-    const trainingTypes = Object.keys(training);
-    trainingTypes.forEach((type) => {
-      if (type !== 'lastUpdated' && type !== 'jobRoleMandatoryTraining') {
-        training[type].forEach((category) => {
-          category.trainingRecords.forEach((trainingRecord) => {
-            if (trainingRecord.trainingStatus === status) {
-              count += 1;
-            }
-          });
-        });
-      }
-    });
-    return count;
-  }
+  //   const trainingTypes = Object.keys(training);
+  //   trainingTypes.forEach((type) => {
+  //     if (type !== 'lastUpdated' && type !== 'jobRoleMandatoryTraining') {
+  //       training[type].forEach((category) => {
+  //         category.trainingRecords.forEach((trainingRecord) => {
+  //           if (trainingRecord.trainingStatus === status) {
+  //             count += 1;
+  //           }
+  //         });
+  //       });
+  //     }
+  //   });
+  //   return count;
+  // }
 
   private getStatus(categories: TrainingRecordCategory[]): void {
     categories.forEach((category) => {
@@ -223,11 +223,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workerService.setReturnTo(this.returnToRecord);
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
+  // addButtonClicked(): void {
+  //   this.setReturnRoute();
+  // }
 
-  addButtonClicked(): void {
-    this.setReturnRoute();
+  public ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

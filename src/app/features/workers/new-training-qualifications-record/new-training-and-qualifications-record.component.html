@@ -32,9 +32,9 @@
       <p *ngIf="lastUpdatedDate">Last update, {{ lastUpdatedDate | date: 'd MMMM yyyy' }}</p>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div class="govuk-button-group govuk-util__float-right govuk-!-margin-top-3 govuk-!-margin-bottom-0">
+      <div class="govuk-util__float-right govuk-!-margin-top-3 govuk-!-margin-bottom-0">
         <a
-          class="govuk-list govuk-list--inline govuk-!-margin-bottom-0"
+          class="govuk-!-margin-bottom-0 govuk-link govuk-body govuk-!-font-size-19"
           *ngIf="canEditWorker && worker.longTermAbsence === null"
           draggable="false"
           role="button"
@@ -108,7 +108,6 @@
           </tr>
         </thead>
         <tbody class="govuk-table__body">
-          <!-- MockData currently in here, this will most likely be a *ngFor looping through all actionables creating a table row for each iteration AP 03/1/2023 -->
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">Sensory disability</td>
             <td class="govuk-table__cell">Non-mandatory</td>
@@ -174,7 +173,6 @@
             <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Add</a></td>
           </tr>
         </tbody>
-        <!-- MockData End AP 03/1/2023 -->
       </table>
     </div>
   </div>
@@ -183,12 +181,14 @@
       <li
         class="govuk-tabs__list-item asc-tabs__list-item"
         [class.asc-tabs__list-item--active]="currentFragment === fragmentsObject.allRecords"
+        data-testid="allRecordsTab"
       >
         <a
           class="govuk-tabs__tab asc-tabs__link"
           role="tab"
           [routerLink]="['../training']"
           fragment="all-records"
+          data-testid="allRecordsTabLink"
           [class.asc-tabs__link--active]="currentFragment === fragmentsObject.allRecords"
           >All records</a
         >
@@ -196,12 +196,14 @@
       <li
         class="govuk-tabs__list-item asc-tabs__list-item"
         [class.asc-tabs__list-item--active]="currentFragment === fragmentsObject.mandatoryTraining"
+        data-testid="mandatoryTrainingTab"
       >
         <a
           class="govuk-tabs__tab asc-tabs__link"
           role="tab"
           [routerLink]="['../training']"
           fragment="mandatory-training"
+          data-testid="mandatoryTrainingTabLink"
           [class.asc-tabs__link--active]="currentFragment === fragmentsObject.mandatoryTraining"
           >Mandatory training</a
         >
@@ -209,12 +211,14 @@
       <li
         class="govuk-tabs__list-item asc-tabs__list-item"
         [class.asc-tabs__list-item--active]="currentFragment === fragmentsObject.nonMandatoryTraining"
+        data-testid="nonMandatoryTrainingTab"
       >
         <a
           class="govuk-tabs__tab asc-tabs__link"
           role="tab"
           [routerLink]="['../training']"
           fragment="non-mandatory-training"
+          data-testid="nonMandatoryTrainingTabLink"
           [class.asc-tabs__link--active]="currentFragment === fragmentsObject.nonMandatoryTraining"
           >Non-mandatory training</a
         >
@@ -222,10 +226,12 @@
       <li
         class="govuk-tabs__list-item asc-tabs__list-item"
         [class.asc-tabs__list-item--active]="currentFragment === fragmentsObject.qualifications"
+        data-testid="qualificationsTab"
       >
         <a
           class="govuk-tabs__tab asc-tabs__link"
           role="tab"
+          data-testid="qualificationsTabLink"
           [routerLink]="['../training']"
           fragment="qualifications"
           [class.asc-tabs__link--active]="currentFragment === fragmentsObject.qualifications"

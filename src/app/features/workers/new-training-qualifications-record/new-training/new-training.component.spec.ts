@@ -199,7 +199,7 @@ describe('NewTrainingComponent', async () => {
       fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
       expect(noTrainingLink).toBeTruthy();
-      expect(noTrainingLink.getAttribute('href')).toBe('/select-record-type');
+      expect(noTrainingLink.getAttribute('href')).toBe('/add-training');
     });
 
     it('should display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true', async () => {

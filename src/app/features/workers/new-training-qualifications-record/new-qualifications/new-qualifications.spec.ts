@@ -75,7 +75,7 @@ describe('NewQualificationsComponent', () => {
       };
 
       const addAQualifcationLink = getByText('Add a qualification record');
-      expect(addAQualifcationLink.getAttribute('href')).toEqual('/select-record-type');
+      expect(addAQualifcationLink.getAttribute('href')).toEqual('/add-qualification');
     });
 
     it('should display a title, no qualifications found and add a qualification link if there are no records', async () => {
