@@ -68,15 +68,15 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
     );
   }
 
-  removeIdFromKey(key: string) {
+  public removeIdFromKey(key: string) {
     return key.replace(/[0-9]/g, '');
   }
 
-  getKeys() {
+  public getKeys() {
     return Object.keys(this.groupByName);
   }
 
-  findUidForWorker(key) {
+  public findUidForWorker(key) {
     return this.groupByName[key].find((u) => u.uid).uid;
   }
 

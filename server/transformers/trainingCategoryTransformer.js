@@ -84,7 +84,7 @@ const transformTrainingCategoriesWithMandatoryTraining = function (establishment
     });
 };
 
-const transformWorkersWithissingMandatoryCategiries = function (establishment, trainingCategories) {
+const transformWorkersWithMissingMandatoryCategories = function (establishment, trainingCategories) {
   let missingTraining = [];
   trainingCategories.map((category) => {
     if (category.MandatoryTraining.length) {
@@ -120,4 +120,4 @@ const transformWorkersWithissingMandatoryCategiries = function (establishment, t
 
 module.exports.transformTrainingCategories = transformTrainingCategories;
 module.exports.transformTrainingCategoriesWithMandatoryTraining = transformTrainingCategoriesWithMandatoryTraining;
-module.exports.transformWorkersWithissingMandatoryCategiries = transformWorkersWithissingMandatoryCategiries;
+module.exports.transformWorkersWithMissingMandatoryCategories = transformWorkersWithMissingMandatoryCategories;
