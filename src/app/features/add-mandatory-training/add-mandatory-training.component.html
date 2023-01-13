@@ -38,7 +38,7 @@
                 id="trainingCategory"
                 name="trainingCategory"
               >
-                <option [ngValue]="null">Select training category</option>
+                <option [ngValue]="null">Select</option>
                 <option *ngFor="let training of trainings" [value]="training.id">
                   {{ training.category }}
                 </option>
