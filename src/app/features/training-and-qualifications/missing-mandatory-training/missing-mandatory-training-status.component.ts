@@ -13,7 +13,7 @@ import { take } from 'rxjs/operators';
   selector: 'app-missing-mandatory-training-status',
   templateUrl: './missing-mandatory-training-status.component.html',
 })
-export class MissingMandatoryTrainingComponent implements OnInit {
+export class MissingMandatoryTrainingStatusComponent implements OnInit {
   public workplace: Establishment;
 
   public canEditWorker = false;
@@ -21,6 +21,7 @@ export class MissingMandatoryTrainingComponent implements OnInit {
 
   public trainings;
   public groupByName;
+  public workplaceUid: string;
 
   missingTrainingArray = [];
 
@@ -36,8 +37,10 @@ export class MissingMandatoryTrainingComponent implements OnInit {
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.workplaceUid = this.route.snapshot.params.establishmentuid;
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+
     this.getAllMissingMandatoryTrainings();
     this.setBackLink();
   }
@@ -49,6 +52,7 @@ export class MissingMandatoryTrainingComponent implements OnInit {
         .pipe(take(1))
         .subscribe((categories: any) => {
           this.trainings = categories.missingTrainings;
+
           this.groupByName = this.trainings.groupBy((item) => item.workerName + item.workerId);
           this.getKeys().forEach((key) => {
             const newValue = {
@@ -85,6 +89,7 @@ export class MissingMandatoryTrainingComponent implements OnInit {
   }
 
   public returnToHome(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
+    const returnLink = this.workplaceUid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
+    this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });
   }
 }
