@@ -5,6 +5,7 @@ const refCacheMiddleware = require('../utils/middleware/refCache');
 const models = require('../models/index');
 const {
   transformTrainingCategories,
+
   transformTrainingCategoriesWithMandatoryTraining,
 } = require('../transformers/trainingCategoryTransformer');
 
@@ -35,7 +36,6 @@ const getTrainingByCategory = async (req, res) => {
     }
 
     const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
-
     res.json({
       trainingCategories: transformTrainingCategoriesWithMandatoryTraining(
         establishmentWithWorkersAndTraining,

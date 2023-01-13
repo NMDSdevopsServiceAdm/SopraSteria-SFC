@@ -27,6 +27,10 @@ export class TrainingService {
     );
   }
 
+  getMissingMandatoryTraining(workplaceId): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${workplaceId}/trainingAndQualifications/missing-training`);
+  }
+
   public updateSelectedStaff(formValue) {
     this.selectedStaff = formValue;
   }

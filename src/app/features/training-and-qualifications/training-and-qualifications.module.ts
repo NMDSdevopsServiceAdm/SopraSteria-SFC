@@ -7,6 +7,7 @@ import { SharedModule } from '@shared/shared.module';
 
 import { ExpiredTrainingComponent } from './expired-training/expired-training.component';
 import { ExpiringSoonTrainingComponent } from './expiring-soon-training/expiring-soon-training.component';
+import { MissingMandatoryTrainingStatusComponent } from './missing-mandatory-training/missing-mandatory-training-status.component';
 import { TrainingAndQualificationsRoutingModule } from './training-and-qualifications-routing.module';
 
 @NgModule({
@@ -18,7 +19,7 @@ import { TrainingAndQualificationsRoutingModule } from './training-and-qualifica
     OverlayModule,
     TrainingAndQualificationsRoutingModule,
   ],
-  declarations: [ExpiredTrainingComponent, ExpiringSoonTrainingComponent],
+  declarations: [ExpiredTrainingComponent, ExpiringSoonTrainingComponent, MissingMandatoryTrainingStatusComponent],
   providers: [GetTrainingByStatusResolver],
 })
 export class TrainingAndQualificationsModule {}
