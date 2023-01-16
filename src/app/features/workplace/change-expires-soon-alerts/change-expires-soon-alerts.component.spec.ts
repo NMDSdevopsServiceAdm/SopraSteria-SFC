@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -29,10 +28,7 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
                   expiresSoonAlertDate: '90',
                 },
                 establishment: {
-                  uid: '1446-uid-54638',
-                },
-                primaryWorkplace: {
-                  uid: isPrimary ? '1446-uid-54638' : '4678-otheruid-5436',
+                  uid: isPrimary ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : '1446-uid-54638',
                 },
               },
             },
@@ -60,10 +56,6 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
     const alertSpy = spyOn(alert, 'addAlert');
     alertSpy.and.callThrough();
 
-    const backService = injector.inject(BackService) as BackService;
-    const backServiceSpy = spyOn(backService, 'setBackLink');
-    backServiceSpy.and.callThrough();
-
     return {
       component,
       fixture,
@@ -72,7 +64,6 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
       routerSpy,
       establishmentSpy,
       alertSpy,
-      backServiceSpy,
     };
   }
 
@@ -111,7 +102,7 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
       fireEvent.click(saveAndReturnButton);
 
       expect(component.form.valid).toBeTruthy();
-      expect(establishmentSpy).toHaveBeenCalledWith('1446-uid-54638', '60');
+      expect(establishmentSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de', '60');
     });
 
     it('should navigate to the training and quals tab on submit if user is primary user', async () => {
@@ -149,27 +140,6 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
         message: `'Expires soon' alerts set to 60 days`,
-      });
-    });
-  });
-
-  describe('Back link', () => {
-    it('should set the back link to the training and quals tab if user is primary user', async () => {
-      const { component, backServiceSpy } = await setup();
-
-      component.setBackLink();
-
-      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'training-and-qualifications' });
-    });
-
-    it(`should set the back link to the sub's training and quals tab if user is not primary user`, async () => {
-      const { component, backServiceSpy } = await setup(false);
-
-      component.setBackLink();
-
-      expect(backServiceSpy).toHaveBeenCalledWith({
-        url: ['/workplace', component.workplaceUid],
-        fragment: 'training-and-qualifications',
       });
     });
   });
