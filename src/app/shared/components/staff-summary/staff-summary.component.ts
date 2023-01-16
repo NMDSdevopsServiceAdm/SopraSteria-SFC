@@ -55,6 +55,8 @@ export class StaffSummaryComponent implements OnInit {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
     this.setSearchIfPrevious();
+    console.log(this.workerCount);
+    console.log(this.totalWorkerCount);
   }
 
   private setSearchIfPrevious(): void {
@@ -99,6 +101,7 @@ export class StaffSummaryComponent implements OnInit {
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;
         this.workerCount = workerCount;
+        console.log(this.workerCount);
       });
   }
 

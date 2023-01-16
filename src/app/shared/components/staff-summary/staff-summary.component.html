@@ -21,58 +21,60 @@
     </div>
   </div>
 </div>
-<table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Staff name</th>
-      <th class="govuk-table__header" scope="col">Job role</th>
-      <th class="govuk-table__header" scope="col">Last updated</th>
-      <th *ngIf="!wdfView" class="govuk-table__header" scope="col">
-        <span class="govuk-visually-hidden">Status</span>
-      </th>
-      <th *ngIf="wdfView" class="govuk-table__header" scope="col">WDF requirements</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <tr class="govuk-table__row" *ngFor="let worker of paginatedWorkers">
-      <td class="govuk-table__cell govuk-!-font-weight-regular">
-        <ng-container *ngIf="canViewWorker; else nameOrId">
-          <a href="#" (click)="getWorkerRecordPath($event, worker)">
+<app-table-pagination-wrapper [workerCount]="workerCount">
+  <table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Staff name</th>
+        <th class="govuk-table__header" scope="col">Job role</th>
+        <th class="govuk-table__header" scope="col">Last updated</th>
+        <th *ngIf="!wdfView" class="govuk-table__header" scope="col">
+          <span class="govuk-visually-hidden">Status</span>
+        </th>
+        <th *ngIf="wdfView" class="govuk-table__header" scope="col">WDF requirements</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row" *ngFor="let worker of paginatedWorkers">
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          <ng-container *ngIf="canViewWorker; else nameOrId">
+            <a href="#" (click)="getWorkerRecordPath($event, worker)">
+              {{ worker.nameOrId }}
+            </a>
+          </ng-container>
+          <ng-template #nameOrId>
             {{ worker.nameOrId }}
-          </a>
-        </ng-container>
-        <ng-template #nameOrId>
-          {{ worker.nameOrId }}
-        </ng-template>
-      </td>
-      <td class="govuk-table__cell">{{ worker.mainJob.jobRoleName }}</td>
-      <td class="govuk-table__cell">
-        <span class="govuk-visually-hidden">last updated</span>
-        <span class="govuk__nowrap">{{ lastUpdated(worker.updated) }}</span>
-      </td>
-      <td *ngIf="!wdfView" class="govuk-table__cell">
-        <a
-          *ngIf="canEditWorker && !worker.completed"
-          class="govuk-util__float-right"
-          [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid, 'date-of-birth']"
-          [state]="{ navigatedFrom: 'staff-records' }"
-          >Add more details <span class="govuk-visually-hidden"> for {{ worker.nameOrId }}</span></a
-        >
-      </td>
-      <td *ngIf="wdfView" class="govuk-table__cell">
-        <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
-        <app-eligibility-icon [eligible]="worker.wdfEligible"></app-eligibility-icon>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<ng-template #noWorkersFound>
-  <p class="govuk-util__bold">There are no matching results</p>
-  <p>Make sure that your spelling is correct.</p>
-</ng-template>
-<app-pagination
-  [itemsPerPage]="itemsPerPage"
-  [totalNoOfItems]="workerCount"
-  (currentPageIndexChange)="handlePageUpdate($event)"
-  [currentPageIndex]="currentPageIndex"
-></app-pagination>
+          </ng-template>
+        </td>
+        <td class="govuk-table__cell">{{ worker.mainJob.jobRoleName }}</td>
+        <td class="govuk-table__cell">
+          <span class="govuk-visually-hidden">last updated</span>
+          <span class="govuk__nowrap">{{ lastUpdated(worker.updated) }}</span>
+        </td>
+        <td *ngIf="!wdfView" class="govuk-table__cell">
+          <a
+            *ngIf="canEditWorker && !worker.completed"
+            class="govuk-util__float-right"
+            [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid, 'date-of-birth']"
+            [state]="{ navigatedFrom: 'staff-records' }"
+            >Add more details <span class="govuk-visually-hidden"> for {{ worker.nameOrId }}</span></a
+          >
+        </td>
+        <td *ngIf="wdfView" class="govuk-table__cell">
+          <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
+          <app-eligibility-icon [eligible]="worker.wdfEligible"></app-eligibility-icon>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <ng-template #noWorkersFound>
+    <p class="govuk-util__bold">There are no matching results</p>
+    <p>Make sure that your spelling is correct.</p>
+  </ng-template>
+  <!-- <app-pagination
+    [itemsPerPage]="itemsPerPage"
+    [totalNoOfItems]="workerCount"
+    (currentPageIndexChange)="handlePageUpdate($event)"
+    [currentPageIndex]="currentPageIndex"
+  ></app-pagination> -->
+</app-table-pagination-wrapper>
