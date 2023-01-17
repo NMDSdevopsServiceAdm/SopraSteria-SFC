@@ -244,11 +244,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
-          this.router.navigate([
-            '/workplace',
-            this.establishmentService.primaryWorkplace.uid,
-            'add-and-manage-mandatory-training',
-          ]);
+          this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
           this.alertService.addAlert({
             type: 'success',
             message: this.renderAsEditMandatoryTraining
