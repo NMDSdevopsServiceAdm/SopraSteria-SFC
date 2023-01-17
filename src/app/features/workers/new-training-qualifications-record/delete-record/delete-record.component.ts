@@ -71,7 +71,6 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   public deleteRecord(): void {
     this.subscriptions.add(
       this.deleteTrainingOrQualificationRecord().subscribe(() => {
-        // this.router.navigate([this.trainingPageUrl, 'training']);
         this.router.navigate(this.previousUrl);
 
         this.alertService.addAlert({
