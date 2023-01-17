@@ -20,7 +20,11 @@
   </thead>
   <tbody class="govuk-table__body" *ngIf="category">
     <ng-container>
-      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let training of trainings">
+      <tr
+        class="govuk-table__row govuk-util__vertical-align-top"
+        *ngFor="let training of trainings; let i = index"
+        [attr.data-testid]="'training-' + i"
+      >
         <td class="govuk-table__cell govuk-!-font-weight-regular">
           <ng-container *ngIf="canEditWorker; else nameOrId">
             <a
@@ -76,11 +80,16 @@
         </td>
         <td class="govuk-table__cell">
           <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
-            <app-missing-mandatory-training
-              [missingRecord]="category"
-              [training]="training.worker"
-              [canEditWorker]="canEditWorker"
-            ></app-missing-mandatory-training>
+            <a
+              [routerLink]="[
+                '/workplace',
+                workplace.uid,
+                'training-and-qualifications-record',
+                training.worker.uid,
+                'add-training'
+              ]"
+              >Add</a
+            >
           </div>
 
           <div
@@ -90,7 +99,18 @@
               canEditWorker
             "
           >
-            <a (click)="updateTrainingRecord($event, training)" href="#">Update</a>
+            <a
+              [routerLink]="[
+                '/workplace',
+                workplace.uid,
+                'training-and-qualifications-record',
+                training.worker.uid,
+                'training',
+                training.uid
+              ]"
+              >Update</a
+            >
+            <!-- <a (click)="updateTrainingRecord($event, training)" href="#">Update</a> -->
           </div>
         </td>
       </tr>

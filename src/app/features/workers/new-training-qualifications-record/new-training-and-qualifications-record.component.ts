@@ -87,6 +87,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
     this.jobRoleMandatoryTraining = trainingRecords.jobRoleMandatoryTraining;
     this.missingJobRoleMandatoryTrainingCount = this.getMissingMandatoryTrainingCount();
+    console.log(this.missingJobRoleMandatoryTrainingCount);
     this.findMissingMandatoryTraining();
   }
 
@@ -146,7 +147,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   private getMissingMandatoryTrainingCount(): number {
     let count = this.jobRoleMandatoryTraining.length;
-
+    console.log('**************');
+    console.log(this.mandatoryTraining);
     if (this.mandatoryTraining.length > 0) {
       this.jobRoleMandatoryTraining.forEach((jobRoleTraining) => {
         this.mandatoryTraining.some((training) => {
