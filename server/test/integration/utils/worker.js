@@ -1,7 +1,7 @@
 const faker = require('faker');
 const jobsUtils = require('./jobs');
 const Random = require('./random');
-const { oneOf, fake, build, perBuild, sequence } = require('@jackfranklin/test-data-bot');
+const { oneOf, fake, build, sequence } = require('@jackfranklin/test-data-bot');
 
 const lookupRandomContract = () => {
   const expectedContractTypeValues = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'];
@@ -61,16 +61,6 @@ module.exports.apiWorkerBuilder = build('Worker', {
     WeeklyHoursContractedHours: fake((f) => f.datatype.number({ min: 0, max: 40 })),
     WeeklyHoursAverageValue: oneOf('Yes', 'No'),
     WeeklyHoursAverageHours: fake((f) => f.datatype.number({ min: 0, max: 40 })),
-    OtherJobsValue: oneOf('Yes', 'No'),
-    otherJobs: [
-      {
-        id: fake((f) => f.datatype.number({ min: 1, max: 28 })),
-        other: fake((f) => f.datatype.boolean()),
-        workerJobs: {
-          other: fake((f) => f.lorem.words(3)),
-        },
-      },
-    ],
     RegisteredNurseValue: oneOf(
       'Adult Nurse',
       'Mental Health Nurse',
