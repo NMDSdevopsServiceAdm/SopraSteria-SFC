@@ -279,6 +279,5 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
 
   ngOnDestroy(): void {
     localStorage.removeItem('trainingCategory');
-    localStorage.removeItem('previousUrl');
   }
 }
