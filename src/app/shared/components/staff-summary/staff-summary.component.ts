@@ -24,9 +24,17 @@ export class StaffSummaryComponent implements OnInit {
   public workersOrderBy: Array<Worker>;
   public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
-  private sortByValue = 'staffNameAsc';
+  public sortByValue = 'staffNameAsc';
   public itemsPerPage = 15;
   private searchTerm = '';
+  public sortByParamMap = {
+    '0_asc': 'staffNameAsc',
+    '0_dsc': 'staffNameDesc',
+    '1_asc': 'jobRoleAsc',
+    '1_dsc': 'jobRoleDesc',
+    '2_meeting': 'wdfMeeting',
+    '2_not_meeting': 'wdfNotMeeting',
+  };
 
   constructor(
     private permissionsService: PermissionsService,
@@ -54,6 +62,7 @@ export class StaffSummaryComponent implements OnInit {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
+    console.log(this.sortStaffOptions);
     this.setSearchIfPrevious();
   }
 
@@ -102,13 +111,18 @@ export class StaffSummaryComponent implements OnInit {
       });
   }
 
-  public getPageOfWorkers2(properties: { index: number; itemsPerPage: number; searchTerm: string }): void {
-    const { index, itemsPerPage, searchTerm } = properties;
+  public getPageOfWorkers2(properties: {
+    index: number;
+    itemsPerPage: number;
+    searchTerm: string;
+    sortByValue: string;
+  }): void {
+    const { index, itemsPerPage, searchTerm, sortByValue } = properties;
     this.workerService
       .getAllWorkers(this.workplace.uid, {
         pageIndex: index,
         itemsPerPage: itemsPerPage,
-        sortBy: this.sortByValue,
+        sortBy: sortByValue,
         ...(searchTerm ? { searchTerm } : {}),
       })
       .pipe(take(1))

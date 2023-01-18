@@ -24,6 +24,9 @@
 <app-table-pagination-wrapper
   [totalWorkerCount]="totalWorkerCount"
   [workerCount]="workerCount"
+  [sortByParamMap]="sortByParamMap"
+  [sortByValue]="sortByValue"
+  [sortOptions]="sortStaffOptions"
   (fetchWorkers)="getPageOfWorkers2($event)"
 >
   <table *ngIf="workerCount; else noWorkersFound" class="govuk-table">

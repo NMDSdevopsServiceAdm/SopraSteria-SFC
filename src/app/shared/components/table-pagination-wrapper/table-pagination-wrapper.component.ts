@@ -8,6 +8,9 @@ import { Router } from '@angular/router';
 export class TablePaginationWrapperComponent implements OnInit {
   @Input() totalWorkerCount: number;
   @Input() workerCount: number;
+  @Input() sortByParamMap: any;
+  @Input() sortByValue: string;
+  @Input() sortOptions: any;
   // @Input() searchTerm: string;
   @Output() fetchWorkers = new EventEmitter<{ index: number; itemsPerPage: number; searchTerm: string }>();
   public itemsPerPage = 15;
@@ -18,8 +21,8 @@ export class TablePaginationWrapperComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('****************');
-    console.log(this.workerCount);
-    console.log(this.searchTerm);
+    console.log(this.sortOptions);
+    console.log(this.sortByParamMap);
   }
 
   private addQueryParams(): void {
@@ -28,6 +31,12 @@ export class TablePaginationWrapperComponent implements OnInit {
       queryParams: { search: this.searchTerm, tab: 'staff' },
       queryParamsHandling: 'merge',
     });
+  }
+
+  public sortBy(sortType: string): void {
+    this.sortByValue = this.sortByParamMap[sortType];
+    this.currentPageIndex = 0;
+    this.getWorkers();
   }
 
   public handleSearch(searchTerm: string): void {
@@ -43,7 +52,12 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   private getWorkers(): void {
-    const properties = { index: this.currentPageIndex, itemsPerPage: this.itemsPerPage, searchTerm: this.searchTerm };
+    const properties = {
+      index: this.currentPageIndex,
+      itemsPerPage: this.itemsPerPage,
+      searchTerm: this.searchTerm,
+      sortByValue: this.sortByValue,
+    };
     this.fetchWorkers.emit(properties);
   }
 }
