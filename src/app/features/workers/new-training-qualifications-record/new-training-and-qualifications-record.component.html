@@ -88,7 +88,7 @@
     <div class="govuk-grid-column-full">
       <app-new-training-and-qualifications-record-summary
         [trainingCount]="mandatoryTrainingCount + nonMandatoryTrainingCount"
-        [qualificationsCount]="qualificationsCount"
+        [qualificationsCount]="qualificationsByGroup.count"
       ></app-new-training-and-qualifications-record-summary>
     </div>
   </div>
