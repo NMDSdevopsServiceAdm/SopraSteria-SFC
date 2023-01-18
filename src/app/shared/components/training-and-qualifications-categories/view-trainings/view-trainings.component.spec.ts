@@ -126,14 +126,14 @@ describe('ViewTrainingComponent', () => {
     expect(getByText(component.trainings[0].worker.mainJob.title)).toBeTruthy();
   });
 
-  it('should set the current url in local storage', async () => {
+  it('should set the training category and current url in local storage', async () => {
     const { component, router } = await setup();
     spyOnProperty(router, 'url').and.returnValue('/view-training');
     const localStorageSpy = spyOn(localStorage, 'setItem');
     component.ngOnInit();
 
     expect(localStorageSpy).toHaveBeenCalledTimes(2);
-    expect(localStorageSpy.calls.all()[0].args).toEqual(['trainingCategory', 'Autism']);
+    expect(localStorageSpy.calls.all()[0].args).toEqual(['trainingCategory', '{"id":2,"category":"Autism"}']);
     expect(localStorageSpy.calls.all()[1].args).toEqual(['previousUrl', '/view-training']);
   });
 

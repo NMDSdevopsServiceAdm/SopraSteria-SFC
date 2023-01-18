@@ -46,6 +46,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
     this.worker = this.workerService.worker;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
+
     if (this.trainingRecordId) {
       this.fillForm();
     } else if (this.trainingCategory) {
