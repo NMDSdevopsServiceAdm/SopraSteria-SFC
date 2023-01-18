@@ -55,8 +55,6 @@ export class StaffSummaryComponent implements OnInit {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
     this.setSearchIfPrevious();
-    console.log(this.workerCount);
-    console.log(this.totalWorkerCount);
   }
 
   private setSearchIfPrevious(): void {
@@ -83,11 +81,11 @@ export class StaffSummaryComponent implements OnInit {
     this.getPageOfWorkers();
   }
 
-  public handlePageUpdate(pageIndex: number): void {
-    this.currentPageIndex = pageIndex;
+  // public handlePageUpdate(pageIndex: number): void {
+  //   this.currentPageIndex = pageIndex;
 
-    this.getPageOfWorkers();
-  }
+  //   this.getPageOfWorkers();
+  // }
 
   public getPageOfWorkers(): void {
     this.workerService
@@ -101,18 +99,17 @@ export class StaffSummaryComponent implements OnInit {
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;
         this.workerCount = workerCount;
-        console.log(this.workerCount);
       });
   }
 
-  public getPageOfWorkers2(properties: { index: number; itemsPerPage: number }): void {
-    const { index, itemsPerPage } = properties;
+  public getPageOfWorkers2(properties: { index: number; itemsPerPage: number; searchTerm: string }): void {
+    const { index, itemsPerPage, searchTerm } = properties;
     this.workerService
       .getAllWorkers(this.workplace.uid, {
         pageIndex: index,
         itemsPerPage: itemsPerPage,
         sortBy: this.sortByValue,
-        ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
+        ...(searchTerm ? { searchTerm } : {}),
       })
       .pipe(take(1))
       .subscribe(({ workers, workerCount }) => {

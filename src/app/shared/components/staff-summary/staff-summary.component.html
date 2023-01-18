@@ -1,4 +1,4 @@
-<div class="govuk-grid-row govuk-util__vertical-align-center">
+<!-- <div class="govuk-grid-row govuk-util__vertical-align-center">
   <div *ngIf="totalWorkerCount > itemsPerPage" class="govuk-grid-column-three-quarters">
     <app-search-input
       ref="trainingRecordSearch"
@@ -20,8 +20,12 @@
       </select>
     </div>
   </div>
-</div>
-<app-table-pagination-wrapper [workerCount]="workerCount" (fetchWorkers)="getPageOfWorkers2($event)">
+</div> -->
+<app-table-pagination-wrapper
+  [totalWorkerCount]="totalWorkerCount"
+  [workerCount]="workerCount"
+  (fetchWorkers)="getPageOfWorkers2($event)"
+>
   <table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
