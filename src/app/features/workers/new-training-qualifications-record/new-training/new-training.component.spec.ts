@@ -199,8 +199,7 @@ describe('NewTrainingComponent', () => {
       ).nativeElement;
 
       fireEvent.click(autismTrainingTitleLink);
-
-      expect(localStorageSpy).toHaveBeenCalledWith('trainingCategory', 'Autism');
+      expect(localStorageSpy).toHaveBeenCalledWith('trainingCategory', '{"id":2,"category":"Autism"}');
     });
 
     it('training title should not link to training records if you are a read only user', () => {
