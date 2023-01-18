@@ -137,9 +137,10 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
               const message =
                 this.i18nPluralPipe.transform(temp[key].value, this.pluralMap[temp[key].question]) +
                 (temp[key].value ? temp[key].service : '');
-              this.capacityMessages.push(message);
+              this.capacityMessages.push({ message, service: temp[key].service });
             }
           });
+          this.sortedCapacityService(this.capacityMessages);
         }
       }),
     );
@@ -154,6 +155,12 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
         }
       }),
     );
+  }
+
+  public sortedCapacityService(capacityService: any) {
+    capacityService.sort((serviceA: any, serviceB: any) => {
+      return serviceA.service.localeCompare(serviceB.service);
+    });
   }
 
   ngOnDestroy(): void {
