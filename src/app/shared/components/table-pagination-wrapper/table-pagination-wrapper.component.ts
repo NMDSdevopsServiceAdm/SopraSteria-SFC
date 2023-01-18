@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 export class TablePaginationWrapperComponent {
   @Input() workerCount: number;
   @Input() searchTerm: string;
-  @Output() fetchWorkers = new EventEmitter();
+  @Output() fetchWorkers = new EventEmitter<{ index: number; itemsPerPage: number }>();
   public itemsPerPage = 15;
   public currentPageIndex = 0;
 
@@ -33,6 +33,7 @@ export class TablePaginationWrapperComponent {
     console.log('*** handle page update ***');
     console.log(pageIndex);
     this.currentPageIndex = pageIndex;
-    this.fetchWorkers.emit();
+    const properties = { index: this.currentPageIndex, itemsPerPage: this.itemsPerPage };
+    this.fetchWorkers.emit(properties);
   }
 }

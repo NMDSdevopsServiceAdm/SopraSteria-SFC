@@ -105,6 +105,23 @@ export class StaffSummaryComponent implements OnInit {
       });
   }
 
+  public getPageOfWorkers2(properties: { index: number; itemsPerPage: number }): void {
+    const { index, itemsPerPage } = properties;
+    this.workerService
+      .getAllWorkers(this.workplace.uid, {
+        pageIndex: index,
+        itemsPerPage: itemsPerPage,
+        sortBy: this.sortByValue,
+        ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
+      })
+      .pipe(take(1))
+      .subscribe(({ workers, workerCount }) => {
+        this.paginatedWorkers = workers;
+        this.workerCount = workerCount;
+        console.log(this.workerCount);
+      });
+  }
+
   private addQueryParams(): void {
     this.router.navigate([], {
       fragment: 'staff-records',
