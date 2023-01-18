@@ -59,7 +59,10 @@ export class ViewTrainingComponent implements OnInit {
         .pipe(take(1))
         .subscribe((categories: any) => {
           this.category = categories.find((t: any) => t.id == this.trainingCategoryId);
-          localStorage.setItem('trainingCategory', this.category.category);
+          localStorage.setItem(
+            'trainingCategory',
+            JSON.stringify({ id: this.category.id, category: this.category.category }),
+          );
           this.trainings = this.category.training;
           this.sortByTrainingStatus();
         }),
@@ -69,19 +72,6 @@ export class ViewTrainingComponent implements OnInit {
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
   }
-
-  // public updateTrainingRecord(event, training): void {
-  //   event.preventDefault();
-
-  //   this.router.navigate([
-  //     '/workplace',
-  //     this.workplace.uid,
-  //     'training-and-qualifications-record',
-  //     training.worker.uid,
-  //     'training',
-  //     training.uid,
-  //   ]);
-  // }
 
   public trainingStatus(training): number {
     return this.trainingStatusService.trainingStatusForRecord(training);

@@ -147,8 +147,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   private getMissingMandatoryTrainingCount(): number {
     let count = this.jobRoleMandatoryTraining.length;
-    console.log('**************');
-    console.log(this.mandatoryTraining);
     if (this.mandatoryTraining.length > 0) {
       this.jobRoleMandatoryTraining.forEach((jobRoleTraining) => {
         this.mandatoryTraining.some((training) => {
@@ -163,6 +161,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.missingMandatoryTraining = this.jobRoleMandatoryTraining.filter(
       (jobRoleTraining) => !this.mandatoryTraining.find((training) => training.id === jobRoleTraining.id),
     );
+    console.log(this.missingMandatoryTraining);
   }
 
   getFilterByStatus(dropdownValue) {

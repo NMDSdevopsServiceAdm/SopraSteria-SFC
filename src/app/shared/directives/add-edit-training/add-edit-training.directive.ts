@@ -24,7 +24,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
-  public trainingCategory: string;
+  public trainingCategory: { id: number; category: string };
   public worker: Worker;
   public workplace: Establishment;
   public missingTrainingRecord: MandatoryTraining;
@@ -55,7 +55,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.missingTrainingRecord = history.state?.missingRecord;
-    this.trainingCategory = localStorage.getItem('trainingCategory');
+    this.trainingCategory = JSON.parse(localStorage.getItem('trainingCategory'));
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
     this.init();

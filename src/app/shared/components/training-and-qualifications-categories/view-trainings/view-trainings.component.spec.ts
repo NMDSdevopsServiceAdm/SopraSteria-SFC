@@ -16,7 +16,7 @@ import userEvent from '@testing-library/user-event';
 
 import { ViewTrainingComponent } from './view-trainings.component';
 
-fdescribe('ViewTrainingComponent', () => {
+describe('ViewTrainingComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId } = await render(ViewTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
