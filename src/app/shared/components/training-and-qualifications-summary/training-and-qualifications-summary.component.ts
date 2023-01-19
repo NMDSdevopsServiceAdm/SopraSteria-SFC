@@ -82,6 +82,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
       .pipe(take(1))
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;
+
         this.workerCount = workerCount;
       });
   }

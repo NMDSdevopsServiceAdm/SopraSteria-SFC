@@ -12,6 +12,14 @@
         (emitInput)="handleSearch($event)"
       ></app-search-input>
     </div>
+    <div class="govuk-grid-column-three-quarters" *ngFor="let workerTandQCount of workers">
+      <span *ngIf="workerTandQCount.trainingCount + workerTandQCount.qualificationCount == 0">
+        <p>
+          You need to click on the name or ID number of the person you want to <br />
+          add a training or qualification record for.
+        </p>
+      </span>
+    </div>
     <div
       class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
       [ngClass]="showSearchBar ? '' : 'govuk-!-padding-0'"
