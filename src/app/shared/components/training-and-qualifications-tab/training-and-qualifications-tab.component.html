@@ -8,12 +8,10 @@
 <ng-container *ngIf="workers && workers.length; else noStaffRecords">
   <div class="govuk-grid-row" *ngIf="totalRecords === 0" data-testid="noRecords">
     <div class="govuk-grid-column-two-thirds">
-      <app-inset-text color="warning">You have not added any training or qualification records yet.</app-inset-text>
       <p>
-        Many care providers use this service to store their staff training and qualification records. The service shows
-        them when training is about to expire.
+        You've not added any training or qualification records yet. Many care providers store their staff training and
+        qualification records in ASC-WDS and get alerts when training is about to expire.
       </p>
-      <h3>You need to click on the name of the person you want to add a training or qualification record for</h3>
     </div>
   </div>
   <app-training-info-panel
@@ -36,12 +34,18 @@
     [workers]="workers"
     [workerCount]="workerCount"
   ></app-training-and-qualifications-summary>
-  <app-training-and-qualifications-categories
-    *ngIf="viewTrainingByCategory && trainingCategories?.length > 0"
-    data-testid="trainingAndQualsCategories"
-    [workplace]="workplace"
-    [trainingCategories]="trainingCategories"
-  ></app-training-and-qualifications-categories>
+
+  <ng-container *ngIf="viewTrainingByCategory && trainingCategories?.length > 0">
+    <app-training-and-qualifications-categories
+      data-testid="trainingAndQualsCategories"
+      [workplace]="workplace"
+      [trainingCategories]="trainingCategories"
+    ></app-training-and-qualifications-categories>
+  </ng-container>
+
+  <ng-container *ngIf="viewTrainingByCategory && trainingCategories?.length == 0">
+    You need to click on a name or ID number under 'Staff' to add a training <br />or qualification record.
+  </ng-container>
 </ng-container>
 <ng-template #noStaffRecords>
   <app-inset-text data-testid="noStaffRecordsWarningBanner" color="warning" [removeTopMargin]="true"
