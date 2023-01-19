@@ -43,19 +43,21 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   protected init(): void {
     this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
     this.mandatoryTraining = history.state?.training;
+
     this.worker = this.workerService.worker;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
+
     if (this.trainingRecordId) {
       this.fillForm();
+    } else if (this.trainingCategory) {
+      this.form.patchValue({
+        category: this.trainingCategory.id,
+      });
     }
   }
 
   public setTitle(): void {
-    if (this.mandatoryTraining) {
-      this.title = this.trainingRecordId ? 'Mandatory training record' : 'Add mandatory training record';
-    } else {
-      this.title = this.trainingRecordId ? 'Training record details' : 'Add training record details';
-    }
+    this.title = this.trainingRecordId ? 'Training record details' : 'Add training record details';
   }
 
   protected setSectionHeading(): void {

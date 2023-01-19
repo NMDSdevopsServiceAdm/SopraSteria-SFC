@@ -8,13 +8,12 @@ import { TrainingStatusService } from '@core/services/trainingStatus.service';
 })
 export class NewTrainingComponent {
   @Input() public trainingRecords: TrainingRecordCategory[];
-  @Input() public trainingType: string;
   @Input() public canEditWorker: boolean;
 
   constructor(private trainingStatusService: TrainingStatusService) {}
 
-  public setLocalStorage(event: Event, category: string): void {
+  public setLocalStorage(event: Event, training: { id: number; category: string }): void {
     event.preventDefault();
-    localStorage.setItem('trainingCategory', category);
+    localStorage.setItem('trainingCategory', JSON.stringify(training));
   }
 }

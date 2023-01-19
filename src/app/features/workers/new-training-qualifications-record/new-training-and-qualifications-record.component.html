@@ -148,8 +148,7 @@
 
       <div *ngIf="missingJobRoleMandatoryTrainingCount > 0">
         <app-missing-mandatory-training
-          [missingRecord]="missingMandatoryTraining"
-          [training]="worker"
+          [missingMandatoryTraining]="missingMandatoryTraining"
           [canEditWorker]="canEditWorker"
         ></app-missing-mandatory-training>
       </div>
@@ -157,8 +156,6 @@
       <div *ngIf="mandatoryTrainingCount > 0">
         <app-new-training
           [trainingRecords]="mandatoryTraining"
-          [trainingType]="'mandatory'"
-          [setReturnRoute]="setReturnRoute"
           [canEditWorker]="canEditWorker"
           data-testid="mandatory-training"
         ></app-new-training>
@@ -177,8 +174,6 @@
       <ng-template #nonMandatoryTrainingTable>
         <app-new-training
           [trainingRecords]="nonMandatoryTraining"
-          [trainingType]="'nonMandatory'"
-          [setReturnRoute]="setReturnRoute"
           [canEditWorker]="canEditWorker"
           data-testid="non-mandatory-training"
         ></app-new-training>
