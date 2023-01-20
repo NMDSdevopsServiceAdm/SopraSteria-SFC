@@ -28,6 +28,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   private searchTerm = '';
   private totalWorkerCount: number;
   public showSearchBar: boolean;
+  public trainingAndQualCount = false;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -44,6 +45,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.totalWorkerCount = this.workerCount;
     this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
     this.setSearchIfPrevious();
+    this.setTrainingCount();
   }
 
   private setSearchIfPrevious(): void {
@@ -119,5 +121,9 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.searchTerm = searchTerm;
     this.addQueryParams();
     this.setPageIndex(0);
+  }
+
+  setTrainingCount() {
+    this.trainingAndQualCount = this.workers.every((w) => w.trainingCount + w.qualificationCount === 0);
   }
 }

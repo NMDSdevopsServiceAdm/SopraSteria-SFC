@@ -1,4 +1,13 @@
-<div class="govuk-!-margin-bottom-6">
+<div class="govuk-!-margin-bottom-4">
+  <div
+    class="govuk-grid-column-three-quarters govuk-!-padding-left-0 govuk-util__float-left"
+    *ngIf="trainingAndQualCount"
+  >
+    <p>
+      You need to click on the name or ID number of the person you want to <br />
+      add a training or qualification record for.
+    </p>
+  </div>
   <div
     [ngClass]="
       showSearchBar ? 'govuk-grid-row' : 'govuk__flex-stack govuk__align-items-flex-end govuk__justify-content-end'
@@ -12,15 +21,9 @@
         (emitInput)="handleSearch($event)"
       ></app-search-input>
     </div>
-    <div class="govuk-grid-column-three-quarters" *ngFor="let workerTandQCount of workers">
-      <span *ngIf="workerTandQCount.trainingCount + workerTandQCount.qualificationCount == 0">
-        <p>
-          You need to click on the name or ID number of the person you want to <br />
-          add a training or qualification record for.
-        </p>
-      </span>
-    </div>
+
     <div
+      *ngIf="workerCount > 1"
       class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
       [ngClass]="showSearchBar ? '' : 'govuk-!-padding-0'"
     >
