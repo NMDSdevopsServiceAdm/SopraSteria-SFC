@@ -11,26 +11,41 @@ export class TablePaginationWrapperComponent implements OnInit {
   @Input() sortByParamMap: any;
   @Input() sortByValue: string;
   @Input() sortOptions: any;
-  // @Input() searchTerm: string;
-  @Output() fetchWorkers = new EventEmitter<{ index: number; itemsPerPage: number; searchTerm: string }>();
+  @Input() searchTerm: string;
+  @Output() fetchWorkers = new EventEmitter<{
+    index: number;
+    itemsPerPage: number;
+    searchTerm: string;
+    sortByValue: string;
+  }>();
   public itemsPerPage = 15;
   public currentPageIndex = 0;
-  private searchTerm = '';
+  private fragment: string;
+  private tab: string;
 
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    console.log('****************');
-    console.log(this.sortOptions);
-    console.log(this.sortByParamMap);
+    this.checkForFragment();
+  }
+
+  private checkForFragment(): void {
+    if (this.router.url.includes('#')) {
+      this.fragment = this.router.url.split('#')[1];
+      this.tab = this.fragment.split('-')[0];
+    }
   }
 
   private addQueryParams(): void {
-    this.router.navigate([], {
-      fragment: 'staff-records',
-      queryParams: { search: this.searchTerm, tab: 'staff' },
-      queryParamsHandling: 'merge',
-    });
+    if (this.searchTerm) {
+      this.router.navigate([], {
+        fragment: this.fragment,
+        queryParams: { search: this.searchTerm, tab: this.tab },
+        queryParamsHandling: 'merge',
+      });
+    } else {
+      this.router.navigate([], { fragment: 'staff-records' });
+    }
   }
 
   public sortBy(sortType: string): void {

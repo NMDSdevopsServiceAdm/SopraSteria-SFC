@@ -1,33 +1,11 @@
-<!-- <div class="govuk-grid-row govuk-util__vertical-align-center">
-  <div *ngIf="totalWorkerCount > itemsPerPage" class="govuk-grid-column-three-quarters">
-    <app-search-input
-      ref="trainingRecordSearch"
-      accessibleLabel="for staff records"
-      [prevSearch]="searchTerm"
-      (emitInput)="handleSearch($event)"
-    ></app-search-input>
-  </div>
-
-  <div
-    class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
-  >
-    <div class="govuk-form-group">
-      <label class="govuk-label" for="sortByStaff"> Sort by </label>
-      <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortBy($event.target.value)">
-        <option *ngFor="let sortStaffOption of sortStaffOptions | keyvalue" value="{{ sortStaffOption.key }}">
-          {{ sortStaffOption.value }}
-        </option>
-      </select>
-    </div>
-  </div>
-</div> -->
 <app-table-pagination-wrapper
   [totalWorkerCount]="totalWorkerCount"
   [workerCount]="workerCount"
+  [searchTerm]="searchTerm"
   [sortByParamMap]="sortByParamMap"
   [sortByValue]="sortByValue"
   [sortOptions]="sortStaffOptions"
-  (fetchWorkers)="getPageOfWorkers2($event)"
+  (fetchWorkers)="getPageOfWorkers($event)"
 >
   <table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
     <thead class="govuk-table__head">
@@ -78,10 +56,4 @@
     <p class="govuk-util__bold">There are no matching results</p>
     <p>Make sure that your spelling is correct.</p>
   </ng-template>
-  <!-- <app-pagination
-    [itemsPerPage]="itemsPerPage"
-    [totalNoOfItems]="workerCount"
-    (currentPageIndexChange)="handlePageUpdate($event)"
-    [currentPageIndex]="currentPageIndex"
-  ></app-pagination> -->
 </app-table-pagination-wrapper>
