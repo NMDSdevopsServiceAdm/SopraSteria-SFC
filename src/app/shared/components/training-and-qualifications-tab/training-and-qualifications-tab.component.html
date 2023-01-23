@@ -6,7 +6,7 @@
   [tAndQsLastUpdated]="tAndQsLastUpdated"
 ></app-training-link-panel>
 <ng-container *ngIf="workers && workers.length; else noStaffRecords">
-  <div class="govuk-grid-row" *ngIf="totalRecords === 0" data-testid="noRecords">
+  <div class="govuk-grid-row" *ngIf="totalRecords === 0" data-testid="noTandQRecords">
     <div class="govuk-grid-column-two-thirds">
       <p>
         You've not added any training or qualification records yet. Many care providers store their staff training and
@@ -36,17 +36,13 @@
     [totalRecords]="totalRecords"
   ></app-training-and-qualifications-summary>
 
-  <ng-container *ngIf="viewTrainingByCategory && trainingCategories?.length > 0">
-    <app-training-and-qualifications-categories
-      data-testid="trainingAndQualsCategories"
-      [workplace]="workplace"
-      [trainingCategories]="trainingCategories"
-    ></app-training-and-qualifications-categories>
-  </ng-container>
-
-  <ng-container *ngIf="viewTrainingByCategory && trainingCategories?.length == 0">
-    You need to click on a name or ID number under 'Staff' to add a training <br />or qualification record.
-  </ng-container>
+  <app-training-and-qualifications-categories
+    *ngIf="viewTrainingByCategory"
+    data-testid="trainingAndQualsCategories"
+    [workplace]="workplace"
+    [trainingCategories]="trainingCategories"
+    [totalRecords]="totalRecords"
+  ></app-training-and-qualifications-categories>
 </ng-container>
 <ng-template #noStaffRecords>
   <app-inset-text data-testid="noStaffRecordsWarningBanner" color="warning" [removeTopMargin]="true"

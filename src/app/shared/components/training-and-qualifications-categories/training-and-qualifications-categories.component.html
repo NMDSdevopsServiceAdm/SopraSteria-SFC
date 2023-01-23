@@ -1,133 +1,152 @@
-<div class="govuk-form-group govuk-!-margin-bottom-6">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-three-quarters govuk-!-padding-top-7 govuk-!-padding-bottom-2">
-      <div class="govuk-checkboxes govuk-checkboxes--small">
-        <div class="govuk-checkboxes__item">
-          <input
-            type="checkbox"
-            class="govuk-checkboxes__input"
-            [checked]="showMandatoryTraining"
-            id="showMandatoryTraining"
-            name="showMandatoryTraining"
-            (change)="toggleCheckbox($event.target)"
-          />
-          <label for="showMandatoryTraining" class="govuk-label govuk-checkboxes__label"
-            >Only show mandatory training</label
-          >
+<ng-container *ngIf="totalRecords > 0; else noRecords">
+  <div class="govuk-form-group govuk-!-margin-bottom-6">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-three-quarters govuk-!-padding-top-7 govuk-!-padding-bottom-2">
+        <div class="govuk-checkboxes govuk-checkboxes--small">
+          <div class="govuk-checkboxes__item">
+            <input
+              type="checkbox"
+              class="govuk-checkboxes__input"
+              [checked]="showMandatoryTraining"
+              id="showMandatoryTraining"
+              name="showMandatoryTraining"
+              (change)="toggleCheckbox($event.target)"
+            />
+            <label for="showMandatoryTraining" class="govuk-label govuk-checkboxes__label"
+              >Only show mandatory training</label
+            >
+          </div>
         </div>
       </div>
-    </div>
-    <div class="govuk-!-margin-bottom-0 govuk-grid-column-one-quarter govuk-!-padding-top-2 govuk-!-padding-bottom-2">
-      <label class="govuk-label" for="sortByTrainingCategory"> Sort by </label>
-      <select
-        class="govuk-select govuk-!-width-full"
-        id="sortByTrainingCategory"
-        name="sortByTrainingCategory"
-        [value]="sortByDefault"
-        (change)="orderTrainingCategories($event.target.value)"
-      >
-        <option
-          *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
-          value="{{ sortTrainingAndQualsOption.key }}"
+      <div class="govuk-!-margin-bottom-0 govuk-grid-column-one-quarter govuk-!-padding-top-2 govuk-!-padding-bottom-2">
+        <label class="govuk-label" for="sortByTrainingCategory"> Sort by </label>
+        <select
+          class="govuk-select govuk-!-width-full"
+          id="sortByTrainingCategory"
+          name="sortByTrainingCategory"
+          [value]="sortByDefault"
+          (change)="orderTrainingCategories($event.target.value)"
         >
-          {{ sortTrainingAndQualsOption.value }}
-        </option>
-      </select>
+          <option
+            *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
+            value="{{ sortTrainingAndQualsOption.key }}"
+          >
+            {{ sortTrainingAndQualsOption.value }}
+          </option>
+        </select>
+      </div>
     </div>
   </div>
-</div>
 
-<table class="govuk-table" data-testid="training-category-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Training category</th>
-      <th class="govuk-table__header" scope="col">Records</th>
-      <th class="govuk-table__header" scope="col">Status</th>
-      <th class="govuk-table__header" scope="col"></th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <ng-container *ngFor="let trainingCategory of trainingCategories">
-      <ng-container *ngIf="showMandatoryTraining ? trainingCategory.isMandatory : true">
-        <tr class="govuk-table__row govuk-util__vertical-align-top">
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
-            {{ trainingCategory.category }}
-          </td>
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
-            {{ totalTrainingRecords(trainingCategory.training) }}
-          </td>
-          <td class="govuk-table__cell">
-            <div
-              *ngIf="
-                trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) > 0
-              "
-              class="govuk-!-margin-bottom-1"
-            >
-              <img
-                src="/assets/images/flag-red.svg"
-                alt=""
-                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-              />
-              {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) }}
-              expired
-            </div>
-            <div
-              *ngIf="
-                trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) > 0
-              "
-              class="govuk-!-margin-bottom-1"
-            >
-              <img
-                src="/assets/images/flag-red.svg"
-                alt=""
-                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-              />
-              {{ trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) }}
-              missing
-            </div>
-            <div
-              *ngIf="
-                trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) > 0
-              "
-              class="govuk-!-margin-bottom-1"
-            >
-              <img
-                src="/assets/images/flag-orange.svg"
-                alt=""
-                class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-              />
-              <ng-container
-                [ngPlural]="
-                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
+  <table class="govuk-table" data-testid="training-category-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Training category</th>
+        <th class="govuk-table__header" scope="col">Records</th>
+        <th class="govuk-table__header" scope="col">Status</th>
+        <th class="govuk-table__header" scope="col"></th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <ng-container *ngFor="let trainingCategory of trainingCategories">
+        <ng-container *ngIf="showMandatoryTraining ? trainingCategory.isMandatory : true">
+          <tr class="govuk-table__row govuk-util__vertical-align-top">
+            <td class="govuk-table__cell govuk-!-font-weight-regular">
+              {{ trainingCategory.category }}
+            </td>
+            <td class="govuk-table__cell govuk-!-font-weight-regular">
+              {{ totalTrainingRecords(trainingCategory.training) }}
+            </td>
+            <td class="govuk-table__cell">
+              <div
+                *ngIf="
+                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) >
+                  0
                 "
+                class="govuk-!-margin-bottom-1"
               >
+                <img
+                  src="/assets/images/flag-red.svg"
+                  alt=""
+                  class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                />
                 {{
-                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
+                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED)
                 }}
-                <ng-template ngPluralCase="=1">expires soon</ng-template>
-                <ng-template ngPluralCase="other">expire soon</ng-template>
-              </ng-container>
-            </div>
-            <div *ngIf="trainingIsComplete(trainingCategory.training)">OK</div>
-          </td>
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <a
-              class="govuk-link--no-visited-state"
-              href="#"
-              data-testid="more-link"
-              [routerLink]="[
-                '/workplace',
-                this.workplace.uid,
-                'training-and-qualifications-record',
-                'view-training-category',
-                trainingCategory.id
-              ]"
-            >
-              View
-            </a>
-          </td>
-        </tr>
+                expired
+              </div>
+              <div
+                *ngIf="
+                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) >
+                  0
+                "
+                class="govuk-!-margin-bottom-1"
+              >
+                <img
+                  src="/assets/images/flag-red.svg"
+                  alt=""
+                  class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                />
+                {{
+                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING)
+                }}
+                missing
+              </div>
+              <div
+                *ngIf="
+                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) >
+                  0
+                "
+                class="govuk-!-margin-bottom-1"
+              >
+                <img
+                  src="/assets/images/flag-orange.svg"
+                  alt=""
+                  class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                />
+                <ng-container
+                  [ngPlural]="
+                    trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
+                  "
+                >
+                  {{
+                    trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
+                  }}
+                  <ng-template ngPluralCase="=1">expires soon</ng-template>
+                  <ng-template ngPluralCase="other">expire soon</ng-template>
+                </ng-container>
+              </div>
+              <div *ngIf="trainingIsComplete(trainingCategory.training)">OK</div>
+            </td>
+            <td class="govuk-table__cell govuk-!-font-weight-regular">
+              <a
+                class="govuk-link--no-visited-state"
+                href="#"
+                data-testid="more-link"
+                [routerLink]="[
+                  '/workplace',
+                  this.workplace.uid,
+                  'training-and-qualifications-record',
+                  'view-training-category',
+                  trainingCategory.id
+                ]"
+              >
+                View
+              </a>
+            </td>
+          </tr>
+        </ng-container>
       </ng-container>
-    </ng-container>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+</ng-container>
+<ng-template #noRecords>
+  <div class="govuk-grid-row" data-testid="noRecords">
+    <div class="govuk-grid-column-three-quarters">
+      <p>
+        You need to click on the name or ID number of the person you want to <br />
+        add a training or qualification record for.
+      </p>
+    </div>
+  </div>
+</ng-template>

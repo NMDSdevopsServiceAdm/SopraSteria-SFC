@@ -118,7 +118,7 @@ const trainingCategories = [
 ];
 
 describe('TrainingAndQualificationsCategoriesComponent', () => {
-  async function setup() {
+  async function setup(totalRecords = 5) {
     const { getByTestId, getByLabelText, fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -130,6 +130,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: trainingCategories,
+        totalRecords,
       },
     });
     const component = fixture.componentInstance;
@@ -143,6 +144,12 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show the no records text, when there are no t and q records for an establishment', async () => {
+    const { getByTestId } = await setup(0);
+
+    expect(getByTestId('noRecords')).toBeTruthy();
   });
 
   it('should list by Expired as default', async () => {
