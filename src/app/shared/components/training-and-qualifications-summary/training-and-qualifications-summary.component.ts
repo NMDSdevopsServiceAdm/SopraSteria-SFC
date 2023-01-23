@@ -16,6 +16,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Input() workerCount: number;
   @Input() wdfView = false;
   @Input() showViewByToggle = false;
+  @Input() totalRecords: number;
 
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
@@ -28,6 +29,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   private searchTerm = '';
   private totalWorkerCount: number;
   public showSearchBar: boolean;
+  public noTraining: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -36,7 +38,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     private route: ActivatedRoute,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
     this.sortByValue = '0_expired';
