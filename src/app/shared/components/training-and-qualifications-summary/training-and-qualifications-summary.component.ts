@@ -29,7 +29,6 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   private searchTerm = '';
   private totalWorkerCount: number;
   public showSearchBar: boolean;
-  public noTraining: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
