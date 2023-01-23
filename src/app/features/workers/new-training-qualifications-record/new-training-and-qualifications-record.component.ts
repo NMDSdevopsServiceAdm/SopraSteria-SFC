@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecordCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
@@ -22,6 +22,7 @@ import { Subscription } from 'rxjs';
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   protected currentFragment: string;
+  public filteredToJobRoleMandatoryTraining: mandatoryTraining[];
   public canEditWorker: boolean;
   public canViewWorker: boolean;
   public worker: Worker;
@@ -56,7 +57,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setUpTabSubscription();
     this.updateTrainingExpiresSoonDate();
     this.updateTrainingExpiresSoonDate();
-    this.setTrainingAndQualifications();
+    this.setTraining();
     this.setUpAlertSubscription();
     this.setReturnRoute();
   }
@@ -68,6 +69,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.trainingService.trainingOrQualificationPreviouslySelected = null;
+    this.filteredToJobRoleMandatoryTraining = this.getMandatoryTrainingForStaffJobRole();
   }
 
   private setBreadcrumbs(): void {
@@ -100,24 +102,71 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
-  public setTrainingAndQualifications(): void {
+  private setTraining(): void {
     const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
-    this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
-    this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
-  }
-
-  private setTraining(
-    mandatoryTrainingRecords: TrainingRecordCategory[],
-    nonMandatoryTrainingRecords: TrainingRecordCategory[],
-  ): void {
-    this.mandatoryTraining = this.sortTrainingAlphabetically(mandatoryTrainingRecords);
-    this.nonMandatoryTraining = this.sortTrainingAlphabetically(nonMandatoryTrainingRecords);
+    this.mandatoryTraining = this.createBlankMissingMandatoryTrainings(trainingRecords.mandatory);
+    this.sortTrainingAlphabetically(this.mandatoryTraining);
+    this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
 
     this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
     this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
 
     this.getStatus(this.mandatoryTraining);
     this.getStatus(this.nonMandatoryTraining);
+
+    this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
+  }
+
+  private createBlankMissingMandatoryTrainings(mandatoryTraining: TrainingRecordCategory[]) {
+    const trainingCategoryIds = this.getMandatoryTrainingIds(mandatoryTraining);
+    const missingMandatoryTrainings = this.filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds);
+    missingMandatoryTrainings.forEach((missingMandatoryTraining) => {
+      mandatoryTraining.push({
+        category: missingMandatoryTraining.category,
+        id: missingMandatoryTraining.trainingCategoryId,
+        trainingRecords: [
+          {
+            trainingCategory: {
+              id: missingMandatoryTraining.trainingCategoryId,
+              category: missingMandatoryTraining.category,
+            },
+            created: null,
+            title: null,
+            uid: null,
+            updated: null,
+            updatedBy: null,
+            expires: null,
+            missing: true,
+          },
+        ],
+      });
+    });
+    return mandatoryTraining;
+  }
+
+  private filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds: Array<number>): mandatoryTraining[] {
+    return this.filteredToJobRoleMandatoryTraining.filter((mandatoryTraining) => {
+      return !trainingCategoryIds.includes(mandatoryTraining.trainingCategoryId);
+    });
+  }
+
+  private getMandatoryTrainingIds(mandatoryTraining: TrainingRecordCategory[]): Array<number> {
+    const trainingCategoryIds = [];
+    mandatoryTraining.forEach((trainingCategory) => {
+      trainingCategoryIds.push(trainingCategory.id);
+    });
+
+    return trainingCategoryIds;
+  }
+
+  private getMandatoryTrainingForStaffJobRole(): mandatoryTraining[] {
+    return this.route.snapshot.data.mandatoryTrainingCategories.mandatoryTraining.filter(
+      (mandatoryTrainingCategory) => {
+        return mandatoryTrainingCategory.jobs.some(
+          (mandatoryJobRole) => mandatoryJobRole.id === this.worker.mainJob.jobId,
+        );
+      },
+    );
   }
 
   public getLastUpdatedDate(lastUpdatedDates: Date[]): void {

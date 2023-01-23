@@ -27,7 +27,11 @@
                 <a
                   class="govuk-link--no-visited-state"
                   [attr.data-testid]="'Title-' + trainingRecord.uid"
-                  [routerLink]="['../training', trainingRecord.uid]"
+                  [routerLink]="
+                    trainingRecord.uid
+                      ? ['../training', trainingRecord.uid]
+                      : ['../add-training', { data: trainingCategory.id }]
+                  "
                   >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
                 >
               </ng-container>
@@ -47,8 +51,7 @@
               {{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd MMM y') : '-' }}
             </td>
             <td class="govuk-table__cell" [attr.data-testid]="'status-' + trainingRecord.uid">
-              <span *ngIf="!trainingRecord.expires">-</span>
-              <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING && trainingRecord.expires">
+              <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING">
                 <img src="/assets/images/flag-red.svg" alt="red warning flag" class="govuk-util__vertical-align-top" />
                 Missing
               </div>

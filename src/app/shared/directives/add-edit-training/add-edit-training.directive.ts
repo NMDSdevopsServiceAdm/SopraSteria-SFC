@@ -53,9 +53,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.missingTrainingRecord = history.state?.missingRecord;
-
-    this.init();
     this.setupForm();
+    this.init();
     this.setTitle();
     this.setSection();
     this.setButtonText();

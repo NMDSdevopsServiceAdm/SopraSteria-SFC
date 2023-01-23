@@ -16,7 +16,6 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
-  private trainingPath: string;
   public mandatoryTraining: boolean;
 
   constructor(
@@ -45,9 +44,12 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
     this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
-
+    if (this.route.snapshot.params.data) {
+      this.form.patchValue({
+        category: this.route.snapshot.params.data,
+      });
+    }
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
-
     if (this.trainingRecordId) {
       this.fillForm();
     }
