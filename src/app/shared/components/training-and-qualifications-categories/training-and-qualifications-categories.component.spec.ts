@@ -2,8 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
@@ -118,19 +116,14 @@ const trainingCategories = [
 ];
 
 describe('TrainingAndQualificationsCategoriesComponent', () => {
-  async function setup(totalRecords = 5) {
+  async function setup(totalTraining = 5) {
     const { getByTestId, getByLabelText, fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
-        },
-      ],
+      providers: [],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: trainingCategories,
-        totalRecords,
+        totalTraining,
       },
     });
     const component = fixture.componentInstance;
