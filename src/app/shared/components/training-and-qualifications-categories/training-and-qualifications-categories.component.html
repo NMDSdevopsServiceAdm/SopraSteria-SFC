@@ -1,4 +1,4 @@
-<ng-container *ngIf="totalRecords > 0; else noRecords">
+<ng-container *ngIf="totalTraining > 0; else noRecords">
   <div class="govuk-form-group govuk-!-margin-bottom-6">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-three-quarters govuk-!-padding-top-7 govuk-!-padding-bottom-2">
@@ -143,10 +143,7 @@
 <ng-template #noRecords>
   <div class="govuk-grid-row" data-testid="noRecords">
     <div class="govuk-grid-column-three-quarters">
-      <p>
-        You need to click on the name or ID number of the person you want to <br />
-        add a training or qualification record for.
-      </p>
+      <p>You need to click on a name or ID number under 'Staff' to add a <br />training record.</p>
     </div>
   </div>
 </ng-template>

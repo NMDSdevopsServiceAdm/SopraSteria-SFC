@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() trainingCategories: Array<any>;
-  @Input() totalRecords: number;
+  @Input() totalTraining: number;
 
   public workerDetails = [];
   public workerDetailsLabel = [];
