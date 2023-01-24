@@ -12,6 +12,8 @@ export class TablePaginationWrapperComponent implements OnInit {
   @Input() sortByValue: string;
   @Input() sortOptions: any;
   @Input() searchTerm: string;
+  @Input() label = 'Search';
+  @Input() accessibleLabel: string;
   @Output() fetchWorkers = new EventEmitter<{
     index: number;
     itemsPerPage: number;

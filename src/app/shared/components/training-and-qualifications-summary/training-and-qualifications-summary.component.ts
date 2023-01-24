@@ -26,9 +26,14 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public itemsPerPage = 15;
   public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
-  private searchTerm = '';
-  private totalWorkerCount: number;
-  public showSearchBar: boolean;
+  public searchTerm = '';
+  public totalWorkerCount: number;
+  public sortByParamMap = {
+    '0_expired': 'trainingExpired',
+    '1_expires_soon': 'trainingExpiringSoon',
+    '2_missing': 'trainingMissing',
+    '3_worker': 'staffNameAsc',
+  };
 
   constructor(
     private permissionsService: PermissionsService,
@@ -43,7 +48,6 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.sortByValue = '0_expired';
     this.paginatedWorkers = this.workers;
     this.totalWorkerCount = this.workerCount;
-    this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
     this.setSearchIfPrevious();
   }
 
@@ -56,69 +60,90 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     }
   }
 
-  private setSortValue(value: string): void {
-    this.sortByValue = value;
-  }
+  // private setSortValue(value: string): void {
+  //   this.sortByValue = value;
+  // }
 
-  private setPageIndex(pageIndex: number): void {
-    this.currentPageIndex = pageIndex;
-    this.refetchWorkers();
-  }
+  // private setPageIndex(pageIndex: number): void {
+  //   this.currentPageIndex = pageIndex;
+  //   this.refetchWorkers();
+  // }
 
-  private refetchWorkers(): void {
-    const sortByParamMap = {
-      '0_expired': 'trainingExpired',
-      '1_expires_soon': 'trainingExpiringSoon',
-      '2_missing': 'trainingMissing',
-      '3_worker': 'staffNameAsc',
-    };
+  // private refetchWorkers(): void {
+  //   const sortByParamMap = {
+  //     '0_expired': 'trainingExpired',
+  //     '1_expires_soon': 'trainingExpiringSoon',
+  //     '2_missing': 'trainingMissing',
+  //     '3_worker': 'staffNameAsc',
+  //   };
 
+  //   this.workerService
+  //     .getAllWorkers(this.workplace.uid, {
+  //       sortBy: sortByParamMap[this.sortByValue],
+  //       pageIndex: this.currentPageIndex,
+  //       itemsPerPage: this.itemsPerPage,
+  //       ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
+  //     })
+  //     .pipe(take(1))
+  //     .subscribe(({ workers, workerCount }) => {
+  //       this.paginatedWorkers = workers;
+
+  //       this.workerCount = workerCount;
+  //     });
+  // }
+
+  public getPageOfWorkers(properties: {
+    index: number;
+    itemsPerPage: number;
+    searchTerm: string;
+    sortByValue: string;
+  }): void {
+    const { index, itemsPerPage, searchTerm, sortByValue } = properties;
     this.workerService
       .getAllWorkers(this.workplace.uid, {
-        sortBy: sortByParamMap[this.sortByValue],
-        pageIndex: this.currentPageIndex,
-        itemsPerPage: this.itemsPerPage,
-        ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
+        pageIndex: index,
+        itemsPerPage: itemsPerPage,
+        sortBy: sortByValue,
+        ...(searchTerm ? { searchTerm } : {}),
       })
       .pipe(take(1))
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;
-
         this.workerCount = workerCount;
       });
   }
 
-  public handleSortUpdate(dropdownValue: string): void {
-    if (dropdownValue !== this.sortByValue) {
-      this.setSortValue(dropdownValue);
-      this.setPageIndex(0);
-    }
-  }
+  // public handleSortUpdate(dropdownValue: string): void {
+  //   if (dropdownValue !== this.sortByValue) {
+  //     this.setSortValue(dropdownValue);
+  //     this.setPageIndex(0);
+  //   }
+  // }
 
-  public handlePageUpdate(pageIndex: number): void {
-    if (pageIndex !== this.currentPageIndex) {
-      this.setPageIndex(pageIndex);
-    }
-  }
+  // public handlePageUpdate(pageIndex: number): void {
+  //   if (pageIndex !== this.currentPageIndex) {
+  //     this.setPageIndex(pageIndex);
+  //   }
+  // }
 
   public getWorkerTrainingAndQualificationsPath(event: Event, worker: Worker): void {
     event.preventDefault();
-    this.addQueryParams();
+
     const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
   }
 
-  private addQueryParams(): void {
-    this.router.navigate([], {
-      fragment: 'training-and-qualifications',
-      queryParams: { search: this.searchTerm, tab: 'training' },
-      queryParamsHandling: 'merge',
-    });
-  }
+  // private addQueryParams(): void {
+  //   this.router.navigate([], {
+  //     fragment: 'training-and-qualifications',
+  //     queryParams: { search: this.searchTerm, tab: 'training' },
+  //     queryParamsHandling: 'merge',
+  //   });
+  // }
 
-  public handleSearch(searchTerm: string): void {
-    this.searchTerm = searchTerm;
-    this.addQueryParams();
-    this.setPageIndex(0);
-  }
+  // public handleSearch(searchTerm: string): void {
+  //   this.searchTerm = searchTerm;
+  //   this.addQueryParams();
+  //   this.setPageIndex(0);
+  // }
 }

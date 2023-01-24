@@ -5,6 +5,7 @@
   [sortByParamMap]="sortByParamMap"
   [sortByValue]="sortByValue"
   [sortOptions]="sortStaffOptions"
+  accessibleLabel="for staff records"
   (fetchWorkers)="getPageOfWorkers($event)"
 >
   <table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
