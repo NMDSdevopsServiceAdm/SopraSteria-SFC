@@ -1,18 +1,21 @@
-<div>
-  <a
-    *ngIf="canEditWorker"
-    data-testid="addMissingRecord"
-    draggable="false"
-    role="button"
-    [routerLink]="[
-      '/workplace',
-      this.workplace.uid,
-      'training-and-qualifications-record',
-      training.uid,
-      'add-training'
-    ]"
-    [state]="{ training: 'mandatory', missingRecord: this.missingRecord }"
-  >
-    Add
-  </a>
+<div class="govuk-!-margin-bottom-4">
+  <div class="govuk-grid-row" *ngFor="let missingRecord of missingMandatoryTraining">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body-l govuk-!-margin-bottom-2">'{{ missingRecord.category }}' training needs to be added</p>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <p class="govuk-body-l govuk-!-margin-bottom-2">
+        <a
+          *ngIf="canEditWorker"
+          [attr.data-testid]="missingRecord.id"
+          draggable="false"
+          role="button"
+          [routerLink]="['../add-training']"
+          (click)="setLocalStorage($event, missingRecord.category)"
+        >
+          Add
+        </a>
+      </p>
+    </div>
+  </div>
 </div>

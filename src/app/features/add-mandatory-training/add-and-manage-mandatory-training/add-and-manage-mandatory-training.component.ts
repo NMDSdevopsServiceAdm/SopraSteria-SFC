@@ -27,7 +27,9 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
+    this.breadcrumbService.show(
+      this.establishmentService.establishment.isParent ? JourneyType.MANDATORY_TRAINING : JourneyType.ALL_WORKPLACES,
+    );
     this.establishment = this.route.parent.snapshot.data.establishment;
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((trainings) => {
@@ -46,7 +48,7 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
   public navigateToAddNewMandatoryTraining() {
     this.router.navigate([
       '/workplace',
-      this.establishmentService.primaryWorkplace.uid,
+      this.establishmentService.establishment.uid,
       'add-and-manage-mandatory-training',
       'add-new-mandatory-training',
     ]);

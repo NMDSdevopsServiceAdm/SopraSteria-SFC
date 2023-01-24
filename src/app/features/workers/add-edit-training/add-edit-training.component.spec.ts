@@ -19,11 +19,7 @@ import { of } from 'rxjs';
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
-  async function setup(isMandatory = false, trainingRecordId = '1') {
-    if (isMandatory) {
-      window.history.pushState({ training: 'mandatory', missingRecord: { category: 'testCategory', id: 5 } }, '');
-    }
-
+  async function setup(trainingRecordId = '1') {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
       {
@@ -86,10 +82,6 @@ describe('AddEditTrainingComponent', () => {
     };
   }
 
-  afterEach(() => {
-    window.history.replaceState(undefined, '');
-  });
-
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -102,28 +94,41 @@ describe('AddEditTrainingComponent', () => {
 
   describe('Training category select/display', async () => {
     it('should show the training category select box when there is no training category is present', async () => {
-      const { getByTestId, queryByTestId } = await setup(false, null);
+      const { getByTestId, queryByTestId } = await setup(null);
 
       expect(getByTestId('trainingSelect')).toBeTruthy();
       expect(queryByTestId('trainingCategoryDisplay')).toBeFalsy();
     });
 
-    it('should show the training category displayed as text when there is a training category present', async () => {
-      const { component, fixture, getByText, getByTestId, queryByTestId } = await setup();
+    it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
+      const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(null);
 
-      component.trainingCategory = 'Autism';
+      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
+      spyOn(localStorage, 'getItem').and.returnValue('{"id":1,"category":"Autism"}');
+      component.ngOnInit();
       fixture.detectChanges();
+
+      const { form } = component;
+      const expectedFormValue = {
+        title: null,
+        category: 1,
+        accredited: null,
+        completed: { day: null, month: null, year: null },
+        expires: { day: null, month: null, year: null },
+        notes: null,
+      };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
       expect(queryByTestId('trainingSelect')).toBeFalsy();
       expect(getByText('Autism')).toBeTruthy();
+      expect(form.value).toEqual(expectedFormValue);
     });
   });
 
   describe('title', () => {
     it('should render the Add training record details title', async () => {
       const trainingRecordId = null;
-      const { getByText } = await setup(false, trainingRecordId);
+      const { getByText } = await setup(trainingRecordId);
 
       expect(getByText('Add training record details')).toBeTruthy();
     });
@@ -132,23 +137,6 @@ describe('AddEditTrainingComponent', () => {
       const { getByText } = await setup();
 
       expect(getByText('Training record details')).toBeTruthy();
-    });
-
-    it('should render the Add mandatory training record title, when accessed from add mandatory training link', async () => {
-      const { component, fixture, getByText } = await setup(true);
-
-      component.mandatoryTraining = true;
-      component.trainingRecordId = null;
-      component.setTitle();
-      fixture.detectChanges();
-
-      expect(getByText('Add mandatory training record')).toBeTruthy();
-    });
-
-    it('should render the Mandatory training record title, when accessed from mandatory training title', async () => {
-      const { getByText } = await setup(true);
-
-      expect(getByText('Mandatory training record')).toBeTruthy();
     });
   });
 
@@ -190,7 +178,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should not call getTrainingRecord if there is no trainingRecordId', async () => {
-      const { component, workerService } = await setup(false, null);
+      const { component, workerService } = await setup(null);
 
       const workerServiceSpy = spyOn(workerService, 'getTrainingRecord').and.callThrough();
       component.ngOnInit();
@@ -209,7 +197,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should render the Save record and Cancel button but not the delete button when there is no training id', async () => {
-      const { getByText, queryByTestId } = await setup(false, null);
+      const { getByText, queryByTestId } = await setup(null);
 
       expect(getByText('Save record')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -266,7 +254,7 @@ describe('AddEditTrainingComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
     });
 
-    it('should show an alert when successfully updating non mandatory training', async () => {
+    it('should show an alert when successfully updating training', async () => {
       const { component, fixture, getByText, alertSpy } = await setup();
 
       component.previousUrl = ['/goToPreviousUrl'];
@@ -281,26 +269,8 @@ describe('AddEditTrainingComponent', () => {
       });
     });
 
-    it('should show an alert when successfully updating mandatory training', async () => {
-      const { component, fixture, getByText, alertSpy } = await setup(true);
-
-      component.previousUrl = ['/goToPreviousUrl'];
-      fixture.detectChanges();
-
-      fireEvent.click(getByText('Save and return'));
-      fixture.detectChanges();
-
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Training record updated',
-      });
-    });
-
     it('should call the createTrainingRecord function if adding a new training record, and navigate away from page', async () => {
-      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy } = await setup(
-        false,
-        null,
-      );
+      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy } = await setup(null);
 
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
@@ -344,7 +314,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should show an alert when successfully adding a training record', async () => {
-      const { component, fixture, getByText, getByLabelText, getByTestId, alertSpy } = await setup(false, null);
+      const { component, fixture, getByText, getByLabelText, getByTestId, alertSpy } = await setup(null);
 
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
@@ -372,7 +342,7 @@ describe('AddEditTrainingComponent', () => {
   describe('errors', () => {
     describe('category errors', () => {
       it('should show an error message if a category is not selected', async () => {
-        const { component, fixture, getByText, getAllByText } = await setup(false, null);
+        const { component, fixture, getByText, getAllByText } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -386,7 +356,7 @@ describe('AddEditTrainingComponent', () => {
 
     describe('title errors', () => {
       it('should show an error message if the title is less than 3 characters long', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(false, null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -400,7 +370,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the title is more than 120 characters long', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(false, null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -419,7 +389,7 @@ describe('AddEditTrainingComponent', () => {
 
     describe('completed date errors', () => {
       it('should show an error message if the completed date is invalid', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -436,7 +406,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the completed date is in the future', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -456,7 +426,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the completed date is more than 100 years ago', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -478,7 +448,7 @@ describe('AddEditTrainingComponent', () => {
 
     describe('expires date errors', () => {
       it('should show an error message if the expiry date is invalid', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -495,7 +465,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the expiry date is more than 100 years ago', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -515,7 +485,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show the min date error message if expiry date is over a hundred years ago and the expiry date is before the completed date', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup(false, null);
+        const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -543,7 +513,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should an error message when the expiry date is before the completed date', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(false, null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -568,7 +538,7 @@ describe('AddEditTrainingComponent', () => {
 
     describe('notes errors', () => {
       it('should show an error message if the notes is over 1000 characters', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(false, null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();

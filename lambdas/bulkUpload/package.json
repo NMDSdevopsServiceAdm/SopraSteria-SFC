@@ -10,7 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.21",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "serverless": "^2.72.2"
   },
   "devDependencies": {
     "chai": "^4.3.6",

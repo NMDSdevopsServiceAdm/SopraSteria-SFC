@@ -1,6 +1,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <div class="govuk-!-margin-bottom-7">
+    <div class="govuk-!-margin-bottom-4">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Training and qualifications ({{ totalRecords || 0 }})</h2>
       <p *ngIf="tAndQsLastUpdated" class="govuk-!-font-size-16 govuk-!-margin-top-2">
         Last update, {{ tAndQsLastUpdated | date: 'd MMMM yyyy' }}
@@ -8,18 +8,20 @@
     </div>
   </div>
   <div *ngIf="workers && workers.length" class="govuk-grid-column-one-third govuk-!-padding-right-0 govuk">
-    <div class="govuk-!-margin-bottom-8">
-      <a
-        class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
-        role="button"
-        draggable="false"
-        href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
-        (click)="downloadTrainingReport($event)"
-      >
-        <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
-          Download training report
-        </span>
-      </a>
+    <div class="govuk-!-margin-bottom-4">
+      <ng-container *ngIf="totalRecords">
+        <a
+          class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+          role="button"
+          draggable="false"
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
+          (click)="downloadTrainingReport($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+            Download training report
+          </span>
+        </a>
+      </ng-container>
       <ng-container *ngIf="isParent">
         <a
           class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"

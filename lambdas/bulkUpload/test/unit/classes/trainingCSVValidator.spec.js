@@ -113,7 +113,7 @@ describe('trainingCSVValidator', () => {
       });
 
       it('should add CATEGORY_ERROR to validationErrors if the Category provided is not a valid category number', async () => {
-        trainingCsv.CATEGORY = 41;
+        trainingCsv.CATEGORY = 145;
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
@@ -127,7 +127,7 @@ describe('trainingCSVValidator', () => {
             error: 'CATEGORY has not been supplied',
             lineNumber: 1,
             name: 'foo',
-            source: 41,
+            source: 145,
             column: 'CATEGORY',
             worker: 'bar',
           },

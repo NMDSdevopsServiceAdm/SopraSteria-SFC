@@ -155,23 +155,24 @@ describe('DeleteRecordComponent', () => {
         );
       });
 
-      it('should navigate to the training page when pressing the delete button', async () => {
-        const { component, getByText, routerSpy } = await setup();
+      it('should navigate to the view training page when pressing the delete button', async () => {
+        const { component, fixture, getByText, routerSpy } = await setup();
+        component.previousUrl = ['/goToPreviousUrl'];
+        fixture.detectChanges();
 
         const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
-
-        expect(routerSpy).toHaveBeenCalledWith([
-          `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
-          'training',
-        ]);
+        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       });
 
       it('should display an alert when the delete button is clicked', async () => {
-        const { getByText, alertSpy } = await setup();
+        const { component, fixture, getByText, alertSpy } = await setup();
 
-        const deleteButton = getByText('Delete record');
-        fireEvent.click(deleteButton);
+        component.previousUrl = ['/goToPreviousUrl'];
+        fixture.detectChanges();
+
+        fireEvent.click(getByText('Delete record'));
+        fixture.detectChanges();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
@@ -246,15 +247,13 @@ describe('DeleteRecordComponent', () => {
       });
 
       it('should navigate to the training page when pressing the delete button', async () => {
-        const { component, getByText, routerSpy } = await setup(false);
+        const { component, fixture, getByText, routerSpy } = await setup(false);
+        component.previousUrl = ['/goToPreviousUrl'];
+        fixture.detectChanges();
 
         const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
-
-        expect(routerSpy).toHaveBeenCalledWith([
-          `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
-          'training',
-        ]);
+        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       });
 
       it('should display an alert when the delete button is clicked', async () => {

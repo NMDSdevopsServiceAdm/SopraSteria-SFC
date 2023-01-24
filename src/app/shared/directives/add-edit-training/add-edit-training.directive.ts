@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { MandatoryTraining, TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
+import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -24,10 +24,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
-  public trainingCategory: string;
+  public trainingCategory: { id: number; category: string };
   public worker: Worker;
   public workplace: Establishment;
-  public missingTrainingRecord: MandatoryTraining;
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
@@ -54,8 +53,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    this.missingTrainingRecord = history.state?.missingRecord;
-    this.trainingCategory = localStorage.getItem('trainingCategory');
+    this.trainingCategory = JSON.parse(localStorage.getItem('trainingCategory'));
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
     this.init();
@@ -90,7 +88,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-        category: this.missingTrainingRecord ? [null] : [null, Validators.required],
+        category: [null, Validators.required],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
@@ -226,7 +224,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
-        id: !this.missingTrainingRecord ? parseInt(category.value) : this.missingTrainingRecord.id,
+        id: parseInt(category.value),
       },
       title: title.value,
       accredited: accredited.value,
@@ -279,6 +277,5 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
 
   ngOnDestroy(): void {
     localStorage.removeItem('trainingCategory');
-    localStorage.removeItem('previousUrl');
   }
 }

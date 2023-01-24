@@ -424,7 +424,7 @@ describe('AddMandatoryTrainingComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
-        component.primaryWorkplace.uid,
+        component.establishment.uid,
         'add-and-manage-mandatory-training',
       ]);
     });
@@ -437,21 +437,8 @@ describe('AddMandatoryTrainingComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
-        component.primaryWorkplace.uid,
+        component.establishment.uid,
         'add-and-manage-mandatory-training',
-      ]);
-    });
-
-    xit('should navigate to delete-mandatory-training-category when Remove this mandatory training category is clicked', async () => {
-      const { component, routerSpy, getByText } = await setup(true);
-
-      const removeTrainingCategoryButton = getByText('Remove this mandatory training category');
-      fireEvent.click(removeTrainingCategoryButton);
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        component.primaryWorkplace.uid,
-        ' delete-mandatory-training-category',
       ]);
     });
   });

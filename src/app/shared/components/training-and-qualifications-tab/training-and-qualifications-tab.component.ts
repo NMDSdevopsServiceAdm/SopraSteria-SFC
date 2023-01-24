@@ -24,6 +24,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   private subscriptions: Subscription = new Subscription();
 
   public trainingCategories: TrainingRecordCategories[];
+  public totalTraining: number;
   public totalRecords: number;
   public totalExpiredTraining: number;
   public totalExpiringTraining: number;
@@ -74,6 +75,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   }
 
   private trainingTotals(): void {
+    this.totalTraining = this.trainingCounts.totalTraining;
     this.totalRecords = this.trainingCounts.totalRecords;
     this.totalExpiredTraining = this.trainingCounts.totalExpiredTraining;
     this.totalExpiringTraining = this.trainingCounts.totalExpiringTraining;

@@ -82,9 +82,10 @@ export interface MultipleTrainingResponse {
 
 export interface Training {
   id: number;
-  uid: string;
-  title: string;
-  expires: Date;
+  uid?: string;
+  title?: string;
+  expires?: Date;
+  missing?: boolean;
   worker: {
     id: number;
     uid: string;
