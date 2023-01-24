@@ -55,8 +55,8 @@ export class WorkersResolver implements Resolve<any> {
       .pipe(
         map(([totalResponse, paginatedResponse]) => {
           totalResponse.workers.forEach((worker) => {
-            trainingCounts.totalTraining = worker.trainingCount;
-            trainingCounts.totalRecords = trainingCounts.totalTraining + worker.qualificationCount;
+            trainingCounts.totalTraining += worker.trainingCount;
+            trainingCounts.totalRecords += worker.trainingCount + worker.qualificationCount;
             trainingCounts.totalExpiredTraining += worker.expiredTrainingCount;
             trainingCounts.totalExpiringTraining += worker.expiringTrainingCount;
             trainingCounts.missingMandatoryTraining += worker.missingMandatoryTrainingCount;
