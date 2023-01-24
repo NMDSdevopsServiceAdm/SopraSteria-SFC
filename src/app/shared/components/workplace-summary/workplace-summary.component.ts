@@ -154,8 +154,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
         }
       }),
     );
-
-    console.log(this.workplace.otherServices.services);
   }
 
   ngOnDestroy(): void {
@@ -177,17 +175,14 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   public filterAndSortOtherServices(services: any): Service[] {
-    let temp = new Array<Service>();
-    console.log(services);
+    let servicesArr = new Array<Service>();
     for(const service of services) {
-      temp = temp.concat(service.services)
+      servicesArr = servicesArr.concat(service.services)
     }
-    console.log(temp);
-    const x = sortBy(
-      temp.filter((service) => service.name !== this.workplace.mainService.name),
+    return sortBy(
+      servicesArr.filter((service) => service.name !== this.workplace.mainService.name),
       'name',
     );
-    return x;
   }
 
   public isArray(variable: any): boolean {
