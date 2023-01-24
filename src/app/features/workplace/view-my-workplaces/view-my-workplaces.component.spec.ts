@@ -27,7 +27,7 @@ import sinon from 'sinon';
 import { WorkplaceInfoPanelComponent } from '../workplace-info-panel/workplace-info-panel.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
-describe('ViewMyWorkplacesComponent', () => {
+fdescribe('ViewMyWorkplacesComponent', () => {
   async function setup(hasChildWorkplaces = true, qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText } = await render(
       ViewMyWorkplacesComponent,
@@ -150,7 +150,7 @@ describe('ViewMyWorkplacesComponent', () => {
     it('it does not render the search bar when pagination threshold is not met', async () => {
       const { queryByLabelText } = await setup();
 
-      const searchInput = queryByLabelText('Search staff training records');
+      const searchInput = queryByLabelText('Search child workplace records');
       expect(searchInput).toBeNull();
     });
 

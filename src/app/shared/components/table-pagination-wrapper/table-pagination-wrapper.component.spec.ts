@@ -79,7 +79,7 @@ describe('TablePaginationWrapperCompnent', () => {
     it('should call handleSearch, add query string to url and emit the properties for getting the worker when searching for a worker', async () => {
       const { component, routerSpy, emitSpy, handleSearchSpy, getByLabelText, getByRole } = await setup();
 
-      userEvent.type(getByLabelText('Search for staff records'), 'Someone');
+      userEvent.type(getByLabelText('Search'), 'Someone');
       userEvent.click(getByRole('button', { name: 'search' }));
 
       expect(handleSearchSpy).toHaveBeenCalledWith('Someone');
@@ -96,7 +96,7 @@ describe('TablePaginationWrapperCompnent', () => {
       const { component, fixture, routerSpy, emitSpy, handleSearchSpy, getByLabelText, getByRole, getByText } =
         await setup();
 
-      userEvent.type(getByLabelText('Search for staff records'), 'Someone');
+      userEvent.type(getByLabelText('Search'), 'Someone');
       userEvent.click(getByRole('button', { name: 'search' }));
       fixture.detectChanges();
       const clearSearch = getByText('Clear search results');

@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class SearchInputComponent {
   @Input() ref = 'search';
   @Input() searchButtonName = 'search';
-  @Input() label: string;
+  @Input() label = 'Search';
   @Input() accessibleLabel: string;
   @Input() set prevSearch(value: string) {
     if (value.trim() !== this.searchTerm.trim()) {

@@ -6,45 +6,6 @@
     </p>
   </div>
 </div>
-
-<!-- <div
-  [ngClass]="
-    showSearchBar ? 'govuk-grid-row' : 'govuk__flex-stack govuk__align-items-flex-end govuk__justify-content-end'
-  "
-  class="govuk-!-margin-bottom-6"
->
-  <div *ngIf="showSearchBar" class="govuk-grid-column-three-quarters">
-    <app-search-input
-      label="Search by name or ID number"
-      accessibleLabel="staff training records"
-      [prevSearch]="searchTerm"
-      (emitInput)="handleSearch($event)"
-    ></app-search-input>
-  </div> -->
-
-<!-- <div
-    data-testid="sortBy"
-    *ngIf="workerCount > 1"
-    class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
-    [ngClass]="showSearchBar ? '' : 'govuk-!-padding-0'"
-  >
-    <label class="govuk-label" for="sortByTrainingStaff"> Sort by </label>
-    <select
-      class="govuk-select govuk-!-width-full"
-      id="sortByTrainingStaff"
-      name="sortByTrainingStaff"
-      [value]="sortByValue"
-      (change)="handleSortUpdate($event.target.value)"
-    >
-      <option
-        *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
-        value="{{ sortTrainingAndQualsOption.key }}"
-      >
-        {{ sortTrainingAndQualsOption.value }}
-      </option>
-    </select>
-  </div>
-</div> -->
 <app-table-pagination-wrapper
   [totalWorkerCount]="totalWorkerCount"
   [workerCount]="workerCount"
@@ -130,11 +91,4 @@
     <p class="govuk-util__bold">There are no matching results</p>
     <p>Make sure that your spelling is correct.</p>
   </ng-template>
-  <!-- <app-pagination
-  [itemsPerPage]="itemsPerPage"
-  [totalNoOfItems]="workerCount"
-  [currentPageIndex]="currentPageIndex"
-  (currentPageIndexChange)="handlePageUpdate($event)"
-></app-pagination> -->
 </app-table-pagination-wrapper>
-<!-- </div> -->
