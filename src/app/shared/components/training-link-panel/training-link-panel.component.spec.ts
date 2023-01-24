@@ -10,29 +10,23 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { TrainingLinkPanelComponent } from '@shared/components/training-link-panel/training-link-panel.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { Establishment as MockEstablishment } from '../../../../mockdata/establishment';
 
 describe('TrainingLinkPanelComponent', () => {
-  async function setup() {
+  async function setup(totalRecords = 6) {
     const { fixture, getByText, queryByText } = await render(TrainingLinkPanelComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
           provide: WorkerService,
           useClass: MockWorkerService,
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
         },
         {
           provide: UserService,
@@ -52,7 +46,7 @@ describe('TrainingLinkPanelComponent', () => {
             trainingCount: 1,
           },
         ] as Worker[],
-        totalRecords: 6,
+        totalRecords,
         tAndQsLastUpdated: new Date('2020-01-01').toISOString(),
       },
     });
@@ -111,20 +105,28 @@ describe('TrainingLinkPanelComponent', () => {
     expect(queryByText(`Manage expiry alerts' alerts`)).toBeFalsy();
   });
 
-  it('should call getTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
-    const { component, fixture, getByText } = await setup();
+  describe('training and quals report', () => {
+    it('should not show the download link if the establishment has no training and qualification records', async () => {
+      const { queryByText } = await setup(0);
 
-    const reportService = TestBed.inject(ReportService);
-    const reportServiceSpy = spyOn(reportService, 'getTrainingAndQualificationsReport').and.returnValue(of(null));
-    const saveFileSpy = spyOn(component, 'saveFile').and.returnValue(null);
+      expect(queryByText('Download training report')).toBeFalsy();
+    });
 
-    const downloadTrainingButton = getByText('Download training report');
+    it('should call getTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
+      const { component, fixture, getByText } = await setup();
 
-    downloadTrainingButton.click();
-    fixture.detectChanges();
+      const reportService = TestBed.inject(ReportService);
+      const reportServiceSpy = spyOn(reportService, 'getTrainingAndQualificationsReport').and.returnValue(of(null));
+      const saveFileSpy = spyOn(component, 'saveFile').and.returnValue(null);
 
-    expect(reportServiceSpy).toHaveBeenCalledWith(component.establishmentUid);
-    expect(saveFileSpy).toHaveBeenCalled();
+      const downloadTrainingButton = getByText('Download training report');
+
+      downloadTrainingButton.click();
+      fixture.detectChanges();
+
+      expect(reportServiceSpy).toHaveBeenCalledWith(component.establishmentUid);
+      expect(saveFileSpy).toHaveBeenCalled();
+    });
   });
 
   it('should display the `Add multiple training records` button with the correct link when the user has edit permission', async () => {
