@@ -44,11 +44,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
     this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
-    if (this.route.snapshot.params.data) {
-      this.form.patchValue({
-        category: this.route.snapshot.params.data,
-      });
-    }
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
     if (this.trainingRecordId) {
       this.fillForm();

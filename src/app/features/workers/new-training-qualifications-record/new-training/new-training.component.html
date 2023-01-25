@@ -24,16 +24,15 @@
           <tr class="govuk-table__row" *ngFor="let trainingRecord of trainingCategory.trainingRecords">
             <td class="govuk-table__cell">
               <ng-container *ngIf="canEditWorker; else viewOnly">
-                <a
-                  class="govuk-link--no-visited-state"
-                  [attr.data-testid]="'Title-' + trainingRecord.uid"
-                  [routerLink]="
-                    trainingRecord.uid
-                      ? ['../training', trainingRecord.uid]
-                      : ['../add-training', { data: trainingCategory.id }]
-                  "
-                  >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
-                >
+                <ng-container *ngIf="!trainingRecord.uid; else showLink"> - </ng-container>
+                <ng-template #showLink>
+                  <a
+                    class="govuk-link--no-visited-state"
+                    [attr.data-testid]="'Title-' + trainingRecord.uid"
+                    [routerLink]="['../training', trainingRecord.uid]"
+                    >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
+                  >
+                </ng-template>
               </ng-container>
               <ng-template #viewOnly>
                 <span [attr.data-testid]="'Title-no-link-' + trainingRecord.uid">
@@ -69,6 +68,9 @@
               </div>
               <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.ACTIVE && trainingRecord.expires">
                 OK
+              </div>
+              <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.ACTIVE && !trainingRecord.expires">
+                -
               </div>
             </td>
           </tr>

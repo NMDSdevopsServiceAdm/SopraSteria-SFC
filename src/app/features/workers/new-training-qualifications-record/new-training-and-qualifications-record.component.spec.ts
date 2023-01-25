@@ -15,7 +15,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
@@ -520,9 +520,19 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should navigate to the training page with fragment all-records when clicking on all-records tab', async () => {
-        const { getByTestId } = await setup();
+        const { getByTestId, routerSpy, component } = await setup();
         const allRecordsTabLink = getByTestId('allRecordsTabLink');
-        expect(allRecordsTabLink.getAttribute('href')).toEqual('/#all-records');
+        fireEvent.click(allRecordsTabLink);
+        expect(routerSpy).toHaveBeenCalledWith(
+          [
+            'workplace',
+            component.workplace.uid,
+            'training-and-qualifications-record',
+            component.worker.uid,
+            'training',
+          ],
+          { fragment: 'all-records' },
+        );
       });
     });
 
@@ -551,9 +561,19 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should navigate to the training page with the fragment mandatory-training when clicking on mandatory training tab', async () => {
-        const { getByTestId } = await setup();
+        const { getByTestId, routerSpy, component } = await setup();
         const mandatoryTrainingTabLink = getByTestId('mandatoryTrainingTabLink');
-        expect(mandatoryTrainingTabLink.getAttribute('href')).toEqual('/#mandatory-training');
+        fireEvent.click(mandatoryTrainingTabLink);
+        expect(routerSpy).toHaveBeenCalledWith(
+          [
+            'workplace',
+            component.workplace.uid,
+            'training-and-qualifications-record',
+            component.worker.uid,
+            'training',
+          ],
+          { fragment: 'mandatory-training' },
+        );
       });
     });
 
@@ -577,10 +597,20 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
       });
 
-      it('should navigate to the training page with the fragment mandatory-training when clicking on non mandatory training tab', async () => {
-        const { getByTestId } = await setup();
-        const mandatoryTrainingTabLink = getByTestId('nonMandatoryTrainingTabLink');
-        expect(mandatoryTrainingTabLink.getAttribute('href')).toEqual('/#non-mandatory-training');
+      it('should navigate to the training page with the fragment non-mandatory-training when clicking on non mandatory training tab', async () => {
+        const { getByTestId, routerSpy, component } = await setup();
+        const nonMandatoryTrainingTab = getByTestId('nonMandatoryTrainingTabLink');
+        fireEvent.click(nonMandatoryTrainingTab);
+        expect(routerSpy).toHaveBeenCalledWith(
+          [
+            'workplace',
+            component.workplace.uid,
+            'training-and-qualifications-record',
+            component.worker.uid,
+            'training',
+          ],
+          { fragment: 'non-mandatory-training' },
+        );
       });
     });
 
@@ -609,9 +639,19 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should navigate to the training page with the fragment qualifications when clicking on qualification tab', async () => {
-        const { getByTestId } = await setup();
-        const mandatoryTrainingTabLink = getByTestId('qualificationsTabLink');
-        expect(mandatoryTrainingTabLink.getAttribute('href')).toEqual('/#qualifications');
+        const { getByTestId, routerSpy, component } = await setup();
+        const qualificationTabLink = getByTestId('qualificationsTabLink');
+        fireEvent.click(qualificationTabLink);
+        expect(routerSpy).toHaveBeenCalledWith(
+          [
+            'workplace',
+            component.workplace.uid,
+            'training-and-qualifications-record',
+            component.worker.uid,
+            'training',
+          ],
+          { fragment: 'qualifications' },
+        );
       });
     });
   });

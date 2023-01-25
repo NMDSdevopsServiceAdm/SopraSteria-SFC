@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
@@ -20,8 +20,9 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./new-training-and-qualification.component.scss'],
 })
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
+  @ViewChild('tabEl') tabEl;
   private subscriptions: Subscription = new Subscription();
-  protected currentFragment: string;
+  public currentFragment: string;
   public filteredToJobRoleMandatoryTraining: mandatoryTraining[];
   public canEditWorker: boolean;
   public canViewWorker: boolean;
@@ -197,6 +198,16 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     return training.sort((categoryA, categoryB) =>
       categoryA.category !== categoryB.category ? (categoryA.category < categoryB.category ? -1 : 1) : 0,
     );
+  }
+
+  public navigateToNewTab(fragmentString): void {
+    this.router
+      .navigate(['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'], {
+        fragment: fragmentString,
+      })
+      .then(() => {
+        this.tabEl.nativeElement.scrollIntoView();
+      });
   }
 
   public setReturnRoute(): void {
