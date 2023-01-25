@@ -46,7 +46,7 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   private getSummaryRoute(): string[] {
-    const summaryUrl = this.getRoutePath('');
+    const summaryUrl = this.determineBaseRoute();
     summaryUrl.push('nursing-specialism');
     return summaryUrl;
   }

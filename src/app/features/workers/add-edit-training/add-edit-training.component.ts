@@ -47,15 +47,19 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
     if (this.trainingRecordId) {
       this.fillForm();
+    } else if (this.trainingCategory) {
+      this.form.patchValue({
+        category: this.trainingCategory.id,
+      });
     }
   }
 
   public setTitle(): void {
-    if (this.mandatoryTraining) {
-      this.title = this.trainingRecordId ? 'Mandatory training record' : 'Add mandatory training record';
-    } else {
-      this.title = this.trainingRecordId ? 'Training details' : 'Add training record details';
-    }
+    this.title = this.trainingRecordId ? 'Training record details' : 'Add training record details';
+  }
+
+  protected setSectionHeading(): void {
+    this.section = this.worker.nameOrId;
   }
 
   protected setButtonText(): void {
@@ -73,7 +77,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
               ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)
               : null;
             const expires = this.trainingRecord.expires ? dayjs(this.trainingRecord.expires, DATE_PARSE_FORMAT) : null;
-
             this.form.patchValue({
               title: this.trainingRecord.title,
               category: this.trainingRecord.trainingCategory.id,
@@ -124,40 +127,12 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
-    const trainingCategoryId = localStorage.getItem('trainingCategoryId');
-
-    let url: string[];
-    if (trainingCategoryId) {
-      url = [
-        `/workplace/${this.workplace.uid}/training-and-qualifications-record/view-training-category/${trainingCategoryId}`,
-      ];
-
-      this.router.navigate(url).then(() => {
-        if (this.mandatoryTraining) {
-          this.alertService.addAlert({
-            type: 'success',
-            message: 'Mandatory training record added',
-          });
-        } else {
-          this.alertService.addAlert({
-            type: 'success',
-            message: 'Training record updated',
-          });
-        }
-
-        localStorage.removeItem('trainingCategoryId');
-      });
-    } else {
-      url = [`workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`];
-
-      this.router.navigate(url).then(() => {
-        if (this.trainingRecordId) {
-          this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
-        } else {
-          this.workerService.alert = { type: 'success', message: 'Training has been added.' };
-        }
-      });
-    }
+    const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
+    this.router.navigate(this.previousUrl);
+    this.alertService.addAlert({
+      type: 'success',
+      message,
+    });
   }
 
   private onError(error) {

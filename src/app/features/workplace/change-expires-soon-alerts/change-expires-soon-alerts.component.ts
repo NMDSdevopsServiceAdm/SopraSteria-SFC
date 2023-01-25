@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
@@ -17,12 +17,12 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   public expiresSoonDate: string;
   public workplaceUid: string;
   public returnUrl: URLStructure;
-  private isPrimary: boolean;
+  public isPrimary: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
-    private backService: BackService,
+    private backLinkService: BackLinkService,
     private router: Router,
     private alertService: AlertService,
     private establishmentService: EstablishmentService,
@@ -32,7 +32,7 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   public ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.data.establishment.uid;
     this.expiresSoonDate = this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate;
-    this.isPrimary = this.route.snapshot.data.primaryWorkplace.uid === this.workplaceUid;
+    this.isPrimary = this.establishmentService.primaryWorkplace.uid === this.workplaceUid;
     this.setupForm();
     this.setReturnUrl();
     this.setBackLink();
@@ -50,7 +50,7 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink(this.returnUrl);
+    this.backLinkService.showBackLink();
   }
 
   public onSubmit(): void {

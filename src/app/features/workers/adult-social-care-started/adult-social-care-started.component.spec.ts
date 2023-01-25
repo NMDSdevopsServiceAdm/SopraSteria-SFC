@@ -61,6 +61,9 @@ describe('AdultSocialCareStartedComponent', () => {
                   },
                 },
               },
+              snapshot: {
+                params: {},
+              },
             },
           },
           {
@@ -84,6 +87,7 @@ describe('AdultSocialCareStartedComponent', () => {
       getByText,
       getAllByText,
       getByLabelText,
+      router,
       routerSpy,
       getByTestId,
       queryByTestId,
@@ -224,6 +228,34 @@ describe('AdultSocialCareStartedComponent', () => {
       workerId,
       'staff-record-summary',
     ]);
+  });
+
+  it('should navigate to wdf staff-summary-page page when pressing save and return in wdf page version', async () => {
+    const { component, router, fixture, routerSpy, getByText } = await setup(false, 'permanent');
+    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    component.returnUrl = undefined;
+    component.ngOnInit();
+    fixture.detectChanges();
+    const workerId = component.worker.uid;
+
+    const link = getByText('Save and return');
+    fireEvent.click(link);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+  });
+
+  it('should navigate to wdf staff-summary-page page when pressing cancel in wdf page version', async () => {
+    const { component, router, routerSpy, getByText, fixture } = await setup(false, 'permanent');
+    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    component.returnUrl = undefined;
+    component.ngOnInit();
+    fixture.detectChanges();
+    const workerId = component.worker.uid;
+
+    const link = getByText('Cancel');
+    fireEvent.click(link);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
   });
 
   describe('progress bar', () => {

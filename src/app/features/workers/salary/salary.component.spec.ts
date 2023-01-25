@@ -30,6 +30,9 @@ describe('SalaryComponent', () => {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
               },
+              snapshot: {
+                params: {},
+              },
             },
           },
           {
@@ -53,6 +56,7 @@ describe('SalaryComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -231,6 +235,46 @@ describe('SalaryComponent', () => {
         component.worker.uid,
         'staff-record-summary',
       ]);
+      expect(workerServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should call submit data and return to the wdf staff record summary when Annual salary is selected, in-range annual salary is entered and save and return is clicked in wdf version of page', async () => {
+      const { fixture, router, getByLabelText, component, getByText, submitSpy, routerSpy, workerServiceSpy } =
+        await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const form = component.form;
+      form.controls.terms.setValue('');
+      form.controls.hourlyRate.setValue('');
+      form.controls.annualRate.setValue('20000');
+      fixture.detectChanges();
+      fireEvent.click(getByLabelText('Annual salary'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({ terms: 'Annually', hourlyRate: '', annualRate: '20000' });
+      userEvent.click(getByText('Save and return'));
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        annualHourlyPay: { value: 'Annually', rate: '20000' },
+      });
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
+    });
+
+    it('return to the wdf staff record summary when cancel is clicked in wdf version of page', async () => {
+      const { component, getByText, submitSpy, routerSpy, workerServiceSpy, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      userEvent.click(getByText('Cancel'));
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
   });

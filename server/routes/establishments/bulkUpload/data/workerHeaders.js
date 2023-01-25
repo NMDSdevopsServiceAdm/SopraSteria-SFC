@@ -29,8 +29,6 @@ const workerHeaders = [
   'MAINJRDESC',
   'CONTHOURS',
   'AVGHOURS',
-  'OTHERJOBROLE',
-  'OTHERJRDESC',
   'NMCREG',
   'NURSESPEC',
   'AMHP',

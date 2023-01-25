@@ -585,55 +585,6 @@ describe('workerCSV', () => {
 
           expect(csvAsArray[28]).to.equal('');
         });
-        it('should return other jobs if other jobs value is Yes', async () => {
-          worker.OtherJobsValue = 'Yes';
-
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[29]).to.equal(String(worker.otherJobs[0].id));
-        });
-        it('should not return other jobs if other jobs value is No', async () => {
-          worker.OtherJobsValue = 'No';
-
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[29]).to.equal('');
-        });
-        it('should not return other jobs if other jobs value is null', async () => {
-          worker.OtherJobsValue = null;
-
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[29]).to.equal('');
-        });
-        it('should return other jobs desc if other jobs value is Yes and is an other value', async () => {
-          worker.OtherJobsValue = 'Yes';
-          worker.otherJobs[0].other = true;
-
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[30]).to.equal(worker.otherJobs[0].workerJobs.other);
-        });
-        it('should not return other jobs desc if other jobs value is No', async () => {
-          worker.OtherJobsValue = 'No';
-
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[30]).to.equal('');
-        });
-        it('should not return other jobs desc if other jobs value is null', async () => {
-          worker.OtherJobsValue = null;
-
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[30]).to.equal('');
-        });
         [
           {
             name: 'Adult Nurse',
@@ -668,7 +619,7 @@ describe('workerCSV', () => {
               const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
               const csvAsArray = csv.split(',');
 
-              expect(csvAsArray[31]).to.equal(regNurse.code);
+              expect(csvAsArray[29]).to.equal(regNurse.code);
             },
           );
         });
@@ -681,7 +632,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[31]).to.equal('');
+          expect(csvAsArray[29]).to.equal('');
         });
         it("should return reistered nurse value if main job is nurse and they don't have reg value", async () => {
           worker.RegisteredNurseValue = 'Adult Nurse';
@@ -692,7 +643,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[31]).to.equal('');
+          expect(csvAsArray[29]).to.equal('');
         });
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code nurse specialism ' + value.value, async () => {
@@ -726,7 +677,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[32]).to.equal(nurseSpec);
+            expect(csvAsArray[30]).to.equal(nurseSpec);
           });
         });
         it('should not return a code for nurse specialism if not a nurse', async () => {
@@ -738,7 +689,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[32]).to.equal('');
+          expect(csvAsArray[30]).to.equal('');
         });
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code for approved mental health worker ' + value.value, async () => {
@@ -762,7 +713,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[33]).to.equal(amhp);
+            expect(csvAsArray[31]).to.equal(amhp);
           });
         });
         yesNoDontKnow.forEach((value) => {
@@ -790,7 +741,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[34]).to.equal(scqual);
+            expect(csvAsArray[32]).to.equal(scqual);
           });
           it('should not return the correct code sc qual ' + value.value, async () => {
             worker.QualificationInSocialCareValue = value.value;
@@ -812,7 +763,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[34]).to.equal(scqual);
+            expect(csvAsArray[32]).to.equal(scqual);
           });
         });
         it('should not return the correct code sc qual', async () => {
@@ -821,7 +772,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[34]).to.equal('');
+          expect(csvAsArray[32]).to.equal('');
         });
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code non sc qual ' + value.value, async () => {
@@ -848,7 +799,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[35]).to.equal(nonscqual);
+            expect(csvAsArray[33]).to.equal(nonscqual);
           });
           it('should not return the correct code non sc qual ' + value.value, async () => {
             worker.OtherQualificationsValue = value.value;
@@ -870,7 +821,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[35]).to.equal(nonscqual);
+            expect(csvAsArray[33]).to.equal(nonscqual);
           });
         });
         it('should not return the correct code non sc qual', async () => {
@@ -879,13 +830,13 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[35]).to.equal('');
+          expect(csvAsArray[33]).to.equal('');
         });
         it('should return the correct code and year for qual 01', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[36]).to.equal(
+          expect(csvAsArray[34]).to.equal(
             `${worker.qualifications[0].qualification.id};${worker.qualifications[0].year}`,
           );
         });
@@ -893,14 +844,14 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[37]).to.equal(worker.qualifications[0].notes);
+          expect(csvAsArray[35]).to.equal(worker.qualifications[0].notes);
         });
         it('should return the unescaped notes for qual 01 notes', async () => {
           worker.qualifications[0].notes = '%EA%E9';
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[37]).to.equal('êé');
+          expect(csvAsArray[35]).to.equal('êé');
         });
         it('should return the correct code and year for qual 01', async () => {
           worker.qualifications = [];
@@ -908,7 +859,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[36]).to.equal('');
+          expect(csvAsArray[33]).to.equal('');
         });
       });
     });

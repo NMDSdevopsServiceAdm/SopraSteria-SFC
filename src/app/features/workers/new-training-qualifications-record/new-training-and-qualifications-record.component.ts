@@ -41,15 +41,15 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     qualifications: 'qualifications',
   };
   constructor(
-    private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
-    private workerService: WorkerService,
     private trainingStatusService: TrainingStatusService,
     private trainingService: TrainingService,
+    private workerService: WorkerService,
+    private alertService: AlertService,
   ) {}
 
   public ngOnInit(): void {
@@ -219,4 +219,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
+
+  // public resetLocalStorage(): void {
+  //   localStorage.removeItem('trainingCategory');
+  // }
 }

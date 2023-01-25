@@ -15,6 +15,7 @@ import { take } from 'rxjs/operators';
 })
 export class ViewTrainingComponent implements OnInit {
   public workplace: Establishment;
+  public primaryWorkplaceUid: string;
   public category: any;
   public canEditWorker = false;
   public trainingCategoryId;
@@ -33,14 +34,14 @@ export class ViewTrainingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.workplace = this.establishmentService.primaryWorkplace;
+    this.workplace = this.establishmentService.establishment;
+    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-
     this.trainingCategoryId = this.route.snapshot.params.categoryId;
-    localStorage.setItem('trainingCategoryId', this.trainingCategoryId);
     this.setExpiresSoonAlertDates();
     this.getAllTrainingByCategory();
     this.setBackLink();
+    localStorage.setItem('previousUrl', this.router.url);
   }
 
   private setExpiresSoonAlertDates(): void {
@@ -58,9 +59,11 @@ export class ViewTrainingComponent implements OnInit {
         .pipe(take(1))
         .subscribe((categories: any) => {
           this.category = categories.find((t: any) => t.id == this.trainingCategoryId);
-
+          localStorage.setItem(
+            'trainingCategory',
+            JSON.stringify({ id: this.category.id, category: this.category.category }),
+          );
           this.trainings = this.category.training;
-
           this.sortByTrainingStatus();
         }),
     );
@@ -70,24 +73,11 @@ export class ViewTrainingComponent implements OnInit {
     this.backLinkService.showBackLink();
   }
 
-  public updateTrainingRecord(event, training): void {
-    event.preventDefault();
-
-    this.router.navigate([
-      '/workplace',
-      this.workplace.uid,
-      'training-and-qualifications-record',
-      training.worker.uid,
-      'training',
-      training.uid,
-    ]);
-  }
-
-  public trainingStatus(training) {
+  public trainingStatus(training): number {
     return this.trainingStatusService.trainingStatusForRecord(training);
   }
 
-  public sortByTrainingStatus() {
+  public sortByTrainingStatus(): void {
     const missings = this.trainings.filter((t: any) => t.missing);
 
     const expired = this.trainings.filter(
@@ -109,6 +99,8 @@ export class ViewTrainingComponent implements OnInit {
   }
 
   public returnToHome(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
+    const returnLink =
+      this.workplace.uid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
+    this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });
   }
 }

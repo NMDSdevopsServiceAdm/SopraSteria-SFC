@@ -44,10 +44,11 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.isParent = this.establishmentService.isOwnWorkplace();
     this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary';
 
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.isParent = this.establishmentService.primaryWorkplace.isParent;
+
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;

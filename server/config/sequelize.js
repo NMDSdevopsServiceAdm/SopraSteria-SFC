@@ -27,11 +27,7 @@ module.exports = async () => {
       migrationStorageTableSchema: 'cqc',
     },
     test: {
-      username: config.get('db.username'),
-      password: config.get('db.password'),
-      database: config.get('db.database'),
-      host: config.get('db.host'),
-      port: config.get('db.port'),
+      use_env_variable: 'DATABASE_URL',
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: config.get('db.ssl'),
