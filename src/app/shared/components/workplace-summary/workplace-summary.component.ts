@@ -174,10 +174,14 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     return unformattedMoneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
-  public filterAndSortOtherServices(services: Service[]): Service[] {
+  public filterAndSortOtherServices(services: any): Service[] {
+    let servicesArr = new Array<Service>();
+    for(const service of services) {
+      servicesArr = servicesArr.concat(service.services)
+    }
     return sortBy(
-      services.filter((service) => service.name !== this.workplace.mainService.name),
-      'id',
+      servicesArr.filter((service) => service.name !== this.workplace.mainService.name),
+      'name',
     );
   }
 

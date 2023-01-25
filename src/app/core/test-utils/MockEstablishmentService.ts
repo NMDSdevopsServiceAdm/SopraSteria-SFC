@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Establishment, UpdateJobsRequest } from '@core/model/establishment.model';
+import { Establishment, mandatoryTraining, UpdateJobsRequest } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -91,6 +91,10 @@ export class MockEstablishmentService extends EstablishmentService {
     return of(null);
   }
 
+  public createAndUpdateMandatoryTraining(establishmentId, data: mandatoryTraining[]): Observable<any> {
+    return of(null);
+  }
+
   public get inStaffRecruitmentFlow(): boolean {
     return false;
   }
@@ -156,8 +160,8 @@ export class MockEstablishmentService extends EstablishmentService {
     return of('');
   }
 
-  public getExpiresSoonAlertDates(): Observable<string> {
-    return of('90');
+  public getExpiresSoonAlertDates(): Observable<any> {
+    return of({ expiresSoonAlertDate: '90' });
   }
 
   public setExpiresSoonAlertDates(establishmentUid, data): Observable<string> {

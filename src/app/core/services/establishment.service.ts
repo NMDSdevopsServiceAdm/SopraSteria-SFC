@@ -3,7 +3,6 @@ import { Injectable, isDevMode } from '@angular/core';
 import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
-  allMandatoryTrainingCategories,
   CancelOwnerShip,
   ChangeOwner,
   Establishment,
@@ -331,12 +330,9 @@ export class EstablishmentService {
   public removeParentAssociation(establishmentId, data): Observable<Establishment> {
     return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/delink`, data);
   }
-  //get all mandatory training
-  public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
-    return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
-  }
+
   //update mandatory training
-  public updateMandatoryTraining(establishmentId, data: mandatoryTraining[]) {
+  public createAndUpdateMandatoryTraining(establishmentId, data: mandatoryTraining[]) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/mandatoryTraining`, data);
   }
 
@@ -362,7 +358,7 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`, { expiresSoonAlertDate });
   }
 
-  public removeParentStatus(data: object): Observable<any> {
+  public removeParentStatus(data: any): Observable<any> {
     return this.http.post<any>(`/api/admin/remove-parent-status`, data);
   }
 

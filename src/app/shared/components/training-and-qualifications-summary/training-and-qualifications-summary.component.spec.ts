@@ -6,7 +6,6 @@ import { Establishment } from '@core/model/establishment.model';
 import { Worker, WorkersResponse } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import {
   longTermAbsentWorker,
   MockWorkerService,
@@ -17,7 +16,6 @@ import {
   workerWithUpToDateTraining,
 } from '@core/test-utils/MockWorkerService';
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
@@ -49,15 +47,13 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     can: sinon.stub<['uid', 'canViewUser'], boolean>().returns(true),
   });
 
-  async function setup(qsParamGetMock = sinon.fake()) {
-    const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText } = await render(
-      TrainingAndQualificationsSummaryComponent,
-      {
+  async function setup(qsParamGetMock = sinon.fake(), totalRecords = 5, fixWorkerCount = false) {
+    const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText, getByTestId, queryByTestId } =
+      await render(TrainingAndQualificationsSummaryComponent, {
         imports: [HttpClientTestingModule, RouterTestingModule],
         declarations: [PaginationComponent, SearchInputComponent],
         providers: [
           { provide: PermissionsService, useValue: mockPermissionsService },
-          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
           {
             provide: WorkerService,
             useClass: MockWorkerService,
@@ -76,10 +72,10 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
         componentProperties: {
           workplace: establishmentBuilder() as Establishment,
           workers: workers as Worker[],
-          workerCount: workers.length,
+          workerCount: fixWorkerCount ? 1 : workers.length,
+          totalRecords,
         },
-      },
-    );
+      });
 
     const component = fixture.componentInstance;
 
@@ -99,6 +95,8 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       getByLabelText,
       getAllByText,
       getByText,
+      getByTestId,
+      queryByTestId,
       spy,
       workerServiceSpy,
       sortBySpy,
@@ -110,6 +108,18 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show the no records text, when there are no t and q records for an establishment', async () => {
+    const { getByTestId } = await setup(sinon.fake(), 0);
+
+    expect(getByTestId('noRecords')).toBeTruthy();
+  });
+
+  it('should not show the sort by dropdown if there is only 1 staff record', async () => {
+    const { queryByTestId } = await setup(sinon.fake(), 5, true);
+
+    expect(queryByTestId('sortBy')).toBeFalsy();
   });
 
   it('should handle sort by expiring soon', async () => {
@@ -237,7 +247,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       fixture.componentInstance.showSearchBar = true;
       fixture.detectChanges();
 
-      const searchInput = getByLabelText('Search staff training records');
+      const searchInput = getByLabelText('Search by name or ID number staff training records');
       expect(searchInput).toBeTruthy();
 
       userEvent.type(searchInput, 'search term here{enter}');
@@ -259,7 +269,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       fixture.componentInstance.currentPageIndex = 1;
       fixture.detectChanges();
 
-      userEvent.type(getByLabelText('Search staff training records'), 'search term here{enter}');
+      userEvent.type(getByLabelText('Search by name or ID number staff training records'), 'search term here{enter}');
       expect(workerServiceSpy.calls.mostRecent().args[1].pageIndex).toEqual(0);
     });
 
@@ -276,7 +286,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
         } as WorkersResponse),
       );
 
-      const searchInput = getByLabelText('Search staff training records');
+      const searchInput = getByLabelText('Search by name or ID number staff training records');
       expect(searchInput).toBeTruthy();
 
       userEvent.type(searchInput, 'search term here{enter}');
@@ -293,7 +303,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       fixture.componentInstance.showSearchBar = true;
       fixture.detectChanges();
 
-      userEvent.type(getByLabelText('Search staff training records'), 'search term here{enter}');
+      userEvent.type(getByLabelText('Search by name or ID number staff training records'), 'search term here{enter}');
       expect(spy).toHaveBeenCalledWith([], {
         fragment: 'training-and-qualifications',
         queryParams: { search: 'search term here', tab: 'training' },
@@ -311,7 +321,9 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       fixture.componentInstance.showSearchBar = true;
       fixture.detectChanges();
 
-      expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
+      expect((getByLabelText('Search by name or ID number staff training records') as HTMLInputElement).value).toBe(
+        'mysupersearch',
+      );
     });
   });
 });

@@ -237,11 +237,6 @@ export interface mandatoryTraining {
   jobs: mandatoryJobs[];
 }
 
-export interface allMandatoryTrainingCategories {
-  mandatoryTrainingCount: number;
-  allJobRolesCount: number;
-  mandatoryTraining: mandatoryTraining[];
-}
 export interface mandatoryTrainingCategories {
   categories: mandatoryTraining[];
 }

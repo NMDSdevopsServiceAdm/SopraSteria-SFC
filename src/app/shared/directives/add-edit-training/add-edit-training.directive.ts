@@ -1,12 +1,14 @@
-import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { MandatoryTraining, TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
+import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -15,16 +17,16 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Directive({})
-export class AddEditTrainingDirective implements OnInit, AfterViewInit {
+export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
+  public trainingCategory: { id: number; category: string };
   public worker: Worker;
   public workplace: Establishment;
-  public missingTrainingRecord: MandatoryTraining;
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
@@ -32,26 +34,31 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public subscriptions: Subscription = new Subscription();
   public previousUrl: string[];
   public title: string;
+  public section: string;
   public buttonText: string;
   public showWorkerCount = false;
+  public remainingCharacterCount: number = this.notesMaxLength;
+  public notesValue = '';
 
   constructor(
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    protected alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    this.missingTrainingRecord = history.state?.missingRecord;
-
-    this.init();
+    this.trainingCategory = JSON.parse(localStorage.getItem('trainingCategory'));
+    this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
+    this.init();
     this.setTitle();
+    this.setSectionHeading();
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
@@ -62,7 +69,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  protected setBackLink(): void {}
+  public handleOnInput(event: Event) {
+    this.notesValue = (<HTMLInputElement>event.target).value;
+    this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
+  }
 
   protected init(): void {}
 
@@ -70,13 +80,15 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   protected setTitle(): void {}
 
+  protected setSectionHeading(): void {}
+
   protected setButtonText(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-        category: this.missingTrainingRecord ? [null] : [null, Validators.required],
+        category: [null, Validators.required],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
@@ -98,7 +110,13 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form
       .get('completed')
       .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(minDate)]);
-    this.form.get('expires').setValidators([DateValidator.dateValid(), DateValidator.min(minDate)]);
+    this.form
+      .get('expires')
+      .setValidators([
+        DateValidator.dateValid(),
+        DateValidator.min(minDate),
+        DateValidator.beforeStartDate('completed', true, true),
+      ]);
   }
 
   private getCategories(): void {
@@ -123,7 +141,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Select a training category',
+            message: 'Select the training category',
           },
         ],
       },
@@ -169,7 +187,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
             message: 'Expiry date cannot be more than 100 years ago',
           },
           {
-            name: 'expiresBeforeCompleted',
+            name: 'beforeStartDate',
             message: 'Expiry date must be after date completed',
           },
         ],
@@ -206,7 +224,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
-        id: !this.missingTrainingRecord ? parseInt(category.value) : this.missingTrainingRecord.id,
+        id: parseInt(category.value),
       },
       title: title.value,
       accredited: accredited.value,
@@ -249,7 +267,15 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     return null;
   }
 
+  public setBackLink(): void {
+    this.backLinkService.showBackLink();
+  }
+
   public onCancel(): void {
-    this.router.navigateByUrl(this.previousUrl[0]);
+    this.router.navigate(this.previousUrl);
+  }
+
+  ngOnDestroy(): void {
+    localStorage.removeItem('trainingCategory');
   }
 }

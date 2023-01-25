@@ -23,7 +23,7 @@ const _maptoCSVregisteredNurse = (registeredNurse) => {
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
   //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
-  //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
+  //     "NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
   const columns = [];
 
   // "LOCALESTID"
@@ -327,22 +327,6 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
     }
   }
   columns.push(avgHours);
-
-  // "OTHERJOBROLE"
-  columns.push(
-    entity.OtherJobsValue === 'Yes'
-      ? entity.otherJobs.map((thisJob) => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.id)).join(';')
-      : '',
-  );
-
-  // "OTHERJRDESC"
-  columns.push(
-    entity.OtherJobsValue === 'Yes'
-      ? entity.otherJobs
-          .map((thisJob) => (thisJob.other && thisJob.workerJobs.other ? thisJob.workerJobs.other : ''))
-          .join(';')
-      : '',
-  );
 
   const NURSE_JOB_ID = 23;
 

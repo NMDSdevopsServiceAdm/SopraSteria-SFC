@@ -7,6 +7,9 @@ import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
+import {
+  ViewTrainingComponent,
+} from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
@@ -75,6 +78,12 @@ const routes: Routes = [
       permissions: ['canAddWorker'],
       title: 'Basic Records Save Success',
     },
+  },
+  {
+    path: 'view-training-category/:categoryId',
+    component: ViewTrainingComponent,
+
+    data: { title: 'View Training Categories' },
   },
   {
     path: ':id',

@@ -10,7 +10,7 @@ const {
 
 const getAllTraining = async function (_req, res) {
   try {
-    let results = await models.workerTrainingCategories.findAll({
+    const results = await models.workerTrainingCategories.findAll({
       order: [['seq', 'ASC']],
     });
 

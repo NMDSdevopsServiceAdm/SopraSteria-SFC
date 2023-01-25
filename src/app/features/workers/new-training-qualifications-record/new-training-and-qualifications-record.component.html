@@ -72,6 +72,7 @@
             role="button"
             draggable="false"
             [routerLink]="['../select-record-type']"
+            (click)="resetLocalStorage()"
           >
             Add a record
           </a>
@@ -138,7 +139,7 @@
             *ngIf="canEditWorker"
             draggable="false"
             role="button"
-            [routerLink]="['/workplace', workplace.uid, 'add-mandatory-training']"
+            [routerLink]="['/workplace', workplace.uid, 'add-and-manage-mandatory-training']"
           >
             Manage mandatory training
           </a>
@@ -148,7 +149,6 @@
       <div *ngIf="missingJobRoleMandatoryTrainingCount > 0">
         <app-missing-mandatory-training
           [missingMandatoryTraining]="missingMandatoryTraining"
-          (addClicked)="addButtonClicked()"
           [canEditWorker]="canEditWorker"
         ></app-missing-mandatory-training>
       </div>
@@ -156,8 +156,6 @@
       <div *ngIf="mandatoryTrainingCount > 0">
         <app-new-training
           [trainingRecords]="mandatoryTraining"
-          [trainingType]="'mandatory'"
-          [setReturnRoute]="setReturnRoute"
           [canEditWorker]="canEditWorker"
           data-testid="mandatory-training"
         ></app-new-training>
@@ -176,8 +174,6 @@
       <ng-template #nonMandatoryTrainingTable>
         <app-new-training
           [trainingRecords]="nonMandatoryTraining"
-          [trainingType]="'nonMandatory'"
-          [setReturnRoute]="setReturnRoute"
           [canEditWorker]="canEditWorker"
           data-testid="non-mandatory-training"
         ></app-new-training>

@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
 import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
@@ -24,14 +24,23 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    protected alertService: AlertService,
     private establishmentService: EstablishmentService,
-    private alertService: AlertService,
   ) {
-    super(formBuilder, route, router, backService, errorSummaryService, trainingService, workerService);
+    super(
+      formBuilder,
+      route,
+      router,
+      backLinkService,
+      errorSummaryService,
+      trainingService,
+      workerService,
+      alertService,
+    );
   }
 
   protected init(): void {
@@ -45,14 +54,11 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.title = 'Add training details';
   }
 
+  protected setSectionHeading(): void {
+    this.section = 'Add multiple records';
+  }
   protected setButtonText(): void {
     this.buttonText = 'Finish';
-  }
-
-  protected setBackLink(): void {
-    this.backService.setBackLink({
-      url: ['workplace', this.workplace.uid, 'add-multiple-training', 'select-staff'],
-    });
   }
 
   protected submit(record: TrainingRecordRequest): void {
