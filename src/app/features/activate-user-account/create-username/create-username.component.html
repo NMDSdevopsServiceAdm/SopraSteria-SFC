@@ -17,7 +17,9 @@
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUsername.errors">
           <label class="govuk-label" for="username"> Username </label>
-          <span id="username-hint" class="govuk-hint"> You will use this to sign in. It should be unique to you </span>
+          <span id="username-hint" class="govuk-hint"
+            >You'll use this to sign in, so it needs to be unique to you.</span
+          >
           <span *ngIf="submitted && getUsername.errors" id="username-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFirstErrorMessage('username') }}
