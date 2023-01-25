@@ -80,11 +80,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.serverErrorsMap = [
       {
         name: 401,
-        message: 'Your username/password is incorrect',
-      },
-      {
-        name: 404,
-        message: 'User not found.',
+        message: 'Your username or your password is incorrect',
       },
       {
         name: 500,
