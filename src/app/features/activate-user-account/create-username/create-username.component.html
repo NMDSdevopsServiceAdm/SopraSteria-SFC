@@ -56,8 +56,18 @@
               id="createPasswordInput"
               name="createPasswordInput"
               [class.govuk-input--error]="submitted && getPassword.errors"
-              type="password"
+              [type]="showPassword ? 'text' : 'password'"
+              data-testid="password"
             />
+            <a
+              class="govuk-body-m govuk-button--link govuk-link govuk-link--no-visited-state govuk-!-margin-left-5"
+              (click)="togglePasswordShow($event)"
+              role="button"
+              href="#"
+            >
+              <ng-container *ngIf="showPassword; else showText">Hide</ng-container
+              ><ng-template #showText>Show</ng-template> passwords
+            </a>
           </div>
 
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getConfirmPassword.errors">
