@@ -6,7 +6,6 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Roles } from '@core/model/roles.enum';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -26,7 +25,6 @@ export class AddAdminUserComponent extends AccountDetailsDirective {
 
   constructor(
     private breadcrumbService: BreadcrumbService,
-    protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
@@ -35,7 +33,7 @@ export class AddAdminUserComponent extends AccountDetailsDirective {
     private alertService: AlertService,
     protected route: ActivatedRoute,
   ) {
-    super(backService, backLinkService, errorSummaryService, fb, router, route);
+    super(backLinkService, errorSummaryService, fb, router, route);
   }
 
   protected init(): void {
