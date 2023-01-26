@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SecurityDetails } from '@core/model/security-details.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -18,13 +17,12 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
   constructor(
     private createAccountService: CreateAccountService,
     private route: ActivatedRoute,
-    protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
   ) {
-    super(backService, backLinkService, errorSummaryService, formBuilder, router);
+    super(backLinkService, errorSummaryService, formBuilder, router);
   }
 
   protected init(): void {

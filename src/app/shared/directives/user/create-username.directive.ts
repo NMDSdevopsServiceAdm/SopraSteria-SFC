@@ -6,7 +6,6 @@ import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { URLStructure } from '@core/model/url.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -37,7 +36,6 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   protected userNameMinLength = 3;
 
   constructor(
-    protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
