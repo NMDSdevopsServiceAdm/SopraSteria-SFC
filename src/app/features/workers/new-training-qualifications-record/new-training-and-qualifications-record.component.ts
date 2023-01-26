@@ -211,16 +211,13 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   public setReturnRoute(): void {
-    this.workerService.setReturnTo({
-      url: [this.router.url],
-    });
+    localStorage.setItem(
+      'previousUrl',
+      this.router.url.includes('#') ? this.router.url.slice(0, this.router.url.indexOf('#')) : this.router.url,
+    );
   }
 
   public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
-  // public resetLocalStorage(): void {
-  //   localStorage.removeItem('trainingCategory');
-  // }
 }

@@ -29,17 +29,16 @@
                   <a
                     class="govuk-link--no-visited-state"
                     [attr.data-testid]="'Title-' + trainingRecord.uid"
-                    [routerLink]="['../training', trainingRecord.uid]"
+                    [routerLink]="[
+                      '../training',
+                      trainingRecord.uid,
+                      {
+                        trainingCategory: trainingRecord.trainingCategory | json
+                      }
+                    ]"
                     >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
                   >
                 </ng-template>
-                <!-- <a
-                class="govuk-link--no-visited-state"
-                [routerLink]="['../training', records.uid]"
-                [attr.data-testid]="'Title-' + records.uid"
-                (click)="setLocalStorage($event, records.trainingCategory)"
-                >{{ records.title ? records.title : 'Missing training name - Add' }}</a
-              > -->
               </ng-container>
               <ng-template #viewOnly>
                 <span [attr.data-testid]="'Title-no-link-' + trainingRecord.uid">

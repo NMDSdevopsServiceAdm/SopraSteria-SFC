@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Directive({})
-export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestroy {
+export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted = false;
@@ -53,8 +53,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    // this.trainingCategory = JSON.parse(localStorage.getItem('trainingCategory'));
-    // this.previousUrl = [localStorage.getItem('previousUrl')];
+    if (this.route.snapshot.params.trainingCategory) {
+      this.trainingCategory = JSON.parse(this.route.snapshot.params.trainingCategory);
+    }
+    this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
     this.init();
     this.setTitle();
@@ -273,9 +275,5 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit, OnDestro
 
   public onCancel(): void {
     this.router.navigate(this.previousUrl);
-  }
-
-  ngOnDestroy(): void {
-    localStorage.removeItem('trainingCategory');
   }
 }

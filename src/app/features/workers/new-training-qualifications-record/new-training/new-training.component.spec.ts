@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { fireEvent } from '@testing-library/angular';
 
 import { NewTrainingComponent } from './new-training.component';
 
@@ -162,25 +161,31 @@ describe('NewTrainingComponent', async () => {
         By.css('[data-testid="Title-someHealthUid2"]'),
       ).nativeElement;
 
-      expect(autismTrainingTitleLink.getAttribute('href')).toBe('/training/someAutismUid');
-      expect(autismTraining2TitleLink.getAttribute('href')).toBe('/training/someAutismUid2');
-      expect(communicationTrainingTitleLink.getAttribute('href')).toBe('/training/someCommunicationUid');
-      expect(healthTrainingTitleLink.getAttribute('href')).toBe('/training/someHealthUid');
-      expect(healthTraining2TitleLink.getAttribute('href')).toBe('/training/someHealthUid2');
-    });
-
-    it('should save the trainingCategory into local storage when clicking a link', async () => {
-      component.canEditWorker = true;
-      fixture.detectChanges();
-
-      const localStorageSpy = spyOn(localStorage, 'setItem').and.callThrough();
-
-      const autismTrainingTitleLink = fixture.debugElement.query(
-        By.css('[data-testid="Title-someAutismUid"]'),
-      ).nativeElement;
-
-      fireEvent.click(autismTrainingTitleLink);
-      expect(localStorageSpy).toHaveBeenCalledWith('trainingCategory', '{"id":2,"category":"Autism"}');
+      expect(
+        autismTrainingTitleLink
+          .getAttribute('href')
+          .slice(0, autismTrainingTitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someAutismUid');
+      expect(
+        autismTraining2TitleLink
+          .getAttribute('href')
+          .slice(0, autismTraining2TitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someAutismUid2');
+      expect(
+        communicationTrainingTitleLink
+          .getAttribute('href')
+          .slice(0, communicationTrainingTitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someCommunicationUid');
+      expect(
+        healthTrainingTitleLink
+          .getAttribute('href')
+          .slice(0, healthTrainingTitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someHealthUid');
+      expect(
+        healthTraining2TitleLink
+          .getAttribute('href')
+          .slice(0, healthTraining2TitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someHealthUid2');
     });
 
     it('training title should not link to training records if you are a read only user', () => {

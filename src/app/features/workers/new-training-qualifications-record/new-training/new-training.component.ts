@@ -14,14 +14,4 @@ export class NewTrainingComponent {
   @Input() public canEditWorker: boolean;
 
   constructor(protected trainingStatusService: TrainingStatusService) {}
-
-  // @Input() public trainingRecords: TrainingRecordCategory[];
-  // @Input() public canEditWorker: boolean;
-
-  // constructor(private trainingStatusService: TrainingStatusService) {}
-
-  // public setLocalStorage(event: Event, training: { id: number; category: string }): void {
-  //   event.preventDefault();
-  //   localStorage.setItem('trainingCategory', JSON.stringify(training));
-  // }
 }

@@ -19,7 +19,7 @@ import { of } from 'rxjs';
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
-  async function setup(trainingRecordId = '1') {
+  async function setup(trainingRecordId = '1', trainingCategoryData = null) {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
       {
@@ -31,7 +31,7 @@ describe('AddEditTrainingComponent', () => {
             provide: ActivatedRoute,
             useValue: new MockActivatedRoute({
               snapshot: {
-                params: { trainingRecordId },
+                params: { trainingRecordId, trainingCategory: trainingCategoryData },
               },
               parent: {
                 snapshot: {
@@ -101,10 +101,15 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
-      const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(null);
+      const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
+        null,
+        JSON.stringify({
+          category: 'Autism',
+          id: 1,
+        }),
+      );
 
       spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
-      spyOn(localStorage, 'getItem').and.returnValue('{"id":1,"category":"Autism"}');
       component.ngOnInit();
       fixture.detectChanges();
 
