@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Establishment, SortTrainingAndQualsOptionsWorker } from '@core/model/establishment.model';
+import { Establishment, SortTrainingAndQualsOptionsWorkerNoMissing } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -20,16 +20,15 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
   public canEditWorker = false;
   public trainingCategoryId: number;
   private subscriptions: Subscription = new Subscription();
-  public sortTrainingAndQualOptions = SortTrainingAndQualsOptionsWorker;
+  public sortTrainingAndQualOptions = SortTrainingAndQualsOptionsWorkerNoMissing;
   public sortByValue: '0_expired';
-  public searchTerm: '';
+  public searchTerm = '';
   public trainingCount: number;
   public totalTrainingCount: number;
-  public sortByParamMap: {
-    '0_expired': 'trainingExpired';
-    '1_expires_soon': 'trainingExpiringSoon';
-    '2_missing': 'trainingMissing';
-    '3_worker': 'staffNameAsc';
+  public sortByParamMap = {
+    '0_expired': 'trainingExpired',
+    '1_expires_soon': 'trainingExpiringSoon',
+    '2_worker': 'staffNameAsc',
   };
   public trainings;
 
@@ -57,6 +56,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
 
   private setWorkersAndCount(): void {
     const { training = [], category, trainingCount } = this.route.snapshot.data.training;
+
     this.trainings = training;
     this.category = category;
     this.totalTrainingCount = trainingCount;
@@ -120,27 +120,6 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
   public trainingStatus(training): number {
     return this.trainingStatusService.trainingStatusForRecord(training);
   }
-
-  // public sortByTrainingStatus(): void {
-  //   const missings = this.trainings.filter((t: any) => t.missing);
-
-  //   const expired = this.trainings.filter(
-  //     (t: any) => t.expires && this.trainingStatusService.getDaysDifference(t.expires) < 0,
-  //   );
-
-  //   const expireSoon = this.trainings.filter(
-  //     (t: any) =>
-  //       t.expires &&
-  //       this.trainingStatusService.getDaysDifference(t.expires) >= 0 &&
-  //       this.trainingStatusService.getDaysDifference(t.expires) <=
-  //         parseInt(this.trainingStatusService.expiresSoonAlertDate$.value),
-  //   );
-
-  //   const sortedStatus = expired.concat(expireSoon).concat(missings);
-  //   const active = this.trainings.filter((t: any) => sortedStatus.every((f: any) => f.id !== t.id));
-
-  //   this.trainings = sortedStatus.concat(active);
-  // }
 
   public returnToHome(): void {
     const returnLink =

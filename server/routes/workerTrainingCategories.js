@@ -53,7 +53,6 @@ const getCategoryTraining = async (req, res) => {
   try {
     const { establishmentId, trainingId } = req.params;
     const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
-
     const isMandatory = await models.MandatoryTraining.checkIfTrainingCategoryIsMandatory(establishmentId, trainingId);
 
     let response;
@@ -70,15 +69,11 @@ const getCategoryTraining = async (req, res) => {
         searchTerm,
       );
     }
-    console.log('*******************');
-    console.log(response);
-    console.log(response.rows.length);
-    console.log(response.count);
     const rows = response.rows;
+    const category = rows[0].get('category');
     const foundWorkers = rows.length && rows[0].workers;
     const trainingCount = response.count;
     const transformedTraining = transformTrainingForACategory(foundWorkers);
-    const { category } = foundWorkers[0].workerTraining[0].category;
     res.json({ training: transformedTraining, category, trainingCount });
   } catch (error) {
     console.error(error);

@@ -96,7 +96,6 @@ const transformTrainingForACategory = (workersWithTraining) => {
         title,
         uid,
         categoryFk,
-        expirationStatus: training.get('expirationStatus'),
         worker: {
           id: worker.id,
           uid: worker.uid,

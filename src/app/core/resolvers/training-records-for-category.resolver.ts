@@ -17,7 +17,7 @@ export class TrainingRecordsForCategoryResolver implements Resolve<any> {
     const workplaceId = this.establishmentService.primaryWorkplace.id;
     const trainingId = +route.paramMap.get('categoryId');
 
-    const paginationParams = { pageIndex: 0, itemsPerPage: 15 };
+    const paginationParams = { pageIndex: 0, itemsPerPage: 15, sortBy: 'trainingExpired' };
 
     return this.trainingCategoryService.getTrainingCategory(workplaceId, trainingId, paginationParams).pipe(
       catchError(() => {

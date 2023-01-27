@@ -1779,6 +1779,15 @@ module.exports = function (sequelize, DataTypes) {
       offset,
     };
 
+    const workplaceAttributes = [
+      'id',
+      'NameValue',
+      [
+        sequelize.literal(`(SELECT "Category" FROM cqc."TrainingCategories" WHERE "ID" = ${trainingCategoryId})`),
+        'category',
+      ],
+    ];
+
     const trainingAttributes = [
       'id',
       'uid',
@@ -1789,37 +1798,40 @@ module.exports = function (sequelize, DataTypes) {
       [
         sequelize.literal(
           `CASE
-            WHEN "Expires" < '${currentDate}' THEN 'Expired'
-            WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 'Expiring soon'
-            ELSE 'OK'
-            END
-            `,
+            WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 2
+            WHEN "Expires" < '${currentDate}' THEN 1
+            ELSE 0
+          END`,
         ),
-        'expirationStatus',
+        'sortByExpiresSoon',
+      ],
+
+      [
+        sequelize.literal(
+          `CASE
+            WHEN "Expires" < '${currentDate}' THEN 2
+            WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 1
+            ELSE 0
+          END`,
+        ),
+        'sortByExpired',
       ],
     ];
 
-    // const order = {
-    //   staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
-    //   staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
-    //   jobRoleAsc: [[sequelize.literal('"workers.mainJob.jobRoleName"'), 'ASC']],
-    //   jobRoleDesc: [[sequelize.literal('"workers.mainJob.jobRoleName"'), 'DESC']],
-    //   trainingExpiringSoon: [
-    //     [sequelize.literal('"workers.expiringTrainingCount"'), 'DESC'],
-    //     ['workers', 'NameOrIdValue', 'ASC'],
-    //   ],
-    //   trainingExpired: [
-    //     [sequelize.literal('"workers.expiredTrainingCount"'), 'DESC'],
-    //     ['workers', 'NameOrIdValue', 'ASC'],
-    //   ],
-    //   trainingMissing: [
-    //     [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
-    //     ['workers', 'NameOrIdValue', 'ASC'],
-    //   ],
-    // }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
+    const order = {
+      staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
+      trainingExpired: [
+        [sequelize.literal('"workers.workerTraining.sortByExpired"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+      trainingExpiringSoon: [
+        [sequelize.literal('"workers.workerTraining.sortByExpiresSoon"'), 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+    }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
 
     return this.findAndCountAll({
-      attributes: ['id', 'NameValue'],
+      attributes: workplaceAttributes,
       where: { id: establishmentId },
       include: [
         {
@@ -1843,18 +1855,11 @@ module.exports = function (sequelize, DataTypes) {
               where: {
                 CategoryFK: trainingCategoryId,
               },
-
-              include: [
-                {
-                  model: sequelize.models.workerTrainingCategories,
-                  as: 'category',
-                },
-              ],
             },
           ],
         },
       ],
-      // order,
+      order,
       ...(limit ? pagination : {}),
     });
   };
@@ -1937,6 +1942,7 @@ module.exports = function (sequelize, DataTypes) {
           ],
         },
       ],
+      logging: console.log,
     });
   };
 
