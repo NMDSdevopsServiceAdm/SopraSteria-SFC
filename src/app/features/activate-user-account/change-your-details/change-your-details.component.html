@@ -6,9 +6,7 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">Account</span>
-          <h1 class="govuk-fieldset__heading">
-            Details
-          </h1>
+          <h1 class="govuk-fieldset__heading">Details</h1>
         </legend>
 
         <ng-container *ngFor="let item of formControlsMap">
@@ -36,5 +34,5 @@
       </fieldset>
     </div>
   </div>
-  <app-submit-exit-buttons [return]="return"></app-submit-exit-buttons>
+  <app-submit-exit-buttons [return]="return" [exit]="'Cancel'"></app-submit-exit-buttons>
 </form>

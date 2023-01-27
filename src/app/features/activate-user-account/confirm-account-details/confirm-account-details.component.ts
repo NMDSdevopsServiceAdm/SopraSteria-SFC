@@ -89,7 +89,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
         route: { url: ['/activate-account', this.activationToken, 'security-question'] },
       },
       {
-        label: 'Security answer',
+        label: 'Answer',
         data: this.securityDetails.securityQuestionAnswer,
       },
     ];

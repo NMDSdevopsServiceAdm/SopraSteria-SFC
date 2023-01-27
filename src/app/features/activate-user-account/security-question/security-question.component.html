@@ -1,15 +1,14 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
-
-<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">User account</span>
           <h1 class="govuk-fieldset__heading">Create and answer your security question</h1>
         </legend>
 
-        <p class="govuk-!-margin-bottom-4">
+        <p class="govuk-!-margin-bottom-6">
           You'll need to be able to answer this question if you forget your username or need to speak to Skills for Care
           about your account.
         </p>
@@ -37,7 +36,8 @@
           </div>
         </ng-container>
       </fieldset>
-    </div>
+
+      <button class="govuk-button govuk-!-margin-top-4" type="submit">Continue</button>
+    </form>
   </div>
-  <app-submit-exit-buttons [return]="return"></app-submit-exit-buttons>
-</form>
+</div>

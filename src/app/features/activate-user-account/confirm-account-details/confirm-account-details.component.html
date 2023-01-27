@@ -7,12 +7,10 @@
 </app-error-summary>
 
 <div class="govuk-grid-row" id="server-error">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
+  <div class="govuk-grid-column-full-from-desktop">
     <span class="govuk-caption-l govuk-!-margin-bottom-2">User account</span>
     <h1 class="govuk-heading-l">Confirm your account details</h1>
-    <p class="govuk-!-margin-bottom-6">
-      Before saving this user account, check the information you have provided is correct.
-    </p>
+    <p class="govuk-!-margin-bottom-6">Check these details before you submit them.</p>
 
     <app-summary-list [topBorder]="true" [summaryList]="userInfo" (setReturn)="onSetReturn()"></app-summary-list>
     <app-summary-list [topBorder]="true" [summaryList]="loginInfo" (setReturn)="onSetReturn()"></app-summary-list>
@@ -26,16 +24,6 @@
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="form">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="termsAndConditions-hint">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h2 class="govuk-fieldset__heading">Are these details correct?</h2>
-          </legend>
-          <span id="termsAndConditions-hint" class="govuk-hint">
-            Check the box to confirm you agree to the
-            <a [routerLink]="['/terms-and-conditions']" target="_blank">
-              terms and conditions<span class="govuk-visually-hidden">, (opens in a new window)</span>
-            </a>
-            . You must agree to them before your account can be activated.
-          </span>
           <span *ngIf="submitted && form.invalid" id="termsAndConditions-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFirstErrorMessage('termsAndConditions') }}
@@ -51,16 +39,18 @@
                 [formControlName]="'termsAndConditions'"
               />
               <label class="govuk-label govuk-checkboxes__label" for="termsAndConditions">
-                I agree to the terms and conditions of this service
+                I agree to the
+                <a [routerLink]="['/terms-and-conditions']" target="_blank">
+                  terms and conditions<span class="govuk-visually-hidden">, (opens in a new window)</span>
+                </a>
+                of this service.
               </label>
             </div>
           </div>
         </fieldset>
       </div>
 
-      <div class="govuk-button-group">
-        <button type="submit" class="govuk-button">Submit details</button>
-      </div>
+      <button type="submit" class="govuk-button govuk-!-margin-top-4">Submit details</button>
     </form>
   </div>
 </div>
