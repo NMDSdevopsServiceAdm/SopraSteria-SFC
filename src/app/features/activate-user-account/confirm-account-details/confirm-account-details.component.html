@@ -8,12 +8,19 @@
 
 <div class="govuk-grid-row" id="server-error">
   <div class="govuk-grid-column-full-from-desktop">
-    <span class="govuk-caption-l govuk-!-margin-bottom-2">User account</span>
     <h1 class="govuk-heading-l">Confirm your account details</h1>
     <p class="govuk-!-margin-bottom-6">Check these details before you submit them.</p>
 
+    <h1 class="govuk-heading-m">User account</h1>
+
     <app-summary-list [topBorder]="true" [summaryList]="userInfo" (setReturn)="onSetReturn()"></app-summary-list>
-    <app-summary-list [topBorder]="true" [summaryList]="loginInfo" (setReturn)="onSetReturn()"></app-summary-list>
+    <app-summary-list
+      [topBorder]="true"
+      [summaryList]="loginInfo"
+      [displayShowPasswordToggle]="true"
+      (setReturn)="onSetReturn()"
+      data-testid="loginInfo"
+    ></app-summary-list>
     <app-summary-list
       [wrapBorder]="true"
       [summaryList]="securityInfo"

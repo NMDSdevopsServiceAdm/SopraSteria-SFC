@@ -78,7 +78,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       },
       {
         label: 'Password',
-        data: '******',
+        data: this.loginCredentials.password,
       },
     ];
 
