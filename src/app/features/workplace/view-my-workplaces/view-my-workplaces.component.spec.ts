@@ -27,7 +27,7 @@ import sinon from 'sinon';
 import { WorkplaceInfoPanelComponent } from '../workplace-info-panel/workplace-info-panel.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
-fdescribe('ViewMyWorkplacesComponent', () => {
+describe('ViewMyWorkplacesComponent', () => {
   async function setup(hasChildWorkplaces = true, qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText } = await render(
       ViewMyWorkplacesComponent,

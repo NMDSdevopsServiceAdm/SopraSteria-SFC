@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, SortTrainingAndQualsOptionsWorker } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -13,14 +13,24 @@ import { take } from 'rxjs/operators';
   selector: 'app-training-and-qualifications-categories-view',
   templateUrl: './view-trainings.component.html',
 })
-export class ViewTrainingComponent implements OnInit {
+export class ViewTrainingComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public primaryWorkplaceUid: string;
-  public category: any;
+  public category: string;
   public canEditWorker = false;
-  public trainingCategoryId;
+  public trainingCategoryId: number;
   private subscriptions: Subscription = new Subscription();
-
+  public sortTrainingAndQualOptions = SortTrainingAndQualsOptionsWorker;
+  public sortByValue: '0_expired';
+  public searchTerm: '';
+  public trainingCount: number;
+  public totalTrainingCount: number;
+  public sortByParamMap: {
+    '0_expired': 'trainingExpired';
+    '1_expires_soon': 'trainingExpiringSoon';
+    '2_missing': 'trainingMissing';
+    '3_worker': 'staffNameAsc';
+  };
   public trainings;
 
   constructor(
@@ -38,10 +48,19 @@ export class ViewTrainingComponent implements OnInit {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.trainingCategoryId = this.route.snapshot.params.categoryId;
+
+    this.setWorkersAndCount();
     this.setExpiresSoonAlertDates();
-    this.getAllTrainingByCategory();
     this.setBackLink();
     localStorage.setItem('previousUrl', this.router.url);
+  }
+
+  private setWorkersAndCount(): void {
+    const { training = [], category, trainingCount } = this.route.snapshot.data.training;
+    this.trainings = training;
+    this.category = category;
+    this.totalTrainingCount = trainingCount;
+    this.trainingCount = trainingCount;
   }
 
   private setExpiresSoonAlertDates(): void {
@@ -52,22 +71,47 @@ export class ViewTrainingComponent implements OnInit {
     );
   }
 
-  private getAllTrainingByCategory(): void {
+  public getWorkersByTrainingCategory(properties: {
+    index: number;
+    itemsPerPage: number;
+    searchTerm: string;
+    sortByValue: string;
+  }): void {
+    const { index, itemsPerPage, searchTerm, sortByValue } = properties;
     this.subscriptions.add(
       this.trainingCategoryService
-        .getCategoriesWithTraining(this.workplace.id)
+        .getTrainingCategory(this.workplace.id, this.trainingCategoryId, {
+          pageIndex: index,
+          itemsPerPage: itemsPerPage,
+          sortBy: sortByValue,
+          ...(searchTerm ? { searchTerm } : {}),
+        })
         .pipe(take(1))
-        .subscribe((categories: any) => {
-          this.category = categories.find((t: any) => t.id == this.trainingCategoryId);
-          localStorage.setItem(
-            'trainingCategory',
-            JSON.stringify({ id: this.category.id, category: this.category.category }),
-          );
-          this.trainings = this.category.training;
-          this.sortByTrainingStatus();
+        .subscribe((data) => {
+          this.trainings = data.training;
+          this.trainingCount = data.trainingCount;
         }),
     );
   }
+
+  // private getAllTrainingByCategory(): void {
+  //   this.subscriptions.add(
+  //     this.trainingCategoryService
+  //       .getCategoriesWithTraining(this.workplace.id)
+  //       .pipe(take(1))
+  //       .subscribe((categories: any) => {
+  //         this.category = categories.find((t: any) => t.id == this.trainingCategoryId);
+  //         localStorage.setItem(
+  //           'trainingCategory',
+  //           JSON.stringify({ id: this.category.id, category: this.category.category }),
+  //         );
+  //         console.log('##############');
+  //         this.trainings = this.category.training;
+  //         console.log(this.trainings);
+  //         this.sortByTrainingStatus();
+  //       }),
+  //   );
+  // }
 
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
@@ -77,30 +121,34 @@ export class ViewTrainingComponent implements OnInit {
     return this.trainingStatusService.trainingStatusForRecord(training);
   }
 
-  public sortByTrainingStatus(): void {
-    const missings = this.trainings.filter((t: any) => t.missing);
+  // public sortByTrainingStatus(): void {
+  //   const missings = this.trainings.filter((t: any) => t.missing);
 
-    const expired = this.trainings.filter(
-      (t: any) => t.expires && this.trainingStatusService.getDaysDifference(t.expires) < 0,
-    );
+  //   const expired = this.trainings.filter(
+  //     (t: any) => t.expires && this.trainingStatusService.getDaysDifference(t.expires) < 0,
+  //   );
 
-    const expireSoon = this.trainings.filter(
-      (t: any) =>
-        t.expires &&
-        this.trainingStatusService.getDaysDifference(t.expires) >= 0 &&
-        this.trainingStatusService.getDaysDifference(t.expires) <=
-          parseInt(this.trainingStatusService.expiresSoonAlertDate$.value),
-    );
+  //   const expireSoon = this.trainings.filter(
+  //     (t: any) =>
+  //       t.expires &&
+  //       this.trainingStatusService.getDaysDifference(t.expires) >= 0 &&
+  //       this.trainingStatusService.getDaysDifference(t.expires) <=
+  //         parseInt(this.trainingStatusService.expiresSoonAlertDate$.value),
+  //   );
 
-    const sortedStatus = expired.concat(expireSoon).concat(missings);
-    const active = this.trainings.filter((t: any) => sortedStatus.every((f: any) => f.id !== t.id));
+  //   const sortedStatus = expired.concat(expireSoon).concat(missings);
+  //   const active = this.trainings.filter((t: any) => sortedStatus.every((f: any) => f.id !== t.id));
 
-    this.trainings = sortedStatus.concat(active);
-  }
+  //   this.trainings = sortedStatus.concat(active);
+  // }
 
   public returnToHome(): void {
     const returnLink =
       this.workplace.uid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
     this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

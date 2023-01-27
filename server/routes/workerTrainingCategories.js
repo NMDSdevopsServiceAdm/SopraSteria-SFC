@@ -6,6 +6,7 @@ const models = require('../models/index');
 const {
   transformTrainingCategories,
   transformTrainingCategoriesWithMandatoryTraining,
+  transformTrainingForACategory,
 } = require('../transformers/trainingCategoryTransformer');
 
 const getAllTraining = async function (_req, res) {
@@ -48,8 +49,44 @@ const getTrainingByCategory = async (req, res) => {
   }
 };
 
+const getCategoryTraining = async (req, res) => {
+  try {
+    const { establishmentId, trainingId } = req.params;
+    const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
+
+    const isMandatory = await models.MandatoryTraining.checkIfTrainingCategoryIsMandatory(establishmentId, trainingId);
+
+    let response;
+    if (isMandatory) {
+      console.log(isMandatory);
+      return;
+    } else {
+      response = await models.establishment.fetchWorkerTrainingRecordsForACategory(
+        establishmentId,
+        trainingId,
+        itemsPerPage && +itemsPerPage,
+        pageIndex && +pageIndex,
+        sortBy,
+        searchTerm,
+      );
+    }
+    console.log('*******************');
+    console.log(response);
+    console.log(response.rows.length);
+    console.log(response.count);
+    const rows = response.rows;
+    const foundWorkers = rows.length && rows[0].workers;
+    const trainingCount = response.count;
+    const transformedTraining = transformTrainingForACategory(foundWorkers);
+    const { category } = foundWorkers[0].workerTraining[0].category;
+    res.json({ training: transformedTraining, category, trainingCount });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 router.route('/').get([refCacheMiddleware.refcache, getAllTraining]);
 router.route('/:establishmentId/with-training').get([cacheMiddleware.nocache, getTrainingByCategory]);
-
+router.route('/:establishmentId/:trainingId').get([cacheMiddleware.nocache], getCategoryTraining);
 module.exports = router;
 module.exports.getTrainingByCategory = getTrainingByCategory;

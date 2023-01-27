@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import { TrainingRecordCategories } from '@core/model/training.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -14,5 +15,9 @@ export class TrainingCategoryService {
     return this.http
       .get<any>(`/api/trainingCategories/${establishmentId}/with-training`)
       .pipe(map((res) => res.trainingCategories));
+  }
+
+  getTrainingCategory(establishmentId: number, trainingId: number, queryParams?: Params): Observable<any> {
+    return this.http.get<any>(`/api/trainingCategories/${establishmentId}/${trainingId}`, { params: queryParams });
   }
 }

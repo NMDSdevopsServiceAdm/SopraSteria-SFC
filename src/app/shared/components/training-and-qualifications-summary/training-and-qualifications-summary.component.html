@@ -7,15 +7,15 @@
   </div>
 </div>
 <app-table-pagination-wrapper
-  [totalWorkerCount]="totalWorkerCount"
-  [workerCount]="workerCount"
+  [totalCount]="totalWorkerCount"
+  [count]="workerCount"
   [searchTerm]="searchTerm"
   [sortByParamMap]="sortByParamMap"
   [sortByValue]="sortByValue"
   [sortOptions]="sortTrainingAndQualsOptions"
   label="Search by name or ID number"
   accessibleLabel="staff training records"
-  (fetchWorkers)="getPageOfWorkers($event)"
+  (fetchData)="getPageOfWorkers($event)"
 >
   <table *ngIf="workerCount; else noWorkersFoundInSearch" class="govuk-table" data-testid="training-worker-table">
     <thead class="govuk-table__head">

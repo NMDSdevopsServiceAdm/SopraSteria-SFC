@@ -6,15 +6,15 @@ import { Router } from '@angular/router';
   templateUrl: './table-pagination-wrapper.component.html',
 })
 export class TablePaginationWrapperComponent implements OnInit {
-  @Input() totalWorkerCount: number;
-  @Input() workerCount: number;
+  @Input() totalCount: number;
+  @Input() count: number;
   @Input() sortByParamMap: any;
   @Input() sortByValue: string;
   @Input() sortOptions: any;
   @Input() searchTerm: string;
   @Input() label = 'Search';
   @Input() accessibleLabel: string;
-  @Output() fetchWorkers = new EventEmitter<{
+  @Output() fetchData = new EventEmitter<{
     index: number;
     itemsPerPage: number;
     searchTerm: string;
@@ -53,28 +53,28 @@ export class TablePaginationWrapperComponent implements OnInit {
   public sortBy(sortType: string): void {
     this.sortByValue = this.sortByParamMap[sortType];
     this.currentPageIndex = 0;
-    this.getWorkers();
+    this.getData();
   }
 
   public handleSearch(searchTerm: string): void {
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
     this.addQueryParams();
-    this.getWorkers();
+    this.getData();
   }
 
   public handlePageUpdate(pageIndex: number): void {
     this.currentPageIndex = pageIndex;
-    this.getWorkers();
+    this.getData();
   }
 
-  private getWorkers(): void {
+  private getData(): void {
     const properties = {
       index: this.currentPageIndex,
       itemsPerPage: this.itemsPerPage,
       searchTerm: this.searchTerm,
       sortByValue: this.sortByValue,
     };
-    this.fetchWorkers.emit(properties);
+    this.fetchData.emit(properties);
   }
 }

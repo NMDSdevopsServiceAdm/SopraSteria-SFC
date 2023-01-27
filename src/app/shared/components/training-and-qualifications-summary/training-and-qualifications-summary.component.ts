@@ -23,8 +23,6 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   public canViewWorker: boolean;
   public sortTrainingAndQualsOptions: Record<string, string>;
   public sortByValue: string;
-  public itemsPerPage = 15;
-  public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
   public searchTerm = '';
   public totalWorkerCount: number;

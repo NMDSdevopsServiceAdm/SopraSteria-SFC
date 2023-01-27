@@ -22,10 +22,8 @@ export class StaffSummaryComponent implements OnInit {
   public canEditWorker: boolean;
   public sortStaffOptions;
   public workersOrderBy: Array<Worker>;
-  public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
   public sortByValue = 'staffNameAsc';
-  public itemsPerPage = 15;
   public searchTerm = '';
   public sortByParamMap = {
     '0_asc': 'staffNameAsc',

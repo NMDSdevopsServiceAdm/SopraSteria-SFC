@@ -885,6 +885,11 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'Approvals',
     });
+    Establishment.hasMany(models.MandatoryTraining, {
+      foreignKey: 'establishmentFK',
+      sourceKey: 'id',
+      as: 'MandatoryTraining',
+    });
   };
 
   Establishment.turnoverData = function (establishmentId) {
@@ -1752,6 +1757,105 @@ module.exports = function (sequelize, DataTypes) {
       ],
       order,
       ...(limit ? workerPagination : {}),
+    });
+  };
+
+  Establishment.fetchWorkerTrainingRecordsForACategory = async function (
+    establishmentId,
+    trainingCategoryId,
+    limit = 0,
+    pageIndex = 0,
+    sortBy = '',
+    searchTerm = '',
+  ) {
+    const currentDate = moment().toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+    const offset = pageIndex * limit;
+
+    const pagination = {
+      subQuery: false,
+      limit,
+      offset,
+    };
+
+    const trainingAttributes = [
+      'id',
+      'uid',
+      'completed',
+      'expires',
+      'title',
+      'categoryFk',
+      [
+        sequelize.literal(
+          `CASE
+            WHEN "Expires" < '${currentDate}' THEN 'Expired'
+            WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 'Expiring soon'
+            ELSE 'OK'
+            END
+            `,
+        ),
+        'expirationStatus',
+      ],
+    ];
+
+    // const order = {
+    //   staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
+    //   staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
+    //   jobRoleAsc: [[sequelize.literal('"workers.mainJob.jobRoleName"'), 'ASC']],
+    //   jobRoleDesc: [[sequelize.literal('"workers.mainJob.jobRoleName"'), 'DESC']],
+    //   trainingExpiringSoon: [
+    //     [sequelize.literal('"workers.expiringTrainingCount"'), 'DESC'],
+    //     ['workers', 'NameOrIdValue', 'ASC'],
+    //   ],
+    //   trainingExpired: [
+    //     [sequelize.literal('"workers.expiredTrainingCount"'), 'DESC'],
+    //     ['workers', 'NameOrIdValue', 'ASC'],
+    //   ],
+    //   trainingMissing: [
+    //     [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
+    //     ['workers', 'NameOrIdValue', 'ASC'],
+    //   ],
+    // }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
+
+    return this.findAndCountAll({
+      attributes: ['id', 'NameValue'],
+      where: { id: establishmentId },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['id', 'uid', 'NameOrIdValue'],
+          where: {
+            archived: false,
+            ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
+          },
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              attributes: ['title', 'id'],
+            },
+            {
+              model: sequelize.models.workerTraining,
+              as: 'workerTraining',
+              attributes: trainingAttributes,
+              where: {
+                CategoryFK: trainingCategoryId,
+              },
+
+              include: [
+                {
+                  model: sequelize.models.workerTrainingCategories,
+                  as: 'category',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      // order,
+      ...(limit ? pagination : {}),
     });
   };
 
