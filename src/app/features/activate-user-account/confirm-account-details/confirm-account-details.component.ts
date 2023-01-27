@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivateAccountRequest } from '@core/model/account.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-account-details.directive';
@@ -19,7 +19,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
 
   constructor(
     protected route: ActivatedRoute,
-    private backService: BackService,
+    private backLinkService: BackLinkService,
     private createAccountService: CreateAccountService,
     private router: Router,
     protected errorSummaryService: ErrorSummaryService,
@@ -96,7 +96,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, 'security-question'] });
+    this.backLinkService.showBackLink();
   }
 
   private generatePayload(): ActivateAccountRequest {
