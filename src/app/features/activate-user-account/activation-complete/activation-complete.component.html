@@ -1,12 +1,22 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <app-panel [title]="'&#10003; Success'">
-      Your user account<br />
-      has been saved.
-    </app-panel>
-
-    <div class="govuk-button-group">
-      <a role="button" draggable="false" class="govuk-button" [routerLink]="['/login']">Go to sign in</a>
+    <div
+      class="govuk-panel govuk-panel--confirmation govuk-util__align-left govuk-!-padding-top-5 govuk-!-padding-bottom-5"
+    >
+      <h6 class="govuk-panel__title govuk-!-font-size-36 govuk-!-margin-bottom-2">Thank you</h6>
+      <span class="govuk-panel__body govuk-!-font-size-19">Your account is now active</span>
     </div>
+    <h2 class="govuk-heading-m govuk-!-margin-top-7">What happens next?</h2>
+    <p>
+      <a class="text-link" [routerLink]="['/login']">Sign into your account </a> using the username and password that
+      you've <br />just created.
+    </p>
+
+    <app-details [title]="'Contact us if you have any questions.'">
+      <p>
+        Call the ASC-WDS Support Team on <strong>0113 241 0969</strong> <br />or email
+        <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
+      </p>
+    </app-details>
   </div>
 </div>
