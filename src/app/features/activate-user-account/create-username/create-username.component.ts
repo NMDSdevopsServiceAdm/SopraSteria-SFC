@@ -33,16 +33,17 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
     this.flow = this.insideFlow
       ? this.activationToken
       : `activate-account/${this.activationToken}/confirm-account-details`;
-    this.return = this.registrationService.returnTo$.value;
+
+    this.setBackLink();
   }
 
-  // protected setBackLink(): void {
-  //   this.return = this.createAccountService.returnTo$.value;
+  protected setBackLink(): void {
+    this.return = this.createAccountService.returnTo$.value;
 
-  //   if (this.return) {
-  //     this.backService.setBackLink(this.return);
-  //   }
-  // }
+    if (this.return) {
+      this.backLinkService.showBackLink();
+    }
+  }
 
   protected setupSubscriptions(): void {
     this.subscriptions.add(
