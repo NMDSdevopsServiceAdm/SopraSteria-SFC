@@ -99,6 +99,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public onSubmit(): void {
     this.submitted = true;
+    this.serverError = null;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
