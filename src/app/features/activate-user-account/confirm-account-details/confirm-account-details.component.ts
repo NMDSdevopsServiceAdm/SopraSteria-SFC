@@ -54,7 +54,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       {
         label: 'Full name',
         data: this.userDetails.fullname,
-        route: { url: ['/activate-account', this.activationToken, 'change-your-details'] },
+        route: { url: ['/activate-account', this.activationToken, 'confirm-account-details', 'change-your-details'] },
       },
       {
         label: 'Job title',
@@ -74,7 +74,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       {
         label: 'Username',
         data: this.loginCredentials.username,
-        route: { url: ['/activate-account', this.activationToken, 'create-username'] },
+        route: { url: ['/activate-account', this.activationToken, 'confirm-account-details', 'create-username'] },
       },
       {
         label: 'Password',
@@ -86,7 +86,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
-        route: { url: ['/activate-account', this.activationToken, 'security-question'] },
+        route: { url: ['/activate-account', this.activationToken, 'confirm-account-details', 'security-question'] },
       },
       {
         label: 'Answer',

@@ -13,6 +13,8 @@ import { SecurityQuestionDirective } from '@shared/directives/user/security-ques
 })
 export class SecurityQuestionComponent extends SecurityQuestionDirective {
   private activationToken: string;
+  public insideFlow: boolean;
+  public flow: string;
 
   constructor(
     private createAccountService: CreateAccountService,
@@ -27,6 +29,11 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
 
   protected init(): void {
     this.activationToken = this.route.snapshot.params.activationToken;
+    this.insideFlow = this.route.snapshot.parent.url[0].path === this.activationToken;
+    this.flow = this.insideFlow
+      ? this.activationToken
+      : `activate-account/${this.activationToken}/confirm-account-details`;
+
     this.setupSubscription();
     this.setBackLink();
   }

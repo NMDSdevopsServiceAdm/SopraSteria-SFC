@@ -28,9 +28,21 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
   }
 
   protected init(): void {
-    this.callToActionLabel = 'Save and continue';
     this.activationToken = this.route.snapshot.params.activationToken;
+    this.insideFlow = this.route.snapshot.parent.url[0].path === this.activationToken;
+    this.flow = this.insideFlow
+      ? this.activationToken
+      : `activate-account/${this.activationToken}/confirm-account-details`;
+    this.return = this.registrationService.returnTo$.value;
   }
+
+  // protected setBackLink(): void {
+  //   this.return = this.createAccountService.returnTo$.value;
+
+  //   if (this.return) {
+  //     this.backService.setBackLink(this.return);
+  //   }
+  // }
 
   protected setupSubscriptions(): void {
     this.subscriptions.add(
@@ -47,7 +59,7 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
       .navigate([
         '/activate-account',
         this.activationToken,
-        this.return ? 'confirm-account-details' : 'security-question',
+        this.insideFlow ? 'security-question' : 'confirm-account-details',
       ])
       .then(() => {
         this.createAccountService.loginCredentials$.next({
