@@ -41,19 +41,13 @@ const viewAllMandatoryTraining = async (req, res) => {
  * Handle POST request for creating new mandatory training
  */
 
-const createMandatoryTraining = async (req, res) => {
-  const establishmentId = req.establishmentId;
-
-  const thisMandatoryTrainingRecord = new MandatoryTraining(establishmentId);
-
+const createAndUpdateMandatoryTraining = async (req, res) => {
+  const thisMandatoryTrainingRecord = new MandatoryTraining(req.establishmentId);
   try {
-    //validate posted records
     const isValidRecord = await thisMandatoryTrainingRecord.load(req.body);
-    // records validated
     if (isValidRecord) {
-      const saveRecords = await thisMandatoryTrainingRecord.save(req.userUid);
-
-      return res.status(200).json(saveRecords);
+      const saveStatus = await thisMandatoryTrainingRecord.save(req.userUid);
+      return res.status(200).json(`success: ${saveStatus}`);
     } else {
       return res.status(400).send('Unexpected Input.');
     }
@@ -63,12 +57,39 @@ const createMandatoryTraining = async (req, res) => {
   }
 };
 
+const deleteMandatoryTrainingById = async (req, res) => {
+  const thisTrainingRecord = new MandatoryTraining(req.establishmentId);
+  try {
+    await thisTrainingRecord.deleteMandatoryTrainingById(req.params.categoryId);
+    res.status(200).send();
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json();
+  }
+};
+
+const deleteAllMandatoryTraining = async (req, res) => {
+  const thisTrainingRecord = new MandatoryTraining(req.establishmentId);
+  try {
+    await thisTrainingRecord.deleteAllMandatoryTraining();
+
+    res.status(200).send();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send();
+  }
+};
+
 router.route('/').get(hasPermission('canAddWorker'), viewMandatoryTraining);
-router.route('/').post(hasPermission('canAddWorker'), createMandatoryTraining);
+router.route('/').post(hasPermission('canAddWorker'), createAndUpdateMandatoryTraining);
 
 // TODO - we can potentially remove this endpoint
 // There is a ViewAllMandatoryTrainingComponent on the FE but this may also not be used
 // as we have the same view when filtering Training & Quals by category.
 router.route('/all').get(hasPermission('canAddWorker'), viewAllMandatoryTraining);
+router.route('/').delete(hasPermission('canEditWorker'), deleteAllMandatoryTraining);
+router.route('/:categoryId').delete(deleteMandatoryTrainingById);
 
 module.exports = router;
+module.exports.createAndUpdateMandatoryTraining = createAndUpdateMandatoryTraining;
+module.exports.deleteMandatoryTrainingById = deleteMandatoryTrainingById;

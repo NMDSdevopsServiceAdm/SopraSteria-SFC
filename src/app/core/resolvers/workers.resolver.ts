@@ -32,6 +32,7 @@ export class WorkersResolver implements Resolve<any> {
     if (!this.permissionsService.can(workplaceUid, 'canViewListOfWorkers')) return of(null);
 
     const trainingCounts = {
+      totalTraining: 0,
       totalRecords: 0,
       totalExpiredTraining: 0,
       totalExpiringTraining: 0,
@@ -54,8 +55,8 @@ export class WorkersResolver implements Resolve<any> {
       .pipe(
         map(([totalResponse, paginatedResponse]) => {
           totalResponse.workers.forEach((worker) => {
-            const totalTrainingRecord = worker.trainingCount;
-            trainingCounts.totalRecords += totalTrainingRecord + worker.qualificationCount;
+            trainingCounts.totalTraining += worker.trainingCount;
+            trainingCounts.totalRecords += worker.trainingCount + worker.qualificationCount;
             trainingCounts.totalExpiredTraining += worker.expiredTrainingCount;
             trainingCounts.totalExpiringTraining += worker.expiringTrainingCount;
             trainingCounts.missingMandatoryTraining += worker.missingMandatoryTrainingCount;

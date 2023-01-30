@@ -28,8 +28,8 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
-    private establishmentService: EstablishmentService,
     protected alertService: AlertService,
+    private establishmentService: EstablishmentService,
   ) {
     super(
       formBuilder,
@@ -54,6 +54,9 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.title = 'Add training details';
   }
 
+  protected setSectionHeading(): void {
+    this.section = 'Add multiple records';
+  }
   protected setButtonText(): void {
     this.buttonText = 'Finish';
   }

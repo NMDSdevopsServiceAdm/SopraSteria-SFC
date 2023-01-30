@@ -36,4 +36,7 @@ exports.TRAINING_CATEGORY = [
   { ASC: 30, BUDI: 38 },
   { ASC: 1, BUDI: 39 },
   { ASC: 34, BUDI: 40 },
+  { ASC: 38, BUDI: 41 },
+  { ASC: 39, BUDI: 42 },
+  { ASC: 40, BUDI: 43 },
 ];

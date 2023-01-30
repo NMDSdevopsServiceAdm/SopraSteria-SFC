@@ -11,7 +11,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import { SharedModule } from '@shared/shared.module';
-import { getByTestId, getByText, render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { ViewTrainingComponent } from './view-trainings.component';
@@ -51,14 +51,10 @@ describe('ViewTrainingComponent', () => {
     const injector = getTestBed();
 
     const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate');
-    routerSpy.and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     const trainingCategories = injector.inject(TrainingCategoryService) as TrainingCategoryService;
-    const trainingCategoriesSpy = spyOn(trainingCategories, 'getCategoriesWithTraining');
-    trainingCategoriesSpy.and.callThrough();
-
-    const workerUID = component.trainings[0].worker.uid;
+    const trainingCategoriesSpy = spyOn(trainingCategories, 'getCategoriesWithTraining').and.callThrough();
 
     return {
       component,
@@ -66,9 +62,9 @@ describe('ViewTrainingComponent', () => {
       getByText,
       getAllByText,
       getByTestId,
+      router,
       routerSpy,
       trainingCategoriesSpy,
-      workerUID,
     };
   }
 
@@ -111,8 +107,9 @@ describe('ViewTrainingComponent', () => {
   });
 
   it('should display a link for each user name to navigate to training and qualification page', async () => {
-    const { getByText, component, fixture, workerUID } = await setup();
+    const { getByText, component, fixture } = await setup();
 
+    const workerUID = component.trainings[0].worker.uid;
     component.canEditWorker = true;
     fixture.detectChanges();
 
@@ -129,34 +126,97 @@ describe('ViewTrainingComponent', () => {
     expect(getByText(component.trainings[0].worker.mainJob.title)).toBeTruthy();
   });
 
-  it(`should `, async () => {
-    const { component, routerSpy, getByText, fixture, workerUID } = await setup();
+  it('should set the training category and current url in local storage', async () => {
+    const { component, router } = await setup();
+    spyOnProperty(router, 'url').and.returnValue('/view-training');
+    const localStorageSpy = spyOn(localStorage, 'setItem');
+    component.ngOnInit();
+
+    expect(localStorageSpy).toHaveBeenCalledTimes(2);
+    expect(localStorageSpy.calls.all()[0].args).toEqual(['trainingCategory', '{"id":2,"category":"Autism"}']);
+    expect(localStorageSpy.calls.all()[1].args).toEqual(['previousUrl', '/view-training']);
+  });
+
+  it(`should render the expired status update link with the correct url for an expired training`, async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    const workerUID = component.trainings[0].worker.uid;
     const trainingUid = component.trainings[0].uid;
+    const workplace = component.workplace;
 
     component.canEditWorker = true;
-    const expired = component.trainings[0].expires;
     fixture.detectChanges();
 
-    const updateTrainingRecord = getByText('Update');
+    const tableRow = getByTestId('training-0');
 
-    userEvent.click(updateTrainingRecord);
+    expect(within(tableRow).getByText('1 expired')).toBeTruthy();
+    expect(within(tableRow).getByText('Update').getAttribute('href')).toEqual(
+      `/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`,
+    );
+  });
 
-    expect(routerSpy).toHaveBeenCalledWith([
-      '/workplace',
-      `${component.workplace.uid}`,
-      'training-and-qualifications-record',
-      `${workerUID}`,
-      'training',
-      `${trainingUid}`,
-    ]);
+  it(`should render the expires soon status and update link with the correct url for an expires soon training`, async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    const workerUID = component.trainings[1].worker.uid;
+    const trainingUid = component.trainings[1].uid;
+    const workplace = component.workplace;
+
+    component.canEditWorker = true;
+    fixture.detectChanges();
+
+    const tableRow = getByTestId('training-1');
+
+    expect(within(tableRow).getByText('1 expires soon')).toBeTruthy();
+    expect(within(tableRow).getByText('Update').getAttribute('href')).toEqual(
+      `/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`,
+    );
+  });
+
+  it(`should render the add link with the correct url for a missing mandatory training`, async () => {
+    const { component, fixture, getByTestId } = await setup();
+    const workerUID = component.trainings[2].worker.uid;
+    const workplace = component.workplace;
+
+    component.canEditWorker = true;
+    fixture.detectChanges();
+
+    const tableRow = getByTestId('training-2');
+
+    expect(within(tableRow).getByText('1 missing')).toBeTruthy();
+    expect(within(tableRow).getByText('Add').getAttribute('href')).toEqual(
+      `/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/add-training`,
+    );
+  });
+
+  it(`should render the OK status when the training is not expired and does not expire soon`, async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.canEditWorker = true;
+    fixture.detectChanges();
+
+    const tableRow = getByTestId('training-3');
+
+    expect(within(tableRow).getByText('OK')).toBeTruthy();
   });
 
   it(`should navigate back to training-and-qualification page`, async () => {
-    const { component, routerSpy, getByText } = await setup();
+    const { component, fixture, routerSpy, getByText } = await setup();
+
+    component.primaryWorkplaceUid = 'mocked-uid';
+    const returnToHome = getByText('Return to home');
+    userEvent.click(returnToHome);
+    fixture.detectChanges();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+  });
+
+  it(`should navigate back to sub workplace page when clicking the return home button when accessing a sub account from a parent`, async () => {
+    const { routerSpy, getByText } = await setup();
 
     const returnToHome = getByText('Return to home');
     userEvent.click(returnToHome);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid'], { fragment: 'training-and-qualifications' });
   });
 });

@@ -33,7 +33,6 @@ module.exports = build('WorkerCSV', {
     MAINJRDESC: '',
     CONTHOURS: '40',
     AVGHOURS: '',
-    OTHERJOBROLE: '25',
     OTHERJRDESC: '',
     NMCREG: '',
     NURSESPEC: '',

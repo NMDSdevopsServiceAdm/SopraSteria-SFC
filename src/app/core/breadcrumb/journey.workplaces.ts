@@ -11,6 +11,7 @@ enum Path {
   USER_PERMISSIONS = '/workplace/:workerUid/user/:workerUid/permissions',
   CREATE_ACCOUNT = '/workplace/:workplaceUid/user/create',
   TRAINING_AND_QUALIFICATIONS_RECORD = '/workplace/:workplaceUid/training-and-qualifications-record/:workerUid/training',
+  MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
 }
 
 export const myWorkplaceJourney: JourneyRoute = {
@@ -91,6 +92,14 @@ export const allWorkplacesJourney: JourneyRoute = {
             {
               title: 'Training and qualifications',
               path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
+              referrer: {
+                path: Path.WORKPLACE,
+                fragment: 'training-and-qualifications',
+              },
+            },
+            {
+              title: 'Add and manage mandatory training categories',
+              path: Path.MANDATORY_TRAINING,
               referrer: {
                 path: Path.WORKPLACE,
                 fragment: 'training-and-qualifications',
