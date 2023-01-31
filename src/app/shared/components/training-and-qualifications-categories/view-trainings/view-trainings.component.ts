@@ -1,6 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Establishment, SortTrainingAndQualsOptionsWorkerNoMissing } from '@core/model/establishment.model';
+import {
+  Establishment,
+  SortTrainingAndQualsOptionsWorker,
+  SortTrainingAndQualsOptionsWorkerNoMissing,
+} from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -20,16 +24,13 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
   public canEditWorker = false;
   public trainingCategoryId: number;
   private subscriptions: Subscription = new Subscription();
-  public sortTrainingAndQualOptions = SortTrainingAndQualsOptionsWorkerNoMissing;
+  public sortTrainingAndQualOptions: any;
   public sortByValue: '0_expired';
   public searchTerm = '';
   public trainingCount: number;
   public totalTrainingCount: number;
-  public sortByParamMap = {
-    '0_expired': 'trainingExpired',
-    '1_expires_soon': 'trainingExpiringSoon',
-    '2_worker': 'staffNameAsc',
-  };
+  public isMandatory: boolean;
+  public sortByParamMap: any;
   public trainings;
 
   constructor(
@@ -47,20 +48,42 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.trainingCategoryId = this.route.snapshot.params.categoryId;
-
     this.setWorkersAndCount();
     this.setExpiresSoonAlertDates();
     this.setBackLink();
+    this.setSortParamMapAndOptions();
     localStorage.setItem('previousUrl', this.router.url);
   }
 
   private setWorkersAndCount(): void {
-    const { training = [], category, trainingCount } = this.route.snapshot.data.training;
+    console.log('***********************');
+    console.log(this.route.snapshot.data.training);
+    const { training = [], category, trainingCount, isMandatory } = this.route.snapshot.data.training;
 
     this.trainings = training;
     this.category = category;
     this.totalTrainingCount = trainingCount;
     this.trainingCount = trainingCount;
+    this.isMandatory = isMandatory;
+  }
+
+  private setSortParamMapAndOptions(): void {
+    if (this.isMandatory) {
+      this.sortByParamMap = {
+        '0_expired': 'trainingExpired',
+        '1_expires_soon': 'trainingExpiringSoon',
+        '2_missing': 'trainingMissing',
+        '3_worker': 'staffNameAsc',
+      };
+      this.sortTrainingAndQualOptions = SortTrainingAndQualsOptionsWorker;
+    } else {
+      this.sortByParamMap = {
+        '0_expired': 'trainingExpired',
+        '1_expires_soon': 'trainingExpiringSoon',
+        '2_worker': 'staffNameAsc',
+      };
+      this.sortTrainingAndQualOptions = SortTrainingAndQualsOptionsWorkerNoMissing;
+    }
   }
 
   private setExpiresSoonAlertDates(): void {
