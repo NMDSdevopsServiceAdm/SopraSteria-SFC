@@ -205,6 +205,7 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         '$worker.EstablishmentFK$': establishmentId,
         '$worker.Archived$': false,
+        ...(searchTerm ? { '$worker.NameOrIdValue$': { [Op.iLike]: `%${searchTerm}%` } } : {}),
       },
       include: [
         {
@@ -214,12 +215,6 @@ module.exports = function (sequelize, DataTypes) {
           on: {
             col1: sequelize.where(sequelize.col('workerTraining.WorkerFK'), '=', sequelize.col('worker.ID')),
             col2: sequelize.where(sequelize.col('workerTraining.CategoryFK'), '=', trainingCategoryId),
-          },
-          where: {
-            ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
-            //   archived: false,
-            //   EstablishmentFK: establishmentId,
-            // ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
           },
           right: true,
           include: [
