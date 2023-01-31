@@ -64,7 +64,7 @@ const getCategoryTraining = async (req, res) => {
       } = await models.workerTraining.fetchTrainingForEstablishment(
         establishmentId,
         trainingId,
-        // itemsPerPage && +itemsPerPage,
+        itemsPerPage && +itemsPerPage,
         pageIndex && +pageIndex,
         sortBy,
         searchTerm,

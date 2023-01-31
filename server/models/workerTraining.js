@@ -103,7 +103,7 @@ module.exports = function (sequelize, DataTypes) {
   WorkerTraining.fetchTrainingForEstablishment = async function (
     establishmentId,
     trainingCategoryId,
-    // limit = 0,
+    limit = 0,
     pageIndex = 0,
     sortBy = '',
     searchTerm = '',
@@ -118,7 +118,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       attributes: ['category'],
     });
-    const limit = 0;
+    // const limit = 0;
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await sequelize.models.establishment.getExpiresSoonAlertDate(establishmentId);
     const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
