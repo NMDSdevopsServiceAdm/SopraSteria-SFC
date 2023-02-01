@@ -22,6 +22,7 @@ import { Subscription } from 'rxjs';
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   @ViewChild('tabEl') tabEl;
   private subscriptions: Subscription = new Subscription();
+  public actionsListData = [];
   public currentFragment: string;
   public filteredToJobRoleMandatoryTraining: mandatoryTraining[];
   public canEditWorker: boolean;
@@ -115,6 +116,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getStatus(this.mandatoryTraining);
     this.getStatus(this.nonMandatoryTraining);
 
+    this.populateActionsList(this.mandatoryTraining, 'Mandatory');
+    this.populateActionsList(this.nonMandatoryTraining, 'Non-mandatory');
+
+    this.sortActionsList();
+
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
   }
 
@@ -192,6 +198,61 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         );
       });
     });
+  }
+
+  private populateActionsList(trainingCategories: any, typeOfTraining: string): void {
+    trainingCategories.forEach((trainingCategory) => {
+      trainingCategory.trainingRecords.forEach((trainingRecord) => {
+        if (trainingRecord.trainingStatus && trainingRecord.trainingStatus !== 0) {
+          this.actionsListData.push({
+            ...trainingRecord,
+            typeOfTraining: typeOfTraining,
+          });
+        }
+      });
+    });
+  }
+
+  private sortActionsList(): void {
+    this.actionsListData.sort(function (a, b) {
+      const optionsList = [a, b];
+      const sortValueArray = [];
+      for (let index = 0; index < optionsList.length; index++) {
+        switch (optionsList[index].trainingStatus) {
+          case 2: //MISSING
+            sortValueArray[index] = 2;
+            break;
+          case 1: //EXPIRING
+            sortValueArray[index] = 1;
+            break;
+          case 3: //EXPIRED
+            sortValueArray[index] = 0;
+            break;
+        }
+      }
+      return sortValueArray[0] - sortValueArray[1];
+    });
+  }
+
+  public actionsListNavigate(actionListItem): void {
+    const url = actionListItem.uid
+      ? [
+          'workplace',
+          this.workplace.uid,
+          'training-and-qualifications-record',
+          this.worker.uid,
+          'training',
+          actionListItem.uid,
+        ]
+      : [
+          'workplace',
+          this.workplace.uid,
+          'training-and-qualifications-record',
+          this.worker.uid,
+          'add-training',
+          { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
+        ];
+    this.router.navigate(url);
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]): TrainingRecordCategory[] {

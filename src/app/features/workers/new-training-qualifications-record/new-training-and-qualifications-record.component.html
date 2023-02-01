@@ -92,7 +92,7 @@
   </div>
 </div>
 
-<div class="govuk-grid-row govuk-!-margin-top-6">
+<div *ngIf="actionsListData.length > 0" class="govuk-grid-row govuk-!-margin-top-6">
   <div class="govuk-grid-column-full">
     <table class="govuk-table">
       <caption class="govuk-table__caption govuk-table__caption--m">
@@ -100,76 +100,42 @@
       </caption>
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header govuk-!-width-one-half">Training category</th>
-          <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Training type</th>
-          <th scope="col" class="govuk-table__header">Status</th>
-          <th scope="col" class="govuk-table__header"></th>
+          <th scope="col" class="govuk-table__header" style="width: 45%">Training category</th>
+          <th scope="col" class="govuk-table__header" style="width: 28%">Training type</th>
+          <th scope="col" class="govuk-table__header" style="width: 17%">Status</th>
+          <th scope="col" class="govuk-table__header" style="width: 10%"></th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">Sensory disability</td>
-          <td class="govuk-table__cell">Non-mandatory</td>
+        <tr class="govuk-table__row" *ngFor="let actionListItem of actionsListData">
+          <td class="govuk-table__cell">{{ actionListItem.trainingCategory.category }}</td>
+          <td class="govuk-table__cell">{{ actionListItem.typeOfTraining }}</td>
           <td class="govuk-table__cell">
-            <img
-              src="/assets/images/flag-red.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            Expired
+            <div *ngIf="actionListItem.trainingStatus === trainingStatusService.MISSING">
+              <img src="/assets/images/flag-red.svg" alt="red warning flag" class="govuk-util__vertical-align-top" />
+              Missing
+            </div>
+            <div *ngIf="actionListItem.trainingStatus === trainingStatusService.EXPIRED && actionListItem.expires">
+              <img src="/assets/images/flag-red.svg" alt="red expired flag" class="govuk-util__vertical-align-top" />
+              Expired
+            </div>
+            <div *ngIf="actionListItem.trainingStatus === trainingStatusService.EXPIRING && actionListItem.expires">
+              <img
+                src="/assets/images/flag-orange.svg"
+                alt="yellow expires soon flag"
+                class="govuk-util__vertical-align-top"
+              />
+              Expires soon
+            </div>
           </td>
-          <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Update</a></td>
-        </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">Supervision, performance management</td>
-          <td class="govuk-table__cell">Non-mandatory</td>
           <td class="govuk-table__cell">
-            <img
-              src="/assets/images/flag-red.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            Expired
+            <a
+              class="govuk-link--no-visited-state govuk-util__float-right"
+              (click)="actionsListNavigate(actionListItem)"
+              href="javascript:void(0)"
+              >{{ actionListItem.trainingStatus !== trainingStatusService.MISSING ? 'Update' : 'Add' }}</a
+            >
           </td>
-          <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Update</a></td>
-        </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">Medication safe handling and awareness</td>
-          <td class="govuk-table__cell">Non-mandatory</td>
-          <td class="govuk-table__cell">
-            <img
-              src="/assets/images/flag-orange.svg"
-              alt=""
-              class="govuk-!-margin-right-2 govuk-util__vertical-align-top"
-            />Expires soon
-          </td>
-          <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Update</a></td>
-        </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">Control and restraint</td>
-          <td class="govuk-table__cell">Mandatory</td>
-          <td class="govuk-table__cell">
-            <img
-              src="/assets/images/flag-red.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            Missing
-          </td>
-          <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Add</a></td>
-        </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">Equality, diversity and human rights training</td>
-          <td class="govuk-table__cell">Mandatory</td>
-          <td class="govuk-table__cell">
-            <img
-              src="/assets/images/flag-red.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
-            Missing
-          </td>
-          <td class="govuk-table__cell"><a href="#" class="govuk-util__float-right">Add</a></td>
         </tr>
       </tbody>
     </table>

@@ -526,11 +526,11 @@ describe('AddEditTrainingComponent', () => {
         const dateCompleted = new Date();
 
         const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), `${dateCompleted.getDate()}`);
+        userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
         userEvent.type(within(completedDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
         userEvent.type(within(completedDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
         const expiresDate = getByTestId('expiresDate');
-        userEvent.type(within(expiresDate).getByLabelText('Day'), `${dateCompleted.getDate() - 1}`);
+        userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
         userEvent.type(within(expiresDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
         userEvent.type(within(expiresDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
 

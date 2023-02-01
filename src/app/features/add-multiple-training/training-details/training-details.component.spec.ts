@@ -252,9 +252,8 @@ describe('MultipleTrainingDetailsComponent', () => {
       const { component, getByText, fixture, getAllByText } = await setup();
       component.form.markAsDirty();
       const today = new Date();
-      const completedDate = { day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear() };
-      const expiresDate = { day: today.getDate() - 1, month: today.getMonth() + 1, year: today.getFullYear() };
-
+      const completedDate = { day: 7, month: today.getMonth(), year: today.getFullYear() };
+      const expiresDate = { day: 6, month: today.getMonth(), year: today.getFullYear() };
       component.form.get('completed').setValue(completedDate);
       component.form.get('completed').markAsDirty();
       component.form.get('expires').setValue(expiresDate);
