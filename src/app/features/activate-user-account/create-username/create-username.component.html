@@ -85,7 +85,7 @@
               id="confirmPasswordInput"
               name="confirmPasswordInput"
               [class.govuk-input--error]="submitted && getConfirmPassword.errors"
-              type="password"
+              [type]="showPassword ? 'text' : 'password'"
               data-testid="confirmpassword"
             />
           </div>

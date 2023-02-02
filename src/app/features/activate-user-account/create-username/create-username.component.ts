@@ -16,7 +16,7 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
   private activationToken: string;
 
   constructor(
-    private createAccountService: CreateAccountService,
+    public createAccountService: CreateAccountService,
     protected route: ActivatedRoute,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
@@ -29,17 +29,17 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
 
   protected init(): void {
     this.activationToken = this.route.snapshot.params.activationToken;
-    this.insideFlow = this.route.snapshot.parent.url[0].path === this.activationToken;
+    this.insideFlow = this.route.parent.snapshot.url[0].path === this.activationToken;
+
     this.flow = this.insideFlow
       ? this.activationToken
       : `activate-account/${this.activationToken}/confirm-account-details`;
+    this.return = this.createAccountService.returnTo$.value;
 
     this.setBackLink();
   }
 
   protected setBackLink(): void {
-    this.return = this.createAccountService.returnTo$.value;
-
     if (this.return) {
       this.backLinkService.showBackLink();
     }
