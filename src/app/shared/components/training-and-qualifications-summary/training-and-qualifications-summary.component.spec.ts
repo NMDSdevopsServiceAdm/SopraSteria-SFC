@@ -248,7 +248,6 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       const { component, fixture, getByLabelText, workerServiceSpy } = await setup();
 
       component.totalWorkerCount = 16;
-      component.currentPageIndex = 1;
       fixture.detectChanges();
 
       userEvent.type(getByLabelText('Search by name or ID number staff training records'), 'search term here{enter}');

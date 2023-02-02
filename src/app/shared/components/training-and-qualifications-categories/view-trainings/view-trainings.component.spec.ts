@@ -29,6 +29,14 @@ describe('ViewTrainingComponent', () => {
               params: {
                 categoryId: '2',
               },
+              data: {
+                training: {
+                  training: [],
+                  category: 'trainingCategory',
+                  trainingCount: 3,
+                  isMandatory: false,
+                },
+              },
             },
           }),
         },
@@ -80,9 +88,7 @@ describe('ViewTrainingComponent', () => {
 
   it('should display the category', async () => {
     const { getByText, component } = await setup();
-    const trainingCategoryId = component.category.id;
-    trainingCategoryId == component.trainingCategoryId;
-    expect(getByText(component.category.category)).toBeTruthy();
+    expect(getByText(component.category)).toBeTruthy();
   });
 
   it('should display the table of users for specific training category', async () => {

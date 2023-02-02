@@ -12,15 +12,15 @@ import { SearchInputComponent } from '../search-input/search-input.component';
 import { TablePaginationWrapperComponent } from './table-pagination-wrapper.component';
 
 describe('TablePaginationWrapperCompnent', () => {
-  const setup = async (totalWorkerCount = 20) => {
+  const setup = async (totalCount = 20) => {
     const { fixture, getByTestId, queryByTestId, getByLabelText, getByRole, getByText } = await render(
       TablePaginationWrapperComponent,
       {
         imports: [HttpClientTestingModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
         declarations: [PaginationComponent, SearchInputComponent],
         componentProperties: {
-          totalWorkerCount,
-          workerCount: totalWorkerCount,
+          totalCount,
+          count: totalCount,
           sortByParamMap: {
             '0_asc': 'staffNameAsc',
             '0_dsc': 'staffNameDesc',
@@ -39,7 +39,7 @@ describe('TablePaginationWrapperCompnent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     spyOnProperty(router, 'url').and.returnValue('dashboard#staff-records');
 
-    const emitSpy = spyOn(component.fetchWorkers, 'emit');
+    const emitSpy = spyOn(component.fetchData, 'emit');
     const handleSearchSpy = spyOn(component, 'handleSearch').and.callThrough();
     const handlePageUpdateSpy = spyOn(component, 'handlePageUpdate').and.callThrough();
     component.ngOnInit();

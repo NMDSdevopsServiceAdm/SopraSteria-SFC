@@ -158,7 +158,6 @@ describe('StaffSummaryComponent', () => {
       const { component, getAllWorkersSpy } = await setup();
 
       component.fixture.componentInstance.totalWorkerCount = 16;
-      component.fixture.componentInstance.currentPageIndex = 1;
       component.fixture.detectChanges();
 
       userEvent.type(component.getByLabelText('Search for staff records'), 'search term here{enter}');
