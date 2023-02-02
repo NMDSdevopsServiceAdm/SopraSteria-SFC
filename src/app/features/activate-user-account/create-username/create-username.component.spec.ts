@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { ActivateUserAccountModule } from '../activate-user-account.module';
 import { CreateUsernameComponent } from './create-username.component';
 
-describe('UsernamePasswordComponent', () => {
+describe('CreateUsernameComponent', () => {
   async function setup(insideActivationFlow = true) {
     const { getByText, getByTestId, fixture, getAllByText } = await render(CreateUsernameComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ActivateUserAccountModule],

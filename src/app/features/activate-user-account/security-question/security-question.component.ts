@@ -29,7 +29,7 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
 
   protected init(): void {
     this.activationToken = this.route.snapshot.params.activationToken;
-    this.insideFlow = this.route.snapshot.parent.url[0].path === this.activationToken;
+    this.insideFlow = this.route.parent.snapshot.url[0].path === this.activationToken;
     this.flow = this.insideFlow
       ? this.activationToken
       : `activate-account/${this.activationToken}/confirm-account-details`;
