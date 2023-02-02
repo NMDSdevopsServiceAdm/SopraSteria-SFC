@@ -15,7 +15,7 @@ import { CreateUsernameComponent } from './create-username.component';
 
 describe('UsernamePasswordComponent', () => {
   async function setup(insideActivationFlow = true) {
-    const component = await render(CreateUsernameComponent, {
+    const { getByText, getByTestId, fixture, getAllByText } = await render(CreateUsernameComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ActivateUserAccountModule],
       providers: [
         BackLinkService,
@@ -50,7 +50,7 @@ describe('UsernamePasswordComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const componentInstance = component.fixture.componentInstance;
+    const component = fixture.componentInstance;
     const registrationsService = injector.inject(RegistrationService) as RegistrationService;
 
     const spy = spyOn(router, 'navigate');
@@ -58,10 +58,13 @@ describe('UsernamePasswordComponent', () => {
 
     return {
       component,
+      fixture,
       router,
-      componentInstance,
       registrationsService,
       spy,
+      getByTestId,
+      getByText,
+      getAllByText,
     };
   }
 
@@ -72,69 +75,224 @@ describe('UsernamePasswordComponent', () => {
   });
 
   it('should show the password as password field when show password is false', async () => {
-    const { component } = await setup();
+    const { component, getByTestId, fixture } = await setup();
 
-    component.fixture.componentInstance.showPassword = false;
+    component.showPassword = false;
 
-    component.fixture.detectChanges();
+    fixture.detectChanges();
 
-    const passwordInput = component.getByTestId('password');
-    const confirmPasswordInput = component.getByTestId('confirmpassword');
+    const passwordInput = getByTestId('password');
+    const confirmPasswordInput = getByTestId('confirmpassword');
     expect(passwordInput.getAttribute('type')).toEqual('password');
     expect(confirmPasswordInput.getAttribute('type')).toEqual('password');
   });
 
   it('should show the password as text field when show password is true', async () => {
-    const { component } = await setup();
+    const { component, fixture, getByTestId } = await setup();
 
-    component.fixture.componentInstance.showPassword = true;
+    component.showPassword = true;
 
-    component.fixture.detectChanges();
+    fixture.detectChanges();
 
-    const passwordInput = component.getByTestId('password');
-    const confirmPasswordInput = component.getByTestId('confirmpassword');
+    const passwordInput = getByTestId('password');
+    const confirmPasswordInput = getByTestId('confirmpassword');
     expect(passwordInput.getAttribute('type')).toEqual('text');
     expect(confirmPasswordInput.getAttribute('type')).toEqual('text');
   });
 
   it('should show password should update when show button pressed', async () => {
-    const { component } = await setup();
-    const showPasswords = component.getByText('Show passwords');
+    const { component, getByText, fixture } = await setup();
+    const showPasswords = getByText('Show passwords');
 
     fireEvent.click(showPasswords);
-    component.fixture.detectChanges();
+    fixture.detectChanges();
 
-    expect(component.fixture.componentInstance.showPassword).toEqual(true);
+    expect(component.showPassword).toEqual(true);
   });
 
   it('should show password should update when hide button pressed', async () => {
-    const { component } = await setup();
-    const showPasswords = component.getByText('Show passwords');
+    const { component, getByText, fixture } = await setup();
+    const showPasswords = getByText('Show passwords');
 
     fireEvent.click(showPasswords);
-    component.fixture.detectChanges();
+    fixture.detectChanges();
 
-    expect(component.fixture.componentInstance.showPassword).toEqual(true);
+    expect(component.showPassword).toEqual(true);
 
-    const hidePasswords = component.getByText('Hide passwords');
+    const hidePasswords = getByText('Hide passwords');
     fireEvent.click(hidePasswords);
 
-    expect(component.fixture.componentInstance.showPassword).toEqual(false);
+    expect(component.showPassword).toEqual(false);
+  });
+
+  it('should not let you submit with no username', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('');
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(getAllByText('Enter your username', { exact: false }).length).toBe(2);
+  });
+
+  it('should not let you submit with no password', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('hello123');
+    form.get(['passwordGroup', 'createPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'createPasswordInput']).setValue('');
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(getAllByText('Enter a password', { exact: false }).length).toBe(2);
+  });
+
+  it('should not let you submit with wrong password confirmation', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('hello123');
+    form.get(['passwordGroup', 'createPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'createPasswordInput']).setValue('Hello123!');
+    form.get(['passwordGroup', 'confirmPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'confirmPasswordInput']).setValue('Hello124!');
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(getAllByText('Confirmation password does not match the password you entered', { exact: false }).length).toBe(
+      2,
+    );
+  });
+
+  it('should not let you submit with no password confirmation', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('hello123');
+    form.get(['passwordGroup', 'createPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'createPasswordInput']).setValue('Hello123!');
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(getAllByText('Enter the password again', { exact: false }).length).toBe(2);
+  });
+
+  it('should not let you submit with a username over 120 characters', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue(
+      'hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123hello123',
+    );
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(getAllByText('Username must be 120 characters or fewer', { exact: false }).length).toBe(2);
+  });
+
+  it('should not let you submit with a username under 3 characters', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('1');
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(getAllByText('Username must be 3 characters or more', { exact: false }).length).toBe(2);
   });
 
   it("should check the username isn't a duplicate", async () => {
-    const { component, registrationsService } = await setup();
-    const continueButton = component.getByText('Continue');
-    const form = component.fixture.componentInstance.form;
+    const { component, registrationsService, getByText, fixture } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
     const spy = spyOn(registrationsService, 'getUsernameDuplicate').and.callThrough();
 
     form.controls['username'].markAsDirty();
     form.controls['username'].setValue('username123!');
 
     fireEvent.click(continueButton);
-    component.fixture.detectChanges();
+    fixture.detectChanges();
 
     expect(form.invalid).toBeTruthy();
     expect(spy).toHaveBeenCalledWith('username123!');
+  });
+
+  it('should not let you submit with a duplicate username', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('duplicate');
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(getAllByText('Enter a different username, this one is not available', { exact: false }).length).toBe(2);
+  });
+
+  it('should not let you submit with a username with special characters', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('username123!');
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(
+      getAllByText('Username can only contain letters, numbers, underscores and hyphens', { exact: false }).length,
+    ).toBe(2);
+  });
+
+  it('should not let you submit with an insecure password', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.get(['passwordGroup', 'createPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'createPasswordInput']).setValue('hello!');
+
+    fireEvent.click(continueButton);
+
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(
+      getAllByText(
+        'Password must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special characters like !, £',
+        { exact: false },
+      ).length,
+    ).toBe(2);
   });
 });
