@@ -295,4 +295,41 @@ describe('UsernamePasswordComponent', () => {
       ).length,
     ).toBe(2);
   });
+
+  it('should navigate to next page if successful', async () => {
+    const { component, spy, getByText, fixture } = await setup();
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('username123');
+    form.get(['passwordGroup', 'createPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'createPasswordInput']).setValue('Hello123!');
+    form.get(['passwordGroup', 'confirmPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'confirmPasswordInput']).setValue('Hello123!');
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['/activate-account', '78kkh676', 'security-question']);
+  });
+
+  it('should navigate to confirm-account-details if return URL is not null and outside flow', async () => {
+    const { component, spy, getByText } = await setup(false);
+    const form = component.form;
+
+    form.controls['username'].markAsDirty();
+    form.controls['username'].setValue('username123');
+    form.get(['passwordGroup', 'createPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'createPasswordInput']).setValue('Hello123!');
+    form.get(['passwordGroup', 'confirmPasswordInput']).markAsDirty();
+    form.get(['passwordGroup', 'confirmPasswordInput']).setValue('Hello123!');
+
+    const continueButton = getByText('Save and return');
+    fireEvent.click(continueButton);
+
+    expect(form.valid).toBeTruthy();
+    expect(spy).toHaveBeenCalledWith(['/activate-account', '78kkh676', 'confirm-account-details']);
+  });
 });
