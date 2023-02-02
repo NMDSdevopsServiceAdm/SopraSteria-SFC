@@ -18,6 +18,11 @@ import { take } from 'rxjs/operators';
   templateUrl: './view-trainings.component.html',
 })
 export class ViewTrainingComponent implements OnInit, OnDestroy {
+  readonly EXPIRED = 'Expired';
+  readonly EXPIRING = 'Expires soon';
+  readonly MISSING = 'Missing';
+  readonly OK = 'OK';
+
   public workplace: Establishment;
   public primaryWorkplaceUid: string;
   public category: string;
@@ -57,7 +62,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
 
   private setWorkersAndCount(): void {
     const { training = [], category, trainingCount, isMandatory } = this.route.snapshot.data.training;
-    console.log(this.route.snapshot.data.training);
+    // console.log(this.route.snapshot.data.training);
     this.trainings = training;
     this.category = category;
     this.totalTrainingCount = trainingCount;

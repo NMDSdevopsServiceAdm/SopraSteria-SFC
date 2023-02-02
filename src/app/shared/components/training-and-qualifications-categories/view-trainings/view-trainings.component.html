@@ -61,24 +61,27 @@
           </td>
 
           <td class="govuk-table__cell">
-            <div *ngIf="training.status === 'Expired'" class="govuk-!-margin-bottom-1">
+            <div *ngIf="training.status === EXPIRED" class="govuk-!-margin-bottom-1">
               <img
+                data-testid="expired-flag"
                 src="/assets/images/flag-red.svg"
                 alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
               1 expired
             </div>
-            <div *ngIf="training.status === 'Expires soon'">
+            <div *ngIf="training.status === EXPIRING">
               <img
+                data-testid="expiring-flag"
                 src="/assets/images/flag-orange.svg"
                 alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
               />
               1 expires soon
             </div>
-            <div *ngIf="training.status === 'Missing'" class="govuk-!-margin-bottom-1">
+            <div *ngIf="training.status === MISSING" class="govuk-!-margin-bottom-1">
               <img
+                data-testid="missing-flag"
                 src="/assets/images/flag-red.svg"
                 alt=""
                 class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
@@ -86,10 +89,10 @@
               1 missing
             </div>
 
-            <div *ngIf="training.status === 'OK'">OK</div>
+            <div *ngIf="training.status === OK">OK</div>
           </td>
           <td class="govuk-table__cell">
-            <div *ngIf="training.status === 'Missing' && canEditWorker">
+            <div *ngIf="training.status === MISSING && canEditWorker">
               <a
                 [routerLink]="[
                   '/workplace',
@@ -102,13 +105,7 @@
               >
             </div>
 
-            <div
-              *ngIf="
-                (trainingStatus(training) == trainingStatusService.EXPIRED ||
-                  trainingStatus(training) == trainingStatusService.EXPIRING) &&
-                canEditWorker
-              "
-            >
+            <div *ngIf="(training.status === EXPIRED || training.status === EXPIRING) && canEditWorker">
               <a
                 [routerLink]="[
                   '/workplace',
