@@ -134,7 +134,7 @@
     "@angular/language-service": "^12.2.11",
     "@jackfranklin/test-data-bot": "^1.3.0",
     "@lhci/cli": "^0.7.0",
-    "@ngx-builders/analyze": "^2.3.0",
+    "@ngx-builders/analyze": "^3.0.1",
     "@testing-library/angular": "^10.10.0",
     "@testing-library/dom": "^7.31.0",
     "@testing-library/user-event": "^12.7.3",
