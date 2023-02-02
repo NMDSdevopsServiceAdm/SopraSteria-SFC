@@ -6,7 +6,6 @@ const models = require('../models/index');
 const {
   transformTrainingCategories,
   transformTrainingCategoriesWithMandatoryTraining,
-  transformTrainingForACategory,
 } = require('../transformers/trainingCategoryTransformer');
 
 const getAllTraining = async function (_req, res) {
@@ -51,58 +50,46 @@ const getTrainingByCategory = async (req, res) => {
 
 const getCategoryTraining = async (req, res) => {
   try {
-    const { establishmentId, trainingId } = req.params;
+    const { establishmentId, trainingCategoryId } = req.params;
     const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
-    const isMandatory = await models.MandatoryTraining.checkIfTrainingCategoryIsMandatory(establishmentId, trainingId);
 
-    let response;
-    if (isMandatory) {
-      const {
-        count: trainingCount,
-        rows: training,
-        category,
-      } = await models.workerTraining.fetchTrainingForEstablishment(
-        establishmentId,
-        trainingId,
-        itemsPerPage && +itemsPerPage,
-        pageIndex && +pageIndex,
-        sortBy,
-        searchTerm,
-      );
-
-      return res.json({ training, trainingCount, category: category.category, isMandatory: !!isMandatory });
-
-      // response = await models.establishment.fetchWorkerTrainingRecordsForAMandatoryCategory(
-      //   establishmentId,
-      //   trainingId,
-      //   itemsPerPage && +itemsPerPage,
-      //   pageIndex && +pageIndex,
-      //   sortBy,
-      //   searchTerm,
-      // );
-    } else {
-      response = await models.establishment.fetchWorkerTrainingRecordsForACategory(
-        establishmentId,
-        trainingId,
-        itemsPerPage && +itemsPerPage,
-        pageIndex && +pageIndex,
-        sortBy,
-        searchTerm,
-      );
+    if (!establishmentId || !trainingCategoryId) {
+      return res.status(400).send();
     }
-    const rows = response.rows;
-    const category = rows[0].get('category');
-    const foundWorkers = rows.length && rows[0].workers;
-    const trainingCount = response.count;
-    const transformedTraining = transformTrainingForACategory(foundWorkers, trainingId);
-    res.json({ training: transformedTraining, category, trainingCount, response });
+
+    const isMandatory = !!(await models.MandatoryTraining.checkIfTrainingCategoryIsMandatory(
+      establishmentId,
+      trainingCategoryId,
+    ));
+
+    console.log('***********************');
+    console.log(sortBy);
+
+    const {
+      count: trainingCount,
+      rows: training,
+      category,
+    } = await models.workerTraining.fetchTrainingByCategoryForEstablishment(
+      establishmentId,
+      trainingCategoryId,
+      itemsPerPage && +itemsPerPage,
+      pageIndex && +pageIndex,
+      sortBy,
+      searchTerm,
+      isMandatory,
+    );
+
+    return res.status(200).json({ training, trainingCount, category: category.category, isMandatory });
   } catch (error) {
     console.error(error);
+    return res.status(500).send();
   }
 };
 
 router.route('/').get([refCacheMiddleware.refcache, getAllTraining]);
 router.route('/:establishmentId/with-training').get([cacheMiddleware.nocache, getTrainingByCategory]);
-router.route('/:establishmentId/:trainingId').get([cacheMiddleware.nocache], getCategoryTraining);
+router.route('/:establishmentId/:trainingCategoryId').get([cacheMiddleware.nocache], getCategoryTraining);
+
 module.exports = router;
 module.exports.getTrainingByCategory = getTrainingByCategory;
+module.exports.getCategoryTraining = getCategoryTraining;

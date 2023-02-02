@@ -25,7 +25,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
   public trainingCategoryId: number;
   private subscriptions: Subscription = new Subscription();
   public sortTrainingAndQualOptions: any;
-  public sortByValue: '0_expired';
+  public sortByValue = '0_expired';
   public searchTerm = '';
   public trainingCount: number;
   public totalTrainingCount: number;
@@ -56,10 +56,8 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
   }
 
   private setWorkersAndCount(): void {
-    console.log('***********************');
-    console.log(this.route.snapshot.data.training);
     const { training = [], category, trainingCount, isMandatory } = this.route.snapshot.data.training;
-
+    console.log(this.route.snapshot.data.training);
     this.trainings = training;
     this.category = category;
     this.totalTrainingCount = trainingCount;
@@ -101,6 +99,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
     sortByValue: string;
   }): void {
     const { index, itemsPerPage, searchTerm, sortByValue } = properties;
+    console.log(sortByValue);
     this.subscriptions.add(
       this.trainingCategoryService
         .getTrainingCategory(this.workplace.id, this.trainingCategoryId, {
@@ -113,6 +112,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
         .subscribe((data) => {
           this.trainings = data.training;
           this.trainingCount = data.trainingCount;
+          console.log(this.trainingCount);
         }),
     );
   }

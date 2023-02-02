@@ -84,52 +84,5 @@ const transformTrainingCategoriesWithMandatoryTraining = function (establishment
     });
 };
 
-const transformTrainingForACategory = (workersWithTraining, trainingId) => {
-  let trainingArr = [];
-
-  workersWithTraining.forEach((worker) => {
-    if (worker.workerTraining.length > 0) {
-      worker.workerTraining.forEach((training) => {
-        const { expires, id, title, uid, categoryFk } = training;
-        trainingArr.push({
-          expires,
-          id,
-          title,
-          uid,
-          categoryFk,
-          sortByExpires: training.get('sortByExpiresSoon'),
-          sortByExpired: training.get('sortByExpired'),
-          worker: {
-            id: worker.id,
-            uid: worker.uid,
-            NameOrIdValue: worker.NameOrIdValue,
-            mainJob: {
-              id: worker.mainJob.id,
-              title: worker.mainJob.title,
-            },
-          },
-        });
-      });
-    } else {
-      trainingArr.push({
-        id: trainingId,
-        missing: true,
-        worker: {
-          id: worker.id,
-          uid: worker.uid,
-          NameOrIdValue: worker.NameOrIdValue,
-          mainJob: {
-            id: worker.mainJob.id,
-            title: worker.mainJob.title,
-          },
-        },
-      });
-    }
-  });
-
-  return trainingArr;
-};
-
 module.exports.transformTrainingCategories = transformTrainingCategories;
 module.exports.transformTrainingCategoriesWithMandatoryTraining = transformTrainingCategoriesWithMandatoryTraining;
-module.exports.transformTrainingForACategory = transformTrainingForACategory;
