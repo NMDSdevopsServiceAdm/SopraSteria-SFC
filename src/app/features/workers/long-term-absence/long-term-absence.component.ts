@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -30,6 +31,7 @@ export class LongTermAbsenceComponent implements OnInit {
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
     private router: Router,
+    public backLinkService: BackLinkService,
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +41,7 @@ export class LongTermAbsenceComponent implements OnInit {
     this.setupForm();
     this.setupFormErrorsMap();
     this.returnUrl = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
+    this.backLinkService.showBackLink();
   }
 
   ngAfterViewInit(): void {

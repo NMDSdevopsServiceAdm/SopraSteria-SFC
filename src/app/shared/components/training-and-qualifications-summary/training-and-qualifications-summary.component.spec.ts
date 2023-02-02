@@ -201,13 +201,10 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     const workplaceUid = component.workplace.uid;
     const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');
 
-    expect(spy).toHaveBeenCalledWith([
-      '/workplace',
-      workplaceUid,
-      'training-and-qualifications-record',
-      worker.uid,
-      'training',
-    ]);
+    expect(spy).toHaveBeenCalledWith(
+      ['/workplace', workplaceUid, 'training-and-qualifications-record', worker.uid, 'training'],
+      { fragment: 'all-records' },
+    );
   });
 
   it('should navigate to the persons wdf training, when the wdfView flag is true', async () => {
@@ -223,14 +220,10 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     const workplaceUid = component.workplace.uid;
     const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');
 
-    expect(spy).toHaveBeenCalledWith([
-      '/workplace',
-      workplaceUid,
-      'training-and-qualifications-record',
-      worker.uid,
-      'training',
-      'wdf-summary',
-    ]);
+    expect(spy).toHaveBeenCalledWith(
+      ['/workplace', workplaceUid, 'training-and-qualifications-record', worker.uid, 'training', 'wdf-summary'],
+      { fragment: 'all-records' },
+    );
   });
 
   describe('calls getAllWorkers on workerService when using search', () => {
