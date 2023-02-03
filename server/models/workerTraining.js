@@ -111,9 +111,11 @@ module.exports = function (sequelize, DataTypes) {
   ) {
     const addSearchToCount = searchTerm ? `AND "worker"."NameOrIdValue" ILIKE '%${searchTerm}%'` : '';
     const joinTypeOnCount = isMandatory ? 'RIGHT OUTER JOIN' : 'INNER JOIN';
+
     const count =
-      await sequelize.query(`SELECT count("worker"."ID") AS "count" FROM "cqc"."WorkerTraining" AS "workerTraining" ${joinTypeOnCount} "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}' ${addSearchToCount} WHERE "worker"."EstablishmentFK" = '1686' AND "worker"."Archived" = false;
+      await sequelize.query(`SELECT count("worker"."ID") AS "count" FROM "cqc"."WorkerTraining" AS "workerTraining" ${joinTypeOnCount} "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}' WHERE "worker"."EstablishmentFK" = '1686' AND "worker"."Archived" = false ${addSearchToCount};
     `);
+
     const category = await sequelize.models.workerTrainingCategories.findOne({
       where: {
         id: trainingCategoryId,
@@ -202,7 +204,7 @@ module.exports = function (sequelize, DataTypes) {
     }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
 
     const response = await this.findAll({
-      // logging: console.log,
+      logging: console.log,
       attributes: trainingAttributes,
       where: {
         '$worker.EstablishmentFK$': establishmentId,

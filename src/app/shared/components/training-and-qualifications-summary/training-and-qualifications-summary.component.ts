@@ -43,7 +43,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   ngOnInit(): void {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
-    this.sortByValue = '0_expired';
+    this.sortByValue = 'trainingExpired';
     this.paginatedWorkers = this.workers;
     this.totalWorkerCount = this.workerCount;
     this.setSearchIfPrevious();

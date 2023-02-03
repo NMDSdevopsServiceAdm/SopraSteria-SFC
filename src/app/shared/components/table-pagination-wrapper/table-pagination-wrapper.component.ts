@@ -51,8 +51,6 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   public sortBy(sortType: string): void {
-    console.log(sortType);
-    console.log(this.sortByParamMap);
     this.sortByValue = this.sortByParamMap[sortType];
     this.currentPageIndex = 0;
     this.getData();
@@ -77,6 +75,8 @@ export class TablePaginationWrapperComponent implements OnInit {
       searchTerm: this.searchTerm,
       sortByValue: this.sortByValue,
     };
+    console.log('***** getData ******');
+    console.log(properties);
     this.fetchData.emit(properties);
   }
 }
