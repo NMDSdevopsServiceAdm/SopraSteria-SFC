@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
+import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
@@ -309,6 +310,7 @@ const routes: Routes = [
               worker: WorkerResolver,
               trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
               expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
+              mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
             },
             data: { title: 'Training and qualification record' },
           },
@@ -542,6 +544,7 @@ const routes: Routes = [
           worker: WorkerResolver,
           trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
           expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
+          mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
         },
         data: { title: 'Training and qualification record' },
       },

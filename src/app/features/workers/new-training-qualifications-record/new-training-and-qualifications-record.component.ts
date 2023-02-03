@@ -1,48 +1,46 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment, FilterTrainingAndQualsOptions } from '@core/model/establishment.model';
+import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { MandatoryTraining, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
-import { URLStructure } from '@core/model/url.model';
+import { TrainingRecordCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-training-and-qualifications-record',
   templateUrl: './new-training-and-qualifications-record.component.html',
+  styleUrls: ['./new-training-and-qualification.component.scss'],
 })
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
+  @ViewChild('tabEl') tabEl;
+  private subscriptions: Subscription = new Subscription();
+  public actionsListData = [];
+  public currentFragment: string;
+  public filteredToJobRoleMandatoryTraining: mandatoryTraining[];
   public canEditWorker: boolean;
   public canViewWorker: boolean;
   public worker: Worker;
   public workplace: Establishment;
-  public trainingAndQualsCount: number;
-  public trainingAlert: number;
-  public qualificationsCount: number;
   public mandatoryTrainingCount: number;
   public nonMandatoryTrainingCount: number;
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
   public qualificationsByGroup: QualificationsByGroup;
-  public expiredTraining: number;
-  public expiresSoonTraining: number;
   public lastUpdatedDate: Date;
-  public jobRoleMandatoryTraining: MandatoryTraining[];
-  public missingJobRoleMandatoryTrainingCount: number;
-  public missingMandatoryTraining: MandatoryTraining[];
-  private subscriptions: Subscription = new Subscription();
-  public filterTrainingByStatus;
-  public filterTrainingByDefault: string;
-  public filterTraining;
-  public allTrainings;
-  public returnToRecord: URLStructure;
-
+  public fragmentsObject: any = {
+    allRecords: 'all-records',
+    mandatoryTraining: 'mandatory-training',
+    nonMandatoryTraining: 'non-mandatory-training',
+    qualifications: 'qualifications',
+  };
   constructor(
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
@@ -51,55 +49,131 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private router: Router,
     private trainingStatusService: TrainingStatusService,
     private trainingService: TrainingService,
+    private workerService: WorkerService,
+    private alertService: AlertService,
   ) {}
 
-  ngOnInit() {
+  public ngOnInit(): void {
+    this.setPageData();
+    this.setBreadcrumbs();
+    this.setUpTabSubscription();
+    this.updateTrainingExpiresSoonDate();
+    this.updateTrainingExpiresSoonDate();
+    this.setTraining();
+    this.setUpAlertSubscription();
+    this.setReturnRoute();
+  }
+
+  private setPageData(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
+    this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+    this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
+    this.trainingService.trainingOrQualificationPreviouslySelected = null;
+    this.filteredToJobRoleMandatoryTraining = this.getMandatoryTrainingForStaffJobRole();
+  }
 
+  private setBreadcrumbs(): void {
+    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
+    this.breadcrumbService.show(journey);
+  }
+
+  private setUpTabSubscription(): void {
+    this.subscriptions.add(
+      this.route.fragment.subscribe((fragment) => {
+        this.currentFragment = fragment ? fragment : 'all-records';
+      }),
+    );
+  }
+
+  private updateTrainingExpiresSoonDate(): void {
     this.trainingStatusService.expiresSoonAlertDate$.next(
       this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate,
     );
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
-    this.breadcrumbService.show(journey);
-    this.setTrainingAndQualifications();
-    localStorage.setItem('previousUrl', this.router.url);
-
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-    this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
-
-    this.filterTrainingByDefault = '0_showall';
-    this.filterTrainingByStatus = FilterTrainingAndQualsOptions;
-    this.getFilterByStatus(this.filterTrainingByDefault);
-
-    this.trainingService.trainingOrQualificationPreviouslySelected = null;
   }
 
-  public setTrainingAndQualifications(): void {
-    this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
-    this.qualificationsCount = this.qualificationsByGroup.count;
+  private setUpAlertSubscription(): void {
+    this.subscriptions.add(
+      this.workerService.alert$.subscribe((alert) => {
+        if (alert) {
+          this.alertService.addAlert(alert);
+          this.workerService.alert = null;
+        }
+      }),
+    );
+  }
+
+  private setTraining(): void {
     const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
-    this.filterTraining = this.allTrainings = trainingRecords;
-    this.setTraining(trainingRecords.mandatory, trainingRecords.nonMandatory);
-    this.expiredTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRED);
-    this.expiresSoonTraining = this.getTrainingStatusCount(trainingRecords, this.trainingStatusService.EXPIRING);
+    this.mandatoryTraining = this.createBlankMissingMandatoryTrainings(trainingRecords.mandatory);
+    this.sortTrainingAlphabetically(this.mandatoryTraining);
+    this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
+
+    this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
+    this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
+
+    this.getStatus(this.mandatoryTraining);
+    this.getStatus(this.nonMandatoryTraining);
+
+    this.populateActionsList(this.mandatoryTraining, 'Mandatory');
+    this.populateActionsList(this.nonMandatoryTraining, 'Non-mandatory');
+
+    this.sortActionsList();
 
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
-    this.jobRoleMandatoryTraining = trainingRecords.jobRoleMandatoryTraining;
-    this.missingJobRoleMandatoryTrainingCount = this.getMissingMandatoryTrainingCount();
-    this.findMissingMandatoryTraining();
   }
 
-  private setTraining(
-    mandatoryTrainingRecords: TrainingRecordCategory[],
-    nonMandatoryTrainingRecords: TrainingRecordCategory[],
-  ): void {
-    this.mandatoryTraining = this.sortTrainingAlphabetically(mandatoryTrainingRecords);
-    this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
-    this.getStatus(this.mandatoryTraining);
-    this.nonMandatoryTraining = this.sortTrainingAlphabetically(nonMandatoryTrainingRecords);
-    this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
-    this.getStatus(this.nonMandatoryTraining);
+  private createBlankMissingMandatoryTrainings(mandatoryTraining: TrainingRecordCategory[]) {
+    const trainingCategoryIds = this.getMandatoryTrainingIds(mandatoryTraining);
+    const missingMandatoryTrainings = this.filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds);
+    missingMandatoryTrainings.forEach((missingMandatoryTraining) => {
+      mandatoryTraining.push({
+        category: missingMandatoryTraining.category,
+        id: missingMandatoryTraining.trainingCategoryId,
+        trainingRecords: [
+          {
+            trainingCategory: {
+              id: missingMandatoryTraining.trainingCategoryId,
+              category: missingMandatoryTraining.category,
+            },
+            created: null,
+            title: null,
+            uid: null,
+            updated: null,
+            updatedBy: null,
+            expires: null,
+            missing: true,
+          },
+        ],
+      });
+    });
+    return mandatoryTraining;
+  }
+
+  private filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds: Array<number>): mandatoryTraining[] {
+    return this.filteredToJobRoleMandatoryTraining.filter((mandatoryTraining) => {
+      return !trainingCategoryIds.includes(mandatoryTraining.trainingCategoryId);
+    });
+  }
+
+  private getMandatoryTrainingIds(mandatoryTraining: TrainingRecordCategory[]): Array<number> {
+    const trainingCategoryIds = [];
+    mandatoryTraining.forEach((trainingCategory) => {
+      trainingCategoryIds.push(trainingCategory.id);
+    });
+
+    return trainingCategoryIds;
+  }
+
+  private getMandatoryTrainingForStaffJobRole(): mandatoryTraining[] {
+    return this.route.snapshot.data.mandatoryTrainingCategories.mandatoryTraining.filter(
+      (mandatoryTrainingCategory) => {
+        return mandatoryTrainingCategory.jobs.some(
+          (mandatoryJobRole) => mandatoryJobRole.id === this.worker.mainJob.jobId,
+        );
+      },
+    );
   }
 
   public getLastUpdatedDate(lastUpdatedDates: Date[]): void {
@@ -115,24 +189,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     return count;
   }
 
-  public getTrainingStatusCount(training: TrainingRecords, status: number): number {
-    let count = 0;
-
-    const trainingTypes = Object.keys(training);
-    trainingTypes.forEach((type) => {
-      if (type !== 'lastUpdated' && type !== 'jobRoleMandatoryTraining') {
-        training[type].forEach((category) => {
-          category.trainingRecords.forEach((trainingRecord) => {
-            if (trainingRecord.trainingStatus === status) {
-              count += 1;
-            }
-          });
-        });
-      }
-    });
-    return count;
-  }
-
   private getStatus(categories: TrainingRecordCategory[]): void {
     categories.forEach((category) => {
       category.trainingRecords.forEach((trainingRecord) => {
@@ -144,71 +200,85 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     });
   }
 
-  private getMissingMandatoryTrainingCount(): number {
-    let count = this.jobRoleMandatoryTraining.length;
-    if (this.mandatoryTraining.length > 0) {
-      this.jobRoleMandatoryTraining.forEach((jobRoleTraining) => {
-        this.mandatoryTraining.some((training) => {
-          jobRoleTraining.category === training.category && count--;
-        });
+  private populateActionsList(trainingCategories: any, typeOfTraining: string): void {
+    trainingCategories.forEach((trainingCategory) => {
+      trainingCategory.trainingRecords.forEach((trainingRecord) => {
+        if (trainingRecord.trainingStatus && trainingRecord.trainingStatus !== 0) {
+          this.actionsListData.push({
+            ...trainingRecord,
+            typeOfTraining: typeOfTraining,
+          });
+        }
       });
-    }
-    return count;
-  }
-
-  private findMissingMandatoryTraining() {
-    this.missingMandatoryTraining = this.jobRoleMandatoryTraining.filter(
-      (jobRoleTraining) => !this.mandatoryTraining.find((training) => training.id === jobRoleTraining.id),
-    );
-  }
-
-  getFilterByStatus(dropdownValue) {
-    if (dropdownValue === '0_showall') {
-      this.nonMandatoryTraining = this.allTrainings.nonMandatory;
-      this.mandatoryTraining = this.allTrainings.mandatory;
-      return;
-    }
-
-    const filterValue = dropdownValue === '1_expired' ? 3 : 1;
-    this.filterTraining = this.allTrainings;
-    const mandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.mandatory);
-    const nonMandatory = this.filterNonMandatoryAndMandatoryByStatus(filterValue, this.filterTraining.nonMandatory);
-
-    this.filterTraining = { mandatory, nonMandatory };
-    this.nonMandatoryTraining = nonMandatory;
-    this.mandatoryTraining = mandatory;
-  }
-
-  private filterNonMandatoryAndMandatoryByStatus(filterValue, trainings) {
-    const filteredTrainings = [];
-    trainings.filter((training) => {
-      this.pushMandatoryAndNonMandatoryInArray(training, filterValue, filteredTrainings);
     });
-    return filteredTrainings;
   }
 
-  private pushMandatoryAndNonMandatoryInArray(training, filterValue, arrayTraining) {
-    const filterdStatus = training.trainingRecords.filter((status) => status.trainingStatus === filterValue);
-    if (filterdStatus && filterdStatus.length) {
-      arrayTraining.push({
-        category: training.category,
-        id: training.id,
-        trainingRecords: filterdStatus,
-      });
-    }
+  private sortActionsList(): void {
+    this.actionsListData.sort(function (a, b) {
+      const optionsList = [a, b];
+      const sortValueArray = [];
+      for (let index = 0; index < optionsList.length; index++) {
+        switch (optionsList[index].trainingStatus) {
+          case 2: //MISSING
+            sortValueArray[index] = 2;
+            break;
+          case 1: //EXPIRING
+            sortValueArray[index] = 1;
+            break;
+          case 3: //EXPIRED
+            sortValueArray[index] = 0;
+            break;
+        }
+      }
+      return sortValueArray[0] - sortValueArray[1];
+    });
   }
 
-  private sortTrainingAlphabetically(training: TrainingRecordCategory[]) {
+  public actionsListNavigate(actionListItem): void {
+    const url = actionListItem.uid
+      ? [
+          'workplace',
+          this.workplace.uid,
+          'training-and-qualifications-record',
+          this.worker.uid,
+          'training',
+          actionListItem.uid,
+        ]
+      : [
+          'workplace',
+          this.workplace.uid,
+          'training-and-qualifications-record',
+          this.worker.uid,
+          'add-training',
+          { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
+        ];
+    this.router.navigate(url);
+  }
+
+  private sortTrainingAlphabetically(training: TrainingRecordCategory[]): TrainingRecordCategory[] {
     return training.sort((categoryA, categoryB) =>
       categoryA.category !== categoryB.category ? (categoryA.category < categoryB.category ? -1 : 1) : 0,
     );
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  public navigateToNewTab(fragmentString): void {
+    this.router
+      .navigate(['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'], {
+        fragment: fragmentString,
+      })
+      .then(() => {
+        this.tabEl.nativeElement.scrollIntoView();
+      });
   }
 
-  public resetLocalStorage(): void {
-    localStorage.removeItem('trainingCategory');
+  public setReturnRoute(): void {
+    localStorage.setItem(
+      'previousUrl',
+      this.router.url.includes('#') ? this.router.url.slice(0, this.router.url.indexOf('#')) : this.router.url,
+    );
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

@@ -233,6 +233,7 @@ export interface mandatoryJobs {
 export interface mandatoryTraining {
   trainingCategoryId: number;
   allJobRoles: boolean;
+  category?: string;
   selectedJobRoles?: boolean;
   jobs: mandatoryJobs[];
 }

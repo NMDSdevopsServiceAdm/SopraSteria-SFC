@@ -287,7 +287,7 @@
           <ng-container *ngIf="!workplace.capacities?.length; else capacities"> - </ng-container>
           <ng-template #capacities>
             <ul class="govuk-list govuk-!-margin-bottom-0">
-              <li *ngFor="let capacity of capacityMessages">{{ capacity }}</li>
+              <li *ngFor="let capacity of capacityMessages">{{ capacity.message }}</li>
             </ul>
           </ng-template>
         </app-summary-record-value>

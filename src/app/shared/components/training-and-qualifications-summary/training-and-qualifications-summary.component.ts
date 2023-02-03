@@ -81,8 +81,9 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
 
   public getWorkerTrainingAndQualificationsPath(event: Event, worker: Worker): void {
     event.preventDefault();
-
-    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
-    this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
+    const path = this.wdfView
+      ? ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training', 'wdf-summary']
+      : ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
+    this.router.navigate(path, { fragment: 'all-records' });
   }
 }
