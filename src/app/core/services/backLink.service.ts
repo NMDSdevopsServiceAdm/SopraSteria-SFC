@@ -6,8 +6,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class BackLinkService {
-  private readonly _backLink$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
-  public readonly backLink$: Observable<boolean> = this._backLink$.asObservable();
+  private _backLink$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  public backLink$: Observable<boolean> = this._backLink$.asObservable();
 
   constructor(private router: Router) {
     this.router.events.subscribe((event) => {
@@ -21,6 +21,15 @@ export class BackLinkService {
 
   private set backLink(show: boolean) {
     this._backLink$.next(show);
+  }
+
+  private get backLink(): boolean {
+    console.log('*** get backlink ***');
+    return this._backLink$.value;
+  }
+
+  public isBackLinkVisible(): boolean {
+    return this.backLink;
   }
 
   public showBackLink(): void {

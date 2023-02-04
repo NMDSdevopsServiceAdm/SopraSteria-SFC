@@ -121,7 +121,10 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
         .subscribe((data) => {
           this.trainings = data.training;
           this.trainingCount = data.trainingCount;
-          console.log(this.trainingCount);
+
+          if (!this.backLinkService.isBackLinkVisible()) {
+            this.setBackLink();
+          }
         }),
     );
   }

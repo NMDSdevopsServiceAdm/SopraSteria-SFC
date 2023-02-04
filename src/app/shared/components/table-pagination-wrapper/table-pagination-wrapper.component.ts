@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-table-pagination-wrapper',
   templateUrl: './table-pagination-wrapper.component.html',
 })
-export class TablePaginationWrapperComponent implements OnInit {
+export class TablePaginationWrapperComponent {
   @Input() totalCount: number;
   @Input() count: number;
   @Input() sortByParamMap: any;
@@ -27,10 +27,6 @@ export class TablePaginationWrapperComponent implements OnInit {
 
   constructor(private router: Router) {}
 
-  ngOnInit(): void {
-    this.checkForFragment();
-  }
-
   private checkForFragment(): void {
     if (this.router.url.includes('#')) {
       this.fragment = this.router.url.split('#')[1];
@@ -39,6 +35,7 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   private addQueryParams(): void {
+    this.checkForFragment();
     if (this.searchTerm) {
       this.router.navigate([], {
         fragment: this.fragment,
@@ -46,7 +43,8 @@ export class TablePaginationWrapperComponent implements OnInit {
         queryParamsHandling: 'merge',
       });
     } else {
-      this.router.navigate([], { fragment: 'staff-records' });
+      console.log(this.fragment);
+      this.router.navigate([], { fragment: this.fragment });
     }
   }
 
@@ -57,6 +55,7 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   public handleSearch(searchTerm: string): void {
+    console.log('**** handle search *****');
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
     this.addQueryParams();

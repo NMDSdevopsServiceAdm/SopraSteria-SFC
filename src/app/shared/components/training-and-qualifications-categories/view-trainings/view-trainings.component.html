@@ -99,7 +99,8 @@
                   workplace.uid,
                   'training-and-qualifications-record',
                   training.worker.uid,
-                  'add-training'
+                  'add-training',
+                  { trainingCategory: { id: trainingCategoryId, category: category } | json }
                 ]"
                 >Add</a
               >
@@ -113,11 +114,11 @@
                   'training-and-qualifications-record',
                   training.worker.uid,
                   'training',
-                  training.uid
+                  training.uid,
+                  { trainingCategory: { id: trainingCategoryId, category: category } | json }
                 ]"
                 >Update</a
               >
-              <!-- <a (click)="updateTrainingRecord($event, training)" href="#">Update</a> -->
             </div>
           </td>
         </tr>
