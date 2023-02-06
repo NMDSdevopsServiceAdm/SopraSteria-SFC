@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { ActivateUserAccountModule } from '../activate-user-account.module';
 import { ConfirmAccountDetailsComponent } from './confirm-account-details.component';
 
-describe('SecurityQuestionComponent', () => {
+describe('ConfirmAccountDetailsComponent', () => {
   async function setup() {
     const { getByText, getByTestId, fixture, getAllByText, queryByText } = await render(
       ConfirmAccountDetailsComponent,
