@@ -61,7 +61,7 @@
           </td>
 
           <td class="govuk-table__cell">
-            <div *ngIf="training.status === EXPIRED" class="govuk-!-margin-bottom-1">
+            <div *ngIf="training.status === EXPIRED">
               <img
                 data-testid="expired-flag"
                 src="/assets/images/flag-red.svg"
@@ -79,7 +79,7 @@
               />
               1 expires soon
             </div>
-            <div *ngIf="training.status === MISSING" class="govuk-!-margin-bottom-1">
+            <div *ngIf="training.status === MISSING">
               <img
                 data-testid="missing-flag"
                 src="/assets/images/flag-red.svg"
