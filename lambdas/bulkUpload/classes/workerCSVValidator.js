@@ -53,10 +53,6 @@ class WorkerCsvValidator {
     this._contHours = null;
     this._avgHours = null;
 
-    this._otherJobs = null;
-    this._otherJobsOther = null;
-    this._mappedOtherJobs = null;
-
     this._registeredNurse = null;
     this._nursingSpecialist = null;
 
@@ -474,11 +470,6 @@ class WorkerCsvValidator {
 
   get mainJobRoleId() {
     return this._mainJobRoleId;
-  }
-
-  get otherJobIds() {
-    //return a clone of the array to prevent modifications to it
-    return Array.isArray(this._otherJobs) ? this._otherJobs.map((x) => x) : [];
   }
 
   get contHours() {
@@ -1517,14 +1508,14 @@ class WorkerCsvValidator {
           column: 'SALARYINT',
         });
         return false;
-      } else if (isNaN(mySalary) || mySalary <= 500 || mySalary >= MAX_VALUE) {
+      } else if (isNaN(mySalary) || mySalary < 500 || mySalary > MAX_VALUE) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: WorkerCsvValidator.SALARY_ERROR,
           errType: 'SALARY_ERROR',
-          error: `Salary (SALARY) must be an integer between £500 and £${MAX_VALUE}`,
+          error: `SALARY must be between £500 and £${MAX_VALUE}`,
           source: this._currentLine.SALARY,
           column: 'SALARY',
         });
@@ -1830,127 +1821,13 @@ class WorkerCsvValidator {
     return true;
   }
 
-  _validateOtherJobs() {
-    const listOfOtherJobs = this._currentLine.OTHERJOBROLE.split(';');
-    const listOfOtherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
-    const localValidationErrors = [];
-    const listOfJobsWithoutNo = listOfOtherJobs.filter((item) => item !== '0');
-    const isValid = listOfJobsWithoutNo.every((job) => !Number.isNaN(parseInt(job, 10)));
-
-    if (this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
-      if (listOfJobsWithoutNo.length > 0 && !isValid) {
-        localValidationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.OTHER_JOB_ROLE_ERROR,
-          errType: 'OTHER_JOB_ROLE_ERROR',
-          error: 'The code you have entered for OTHERJOBROLE is incorrect',
-          source: this._currentLine.OTHERJOBROLE,
-          column: 'OTHERJOBROLE',
-        });
-      } else if (listOfOtherJobs.length !== listOfOtherJobsDescriptions.length) {
-        localValidationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.OTHER_JOB_ROLE_ERROR,
-          errType: 'OTHER_JOB_ROLE_ERROR',
-          error: 'OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)',
-          source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
-          column: 'OTHERJOBROLE/OTHERJRDESC',
-        });
-      } else if (listOfOtherJobs.includes('0') && listOfOtherJobs.length > 1) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.OTHER_JOB_ROLE_ERROR,
-          errType: 'OTHER_JOB_ROLE_ERROR',
-          error: 'OTHERJOBROLE is 0 (none) but contains other job roles',
-          source: this._currentLine.OTHERJOBROLE,
-          column: 'OTHERJOBROLE',
-          name: this._currentLine.LOCALESTID,
-          worker: this._currentLine.UNIQUEWORKERID,
-        });
-      } else {
-        const myJobDescriptions = [];
-        this._otherJobs = listOfOtherJobs.map((thisJob, index) => {
-          const thisJobIndex = parseInt(thisJob, 10);
-
-          // if the job is one of the many "other" job roles, then need to validate the "other description"
-          const otherJobs = [23, 27]; // these are the original budi codes
-          if (otherJobs.includes(thisJobIndex)) {
-            const myJobOther = listOfOtherJobsDescriptions[index];
-            const MAX_LENGTH = 120;
-            if (!myJobOther || myJobOther.length === 0) {
-              localValidationErrors.push({
-                worker: this._currentLine.UNIQUEWORKERID,
-                name: this._currentLine.LOCALESTID,
-                lineNumber: this._lineNumber,
-                errCode: WorkerCsvValidator.OTHER_JR_DESC_ERROR,
-                errType: 'OTHER_JR_DESC_ERROR',
-                error: `OTHERJRDESC (${index + 1}) has not been supplied`,
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`,
-                column: 'OTHERJRDESC',
-              });
-              myJobDescriptions.push(null);
-            } else if (myJobOther.length > MAX_LENGTH) {
-              localValidationErrors.push({
-                worker: this._currentLine.UNIQUEWORKERID,
-                name: this._currentLine.LOCALESTID,
-                lineNumber: this._lineNumber,
-                errCode: WorkerCsvValidator.OTHER_JR_DESC_ERROR,
-                errType: 'OTHER_JR_DESC_ERROR',
-                error: 'OTHERJRDESC is longer than 120 characters',
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`,
-                column: 'OTHERJRDESC',
-              });
-            } else {
-              myJobDescriptions.push(listOfOtherJobsDescriptions[index]);
-            }
-          } else if (listOfOtherJobsDescriptions[index] && listOfOtherJobsDescriptions[index].length > 0) {
-            localValidationErrors.push({
-              worker: this._currentLine.UNIQUEWORKERID,
-              name: this._currentLine.LOCALESTID,
-              lineNumber: this._lineNumber,
-              warnCode: WorkerCsvValidator.OTHER_JR_DESC_WARNING,
-              warnType: 'OTHER_JR_DESC_WARNING',
-              warning: 'OTHERJRDESC will be ignored as not required for OTHERJOBROLE',
-              source: `${this._currentLine.OTHERJOBROLE} - ${listOfOtherJobsDescriptions[index]}`,
-              column: 'OTHERJRDESC',
-            });
-          } else {
-            myJobDescriptions.push(null);
-          }
-
-          return thisJobIndex;
-        });
-
-        this._mappedOtherJobs = this._otherJobs;
-        this._otherJobsOther = myJobDescriptions;
-      }
-
-      if (localValidationErrors.length > 0) {
-        localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   _validateRegisteredNurse() {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
     const NURSING_ROLE = 16;
-    const otherJobRoleIsNurse = Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE);
     const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
-    const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
+    const notNurseRole = !mainJobRoleIsNurse;
 
-    if (
-      (this._mainJobRole === NURSING_ROLE ||
-        (Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE))) &&
-      myRegisteredNurse !== 0 &&
-      isNaN(myRegisteredNurse)
-    ) {
+    if (this._mainJobRole === NURSING_ROLE && myRegisteredNurse !== 0 && isNaN(myRegisteredNurse)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1988,11 +1865,10 @@ class WorkerCsvValidator {
     const notSpecialisms = [7, 8];
 
     const NURSING_ROLE = 16;
-    const otherJobRoleIsNurse = Array.isArray(this._otherJobs) && this._otherJobs.includes(NURSING_ROLE);
     const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
-    const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
+    const notNurseRole = !mainJobRoleIsNurse;
 
-    if (mainJobRoleIsNurse || otherJobRoleIsNurse) {
+    if (mainJobRoleIsNurse) {
       if (listOfNurseSpecialisms.length === 0) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -2043,7 +1919,7 @@ class WorkerCsvValidator {
         lineNumber: this._lineNumber,
         warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
         warnType: 'NURSE_SPEC_WARNING',
-        warning: 'NURSESPEC will be ignored as this is not required for the MAINJOBROLE/OTHERJOBROLE',
+        warning: 'NURSESPEC will be ignored as this is not required for the MAINJOBROLE',
         source: this._currentLine.NURSESPEC,
         column: 'NURSESPEC',
       });
@@ -2061,9 +1937,7 @@ class WorkerCsvValidator {
     const strAmhp = String(this._currentLine.AMHP);
     const intAmhp = parseInt(this._currentLine.AMHP, 10);
 
-    const isSocialWorkerRole =
-      this._mainJobRole === SOCIAL_WORKER_ROLE ||
-      (Array.isArray(this._otherJobs) && this._otherJobs.includes(SOCIAL_WORKER_ROLE));
+    const isSocialWorkerRole = this._mainJobRole === SOCIAL_WORKER_ROLE;
 
     if (isSocialWorkerRole) {
       if (strAmhp === '') {
@@ -2100,7 +1974,7 @@ class WorkerCsvValidator {
         lineNumber: this._lineNumber,
         warnCode: WorkerCsvValidator.AMHP_WARNING,
         warnType: 'AMHP_WARNING',
-        warning: 'The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE/OTHERJOBROLE',
+        warning: 'The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE',
         source: this._currentLine.AMHP,
         column: 'AMHP',
       });
@@ -2561,33 +2435,6 @@ class WorkerCsvValidator {
     }
   }
 
-  _transformOtherJobRoles() {
-    if (this._otherJobs !== null) {
-      const mappedJobs = [];
-
-      this._otherJobs.forEach((thisJob) => {
-        const myValidatedJobRole = thisJob !== 0 ? this.BUDI.jobRoles(this.BUDI.TO_ASC, thisJob) : 0;
-
-        if (myValidatedJobRole !== 0 && !myValidatedJobRole) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: WorkerCsvValidator.OTHER_JOB_ROLE_ERROR,
-            errType: 'OTHER_JOB_ROLE_ERROR',
-            error: 'The code you have entered for OTHERJOBROLE is incorrect',
-            source: this._currentLine.OTHERJOBROLE,
-            column: 'OTHERJOBROLE',
-          });
-        } else {
-          mappedJobs.push(myValidatedJobRole);
-        }
-      });
-
-      this._mappedOtherJobs = mappedJobs;
-    }
-  }
-
   // ['Adult Nurse', 'Mental Health Nurse', 'Learning Disabilities Nurse', `Children's Nurse`, 'Enrolled Nurse'
   _transformRegisteredNurse() {
     if (this._registeredNurse || this._registeredNurse === 0) {
@@ -2822,7 +2669,6 @@ class WorkerCsvValidator {
       status = !this._validateMainJobDesc() ? false : status;
       status = !this._validateContHours() ? false : status;
       status = !this._validateAvgHours() ? false : status;
-      status = !this._validateOtherJobs() ? false : status;
       status = !this._validateRegisteredNurse() ? false : status;
       status = !this._validateNursingSpecialist() ? false : status;
       status = !this._validationQualificationRecords() ? false : status;
@@ -2845,7 +2691,6 @@ class WorkerCsvValidator {
       status = !this._transformEthnicity() ? false : status;
       status = !this._transformRecruitment() ? false : status;
       status = !this._transformMainJobRole() ? false : status;
-      status = !this._transformOtherJobRoles() ? false : status;
       status = !this._transformRegisteredNurse() ? false : status;
       status = !this._transformNursingSpecialist() ? false : status;
       status = !this._transformNationality() ? false : status;
@@ -2866,7 +2711,6 @@ class WorkerCsvValidator {
       extraFields.establishmentKey = this.establishmentKey;
       extraFields.contractTypeId = this.contractTypeId;
       extraFields.mainJobRoleId = this.mainJobRoleId;
-      extraFields.otherJobIds = this.otherJobIds;
       extraFields.lineNumber = this._lineNumber;
       extraFields._currentLine = this._currentLine;
     }
@@ -2910,15 +2754,6 @@ class WorkerCsvValidator {
         contractedHours: this._contHours !== null ? this._contHours : undefined,
         additionalHours: this._avgHours !== null ? this._avgHours : undefined,
       },
-      otherJobs:
-        this._mappedOtherJobs !== null
-          ? this._mappedOtherJobs.map((thisJob, index) => {
-              return {
-                job: thisJob,
-                other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined,
-              };
-            })
-          : undefined,
       nursing: {
         registered: this._registeredNurse ? this._registeredNurse : undefined,
         specialist: this._nursingSpecialist ? this._nursingSpecialist : undefined,
@@ -2953,27 +2788,6 @@ class WorkerCsvValidator {
   }
 
   toAPI() {
-    let otherJobs;
-
-    if (this._otherJobs) {
-      if (this._otherJobs.includes(0)) {
-        otherJobs = {
-          value: 'No',
-        };
-      } else {
-        otherJobs = {
-          value: 'Yes',
-          jobs:
-            this._mappedOtherJobs !== null
-              ? this._mappedOtherJobs.map((thisJob, index) => ({
-                  jobId: thisJob,
-                  other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined,
-                }))
-              : undefined,
-        };
-      }
-    }
-
     const changeProperties = {
       // the minimum to create a new worker
       localIdentifier: this._uniqueWorkerId,
@@ -2984,7 +2798,6 @@ class WorkerCsvValidator {
         jobId: this._mainJobRole,
         other: this._mainJobDesc,
       },
-      otherJobs,
       mainJobStartDate: this._startDate ? this._startDate.format('YYYY-MM-DD') : undefined,
       nationalInsuranceNumber: this._NINumber ? this._NINumber : undefined,
       dateOfBirth: this._DOB ? this._DOB.format('YYYY-MM-DD') : undefined,

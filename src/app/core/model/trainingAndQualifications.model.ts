@@ -7,6 +7,7 @@ export interface TrainingAndQualificationRecords {
 }
 
 export interface TrainingCounts {
+  totalTraining?: number;
   totalRecords?: number;
   totalExpiredTraining?: number;
   totalExpiringTraining?: number;

@@ -22,7 +22,6 @@ describe('MissingMandatoryTrainingComponent', () => {
     );
 
     const component = fixture.componentInstance;
-    spyOn(component.addClicked, 'emit');
 
     return {
       component,
@@ -48,11 +47,11 @@ describe('MissingMandatoryTrainingComponent', () => {
       },
     ]);
 
-    const message = getByText("'Duty of care' training needs to be added");
+    const message = getByText(`'Duty of care' training needs to be added`);
     expect(message).toBeTruthy();
   });
 
-  it("should not show an add button if you don't have permission to edit a worker", async () => {
+  it(`should not show an add button if you don't have permission to edit a worker`, async () => {
     const { queryAllByTestId } = await setup([
       {
         category: 'Duty of care',
@@ -80,7 +79,7 @@ describe('MissingMandatoryTrainingComponent', () => {
     expect(message.getAttribute('href')).toEqual('/add-training');
   });
 
-  it('should show a multiple messages saying what training is missing', async () => {
+  it('should show a multiple messages saying what training is missing and add links', async () => {
     const { getByText } = await setup([
       {
         category: 'Duty of care',
@@ -92,25 +91,9 @@ describe('MissingMandatoryTrainingComponent', () => {
       },
     ]);
 
-    const dutyOfCareMessage = getByText("'Duty of care' training needs to be added");
+    const dutyOfCareMessage = getByText(`'Duty of care' training needs to be added`);
     expect(dutyOfCareMessage).toBeTruthy();
-    const autismMessage = getByText("'Autism' training needs to be added");
+    const autismMessage = getByText(`'Autism' training needs to be added`);
     expect(autismMessage).toBeTruthy();
-  });
-
-  it('should emit an event when add button clicked', async () => {
-    const { component } = await setup(
-      [
-        {
-          category: 'Duty of care',
-          id: 1,
-        },
-      ],
-      true,
-    );
-
-    component.addButtonClicked();
-
-    expect(component.addClicked.emit).toHaveBeenCalled();
   });
 });

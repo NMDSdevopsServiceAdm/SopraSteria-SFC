@@ -8,7 +8,4 @@ import { Component, Input } from '@angular/core';
 export class NewTrainingAndQualificationsRecordSummaryComponent {
   @Input() trainingCount: number;
   @Input() qualificationsCount: number;
-  @Input() expiresSoonTrainingCount: number;
-  @Input() expiredTrainingCount: number;
-  @Input() missingMandatoryTraining: number;
 }

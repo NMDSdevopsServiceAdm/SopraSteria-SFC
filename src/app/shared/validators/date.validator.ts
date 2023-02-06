@@ -36,6 +36,7 @@ export abstract class DateValidator {
       if (day.value == !DATE_DAY_VALID || month.value == !DATE_MONTH_VALID) {
         return { dateValid: true };
       }
+
       if (!day.value && !month.value && !year.value) {
         return null;
       }
@@ -55,10 +56,15 @@ export abstract class DateValidator {
     };
   }
 
-  static beforeStartDate(control: string, before = true): ValidatorFn {
+  static beforeStartDate(control: string, before = true, ignoreBlankStartDate = false): ValidatorFn {
     return (formGroup: FormGroup): { [key: string]: any } | null => {
       const formControlValue = formGroup.parent.get(control).value;
+
       const comparisonDate = FormatUtil.formatDate(formControlValue);
+
+      if (isNaN(comparisonDate.getTime()) && ignoreBlankStartDate) {
+        return null;
+      }
 
       const { day, month, year } = formGroup.controls;
 

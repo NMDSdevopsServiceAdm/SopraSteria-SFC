@@ -3,7 +3,6 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,6 +11,9 @@ import { WorkerService } from '@core/services/worker.service';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
 
+<<<<<<< HEAD
+=======
+>>>>>>> test
 @Component({
   selector: 'app-add-edit-training',
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
@@ -24,23 +26,22 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    protected alertService: AlertService,
     private establishmentService: EstablishmentService,
-    private alertService: AlertService,
-    public backLinkService: BackLinkService,
   ) {
     super(
       formBuilder,
       route,
       router,
-      backService,
+      backLinkService,
       errorSummaryService,
       trainingService,
       workerService,
-      backLinkService,
+      alertService,
     );
   }
 
@@ -59,6 +60,9 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.title = 'Add training record details';
   }
 
+  protected setSectionHeading(): void {
+    this.section = 'Add multiple records';
+  }
   protected setButtonText(): void {
     this.buttonText = 'Continue';
   }

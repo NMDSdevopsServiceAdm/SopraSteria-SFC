@@ -39,9 +39,9 @@ describe('SelectWorkplaceComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workplaceService = injector.inject(WorkplaceService) as WorkplaceService;
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
 
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
+    const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     const component = fixture.componentInstance;
 
@@ -55,6 +55,7 @@ describe('SelectWorkplaceComponent', () => {
       getByTestId,
       queryByTestId,
       workplaceService,
+      establishmentService,
     };
   }
 
@@ -142,14 +143,16 @@ describe('SelectWorkplaceComponent', () => {
     });
 
     it('should navigate to the back to the workplace page when workplace selected and the establishment does not already exists in the service', async () => {
-      const { getByText, fixture, spy } = await setup();
+      const { getByText, fixture, spy, establishmentService } = await setup();
 
+      const establishmentServiceSpy = spyOn(establishmentService, 'updateLocationDetails').and.returnValue(of({}));
       const firstWorkplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
       fireEvent.click(firstWorkplaceRadioButton);
 
       const continueButton = getByText('Save and return');
       fireEvent.click(continueButton);
 
+      expect(establishmentServiceSpy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
     });
 

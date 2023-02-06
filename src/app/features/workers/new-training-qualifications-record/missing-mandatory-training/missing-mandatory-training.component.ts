@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { MandatoryTraining } from '@core/model/training.model';
 
 @Component({
@@ -6,11 +7,13 @@ import { MandatoryTraining } from '@core/model/training.model';
   templateUrl: './missing-mandatory-training.component.html',
 })
 export class MissingMandatoryTrainingComponent {
+  public workplace: Establishment;
   @Input() public missingMandatoryTraining: MandatoryTraining[];
   @Input() public canEditWorker: boolean;
-  @Output() public addClicked: EventEmitter<void> = new EventEmitter();
 
-  addButtonClicked(): void {
-    this.addClicked.emit();
+  public setLocalStorage(event: Event, category: string): void {
+    event.preventDefault();
+    const training = this.missingMandatoryTraining.find((missingTraining) => missingTraining.category === category);
+    localStorage.setItem('trainingCategory', JSON.stringify(training));
   }
 }

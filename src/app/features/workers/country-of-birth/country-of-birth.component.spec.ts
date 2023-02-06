@@ -34,6 +34,9 @@ describe('CountryOfBirthComponent', () => {
                   url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 },
               },
+              snapshot: {
+                params: {},
+              },
             },
           },
         ],
@@ -60,6 +63,7 @@ describe('CountryOfBirthComponent', () => {
       routerSpy,
       submitSpy,
       workerServiceSpy,
+      router,
     };
   }
 
@@ -326,6 +330,89 @@ describe('CountryOfBirthComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of the page', async () => {
+      const { component, router, fixture, routerSpy, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to wdf year-arrived-uk page when pressing Save and I do not know is selected in wdf version of page', async () => {
+      const { component, fixture, router, routerSpy, getByText, getByLabelText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const radioButton = getByLabelText('I do not know');
+      fireEvent.click(radioButton);
+
+      const link = getByText('Save');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'year-arrived-uk']);
+    });
+
+    it(`should navigate to wdf year-arrived-uk page when pressing Save and Other is selected with optional input in wdf version of the page`, async () => {
+      const { component, fixture, router, getByText, getByLabelText, routerSpy } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      component.availableCountries = [{ id: 1, country: 'France' }];
+      fireEvent.click(getByLabelText('Other'));
+      fixture.detectChanges();
+      userEvent.type(getByLabelText('Country (optional)'), 'France');
+      fireEvent.click(getByText('Save'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid, 'year-arrived-uk']);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing Save and United Kingdom is selected in wdf version of page', async () => {
+      const { component, router, fixture, routerSpy, getByLabelText, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const radioButton = getByLabelText('United Kingdom');
+      fireEvent.click(radioButton);
+
+      const link = getByText('Save');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to wdf year-arrived-uk-summary page when pressing Save and other country is selected in wdf version of page', async () => {
+      const { component, router, fixture, routerSpy, getByLabelText, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const radioButton = getByLabelText('Other');
+      fireEvent.click(radioButton);
+
+      const link = getByText('Save');
+      fireEvent.click(link);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'year-arrived-uk']);
     });
   });
 

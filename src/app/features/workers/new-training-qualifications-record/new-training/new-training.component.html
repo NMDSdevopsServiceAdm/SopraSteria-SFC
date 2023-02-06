@@ -1,64 +1,113 @@
-<ng-container>
-  <div *ngFor="let trainingCategories of trainingRecords">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <p class="govuk-body-l govuk-!-margin-bottom-0" [attr.data-testid]="'category-' + trainingCategories.category">
-          Category: {{ trainingCategories.category }} ({{ trainingCategories.trainingRecords.length }})
-        </p>
-      </div>
-    </div>
-    <table class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__header govuk-!-width-one-third" scope="col" style="width: 30%">Training name</th>
-          <th class="govuk-table__header" scope="col" style="width: 12%">Accredited</th>
-          <th class="govuk-table__header" scope="col" style="width: 20%">Completion date</th>
-          <th class="govuk-table__header" scope="col" style="width: 18%">Expiry date</th>
-          <th class="govuk-table__header" scope="col" style="width: 20%">Status</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body" *ngFor="let records of trainingCategories.trainingRecords">
-        <ng-container>
-          <tr class="govuk-table__row govuk-util__vertical-align-top">
+<div class="govuk-grid-row">
+  <ng-container *ngIf="trainingCategories.length > 0; else noTraining">
+    <h1 class="govuk-heading-l govuk-!-font-size-27">{{ trainingType }}</h1>
+    <div *ngFor="let trainingCategory of trainingCategories">
+      <table class="govuk-table govuk-!-margin-bottom-7">
+        <caption
+          class="govuk-table__caption govuk-table__caption--m govuk-!-margin-bottom-2"
+          [attr.data-testid]="'category-' + trainingCategory.category"
+        >
+          {{
+            trainingCategory.category
+          }}
+        </caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" scope="col" style="width: 30%">Training Name</th>
+            <th scope="col" class="govuk-table__header" scope="col" style="width: 16.5%">Accredited</th>
+            <th scope="col" class="govuk-table__header" scope="col" style="width: 20%">Completion date</th>
+            <th scope="col" class="govuk-table__header" scope="col" style="width: 16.5%">Expriy date</th>
+            <th scope="col" class="govuk-table__header" scope="col" style="width: 17%">Status</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row" *ngFor="let trainingRecord of trainingCategory.trainingRecords">
             <td class="govuk-table__cell">
               <ng-container *ngIf="canEditWorker; else viewOnly">
-                <a
-                  class="govuk-link--no-visited-state"
-                  [routerLink]="['../training', records.uid]"
-                  [attr.data-testid]="'Title-' + records.uid"
-                  [state]="trainingType === 'mandatory' && { training: 'mandatory' }"
-                  (click)="setReturnRoute()"
-                  >{{ records.title ? records.title : 'Missing training name - Add' }}</a
-                >
+                <ng-container *ngIf="!trainingRecord.uid; else showLink"> - </ng-container>
+                <ng-template #showLink>
+                  <a
+                    class="govuk-link--no-visited-state"
+                    [attr.data-testid]="'Title-' + trainingRecord.uid"
+                    [routerLink]="[
+                      '../training',
+                      trainingRecord.uid,
+                      {
+                        trainingCategory: trainingRecord.trainingCategory | json
+                      }
+                    ]"
+                    >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
+                  >
+                </ng-template>
               </ng-container>
               <ng-template #viewOnly>
-                <span [attr.data-testid]="'Title-no-link-' + records.uid">{{
-                  records.title ? records.title : 'Missing training name - Add'
-                }}</span>
+                <span [attr.data-testid]="'Title-no-link-' + trainingRecord.uid">
+                  {{ trainingRecord.title ? trainingRecord.title : 'Missing training name' }}
+                </span>
               </ng-template>
             </td>
-            <td class="govuk-table__cell">{{ records.accredited ? records.accredited : '-' }}</td>
-            <td class="govuk-table__cell">{{ records.completed ? (records.completed | date: 'dd MMM y') : '-' }}</td>
-            <td class="govuk-table__cell">{{ records.expires ? (records.expires | date: 'dd MMM y') : '-' }}</td>
-            <td class="govuk-table__cell" [attr.data-testid]="'Status-' + records.uid">
-              <span *ngIf="!records.expires">-</span>
-              <div *ngIf="records.trainingStatus === trainingStatusService.MISSING && records.expires">
-                <img src="/assets/images/flag-red.svg" alt="" class="govuk-util__vertical-align-top" />
+            <td class="govuk-table__cell" [attr.data-testid]="'accredited-' + trainingRecord.uid">
+              {{ trainingRecord.accredited ? trainingRecord.accredited : '-' }}
+            </td>
+            <td class="govuk-table__cell" [attr.data-testid]="'completion-date-' + trainingRecord.uid">
+              {{ trainingRecord.completed ? (trainingRecord.completed | date: 'dd MMM y') : '-' }}
+            </td>
+            <td class="govuk-table__cell" [attr.data-testid]="'expiry-date-' + trainingRecord.uid">
+              {{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd MMM y') : '-' }}
+            </td>
+            <td class="govuk-table__cell" [attr.data-testid]="'status-' + trainingRecord.uid">
+              <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING">
+                <img src="/assets/images/flag-red.svg" alt="red warning flag" class="govuk-util__vertical-align-top" />
                 Missing
               </div>
-              <div *ngIf="records.trainingStatus === trainingStatusService.EXPIRED && records.expires">
-                <img src="/assets/images/flag-red.svg" alt="" class="govuk-util__vertical-align-top" />
+              <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRED && trainingRecord.expires">
+                <img src="/assets/images/flag-red.svg" alt="red expired flag" class="govuk-util__vertical-align-top" />
                 Expired
               </div>
-              <div *ngIf="records.trainingStatus === trainingStatusService.EXPIRING && records.expires">
-                <img src="/assets/images/flag-orange.svg" alt="" class="govuk-util__vertical-align-top" />
+              <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRING && trainingRecord.expires">
+                <img
+                  src="/assets/images/flag-orange.svg"
+                  alt="yellow expires soon flag"
+                  class="govuk-util__vertical-align-top"
+                />
                 Expires soon
               </div>
-              <div *ngIf="records.trainingStatus === trainingStatusService.ACTIVE && records.expires">OK</div>
+              <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.ACTIVE && trainingRecord.expires">
+                OK
+              </div>
+              <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.ACTIVE && !trainingRecord.expires">
+                -
+              </div>
             </td>
           </tr>
-        </ng-container>
-      </tbody>
-    </table>
-  </div>
-</ng-container>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+  <ng-template #noTraining>
+    <ng-container *ngIf="isMandatoryTraining; else notMandatoryTraining">
+      <div class="govuk-!-margin-bottom-8">
+        <h1 class="govuk-heading-l govuk-!-font-size-27 govuk-!-margin-bottom-3">Mandatory training</h1>
+        <p class="govuk-body">No mandatory training has been added for their job role yet.</p>
+        <a
+          class="govuk-link--no-visited-state govuk-!-font-size-19"
+          [attr.data-testid]="'no-mandatory-training-link'"
+          [routerLink]="['../select-record-type']"
+          >Add and manage mandatory training records</a
+        >
+      </div>
+    </ng-container>
+    <ng-template #notMandatoryTraining>
+      <div class="govuk-!-margin-bottom-8">
+        <h1 class="govuk-heading-l govuk-!-font-size-27 govuk-!-margin-bottom-3">Non-mandatory training</h1>
+        <p class="govuk-body">No non-mandatory training has been added for their job role yet</p>
+        <a
+          class="govuk-link--no-visited-state govuk-!-font-size-19"
+          [attr.data-testid]="'no-training-link'"
+          [routerLink]="['../add-training']"
+          >Add a training record</a
+        >
+      </div>
+    </ng-template>
+  </ng-template>
+</div>

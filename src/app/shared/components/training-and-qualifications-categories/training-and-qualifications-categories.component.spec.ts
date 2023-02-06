@@ -2,15 +2,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { fireEvent, render, RenderResult, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
 import { TrainingAndQualificationsCategoriesComponent } from './training-and-qualifications-categories.component';
 
-const sinon = require('sinon');
 const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
 
 const establishmentBuilder = build('Establishment', {
@@ -61,34 +57,80 @@ const trainingCategoryBuilder = build('TrainingCategory', {
     id: sequence(),
     seq: sequence(),
     category: fake((f) => f.lorem.sentence()),
+    isMandatory: false,
     training: perBuild(() => {
       return [trainingBuilder()];
     }),
   },
 });
 
-describe('TrainingAndQualificationsCategoriesComponent', () => {
-  let component: RenderResult<TrainingAndQualificationsCategoriesComponent>;
-  const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-    can: sinon.stub().returns(true),
-  });
-
-  async function setup(trainingCategory = [], workplace = null) {
-    const { getByTestId, fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+const trainingCategories = [
+  trainingCategoryBuilder({
+    // expired
+    overrides: {
+      category: 'B Category Name',
+      isMandatory: true,
+      training: [
+        trainingBuilder({
+          overrides: {
+            expires: dayjs().subtract(1, 'month').toISOString(),
+          },
+        }),
       ],
+    },
+  }),
+  trainingCategoryBuilder({
+    // expiring
+    overrides: {
+      category: 'A Category Name',
+      training: [
+        trainingBuilder({
+          overrides: {
+            expires: dayjs().add(1, 'month').toISOString(),
+          },
+        }),
+      ],
+    },
+  }),
+  trainingCategoryBuilder({
+    // up to date
+    overrides: {
+      category: 'C Category Name',
+      isMandatory: true,
+      training: [
+        trainingBuilder({
+          overrides: {
+            expires: dayjs().add(1, 'year').toISOString(),
+          },
+        }),
+      ],
+    },
+  }),
+  trainingCategoryBuilder({
+    // Missing
+    overrides: {
+      category: 'D Category Name',
+      training: [missingTrainingBuilder()],
+    },
+  }),
+];
+
+describe('TrainingAndQualificationsCategoriesComponent', () => {
+  async function setup(totalTraining = 5) {
+    const { getByTestId, getByLabelText, fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      providers: [],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
-        trainingCategories: trainingCategory,
+        trainingCategories: trainingCategories,
+        totalTraining,
       },
     });
     const component = fixture.componentInstance;
     return {
       component,
       getByTestId,
+      getByLabelText,
       fixture,
     };
   }
@@ -97,126 +139,14 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show Worker information when clicking the More link', async () => {
-    const trainingCategory = trainingCategoryBuilder();
+  it('should show the no records text, when there are no t and q records for an establishment', async () => {
+    const { getByTestId } = await setup(0);
 
-    const { getByTestId } = await setup([trainingCategory]);
-    const container = within(getByTestId('training-category-table'));
-
-    fireEvent.click(container.getAllByTestId('more-link')[0]);
-    expect(container.getAllByText(trainingCategory.training[0].worker.NameOrIdValue));
-  });
-
-  it('should show an Update link for expired and expiring soon workers when clicking the More link', async () => {
-    const trainingCategory = trainingCategoryBuilder({
-      overrides: {
-        training: [
-          trainingBuilder({
-            overrides: {
-              expires: dayjs().subtract(1, 'month').toISOString(),
-            },
-          }),
-        ],
-      },
-    });
-    const { getByTestId } = await setup([trainingCategory]);
-
-    const container = within(getByTestId('training-category-table'));
-
-    fireEvent.click(container.getAllByTestId('more-link')[0]);
-    expect(container.getAllByText('Update'));
-  });
-
-  it('should not display an Update link if you do not have permissions to edit workers', async () => {
-    sinon.restore();
-    const mockPermissionsService = sinon.createStubInstance(PermissionsService, {
-      can: sinon.stub().returns(false),
-    });
-
-    const trainingCategory = trainingCategoryBuilder({
-      overrides: {
-        training: [
-          trainingBuilder({
-            overrides: {
-              expires: dayjs().subtract(1, 'month').toISOString(),
-            },
-          }),
-        ],
-      },
-    });
-
-    const { getByTestId } = await render(TrainingAndQualificationsCategoriesComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        { provide: PermissionsService, useValue: mockPermissionsService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-      ],
-      componentProperties: {
-        workplace: establishmentBuilder() as Establishment,
-        trainingCategories: [trainingCategory],
-      },
-    });
-
-    const container = within(getByTestId('training-category-table'));
-
-    fireEvent.click(container.getAllByTestId('more-link')[0]);
-    expect(container.queryAllByText('Update').length).toBe(0);
+    expect(getByTestId('noRecords')).toBeTruthy();
   });
 
   it('should list by Expired as default', async () => {
-    const workplace = establishmentBuilder() as Establishment;
-
-    const trainingCategories = [
-      trainingCategoryBuilder({
-        // expired
-        overrides: {
-          category: 'B Category Name',
-          training: [
-            trainingBuilder({
-              overrides: {
-                expires: dayjs().subtract(1, 'month').toISOString(),
-              },
-            }),
-          ],
-        },
-      }),
-      trainingCategoryBuilder({
-        // expiring
-        overrides: {
-          category: 'A Category Name',
-          training: [
-            trainingBuilder({
-              overrides: {
-                expires: dayjs().add(1, 'month').toISOString(),
-              },
-            }),
-          ],
-        },
-      }),
-      trainingCategoryBuilder({
-        // up to date
-        overrides: {
-          category: 'C Category Name',
-          training: [
-            trainingBuilder({
-              overrides: {
-                expires: dayjs().add(1, 'year').toISOString(),
-              },
-            }),
-          ],
-        },
-      }),
-      trainingCategoryBuilder({
-        // Missing
-        overrides: {
-          category: 'D Category Name',
-          training: [missingTrainingBuilder()],
-        },
-      }),
-    ];
-
-    const { fixture } = await setup(trainingCategories, workplace);
-    fixture.detectChanges();
+    const { fixture } = await setup();
 
     const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
 
@@ -226,61 +156,10 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(rows[2].innerHTML).toContain('C Category Name');
     expect(rows[3].innerHTML).toContain('D Category Name');
   });
+
   it('should change list depending on sort', async () => {
-    const workplace = establishmentBuilder() as Establishment;
+    const { fixture } = await setup();
 
-    const trainingCategories = [
-      trainingCategoryBuilder({
-        // expired
-        overrides: {
-          category: 'B Category Name',
-          training: [
-            trainingBuilder({
-              overrides: {
-                expires: dayjs().subtract(1, 'month').toISOString(),
-              },
-            }),
-          ],
-        },
-      }),
-      trainingCategoryBuilder({
-        // expiring
-        overrides: {
-          category: 'A Category Name',
-          training: [
-            trainingBuilder({
-              overrides: {
-                expires: dayjs().add(1, 'month').toISOString(),
-              },
-            }),
-          ],
-        },
-      }),
-      trainingCategoryBuilder({
-        // up to date
-        overrides: {
-          category: 'C Category Name',
-          training: [
-            trainingBuilder({
-              overrides: {
-                expires: dayjs().add(1, 'year').toISOString(),
-              },
-            }),
-          ],
-        },
-      }),
-      trainingCategoryBuilder({
-        // Missing
-        overrides: {
-          category: 'D Category Name',
-          training: [missingTrainingBuilder()],
-        },
-      }),
-    ];
-
-    const { fixture } = await setup(trainingCategories, workplace);
-
-    fixture.detectChanges();
     const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingCategory')).nativeElement;
     select.value = select.options[1].value; // Expiring Soon
     select.dispatchEvent(new Event('change'));
@@ -301,5 +180,33 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(rows[1].innerHTML).toContain('A Category Name');
     expect(rows[2].innerHTML).toContain('B Category Name');
     expect(rows[3].innerHTML).toContain('C Category Name');
+  });
+
+  it('should show just the mandatory training categories when the checkbox is selected', async () => {
+    const { fixture, getByLabelText } = await setup();
+
+    const checkbox = getByLabelText('Only show mandatory training');
+    fireEvent.click(checkbox);
+    fixture.detectChanges();
+
+    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
+
+    expect(rows.length).toEqual(2);
+    expect(rows[0].innerHTML).toContain('B Category Name');
+    expect(rows[1].innerHTML).toContain('C Category Name');
+  });
+
+  it('should render a view link for each training category with correct href', async () => {
+    const { component, fixture } = await setup();
+
+    const workplaceUid = component.workplace.uid;
+    const rows = fixture.nativeElement.querySelectorAll(`table[data-testid='training-category-table'] tbody tr`);
+
+    rows.forEach((row, index) => {
+      const viewLink = within(row).getByText('View');
+      expect(viewLink.getAttribute('href')).toEqual(
+        `/workplace/${workplaceUid}/training-and-qualifications-record/view-training-category/${trainingCategories[index].id}`,
+      );
+    });
   });
 });

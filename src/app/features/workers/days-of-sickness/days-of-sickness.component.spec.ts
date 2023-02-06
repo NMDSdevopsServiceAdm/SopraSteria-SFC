@@ -36,6 +36,9 @@ describe('DaysOfSicknessComponent', () => {
                   },
                 },
               },
+              snapshot: {
+                params: {},
+              },
             },
           },
           {
@@ -55,6 +58,7 @@ describe('DaysOfSicknessComponent', () => {
     return {
       component,
       fixture,
+      router,
       getByText,
       getAllByText,
       getByLabelText,
@@ -167,6 +171,34 @@ describe('DaysOfSicknessComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
+      const { component, routerSpy, getByText, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const link = getByText('Save and return');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+
+    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+      const { component, routerSpy, getByText, fixture, router } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
   });
 

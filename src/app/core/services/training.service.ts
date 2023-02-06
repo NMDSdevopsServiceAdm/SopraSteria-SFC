@@ -11,6 +11,7 @@ export class TrainingService {
   public selectedTraining = null;
   public selectedStaff = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
+  private _trainingOrQualificationPreviouslySelected: string = null;
 
   constructor(private http: HttpClient) {}
 
@@ -18,6 +19,16 @@ export class TrainingService {
     return this.http
       .get<TrainingCategoryResponse>('/api/trainingCategories')
       .pipe(map((res) => res.trainingCategories));
+  }
+
+  getCategoryById(categoryId): Observable<TrainingCategory[]> {
+    return this.http
+      .get<TrainingCategoryResponse>(`/api/trainingCategories/${categoryId}`)
+      .pipe(map((res) => res.trainingCategories));
+  }
+
+  public deleteCategoryById(establishmentId, categoryId) {
+    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining/${categoryId}`);
   }
 
   public updateSelectedStaff(formValue): void {
@@ -39,5 +50,24 @@ export class TrainingService {
   //get all mandatory training
   public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
     return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
+  }
+
+  public deleteAllMandatoryTraining(establishmentId: number) {
+    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining`);
+  }
+
+  public get trainingOrQualificationPreviouslySelected(): string {
+    if (!this._trainingOrQualificationPreviouslySelected) {
+      this._trainingOrQualificationPreviouslySelected = localStorage.getItem(
+        'trainingOrQualificationPreviouslySelected',
+      );
+    }
+
+    return this._trainingOrQualificationPreviouslySelected;
+  }
+
+  public set trainingOrQualificationPreviouslySelected(value: string) {
+    this._trainingOrQualificationPreviouslySelected = value;
+    localStorage.setItem('trainingOrQualificationPreviouslySelected', value);
   }
 }

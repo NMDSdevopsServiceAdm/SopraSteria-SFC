@@ -23,13 +23,8 @@ function isRegManager(worker) {
   if (worker.mainJobRoleId === registeredManagerJobID) {
     // 4 is reg manager in csv
     return true;
-  } else {
-    worker.otherJobIds.map((otherJobId) => {
-      if (otherJobId === registeredManagerJobID) {
-        return true;
-      }
-    });
   }
+  return false;
 }
 function isPerm(worker) {
   return employedContractStatusIds.includes(worker.contractTypeId);
@@ -2774,6 +2769,7 @@ class WorkplaceCSVValidator {
     let registeredManagers = 0;
 
     const dataInCSV = ['NEW', 'UPDATE', 'CHGSUB']; //For theses statuses trust the data in the CSV
+
     myJSONWorkers.forEach((worker) => {
       if (this.key === worker.establishmentKey && dataInCSV.includes(worker.status)) {
         /* update totals */

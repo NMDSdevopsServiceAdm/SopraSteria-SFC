@@ -9,11 +9,17 @@ export class WorkplaceResolver implements Resolve<any> {
   constructor(private router: Router, private establishmentService: EstablishmentService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.establishmentService.getEstablishment(route.paramMap.get('establishmentuid')).pipe(
-      catchError(() => {
-        this.router.navigate(['/dashboard'], { fragment: 'workplace' });
-        return of(null);
-      })
-    );
+    return this.establishmentService
+      .getEstablishment(
+        route.paramMap.get('establishmentuid')
+          ? route.paramMap.get('establishmentuid')
+          : this.establishmentService.establishmentId,
+      )
+      .pipe(
+        catchError(() => {
+          this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+          return of(null);
+        }),
+      );
   }
 }

@@ -1,26 +1,20 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
-<ng-container *ngIf="worker">
-  <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-full">
-      <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
-        {{ worker.nameOrId }}: {{ worker.mainJob?.other ? worker.mainJob.other : worker.mainJob.title }}
-      </span>
-    </div>
-  </div>
-</ng-container>
 
 <form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
           <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
           <h1 class="govuk-fieldset__heading">
             {{ title }}
           </h1>
         </legend>
-        <div *ngIf="missingTrainingRecord; then missingTrainingCategoryLabelBlock; else categoryListBLock"></div>
-        <ng-template #categoryListBLock>
+        <p class="govuk-body" *ngIf="showWorkerCount">
+          <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
+          <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
+        </p>
+        <ng-container *ngIf="!trainingCategory; else noDropdown">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
             <label class="govuk-label" for="category"> Training category </label>
             <span *ngIf="submitted && form.get('category').invalid" id="category-error" class="govuk-error-message">
@@ -40,9 +34,12 @@
               </option>
             </select>
           </div>
-        </ng-template>
-        <ng-template #missingTrainingCategoryLabelBlock>
-          <p class="govuk-body govuk-!-margin-bottom-5">Training category: {{ missingTrainingRecord.category }}</p>
+        </ng-container>
+        <ng-template #noDropdown>
+          <p class="govuk-body govuk-!-margin-bottom-6" data-testid="trainingCategoryDisplay">
+            <span class="govuk-util__block"><b>Training category</b></span>
+            <span class="govuk-util__block govuk-!-margin-top-2">{{ trainingCategory.category }}</span>
+          </p>
         </ng-template>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
@@ -60,12 +57,9 @@
           />
         </div>
 
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('accredited').invalid">
+        <div class="govuk-form-group">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend">Is the training accredited?</legend>
-            <span *ngIf="submitted && form.get('accredited').invalid" id="accredited-error" class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('accredited') }}
-            </span>
             <div class="govuk-radios govuk-!-margin-bottom-2">
               <div class="govuk-radios__item">
                 <input
@@ -102,6 +96,7 @@
         </div>
 
         <div
+          data-testid="completedDate"
           class="govuk-form-group govuk-!-margin-bottom-7"
           [class.govuk-form-group--error]="submitted && form.get('completed').invalid"
         >
@@ -116,6 +111,7 @@
         </div>
 
         <div
+          data-testid="expiresDate"
           class="govuk-form-group govuk-!-margin-bottom-7"
           [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
         >
@@ -131,7 +127,7 @@
 
         <div class="govuk-character-count govuk-!-margin-bottom-4">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
-            <label class="govuk-label" for="notes"> Add notes </label>
+            <label class="govuk-label" for="notes"> Notes </label>
             <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
             </span>
@@ -174,20 +170,25 @@
         </div>
       </fieldset>
     </div>
+    <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
+      <a
+        class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
+        *ngIf="trainingRecordId"
+        draggable="false"
+        href="#"
+        [routerLink]="['../delete']"
+        data-testid="deleteButton"
+      >
+        <img src="/assets/images/bin.svg" alt="" />
+        <span class="govuk-!-margin-left-1"> Delete this training record </span></a
+      >
+    </div>
   </div>
-
   <div class="govuk-button-group">
     <button type="submit" class="govuk-button govuk-!-margin-right-9">
       {{ buttonText }}
     </button>
-    <button
-      *ngIf="trainingRecordId"
-      type="button"
-      class="govuk-button govuk-button--warning govuk-!-margin-right-8"
-      [routerLink]="['../delete']"
-    >
-      Delete
-    </button>
+
     <a
       class="govuk-button govuk-button--link govuk-!-margin-left-9"
       role="button"
@@ -198,3 +199,4 @@
     </a>
   </div>
 </form>
+<!-- </div> -->

@@ -11,8 +11,7 @@
           draggable="false"
           role="button"
           [routerLink]="['../add-training']"
-          [state]="{ training: 'mandatory', missingRecord }"
-          (click)="addButtonClicked()"
+          (click)="setLocalStorage($event, missingRecord.category)"
         >
           Add
         </a>

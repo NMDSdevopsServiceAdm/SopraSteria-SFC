@@ -5,7 +5,7 @@ import { QualificationResponse } from '@core/model/qualification.model';
 import { TrainingRecord } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
@@ -23,18 +23,21 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   private trainingPageUrl: string;
   private recordUid: string;
   private subscriptions: Subscription = new Subscription();
+  public previousUrl: string[];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
-    private backService: BackService,
     private alertService: AlertService,
+    protected backLinkService: BackLinkService,
   ) {}
 
   ngOnInit(): void {
     this.setTrainingView();
     this.setVariables();
+    this.previousUrl = [localStorage.getItem('previousUrl')];
+
     this.trainingPageUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
     this.setBackLink();
   }
@@ -56,10 +59,8 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
     this.worker = this.route.snapshot.data.worker;
   }
 
-  private setBackLink(): void {
-    this.backService.setBackLink({
-      url: [this.trainingPageUrl, this.trainingOrQualification, this.recordUid],
-    });
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   public returnToEditPage(event: Event): void {
@@ -70,11 +71,11 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   public deleteRecord(): void {
     this.subscriptions.add(
       this.deleteTrainingOrQualificationRecord().subscribe(() => {
-        this.router.navigate([this.trainingPageUrl, 'training']);
+        this.router.navigate(this.previousUrl);
 
         this.alertService.addAlert({
           type: 'success',
-          message: `${this.capitalizeFirstLetter(this.trainingOrQualification)} record has been deleted`,
+          message: `${this.capitalizeFirstLetter(this.trainingOrQualification)} record deleted`,
         });
       }),
     );
@@ -93,5 +94,6 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    localStorage.removeItem('previousUrl');
   }
 }

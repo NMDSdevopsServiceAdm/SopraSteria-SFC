@@ -29,7 +29,6 @@ const buildWorkerCsv = build('WorkerCSV', {
     NMCREG: '',
     NONSCQUAL: '2',
     NURSESPEC: '',
-    OTHERJOBROLE: '10',
     OTHERJRDESC: '',
     POSTCODE: 'LS1 1AA',
     QUALACH01: '',
@@ -410,83 +409,6 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors).to.deep.equal([]);
         expect(validator._validationErrors.length).to.equal(0);
-      });
-    });
-
-    describe('otherJobs', () => {
-      it('should allow correct other jobs', async () => {
-        const validator = new WorkerCsvValidator(
-          buildWorkerCsv({
-            overrides: {
-              STATUS: 'NEW',
-              OTHERJOBROLE: '25;17;26;11;34',
-              OTHERJRDESC: ';;;;',
-            },
-          }),
-          2,
-          null,
-          mappings,
-        );
-
-        await validator.validate();
-
-        await validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._validationErrors.length).to.equal(0);
-      });
-
-      it('should allow 0 as an option to say No', async () => {
-        const validator = new WorkerCsvValidator(
-          buildWorkerCsv({
-            overrides: {
-              STATUS: 'NEW',
-              OTHERJOBROLE: '0',
-              OTHERJRDESC: '',
-            },
-          }),
-          2,
-          null,
-          mappings,
-        );
-
-        await validator.validate();
-        await validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._validationErrors.length).to.equal(0);
-      });
-
-      it('should not allow 0 as an option to say No and other roles', async () => {
-        const validator = new WorkerCsvValidator(
-          buildWorkerCsv({
-            overrides: {
-              STATUS: 'NEW',
-              OTHERJOBROLE: '0;14',
-              OTHERJRDESC: ';',
-            },
-          }),
-          2,
-          null,
-          mappings,
-        );
-
-        await validator.validate();
-        await validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([
-          {
-            column: 'OTHERJOBROLE',
-            errCode: 1320,
-            errType: 'OTHER_JOB_ROLE_ERROR',
-            error: 'OTHERJOBROLE is 0 (none) but contains other job roles',
-            lineNumber: 2,
-            name: 'MARMA',
-            source: '0;14',
-            worker: '3',
-          },
-        ]);
-        expect(validator._validationErrors.length).to.equal(1);
       });
     });
 
@@ -939,7 +861,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             lineNumber: 2,
             errCode: WorkerCsvValidator.SALARY_ERROR,
             errType: 'SALARY_ERROR',
-            error: 'Salary (SALARY) must be an integer between £500 and £200000',
+            error: 'SALARY must be between £500 and £200000',
             source: worker.SALARY,
             column: 'SALARY',
             name: 'MARMA',
@@ -967,7 +889,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             lineNumber: 2,
             errCode: WorkerCsvValidator.SALARY_ERROR,
             errType: 'SALARY_ERROR',
-            error: 'Salary (SALARY) must be an integer between £500 and £200000',
+            error: 'SALARY must be between £500 and £200000',
             source: worker.SALARY,
             column: 'SALARY',
             name: 'MARMA',
@@ -996,7 +918,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             lineNumber: 2,
             errCode: WorkerCsvValidator.SALARY_ERROR,
             errType: 'SALARY_ERROR',
-            error: 'Salary (SALARY) must be an integer between £500 and £250000',
+            error: 'SALARY must be between £500 and £250000',
             source: worker.SALARY,
             column: 'SALARY',
             name: 'MARMA',

@@ -8,7 +8,6 @@ export const POSTCODE_PATTERN =
 export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,50}$/;
 export const INT_PATTERN = /^-?[0-9]*$/;
 export const FLOAT_PATTERN = /^([0-9]*[.])?[0-9]+$/;
-// export const SALARY_PATTERN = /^\d*$|^\d*\.\d{0,2}$/;
 export const SALARY_PATTERN = /^-?\d*$|^-?\d*\.\d{0,2}$/;
 export const API_PATTERN = /^\/api\//;
 export const ADD_USER_API = '/api/user/add';

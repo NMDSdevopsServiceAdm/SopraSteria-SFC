@@ -16,6 +16,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Input() workerCount: number;
   @Input() wdfView = false;
   @Input() showViewByToggle = false;
+  @Input() totalRecords: number;
 
   @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
 
@@ -36,7 +37,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     private route: ActivatedRoute,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
     this.sortByValue = '0_expired';
@@ -82,6 +83,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
       .pipe(take(1))
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;
+
         this.workerCount = workerCount;
       });
   }
@@ -101,9 +103,10 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
 
   public getWorkerTrainingAndQualificationsPath(event: Event, worker: Worker): void {
     event.preventDefault();
-    this.addQueryParams();
-    const path = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
-    this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
+    const path = this.wdfView
+      ? ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training', 'wdf-summary']
+      : ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
+    this.router.navigate(path, { fragment: 'all-records' });
   }
 
   private addQueryParams(): void {

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
-import { BackService } from '@core/services/back.service';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
@@ -16,70 +16,54 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
-  private trainingPath: string;
   public mandatoryTraining: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
-    protected backLinkService: BackLinkService,
+    protected alertService: AlertService,
   ) {
     super(
       formBuilder,
       route,
       router,
-      backService,
+      backLinkService,
       errorSummaryService,
       trainingService,
       workerService,
-      backLinkService,
+      alertService,
     );
   }
 
   protected init(): void {
+    this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
     this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
-
-    this.workerService.getRoute$.subscribe((route) => {
-      if (route) {
-        this.previousUrl = [route];
-      } else {
-        this.previousUrl = [
-          `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`,
-        ];
-      }
-    });
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
-
     if (this.trainingRecordId) {
       this.fillForm();
+    } else if (this.trainingCategory) {
+      this.form.patchValue({
+        category: this.trainingCategory.id,
+      });
     }
   }
 
   public setTitle(): void {
-    if (this.mandatoryTraining) {
-      this.title = this.trainingRecordId ? 'Mandatory training record' : 'Add mandatory training record';
-    } else {
-      this.title = this.trainingRecordId ? 'Training details' : 'Enter training details';
-    }
+    this.title = this.trainingRecordId ? 'Training record details' : 'Add training record details';
+  }
+
+  protected setSectionHeading(): void {
+    this.section = this.worker.nameOrId;
   }
 
   protected setButtonText(): void {
-    this.buttonText = this.trainingRecordId ? 'Save and return' : 'Add training';
-  }
-
-  protected setBackLink(): void {
-    const parsed = this.router.parseUrl(this.previousUrl[0]);
-    this.backService.setBackLink({
-      url: [parsed.root.children.primary.segments.map((seg) => seg.path).join('/')],
-      fragment: parsed.fragment,
-      queryParams: parsed.queryParams,
-    });
+    this.buttonText = this.trainingRecordId ? 'Save and return' : 'Save record';
   }
 
   private fillForm(): void {
@@ -93,7 +77,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
               ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)
               : null;
             const expires = this.trainingRecord.expires ? dayjs(this.trainingRecord.expires, DATE_PARSE_FORMAT) : null;
-
             this.form.patchValue({
               title: this.trainingRecord.title,
               category: this.trainingRecord.trainingCategory.id,
@@ -144,18 +127,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
-    let url: string[];
-    if (this.previousUrl.indexOf('dashboard') > -1) {
-      url = this.previousUrl;
-    } else {
-      url = [`/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/training`];
-    }
-    this.router.navigate(url).then(() => {
-      if (this.trainingRecordId) {
-        this.workerService.alert = { type: 'success', message: 'Training has been saved.' };
-      } else {
-        this.workerService.alert = { type: 'success', message: 'Training has been added.' };
-      }
+    const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
+    this.router.navigate(this.previousUrl);
+    this.alertService.addAlert({
+      type: 'success',
+      message,
     });
   }
 

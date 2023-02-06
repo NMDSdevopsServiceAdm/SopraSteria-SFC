@@ -17,9 +17,7 @@ export class TrainingStatusService {
     if (missing) {
       return this.MISSING;
     } else if (expires) {
-      const expiringDate = dayjs(expires);
-      const currentDate = dayjs();
-      const daysDifference = expiringDate.diff(currentDate, 'days');
+      const daysDifference = this.getDaysDifference(expires);
       if (daysDifference < 0) {
         return this.EXPIRED;
       } else if (daysDifference >= 0 && daysDifference <= parseInt(this.expiresSoonAlertDate$.value)) {
@@ -37,5 +35,11 @@ export class TrainingStatusService {
     return training.filter((trainingRecord) => {
       return this.trainingStatusForRecord(trainingRecord) === status;
     }).length;
+  }
+
+  public getDaysDifference(expires: Date) {
+    const expiringDate = dayjs(expires);
+    const currentDate = dayjs();
+    return expiringDate.diff(currentDate, 'days');
   }
 }

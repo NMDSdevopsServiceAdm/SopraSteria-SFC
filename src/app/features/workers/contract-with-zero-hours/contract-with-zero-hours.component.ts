@@ -62,15 +62,21 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     };
   }
 
-  onSuccess() {
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
     const { zeroHoursContract } = this.form.controls;
-    if (!this.insideFlow) {
-      const staffSummaryUrl = this.getRoutePath('');
+
+    const conditionalRoute =
       zeroHoursContract.value === 'Yes' ||
       [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-        ? staffSummaryUrl.push('average-weekly-hours')
-        : staffSummaryUrl.push('weekly-contracted-hours');
-      this.next = staffSummaryUrl;
-    }
+        ? 'average-weekly-hours'
+        : 'weekly-contracted-hours';
+
+    nextRoute.push(conditionalRoute);
+    return nextRoute;
+  }
+
+  onSuccess(): void {
+    this.next = this.determineConditionalRouting();
   }
 }
