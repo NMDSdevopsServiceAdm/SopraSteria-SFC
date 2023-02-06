@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -9,7 +10,7 @@ import { map } from 'rxjs/operators';
 })
 export class TrainingService {
   public selectedTraining = null;
-  public selectedStaff = [];
+  public selectedStaff: Worker[] = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
 
@@ -69,5 +70,11 @@ export class TrainingService {
   public set trainingOrQualificationPreviouslySelected(value: string) {
     this._trainingOrQualificationPreviouslySelected = value;
     localStorage.setItem('trainingOrQualificationPreviouslySelected', value);
+  }
+
+  public resetState(): void {
+    this.addMultipleTrainingInProgress$.next(false);
+    this.resetSelectedStaff();
+    this.resetSelectedTraining();
   }
 }

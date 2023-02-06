@@ -78,6 +78,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   protected init(): void {}
 
+  protected prefill(): void {}
+
   protected submit(record: any): void {}
 
   protected setTitle(): void {}

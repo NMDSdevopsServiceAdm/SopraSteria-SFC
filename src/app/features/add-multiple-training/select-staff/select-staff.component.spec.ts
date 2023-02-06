@@ -26,7 +26,7 @@ const createWorkers = (noOfWorkers) => {
 };
 
 describe('SelectStaffComponent', () => {
-  async function setup(noOfWorkers = 3) {
+  async function setup(noOfWorkers = 3, accessedFromSummary = false) {
     const workers = createWorkers(noOfWorkers);
     const {
       fixture,
@@ -57,6 +57,9 @@ describe('SelectStaffComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
+              parent: {
+                url: [{ path: accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
+              },
               data: {
                 workers: {
                   workers: workers,
@@ -75,20 +78,13 @@ describe('SelectStaffComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
-
     const trainingService = injector.inject(TrainingService) as TrainingService;
-
-    const trainingSpy = spyOn(trainingService, 'resetSelectedStaff');
-    trainingSpy.and.callThrough();
-
-    const updateSelectedStaffSpy = spyOn(trainingService, 'updateSelectedStaff');
-
     const workerService = injector.inject(WorkerService) as WorkerService;
-    const workerSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
 
+    const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const trainingSpy = spyOn(trainingService, 'resetSelectedStaff').and.callThrough();
+    const updateSelectedStaffSpy = spyOn(trainingService, 'updateSelectedStaff');
+    const workerSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
     const searchSpy = spyOn(component, 'handleSearch').and.callThrough();
 
     return {
@@ -115,6 +111,20 @@ describe('SelectStaffComponent', () => {
   it('should render a SelectStaffComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render `Continue` and `Cancel` buttons when it is not accessed from the confirm training page', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Continue')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
+  });
+
+  it('should render `Save and return` and `Cancel` buttons when it is accessed from the confirm training page', async () => {
+    const { getByText } = await setup(3, true);
+
+    expect(getByText('Save and return')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
   it('should render a table with the establishment staff in it and the number of workers above the table', async () => {
@@ -383,9 +393,7 @@ describe('SelectStaffComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      const selectedStaffIds = workers.map((worker) => worker.uid);
-
-      expect(updateSelectedStaffSpy).toHaveBeenCalledWith(selectedStaffIds);
+      expect(updateSelectedStaffSpy).toHaveBeenCalledWith(workers);
     });
 
     it('should store the selected staff in the training service when selecting individual staff and pressing continue', async () => {
@@ -401,7 +409,7 @@ describe('SelectStaffComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(updateSelectedStaffSpy).toHaveBeenCalledWith([workers[0].uid]);
+      expect(updateSelectedStaffSpy).toHaveBeenCalledWith([workers[0]]);
     });
 
     it('should navigate to the training details page when pressing continue', async () => {
@@ -438,14 +446,35 @@ describe('SelectStaffComponent', () => {
 
       expect(getAllByText('Select who you want to add a record for').length).toEqual(2);
     });
+
+    it('should navigate to the confirm training page when page has been accessed from that page and pressing Save and return', async () => {
+      const { component, fixture, getByText, spy, workers } = await setup(3, true);
+
+      component.paginatedWorkers = workers;
+      fixture.detectChanges();
+
+      const selectAllLink = getByText('Select all');
+      fireEvent.click(selectAllLink);
+      fixture.detectChanges();
+
+      const continueButton = getByText('Save and return');
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledWith([
+        'workplace',
+        component.workplaceUid,
+        'add-multiple-training',
+        'confirm-training',
+      ]);
+    });
   });
 
   describe('Prefill', () => {
     it('should show all staff selected if rendering this page having already selected all staff', async () => {
       const { component, fixture, getByText, getAllByText, getByTestId, workers } = await setup();
 
-      const selectedStaffIds = workers.map((worker) => worker.uid);
-      component.trainingService.selectedStaff = selectedStaffIds;
+      component.trainingService.selectedStaff = workers;
       component.ngOnInit();
       component.paginatedWorkers = workers;
       fixture.detectChanges();
@@ -460,8 +489,7 @@ describe('SelectStaffComponent', () => {
     it('should show the staff selected if rendering this page having already selected some staff', async () => {
       const { component, fixture, getByText, getAllByText, getByTestId, workers } = await setup();
 
-      const selectedStaffId = workers[0].uid;
-      component.trainingService.selectedStaff = [selectedStaffId];
+      component.trainingService.selectedStaff = [workers[0]];
       component.ngOnInit();
       component.paginatedWorkers = workers;
       fixture.detectChanges();
@@ -502,6 +530,17 @@ describe('SelectStaffComponent', () => {
 
       expect(trainingSpy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledWith(['/workplace', '1234-5678'], { fragment: 'training-and-qualifications' });
+    });
+
+    it('should navigate to the confirm training page when page has been accessed from that page and pressing Cancel', async () => {
+      const { fixture, getByText, trainingSpy, spy } = await setup(3, true);
+
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+      fixture.detectChanges();
+
+      expect(trainingSpy).not.toHaveBeenCalled();
+      expect(spy.calls.mostRecent().args[0]).toEqual(['../']);
     });
   });
 
