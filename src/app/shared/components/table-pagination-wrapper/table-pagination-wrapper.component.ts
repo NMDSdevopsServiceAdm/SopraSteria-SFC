@@ -43,7 +43,6 @@ export class TablePaginationWrapperComponent {
         queryParamsHandling: 'merge',
       });
     } else {
-      console.log(this.fragment);
       this.router.navigate([], { fragment: this.fragment });
     }
   }
@@ -55,7 +54,6 @@ export class TablePaginationWrapperComponent {
   }
 
   public handleSearch(searchTerm: string): void {
-    console.log('**** handle search *****');
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
     this.addQueryParams();
@@ -74,8 +72,6 @@ export class TablePaginationWrapperComponent {
       searchTerm: this.searchTerm,
       sortByValue: this.sortByValue,
     };
-    console.log('***** getData ******');
-    console.log(properties);
     this.fetchData.emit(properties);
   }
 }

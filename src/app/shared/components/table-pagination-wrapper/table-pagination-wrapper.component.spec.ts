@@ -42,7 +42,6 @@ describe('TablePaginationWrapperCompnent', () => {
     const emitSpy = spyOn(component.fetchData, 'emit');
     const handleSearchSpy = spyOn(component, 'handleSearch').and.callThrough();
     const handlePageUpdateSpy = spyOn(component, 'handlePageUpdate').and.callThrough();
-    // component.ngOnInit();
 
     return {
       component,

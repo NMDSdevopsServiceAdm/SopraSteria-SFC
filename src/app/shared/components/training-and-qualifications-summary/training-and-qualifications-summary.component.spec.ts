@@ -230,7 +230,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       const expectedEmit = {
         pageIndex: 0,
         itemsPerPage: 15,
-        sortBy: '0_expired',
+        sortBy: 'trainingExpired',
         searchTerm: 'search term here',
       };
 

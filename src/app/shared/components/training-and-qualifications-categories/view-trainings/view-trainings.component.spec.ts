@@ -19,11 +19,12 @@ import {
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import sinon from 'sinon';
 
 import { ViewTrainingComponent } from './view-trainings.component';
 
 describe('ViewTrainingComponent', () => {
-  async function setup() {
+  async function setup(qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, getByTestId } = await render(ViewTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -32,6 +33,9 @@ describe('ViewTrainingComponent', () => {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
             snapshot: {
+              queryParamMap: {
+                get: qsParamGetMock,
+              },
               params: {
                 categoryId: '2',
               },
@@ -148,14 +152,13 @@ describe('ViewTrainingComponent', () => {
     });
   });
 
-  it('should set the training category and current url in local storage', async () => {
+  it('should set the current url in local storage', async () => {
     const { component, router } = await setup();
     spyOnProperty(router, 'url').and.returnValue('/view-training');
     const localStorageSpy = spyOn(localStorage, 'setItem');
     component.ngOnInit();
 
     expect(localStorageSpy).toHaveBeenCalledTimes(1);
-    // expect(localStorageSpy.calls.all()[0].args).toEqual(['trainingCategory', '{"id":2,"category":"Autism"}']);
     expect(localStorageSpy.calls.all()[0].args).toEqual(['previousUrl', '/view-training']);
   });
 
@@ -173,9 +176,12 @@ describe('ViewTrainingComponent', () => {
 
     expect(within(tableRow).getByTestId('expired-flag')).toBeTruthy();
     expect(within(tableRow).getByText('1 expired')).toBeTruthy();
-    expect(within(tableRow).getByText('Update').getAttribute('href')).toEqual(
-      `/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`,
-    );
+    expect(
+      within(tableRow)
+        .getByText('Update')
+        .getAttribute('href')
+        .slice(0, within(tableRow).getByText('Update').getAttribute('href').indexOf(';')),
+    ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`);
   });
 
   it(`should render a flag with the expires soon status and update link with the correct url for an expires soon training`, async () => {
@@ -192,9 +198,12 @@ describe('ViewTrainingComponent', () => {
 
     expect(within(tableRow).getByTestId('expiring-flag')).toBeTruthy();
     expect(within(tableRow).getByText('1 expires soon')).toBeTruthy();
-    expect(within(tableRow).getByText('Update').getAttribute('href')).toEqual(
-      `/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`,
-    );
+    expect(
+      within(tableRow)
+        .getByText('Update')
+        .getAttribute('href')
+        .slice(0, within(tableRow).getByText('Update').getAttribute('href').indexOf(';')),
+    ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`);
   });
 
   it(`should render a flag with the missing status and an add link with the correct url for missing training`, async () => {
@@ -209,9 +218,12 @@ describe('ViewTrainingComponent', () => {
 
     expect(within(tableRow).getByTestId('missing-flag')).toBeTruthy();
     expect(within(tableRow).getByText('1 missing')).toBeTruthy();
-    expect(within(tableRow).getByText('Add').getAttribute('href')).toEqual(
-      `/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/add-training`,
-    );
+    expect(
+      within(tableRow)
+        .getByText('Add')
+        .getAttribute('href')
+        .slice(0, within(tableRow).getByText('Add').getAttribute('href').indexOf(';')),
+    ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/add-training`);
   });
 
   it(`should render the OK status when the training is not expired and does not expire soon`, async () => {
