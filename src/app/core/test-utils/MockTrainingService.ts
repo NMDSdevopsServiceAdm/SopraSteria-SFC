@@ -10,6 +10,15 @@ const workers = [workerBuilder(), workerBuilder()];
 @Injectable()
 export class MockTrainingService extends TrainingService {
   public selectedStaff = [];
+  public _mockTrainingOrQualificationPreviouslySelected: string = null;
+
+  public get trainingOrQualificationPreviouslySelected() {
+    return null;
+  }
+
+  public set trainingOrQualificationPreviouslySelected(value: string) {
+    this._mockTrainingOrQualificationPreviouslySelected = value;
+  }
   public selectedTraining = null;
   getCategories(): Observable<TrainingCategory[]> {
     return of([
@@ -180,6 +189,10 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     notes: 'This is a note',
     title: 'Title',
   };
+
+  public get trainingOrQualificationPreviouslySelected() {
+    return 'training';
+  }
 
   public static factory(incompleteTraining = false) {
     return (http: HttpClient) => {

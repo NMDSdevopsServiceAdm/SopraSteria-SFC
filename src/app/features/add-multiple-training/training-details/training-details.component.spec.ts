@@ -6,6 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -25,8 +26,8 @@ describe('MultipleTrainingDetailsComponent', () => {
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
         providers: [
+          WindowRef,
           { provide: EstablishmentService, useClass: MockEstablishmentService },
-
           {
             provide: ActivatedRoute,
             useValue: new MockActivatedRoute({
@@ -124,7 +125,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     userEvent.type(within(completedDate).getByLabelText('Day'), '1');
     userEvent.type(within(completedDate).getByLabelText('Month'), '1');
     userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
-    const expiryDate = getByTestId('expiryDate');
+    const expiryDate = getByTestId('expiresDate');
     userEvent.type(within(expiryDate).getByLabelText('Day'), '1');
     userEvent.type(within(expiryDate).getByLabelText('Month'), '1');
     userEvent.type(within(expiryDate).getByLabelText('Year'), '2022');

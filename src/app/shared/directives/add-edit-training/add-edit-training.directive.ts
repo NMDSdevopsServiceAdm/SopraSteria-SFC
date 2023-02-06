@@ -59,6 +59,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
     this.init();
+    this.prefill();
     this.setTitle();
     this.setSectionHeading();
     this.setButtonText();
@@ -275,7 +276,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.backLinkService.showBackLink();
   }
 
-  public onCancel(): void {
+  public onCancel(event: Event): void {
+    event.preventDefault();
     this.router.navigate(this.previousUrl);
   }
 }
