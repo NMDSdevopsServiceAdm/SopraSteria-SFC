@@ -1,0 +1,105 @@
+<div>
+  <h1>This is the New Dashboard</h1>
+</div>
+
+<!-- <div style="background-color: #e6e5e3">
+      <div class="govuk-width-container">
+        <app-new-tabs (selectedTabClick)="tabClickEvent($event)" (viewTab)="handleTabChange($event)">
+          <app-new-tab title="Home"></app-new-tab>
+          <app-new-tab *ngIf="workplace && canViewEstablishment" title="Workplace"></app-new-tab>
+          <app-new-tab *ngIf="workplace && canViewListOfWorkers" title="Staff records"></app-new-tab>
+          <app-new-tab *ngIf="workplace && canViewListOfWorkers" title="Training and qualifications"></app-new-tab>
+          <app-new-tab *ngIf="workplace && canViewBenchmarks" title="Benchmarks"></app-new-tab>
+        </app-new-tabs>
+      </div>
+    </div>
+
+    <div style="background-color: #f3f2f1">
+      <div class="govuk-width-container">
+        <app-back-link></app-back-link>
+        <app-new-back-link></app-new-back-link>
+        <app-breadcrumbs></app-breadcrumbs>
+        <app-alert></app-alert>
+        <div class="govuk-!-padding-top-9">
+          <app-dashboard-header></app-dashboard-header>
+        </div>
+      </div>
+    </div>
+
+    <div class="govuk-width-container">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <app-home-tab
+            *ngIf="selectedTab === 'Home'"
+            [workplace]="workplace"
+            [workerCount]="workerCount"
+          ></app-home-tab>
+          <app-workplace-tab
+            *ngIf="selectedTab === 'Workplace'"
+            [workplace]="workplace"
+            [workerCount]="workerCount"
+          ></app-workplace-tab>
+          <app-staff-records-tab
+            *ngIf="selectedTab === 'Staff records'"
+            [workplace]="workplace"
+            [workers]="workers"
+            [workerCount]="workerCount"
+          ></app-staff-records-tab>
+          <app-training-and-qualifications-tab
+            *ngIf="selectedTab === 'Training and qualifications'"
+            [workplace]="workplace"
+            [workers]="workers"
+            [workerCount]="workerCount"
+            [trainingCounts]="trainingCounts"
+          ></app-training-and-qualifications-tab>
+          <app-benchmarks-tab
+            *ngIf="selectedTab === 'Benchmarks'"
+            [workplace]="workplace"
+            class="asc-benchmarks-tab"
+          ></app-benchmarks-tab> -->
+<!-- <app-tabs (selectedTabClick)="tabClickEvent($event)">
+        <app-tab [title]="'Home'">
+          <app-home-tab [workplace]="workplace" [workerCount]="workerCount"></app-home-tab>
+        </app-tab>
+
+        <app-tab
+          *ngIf="workplace && canViewEstablishment"
+          [title]="'Workplace'"
+          [redAlert]="workplace?.employerType && (showCQCDetailsBanner || showSharingPermissionsBanner)"
+        >
+          <app-workplace-tab [workplace]="workplace" [workerCount]="workerCount"></app-workplace-tab>
+        </app-tab>
+
+        <app-tab *ngIf="workplace && canViewListOfWorkers" [alert]="totalStaffRecords === 0" [title]="'Staff records'">
+          <app-staff-records-tab
+            [workplace]="workplace"
+            [workers]="workers"
+            [workerCount]="workerCount"
+          ></app-staff-records-tab>
+        </app-tab>
+
+        <app-tab
+          *ngIf="workplace && canViewListOfWorkers"
+          [alert]="trainingAlert === 1"
+          [redAlert]="trainingAlert === 2"
+          [title]="'Training and qualifications'"
+        >
+          <app-training-and-qualifications-tab
+            [workplace]="workplace"
+            [workers]="workers"
+            [workerCount]="workerCount"
+            [trainingCounts]="trainingCounts"
+          ></app-training-and-qualifications-tab>
+        </app-tab>
+
+        <app-tab *ngIf="workplace && canViewBenchmarks" [title]="'Benchmarks'">
+          <app-benchmarks-tab class="asc-benchmarks-tab" [workplace]="workplace"></app-benchmarks-tab>
+        </app-tab>
+
+        <app-tab *ngIf="workplace && canViewEstablishment && wdfNewDesignFlag" [title]="'WDF'">
+          <app-wdf-tab [workplace]="workplace"></app-wdf-tab>
+        </app-tab>
+      </app-tabs> -->
+<!-- </div>
+      </div>
+    </div> -->

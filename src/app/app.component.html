@@ -2,7 +2,7 @@
   <a class="govuk-skip-link" href="#main-content" (click)="skip($event)">Skip to main content</a>
   <app-header></app-header>
 
-  <ng-container *ngIf="dashboardView; else otherView">
+  <ng-container *ngIf="standAloneAccount; else otherView">
     <div id="content">
       <main
         id="main-content"

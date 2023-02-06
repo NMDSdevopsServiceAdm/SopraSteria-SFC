@@ -4,6 +4,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -18,6 +19,7 @@ export class AppComponent implements OnInit {
   private baseTitle = 'Skills for Care';
   public isAdminSection = false;
   public dashboardView = false;
+  public standAloneAccount = false;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -29,6 +31,7 @@ export class AppComponent implements OnInit {
     private idleService: IdleService,
     private angulartics2GoogleTagManager: Angulartics2GoogleTagManager,
     private featureFlagsService: FeatureFlagsService,
+    private establishmentService: EstablishmentService,
   ) {
     this.nestedRoutesService.routes$.subscribe((routes) => {
       if (routes) {
@@ -48,10 +51,14 @@ export class AppComponent implements OnInit {
     this.featureFlagsService.start();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
       this.dashboardView = nav.url.includes('dashboard');
+
+      this.checkIfStandAloneAccount();
+      // console.log('****************');
+      // console.log(this.route.snapshot);
       // this.dashboardView = nav.url.includes(
       //   '#home' || '#workplace' || '#staff-records' || '#training-and-qualifications' || '#benchmarks',
       // );
@@ -78,6 +85,12 @@ export class AppComponent implements OnInit {
         this.idleService.clear();
       }
     });
+  }
+
+  private checkIfStandAloneAccount(): void {
+    const workplace = this.establishmentService.primaryWorkplace;
+    this.standAloneAccount = !(workplace?.isParent || workplace?.parentUid);
+    console.log('standAloneAccount:', this.standAloneAccount);
   }
 
   public skip(event: Event) {
