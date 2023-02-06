@@ -275,6 +275,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     mandatoryTrainingCount: 2,
                   },
                 },
+                params: {
+                  establishmentuid: '123',
+                },
               },
             }),
           },
@@ -397,15 +400,21 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should navigate to `/long-term-absence` when pressing the "view" button', async () => {
-      const { component, fixture, getByTestId, workplaceUid, workerUid } = await setup();
+      const { component, routerSpy, fixture, getByTestId } = await setup();
 
       component.worker.longTermAbsence = 'Illness';
       fixture.detectChanges();
 
       const longTermAbsenceLink = getByTestId('longTermAbsence');
-      expect(longTermAbsenceLink.getAttribute('href')).toBe(
-        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/long-term-absence`,
-      );
+      fireEvent.click(longTermAbsenceLink);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'training-and-qualifications-record',
+        123,
+        'long-term-absence',
+        { returnToTrainingAndQuals: 'true' },
+      ]);
     });
   });
 
@@ -421,16 +430,22 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should navigate to `/long-term-absence` when pressing the "Flag long-term absence" button', async () => {
-      const { component, fixture, getByTestId, workplaceUid, workerUid } = await setup();
+      const { component, fixture, getByTestId, routerSpy } = await setup();
 
       component.worker.longTermAbsence = null;
       component.canEditWorker = true;
       fixture.detectChanges();
 
       const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
-      expect(flagLongTermAbsenceLink.getAttribute('href')).toBe(
-        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/long-term-absence`,
-      );
+      fireEvent.click(flagLongTermAbsenceLink);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'training-and-qualifications-record',
+        123,
+        'long-term-absence',
+        { returnToTrainingAndQuals: 'true' },
+      ]);
     });
   });
 
