@@ -17,6 +17,7 @@ import { filter, take, takeWhile } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   private baseTitle = 'Skills for Care';
   public isAdminSection = false;
+  public dashboardView = false;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -50,6 +51,10 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
+      this.dashboardView = nav.url.includes('dashboard');
+      // this.dashboardView = nav.url.includes(
+      //   '#home' || '#workplace' || '#staff-records' || '#training-and-qualifications' || '#benchmarks',
+      // );
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {
         (document.activeElement as HTMLElement).blur();
