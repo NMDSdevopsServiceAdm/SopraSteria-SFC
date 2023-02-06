@@ -60,7 +60,6 @@
         <div class="govuk-form-group">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend">Is the training accredited?</legend>
-
             <div class="govuk-radios govuk-!-margin-bottom-2">
               <div class="govuk-radios__item">
                 <input
@@ -118,7 +117,7 @@
         >
           <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
             <legend class="govuk-fieldset__legend">Expiry date</legend>
-            <span id="expires-hint govuk-!-margin-bottom-4" class="govuk-hint"> For example, 31 3 1980 </span>
+            <span id="expires-hint" class="govuk-hint govuk-!-margin-bottom-4"> For example, 31 3 1980 </span>
             <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
             </span>
@@ -128,10 +127,11 @@
 
         <div class="govuk-character-count govuk-!-margin-bottom-4">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
-            <label class="govuk-label" for="notes"> Notes </label>
+            <label class="govuk-label" for="notes">Add notes </label>
             <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
             </span>
+
             <textarea
               class="govuk-textarea"
               [class.govuk-textarea--error]="submitted && form.get('notes').invalid"
@@ -193,7 +193,7 @@
       class="govuk-button govuk-button--link govuk-!-margin-left-9"
       role="button"
       draggable="false"
-      (click)="onCancel()"
+      (click)="onCancel($event)"
     >
       Cancel
     </a>

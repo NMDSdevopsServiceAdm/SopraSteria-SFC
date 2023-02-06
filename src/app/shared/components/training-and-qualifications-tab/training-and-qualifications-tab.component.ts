@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecordCategories } from '@core/model/training.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -36,6 +36,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     protected trainingCategoryService: TrainingCategoryService,
@@ -56,6 +57,10 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     if ('workers' in changes || 'trainingCounts' in changes) {
       this.trainingTotals();
     }
+  }
+
+  public navigateToMultipleTraining(): void {
+    this.router.navigate(['/workplace', this.workplace.uid, 'add-multiple-training', 'select-staff']);
   }
 
   private getAllTrainingByCategory(): void {
