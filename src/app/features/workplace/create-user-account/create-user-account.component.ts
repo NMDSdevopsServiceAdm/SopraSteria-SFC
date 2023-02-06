@@ -10,7 +10,6 @@ import { URLStructure } from '@core/model/url.model';
 import { UserPermissionsType } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -32,7 +31,6 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   public permissionsTypeRadios: UserPermissionsType[];
 
   constructor(
-    private breadcrumbService: BreadcrumbService,
     private createAccountService: CreateAccountService,
     protected route: ActivatedRoute,
     private establishmentService: EstablishmentService,
@@ -60,8 +58,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
 
     this.workplace = this.route.parent.snapshot.data.establishment;
 
-    const journey = this.setBreadcrumbJourney();
-    this.breadcrumbService.show(journey);
+    this.backLinkService.showBackLink();
 
     this.addFormControls();
     this.establishmentUid = this.route.parent.snapshot.params.establishmentuid;
