@@ -204,7 +204,6 @@ module.exports = function (sequelize, DataTypes) {
     }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
 
     const response = await this.findAll({
-      logging: console.log,
       attributes: trainingAttributes,
       where: {
         '$worker.EstablishmentFK$': establishmentId,
@@ -221,124 +220,6 @@ module.exports = function (sequelize, DataTypes) {
             col2: sequelize.where(sequelize.col('workerTraining.CategoryFK'), '=', trainingCategoryId),
           },
           right: isMandatory,
-          include: [
-            {
-              model: sequelize.models.job,
-              as: 'mainJob',
-              attributes: ['title', 'id'],
-            },
-          ],
-        },
-      ],
-
-      order,
-      ...(limit ? pagination : {}),
-    });
-
-    return { count: +count[0][0].count, rows: response, category };
-  };
-
-  WorkerTraining.fetchTrainingForEstablishment = async function (
-    establishmentId,
-    trainingCategoryId,
-    // limit = 0,
-    pageIndex = 0,
-    sortBy = '',
-    searchTerm = '',
-  ) {
-    const count =
-      await sequelize.query(`SELECT count("worker"."ID") AS "count" FROM "cqc"."WorkerTraining" AS "workerTraining" RIGHT OUTER JOIN "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}' WHERE "worker"."EstablishmentFK" = '1686' AND "worker"."Archived" = false;
-      `);
-
-    const category = await sequelize.models.workerTrainingCategories.findOne({
-      where: {
-        id: trainingCategoryId,
-      },
-      attributes: ['category'],
-    });
-    const limit = 0;
-    const currentDate = moment().toISOString();
-    const expiresSoonAlertDate = await sequelize.models.establishment.getExpiresSoonAlertDate(establishmentId);
-    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
-    const offset = pageIndex * limit;
-
-    const pagination = {
-      subQuery: false,
-      limit,
-      offset,
-    };
-
-    const trainingAttributes = [
-      'id',
-      'uid',
-      'completed',
-      'expires',
-      'title',
-      'categoryFk',
-      [
-        sequelize.literal(
-          `CASE
-            WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 'Expires soon'
-            WHEN "Expires" < '${currentDate}' THEN 'Expired'
-            WHEN "CategoryFK" IS NULL THEN 'Missing'
-            ELSE 'OK'
-          END`,
-        ),
-        'status',
-      ],
-      [
-        sequelize.literal(
-          `CASE
-            WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 3
-            WHEN "Expires" < '${currentDate}' THEN 2
-            WHEN "CategoryFK" IS NULL THEN 1
-            ELSE 0
-          END`,
-        ),
-        'sortByExpiresSoon',
-      ],
-      [
-        sequelize.literal(
-          `CASE
-            WHEN "Expires" < '${currentDate}' THEN 3
-            WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 2
-            WHEN "CategoryFK" IS NULL THEN 1
-            ELSE 0
-          END`,
-        ),
-        'sortByExpired',
-      ],
-    ];
-
-    const order = {
-      staffNameAsc: [['worker', 'NameOrIdValue', 'ASC']],
-      trainingExpired: [
-        [sequelize.literal('"sortByExpired"'), 'DESC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-      trainingExpiringSoon: [
-        [sequelize.literal('"sortByExpiresSoon"'), 'DESC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-    }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
-
-    const response = await this.findAndCountAll({
-      logging: console.log,
-      attributes: trainingAttributes,
-      where: {
-        '$worker.EstablishmentFK$': establishmentId,
-        '$worker.Archived$': false,
-        ...(searchTerm ? { '$worker.NameOrIdValue$': { [Op.iLike]: `%${searchTerm}%` } } : {}),
-      },
-      include: [
-        {
-          model: sequelize.models.worker,
-          as: 'worker',
-          attributes: ['id', 'uid', 'NameOrIdValue'],
-          on: {
-            col1: sequelize.where(sequelize.col('workerTraining.WorkerFK'), '=', sequelize.col('worker.ID')),
-            col2: sequelize.where(sequelize.col('workerTraining.CategoryFK'), '=', trainingCategoryId),
-          },
           include: [
             {
               model: sequelize.models.job,

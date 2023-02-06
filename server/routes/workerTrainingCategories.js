@@ -62,9 +62,6 @@ const getCategoryTraining = async (req, res) => {
       trainingCategoryId,
     ));
 
-    console.log('***********************');
-    console.log(sortBy);
-
     const {
       count: trainingCount,
       rows: training,

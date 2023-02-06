@@ -27,15 +27,6 @@ export class BackLinkService {
     this._backLink$.next(show);
   }
 
-  private get backLink(): boolean {
-    console.log('*** get backlink ***');
-    return this._backLink$.value;
-  }
-
-  public isBackLinkVisible(): boolean {
-    return this.backLink;
-  }
-
   public showBackLink(): void {
     this.backLink = true;
   }

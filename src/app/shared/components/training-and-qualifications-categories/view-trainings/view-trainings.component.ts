@@ -121,32 +121,9 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
         .subscribe((data) => {
           this.trainings = data.training;
           this.trainingCount = data.trainingCount;
-
-          if (!this.backLinkService.isBackLinkVisible()) {
-            this.setBackLink();
-          }
         }),
     );
   }
-
-  // private getAllTrainingByCategory(): void {
-  //   this.subscriptions.add(
-  //     this.trainingCategoryService
-  //       .getCategoriesWithTraining(this.workplace.id)
-  //       .pipe(take(1))
-  //       .subscribe((categories: any) => {
-  //         this.category = categories.find((t: any) => t.id == this.trainingCategoryId);
-  //         localStorage.setItem(
-  //           'trainingCategory',
-  //           JSON.stringify({ id: this.category.id, category: this.category.category }),
-  //         );
-  //         console.log('##############');
-  //         this.trainings = this.category.training;
-  //         console.log(this.trainings);
-  //         this.sortByTrainingStatus();
-  //       }),
-  //   );
-  // }
 
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
