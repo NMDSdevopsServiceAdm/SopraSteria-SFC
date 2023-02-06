@@ -173,7 +173,7 @@ describe('CreateUsernameComponent', () => {
     fixture.detectChanges();
 
     expect(form.invalid).toBeTruthy();
-    expect(getAllByText('Confirmation password does not match the password you entered', { exact: false }).length).toBe(
+    expect(getAllByText('Password confirmation does not match the password you entered', { exact: false }).length).toBe(
       2,
     );
   });

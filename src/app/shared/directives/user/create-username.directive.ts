@@ -111,7 +111,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
         passwordGroup: this.formBuilder.group(
           {
             createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
-            confirmPasswordInput: ['', [Validators.required]],
+            confirmPasswordInput: [''],
           },
           { validators: [CustomValidators.matchInputValues], updateOn: 'submit' },
         ),
@@ -119,7 +119,6 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
       { updateOn: 'submit' },
     );
   }
-
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -161,6 +160,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
           },
         ],
       },
+
       {
         item: 'passwordGroup.confirmPasswordInput',
         type: [
@@ -170,7 +170,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
           },
           {
             name: 'notMatched',
-            message: 'Confirmation password does not match the password you entered',
+            message: 'Password confirmation does not match the password you entered',
           },
         ],
       },
@@ -211,8 +211,15 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
         ),
     );
   }
+  confirmPassValidationMessages() {
+    if (this.getPassword.status === 'VALID') {
+      this.getConfirmPassword.setValidators(Validators.required);
+      this.getConfirmPassword.updateValueAndValidity();
+    }
+  }
 
   private onSubmit(): void {
+    this.confirmPassValidationMessages();
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.invalid || this.serverError) {
