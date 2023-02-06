@@ -278,6 +278,17 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
+  public navigateToLongTermAbsence(): void {
+    this.router.navigate([
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'long-term-absence',
+      { returnToTrainingAndQuals: 'true' },
+    ]);
+  }
+
   public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

@@ -225,12 +225,13 @@ describe('NewTrainingComponent', async () => {
     it('should display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true', async () => {
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
+      component.workplaceUid = '123';
       fixture.detectChanges();
       const noMandatoryTrainingLink = fixture.debugElement.query(
         By.css('[data-testid="no-mandatory-training-link"]'),
       ).nativeElement;
       expect(noMandatoryTrainingLink).toBeTruthy();
-      expect(noMandatoryTrainingLink.getAttribute('href')).toBe('/select-record-type');
+      expect(noMandatoryTrainingLink.getAttribute('href')).toBe('/workplace/123/add-and-manage-mandatory-training');
     });
   });
 });
