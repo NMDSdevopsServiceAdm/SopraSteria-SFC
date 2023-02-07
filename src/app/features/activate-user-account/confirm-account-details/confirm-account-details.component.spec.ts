@@ -55,6 +55,7 @@ describe('ConfirmAccountDetailsComponent', () => {
     const router = injector.inject(Router) as Router;
     const component = fixture.componentInstance;
     const activateAccountService = injector.inject(CreateAccountService) as CreateAccountService;
+    const activateAccountSpy = spyOn(activateAccountService, 'activateAccount');
 
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
@@ -64,7 +65,7 @@ describe('ConfirmAccountDetailsComponent', () => {
       fixture,
       router,
       spy,
-      activateAccountService,
+      activateAccountSpy,
       getByTestId,
       getByText,
       getAllByText,
@@ -110,7 +111,7 @@ describe('ConfirmAccountDetailsComponent', () => {
 
     const termsAndConditionsCheckbox = getByTestId('checkbox');
     const submitButton = getByText('Submit details');
-    const saveSpy = spyOn<any>(component, 'save').and.returnValue(null);
+    const saveSpy = spyOn(component, 'save').and.returnValue(null);
 
     fireEvent.click(termsAndConditionsCheckbox);
     fireEvent.click(submitButton);

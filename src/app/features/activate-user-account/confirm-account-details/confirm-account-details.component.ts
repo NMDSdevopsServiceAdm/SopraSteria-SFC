@@ -113,7 +113,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     };
   }
 
-  protected save(): void {
+  public save(): void {
     this.subscriptions.add(
       this.createAccountService.activateAccount(this.generatePayload()).subscribe(
         () => this.router.navigate(['/activate-account', this.activationToken, 'complete']),
