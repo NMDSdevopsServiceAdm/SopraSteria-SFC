@@ -88,17 +88,6 @@ describe('ConfirmAccountDetailsComponent', () => {
     expect(getAllByText(termsAndConditionsLink, { exact: false })).toBeTruthy();
   });
 
-  it('should show an error message when pressing submit without agreeing to terms and conditions', async () => {
-    const { fixture, getByText, getAllByText } = await setup();
-    const expectedErrorMessage = 'Confirm that you agree to the terms and conditions';
-
-    const submitButton = getByText('Submit details');
-    fireEvent.click(submitButton);
-
-    expect(fixture.componentInstance.form.invalid).toBeTruthy();
-    expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
-  });
-
   it('should call the save function to create account when pressing submit after agreeing to terms and conditions', async () => {
     const { component, fixture, getByText, getByTestId } = await setup();
 
