@@ -35,11 +35,7 @@ export class RemoveAllMandatoryTrainingComponent implements OnInit {
   public deleteMandatoryTraining(): void {
     this.subscriptions.add(
       this.trainingService.deleteAllMandatoryTraining(this.establishment.id).subscribe(() => {
-        this.router.navigate([
-          '/workplace',
-          this.establishmentService.primaryWorkplace.uid,
-          'add-and-manage-mandatory-training',
-        ]);
+        this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
         this.alertService.addAlert({
           type: 'success',
           message: 'All mandatory training categories removed',
@@ -49,10 +45,6 @@ export class RemoveAllMandatoryTrainingComponent implements OnInit {
   }
 
   public navigateToPreviousPage(): void {
-    this.router.navigate([
-      '/workplace',
-      this.establishmentService.primaryWorkplace.uid,
-      'add-and-manage-mandatory-training',
-    ]);
+    this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
   }
 }
