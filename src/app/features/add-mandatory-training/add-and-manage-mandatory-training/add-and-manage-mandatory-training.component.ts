@@ -15,8 +15,8 @@ import { Subscription } from 'rxjs';
 export class AddAndManageMandatoryTrainingComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public establishment: Establishment;
-
   public existingMandatoryTrainings: any;
+
   constructor(
     public trainingService: TrainingService,
     private route: ActivatedRoute,
