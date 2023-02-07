@@ -5,7 +5,6 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationRequest, QualificationResponse, QualificationType } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
@@ -30,14 +29,13 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
-  public previousUrl: string;
+  public previousUrl: Array<string>;
 
   constructor(
     private trainingService: TrainingService,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,
     protected backLinkService: BackLinkService,
@@ -46,6 +44,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    this.previousUrl = [localStorage.getItem('previousUrl')];
     this.trainingService.trainingOrQualificationPreviouslySelected = 'qualification';
 
     this.form = this.formBuilder.group({
@@ -129,6 +128,10 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
 
     this.setBackLink();
+  }
+
+  protected navigateToPreviousPage(): void {
+    this.router.navigate(this.previousUrl);
   }
 
   ngOnDestroy(): void {

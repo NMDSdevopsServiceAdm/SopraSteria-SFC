@@ -17,7 +17,7 @@ describe('LongTermAbsenceComponent', () => {
   const worker = workerBuilder() as Worker;
   const workplace = establishmentBuilder() as Establishment;
 
-  async function setup() {
+  async function setup(returnToTrainingAndQuals = false) {
     const { fixture, getByText, getAllByText, queryByText } = await render(LongTermAbsenceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -29,6 +29,9 @@ describe('LongTermAbsenceComponent', () => {
                 worker: worker,
                 establishment: workplace,
                 longTermAbsenceReasons: ['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other'],
+              },
+              params: {
+                returnToTrainingAndQuals: returnToTrainingAndQuals,
               },
             },
           },
@@ -157,8 +160,8 @@ describe('LongTermAbsenceComponent', () => {
     expect(updateWorkerSpy).toHaveBeenCalledWith(workplace.uid, worker.uid, { longTermAbsence: 'Illness' });
   });
 
-  it('should navigate to the previous page on submit', async () => {
-    const { component, fixture, routerSpy, getByText } = await setup();
+  it('should navigate to the staff record summary page on submit when returnToTrainingAndQuals is false', async () => {
+    const { component, routerSpy, getByText } = await setup();
 
     const illnessRadioButton = getByText('Illness');
     fireEvent.click(illnessRadioButton);
@@ -167,7 +170,32 @@ describe('LongTermAbsenceComponent', () => {
     fireEvent.click(saveAndReturnButton);
 
     expect(component.form.valid).toBeTruthy();
-    expect(routerSpy).toHaveBeenCalled();
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      component.workplace.uid,
+      'staff-record',
+      component.worker.uid,
+      'staff-record-summary',
+    ]);
+  });
+
+  it('should navigate to the training and quals individual view on submit when returnToTrainingAndQuals is true', async () => {
+    const { component, routerSpy, getByText } = await setup(true);
+
+    const illnessRadioButton = getByText('Illness');
+    fireEvent.click(illnessRadioButton);
+
+    const saveAndReturnButton = getByText('Save and return');
+    fireEvent.click(saveAndReturnButton);
+
+    expect(component.form.valid).toBeTruthy();
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      component.workplace.uid,
+      'training-and-qualifications-record',
+      component.worker.uid,
+      'training',
+    ]);
   });
 
   describe('generateProps()', () => {
