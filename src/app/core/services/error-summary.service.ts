@@ -10,6 +10,7 @@ import * as parse from 'url-parse';
 })
 export class ErrorSummaryService {
   public syncFormErrorsEvent: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  public syncErrorsEvent: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   public formEl$: BehaviorSubject<ElementRef> = new BehaviorSubject(null);
   public errorId$: BehaviorSubject<string> = new BehaviorSubject(null);
 

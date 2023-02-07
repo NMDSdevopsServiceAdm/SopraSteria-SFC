@@ -1,0 +1,21 @@
+@import '~govuk-frontend/govuk/base';
+
+.asc-summary-box {
+  background-color: govuk-colour('light-grey');
+  display: flex;
+  padding: 20px 30px;
+  font-weight: bold;
+}
+
+.asc-records-count {
+  font-size: 50px;
+  color: govuk-colour('turquoise');
+  margin-right: 10px;
+}
+
+.asc-records-text {
+  font-size: 19px;
+  color: $govuk-text-colour;
+  align-self: flex-end;
+  margin-bottom: 8px;
+}

@@ -1,0 +1,70 @@
+<div class="govuk-grid-row-two-thirds-from-desktop">
+  <div class="govuk-grid-column">
+    <div class="govuk-grid-row govuk-!-margin-left-0 govuk-margin-right-0">
+      <span class="govuk-caption-m">Add multiple records</span>
+      <h1 class="govuk-heading-l">Summary</h1>
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-left-0 govuk-!-margin-right-0">
+      <div class="govuk-grid-column-one-half govuk-!-padding-0 govuk-!-margin-top-1">
+        <p>Check these details before you confirm them.</p>
+      </div>
+      <div class="govuk-grid-column">
+        <button type="submit" class="govuk-button govuk-util__float-right govuk-!-margin-bottom-4" (click)="onSubmit()">
+          Confirm details
+        </button>
+      </div>
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-left-0 govuk-!-margin-right-0 govuk-!-margin-bottom-6">
+      <h2 class="govuk-heading-m">Selected staff</h2>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summarylist-border-bottom govuk-!-width-full govuk-"
+        data-testid="selectedStaffSummary"
+      >
+        <ng-container *ngFor="let worker of workers; index as i">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              {{ worker.nameOrId }}
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ worker.mainJob.title }}
+            </dd>
+            <ng-container *ngIf="i === 0">
+              <dd class="govuk-summary-list__actions">
+                <app-summary-record-change
+                  [link]="getRoutePath('select-staff')"
+                  [hasData]="true"
+                ></app-summary-record-change>
+              </dd>
+            </ng-container>
+          </div>
+        </ng-container>
+      </dl>
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-left-0 govuk-!-margin-right-0">
+      <h2 class="govuk-heading-m">Training record details</h2>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summarylist-border-bottom govuk-!-width-full"
+        data-testid="trainingRecordDetails"
+      >
+        <ng-container *ngFor="let record of trainingRecords; index as i">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              {{ record.key }}
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ record.value }}
+            </dd>
+            <ng-container *ngIf="i === 0">
+              <dd class="govuk-summary-list__actions">
+                <app-summary-record-change
+                  [link]="getRoutePath('training-details')"
+                  [hasData]="true"
+                ></app-summary-record-change>
+              </dd>
+            </ng-container>
+          </div>
+        </ng-container>
+      </dl>
+    </div>
+  </div>
+</div>
