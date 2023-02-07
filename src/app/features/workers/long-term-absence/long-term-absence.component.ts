@@ -21,7 +21,7 @@ export class LongTermAbsenceComponent implements OnInit {
   public longTermAbsenceReasons: Array<string>;
   public backAtWork = false;
   private formErrorsMap: Array<ErrorDetails>;
-  private workplace: Establishment;
+  public workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
   public returnUrl;
 
@@ -40,7 +40,7 @@ export class LongTermAbsenceComponent implements OnInit {
     this.longTermAbsenceReasons = this.route.snapshot.data.longTermAbsenceReasons;
     this.setupForm();
     this.setupFormErrorsMap();
-    this.returnUrl = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
+    this.setReturnUrl();
     this.backLinkService.showBackLink();
   }
 
@@ -50,6 +50,14 @@ export class LongTermAbsenceComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  public setReturnUrl(): void {
+    const returnToTrainingAndQuals = this.route.snapshot.params.returnToTrainingAndQuals;
+
+    this.returnUrl = returnToTrainingAndQuals
+      ? ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training']
+      : ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
   }
 
   public setupForm = () => {
