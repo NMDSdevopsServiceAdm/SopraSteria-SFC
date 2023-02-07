@@ -4,4 +4,4 @@ import { Component } from '@angular/core';
   selector: 'app-new-staff-tab',
   templateUrl: './staff-tab.component.html',
 })
-export class StaffTabComponent {}
+export class NewStaffTabComponent {}

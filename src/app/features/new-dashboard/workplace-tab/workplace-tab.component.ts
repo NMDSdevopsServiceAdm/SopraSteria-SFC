@@ -4,4 +4,4 @@ import { Component } from '@angular/core';
   selector: 'app-new-workplace-tab',
   templateUrl: './workplace-tab.component.html',
 })
-export class WorkplaceTabComponent {}
+export class NewWorkplaceTabComponent {}

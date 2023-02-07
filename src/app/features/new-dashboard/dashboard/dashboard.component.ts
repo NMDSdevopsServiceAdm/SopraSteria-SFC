@@ -4,4 +4,4 @@ import { Component } from '@angular/core';
   selector: 'app-new-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class DasboardComponent {}
+export class NewDashboardComponent {}

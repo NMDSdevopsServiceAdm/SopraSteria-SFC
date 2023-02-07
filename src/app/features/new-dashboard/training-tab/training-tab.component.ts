@@ -4,4 +4,4 @@ import { Component } from '@angular/core';
   selector: 'app-new-training-tab',
   templateUrl: './training-tab.component.html',
 })
-export class TrainingTabComponent {}
+export class NewTrainingTabComponent {}

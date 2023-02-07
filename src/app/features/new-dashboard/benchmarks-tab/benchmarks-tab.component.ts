@@ -4,4 +4,4 @@ import { Component } from '@angular/core';
   selector: 'app-new-benchmarks-tab',
   templateUrl: './benchmarks-tab.component.html',
 })
-export class BenchmarksTabComponent {}
+export class NewBenchmarksTabComponent {}

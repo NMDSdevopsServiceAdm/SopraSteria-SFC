@@ -41,6 +41,7 @@ import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bund
 import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { SelectMainServiceComponent } from '@features/create-account/workplace/select-main-service/select-main-service.component';
+import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
@@ -51,10 +52,11 @@ import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
+import { DashboardWrapperComponent } from '@features/new-dashboard/dasboard-wrapper.component';
+import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
-import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -100,6 +102,8 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     BenefitsTrainingDiscountsComponent,
     BenefitsELearningComponent,
     TailoredSeminarsComponent,
+    NewDashboardComponent,
+    DashboardWrapperComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
