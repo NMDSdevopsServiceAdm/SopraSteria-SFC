@@ -126,6 +126,7 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
+import { DontKnowPipe } from './pipes/dont-know.pipe';
 import { FirstErrorPipe } from './pipes/first-error.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
@@ -239,6 +240,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ViewTrainingComponent,
     MissingMandatoryTrainingComponent,
     TrainingSelectViewPanelComponent,
+    DontKnowPipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -336,8 +338,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewBackLinkComponent,
     ViewTrainingComponent,
     MissingMandatoryTrainingComponent,
-    AbsoluteNumberPipe,
     TrainingSelectViewPanelComponent,
+    DontKnowPipe,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

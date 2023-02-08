@@ -37,14 +37,15 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     this.convertTrainingRecord();
     this.setReturnLink();
     this.backLinkService.showBackLink();
+    console.log(this.trainingRecords);
   }
 
   private convertTrainingRecord(): void {
     const training = this.trainingService.selectedTraining;
     this.trainingRecords = [
       { key: 'Training category', value: training.trainingCategory.category },
-      { key: 'Training name', value: training.title },
-      { key: 'Training accredited', value: training.accredited },
+      { key: 'Training name', value: training.title ? training.title : '-' },
+      { key: 'Training accredited', value: training.accredited ? training.accredited : '-' },
       { key: 'Date completed', value: training.completed ? dayjs(training.completed).format('D MMMM YYYY') : '-' },
       { key: 'Expiry date', value: training.expires ? dayjs(training.expires).format('D MMMM YYYY') : '-' },
       { key: 'Notes', value: training.notes ? training.notes : 'No notes added' },

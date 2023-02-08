@@ -6,6 +6,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -40,6 +41,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     private workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     protected trainingCategoryService: TrainingCategoryService,
+    private trainingService: TrainingService,
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +50,10 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
         this.viewTrainingByCategory = true;
       }
     });
+
+    // if returning to this page from adding multiple training and using the back link
+    // we need to remove any staff that were selected
+    this.trainingService.resetSelectedStaff();
 
     this.getAllTrainingByCategory();
     this.trainingTotals();
