@@ -173,8 +173,8 @@ describe('SelectStaffComponent', () => {
     expect(within(selectedStaffPanel).getByText('0')).toBeTruthy();
   });
 
-  it('should change the select and select all link text and update the count box when a staff member is selected', async () => {
-    const { component, fixture, getAllByText, getByTestId, getByText, queryByText, workers } = await setup();
+  it('should change the select link text and update the count box when a staff member is selected', async () => {
+    const { component, fixture, getAllByText, getByTestId, getByText, workers } = await setup();
 
     component.paginatedWorkers = workers;
     fixture.detectChanges();
@@ -187,9 +187,30 @@ describe('SelectStaffComponent', () => {
 
     expect(getByText('Deselect')).toBeTruthy();
     expect(getAllByText('Select').length).toEqual(2);
-    expect(getByText('Deselect all')).toBeTruthy();
-    expect(queryByText('Select all')).toBeFalsy();
+    expect(getByText('Select all')).toBeTruthy();
     expect(within(selectedStaffPanel).getByText('1')).toBeTruthy();
+  });
+
+  it('should change the select and select all link text and update the count box when more than 1 staff member is selected', async () => {
+    const { component, fixture, getAllByText, getByTestId, getByText, queryByText, workers } = await setup();
+
+    component.paginatedWorkers = workers;
+    fixture.detectChanges();
+
+    const selectLinks = getAllByText('Select');
+    const firstWorkerSelectLink = selectLinks[0];
+    const secondWorkerSelectLink = selectLinks[1];
+    fireEvent.click(firstWorkerSelectLink);
+    fireEvent.click(secondWorkerSelectLink);
+    fixture.detectChanges();
+
+    const selectedStaffPanel = getByTestId('selectedStaffPanel');
+
+    expect(getAllByText('Deselect').length).toEqual(2);
+    expect(getByText('Select')).toBeTruthy();
+    expect(queryByText('Select all')).toBeFalsy();
+    expect(getByText('Deselect all')).toBeTruthy();
+    expect(within(selectedStaffPanel).getByText('2')).toBeTruthy();
   });
 
   it('should change link text and update count box when a staff member is deselected', async () => {
@@ -515,7 +536,7 @@ describe('SelectStaffComponent', () => {
 
       const selectedStaffPanel = getByTestId('selectedStaffPanel');
 
-      expect(getByText('Deselect all')).toBeTruthy();
+      expect(getByText('Select all')).toBeTruthy();
       expect(getByText('Deselect')).toBeTruthy();
       expect(getAllByText('Select').length).toEqual(2);
       expect(within(selectedStaffPanel).getByText('1')).toBeTruthy();
