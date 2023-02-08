@@ -212,7 +212,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     it('it does not render the search bar when pagination threshold is not met', async () => {
       const { queryByLabelText } = await setup();
 
-      const searchInput = queryByLabelText('Search staff training records');
+      const searchInput = queryByLabelText('Search by name or ID number staff training records');
       expect(searchInput).toBeNull();
     });
 

@@ -18,7 +18,7 @@
   accessibleLabel="staff training records"
   (fetchData)="getWorkersByTrainingCategory($event)"
 >
-  <table class="govuk-table" data-testid="userTable">
+  <table class="govuk-table" data-testid="userTable" *ngIf="trainingCount; else noTrainingFoundInSearch">
     <thead class="govuk-table__head" data-testid="userTable-Heading">
       <tr class="govuk-table__row">
         <th class="govuk-table__header" scope="col" style="width: 30%">Name or ID number</th>
@@ -125,7 +125,14 @@
       </ng-container>
     </tbody>
   </table>
+  <ng-template #noTrainingFoundInSearch>
+    <div class="govuk-!-margin-top-6">
+      <p class="govuk-util__bold">There are no matching results</p>
+      <p>Make sure that your spelling is correct.</p>
+    </div>
+  </ng-template>
 </app-table-pagination-wrapper>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <button type="button" class="govuk-button govuk-!-margin-top-4" (click)="returnToHome()">Return to home</button>
