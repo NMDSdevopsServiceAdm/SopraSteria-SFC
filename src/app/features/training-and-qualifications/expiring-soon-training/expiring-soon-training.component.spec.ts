@@ -15,7 +15,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { ExpiringSoonTrainingComponent } from './expiring-soon-training.component';
 
-describe('ExiredTrainingComponent', () => {
+describe('ExpiringSoonTrainingComponent', () => {
   const expiryDate = new Date();
   expiryDate.setMonth(expiryDate.getMonth() + 1);
   expiryDate.setDate(15);

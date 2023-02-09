@@ -7,60 +7,75 @@ import { PermissionType } from '@core/model/permissions.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingService } from '@core/services/training.service';
 import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
+import sinon from 'sinon';
 
 import { ExpiredTrainingComponent } from './expired-training.component';
 
-describe('ExiredTrainingComponent', () => {
-  async function setup(addPermissions = true) {
+const training = [
+  {
+    uid: 'mock-uid-one',
+    expires: new Date('2020-01-01'),
+    categoryFk: 1,
+    category: { id: 1, category: 'Category name' },
+    worker: { id: 1, uid: 'worker-one-uid', NameOrIdValue: 'Worker One' },
+  },
+  {
+    uid: 'mock-uid-two',
+    expires: new Date('2021-05-01'),
+    categoryFk: 1,
+    category: { id: 3, category: 'Another category name' },
+    worker: { id: 3, uid: 'worker-two-uid', NameOrIdValue: 'Worker Two' },
+  },
+];
+
+describe('ExpiredTrainingComponent', () => {
+  async function setup(addPermissions = true, fixTrainingCount = false, qsParamGetMock = sinon.fake()) {
+    let trainingObj = {
+      training,
+      trainingCount: 2,
+    };
+    if (fixTrainingCount) trainingObj = { training: [training[0]], trainingCount: 1 };
     const permissions = addPermissions ? ['canEditWorker'] : [];
-    const { fixture, getByText, getByTestId } = await render(ExpiredTrainingComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        BackLinkService,
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
-          deps: [HttpClient, Router, UserService],
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {
-                expiredTraining: {
-                  training: [
-                    {
-                      uid: 'mock-uid-one',
-                      expires: new Date('2020-01-01'),
-                      categoryFk: 1,
-                      category: { id: 1, category: 'Category name' },
-                      worker: { id: 1, uid: 'worker-one-uid', NameOrIdValue: 'Worker One' },
-                    },
-                    {
-                      uid: 'mock-uid-two',
-                      expires: new Date('2021-05-01'),
-                      categoryFk: 1,
-                      category: { id: 3, category: 'Another category name' },
-                      worker: { id: 3, uid: 'worker-two-uid', NameOrIdValue: 'Worker Two' },
-                    },
-                  ],
+    const { fixture, getByText, getByTestId, getByLabelText, queryByLabelText, queryByTestId } = await render(
+      ExpiredTrainingComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        providers: [
+          BackLinkService,
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                queryParamMap: {
+                  get: qsParamGetMock,
                 },
+                data: {
+                  training: trainingObj,
+                },
+                params: { establishmentuid: '1234-5678' },
               },
-              params: { establishmentuid: '1234-5678' },
             },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
 
@@ -68,13 +83,22 @@ describe('ExiredTrainingComponent', () => {
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+    const trainingServiceSpy = spyOn(trainingService, 'getAllTrainingByStatus').and.returnValue(
+      of({ training, trainingCount: 2 }),
+    );
 
     return {
       component,
       fixture,
       getByText,
       getByTestId,
+      getByLabelText,
+      queryByLabelText,
+      queryByTestId,
       routerSpy,
+      trainingService,
+      trainingServiceSpy,
     };
   }
 
@@ -127,10 +151,10 @@ describe('ExiredTrainingComponent', () => {
     const table1UpdateLink = within(tableRow1).getByText('Update');
     const table2UpdateLink = within(tableRow2).getByText('Update');
 
-    expect(table1UpdateLink.getAttribute('href')).toEqual(
+    expect(table1UpdateLink.getAttribute('href').slice(0, table1UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-one-uid/training/mock-uid-one`,
     );
-    expect(table2UpdateLink.getAttribute('href')).toEqual(
+    expect(table2UpdateLink.getAttribute('href').slice(0, table2UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-two-uid/training/mock-uid-two`,
     );
   });
@@ -164,5 +188,124 @@ describe('ExiredTrainingComponent', () => {
     fixture.detectChanges();
 
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', '1234-5678'], { fragment: 'training-and-qualifications' });
+  });
+
+  describe('sort', () => {
+    it('should not show the sort by dropdown if there is only 1 staff record', async () => {
+      const { queryByTestId } = await setup(true, true);
+
+      expect(queryByTestId('sortBy')).toBeFalsy();
+    });
+
+    it('should handle sort by staff name', async () => {
+      const { component, getByLabelText, trainingServiceSpy } = await setup();
+
+      expect(trainingServiceSpy).not.toHaveBeenCalled();
+
+      const select = getByLabelText('Sort by', { exact: false });
+      fireEvent.change(select, { target: { value: '0_worker' } });
+
+      expect(trainingServiceSpy).toHaveBeenCalledWith(component.workplaceUid, 'expired', {
+        sortBy: 'staffNameAsc',
+        pageIndex: 0,
+        itemsPerPage: 15,
+      });
+    });
+
+    it('should handle sort by expired date', async () => {
+      const { component, getByLabelText, trainingServiceSpy } = await setup();
+
+      expect(trainingServiceSpy).not.toHaveBeenCalled();
+
+      const select = getByLabelText('Sort by', { exact: false });
+      fireEvent.change(select, { target: { value: '1_expired' } });
+
+      expect(trainingServiceSpy).toHaveBeenCalledWith(component.workplaceUid, 'expired', {
+        sortBy: 'expiryDateDesc',
+        pageIndex: 0,
+        itemsPerPage: 15,
+      });
+    });
+
+    it('should handle sort by expiring soon', async () => {
+      const { component, getByLabelText, trainingServiceSpy } = await setup();
+
+      expect(trainingServiceSpy).not.toHaveBeenCalled();
+
+      const select = getByLabelText('Sort by', { exact: false });
+      fireEvent.change(select, { target: { value: '2_category' } });
+
+      expect(trainingServiceSpy).toHaveBeenCalledWith(component.workplaceUid, 'expired', {
+        sortBy: 'categoryNameAsc',
+        pageIndex: 0,
+        itemsPerPage: 15,
+      });
+    });
+  });
+
+  describe('call getAllTrainingByStatus on trainingService when using search', () => {
+    it('does not render the search bar when there are fewer than 15 training records', async () => {
+      const { queryByLabelText } = await setup();
+
+      const searchInput = queryByLabelText('Search staff training records');
+      expect(searchInput).toBeNull();
+    });
+
+    it('shoud call getAllTrainingByStatus with the correct search term passed', async () => {
+      const { component, fixture, getByLabelText, trainingServiceSpy } = await setup();
+
+      component.totalTrainingCount = 16;
+      fixture.detectChanges();
+
+      const searchInput = getByLabelText('Search staff training records');
+      expect(searchInput).toBeTruthy();
+
+      userEvent.type(searchInput, 'search term here{enter}');
+      const expectedEmit = {
+        pageIndex: 0,
+        itemsPerPage: 15,
+        sortBy: 'staffNameAsc',
+        searchTerm: 'search term here',
+      };
+
+      expect(trainingServiceSpy).toHaveBeenCalledWith(component.workplaceUid, 'expired', expectedEmit);
+    });
+
+    it('should render the no results returned message when 0 workers returned from getAllWorkers after search', async () => {
+      const { component, fixture, getByLabelText, getByText, trainingService } = await setup();
+
+      component.totalTrainingCount = 16;
+      fixture.detectChanges();
+
+      sinon.stub(trainingService, 'getAllTrainingByStatus').returns(
+        of({
+          training: [],
+          trainingCount: 0,
+        }),
+      );
+
+      const searchInput = getByLabelText('Search staff training records');
+      expect(searchInput).toBeTruthy();
+
+      userEvent.type(searchInput, 'search term here{enter}');
+      fixture.detectChanges();
+
+      expect(getByText('There are no matching results')).toBeTruthy();
+      expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
+    });
+  });
+
+  describe('Query search params update correctly', () => {
+    it('sets the searchTerm for staff record input if query params are found on render', async () => {
+      const qsParamGetMock = sinon.stub();
+      qsParamGetMock.onCall(0).returns('mysupersearch');
+      qsParamGetMock.onCall(1).returns('training');
+
+      const { component, fixture, getByLabelText } = await setup(true, false, qsParamGetMock);
+
+      component.totalTrainingCount = 16;
+      fixture.detectChanges();
+      expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
+    });
   });
 });
