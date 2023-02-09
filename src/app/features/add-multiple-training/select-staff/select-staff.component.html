@@ -10,7 +10,7 @@
 
     <div *ngIf="showSearchBar" class="govuk-!-margin-bottom-8">
       <app-search-input
-        label="Search for staff"
+        label="Search for staff by name or ID number"
         (emitInput)="handleSearch($event)"
         [showClearResults]="false"
       ></app-search-input>
@@ -58,11 +58,15 @@
     <div [class.govuk-form-group--error]="submitted && error" #table>
       <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
         <span class="govuk-!-font-weight-bold"
-          >Showing {{ paginatedWorkers?.length }} of {{ totalWorkerCount }} staff</span
-        >
+          >Showing {{ paginatedWorkers?.length }} of {{ totalWorkerCount }} staff
+          <ng-container [ngPlural]="totalWorkerCount">
+            <ng-template ngPluralCase="=1">record</ng-template>
+            <ng-template ngPluralCase="other">records</ng-template>
+          </ng-container>
+        </span>
 
         <a href="#" (click)="selectAllWorkers($event)" class="govuk-util__float-right">
-          {{ selectAll ? 'Deselect all' : 'Select all' }}</a
+          {{ selectedWorkers.length > 1 ? 'Deselect all' : 'Select all' }}</a
         >
       </div>
       <div>

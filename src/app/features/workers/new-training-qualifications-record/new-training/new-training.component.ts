@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { TrainingRecordCategory } from '@core/model/training.model';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 
@@ -13,5 +14,11 @@ export class NewTrainingComponent {
   @Input() public setReturnRoute: () => void;
   @Input() public canEditWorker: boolean;
 
-  constructor(protected trainingStatusService: TrainingStatusService) {}
+  public workplaceUid: string;
+
+  constructor(protected trainingStatusService: TrainingStatusService, private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.workplaceUid = this.route.snapshot.params.establishmentuid;
+  }
 }

@@ -136,7 +136,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
 
   public selectAllWorkers(event: Event): void {
     event.preventDefault();
-    if (this.selectAll) {
+    if (this.selectedWorkers.length > 1) {
       this.selectAll = false;
       this.selectedWorkers = [];
     } else {

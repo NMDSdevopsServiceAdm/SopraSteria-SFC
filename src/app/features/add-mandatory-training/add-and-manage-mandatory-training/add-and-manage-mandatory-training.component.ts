@@ -15,8 +15,8 @@ import { Subscription } from 'rxjs';
 export class AddAndManageMandatoryTrainingComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public establishment: Establishment;
-
   public existingMandatoryTrainings: any;
+
   constructor(
     public trainingService: TrainingService,
     private route: ActivatedRoute,
@@ -28,7 +28,7 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
 
   ngOnInit(): void {
     this.breadcrumbService.show(
-      this.establishmentService.establishment.isParent ? JourneyType.MANDATORY_TRAINING : JourneyType.ALL_WORKPLACES,
+      this.establishmentService.isOwnWorkplace() ? JourneyType.MANDATORY_TRAINING : JourneyType.ALL_WORKPLACES,
     );
     this.establishment = this.route.parent.snapshot.data.establishment;
     this.subscriptions.add(

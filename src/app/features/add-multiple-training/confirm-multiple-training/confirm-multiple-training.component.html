@@ -52,7 +52,7 @@
               {{ record.key }}
             </dt>
             <dd class="govuk-summary-list__value">
-              {{ record.value }}
+              {{ record.value | dontKnow }}
             </dd>
             <ng-container *ngIf="i === 0">
               <dd class="govuk-summary-list__actions">

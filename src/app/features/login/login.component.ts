@@ -37,8 +37,8 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      username: [null, Validators.required],
-      password: [null, Validators.required],
+      username: [null, { validators: [Validators.required], updateOn: 'submit' }],
+      password: [null, { validators: [Validators.required], updateOn: 'submit' }],
     });
 
     this.setupFormErrorsMap();
@@ -80,11 +80,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.serverErrorsMap = [
       {
         name: 401,
-        message: 'Your username/password is incorrect',
-      },
-      {
-        name: 404,
-        message: 'User not found.',
+        message: 'Your username or your password is incorrect',
       },
       {
         name: 500,
@@ -103,6 +99,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public onSubmit(): void {
     this.submitted = true;
+    this.serverError = null;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
