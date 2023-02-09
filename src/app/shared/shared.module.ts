@@ -87,6 +87,7 @@ import { SubmitButtonComponent } from './components/submit-button/submit-button.
 import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/submit-exit-buttons.component';
 import { SummaryListComponent } from './components/summary-list/summary-list.component';
 import { SummaryRecordChangeComponent } from './components/summary-record-change/summary-record-change.component';
+import { TablePaginationWrapperComponent } from './components/table-pagination-wrapper/table-pagination-wrapper.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
@@ -240,6 +241,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ViewTrainingComponent,
     MissingMandatoryTrainingComponent,
     TrainingSelectViewPanelComponent,
+    TablePaginationWrapperComponent,
     DontKnowPipe,
   ],
   exports: [
@@ -339,6 +341,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ViewTrainingComponent,
     MissingMandatoryTrainingComponent,
     TrainingSelectViewPanelComponent,
+    TablePaginationWrapperComponent,
     DontKnowPipe,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],

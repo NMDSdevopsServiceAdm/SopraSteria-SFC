@@ -8,6 +8,7 @@ import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
+import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -130,6 +131,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     TrainingRecordResolver,
     TrainingRecordsResolver,
     TrainingAndQualificationRecordsResolver,
+    TrainingRecordsForCategoryResolver,
     MandatoryTrainingCategoriesResolver,
   ],
 })

@@ -3,6 +3,78 @@ import { TrainingRecordCategories } from '@core/model/training.model';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { Observable, of } from 'rxjs';
 
+const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
+
+const workerBuilder = build('Worker', {
+  fields: {
+    id: sequence(),
+    uid: fake((f) => f.datatype.uuid()),
+    NameOrIdValue: fake((f) => f.name.findName()),
+    mainJob: {
+      id: sequence(),
+      title: fake((f) => f.lorem.sentence()),
+    },
+  },
+});
+
+export const trainingBuilder = build('Training', {
+  fields: {
+    id: sequence(),
+    uid: fake((f) => f.datatype.uuid()),
+    expires: fake((f) => f.date.future(1).toISOString()),
+    completed: fake((f) => f.date.past(1).toISOString()),
+    sortByExpired: 0,
+    sortByExpiresSoon: 0,
+    sortByMissing: 0,
+    status: 'OK',
+    caetgoryFk: 1,
+    worker: perBuild(() => {
+      return workerBuilder();
+    }),
+  },
+});
+
+export const expiredTrainingBuilder = () => {
+  return trainingBuilder({
+    overrides: {
+      sortByExpired: 3,
+      sortByExpiresSoon: 2,
+      sortByMissing: 2,
+      status: 'Expired',
+    },
+  });
+};
+
+export const expiresSoonTrainingBuilder = () => {
+  return trainingBuilder({
+    overrides: {
+      sortByExpired: 2,
+      sortByExpiresSoon: 3,
+      sortByMissing: 1,
+      status: 'Expires soon',
+    },
+  });
+};
+
+export const missingTrainingBuilder = () => {
+  return trainingBuilder({
+    overrides: {
+      id: null,
+      uid: null,
+      expires: null,
+      completed: null,
+      sortByExpired: 1,
+      sortByExpiresSoon: 1,
+      sortByMissing: 3,
+      status: 'Missing',
+      categoryFk: null,
+      worker: perBuild(() => {
+        return workerBuilder();
+      }),
+    },
+  });
+};
+
 @Injectable()
 export class MockTrainingCategoryService extends TrainingCategoryService {
   getCategoriesWithTraining(establishmentId): Observable<TrainingRecordCategories[]> {
