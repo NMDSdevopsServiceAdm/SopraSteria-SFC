@@ -127,20 +127,35 @@ describe('SelectStaffComponent', () => {
     expect(getByText('Cancel')).toBeTruthy();
   });
 
-  it('should render a table with the establishment staff in it and the number of workers above the table', async () => {
+  it('should render a table with the establishment staff in it and the number of workers above the table pluralised if there is more than 1 staff record', async () => {
     const { component, fixture, getByText, workers } = await setup();
 
     component.paginatedWorkers = workers;
     fixture.detectChanges();
 
     const numberOfWorkersText = getByText(
-      `Showing ${component.paginatedWorkers.length} of ${component.totalWorkerCount} staff`,
+      `Showing ${component.paginatedWorkers.length} of ${component.totalWorkerCount} staff records`,
     );
     expect(numberOfWorkersText).toBeTruthy();
     workers.forEach((worker) => {
       expect(getByText(`${worker.nameOrId}`)).toBeTruthy();
       expect(getByText(`${worker.mainJob.title}`)).toBeTruthy();
     });
+  });
+
+  it('should render a table with the establishment staff in it and the number of workers above the table not pluralised if there is 1 staff record', async () => {
+    const { component, fixture, getByText, workers } = await setup(1);
+
+    component.paginatedWorkers = workers;
+    fixture.detectChanges();
+
+    const numberOfWorkersText = getByText(
+      `Showing ${component.paginatedWorkers.length} of ${component.totalWorkerCount} staff record`,
+    );
+    expect(numberOfWorkersText).toBeTruthy();
+    const worker = workers[0];
+    expect(getByText(`${worker.nameOrId}`)).toBeTruthy();
+    expect(getByText(`${worker.mainJob.title}`)).toBeTruthy();
   });
 
   it('should render count box, select links and select all link, but no deselect links, when nothing is selected', async () => {
@@ -158,7 +173,7 @@ describe('SelectStaffComponent', () => {
     expect(within(selectedStaffPanel).getByText('0')).toBeTruthy();
   });
 
-  it('should change link text and update the count box when a staff member is selected', async () => {
+  it('should change the select link text and update the count box when a staff member is selected', async () => {
     const { component, fixture, getAllByText, getByTestId, getByText, workers } = await setup();
 
     component.paginatedWorkers = workers;
@@ -174,6 +189,28 @@ describe('SelectStaffComponent', () => {
     expect(getAllByText('Select').length).toEqual(2);
     expect(getByText('Select all')).toBeTruthy();
     expect(within(selectedStaffPanel).getByText('1')).toBeTruthy();
+  });
+
+  it('should change the select and select all link text and update the count box when more than 1 staff member is selected', async () => {
+    const { component, fixture, getAllByText, getByTestId, getByText, queryByText, workers } = await setup();
+
+    component.paginatedWorkers = workers;
+    fixture.detectChanges();
+
+    const selectLinks = getAllByText('Select');
+    const firstWorkerSelectLink = selectLinks[0];
+    const secondWorkerSelectLink = selectLinks[1];
+    fireEvent.click(firstWorkerSelectLink);
+    fireEvent.click(secondWorkerSelectLink);
+    fixture.detectChanges();
+
+    const selectedStaffPanel = getByTestId('selectedStaffPanel');
+
+    expect(getAllByText('Deselect').length).toEqual(2);
+    expect(getByText('Select')).toBeTruthy();
+    expect(queryByText('Select all')).toBeFalsy();
+    expect(getByText('Deselect all')).toBeTruthy();
+    expect(within(selectedStaffPanel).getByText('2')).toBeTruthy();
   });
 
   it('should change link text and update count box when a staff member is deselected', async () => {
@@ -194,6 +231,7 @@ describe('SelectStaffComponent', () => {
 
     expect(queryByText('Deselect')).toBeFalsy();
     expect(getAllByText('Select').length).toEqual(3);
+    expect(getByText('Select all')).toBeTruthy();
     expect(within(selectedStaffPanel).getByText('0')).toBeTruthy();
   });
 
@@ -274,8 +312,8 @@ describe('SelectStaffComponent', () => {
     expect(within(selectedStaffPanel).getByText('0')).toBeTruthy();
   });
 
-  it('should change deselect all link text and update count when a staff member is deselected', async () => {
-    const { component, fixture, getAllByText, getByTestId, queryByText, getByText, workers } = await setup();
+  it('should update count when a staff member is deselected', async () => {
+    const { component, fixture, getAllByText, getByTestId, getByText, workers } = await setup();
 
     component.paginatedWorkers = workers;
     fixture.detectChanges();
@@ -290,11 +328,13 @@ describe('SelectStaffComponent', () => {
 
     const selectedStaffPanel = getByTestId('selectedStaffPanel');
 
-    expect(queryByText('Deselect all')).toBeFalsy();
+    expect(getByText('Deselect all')).toBeTruthy();
     expect(getAllByText('Deselect').length).toEqual(2);
     expect(getByText('Select')).toBeTruthy();
     expect(within(selectedStaffPanel).getByText('2')).toBeTruthy();
   });
+
+  it('should deselect all selected workers that have been selected when the deselect all link is clicked', async () => {});
 
   describe('Search bar', () => {
     it('should not show the search box when there are fewer than 16 staff', async () => {
@@ -303,7 +343,7 @@ describe('SelectStaffComponent', () => {
       component.paginatedWorkers = workers;
       fixture.detectChanges();
 
-      expect(queryByLabelText('Search for staff')).toBeFalsy();
+      expect(queryByLabelText('Search for staff by name or ID number')).toBeFalsy();
     });
 
     it('should not show the search box when there are more than 15 staff', async () => {
@@ -312,7 +352,7 @@ describe('SelectStaffComponent', () => {
       component.paginatedWorkers = workers;
       fixture.detectChanges();
 
-      expect(getByLabelText('Search for staff')).toBeTruthy();
+      expect(getByLabelText('Search for staff by name or ID number')).toBeTruthy();
     });
 
     it('should call getAllWorkers with correct search term if passed and display the search results in a table', async () => {
@@ -320,7 +360,7 @@ describe('SelectStaffComponent', () => {
       component.paginatedWorkers = workers;
       fixture.detectChanges();
 
-      const searchInput = getByLabelText('Search for staff');
+      const searchInput = getByLabelText('Search for staff by name or ID number');
       userEvent.type(searchInput, `${workers[0].nameOrId}{enter}`);
       component.searchResults = [workers[0]];
       fixture.detectChanges();
@@ -347,7 +387,7 @@ describe('SelectStaffComponent', () => {
       component.paginatedWorkers = workers;
       fixture.detectChanges();
 
-      const searchInput = getByLabelText('Search for staff');
+      const searchInput = getByLabelText('Search for staff by name or ID number');
       userEvent.type(searchInput, `Search returning nothing{enter}`);
       component.searchResults = [];
       fixture.detectChanges();
@@ -365,7 +405,7 @@ describe('SelectStaffComponent', () => {
       component.paginatedWorkers = workers;
       fixture.detectChanges();
 
-      const searchInput = getByLabelText('Search for staff');
+      const searchInput = getByLabelText('Search for staff by name or ID number');
       userEvent.type(searchInput, `${workers[0].nameOrId}{enter}`);
       component.searchResults = [workers[0]];
       fixture.detectChanges();
