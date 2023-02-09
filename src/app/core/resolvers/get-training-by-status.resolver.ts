@@ -10,9 +10,11 @@ export class GetTrainingByStatusResolver implements Resolve<any> {
 
   resolve(route: ActivatedRouteSnapshot) {
     const workplaceUid = route.paramMap.get('establishmentuid');
-
     const status = route.data.training;
-    return this.trainingService.getAllTrainingByStatus(workplaceUid, status).pipe(
+
+    const paginationParams = { pageIndex: 0, itemsPerPage: 15 };
+
+    return this.trainingService.getAllTrainingByStatus(workplaceUid, status, paginationParams).pipe(
       catchError(() => {
         this.router.navigate(['/problem with the service']);
         return of(null);

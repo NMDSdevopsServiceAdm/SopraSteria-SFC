@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingService } from '@core/services/training.service';
 
 import {
   ExpiredAndExpiringTrainingDirective,
@@ -19,8 +20,9 @@ export class ExpiringSoonTrainingComponent extends ExpiredAndExpiringTrainingDir
     protected route: ActivatedRoute,
     protected establishmentService: EstablishmentService,
     protected permissionsService: PermissionsService,
+    protected trainingService: TrainingService,
   ) {
-    super(backLinkService, router, route, establishmentService, permissionsService);
+    super(backLinkService, router, route, establishmentService, permissionsService, trainingService);
   }
 
   protected init(): void {
@@ -28,5 +30,6 @@ export class ExpiringSoonTrainingComponent extends ExpiredAndExpiringTrainingDir
     this.trainingList = this.route.snapshot.data.expiringTraining.training;
     this.flagText = 'Expires soon';
     this.img = '/assets/images/flag-orange.svg';
+    this.status = 'expiring';
   }
 }

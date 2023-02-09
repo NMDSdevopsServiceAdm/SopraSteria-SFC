@@ -699,18 +699,32 @@ class Training extends EntityValidator {
     }
   }
 
-  static async getAllEstablishmentTrainingByStatus(establishmentId, status) {
-    const today = new Date();
+  static async getAllEstablishmentTrainingByStatus(
+    establishmentId,
+    status,
+    limit = 0,
+    pageIndex = 0,
+    sortBy = '',
+    searchTerm = '',
+  ) {
+    const currentDate = moment().toISOString();
+    const expiresSoonAlertDate = await models.establishment.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+    const offset = pageIndex * limit;
 
-    let filter = { [Op.lt]: today };
+    const pagination = {
+      subQuery: false,
+      limit,
+      offset,
+    };
+
+    let filter = { [Op.lt]: currentDate };
 
     if (status === 'expiring') {
-      const threeMonthsFromNow = new Date();
-      threeMonthsFromNow.setMonth(today.getMonth() + 3);
-      filter = { [Op.gt]: today, [Op.lt]: threeMonthsFromNow };
+      filter = { [Op.gt]: currentDate, [Op.lt]: expiresSoon };
     }
 
-    return await models.workerTraining.findAll({
+    return await models.workerTraining.findAndCountAll({
       include: [
         {
           model: models.worker,
@@ -732,6 +746,7 @@ class Training extends EntityValidator {
       },
       attributes: ['categoryFk', 'expires', 'uid'],
       order: [['expires', 'asc']],
+      ...(limit ? pagination : {}),
     });
   }
 

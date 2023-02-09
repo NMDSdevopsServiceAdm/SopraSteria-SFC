@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingService } from '@core/services/training.service';
 
 import {
   ExpiredAndExpiringTrainingDirective,
@@ -19,14 +20,15 @@ export class ExpiredTrainingComponent extends ExpiredAndExpiringTrainingDirectiv
     protected route: ActivatedRoute,
     protected establishmentService: EstablishmentService,
     protected permissionsService: PermissionsService,
+    protected trainingService: TrainingService,
   ) {
-    super(backLinkService, router, route, establishmentService, permissionsService);
+    super(backLinkService, router, route, establishmentService, permissionsService, trainingService);
   }
 
   protected init(): void {
     this.title = 'Expired training records';
-    this.trainingList = this.route.snapshot.data.expiredTraining.training;
     this.flagText = 'Expired';
     this.img = '/assets/images/flag-red.svg';
+    this.status = 'expired';
   }
 }

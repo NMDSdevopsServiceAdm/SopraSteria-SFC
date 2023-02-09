@@ -4,14 +4,16 @@ import { GetTrainingByStatusResolver } from '@core/resolvers/get-training-by-sta
 
 import { ExpiredTrainingComponent } from './expired-training/expired-training.component';
 import { ExpiringSoonTrainingComponent } from './expiring-soon-training/expiring-soon-training.component';
-import { MissingMandatoryTrainingStatusComponent } from './missing-mandatory-training/missing-mandatory-training-status.component';
+import {
+  MissingMandatoryTrainingStatusComponent,
+} from './missing-mandatory-training/missing-mandatory-training-status.component';
 
 const routes: Routes = [
   {
     path: 'expired-training',
     component: ExpiredTrainingComponent,
     resolve: {
-      expiredTraining: GetTrainingByStatusResolver,
+      training: GetTrainingByStatusResolver,
     },
     data: { title: 'Expired training', training: 'expired' },
   },
@@ -19,7 +21,7 @@ const routes: Routes = [
     path: 'expires-soon-training',
     component: ExpiringSoonTrainingComponent,
     resolve: {
-      expiringTraining: GetTrainingByStatusResolver,
+      training: GetTrainingByStatusResolver,
     },
     data: { title: 'Expiring training', training: 'expiring' },
   },

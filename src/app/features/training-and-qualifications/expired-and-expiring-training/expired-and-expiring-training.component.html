@@ -6,77 +6,86 @@
     </h1>
   </div>
 </div>
-<table class="govuk-table" data-testid="table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col" style="width: 22%">Name or ID number</th>
-      <th class="govuk-table__header" scope="col" style="width: 37%">Training category</th>
-      <th class="govuk-table__header" scope="col" style="width: 15%">Expiry date</th>
-      <th class="govuk-table__header" scope="col" style="width: 18%">Status</th>
-      <th class="govuk-table__header" scope="col" style="width: 8%"></th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <ng-container>
-      <tr
-        class="govuk-table__row govuk-util__vertical-align-top"
-        *ngFor="let training of trainingList; let i = index"
-        [attr.data-testid]="'table-row-' + i"
-      >
-        <td class="govuk-table__cell govuk-!-font-weight-regular">
-          <ng-container *ngIf="canEditWorker; else nameOrId">
-            <a
-              class="govuk-link--no-visited-state"
-              [attr.data-testid]="'worker-' + i"
-              href="#"
-              [routerLink]="[
-                '/workplace',
-                workplaceUid,
-                'training-and-qualifications-record',
-                training.worker.uid,
-                'training'
-              ]"
-            >
-              {{ training.worker.NameOrIdValue }}</a
-            >
-          </ng-container>
-          <ng-template #nameOrId>
-            <span [attr.data-testid]="'worker-' + i + '-noLink'">{{ training.worker.NameOrIdValue }}</span>
-          </ng-template>
-        </td>
-        <td class="govuk-table__cell govuk-!-font-weight-regular">
-          {{ training.category.category }}
-        </td>
-        <td class="govuk-table__cell govuk-!-font-weight-regular">
-          {{ training.expires ? (training.expires | date: 'd MMM y') : '-' }}
-        </td>
-
-        <td class="govuk-table__cell">
-          <div class="govuk-!-margin-bottom-1">
-            <img src="{{ img }}" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
-            {{ flagText }}
-          </div>
-        </td>
-        <td class="govuk-table__cell">
-          <div *ngIf="canEditWorker">
-            <a
-              [routerLink]="[
-                '/workplace',
-                workplaceUid,
-                'training-and-qualifications-record',
-                training.worker.uid,
-                'training',
-                training.uid
-              ]"
-              href="#"
-              >Update</a
-            >
-          </div>
-        </td>
+<app-table-pagination-wrapper
+  [totalCount]="totalTrainingCount"
+  [count]="trainingCount"
+  [searchTerm]="searchTerm"
+  [sortByParamMap]="sortByParamMap"
+  accessibleLabel="staff training records"
+  (fetchData)="getTrainingByStatus($event)"
+>
+  <table class="govuk-table" data-testid="table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col" style="width: 22%">Name or ID number</th>
+        <th class="govuk-table__header" scope="col" style="width: 37%">Training category</th>
+        <th class="govuk-table__header" scope="col" style="width: 15%">Expiry date</th>
+        <th class="govuk-table__header" scope="col" style="width: 18%">Status</th>
+        <th class="govuk-table__header" scope="col" style="width: 8%"></th>
       </tr>
-    </ng-container>
-  </tbody>
-</table>
+    </thead>
+    <tbody class="govuk-table__body">
+      <ng-container>
+        <tr
+          class="govuk-table__row govuk-util__vertical-align-top"
+          *ngFor="let training of trainingList; let i = index"
+          [attr.data-testid]="'table-row-' + i"
+        >
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            <ng-container *ngIf="canEditWorker; else nameOrId">
+              <a
+                class="govuk-link--no-visited-state"
+                [attr.data-testid]="'worker-' + i"
+                href="#"
+                [routerLink]="[
+                  '/workplace',
+                  workplaceUid,
+                  'training-and-qualifications-record',
+                  training.worker.uid,
+                  'training'
+                ]"
+              >
+                {{ training.worker.NameOrIdValue }}</a
+              >
+            </ng-container>
+            <ng-template #nameOrId>
+              <span [attr.data-testid]="'worker-' + i + '-noLink'">{{ training.worker.NameOrIdValue }}</span>
+            </ng-template>
+          </td>
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            {{ training.category.category }}
+          </td>
+          <td class="govuk-table__cell govuk-!-font-weight-regular">
+            {{ training.expires ? (training.expires | date: 'd MMM y') : '-' }}
+          </td>
+
+          <td class="govuk-table__cell">
+            <div class="govuk-!-margin-bottom-1">
+              <img src="{{ img }}" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
+              {{ flagText }}
+            </div>
+          </td>
+          <td class="govuk-table__cell">
+            <div *ngIf="canEditWorker">
+              <a
+                [routerLink]="[
+                  '/workplace',
+                  workplaceUid,
+                  'training-and-qualifications-record',
+                  training.worker.uid,
+                  'training',
+                  training.uid
+                ]"
+                href="#"
+                >Update</a
+              >
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</app-table-pagination-wrapper>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <button type="button" class="govuk-button govuk-!-margin-top-4" (click)="returnToHome()">Return to home</button>

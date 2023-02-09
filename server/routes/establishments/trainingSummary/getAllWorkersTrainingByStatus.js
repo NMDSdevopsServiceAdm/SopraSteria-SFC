@@ -10,6 +10,7 @@ const { transformWorkersWithMissingMandatoryCategories } = require('../../../tra
 const getAllTrainingByStatus = async (req, res) => {
   const establishmentId = req.establishmentId;
   const status = req.params.status;
+  const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
 
   try {
     if (!establishmentId || !status) {
@@ -17,9 +18,16 @@ const getAllTrainingByStatus = async (req, res) => {
       return res.status(400).send('The establishment id and status must be given');
     }
 
-    const training = await Training.getAllEstablishmentTrainingByStatus(establishmentId, status);
+    const { count: trainingCount, rows: training } = await Training.getAllEstablishmentTrainingByStatus(
+      establishmentId,
+      status,
+      itemsPerPage && +itemsPerPage,
+      pageIndex && +pageIndex,
+      sortBy,
+      searchTerm,
+    );
 
-    return res.status(200).json({ training });
+    return res.status(200).json({ training, trainingCount });
   } catch (error) {
     console.error('Training::root getAllTrainingByStatus - failed', error);
     res.status(500).send(`Failed to get ${status} training and qualifications for establishment ${establishmentId}`);
