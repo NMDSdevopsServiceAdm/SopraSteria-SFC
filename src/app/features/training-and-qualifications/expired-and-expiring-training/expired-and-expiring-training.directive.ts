@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Directive, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SortTrainingOptionsStatus } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -20,9 +21,15 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   public searchTerm = '';
   public trainingCount: number;
   public totalTrainingCount: number;
-  public sortByParamMap: any;
+  public sortTrainingOptions = SortTrainingOptionsStatus;
+  public sortByValue: 'staffNameAsc';
   public status: string;
   private subscriptions: Subscription = new Subscription();
+  public sortByParamMap = {
+    '0_worker': 'staffNameAsc',
+    '1_expired': 'expiryDateDesc',
+    '2_category': 'categoryNameAsc',
+  };
 
   constructor(
     protected backLinkService: BackLinkService,
@@ -40,6 +47,7 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.backLinkService.showBackLink();
+    localStorage.setItem('previousUrl', this.router.url);
   }
 
   protected init(): void {}

@@ -11,6 +11,8 @@
   [count]="trainingCount"
   [searchTerm]="searchTerm"
   [sortByParamMap]="sortByParamMap"
+  [sortByValue]="sortByValue"
+  [sortOptions]="sortTrainingOptions"
   accessibleLabel="staff training records"
   (fetchData)="getTrainingByStatus($event)"
 >
@@ -74,9 +76,9 @@
                   'training-and-qualifications-record',
                   training.worker.uid,
                   'training',
-                  training.uid
+                  training.uid,
+                  { trainingCategory: training.category | json }
                 ]"
-                href="#"
                 >Update</a
               >
             </div>

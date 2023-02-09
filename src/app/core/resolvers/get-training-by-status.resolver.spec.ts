@@ -48,7 +48,10 @@ describe('GetTrainingByStatusResolver', () => {
 
     resolver.resolve(route.snapshot);
 
-    expect(trainingService.getAllTrainingByStatus).toHaveBeenCalledWith(workplaceUid, status);
+    expect(trainingService.getAllTrainingByStatus).toHaveBeenCalledWith(workplaceUid, status, {
+      pageIndex: 0,
+      itemsPerPage: 15,
+    });
   });
 
   it('should call the getAllTrainingByStatus with the workplaceUid and expiring status', async () => {
@@ -59,6 +62,9 @@ describe('GetTrainingByStatusResolver', () => {
 
     resolver.resolve(route.snapshot);
 
-    expect(trainingService.getAllTrainingByStatus).toHaveBeenCalledWith(workplaceUid, status);
+    expect(trainingService.getAllTrainingByStatus).toHaveBeenCalledWith(workplaceUid, status, {
+      pageIndex: 0,
+      itemsPerPage: 15,
+    });
   });
 });

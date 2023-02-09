@@ -724,7 +724,17 @@ class Training extends EntityValidator {
       filter = { [Op.gt]: currentDate, [Op.lt]: expiresSoon };
     }
 
+    const order = {
+      staffNameAsc: [['worker', 'NameOrIdValue', 'ASC']],
+      expiryDateDesc: [['expires', 'DESC']],
+      categoryNameAsc: [['category', 'category', 'ASC']],
+    }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
+
     return await models.workerTraining.findAndCountAll({
+      attributes: ['categoryFk', 'expires', 'uid'],
+      where: {
+        expires: filter,
+      },
       include: [
         {
           model: models.worker,
@@ -733,6 +743,7 @@ class Training extends EntityValidator {
           where: {
             EstablishmentFK: establishmentId,
             archived: false,
+            ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `${searchTerm}` } } : {}),
           },
         },
         {
@@ -741,11 +752,7 @@ class Training extends EntityValidator {
           attributes: ['id', 'category'],
         },
       ],
-      where: {
-        expires: filter,
-      },
-      attributes: ['categoryFk', 'expires', 'uid'],
-      order: [['expires', 'asc']],
+      order,
       ...(limit ? pagination : {}),
     });
   }
