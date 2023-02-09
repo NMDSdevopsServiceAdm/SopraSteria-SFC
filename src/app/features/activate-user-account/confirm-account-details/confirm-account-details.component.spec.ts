@@ -106,7 +106,7 @@ describe('ConfirmAccountDetailsComponent', () => {
     expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
   });
 
-  it('should call the save function to create account when pressing submit after agreeing to terms and conditions', async () => {
+  it('should call the save function to create account when pressing submit after agreeing to terms', async () => {
     const { component, fixture, getByText, getByTestId } = await setup();
 
     const termsAndConditionsCheckbox = getByTestId('checkbox');
