@@ -1,15 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
+import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-<<<<<<< HEAD
-=======
-import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
-import { Worker } from '@core/model/worker.model';
->>>>>>> test
 @Injectable({
   providedIn: 'root',
 })
@@ -36,7 +32,6 @@ export class TrainingService {
   getMissingMandatoryTraining(workplaceId): Observable<any> {
     return this.http.get<any>(`/api/establishment/${workplaceId}/trainingAndQualifications/missing-training`);
   }
-
 
   getCategoryById(categoryId): Observable<TrainingCategory[]> {
     return this.http
