@@ -218,6 +218,7 @@ describe('NewTrainingComponent', async () => {
       component.trainingCategories = [];
       fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
+
       expect(noTrainingLink).toBeTruthy();
       expect(noTrainingLink.getAttribute('href')).toBe('/add-training');
     });

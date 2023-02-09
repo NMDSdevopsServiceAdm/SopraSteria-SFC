@@ -13,6 +13,7 @@ describe('SearchInputComponent', () => {
         accessibleLabel,
         ref,
         prevSearch: '',
+        label: 'Search',
       },
     });
 

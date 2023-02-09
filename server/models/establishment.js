@@ -885,6 +885,11 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'Approvals',
     });
+    Establishment.hasMany(models.MandatoryTraining, {
+      foreignKey: 'establishmentFK',
+      sourceKey: 'id',
+      as: 'MandatoryTraining',
+    });
   };
 
   Establishment.turnoverData = function (establishmentId) {
@@ -1833,6 +1838,7 @@ module.exports = function (sequelize, DataTypes) {
           ],
         },
       ],
+      logging: console.log,
     });
   };
 
