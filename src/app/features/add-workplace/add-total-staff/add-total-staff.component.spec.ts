@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -16,7 +17,14 @@ import { AddTotalStaffComponent } from './add-total-staff.component';
 describe('AddTotalStaffComponent', () => {
   async function setup(addWorkplaceFlow = true) {
     const component = await render(AddTotalStaffComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
+      imports: [
+        SharedModule,
+        RouterModule,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        RegistrationModule,
+        ReactiveFormsModule,
+      ],
       providers: [
         {
           provide: EstablishmentService,

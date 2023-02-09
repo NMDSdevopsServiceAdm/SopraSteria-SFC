@@ -27,7 +27,7 @@
     </div>
     <div class="govuk-grid-column-one-third govuk-!-padding-top-2 govuk-!-padding-bottom-2">
       <button
-        *ngIf="searched"
+        *ngIf="searched && showClearResults"
         class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-util__vertical-align-center"
         type="button"
         (click)="handleResetSearch()"

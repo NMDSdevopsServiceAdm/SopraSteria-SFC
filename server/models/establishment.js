@@ -1,6 +1,5 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
-const { query } = require('express');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -1421,7 +1420,6 @@ module.exports = function (sequelize, DataTypes) {
             'WeeklyHoursContractedHours',
             'WeeklyHoursAverageValue',
             'WeeklyHoursAverageHours',
-            'OtherJobsValue',
             'NurseSpecialismsValue',
             'RegisteredNurseValue',
             'ApprovedMentalHealthWorkerValue',
@@ -1448,10 +1446,6 @@ module.exports = function (sequelize, DataTypes) {
             {
               model: sequelize.models.recruitedFrom,
               as: 'recruitedFrom',
-            },
-            {
-              model: sequelize.models.job,
-              as: 'otherJobs',
             },
             {
               model: sequelize.models.job,

@@ -471,7 +471,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'add-mandatory-training',
+        path: 'add-and-manage-mandatory-training',
         loadChildren: () =>
           import('@features/add-mandatory-training/add-mandatory-training.module').then(
             (m) => m.AddMandatoryTrainingModule,

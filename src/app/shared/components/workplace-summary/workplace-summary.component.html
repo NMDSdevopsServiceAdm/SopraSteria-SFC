@@ -257,9 +257,9 @@
           <span *ngSwitchCase="'No'"> None </span>
           <div *ngSwitchCase="'Yes'">
             <ul class="govuk-list govuk-!-margin-bottom-0">
-              <ng-container *ngFor="let categories of workplace.otherServices.services">
-                <li *ngFor="let service of filterAndSortOtherServices(categories.services)">
-                  {{ service.name }}<ng-container *ngIf="service.other"> - {{ service.other }}</ng-container>
+              <ng-container *ngFor="let service of filterAndSortOtherServices(workplace.otherServices.services)">
+                <li>
+                  {{ service.name }}<ng-container *ngIf="service.other">: {{ service.other }}</ng-container>
                 </li>
               </ng-container>
             </ul>
@@ -287,7 +287,7 @@
           <ng-container *ngIf="!workplace.capacities?.length; else capacities"> - </ng-container>
           <ng-template #capacities>
             <ul class="govuk-list govuk-!-margin-bottom-0">
-              <li *ngFor="let capacity of capacityMessages">{{ capacity }}</li>
+              <li *ngFor="let capacity of capacityMessages">{{ capacity.message }}</li>
             </ul>
           </ng-template>
         </app-summary-record-value>

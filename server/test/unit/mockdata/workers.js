@@ -164,8 +164,6 @@ exports.knownHeaders = [
   'MAINJRDESC',
   'CONTHOURS',
   'AVGHOURS',
-  'OTHERJOBROLE',
-  'OTHERJRDESC',
   'NMCREG',
   'NURSESPEC',
   'AMHP',

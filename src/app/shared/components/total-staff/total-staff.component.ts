@@ -15,6 +15,7 @@ export class TotalStaffComponent implements OnInit {
   @Input() formErrorsMap: Array<ErrorDetails>;
   @Input() submitted: boolean;
   @Input() errorSummaryService: ErrorSummaryService;
+  @Input() showHint = true;
 
   private subscriptions: Subscription = new Subscription();
 

@@ -121,7 +121,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of places must be between 1 and 999';
         const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -140,7 +140,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of places must be between 1 and 999';
         const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -174,7 +174,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of places being used must be between 1 and 999';
         const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -191,7 +191,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of places being used must be between 1 and 999';
         const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -246,7 +246,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of places must be between 1 and 999';
         const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -267,7 +267,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of places being used must be between 1 and 999';
         const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -288,7 +288,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const firstErrorMessage = 'Number must be between 1 and 999';
+        const firstErrorMessage = 'Number of places must be between 1 and 999';
         const secondErrorMessage = 'Number cannot be more than the places you have';
         const service = capacities[0].service.split(': ')[1].toLowerCase();
         expect(getByText(firstErrorMessage)).toBeTruthy();
@@ -327,7 +327,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of beds must be between 1 and 999';
         const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -346,7 +346,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of beds must be between 1 and 999';
         const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -380,7 +380,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of beds being used must be between 1 and 999';
         const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -397,7 +397,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of beds being used must be between 1 and 999';
         const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -452,7 +452,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of beds must be between 1 and 999';
         const service = capacities[1].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -490,7 +490,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of people must be between 1 and 999';
         const service = capacities[2].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -507,7 +507,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of people must be between 1 and 999';
         const service = capacities[2].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -543,7 +543,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of people must be between 1 and 999';
         const service = capacities[3].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();
@@ -560,7 +560,7 @@ describe('ServicesCapacityComponent', () => {
         userEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
-        const errorMessage = 'Number must be between 1 and 999';
+        const errorMessage = 'Number of people must be between 1 and 999';
         const service = capacities[3].service.split(': ')[1].toLowerCase();
         expect(getByText(errorMessage)).toBeTruthy();
         expect(getByText(`${errorMessage} (${service})`)).toBeTruthy();

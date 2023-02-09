@@ -16,7 +16,6 @@ import { Question } from '../question/question.component';
 })
 export class ServicesCapacityComponent extends Question {
   public capacities = [];
-  public capacityErrorMsg = 'Number must be between 1 and 999';
   public intPattern = INT_PATTERN.toString();
   public section = 'Services';
   public errorsSummaryErrorsMap: ErrorDetails[] = [];
@@ -163,27 +162,34 @@ export class ServicesCapacityComponent extends Question {
         const formControlName = this.generateFormControlName(question);
 
         let patternErrorMsg;
+        let patternErrorMsgCapacity;
 
         if (question.question.includes('beds')) {
           patternErrorMsg = question.seq === 1 ? 'beds you have' : 'beds being used';
+          patternErrorMsgCapacity = question.seq === 1 ? 'beds' : 'beds being used';
         } else if (question.question.includes('places')) {
           patternErrorMsg = question.seq === 1 ? 'places you have' : 'places being used';
+          patternErrorMsgCapacity = question.seq === 1 ? 'places' : 'places being used';
         } else if (question.question.includes('people receiving care')) {
           patternErrorMsg = 'people receiving care';
+          patternErrorMsgCapacity = 'people';
         } else {
           patternErrorMsg = 'people using the service';
+          patternErrorMsgCapacity = 'people';
         }
+
+        const capacityErrorMsg = `Number of ${patternErrorMsgCapacity} must be between 1 and 999`;
 
         const errorObj = {
           item: `${id}.${formControlName}`,
           type: [
             {
               name: 'min',
-              message: this.capacityErrorMsg,
+              message: capacityErrorMsg,
             },
             {
               name: 'max',
-              message: this.capacityErrorMsg,
+              message: capacityErrorMsg,
             },
             {
               name: 'pattern',

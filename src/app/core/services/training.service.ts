@@ -5,11 +5,17 @@ import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualific
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+<<<<<<< HEAD
+=======
+import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import { Worker } from '@core/model/worker.model';
+>>>>>>> test
 @Injectable({
   providedIn: 'root',
 })
 export class TrainingService {
-  public selectedStaff = [];
+  public selectedTraining = null;
+  public selectedStaff: Worker[] = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
 
@@ -31,12 +37,40 @@ export class TrainingService {
     return this.http.get<any>(`/api/establishment/${workplaceId}/trainingAndQualifications/missing-training`);
   }
 
-  public updateSelectedStaff(formValue) {
+
+  getCategoryById(categoryId): Observable<TrainingCategory[]> {
+    return this.http
+      .get<TrainingCategoryResponse>(`/api/trainingCategories/${categoryId}`)
+      .pipe(map((res) => res.trainingCategories));
+  }
+
+  public deleteCategoryById(establishmentId, categoryId) {
+    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining/${categoryId}`);
+  }
+
+  public updateSelectedStaff(formValue): void {
     this.selectedStaff = formValue;
   }
 
   public resetSelectedStaff(): void {
     this.selectedStaff = [];
+  }
+
+  public updateSelectedTraining(formValue): void {
+    this.selectedTraining = formValue;
+  }
+
+  public resetSelectedTraining(): void {
+    this.selectedTraining = null;
+  }
+
+  //get all mandatory training
+  public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
+    return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
+  }
+
+  public deleteAllMandatoryTraining(establishmentId: number) {
+    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining`);
   }
 
   public get trainingOrQualificationPreviouslySelected(): string {
@@ -52,5 +86,11 @@ export class TrainingService {
   public set trainingOrQualificationPreviouslySelected(value: string) {
     this._trainingOrQualificationPreviouslySelected = value;
     localStorage.setItem('trainingOrQualificationPreviouslySelected', value);
+  }
+
+  public resetState(): void {
+    this.addMultipleTrainingInProgress$.next(false);
+    this.resetSelectedStaff();
+    this.resetSelectedTraining();
   }
 }
