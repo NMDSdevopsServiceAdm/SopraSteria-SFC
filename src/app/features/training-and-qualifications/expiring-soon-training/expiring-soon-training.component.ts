@@ -5,9 +5,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 
-import {
-  ExpiredAndExpiringTrainingDirective,
-} from '../expired-and-expiring-training/expired-and-expiring-training.directive';
+import { ExpiredAndExpiringTrainingDirective } from '../expired-and-expiring-training/expired-and-expiring-training.directive';
 
 @Component({
   selector: 'app-expiring-soon-training',
@@ -27,7 +25,6 @@ export class ExpiringSoonTrainingComponent extends ExpiredAndExpiringTrainingDir
 
   protected init(): void {
     this.title = 'Records that expire soon';
-    this.trainingList = this.route.snapshot.data.expiringTraining.training;
     this.flagText = 'Expires soon';
     this.img = '/assets/images/flag-orange.svg';
     this.status = 'expiring';
