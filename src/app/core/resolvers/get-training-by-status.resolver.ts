@@ -1,18 +1,24 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
-import { AlertService } from '@core/services/alert.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class GetTrainingByStatusResolver implements Resolve<any> {
-  constructor(private router: Router, private trainingService: TrainingService, private alertService: AlertService) {}
+  constructor(
+    private router: Router,
+    private trainingService: TrainingService,
+    private establishmentService: EstablishmentService,
+  ) {}
 
   resolve(route: ActivatedRouteSnapshot) {
     const workplaceUid = route.paramMap.get('establishmentuid');
+    const primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
+
     const status = route.data.training;
-    const { state } = this.router.getCurrentNavigation()?.extras;
+    const state = this.router.getCurrentNavigation()?.extras.state;
     const paginationParams = { pageIndex: 0, itemsPerPage: 15 };
 
     return this.trainingService.getAllTrainingByStatus(workplaceUid, status, paginationParams).pipe(
@@ -20,7 +26,8 @@ export class GetTrainingByStatusResolver implements Resolve<any> {
         if (response.trainingCount > 0) {
           return response;
         } else {
-          this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications', replaceUrl: true, state });
+          const redirectUrl = workplaceUid === primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', workplaceUid];
+          this.router.navigate(redirectUrl, { fragment: 'training-and-qualifications', replaceUrl: true, state });
           return null;
         }
       }),

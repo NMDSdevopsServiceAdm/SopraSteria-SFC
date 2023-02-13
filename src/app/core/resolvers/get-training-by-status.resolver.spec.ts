@@ -7,6 +7,7 @@ import { TrainingService } from '@core/services/training.service';
 import { GetTrainingByStatusResolver } from './get-training-by-status.resolver';
 
 describe('GetTrainingByStatusResolver', () => {
+  const workplaceUid = 'mock-uid';
   function setup(status = 'expired') {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
@@ -26,7 +27,6 @@ describe('GetTrainingByStatusResolver', () => {
 
     const trainingService = TestBed.inject(TrainingService);
     spyOn(trainingService, 'getAllTrainingByStatus').and.callThrough();
-
     return {
       resolver,
       route,
@@ -43,9 +43,7 @@ describe('GetTrainingByStatusResolver', () => {
   it('should call the getAllTrainingByStatus with the workplaceUid and expired status', async () => {
     const { resolver, route, trainingService } = await setup();
 
-    const workplaceUid = 'mock-uid';
     const status = 'expired';
-
     resolver.resolve(route.snapshot);
 
     expect(trainingService.getAllTrainingByStatus).toHaveBeenCalledWith(workplaceUid, status, {
@@ -57,9 +55,7 @@ describe('GetTrainingByStatusResolver', () => {
   it('should call the getAllTrainingByStatus with the workplaceUid and expiring status', async () => {
     const { resolver, route, trainingService } = await setup('expiring');
 
-    const workplaceUid = 'mock-uid';
     const status = 'expiring';
-
     resolver.resolve(route.snapshot);
 
     expect(trainingService.getAllTrainingByStatus).toHaveBeenCalledWith(workplaceUid, status, {

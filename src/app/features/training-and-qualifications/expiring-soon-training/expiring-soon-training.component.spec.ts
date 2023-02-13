@@ -4,11 +4,13 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { UserService } from '@core/services/user.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
@@ -41,18 +43,29 @@ const training = [
 ];
 
 describe('ExpiringSoonTrainingComponent', () => {
-  async function setup(addPermissions = true, fixTrainingCount = false, qsParamGetMock = sinon.fake()) {
+  async function setup(
+    addPermissions = true,
+    fixTrainingCount = false,
+    qsParamGetMock = sinon.fake(),
+    addAlert = false,
+  ) {
     let trainingObj = {
       training,
       trainingCount: 2,
     };
     if (fixTrainingCount) trainingObj = { training: [training[0]], trainingCount: 1 };
     const permissions = addPermissions ? ['canEditWorker'] : [];
+
+    if (addAlert) {
+      window.history.pushState({ alertMessage: 'Updated record' }, '');
+    }
+
     const { fixture, getByText, getByTestId, queryByTestId, getByLabelText, queryByLabelText } = await render(
       ExpiringSoonTrainingComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
         providers: [
+          WindowRef,
           BackLinkService,
           {
             provide: EstablishmentService,
@@ -91,6 +104,10 @@ describe('ExpiringSoonTrainingComponent', () => {
     const trainingServiceSpy = spyOn(trainingService, 'getAllTrainingByStatus').and.returnValue(
       of({ training, trainingCount: 2 }),
     );
+
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
       component,
       fixture,
@@ -102,12 +119,24 @@ describe('ExpiringSoonTrainingComponent', () => {
       routerSpy,
       trainingService,
       trainingServiceSpy,
+      alertSpy,
     };
   }
 
   it('should render a ExpiredTrainingComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render an alert banner if there is an aler message in state', async () => {
+    const { component, fixture, alertSpy } = await setup(true, false, sinon.fake(), true);
+
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(alertSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'Updated record',
+    });
   });
 
   it('should render the table with a list of the expired training', async () => {

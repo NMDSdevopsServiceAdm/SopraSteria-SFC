@@ -76,10 +76,10 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
     this.trainingCount = trainingCount;
   }
 
-  public returnToHome(replaceUrl?: boolean): void {
+  public returnToHome(): void {
     const returnLink =
       this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
-    this.router.navigate(returnLink, { fragment: 'training-and-qualifications', replaceUrl });
+    this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });
   }
 
   public getTrainingByStatus(properties: {
