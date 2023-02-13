@@ -2,7 +2,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
 import { GetTrainingByStatusResolver } from './get-training-by-status.resolver';
 
@@ -13,6 +15,10 @@ describe('GetTrainingByStatusResolver', () => {
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       providers: [
         GetTrainingByStatusResolver,
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
         {
           provide: ActivatedRoute,
           useValue: {
