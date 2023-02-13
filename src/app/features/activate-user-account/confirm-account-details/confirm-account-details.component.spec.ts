@@ -5,10 +5,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { UserService } from '@core/services/user.service';
 import { MockCreateAccountService } from '@core/test-utils/MockCreateAccountService';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
-import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -31,10 +29,6 @@ describe('ConfirmAccountDetailsComponent', () => {
           {
             provide: RegistrationService,
             useClass: MockRegistrationService,
-          },
-          {
-            provide: UserService,
-            useClass: MockUserService,
           },
 
           {
@@ -75,7 +69,6 @@ describe('ConfirmAccountDetailsComponent', () => {
 
   it('should render a ConfirmAccountDetailsComponent', async () => {
     const { component } = await setup();
-
     expect(component).toBeTruthy();
   });
 
@@ -106,7 +99,7 @@ describe('ConfirmAccountDetailsComponent', () => {
     expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
   });
 
-  it('should call the save function to create account when pressing submit after agreeing to terms', async () => {
+  it('should call the save function to create account when pressing submit after agreeing to terms and conditions', async () => {
     const { component, fixture, getByText, getByTestId } = await setup();
 
     const termsAndConditionsCheckbox = getByTestId('checkbox');
