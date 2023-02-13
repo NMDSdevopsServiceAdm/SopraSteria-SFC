@@ -37,7 +37,6 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     this.convertTrainingRecord();
     this.setReturnLink();
     this.backLinkService.showBackLink();
-    console.log(this.trainingRecords);
   }
 
   private convertTrainingRecord(): void {
