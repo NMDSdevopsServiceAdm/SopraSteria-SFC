@@ -2,6 +2,7 @@
 import { Directive, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SortTrainingOptionsStatus } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -38,13 +39,16 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
     protected establishmentService: EstablishmentService,
     protected permissionsService: PermissionsService,
     protected trainingService: TrainingService,
+    protected alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
-    this.init();
+    const alertMessage = history.state?.alertMessage;
+    alertMessage && this.showAlert(alertMessage);
     this.setTrainingAndCount();
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
+    this.init();
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.backLinkService.showBackLink();
     this.setSearchIfPrevious();
@@ -52,6 +56,13 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   }
 
   protected init(): void {}
+
+  private showAlert(message: string): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message,
+    });
+  }
 
   private setSearchIfPrevious(): void {
     const search = this.route.snapshot.queryParamMap.get('search');
@@ -65,10 +76,10 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
     this.trainingCount = trainingCount;
   }
 
-  public returnToHome(): void {
+  public returnToHome(replaceUrl?: boolean): void {
     const returnLink =
       this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
-    this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });
+    this.router.navigate(returnLink, { fragment: 'training-and-qualifications', replaceUrl });
   }
 
   public getTrainingByStatus(properties: {

@@ -42,7 +42,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   protected init(): void {
     this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
-    this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
     if (this.trainingRecordId) {
@@ -128,11 +127,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   private onSuccess() {
     const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
-    this.router.navigate(this.previousUrl);
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
+    this.router.navigate(this.previousUrl, { state: { alertMessage: message } });
   }
 
   private onError(error) {
