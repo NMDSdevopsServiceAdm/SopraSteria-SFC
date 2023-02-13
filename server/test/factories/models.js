@@ -82,6 +82,7 @@ const trainingBuilder = build('Training', {
     categoryFk: perBuild(() => {
       return categoryBuilder().id;
     }),
+    completed: fake((f) => f.date.past(1).toISOString()),
   },
 });
 

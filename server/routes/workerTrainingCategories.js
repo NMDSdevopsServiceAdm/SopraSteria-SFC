@@ -48,8 +48,45 @@ const getTrainingByCategory = async (req, res) => {
   }
 };
 
+const getCategoryTraining = async (req, res) => {
+  try {
+    const { establishmentId, trainingCategoryId } = req.params;
+    const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
+
+    if (!establishmentId || !trainingCategoryId) {
+      return res.status(400).send();
+    }
+
+    const isMandatory = !!(await models.MandatoryTraining.checkIfTrainingCategoryIsMandatory(
+      establishmentId,
+      trainingCategoryId,
+    ));
+
+    const {
+      count: trainingCount,
+      rows: training,
+      category,
+    } = await models.workerTraining.fetchTrainingByCategoryForEstablishment(
+      establishmentId,
+      trainingCategoryId,
+      itemsPerPage && +itemsPerPage,
+      pageIndex && +pageIndex,
+      sortBy,
+      searchTerm,
+      isMandatory,
+    );
+
+    return res.status(200).json({ training, trainingCount, category: category.category, isMandatory });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+};
+
 router.route('/').get([refCacheMiddleware.refcache, getAllTraining]);
 router.route('/:establishmentId/with-training').get([cacheMiddleware.nocache, getTrainingByCategory]);
+router.route('/:establishmentId/:trainingCategoryId').get([cacheMiddleware.nocache], getCategoryTraining);
 
 module.exports = router;
 module.exports.getTrainingByCategory = getTrainingByCategory;
+module.exports.getCategoryTraining = getCategoryTraining;

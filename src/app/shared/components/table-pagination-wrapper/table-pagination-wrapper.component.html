@@ -1,0 +1,35 @@
+<div class="govuk-grid-row govuk-util__vertical-align-center">
+  <div *ngIf="totalCount > itemsPerPage" class="govuk-grid-column-three-quarters" data-testid="search">
+    <app-search-input
+      ref="search"
+      [accessibleLabel]="accessibleLabel"
+      [label]="label"
+      [prevSearch]="searchTerm"
+      (emitInput)="handleSearch($event)"
+    ></app-search-input>
+  </div>
+
+  <div
+    data-testid="sortBy"
+    *ngIf="count > 1"
+    class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
+  >
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="sortBy"> Sort by </label>
+      <select class="govuk-select govuk-!-width-full" id="sortBy" name="sortBy" (change)="sortBy($event.target.value)">
+        <option *ngFor="let option of sortOptions | keyvalue" value="{{ option.key }}">
+          {{ option.value }}
+        </option>
+      </select>
+    </div>
+  </div>
+</div>
+<div>
+  <ng-content></ng-content>
+  <app-pagination
+    [itemsPerPage]="itemsPerPage"
+    [totalNoOfItems]="count"
+    (currentPageIndexChange)="handlePageUpdate($event)"
+    [currentPageIndex]="currentPageIndex"
+  ></app-pagination>
+</div>

@@ -8,8 +8,8 @@ import * as parse from 'url-parse';
   providedIn: 'root',
 })
 export class BackLinkService {
-  private readonly _backLink$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
-  public readonly backLink$: Observable<boolean> = this._backLink$.asObservable();
+  private _backLink$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  public backLink$: Observable<boolean> = this._backLink$.asObservable();
 
   constructor(private router: Router) {
     this.router.events

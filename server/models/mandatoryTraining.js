@@ -71,5 +71,14 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  MandatoryTraining.checkIfTrainingCategoryIsMandatory = async function (establishmentId, trainingCategoryId) {
+    return await this.findOne({
+      where: {
+        establishmentFK: establishmentId,
+        trainingCategoryFK: trainingCategoryId,
+      },
+    });
+  };
+
   return MandatoryTraining;
 };
