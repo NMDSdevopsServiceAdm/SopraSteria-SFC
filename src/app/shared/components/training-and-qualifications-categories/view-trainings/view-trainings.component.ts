@@ -68,6 +68,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
 
   private setWorkersAndCount(): void {
     const { training = [], category, trainingCount, isMandatory } = this.route.snapshot.data.training;
+
     this.trainings = training;
     this.category = category;
     this.totalTrainingCount = trainingCount;
