@@ -50,12 +50,14 @@ const getTrainingByCategory = async (req, res) => {
 
 const getCategoryTraining = async (req, res) => {
   try {
-    const { establishmentId, trainingCategoryId } = req.params;
+    const { establishmentUid, trainingCategoryId } = req.params;
     const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
 
-    if (!establishmentId || !trainingCategoryId) {
+    if (!establishmentUid || !trainingCategoryId) {
       return res.status(400).send();
     }
+
+    const { id: establishmentId } = await models.establishment.findByUid(establishmentUid);
 
     const isMandatory = !!(await models.MandatoryTraining.checkIfTrainingCategoryIsMandatory(
       establishmentId,
@@ -85,7 +87,7 @@ const getCategoryTraining = async (req, res) => {
 
 router.route('/').get([refCacheMiddleware.refcache, getAllTraining]);
 router.route('/:establishmentId/with-training').get([cacheMiddleware.nocache, getTrainingByCategory]);
-router.route('/:establishmentId/:trainingCategoryId').get([cacheMiddleware.nocache], getCategoryTraining);
+router.route('/:establishmentUid/:trainingCategoryId').get([cacheMiddleware.nocache], getCategoryTraining);
 
 module.exports = router;
 module.exports.getTrainingByCategory = getTrainingByCategory;

@@ -111,7 +111,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
     const { index, itemsPerPage, searchTerm, sortByValue } = properties;
     this.subscriptions.add(
       this.trainingCategoryService
-        .getTrainingCategory(this.workplace.id, this.trainingCategoryId, {
+        .getTrainingCategory(this.workplace.uid, this.trainingCategoryId, {
           pageIndex: index,
           itemsPerPage: itemsPerPage,
           sortBy: sortByValue,

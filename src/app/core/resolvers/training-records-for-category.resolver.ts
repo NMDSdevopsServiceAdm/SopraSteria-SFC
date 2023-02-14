@@ -14,12 +14,12 @@ export class TrainingRecordsForCategoryResolver implements Resolve<any> {
   ) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    const workplaceId = this.establishmentService.primaryWorkplace.id;
+    const workplaceUid = route.paramMap.get('establishmentuid');
     const trainingId = +route.paramMap.get('categoryId');
 
     const paginationParams = { pageIndex: 0, itemsPerPage: 15, sortBy: 'trainingExpired' };
 
-    return this.trainingCategoryService.getTrainingCategory(workplaceId, trainingId, paginationParams).pipe(
+    return this.trainingCategoryService.getTrainingCategory(workplaceUid, trainingId, paginationParams).pipe(
       catchError(() => {
         this.router.navigate(['/problem-with-the-service']);
         return of(null);
