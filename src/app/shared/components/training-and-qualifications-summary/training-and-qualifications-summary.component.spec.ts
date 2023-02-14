@@ -48,7 +48,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     can: sinon.stub<['uid', 'canViewUser'], boolean>().returns(true),
   });
 
-  async function setup(qsParamGetMock = sinon.fake(), totalRecords = 5, fixWorkerCount = false) {
+  async function setup(qsParamGetMock = sinon.fake(), totalRecords = 5) {
     const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText, getByTestId, queryByTestId } =
       await render(TrainingAndQualificationsSummaryComponent, {
         imports: [HttpClientTestingModule, RouterTestingModule],
@@ -73,7 +73,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
         componentProperties: {
           workplace: establishmentBuilder() as Establishment,
           workers: workers as Worker[],
-          workerCount: fixWorkerCount ? 1 : workers.length,
+          workerCount: workers.length,
           totalRecords,
         },
       });
@@ -82,11 +82,8 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
 
     const router = TestBed.inject(Router) as Router;
     const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
     const workerService = TestBed.inject(WorkerService) as WorkerService;
-    const workerServiceSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
-      of({ workers: [...workers, ...workers, ...workers], workerCount: 18 }),
-    );
+    const workerServiceSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
 
     return {
       component,
@@ -115,8 +112,9 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   });
 
   it('should not show the sort by dropdown if there is only 1 staff record', async () => {
-    const { queryByTestId } = await setup(sinon.fake(), 5, true);
-
+    const { component, fixture, queryByTestId } = await setup();
+    component.workerCount = 1;
+    fixture.detectChanges();
     expect(queryByTestId('sortBy')).toBeFalsy();
   });
 
