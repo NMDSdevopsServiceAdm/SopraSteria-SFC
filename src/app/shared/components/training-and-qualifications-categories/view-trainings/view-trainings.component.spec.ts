@@ -306,7 +306,7 @@ describe('ViewTrainingComponent', () => {
       const select = getByLabelText('Sort by', { exact: false });
       fireEvent.change(select, { target: { value: '0_expired' } });
 
-      expect(trainingCategoriesSpy).toHaveBeenCalledWith(component.workplace.id, component.trainingCategoryId, {
+      expect(trainingCategoriesSpy).toHaveBeenCalledWith(component.workplace.uid, component.trainingCategoryId, {
         sortBy: 'trainingExpired',
         pageIndex: 0,
         itemsPerPage: 15,
@@ -321,7 +321,7 @@ describe('ViewTrainingComponent', () => {
       const select = getByLabelText('Sort by', { exact: false });
       fireEvent.change(select, { target: { value: '1_expires_soon' } });
 
-      expect(trainingCategoriesSpy).toHaveBeenCalledWith(component.workplace.id, component.trainingCategoryId, {
+      expect(trainingCategoriesSpy).toHaveBeenCalledWith(component.workplace.uid, component.trainingCategoryId, {
         sortBy: 'trainingExpiringSoon',
         pageIndex: 0,
         itemsPerPage: 15,
@@ -336,7 +336,7 @@ describe('ViewTrainingComponent', () => {
       const select = getByLabelText('Sort by', { exact: false });
       fireEvent.change(select, { target: { value: '2_worker' } });
 
-      expect(trainingCategoriesSpy).toHaveBeenCalledWith(component.workplace.id, component.trainingCategoryId, {
+      expect(trainingCategoriesSpy).toHaveBeenCalledWith(component.workplace.uid, component.trainingCategoryId, {
         sortBy: 'staffNameAsc',
         pageIndex: 0,
         itemsPerPage: 15,
@@ -351,7 +351,7 @@ describe('ViewTrainingComponent', () => {
       const select = getByLabelText('Sort by', { exact: false });
       fireEvent.change(select, { target: { value: '2_missing' } });
 
-      expect(trainingCategoriesSpy).toHaveBeenCalledWith(component.workplace.id, component.trainingCategoryId, {
+      expect(trainingCategoriesSpy).toHaveBeenCalledWith(component.workplace.uid, component.trainingCategoryId, {
         sortBy: 'trainingMissing',
         pageIndex: 0,
         itemsPerPage: 15,
@@ -385,7 +385,7 @@ describe('ViewTrainingComponent', () => {
       };
 
       expect(trainingCategoriesSpy).toHaveBeenCalledWith(
-        component.workplace.id,
+        component.workplace.uid,
         component.trainingCategoryId,
         expectedEmit,
       );

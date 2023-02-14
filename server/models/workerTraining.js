@@ -113,7 +113,7 @@ module.exports = function (sequelize, DataTypes) {
     const joinTypeOnCount = isMandatory ? 'RIGHT OUTER JOIN' : 'INNER JOIN';
 
     const count =
-      await sequelize.query(`SELECT count("worker"."ID") AS "count" FROM "cqc"."WorkerTraining" AS "workerTraining" ${joinTypeOnCount} "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}' WHERE "worker"."EstablishmentFK" = '1686' AND "worker"."Archived" = false ${addSearchToCount};
+      await sequelize.query(`SELECT count("worker"."ID") AS "count" FROM "cqc"."WorkerTraining" AS "workerTraining" ${joinTypeOnCount} "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}' WHERE "worker"."EstablishmentFK" = '${establishmentId}' AND "worker"."Archived" = false ${addSearchToCount};
     `);
 
     const category = await sequelize.models.workerTrainingCategories.findOne({

@@ -47,6 +47,12 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.paginatedWorkers = this.workers;
     this.totalWorkerCount = this.workerCount;
     this.setSearchIfPrevious();
+    this.getPageOfWorkers({
+      index: 0,
+      itemsPerPage: 15,
+      searchTerm: this.searchTerm,
+      sortByValue: this.sortByValue,
+    });
   }
 
   private setSearchIfPrevious(): void {

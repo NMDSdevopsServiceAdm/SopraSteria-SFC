@@ -17,8 +17,8 @@ export class TrainingCategoryService {
       .pipe(map((res) => res.trainingCategories));
   }
 
-  getTrainingCategory(establishmentId: number, trainingCategoryId: number, queryParams?: Params): Observable<any> {
-    return this.http.get<any>(`/api/trainingCategories/${establishmentId}/${trainingCategoryId}`, {
+  getTrainingCategory(establishmentUid: string, trainingCategoryId: number, queryParams?: Params): Observable<any> {
+    return this.http.get<any>(`/api/trainingCategories/${establishmentUid}/${trainingCategoryId}`, {
       params: queryParams,
     });
   }

@@ -26,7 +26,7 @@ describe('TrainingRecordsForCategoryResolver', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { paramMap: convertToParamMap({ categoryId: '1' }) },
+            snapshot: { paramMap: convertToParamMap({ categoryId: '1', establishmentuid: 'mock-uid' }) },
           },
         },
       ],
@@ -38,13 +38,10 @@ describe('TrainingRecordsForCategoryResolver', () => {
     const trainingCategoryService = TestBed.inject(TrainingCategoryService);
     spyOn(trainingCategoryService, 'getTrainingCategory').and.callThrough();
 
-    const establishmentService = TestBed.inject(EstablishmentService);
-
     return {
       resolver,
       route,
       trainingCategoryService,
-      establishmentService,
     };
   }
 
@@ -55,12 +52,10 @@ describe('TrainingRecordsForCategoryResolver', () => {
   });
 
   it('should call the getTrainingCategory function', () => {
-    const { resolver, route, trainingCategoryService, establishmentService } = setup();
-
-    const establishmentId = establishmentService.primaryWorkplace.id;
+    const { resolver, route, trainingCategoryService } = setup();
 
     resolver.resolve(route.snapshot);
-    expect(trainingCategoryService.getTrainingCategory).toHaveBeenCalledWith(establishmentId, 1, {
+    expect(trainingCategoryService.getTrainingCategory).toHaveBeenCalledWith('mock-uid', 1, {
       pageIndex: 0,
       itemsPerPage: 15,
       sortBy: 'trainingExpired',

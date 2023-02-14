@@ -23,17 +23,17 @@ describe('TrainingCategoryService', () => {
 
   describe('getTrainingCategory', () => {
     it('should call trainingCategories/establishmentId/trainingCategoryId endpoint with no query params if none are given', async () => {
-      const establishmentId = 1034340;
+      const establishmentUid = 'mock-uid';
       const trainingCategoryId = 2345;
 
-      service.getTrainingCategory(establishmentId, trainingCategoryId).subscribe();
+      service.getTrainingCategory(establishmentUid, trainingCategoryId).subscribe();
 
-      const req = http.expectOne(`/api/trainingCategories/${establishmentId}/${trainingCategoryId}`);
+      const req = http.expectOne(`/api/trainingCategories/${establishmentUid}/${trainingCategoryId}`);
       expect(req.request.method).toBe('GET');
     });
 
     it('should call trainingCategories/establishmentId/trainingCategoryId endpoint with query params if they are given', async () => {
-      const establishmentId = 1034340;
+      const establishmentUid = 'mock-uid';
       const trainingCategoryId = 2345;
       const queryParams = {
         sortBy: 'staffNameAsc',
@@ -42,10 +42,10 @@ describe('TrainingCategoryService', () => {
         itemsPerPage: 15,
       };
 
-      service.getTrainingCategory(establishmentId, trainingCategoryId, queryParams).subscribe();
+      service.getTrainingCategory(establishmentUid, trainingCategoryId, queryParams).subscribe();
 
       const req = http.expectOne(
-        `/api/trainingCategories/${establishmentId}/${trainingCategoryId}?sortBy=staffNameAsc&searchTerm=&pageIndex=1&itemsPerPage=15`,
+        `/api/trainingCategories/${establishmentUid}/${trainingCategoryId}?sortBy=staffNameAsc&searchTerm=&pageIndex=1&itemsPerPage=15`,
       );
       expect(req.request.method).toBe('GET');
     });

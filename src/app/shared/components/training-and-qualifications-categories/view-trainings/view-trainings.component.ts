@@ -68,6 +68,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
 
   private setWorkersAndCount(): void {
     const { training = [], category, trainingCount, isMandatory } = this.route.snapshot.data.training;
+
     this.trainings = training;
     this.category = category;
     this.totalTrainingCount = trainingCount;
@@ -111,7 +112,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
     const { index, itemsPerPage, searchTerm, sortByValue } = properties;
     this.subscriptions.add(
       this.trainingCategoryService
-        .getTrainingCategory(this.workplace.id, this.trainingCategoryId, {
+        .getTrainingCategory(this.workplace.uid, this.trainingCategoryId, {
           pageIndex: index,
           itemsPerPage: itemsPerPage,
           sortBy: sortByValue,

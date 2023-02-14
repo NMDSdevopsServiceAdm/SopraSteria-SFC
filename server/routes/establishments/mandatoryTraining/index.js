@@ -80,13 +80,13 @@ const deleteAllMandatoryTraining = async (req, res) => {
   }
 };
 
-router.route('/').get(hasPermission('canAddWorker'), viewMandatoryTraining);
+router.route('/').get(hasPermission('canViewWorker'), viewMandatoryTraining);
 router.route('/').post(hasPermission('canAddWorker'), createAndUpdateMandatoryTraining);
 
 // TODO - we can potentially remove this endpoint
 // There is a ViewAllMandatoryTrainingComponent on the FE but this may also not be used
 // as we have the same view when filtering Training & Quals by category.
-router.route('/all').get(hasPermission('canAddWorker'), viewAllMandatoryTraining);
+router.route('/all').get(hasPermission('canViewWorker'), viewAllMandatoryTraining);
 router.route('/').delete(hasPermission('canEditWorker'), deleteAllMandatoryTraining);
 router.route('/:categoryId').delete(deleteMandatoryTrainingById);
 

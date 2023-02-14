@@ -166,7 +166,7 @@ describe('workerTrainingCategories', () => {
   });
 
   describe('getCategoryTraining', () => {
-    const establishmentId = '167334';
+    const establishmentUid = '167334';
     const trainingCategoryId = '18';
     let req;
     let res;
@@ -221,9 +221,9 @@ describe('workerTrainingCategories', () => {
     beforeEach(() => {
       request = {
         method: 'GET',
-        url: `/api/trainingCategories/${establishmentId}/${trainingCategoryId}`,
+        url: `/api/trainingCategories/${establishmentUid}/${trainingCategoryId}`,
         params: {
-          establishmentId,
+          establishmentUid,
           trainingCategoryId,
         },
         query: {
@@ -235,6 +235,8 @@ describe('workerTrainingCategories', () => {
       };
       req = httpMocks.createRequest(request);
       res = httpMocks.createResponse();
+
+      sinon.stub(models.establishment, 'findByUid').returns({ id: 1 });
     });
 
     it('should return a status of 200 and an object containing the training, the count, the category and isMandatory set to false when not mandatory training', async () => {
@@ -319,9 +321,9 @@ describe('workerTrainingCategories', () => {
       expect(response).to.deep.equal(expectedResponse);
     });
 
-    it('should return 400 when there is no establishment id in the request params', async () => {
+    it('should return 400 when there is no establishment uid in the request params', async () => {
       const request400 = cloneDeep(request);
-      request400.params.establishmentId = '';
+      request400.params.establishmentUid = '';
 
       const req = httpMocks.createRequest(request400);
 
@@ -339,6 +341,15 @@ describe('workerTrainingCategories', () => {
       await getCategoryTraining(req, res);
 
       expect(res.statusCode).to.deep.equal(400);
+    });
+
+    it('should return 500 when the check mandatory training call throws an error', async () => {
+      sinon.restore();
+      sinon.stub(models.establishment, 'findByUid').throws();
+
+      await getCategoryTraining(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
     });
 
     it('should return 500 when the check mandatory training call throws an error', async () => {
