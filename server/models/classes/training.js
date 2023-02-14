@@ -726,8 +726,14 @@ class Training extends EntityValidator {
 
     const order = {
       staffNameAsc: [['worker', 'NameOrIdValue', 'ASC']],
-      expiryDateDesc: [['expires', 'DESC']],
-      categoryNameAsc: [['category', 'category', 'ASC']],
+      expiryDateDesc: [
+        ['expires', 'DESC'],
+        ['worker', 'NameOrIdValue', 'ASC'],
+      ],
+      categoryNameAsc: [
+        ['category', 'category', 'ASC'],
+        ['worker', 'NameOrIdValue', 'ASC'],
+      ],
     }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
 
     return await models.workerTraining.findAndCountAll({
