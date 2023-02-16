@@ -77,7 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getPermissions(): void {
-    this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
+    this.canViewBenchmarks = true // this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
     this.canViewListOfUsers = this.permissionsService.can(this.workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');

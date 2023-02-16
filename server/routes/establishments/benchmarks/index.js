@@ -107,7 +107,7 @@ const viewBenchmarks = async (req, res) => {
   }
 };
 
-router.use('/', hasPermission('canViewBenchmarks'));
+// router.use('/', hasPermission('canViewBenchmarks'));
 router.route('/').get(viewBenchmarks);
 
 router.use('/rankings', rankings);
