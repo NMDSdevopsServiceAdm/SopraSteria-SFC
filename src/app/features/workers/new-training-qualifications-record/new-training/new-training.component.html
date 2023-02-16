@@ -90,6 +90,7 @@
         <h1 class="govuk-heading-l govuk-!-font-size-27 govuk-!-margin-bottom-3">Mandatory training</h1>
         <p class="govuk-body">No mandatory training has been added for their job role yet.</p>
         <a
+          *ngIf="canEditWorker"
           class="govuk-link--no-visited-state govuk-!-font-size-19"
           [attr.data-testid]="'no-mandatory-training-link'"
           [routerLink]="['/workplace', workplaceUid, 'add-and-manage-mandatory-training']"
@@ -102,6 +103,7 @@
         <h1 class="govuk-heading-l govuk-!-font-size-27 govuk-!-margin-bottom-3">Non-mandatory training</h1>
         <p class="govuk-body">No non-mandatory training records have been added for this person yet.</p>
         <a
+          *ngIf="canEditWorker"
           class="govuk-link--no-visited-state govuk-!-font-size-19"
           [attr.data-testid]="'no-training-link'"
           [routerLink]="['../add-training']"
