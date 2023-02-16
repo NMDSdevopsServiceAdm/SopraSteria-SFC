@@ -9,7 +9,7 @@ import { NewQualificationsComponent } from './new-qualifications.component';
 
 describe('NewQualificationsComponent', () => {
   async function setup() {
-    const { fixture, getByText, getAllByText } = await render(NewQualificationsComponent, {
+    const { fixture, getByText, getAllByText, queryByText } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
       providers: [],
       componentProperties: {
@@ -25,6 +25,7 @@ describe('NewQualificationsComponent', () => {
       component,
       getByText,
       getAllByText,
+      queryByText,
     };
   }
 
@@ -143,6 +144,27 @@ describe('NewQualificationsComponent', () => {
       );
 
       expect(firstCertificateTitle).toBeTruthy();
+    });
+  });
+
+  describe('no training', () => {
+    it('should render an add a qualification link if canEditWorker is true', async () => {
+      const { fixture, component, getByText } = await setup();
+      component.qualificationsByGroup.count = 0;
+      fixture.detectChanges();
+
+      const addQualificationLink = getByText('Add a qualification record');
+      expect(addQualificationLink).toBeTruthy();
+    });
+
+    it('should not render an add a qualification link if canEditWorker is true', async () => {
+      const { fixture, component, queryByText } = await setup();
+      component.qualificationsByGroup.count = 0;
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
+      const addQualificationLink = queryByText('Add a qualification record');
+      expect(addQualificationLink).toBeFalsy();
     });
   });
 });
