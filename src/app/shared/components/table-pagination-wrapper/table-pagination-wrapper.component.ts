@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-table-pagination-wrapper',
   templateUrl: './table-pagination-wrapper.component.html',
 })
-export class TablePaginationWrapperComponent {
+export class TablePaginationWrapperComponent implements OnInit {
   @Input() totalCount: number;
   @Input() count: number;
   @Input() sortByParamMap: any;
@@ -24,8 +24,13 @@ export class TablePaginationWrapperComponent {
   public currentPageIndex = 0;
   private fragment: string;
   private tab: string;
+  public sortBySelected: string;
 
   constructor(private router: Router) {}
+
+  ngOnInit(): void {
+    this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
+  }
 
   private checkForFragment(): void {
     if (this.router.url.includes('#')) {

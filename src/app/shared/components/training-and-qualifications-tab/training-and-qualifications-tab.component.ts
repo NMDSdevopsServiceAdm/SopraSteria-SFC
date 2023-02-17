@@ -34,6 +34,8 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   public totalStaff: number;
   public isShowAllTrainings: boolean;
   public viewTrainingByCategory = false;
+  public staffSortByValue = 'trainingExpired';
+  public trainingSortByValue = 'trainingExpired';
 
   constructor(
     private route: ActivatedRoute,
@@ -98,17 +100,9 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     this.viewTrainingByCategory = visible;
   }
 
-  public showAllTrainings(): void {
-    this.isShowAllTrainings = true;
-    this.missingMandatoryTraining = 0;
-    this.totalExpiredTraining = 0;
-    this.totalExpiringTraining = 0;
-  }
-
-  public mandatoryTrainingChangedHandler($event): void {
-    this.missingMandatoryTraining = $event;
-    this.totalExpiredTraining = 0;
-    this.totalExpiringTraining = 0;
+  public updateSortByValue(properties: { section: string; sortByValue: string }): void {
+    const { section, sortByValue } = properties;
+    section === 'staff-summary' ? (this.staffSortByValue = sortByValue) : (this.trainingSortByValue = sortByValue);
   }
 
   ngOnDestroy(): void {

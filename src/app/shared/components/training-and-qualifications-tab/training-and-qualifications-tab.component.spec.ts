@@ -102,6 +102,28 @@ describe('TrainingAndQualificationsTabComponent', () => {
     expect(getByTestId('noStaffRecordsWarningBanner')).toBeTruthy();
   });
 
+  describe('updateSortByValue', () => {
+    it('should update the staff sort by value when called with staff-summary section', async () => {
+      const { component } = await setup();
+
+      const properties = { section: 'staff-summary', sortByValue: 'trainingExpiresSoon' };
+      component.updateSortByValue(properties);
+
+      expect(component.staffSortByValue).toEqual('trainingExpiresSoon');
+      expect(component.trainingSortByValue).toEqual('trainingExpired');
+    });
+
+    it('should update the training sort by value when called with training-summary section', async () => {
+      const { component } = await setup();
+
+      const properties = { section: 'training-summary', sortByValue: 'trainingExpiresSoon' };
+      component.updateSortByValue(properties);
+
+      expect(component.trainingSortByValue).toEqual('trainingExpiresSoon');
+      expect(component.staffSortByValue).toEqual('trainingExpired');
+    });
+  });
+
   describe('staff and training views when there are workers', () => {
     it('should render the tab bar to show different views', async () => {
       const { getByText } = await setup();
