@@ -32,6 +32,5 @@ export class WdfFieldConfirmationComponent {
 
   public setReturn(): void {
     this.setReturnClicked.emit();
-    this.confirmButtonClicked = true;
   }
 }
