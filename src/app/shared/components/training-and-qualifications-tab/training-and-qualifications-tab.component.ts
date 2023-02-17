@@ -35,7 +35,7 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   public isShowAllTrainings: boolean;
   public viewTrainingByCategory = false;
   public staffSortByValue = 'trainingExpired';
-  public trainingSortByValue = 'trainingExpired';
+  public trainingSortByValue = '0_expired';
 
   constructor(
     private route: ActivatedRoute,

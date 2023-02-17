@@ -44,6 +44,8 @@
     [workplace]="workplace"
     [trainingCategories]="trainingCategories"
     [totalTraining]="totalTraining"
+    [sortByValue]="trainingSortByValue"
+    (changeTrainingSortBy)="updateSortByValue($event)"
   ></app-training-and-qualifications-categories>
 </ng-container>
 <ng-template #noStaffRecords>

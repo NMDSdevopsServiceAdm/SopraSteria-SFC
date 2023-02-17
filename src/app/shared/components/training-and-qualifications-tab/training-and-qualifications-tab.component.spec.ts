@@ -110,16 +110,16 @@ describe('TrainingAndQualificationsTabComponent', () => {
       component.updateSortByValue(properties);
 
       expect(component.staffSortByValue).toEqual('trainingExpiresSoon');
-      expect(component.trainingSortByValue).toEqual('trainingExpired');
+      expect(component.trainingSortByValue).toEqual('0_expired');
     });
 
     it('should update the training sort by value when called with training-summary section', async () => {
       const { component } = await setup();
 
-      const properties = { section: 'training-summary', sortByValue: 'trainingExpiresSoon' };
+      const properties = { section: 'training-summary', sortByValue: '1_expires_soon' };
       component.updateSortByValue(properties);
 
-      expect(component.trainingSortByValue).toEqual('trainingExpiresSoon');
+      expect(component.trainingSortByValue).toEqual('1_expires_soon');
       expect(component.staffSortByValue).toEqual('trainingExpired');
     });
   });
