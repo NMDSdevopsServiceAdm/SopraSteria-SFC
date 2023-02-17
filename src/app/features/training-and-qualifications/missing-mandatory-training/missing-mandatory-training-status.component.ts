@@ -50,20 +50,22 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
       this.trainingService
         .getMissingMandatoryTraining(this.workplace.id)
         .pipe(take(1))
-        .subscribe((categories: any) => {
-          this.trainings = categories.missingTrainings;
+        .subscribe((workers: any) => {
+          console.log('***************');
+          console.log(workers.missingTraining[0].mainJob);
+          console.log(workers.missingTraining[0].mainJob.MandatoryTraining[0].workerTrainingCategories);
 
-          this.groupByName = this.trainings.groupBy((item) => item.workerName + item.workerId);
-          this.getKeys().forEach((key) => {
-            const newValue = {
-              key,
-              name: this.removeIdFromKey(key),
-              uid: this.findUidForWorker(key),
-              value: this.groupByName[key],
+          this.missingTrainingArray = workers.missingTraining.map((worker) => {
+            return {
+              name: worker.NameOrIdValue,
+              missingTraining: worker.mainJob.MandatoryTraining.map((mandatoryTraining) => {
+                return {
+                  category: mandatoryTraining.workerTrainingCategories.cate,
+                };
+              }),
             };
-
-            this.missingTrainingArray.push(newValue);
           });
+          console.log(this.missingTrainingArray);
         }),
     );
   }

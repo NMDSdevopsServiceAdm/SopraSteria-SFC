@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, HasMany } = require('sequelize');
 const moment = require('moment');
 
 module.exports = function (sequelize, DataTypes) {
@@ -2184,6 +2184,72 @@ module.exports = function (sequelize, DataTypes) {
     } catch (error) {
       console.log({ error });
     }
+  };
+
+  Establishment.getWorkersWithMissingMandatoryTraining = async function (establishmentId) {
+    return this.findAndCountAll({
+      logging: console.log,
+      where: {
+        id: establishmentId,
+        '$workers->mainJob->MandatoryTraining->workerTrainingCategories->workerTraining.Title$': null,
+      },
+      attributes: ['NameValue'],
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['id', 'uid', 'NameOrIdValue'],
+          where: {
+            Archived: false,
+          },
+          required: true,
+          include: [
+            {
+              model: sequelize.models.job,
+              as: 'mainJob',
+              required: true,
+              include: [
+                {
+                  model: sequelize.models.MandatoryTraining,
+                  as: 'MandatoryTraining',
+                  where: {
+                    establishmentFK: establishmentId,
+                  },
+                  include: [
+                    {
+                      model: sequelize.models.workerTrainingCategories,
+                      as: 'workerTrainingCategories',
+                      include: [
+                        {
+                          model: sequelize.models.workerTraining,
+                          as: 'workerTraining',
+                          on: {
+                            col1: sequelize.where(
+                              sequelize.col('workers->mainJob->MandatoryTraining->workerTrainingCategories.ID'),
+                              '=',
+                              sequelize.col(
+                                'workers->mainJob->MandatoryTraining->workerTrainingCategories->workerTraining.CategoryFK',
+                              ),
+                            ),
+                            col2: sequelize.where(
+                              sequelize.col(
+                                'workers->mainJob->MandatoryTraining->workerTrainingCategories->workerTraining.WorkerFK',
+                              ),
+                              '=',
+                              sequelize.col('workers.ID'),
+                            ),
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
   };
 
   return Establishment;

@@ -38,14 +38,14 @@
         </td>
 
         <td class="govuk-table__cell govuk-!-font-weight-regular">
-          <div *ngFor="let training of worker.value">
+          <div *ngFor="let training of worker.missingTraining">
             {{ training.category }}
           </div>
         </td>
 
         <td class="govuk-table__cell">
-          <div *ngFor="let training of worker.value">
-            <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING" class="govuk-!-margin-bottom-1">
+          <div *ngFor="let training of worker.missingTraining">
+            <div class="govuk-!-margin-bottom-1">
               <img
                 src="/assets/images/flag-red.svg"
                 alt=""
@@ -57,8 +57,8 @@
         </td>
 
         <td class="govuk-table__cell">
-          <div *ngFor="let training of worker.value">
-            <div *ngIf="trainingStatus(training) === trainingStatusService.MISSING && canEditWorker">
+          <div *ngFor="let training of worker.missingTraining">
+            <div *ngIf="canEditWorker">
               <app-missing-mandatory-training
                 [missingRecord]="training"
                 [training]="training"

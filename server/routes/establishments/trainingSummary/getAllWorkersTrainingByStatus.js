@@ -35,26 +35,36 @@ const getAllTrainingByStatus = async (req, res) => {
 };
 
 const getMissingMandatoryTraining = async (req, res) => {
+  // const establishmentId = req.establishmentId;
+  const establishmentId = 2287;
   try {
-    const establishmentId = req.params.id;
-
-    const establishmentWithWorkersAndTraining = await models.establishment.findWithWorkersAndTraining(establishmentId);
-    if (establishmentWithWorkersAndTraining === null) {
-      return res.json({
-        trainingCategories: [],
-      });
+    if (!establishmentId) {
+      console.error('Training::root getMissingMandatoryTraining - failed: establishment id not given');
+      return res.status(400).send('The establishment id must be given');
     }
 
-    const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
-    res.json({
-      missingTrainings: transformWorkersWithMissingMandatoryCategories(
-        establishmentWithWorkersAndTraining,
-        trainingCategories,
-      ),
-    });
+    const { count, rows } = await models.establishment.getWorkersWithMissingMandatoryTraining(establishmentId);
+
+    const missingTraining = rows[0].workers;
+    // const establishmentWithWorkersAndTraining = await models.establishment.findWithWorkersAndTraining(establishmentId);
+    // if (establishmentWithWorkersAndTraining === null) {
+    //   return res.json({
+    //     trainingCategories: [],
+    //   });
+    // }
+
+    // const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
+    // res.json({
+    //   missingTrainings: transformWorkersWithMissingMandatoryCategories(
+    //     establishmentWithWorkersAndTraining,
+    //     trainingCategories,
+    //   ),
+    //   response,
+    // });
+    return res.status(200).json({ missingTraining, count });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json();
+    console.error('Training::root getMissingMandatoryTraining - failed', err);
+    res.status(500).send(`Failed to get missing training for establishment ${establishmentId}`);
   }
 };
 router.route('/missing-training').get(hasPermission('canViewWorker'), getMissingMandatoryTraining);
