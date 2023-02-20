@@ -124,16 +124,22 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: trainingCategories,
         totalTraining,
+        sortByValue: '0_expired',
       },
     });
     const component = fixture.componentInstance;
+
+    const emitSpy = spyOn(component.changeTrainingSortBy, 'emit');
+
     return {
       component,
       getByTestId,
       getByLabelText,
       fixture,
+      emitSpy,
     };
   }
+
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -158,7 +164,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
   });
 
   it('should change list depending on sort', async () => {
-    const { fixture } = await setup();
+    const { fixture, emitSpy } = await setup();
 
     const select: HTMLSelectElement = fixture.debugElement.query(By.css('#sortByTrainingCategory')).nativeElement;
     select.value = select.options[1].value; // Expiring Soon
@@ -171,6 +177,7 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(rows[1].innerHTML).toContain('B Category Name');
     expect(rows[2].innerHTML).toContain('C Category Name');
     expect(rows[3].innerHTML).toContain('D Category Name');
+    expect(emitSpy).toHaveBeenCalledWith({ section: 'training-summary', sortByValue: '1_expires_soon' });
 
     select.value = select.options[2].value; //Missing
     select.dispatchEvent(new Event('change'));
@@ -180,6 +187,8 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
     expect(rows[1].innerHTML).toContain('A Category Name');
     expect(rows[2].innerHTML).toContain('B Category Name');
     expect(rows[3].innerHTML).toContain('C Category Name');
+
+    expect(emitSpy).toHaveBeenCalledWith({ section: 'training-summary', sortByValue: '2_missing' });
   });
 
   it('should show just the mandatory training categories when the checkbox is selected', async () => {

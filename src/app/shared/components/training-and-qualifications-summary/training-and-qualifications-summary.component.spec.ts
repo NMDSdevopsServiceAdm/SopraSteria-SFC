@@ -75,6 +75,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
           workers: workers as Worker[],
           workerCount: workers.length,
           totalRecords,
+          sortByValue: 'trainingExpired',
         },
       });
 
@@ -84,6 +85,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerService = TestBed.inject(WorkerService) as WorkerService;
     const workerServiceSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
+    const emitSpy = spyOn(component.changeStaffSortBy, 'emit');
 
     return {
       component,
@@ -97,6 +99,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       spy,
       workerServiceSpy,
       workerService,
+      emitSpy,
     };
   }
 
@@ -118,8 +121,24 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(queryByTestId('sortBy')).toBeFalsy();
   });
 
+  it('should handle sort by expired', async () => {
+    const { component, getByLabelText, workerServiceSpy, emitSpy } = await setup();
+
+    expect(workerServiceSpy).not.toHaveBeenCalled();
+
+    const select = getByLabelText('Sort by', { exact: false });
+    fireEvent.change(select, { target: { value: '0_expired' } });
+
+    expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, {
+      sortBy: 'trainingExpired',
+      pageIndex: 0,
+      itemsPerPage: 15,
+    });
+    expect(emitSpy).toHaveBeenCalledOnceWith({ section: 'staff-summary', sortByValue: 'trainingExpired' });
+  });
+
   it('should handle sort by expiring soon', async () => {
-    const { component, getByLabelText, workerServiceSpy } = await setup();
+    const { component, getByLabelText, workerServiceSpy, emitSpy } = await setup();
 
     expect(workerServiceSpy).not.toHaveBeenCalled();
 
@@ -131,10 +150,11 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       pageIndex: 0,
       itemsPerPage: 15,
     });
+    expect(emitSpy).toHaveBeenCalledOnceWith({ section: 'staff-summary', sortByValue: 'trainingExpiringSoon' });
   });
 
   it('should handle sort by missing', async () => {
-    const { component, getByLabelText, workerServiceSpy } = await setup();
+    const { component, getByLabelText, workerServiceSpy, emitSpy } = await setup();
 
     expect(workerServiceSpy).not.toHaveBeenCalled();
 
@@ -146,6 +166,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       pageIndex: 0,
       itemsPerPage: 15,
     });
+    expect(emitSpy).toHaveBeenCalledOnceWith({ section: 'staff-summary', sortByValue: 'trainingMissing' });
   });
 
   it('should display the "OK" message if training is up to date', async () => {

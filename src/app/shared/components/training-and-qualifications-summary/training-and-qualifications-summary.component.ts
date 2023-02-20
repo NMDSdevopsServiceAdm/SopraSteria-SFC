@@ -17,12 +17,12 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Input() wdfView = false;
   @Input() showViewByToggle = false;
   @Input() totalRecords: number;
+  @Input() sortByValue: string;
 
-  @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
+  @Output() changeStaffSortBy = new EventEmitter<{ section: string; sortByValue: string }>();
 
   public canViewWorker: boolean;
   public sortTrainingAndQualsOptions: Record<string, string>;
-  public sortByValue: string;
   public paginatedWorkers: Array<Worker>;
   public searchTerm = '';
   public totalWorkerCount: number;
@@ -43,7 +43,6 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   ngOnInit(): void {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
-    this.sortByValue = 'trainingExpired';
     this.paginatedWorkers = this.workers;
     this.totalWorkerCount = this.workerCount;
     this.setSearchIfPrevious();
@@ -82,6 +81,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;
         this.workerCount = workerCount;
+        this.changeStaffSortBy.emit({ section: 'staff-summary', sortByValue: sortByValue });
       });
   }
 
