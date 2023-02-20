@@ -5,7 +5,6 @@ const models = require('../../../models/index');
 
 const router = express.Router({ mergeParams: true });
 const { hasPermission } = require('../../../utils/security/hasPermission');
-const { transformWorkersWithMissingMandatoryCategories } = require('../../../transformers/trainingCategoryTransformer');
 
 const getAllTrainingByStatus = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -35,8 +34,8 @@ const getAllTrainingByStatus = async (req, res) => {
 };
 
 const getMissingMandatoryTraining = async (req, res) => {
-  // const establishmentId = req.establishmentId;
-  const establishmentId = 2287;
+  const establishmentId = req.establishmentId;
+
   try {
     if (!establishmentId) {
       console.error('Training::root getMissingMandatoryTraining - failed: establishment id not given');
@@ -46,21 +45,7 @@ const getMissingMandatoryTraining = async (req, res) => {
     const { count, rows } = await models.establishment.getWorkersWithMissingMandatoryTraining(establishmentId);
 
     const missingTraining = rows[0].workers;
-    // const establishmentWithWorkersAndTraining = await models.establishment.findWithWorkersAndTraining(establishmentId);
-    // if (establishmentWithWorkersAndTraining === null) {
-    //   return res.json({
-    //     trainingCategories: [],
-    //   });
-    // }
 
-    // const trainingCategories = await models.workerTrainingCategories.findAllWithMandatoryTraining(establishmentId);
-    // res.json({
-    //   missingTrainings: transformWorkersWithMissingMandatoryCategories(
-    //     establishmentWithWorkersAndTraining,
-    //     trainingCategories,
-    //   ),
-    //   response,
-    // });
     return res.status(200).json({ missingTraining, count });
   } catch (err) {
     console.error('Training::root getMissingMandatoryTraining - failed', err);
@@ -73,4 +58,4 @@ router.route('/:status').get(hasPermission('canViewWorker'), getAllTrainingBySta
 
 module.exports = router;
 module.exports.getAllTrainingByStatus = getAllTrainingByStatus;
-module.exports.getMissingMandatoryForWorkers = getMissingMandatoryTraining;
+module.exports.getMissingMandatoryTraining = getMissingMandatoryTraining;

@@ -1,4 +1,4 @@
-const { Op, HasMany } = require('sequelize');
+const { Op } = require('sequelize');
 const moment = require('moment');
 
 module.exports = function (sequelize, DataTypes) {
@@ -2188,7 +2188,6 @@ module.exports = function (sequelize, DataTypes) {
 
   Establishment.getWorkersWithMissingMandatoryTraining = async function (establishmentId) {
     return this.findAndCountAll({
-      logging: console.log,
       where: {
         id: establishmentId,
         '$workers->mainJob->MandatoryTraining->workerTrainingCategories->workerTraining.Title$': null,

@@ -48,10 +48,11 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
   private getAllMissingMandatoryTrainings(): void {
     this.subscriptions.add(
       this.trainingService
-        .getMissingMandatoryTraining(this.workplace.id)
+        .getMissingMandatoryTraining(this.workplaceUid)
         .pipe(take(1))
         .subscribe((workers: any) => {
           console.log('***************');
+          console.log(workers);
           console.log(workers.missingTraining[0].mainJob);
           console.log(workers.missingTraining[0].mainJob.MandatoryTraining[0].workerTrainingCategories);
 
