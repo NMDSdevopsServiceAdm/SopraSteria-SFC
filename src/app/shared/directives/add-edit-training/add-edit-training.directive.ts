@@ -215,6 +215,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onSubmit(): void {
+    this.form.get('completed').updateValueAndValidity();
+    this.form.get('expires').updateValueAndValidity();
+
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
