@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GetTrainingByStatusResolver } from '@core/resolvers/get-training-by-status.resolver';
+import { MissingMandatoryTrainingResolver } from '@core/resolvers/missing-mandatory-training.resolver';
 import { SharedModule } from '@shared/shared.module';
 
 import { ExpiredTrainingComponent } from './expired-training/expired-training.component';
@@ -20,6 +21,6 @@ import { TrainingAndQualificationsRoutingModule } from './training-and-qualifica
     TrainingAndQualificationsRoutingModule,
   ],
   declarations: [ExpiredTrainingComponent, ExpiringSoonTrainingComponent, MissingMandatoryTrainingStatusComponent],
-  providers: [GetTrainingByStatusResolver],
+  providers: [GetTrainingByStatusResolver, MissingMandatoryTrainingResolver],
 })
 export class TrainingAndQualificationsModule {}

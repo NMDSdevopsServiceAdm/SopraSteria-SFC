@@ -213,9 +213,13 @@ exports.mockMissingMandatoryTraining = [
           updated: '01/02/2022',
           updatedBy: 'admin',
           workerTrainingCategories: {
-            cate: 'Autism',
-            id: 9,
-            seq: 11,
+            get() {
+              return {
+                cate: 'Autism',
+                id: 9,
+                seq: 11,
+              };
+            },
           },
         },
       ],
@@ -240,9 +244,13 @@ exports.mockMissingMandatoryTraining = [
           updated: '01/02/2022',
           updatedBy: 'admin',
           workerTrainingCategories: {
-            cate: 'Autism',
-            id: 9,
-            seq: 11,
+            get() {
+              return {
+                cate: 'Autism',
+                id: 9,
+                seq: 11,
+              };
+            },
           },
         },
         {
@@ -255,9 +263,13 @@ exports.mockMissingMandatoryTraining = [
           updated: '01/02/2022',
           updatedBy: 'admin',
           workerTrainingCategories: {
-            cate: 'COSHH',
-            id: 5,
-            seq: 11,
+            get() {
+              return {
+                cate: 'COSHH',
+                id: 5,
+                seq: 11,
+              };
+            },
           },
         },
       ],
