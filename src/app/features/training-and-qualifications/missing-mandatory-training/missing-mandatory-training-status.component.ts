@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, SortTrainingOptionsMissing } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -15,15 +15,20 @@ import { take } from 'rxjs/operators';
 })
 export class MissingMandatoryTrainingStatusComponent implements OnInit {
   public workplace: Establishment;
-
   public canEditWorker = false;
   private subscriptions: Subscription = new Subscription();
-
-  public trainings;
+  public missingTrainingList;
   public groupByName;
   public workplaceUid: string;
-
-  missingTrainingArray = [];
+  public searchTerm = '';
+  public missingTrainingCount: number;
+  public totalMissingTrainingCount: number;
+  public sortMissingTrainingOptions = SortTrainingOptionsMissing;
+  public sortByValue = 'staffNameAsc';
+  public sortByParamMap = {
+    '0_asc': 'staffNameAsc',
+    '1_desc': 'staffNameDesc',
+  };
 
   constructor(
     private permissionsService: PermissionsService,
@@ -36,59 +41,50 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.setMissingTrainingAndCount();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
 
-    this.getAllMissingMandatoryTrainings();
     this.setBackLink();
   }
 
-  private getAllMissingMandatoryTrainings(): void {
+  private setMissingTrainingAndCount(): void {
+    const { missingTraining = [], count } = this.route.snapshot.data.training;
+    console.log('*****************');
+    console.log(missingTraining);
+    console.log(count);
+    this.missingTrainingList = missingTraining;
+    this.totalMissingTrainingCount = count;
+    this.missingTrainingCount = count;
+  }
+
+  public getMissingMandatoryTraining(properties: {
+    index: number;
+    itemsPerPage: number;
+    searchTerm: string;
+    sortByValue: string;
+  }): void {
+    const { index, itemsPerPage, searchTerm, sortByValue } = properties;
     this.subscriptions.add(
       this.trainingService
-        .getMissingMandatoryTraining(this.workplaceUid)
+        .getMissingMandatoryTraining(this.workplaceUid, {
+          pageIndex: index,
+          itemsPerPage,
+          sortBy: sortByValue,
+          ...(searchTerm ? { searchTerm } : {}),
+        })
         .pipe(take(1))
-        .subscribe((workers: any) => {
-          console.log('***************');
-          console.log(workers);
-          console.log(workers.missingTraining[0].mainJob);
-          console.log(workers.missingTraining[0].mainJob.MandatoryTraining[0].workerTrainingCategories);
-
-          this.missingTrainingArray = workers.missingTraining.map((worker) => {
-            return {
-              name: worker.NameOrIdValue,
-              missingTraining: worker.mainJob.MandatoryTraining.map((mandatoryTraining) => {
-                return {
-                  category: mandatoryTraining.workerTrainingCategories.cate,
-                };
-              }),
-            };
-          });
-          console.log(this.missingTrainingArray);
+        .subscribe((data) => {
+          this.missingTrainingList = data.missingTraining;
+          this.missingTrainingCount = data.count;
         }),
     );
   }
 
-  public removeIdFromKey(key: string) {
-    return key.replace(/[0-9]/g, '');
-  }
-
-  public getKeys() {
-    return Object.keys(this.groupByName);
-  }
-
-  public findUidForWorker(key) {
-    return this.groupByName[key].find((u) => u.uid).uid;
-  }
-
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
-  }
-
-  public trainingStatus(training) {
-    return this.trainingStatusService.trainingStatusForRecord(training);
   }
 
   public returnToHome(): void {

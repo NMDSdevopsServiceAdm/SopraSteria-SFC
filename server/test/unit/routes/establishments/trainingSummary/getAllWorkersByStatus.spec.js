@@ -107,6 +107,7 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
       const formattedTraining = mockMissingMandatoryTraining.map((worker) => {
         return {
           name: worker.NameOrIdValue,
+          uid: worker.uid,
           missingTraining: worker.mainJob.MandatoryTraining.map((training) => {
             return { category: training.workerTrainingCategories.get('cate') };
           }),
@@ -115,6 +116,15 @@ describe('server/routes/establishments/trainingAndQualifications/getAllTrainingA
 
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getJSONData()).to.deep.equal({ missingTraining: formattedTraining, count: 2 });
+    });
+
+    it('should return a status of 200 and an empty array if there are no results', async () => {
+      sinon.stub(models.establishment, 'getWorkersWithMissingMandatoryTraining').returns({ rows: [], count: 0 });
+
+      await getMissingMandatoryTraining(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ missingTraining: [], count: 0 });
     });
 
     it('should return a status of 400 and error message if there is no establishment id', async () => {

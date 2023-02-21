@@ -88,6 +88,7 @@ const transformWorkersWithMissingMandatoryTraining = (workers) => {
   const formattedTraining = workers.map((worker) => {
     return {
       name: worker.NameOrIdValue,
+      uid: worker.uid,
       missingTraining: worker.mainJob.MandatoryTraining.map((training) => {
         return { category: training.workerTrainingCategories.get('cate') };
       }),

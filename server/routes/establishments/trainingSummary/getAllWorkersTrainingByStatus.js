@@ -2,6 +2,7 @@ const express = require('express');
 const { Training } = require('../../../models/classes/training');
 
 const models = require('../../../models/index');
+const { transformWorkersWithMissingMandatoryTraining } = require('../../../transformers/trainingCategoryTransformer');
 
 const router = express.Router({ mergeParams: true });
 const { hasPermission } = require('../../../utils/security/hasPermission');
@@ -35,16 +36,26 @@ const getAllTrainingByStatus = async (req, res) => {
 
 const getMissingMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
-
+  const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
   try {
     if (!establishmentId) {
       console.error('Training::root getMissingMandatoryTraining - failed: establishment id not given');
       return res.status(400).send('The establishment id must be given');
     }
 
-    const { count, rows } = await models.establishment.getWorkersWithMissingMandatoryTraining(establishmentId);
+    const { count, rows } = await models.establishment.getWorkersWithMissingMandatoryTraining(
+      establishmentId,
+      itemsPerPage && +itemsPerPage,
+      pageIndex && +pageIndex,
+      sortBy,
+      searchTerm,
+    );
 
-    const missingTraining = rows[0].workers;
+    if (rows.length === 0) {
+      return res.status(200).json({ missingTraining: [], count: 0 });
+    }
+
+    const missingTraining = transformWorkersWithMissingMandatoryTraining(rows[0].workers);
 
     return res.status(200).json({ missingTraining, count });
   } catch (err) {

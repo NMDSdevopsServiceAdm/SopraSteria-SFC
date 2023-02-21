@@ -29,8 +29,10 @@ export class TrainingService {
     });
   }
 
-  getMissingMandatoryTraining(workplaceUid: string): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${workplaceUid}/trainingAndQualifications/missing-training`);
+  getMissingMandatoryTraining(workplaceUid: string, queryParams?: Params): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${workplaceUid}/trainingAndQualifications/missing-training`, {
+      params: queryParams,
+    });
   }
 
   getCategoryById(categoryId): Observable<TrainingCategory[]> {

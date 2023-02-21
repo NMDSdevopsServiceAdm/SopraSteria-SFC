@@ -18,7 +18,7 @@ import { of } from 'rxjs';
 
 import { MissingMandatoryTrainingStatusComponent } from './missing-mandatory-training-status.component';
 
-describe('MissingMandatoryTrainingStatusComponent', () => {
+fdescribe('MissingMandatoryTrainingStatusComponent', () => {
   async function setup(addPermissions = true) {
     const permissions = addPermissions ? ['canEditWorker'] : [];
     const { fixture, getByText, getByTestId } = await render(MissingMandatoryTrainingStatusComponent, {
