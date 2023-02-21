@@ -16,8 +16,8 @@
   [accessibleLabel]="'missing mandatory training'"
   (fetchData)="getMissingMandatoryTraining($event)"
 >
-  <table class="govuk-table" data-testid="userTable" *ngIf="missingTrainingCount; else noTrainingFoundInSearch">
-    <thead class="govuk-table__head" data-testid="userTable-Heading">
+  <table class="govuk-table" data-testid="table" *ngIf="missingTrainingCount; else noTrainingFoundInSearch">
+    <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th class="govuk-table__header" scope="col" style="width: 30%">Name or ID number</th>
         <th class="govuk-table__header" scope="col" style="width: 40%">Training category</th>
@@ -27,28 +27,36 @@
     </thead>
     <tbody class="govuk-table__body">
       <ng-container>
-        <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of missingTrainingList">
+        <tr
+          class="govuk-table__row govuk-util__vertical-align-top"
+          *ngFor="let worker of missingTrainingList; let i = index"
+          [attr.data-testid]="'table-row-' + i"
+        >
           <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <ng-container *ngIf="canEditWorker; else nameOrId">
-              <a
-                [routerLink]="[
-                  '/workplace',
-                  this.workplace.uid,
-                  'training-and-qualifications-record',
-                  worker.uid,
-                  'training'
-                ]"
-              >
-                {{ worker.name }}</a
-              >
-            </ng-container>
-            <ng-template #nameOrId>
-              {{ worker.name }}
-            </ng-template>
+            <div class="govuk-!-margin-bottom-1">
+              <ng-container *ngIf="canEditWorker; else nameOrId">
+                <a
+                  [routerLink]="[
+                    '/workplace',
+                    this.workplace.uid,
+                    'training-and-qualifications-record',
+                    worker.uid,
+                    'training'
+                  ]"
+                >
+                  {{ worker.name }}</a
+                >
+              </ng-container>
+              <ng-template #nameOrId>
+                <span [attr.data-testid]="'worker-' + i + '-noLink'">
+                  {{ worker.name }}
+                </span>
+              </ng-template>
+            </div>
           </td>
 
           <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <div *ngFor="let training of worker.missingTraining">
+            <div *ngFor="let training of worker.missingTraining" class="govuk-!-margin-bottom-1">
               {{ training.category }}
             </div>
           </td>
@@ -68,7 +76,7 @@
 
           <td class="govuk-table__cell">
             <div *ngFor="let training of worker.missingTraining">
-              <div *ngIf="canEditWorker">
+              <div *ngIf="canEditWorker" class="govuk-!-margin-bottom-1">
                 <a
                   [routerLink]="[
                     '/workplace',

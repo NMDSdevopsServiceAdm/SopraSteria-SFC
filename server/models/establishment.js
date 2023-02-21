@@ -2205,17 +2205,6 @@ module.exports = function (sequelize, DataTypes) {
       staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
     }[sortBy];
 
-    // const count = await sequelize.query(`
-    //   SELECT count("establishment"."EstablishmentID") AS "count"
-    //     FROM "cqc"."Establishment" AS "establishment"
-    //     INNER JOIN "cqc"."Worker" AS "workers" ON "establishment"."EstablishmentID" = "workers"."EstablishmentFK" AND "workers"."Archived" = false
-    //     INNER JOIN "cqc"."Job" AS "workers->mainJob" ON "workers"."MainJobFKValue" = "workers->mainJob"."JobID"
-    //     INNER JOIN "cqc"."MandatoryTraining" AS "workers->mainJob->MandatoryTraining" ON "workers->mainJob"."JobID" = "workers->mainJob->MandatoryTraining"."JobFK" AND "workers->mainJob->MandatoryTraining"."EstablishmentFK" = ${establishmentId}
-    //     LEFT OUTER JOIN "cqc"."TrainingCategories" AS "workers->mainJob->MandatoryTraining->workerTrainingCategories" ON "workers->mainJob->MandatoryTraining"."TrainingCategoryFK" = "workers->mainJob->MandatoryTraining->workerTrainingCategories"."ID"
-    //     LEFT OUTER JOIN "cqc"."WorkerTraining" AS "workers->mainJob->MandatoryTraining->workerTrainingCategories->workerTraining" ON "workers->mainJob->MandatoryTraining->workerTrainingCategories"."ID" = "workers->mainJob->MandatoryTraining->workerTrainingCategories->workerTraining"."CategoryFK" AND "workers->mainJob->MandatoryTraining->workerTrainingCategories->workerTraining"."WorkerFK" = "workers"."ID"
-    //     WHERE "workers->mainJob->MandatoryTraining->workerTrainingCategories->workerTraining"."Title" IS NULL AND "establishment"."Archived" = false AND "establishment"."EstablishmentID" = ${establishmentId}
-    // `);
-
     return await this.findAndCountAll({
       where: {
         id: establishmentId,
@@ -2231,7 +2220,6 @@ module.exports = function (sequelize, DataTypes) {
             archived: false,
             ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
           },
-          // ...(limit ? workerPagination : {}),
           required: true,
           include: [
             {
@@ -2282,11 +2270,6 @@ module.exports = function (sequelize, DataTypes) {
       order,
       ...(limit ? workerPagination : {}),
     });
-
-    // console.log('************');
-    // console.log(count);
-    // console.log(response);
-    // return { count: 1, rows: response };
   };
 
   return Establishment;

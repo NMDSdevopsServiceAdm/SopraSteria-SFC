@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment, SortTrainingOptionsMissing } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -38,23 +39,36 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
     private trainingService: TrainingService,
     protected backLinkService: BackLinkService,
     private route: ActivatedRoute,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
+    const alertMessage = history.state?.alertMessage;
+    alertMessage && this.showAlert(alertMessage);
     this.setMissingTrainingAndCount();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-
     this.setBackLink();
+    this.setSearchIfPrevious();
+    localStorage.setItem('previousUrl', this.router.url);
+  }
+
+  private showAlert(message: string): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message,
+    });
+  }
+
+  private setSearchIfPrevious(): void {
+    const search = this.route.snapshot.queryParamMap.get('search');
+    if (search) this.searchTerm = search;
   }
 
   private setMissingTrainingAndCount(): void {
     const { missingTraining = [], count } = this.route.snapshot.data.training;
-    console.log('*****************');
-    console.log(missingTraining);
-    console.log(count);
     this.missingTrainingList = missingTraining;
     this.totalMissingTrainingCount = count;
     this.missingTrainingCount = count;

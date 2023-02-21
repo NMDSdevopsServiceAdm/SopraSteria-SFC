@@ -128,7 +128,7 @@ describe('ExpiringSoonTrainingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render an alert banner if there is an aler message in state', async () => {
+  it('should render an alert banner if there is an alert message in state', async () => {
     const { component, fixture, alertSpy } = await setup(true, false, sinon.fake(), true);
 
     component.ngOnInit();
