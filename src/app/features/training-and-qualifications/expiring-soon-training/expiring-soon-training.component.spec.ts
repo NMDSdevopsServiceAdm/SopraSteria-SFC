@@ -25,20 +25,44 @@ const expiryDate = new Date();
 expiryDate.setMonth(expiryDate.getMonth() + 1);
 expiryDate.setDate(15);
 
-const training = [
+const workers = [
   {
-    uid: 'mock-uid-one',
-    expires: expiryDate,
-    categoryFk: 1,
-    category: { id: 1, category: 'Category name' },
-    worker: { id: 1, uid: 'worker-one-uid', NameOrIdValue: 'Worker One' },
+    id: 1,
+    uid: 'worker-one-uid',
+    NameOrIdValue: 'Worker One',
+    workerTraining: [
+      {
+        uid: 'mock-uid-one',
+        expires: expiryDate,
+        categoryFk: 1,
+        category: { id: 1, category: 'Category name 1' },
+      },
+      {
+        uid: 'mock-uid-two',
+        expires: expiryDate,
+        categoryFk: 2,
+        category: { id: 2, category: 'Category name 2' },
+      },
+      {
+        uid: 'mock-uid-three',
+        expires: expiryDate,
+        categoryFk: 3,
+        category: { id: 3, category: 'Category name 3' },
+      },
+    ],
   },
   {
-    uid: 'mock-uid-two',
-    expires: expiryDate,
-    categoryFk: 1,
-    category: { id: 3, category: 'Another category name' },
-    worker: { id: 3, uid: 'worker-two-uid', NameOrIdValue: 'Worker Two' },
+    id: 2,
+    uid: 'worker-two-uid',
+    NameOrIdValue: 'Worker Two',
+    workerTraining: [
+      {
+        uid: 'mock-uid-four',
+        expires: expiryDate,
+        categoryFk: 3,
+        category: { id: 3, category: 'Category name 3' },
+      },
+    ],
   },
 ];
 
@@ -49,11 +73,11 @@ describe('ExpiringSoonTrainingComponent', () => {
     qsParamGetMock = sinon.fake(),
     addAlert = false,
   ) {
-    let trainingObj = {
-      training,
-      trainingCount: 2,
+    let workerObj = {
+      workers,
+      workerCount: 2,
     };
-    if (fixTrainingCount) trainingObj = { training: [training[0]], trainingCount: 1 };
+    if (fixTrainingCount) workerObj = { workers: [workers[0]], workerCount: 1 };
     const permissions = addPermissions ? ['canEditWorker'] : [];
 
     if (addAlert) {
@@ -84,7 +108,7 @@ describe('ExpiringSoonTrainingComponent', () => {
                   get: qsParamGetMock,
                 },
                 data: {
-                  training: trainingObj,
+                  training: workerObj,
                 },
                 params: { establishmentuid: '1234-5678' },
               },
@@ -102,7 +126,7 @@ describe('ExpiringSoonTrainingComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const trainingServiceSpy = spyOn(trainingService, 'getAllTrainingByStatus').and.returnValue(
-      of({ training, trainingCount: 2 }),
+      of({ workers, workerCount: 2 }),
     );
 
     const alertService = injector.inject(AlertService) as AlertService;
@@ -290,7 +314,7 @@ describe('ExpiringSoonTrainingComponent', () => {
     it('shoud call getAllTrainingByStatus with the correct search term passed', async () => {
       const { component, fixture, getByLabelText, trainingServiceSpy } = await setup();
 
-      component.totalTrainingCount = 16;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
 
       const searchInput = getByLabelText('Search staff training records');
@@ -310,7 +334,7 @@ describe('ExpiringSoonTrainingComponent', () => {
     it('should render the no results returned message when 0 workers returned from getAllWorkers after search', async () => {
       const { component, fixture, getByLabelText, getByText, trainingService } = await setup();
 
-      component.totalTrainingCount = 16;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
 
       sinon.stub(trainingService, 'getAllTrainingByStatus').returns(
@@ -339,7 +363,7 @@ describe('ExpiringSoonTrainingComponent', () => {
 
       const { component, fixture, getByLabelText } = await setup(true, false, qsParamGetMock);
 
-      component.totalTrainingCount = 16;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
       expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
     });

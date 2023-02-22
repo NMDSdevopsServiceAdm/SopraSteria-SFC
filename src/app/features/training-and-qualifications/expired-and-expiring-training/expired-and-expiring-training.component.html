@@ -28,15 +28,13 @@
     </thead>
     <tbody class="govuk-table__body">
       <ng-container *ngFor="let worker of workers">
-        <!-- <tr
-          class="govuk-table__row govuk-util__vertical-align-top"
-          *ngFor="let worker of workers; let i = index"
-          [attr.data-testid]="'table-row-' + i"
-        > -->
         <ng-container *ngFor="let training of worker.workerTraining; let i = index">
-          <tr class="govuk-training-table__row govuk-util__vertical-align-top">
+          <tr
+            class="govuk-training-table__row govuk-util__vertical-align-top"
+            [attr.data-testid]="'table-row-' + worker.NameOrIdValue + '-' + i"
+          >
             <td
-              class="govuk-table__cell govuk-!-font-weight-regular asc-training-table"
+              class="govuk-table__cell govuk-!-font-weight-regular"
               [ngClass]="tableRowConditionalClass(worker.workerTraining, i)"
             >
               <ng-container *ngIf="i === 0">
@@ -57,12 +55,15 @@
                   >
                 </ng-container>
                 <ng-template #nameOrId>
-                  <span [attr.data-testid]="'worker-' + i + '-noLink'">{{ training.worker.NameOrIdValue }}</span>
+                  <span [attr.data-testid]="'worker-' + worker.NameOrIdValue + '-noLink'">{{
+                    worker.NameOrIdValue
+                  }}</span>
                 </ng-template>
               </ng-container>
             </td>
             <td
               class="govuk-table__cell govuk-!-font-weight-regular"
+              [attr.data-testid]="'cell-' + worker.NameOrIdValue + '-' + i"
               [ngClass]="tableRowConditionalClass(worker.workerTraining, i)"
             >
               {{ training.category.category }}
@@ -97,7 +98,6 @@
             </td>
           </tr>
         </ng-container>
-        <!-- </tr> -->
       </ng-container>
     </tbody>
   </table>
