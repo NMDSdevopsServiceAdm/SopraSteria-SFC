@@ -2,8 +2,6 @@
 
 const db = require('../utils/datastore');
 
-const effectiveDate = require('../models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
-
 const getEstablishmentDataQuery = `
 SELECT
   "Establishment"."EstablishmentID",
@@ -158,8 +156,10 @@ const getServiceCapacityDetailsQuery = `SELECT "ServiceCapacityID", "Type"
    FROM cqc."ServicesCapacity"
    WHERE "ServiceID" = :mainServiceId`;
 
-exports.getEstablishmentData = async (establishmentId) =>
-  db.query(getEstablishmentDataQuery, {
+exports.getEstablishmentData = async (establishmentId) => {
+  const effectiveDate = require('../models/classes/wdfCalculator').WdfCalculator.effectiveDate.toISOString();
+
+  return db.query(getEstablishmentDataQuery, {
     replacements: {
       zero: 0,
       falseFlag: false,
@@ -182,6 +182,7 @@ exports.getEstablishmentData = async (establishmentId) =>
     },
     type: db.QueryTypes.SELECT,
   });
+};
 
 exports.getCapicityData = async (establishmentId, mainServiceId) =>
   db.query(getCapicityOrUtilisationDataQuery, {
