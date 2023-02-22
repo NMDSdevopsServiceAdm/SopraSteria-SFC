@@ -104,8 +104,11 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
       expect(res._getData()).to.deep.equal('Failed to get expired training and qualifications for establishment 6');
     });
 
-    it('should return a status of 500 when an error is thrown on getAllEstablishmentTrainingByStatus', async () => {
-      sinon.stub(Training, 'getAllEstablishmentTrainingByStatus').throws(new Error());
+    it('should return a status of 500 when an error is thrown on getWorkersTrainingByStatus', async () => {
+      sinon
+        .stub(models.establishment, 'getWorkerWithExpiredOrExpiringTraining')
+        .returns({ rows: returnedWorkers, count: 3 });
+      sinon.stub(Training, 'getWorkersTrainingByStatus').throws(new Error());
 
       await getAllTrainingByStatus(req, res);
 
