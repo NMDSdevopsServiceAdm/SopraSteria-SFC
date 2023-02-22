@@ -1,11 +1,12 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecordCategories } from '@core/model/training.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -33,12 +34,16 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   public totalStaff: number;
   public isShowAllTrainings: boolean;
   public viewTrainingByCategory = false;
+  public staffSortByValue = 'trainingExpired';
+  public trainingSortByValue = '0_expired';
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     protected trainingCategoryService: TrainingCategoryService,
+    private trainingService: TrainingService,
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +53,10 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
       }
     });
 
+    // if returning to this page from adding multiple training and using the back link
+    // we need to remove any staff that were selected
+    this.trainingService.resetSelectedStaff();
+
     this.getAllTrainingByCategory();
     this.trainingTotals();
   }
@@ -56,6 +65,10 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     if ('workers' in changes || 'trainingCounts' in changes) {
       this.trainingTotals();
     }
+  }
+
+  public navigateToMultipleTraining(): void {
+    this.router.navigate(['/workplace', this.workplace.uid, 'add-multiple-training', 'select-staff']);
   }
 
   private getAllTrainingByCategory(): void {
@@ -87,17 +100,9 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     this.viewTrainingByCategory = visible;
   }
 
-  public showAllTrainings(): void {
-    this.isShowAllTrainings = true;
-    this.missingMandatoryTraining = 0;
-    this.totalExpiredTraining = 0;
-    this.totalExpiringTraining = 0;
-  }
-
-  public mandatoryTrainingChangedHandler($event): void {
-    this.missingMandatoryTraining = $event;
-    this.totalExpiredTraining = 0;
-    this.totalExpiringTraining = 0;
+  public updateSortByValue(properties: { section: string; sortByValue: string }): void {
+    const { section, sortByValue } = properties;
+    section === 'staff-summary' ? (this.staffSortByValue = sortByValue) : (this.trainingSortByValue = sortByValue);
   }
 
   ngOnDestroy(): void {

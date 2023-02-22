@@ -6,115 +6,91 @@
     </p>
   </div>
 </div>
-
-<div
-  [ngClass]="
-    showSearchBar ? 'govuk-grid-row' : 'govuk__flex-stack govuk__align-items-flex-end govuk__justify-content-end'
-  "
-  class="govuk-!-margin-bottom-6"
+<app-table-pagination-wrapper
+  [totalCount]="totalWorkerCount"
+  [count]="workerCount"
+  [searchTerm]="searchTerm"
+  [sortByParamMap]="sortByParamMap"
+  [sortByValue]="sortByValue"
+  [sortOptions]="sortTrainingAndQualsOptions"
+  label="Search by name or ID number"
+  accessibleLabel="staff training records"
+  (fetchData)="getPageOfWorkers($event)"
 >
-  <div *ngIf="showSearchBar" class="govuk-grid-column-three-quarters">
-    <app-search-input
-      label="Search by name or ID number"
-      accessibleLabel="staff training records"
-      [prevSearch]="searchTerm"
-      (emitInput)="handleSearch($event)"
-    ></app-search-input>
-  </div>
-
-  <div
-    data-testid="sortBy"
-    *ngIf="workerCount > 1"
-    class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
-    [ngClass]="showSearchBar ? '' : 'govuk-!-padding-0'"
-  >
-    <label class="govuk-label" for="sortByTrainingStaff"> Sort by </label>
-    <select
-      class="govuk-select govuk-!-width-full"
-      id="sortByTrainingStaff"
-      name="sortByTrainingStaff"
-      [value]="sortByValue"
-      (change)="handleSortUpdate($event.target.value)"
-    >
-      <option
-        *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
-        value="{{ sortTrainingAndQualsOption.key }}"
-      >
-        {{ sortTrainingAndQualsOption.value }}
-      </option>
-    </select>
-  </div>
-</div>
-
-<table *ngIf="workerCount; else noWorkersFoundInSearch" class="govuk-table" data-testid="training-worker-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Name or ID number</th>
-      <th class="govuk-table__header" scope="col">Records</th>
-      <th class="govuk-table__header" scope="col">Status</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of paginatedWorkers">
-      <td class="govuk-table__cell govuk-!-font-weight-regular">
-        <ng-container *ngIf="canViewWorker; else nameOrId">
-          <a href="#" (click)="getWorkerTrainingAndQualificationsPath($event, worker)">
-            {{ worker.nameOrId }}
-          </a>
-          <p
-            *ngIf="worker.longTermAbsence"
-            class="govuk-tag govuk-tag--grey govuk-!-margin-left-2 govuk-!-margin-bottom-0 asc-tag"
-          >
-            Long-term absent
-          </p>
-        </ng-container>
-        <ng-template #nameOrId>
-          {{ worker.nameOrId }}
-        </ng-template>
-      </td>
-      <td class="govuk-table__cell">{{ worker.trainingCount + worker.qualificationCount }}</td>
-      <td class="govuk-table__cell">
-        <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-1">
-          <img src="/assets/images/flag-red.svg" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
-          {{ worker.expiredTrainingCount }}
-          expired
-        </div>
-        <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-1">
-          <img src="/assets/images/flag-red.svg" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
-          {{ worker.missingMandatoryTrainingCount }}
-          missing
-        </div>
-        <div *ngIf="worker.expiringTrainingCount > 0" class="govuk-!-margin-bottom-1">
-          <img
-            src="/assets/images/flag-orange.svg"
-            alt=""
-            class="govuk-!-margin-right-2 govuk-util__vertical-align-top"
-          />
-          <ng-container [ngPlural]="worker.expiringTrainingCount">
-            <ng-template ngPluralCase="=1">{{ worker.expiringTrainingCount }} expires soon</ng-template>
-            <ng-template ngPluralCase="other">{{ worker.expiringTrainingCount }} expire soon</ng-template>
+  <table *ngIf="workerCount; else noWorkersFoundInSearch" class="govuk-table" data-testid="training-worker-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Name or ID number</th>
+        <th class="govuk-table__header" scope="col">Records</th>
+        <th class="govuk-table__header" scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row govuk-util__vertical-align-top" *ngFor="let worker of paginatedWorkers">
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          <ng-container *ngIf="canViewWorker; else nameOrId">
+            <a href="#" (click)="getWorkerTrainingAndQualificationsPath($event, worker)">
+              {{ worker.nameOrId }}
+            </a>
+            <p
+              *ngIf="worker.longTermAbsence"
+              class="govuk-tag govuk-tag--grey govuk-!-margin-left-2 govuk-!-margin-bottom-0 asc-tag"
+            >
+              Long-term absent
+            </p>
           </ng-container>
-        </div>
-        <div
-          *ngIf="
-            worker.expiredTrainingCount === 0 &&
-            worker.expiringTrainingCount === 0 &&
-            worker.missingMandatoryTrainingCount === 0
-          "
-        >
-          OK
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<ng-template #noWorkersFoundInSearch>
-  <p class="govuk-util__bold">There are no matching results</p>
-  <p>Make sure that your spelling is correct.</p>
-</ng-template>
-<app-pagination
-  [itemsPerPage]="itemsPerPage"
-  [totalNoOfItems]="workerCount"
-  [currentPageIndex]="currentPageIndex"
-  (currentPageIndexChange)="handlePageUpdate($event)"
-></app-pagination>
+          <ng-template #nameOrId>
+            {{ worker.nameOrId }}
+          </ng-template>
+        </td>
+        <td class="govuk-table__cell">{{ worker.trainingCount + worker.qualificationCount }}</td>
+        <td class="govuk-table__cell">
+          <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-1">
+            <img
+              src="/assets/images/flag-red.svg"
+              alt=""
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
+            {{ worker.expiredTrainingCount }}
+            expired
+          </div>
+          <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-1">
+            <img
+              src="/assets/images/flag-red.svg"
+              alt=""
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
+            {{ worker.missingMandatoryTrainingCount }}
+            missing
+          </div>
+          <div *ngIf="worker.expiringTrainingCount > 0" class="govuk-!-margin-bottom-1">
+            <img
+              src="/assets/images/flag-orange.svg"
+              alt=""
+              class="govuk-!-margin-right-2 govuk-util__vertical-align-top"
+            />
+            <ng-container [ngPlural]="worker.expiringTrainingCount">
+              <ng-template ngPluralCase="=1">{{ worker.expiringTrainingCount }} expires soon</ng-template>
+              <ng-template ngPluralCase="other">{{ worker.expiringTrainingCount }} expire soon</ng-template>
+            </ng-container>
+          </div>
+          <div
+            *ngIf="
+              worker.expiredTrainingCount === 0 &&
+              worker.expiringTrainingCount === 0 &&
+              worker.missingMandatoryTrainingCount === 0
+            "
+          >
+            OK
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <ng-template #noWorkersFoundInSearch>
+    <div class="govuk-!-margin-top-6">
+      <p class="govuk-util__bold">There are no matching results</p>
+      <p>Make sure that your spelling is correct.</p>
+    </div>
+  </ng-template>
+</app-table-pagination-wrapper>

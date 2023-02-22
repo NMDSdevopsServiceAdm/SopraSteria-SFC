@@ -59,6 +59,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
     this.init();
+    this.prefill();
     this.setTitle();
     this.setSectionHeading();
     this.setButtonText();
@@ -77,6 +78,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   protected init(): void {}
+
+  protected prefill(): void {}
 
   protected submit(record: any): void {}
 
@@ -212,6 +215,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onSubmit(): void {
+    this.form.get('completed').updateValueAndValidity();
+    this.form.get('expires').updateValueAndValidity();
+
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -273,7 +279,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.backLinkService.showBackLink();
   }
 
-  public onCancel(): void {
+  public onCancel(event: Event): void {
+    event.preventDefault();
     this.router.navigate(this.previousUrl);
   }
 }

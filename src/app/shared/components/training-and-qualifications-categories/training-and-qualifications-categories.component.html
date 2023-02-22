@@ -24,12 +24,13 @@
           class="govuk-select govuk-!-width-full"
           id="sortByTrainingCategory"
           name="sortByTrainingCategory"
-          [value]="sortByDefault"
+          [value]="sortByValue"
           (change)="orderTrainingCategories($event.target.value)"
         >
           <option
             *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
             value="{{ sortTrainingAndQualsOption.key }}"
+            [selected]="sortTrainingAndQualsOption.key === sortByValue"
           >
             {{ sortTrainingAndQualsOption.value }}
           </option>

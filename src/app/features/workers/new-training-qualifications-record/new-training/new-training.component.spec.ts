@@ -214,15 +214,25 @@ describe('NewTrainingComponent', async () => {
   });
 
   describe('no training', async () => {
-    it('should display a no training found link when there is no training and isMandatoryTraining is false', async () => {
+    it('should display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is true', async () => {
       component.trainingCategories = [];
       fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
+
       expect(noTrainingLink).toBeTruthy();
       expect(noTrainingLink.getAttribute('href')).toBe('/add-training');
     });
 
-    it('should display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true', async () => {
+    it('should not display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is false', async () => {
+      component.trainingCategories = [];
+      component.canEditWorker = false;
+      fixture.detectChanges();
+      const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]'));
+
+      expect(noTrainingLink).toBeFalsy();
+    });
+
+    it('should display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true and canEditWorker is true', async () => {
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
@@ -232,6 +242,17 @@ describe('NewTrainingComponent', async () => {
       ).nativeElement;
       expect(noMandatoryTrainingLink).toBeTruthy();
       expect(noMandatoryTrainingLink.getAttribute('href')).toBe('/workplace/123/add-and-manage-mandatory-training');
+    });
+
+    it('should not display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true and canEditWorker is false', async () => {
+      component.trainingCategories = [];
+      component.isMandatoryTraining = true;
+      component.workplaceUid = '123';
+      component.canEditWorker = false;
+      fixture.detectChanges();
+      const noMandatoryTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
+
+      expect(noMandatoryTrainingLink).toBeFalsy();
     });
   });
 });

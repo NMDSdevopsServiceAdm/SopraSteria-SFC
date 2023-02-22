@@ -120,6 +120,7 @@
           </td>
           <td class="govuk-table__cell">
             <a
+              *ngIf="canEditWorker"
               class="govuk-link--no-visited-state govuk-util__float-right"
               (click)="actionsListNavigate(actionListItem)"
               href="javascript:void(0)"

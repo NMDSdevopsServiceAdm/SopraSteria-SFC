@@ -501,8 +501,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(headerRow.cells['3'].innerHTML).toBe('');
     });
 
-    it('should render Autism as an expired training', async () => {
-      const { fixture } = await setup();
+    it('should render Autism as an expired training with an update link if canEditWorker is true', async () => {
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = true;
+      fixture.detectChanges();
       const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
       const rowOne = actionListTableRows[1];
       expect(rowOne.cells['0'].innerHTML).toBe('Autism');
@@ -511,14 +514,37 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(rowOne.cells['3'].innerHTML).toContain('Update');
     });
 
-    it('should render Coshh as an expiring soon training', async () => {
+    it('should render Autism as an expired training without an update link if canEditWorker is false', async () => {
       const { fixture } = await setup();
+      const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
+      const rowOne = actionListTableRows[1];
+      expect(rowOne.cells['0'].innerHTML).toBe('Autism');
+      expect(rowOne.cells['1'].innerHTML).toBe('Non-mandatory');
+      expect(rowOne.cells['2'].innerHTML).toContain('Expired');
+      expect(rowOne.cells['3'].innerHTML).not.toContain('Update');
+    });
+
+    it('should render Coshh as an expiring soon training with an update link if canEditWorker is true', async () => {
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = true;
+      fixture.detectChanges();
       const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
       const rowTwo = actionListTableRows[2];
       expect(rowTwo.cells['0'].innerHTML).toBe('Coshh');
       expect(rowTwo.cells['1'].innerHTML).toBe('Non-mandatory');
       expect(rowTwo.cells['2'].innerHTML).toContain('Expires soon');
       expect(rowTwo.cells['3'].innerHTML).toContain('Update');
+    });
+
+    it('should render Coshh as an expiring soon training without an update link if canEditWorker is false', async () => {
+      const { fixture } = await setup();
+      const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
+      const rowTwo = actionListTableRows[2];
+      expect(rowTwo.cells['0'].innerHTML).toBe('Coshh');
+      expect(rowTwo.cells['1'].innerHTML).toBe('Non-mandatory');
+      expect(rowTwo.cells['2'].innerHTML).toContain('Expires soon');
+      expect(rowTwo.cells['3'].innerHTML).not.toContain('Update');
     });
   });
 

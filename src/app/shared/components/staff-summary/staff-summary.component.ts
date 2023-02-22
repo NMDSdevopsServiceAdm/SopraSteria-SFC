@@ -22,11 +22,17 @@ export class StaffSummaryComponent implements OnInit {
   public canEditWorker: boolean;
   public sortStaffOptions;
   public workersOrderBy: Array<Worker>;
-  public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
-  private sortByValue = 'staffNameAsc';
-  public itemsPerPage = 15;
-  private searchTerm = '';
+  public sortByValue = 'staffNameAsc';
+  public searchTerm = '';
+  public sortByParamMap = {
+    '0_asc': 'staffNameAsc',
+    '0_dsc': 'staffNameDesc',
+    '1_asc': 'jobRoleAsc',
+    '1_dsc': 'jobRoleDesc',
+    '2_meeting': 'wdfMeeting',
+    '2_not_meeting': 'wdfNotMeeting',
+  };
 
   constructor(
     private permissionsService: PermissionsService,
@@ -43,7 +49,6 @@ export class StaffSummaryComponent implements OnInit {
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
     event.preventDefault();
-    this.addQueryParams();
     const path = ['/workplace', this.workplace.uid, 'staff-record', worker.uid, 'staff-record-summary'];
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
   }
@@ -66,54 +71,24 @@ export class StaffSummaryComponent implements OnInit {
     }
   }
 
-  public sortBy(sortType: string): void {
-    const sortByParamMap = {
-      '0_asc': 'staffNameAsc',
-      '0_dsc': 'staffNameDesc',
-      '1_asc': 'jobRoleAsc',
-      '1_dsc': 'jobRoleDesc',
-      '2_meeting': 'wdfMeeting',
-      '2_not_meeting': 'wdfNotMeeting',
-    };
-
-    this.sortByValue = sortByParamMap[sortType];
-    this.currentPageIndex = 0;
-    this.getPageOfWorkers();
-  }
-
-  public handlePageUpdate(pageIndex: number): void {
-    this.currentPageIndex = pageIndex;
-
-    this.getPageOfWorkers();
-  }
-
-  public getPageOfWorkers(): void {
+  public getPageOfWorkers(properties: {
+    index: number;
+    itemsPerPage: number;
+    searchTerm: string;
+    sortByValue: string;
+  }): void {
+    const { index, itemsPerPage, searchTerm, sortByValue } = properties;
     this.workerService
       .getAllWorkers(this.workplace.uid, {
-        pageIndex: this.currentPageIndex,
-        itemsPerPage: this.itemsPerPage,
-        sortBy: this.sortByValue,
-        ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
+        pageIndex: index,
+        itemsPerPage: itemsPerPage,
+        sortBy: sortByValue,
+        ...(searchTerm ? { searchTerm } : {}),
       })
       .pipe(take(1))
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;
         this.workerCount = workerCount;
       });
-  }
-
-  private addQueryParams(): void {
-    this.router.navigate([], {
-      fragment: 'staff-records',
-      queryParams: { search: this.searchTerm, tab: 'staff' },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  public handleSearch(searchTerm: string): void {
-    this.currentPageIndex = 0;
-    this.searchTerm = searchTerm;
-    this.addQueryParams();
-    this.getPageOfWorkers();
   }
 }

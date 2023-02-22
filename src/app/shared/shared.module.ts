@@ -87,6 +87,7 @@ import { SubmitButtonComponent } from './components/submit-button/submit-button.
 import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/submit-exit-buttons.component';
 import { SummaryListComponent } from './components/summary-list/summary-list.component';
 import { SummaryRecordChangeComponent } from './components/summary-record-change/summary-record-change.component';
+import { TablePaginationWrapperComponent } from './components/table-pagination-wrapper/table-pagination-wrapper.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
@@ -126,6 +127,7 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
+import { DontKnowPipe } from './pipes/dont-know.pipe';
 import { FirstErrorPipe } from './pipes/first-error.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
@@ -239,6 +241,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ViewTrainingComponent,
     MissingMandatoryTrainingComponent,
     TrainingSelectViewPanelComponent,
+    TablePaginationWrapperComponent,
+    DontKnowPipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -336,8 +340,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewBackLinkComponent,
     ViewTrainingComponent,
     MissingMandatoryTrainingComponent,
-    AbsoluteNumberPipe,
     TrainingSelectViewPanelComponent,
+    TablePaginationWrapperComponent,
+    DontKnowPipe,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

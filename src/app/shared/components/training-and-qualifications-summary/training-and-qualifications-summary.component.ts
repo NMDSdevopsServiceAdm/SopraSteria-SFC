@@ -17,18 +17,21 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Input() wdfView = false;
   @Input() showViewByToggle = false;
   @Input() totalRecords: number;
+  @Input() sortByValue: string;
 
-  @Output() viewTrainingByCategory: EventEmitter<boolean> = new EventEmitter();
+  @Output() changeStaffSortBy = new EventEmitter<{ section: string; sortByValue: string }>();
 
   public canViewWorker: boolean;
   public sortTrainingAndQualsOptions: Record<string, string>;
-  public sortByValue: string;
-  public itemsPerPage = 15;
-  public currentPageIndex = 0;
   public paginatedWorkers: Array<Worker>;
-  private searchTerm = '';
-  private totalWorkerCount: number;
-  public showSearchBar: boolean;
+  public searchTerm = '';
+  public totalWorkerCount: number;
+  public sortByParamMap = {
+    '0_expired': 'trainingExpired',
+    '1_expires_soon': 'trainingExpiringSoon',
+    '2_missing': 'trainingMissing',
+    '3_worker': 'staffNameAsc',
+  };
 
   constructor(
     private permissionsService: PermissionsService,
@@ -40,11 +43,15 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
   ngOnInit(): void {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
-    this.sortByValue = '0_expired';
     this.paginatedWorkers = this.workers;
     this.totalWorkerCount = this.workerCount;
-    this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
     this.setSearchIfPrevious();
+    this.getPageOfWorkers({
+      index: 0,
+      itemsPerPage: 15,
+      searchTerm: this.searchTerm,
+      sortByValue: this.sortByValue,
+    });
   }
 
   private setSearchIfPrevious(): void {
@@ -56,49 +63,26 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     }
   }
 
-  private setSortValue(value: string): void {
-    this.sortByValue = value;
-  }
-
-  private setPageIndex(pageIndex: number): void {
-    this.currentPageIndex = pageIndex;
-    this.refetchWorkers();
-  }
-
-  private refetchWorkers(): void {
-    const sortByParamMap = {
-      '0_expired': 'trainingExpired',
-      '1_expires_soon': 'trainingExpiringSoon',
-      '2_missing': 'trainingMissing',
-      '3_worker': 'staffNameAsc',
-    };
-
+  public getPageOfWorkers(properties: {
+    index: number;
+    itemsPerPage: number;
+    searchTerm: string;
+    sortByValue: string;
+  }): void {
+    const { index, itemsPerPage, searchTerm, sortByValue } = properties;
     this.workerService
       .getAllWorkers(this.workplace.uid, {
-        sortBy: sortByParamMap[this.sortByValue],
-        pageIndex: this.currentPageIndex,
-        itemsPerPage: this.itemsPerPage,
-        ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
+        pageIndex: index,
+        itemsPerPage: itemsPerPage,
+        sortBy: sortByValue,
+        ...(searchTerm ? { searchTerm } : {}),
       })
       .pipe(take(1))
       .subscribe(({ workers, workerCount }) => {
         this.paginatedWorkers = workers;
-
         this.workerCount = workerCount;
+        this.changeStaffSortBy.emit({ section: 'staff-summary', sortByValue: sortByValue });
       });
-  }
-
-  public handleSortUpdate(dropdownValue: string): void {
-    if (dropdownValue !== this.sortByValue) {
-      this.setSortValue(dropdownValue);
-      this.setPageIndex(0);
-    }
-  }
-
-  public handlePageUpdate(pageIndex: number): void {
-    if (pageIndex !== this.currentPageIndex) {
-      this.setPageIndex(pageIndex);
-    }
   }
 
   public getWorkerTrainingAndQualificationsPath(event: Event, worker: Worker): void {
@@ -107,19 +91,5 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
       ? ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training', 'wdf-summary']
       : ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
     this.router.navigate(path, { fragment: 'all-records' });
-  }
-
-  private addQueryParams(): void {
-    this.router.navigate([], {
-      fragment: 'training-and-qualifications',
-      queryParams: { search: this.searchTerm, tab: 'training' },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  public handleSearch(searchTerm: string): void {
-    this.searchTerm = searchTerm;
-    this.addQueryParams();
-    this.setPageIndex(0);
   }
 }
