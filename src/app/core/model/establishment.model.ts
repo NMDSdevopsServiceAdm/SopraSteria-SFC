@@ -270,9 +270,8 @@ export enum WdfParentSortWorkplacesOptions {
 }
 
 export enum SortTrainingOptionsStatus {
-  '0_worker' = 'Staff name',
-  '1_expired' = 'Expiry date',
-  '2_category' = 'Category',
+  '0_asc' = 'Staff name (A to Z)',
+  '1_desc' = 'Staff name (Z to A)',
 }
 
 export enum SortTrainingOptionsMissing {

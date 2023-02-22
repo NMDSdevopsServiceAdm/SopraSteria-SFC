@@ -14,6 +14,24 @@ $error_row_padding: $govuk-gutter-half;
   }
 }
 
+.govuk-training-table__row {
+  .govuk-table__cell-no-border {
+    &__top-row {
+      border: none;
+      padding-bottom: 0;
+    }
+
+    &__middle-row {
+      border: none;
+      padding: 0;
+    }
+
+    &__bottom-row {
+      padding-top: 0;
+    }
+  }
+}
+
 .govuk-table__with-action {
   .govuk-table__row td:last-child,
   .govuk-table__row th:last-child {

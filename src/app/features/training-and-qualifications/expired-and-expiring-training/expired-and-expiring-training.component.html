@@ -7,8 +7,8 @@
   </div>
 </div>
 <app-table-pagination-wrapper
-  [totalCount]="totalTrainingCount"
-  [count]="trainingCount"
+  [totalCount]="totalWorkerCount"
+  [count]="workerCount"
   [searchTerm]="searchTerm"
   [sortByParamMap]="sortByParamMap"
   [sortByValue]="sortByValue"
@@ -16,7 +16,7 @@
   accessibleLabel="staff training records"
   (fetchData)="getTrainingByStatus($event)"
 >
-  <table class="govuk-table" data-testid="table" *ngIf="trainingCount; else noTrainingFoundInSearch">
+  <table class="govuk-table" data-testid="table" *ngIf="workerCount; else noTrainingFoundInSearch">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th class="govuk-table__header" scope="col" style="width: 22%">Name or ID number</th>
@@ -27,63 +27,77 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <ng-container>
-        <tr
-          class="govuk-table__row govuk-util__vertical-align-top"
-          *ngFor="let training of trainingList; let i = index"
-          [attr.data-testid]="'table-row-' + i"
-        >
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <ng-container *ngIf="canEditWorker; else nameOrId">
-              <a
-                class="govuk-link--no-visited-state"
-                [attr.data-testid]="'worker-' + i"
-                href="#"
-                [routerLink]="[
-                  '/workplace',
-                  workplaceUid,
-                  'training-and-qualifications-record',
-                  training.worker.uid,
-                  'training'
-                ]"
-              >
-                {{ training.worker.NameOrIdValue }}</a
-              >
-            </ng-container>
-            <ng-template #nameOrId>
-              <span [attr.data-testid]="'worker-' + i + '-noLink'">{{ training.worker.NameOrIdValue }}</span>
-            </ng-template>
-          </td>
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
-            {{ training.category.category }}
-          </td>
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
-            {{ training.expires ? (training.expires | date: 'd MMM y') : '-' }}
-          </td>
-
-          <td class="govuk-table__cell">
-            <div class="govuk-!-margin-bottom-1">
-              <img src="{{ img }}" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
-              {{ flagText }}
-            </div>
-          </td>
-          <td class="govuk-table__cell">
-            <div *ngIf="canEditWorker">
-              <a
-                [routerLink]="[
-                  '/workplace',
-                  workplaceUid,
-                  'training-and-qualifications-record',
-                  training.worker.uid,
-                  'training',
-                  training.uid,
-                  { trainingCategory: training.category | json }
-                ]"
-                >Update</a
-              >
-            </div>
-          </td>
-        </tr>
+      <ng-container *ngFor="let worker of workers">
+        <ng-container *ngFor="let training of worker.workerTraining; let i = index">
+          <tr
+            class="govuk-training-table__row govuk-util__vertical-align-top"
+            [attr.data-testid]="'table-row-' + worker.NameOrIdValue + '-' + i"
+          >
+            <td
+              class="govuk-table__cell govuk-!-font-weight-regular"
+              [ngClass]="tableRowConditionalClass(worker.workerTraining, i)"
+            >
+              <ng-container *ngIf="i === 0">
+                <ng-container *ngIf="canEditWorker; else nameOrId">
+                  <a
+                    class="govuk-link--no-visited-state"
+                    [attr.data-testid]="'worker-' + i"
+                    href="#"
+                    [routerLink]="[
+                      '/workplace',
+                      workplaceUid,
+                      'training-and-qualifications-record',
+                      worker.uid,
+                      'training'
+                    ]"
+                  >
+                    {{ worker.NameOrIdValue }}</a
+                  >
+                </ng-container>
+                <ng-template #nameOrId>
+                  <span [attr.data-testid]="'worker-' + worker.NameOrIdValue + '-noLink'">{{
+                    worker.NameOrIdValue
+                  }}</span>
+                </ng-template>
+              </ng-container>
+            </td>
+            <td
+              class="govuk-table__cell govuk-!-font-weight-regular"
+              [attr.data-testid]="'cell-' + worker.NameOrIdValue + '-' + i"
+              [ngClass]="tableRowConditionalClass(worker.workerTraining, i)"
+            >
+              {{ training.category.category }}
+            </td>
+            <td
+              class="govuk-table__cell govuk-!-font-weight-regular"
+              [ngClass]="tableRowConditionalClass(worker.workerTraining, i)"
+            >
+              {{ training.expires ? (training.expires | date: 'd MMM y') : '-' }}
+            </td>
+            <td class="govuk-table__cell" [ngClass]="tableRowConditionalClass(worker.workerTraining, i)">
+              <div class="govuk-!-margin-bottom-1">
+                <img src="{{ img }}" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
+                {{ flagText }}
+              </div>
+            </td>
+            <td class="govuk-table__cell" [ngClass]="tableRowConditionalClass(worker.workerTraining, i)">
+              <div *ngIf="canEditWorker">
+                <a
+                  [routerLink]="[
+                    '/workplace',
+                    workplaceUid,
+                    'training-and-qualifications-record',
+                    worker.uid,
+                    'training',
+                    training.uid,
+                    { trainingCategory: training.category | json }
+                  ]"
+                  >Update</a
+                >
+              </div>
+            </td>
+          </tr>
+        </ng-container>
       </ng-container>
     </tbody>
   </table>

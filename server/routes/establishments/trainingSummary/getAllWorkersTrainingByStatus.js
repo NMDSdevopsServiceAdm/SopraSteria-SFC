@@ -18,7 +18,7 @@ const getAllTrainingByStatus = async (req, res) => {
       return res.status(400).send('The establishment id and status must be given');
     }
 
-    const { count: trainingCount, rows: training } = await Training.getAllEstablishmentTrainingByStatus(
+    const { count: workerCount, rows } = await models.establishment.getWorkerWithExpiredOrExpiringTraining(
       establishmentId,
       status,
       itemsPerPage && +itemsPerPage,
@@ -27,7 +27,15 @@ const getAllTrainingByStatus = async (req, res) => {
       searchTerm,
     );
 
-    return res.status(200).json({ training, trainingCount });
+    if (rows.length === 0) {
+      return res.status(200).json({ workers: [], workerCount: 0 });
+    }
+
+    const workerIds = rows[0].workers.map((worker) => worker.id);
+
+    const workers = await Training.getWorkersTrainingByStatus(establishmentId, workerIds, status);
+
+    return res.status(200).json({ workers, workerCount });
   } catch (error) {
     console.error('Training::root getAllTrainingByStatus - failed', error);
     res.status(500).send(`Failed to get ${status} training and qualifications for establishment ${establishmentId}`);

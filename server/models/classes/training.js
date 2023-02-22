@@ -699,24 +699,10 @@ class Training extends EntityValidator {
     }
   }
 
-  static async getAllEstablishmentTrainingByStatus(
-    establishmentId,
-    status,
-    limit = 0,
-    pageIndex = 0,
-    sortBy = '',
-    searchTerm = '',
-  ) {
+  static async getWorkersTrainingByStatus(establishmentId, workerIds, status) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await models.establishment.getExpiresSoonAlertDate(establishmentId);
     const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
-    const offset = pageIndex * limit;
-
-    const pagination = {
-      subQuery: false,
-      limit,
-      offset,
-    };
 
     let filter = { [Op.lt]: currentDate };
 
@@ -724,42 +710,38 @@ class Training extends EntityValidator {
       filter = { [Op.gt]: currentDate, [Op.lt]: expiresSoon };
     }
 
-    const order = {
-      staffNameAsc: [['worker', 'NameOrIdValue', 'ASC']],
-      expiryDateDesc: [
-        ['expires', 'DESC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-      categoryNameAsc: [
-        ['category', 'category', 'ASC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-    }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
+    const customOrder = (values) => {
+      let orderByClause = 'CASE ';
 
-    return await models.workerTraining.findAndCountAll({
-      attributes: ['categoryFk', 'expires', 'uid'],
+      values.forEach((value, index) => {
+        orderByClause += `WHEN "worker"."ID" = ${value} THEN '${index}' `;
+      });
+
+      orderByClause += 'ELSE "worker"."ID" END';
+      return [models.sequelize.literal(orderByClause, 'asc')];
+    };
+
+    return await models.worker.findAll({
+      attributes: ['id', 'uid', 'NameOrIdValue'],
       where: {
-        expires: filter,
-      },
-      include: [
-        {
-          model: models.worker,
-          as: 'worker',
-          attributes: ['id', 'uid', 'NameOrIdValue'],
-          where: {
-            EstablishmentFK: establishmentId,
-            archived: false,
-            ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `${searchTerm}` } } : {}),
-          },
+        id: {
+          [Op.in]: workerIds,
         },
-        {
+      },
+      include: {
+        model: models.workerTraining,
+        as: 'workerTraining',
+        attributes: ['categoryFk', 'expires', 'uid'],
+        where: {
+          expires: filter,
+        },
+        include: {
           model: models.workerTrainingCategories,
           as: 'category',
           attributes: ['id', 'category'],
         },
-      ],
-      order,
-      ...(limit ? pagination : {}),
+      },
+      order: [customOrder(workerIds), [models.sequelize.literal('"workerTraining.category.category"'), 'ASC']],
     });
   }
 

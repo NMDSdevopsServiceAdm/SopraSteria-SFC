@@ -21,20 +21,44 @@ import sinon from 'sinon';
 
 import { ExpiredTrainingComponent } from './expired-training.component';
 
-const training = [
+const workers = [
   {
-    uid: 'mock-uid-one',
-    expires: new Date('2020-01-01'),
-    categoryFk: 1,
-    category: { id: 1, category: 'Category name' },
-    worker: { id: 1, uid: 'worker-one-uid', NameOrIdValue: 'Worker One' },
+    id: 1,
+    uid: 'worker-one-uid',
+    NameOrIdValue: 'Worker One',
+    workerTraining: [
+      {
+        uid: 'mock-uid-one',
+        expires: new Date('2020-01-01'),
+        categoryFk: 1,
+        category: { id: 1, category: 'Category name 1' },
+      },
+      {
+        uid: 'mock-uid-two',
+        expires: new Date('2020-01-01'),
+        categoryFk: 2,
+        category: { id: 2, category: 'Category name 2' },
+      },
+      {
+        uid: 'mock-uid-three',
+        expires: new Date('2020-01-01'),
+        categoryFk: 3,
+        category: { id: 3, category: 'Category name 3' },
+      },
+    ],
   },
   {
-    uid: 'mock-uid-two',
-    expires: new Date('2021-05-01'),
-    categoryFk: 1,
-    category: { id: 3, category: 'Another category name' },
-    worker: { id: 3, uid: 'worker-two-uid', NameOrIdValue: 'Worker Two' },
+    id: 2,
+    uid: 'worker-two-uid',
+    NameOrIdValue: 'Worker Two',
+    workerTraining: [
+      {
+        uid: 'mock-uid-four',
+        expires: new Date('2021-05-01'),
+        categoryFk: 3,
+        category: { id: 3, category: 'Category name 3' },
+      },
+    ],
   },
 ];
 
@@ -45,11 +69,11 @@ describe('ExpiredTrainingComponent', () => {
     qsParamGetMock = sinon.fake(),
     addAlert = false,
   ) {
-    let trainingObj = {
-      training,
-      trainingCount: 2,
+    let workerObj = {
+      workers,
+      workerCount: 2,
     };
-    if (fixTrainingCount) trainingObj = { training: [training[0]], trainingCount: 1 };
+    if (fixTrainingCount) workerObj = { workers: [workers[0]], workerCount: 1 };
     const permissions = addPermissions ? ['canEditWorker'] : [];
 
     if (addAlert) {
@@ -79,7 +103,7 @@ describe('ExpiredTrainingComponent', () => {
                   get: qsParamGetMock,
                 },
                 data: {
-                  training: trainingObj,
+                  training: workerObj,
                 },
                 params: { establishmentuid: '1234-5678' },
               },
@@ -97,7 +121,7 @@ describe('ExpiredTrainingComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const trainingServiceSpy = spyOn(trainingService, 'getAllTrainingByStatus').and.returnValue(
-      of({ training, trainingCount: 2 }),
+      of({ workers, workerCount: 2 }),
     );
 
     const alertService = injector.inject(AlertService) as AlertService;
@@ -134,21 +158,35 @@ describe('ExpiredTrainingComponent', () => {
     });
   });
 
-  it('should render the table with a list of the expired training', async () => {
+  it('should render a row for each expired training for a worker, with the worker name shown in top row', async () => {
     const { getByTestId } = await setup();
 
-    const tableRow1 = getByTestId('table-row-0');
-    const tableRow2 = getByTestId('table-row-1');
+    const tableRow1 = getByTestId(`table-row-${workers[0].NameOrIdValue}-0`);
+    const tableRow2 = getByTestId(`table-row-${workers[0].NameOrIdValue}-1`);
+    const tableRow3 = getByTestId(`table-row-${workers[0].NameOrIdValue}-2`);
+    const tableRow4 = getByTestId(`table-row-${workers[1].NameOrIdValue}-0`);
 
     expect(getByTestId('table')).toBeTruthy();
+
     expect(within(tableRow1).getByText('Worker One')).toBeTruthy();
-    expect(within(tableRow1).getByText('Category name')).toBeTruthy();
+    expect(within(tableRow1).getByText('Category name 1')).toBeTruthy();
     expect(within(tableRow1).getByText('1 Jan 2020')).toBeTruthy();
     expect(within(tableRow1).getByText('Expired')).toBeTruthy();
-    expect(within(tableRow2).getByText('Worker Two')).toBeTruthy();
-    expect(within(tableRow2).getByText('Another category name')).toBeTruthy();
-    expect(within(tableRow2).getByText('1 May 2021')).toBeTruthy();
+
+    expect(within(tableRow2).queryByText('Worker One')).toBeFalsy();
+    expect(within(tableRow2).getByText('Category name 2')).toBeTruthy();
+    expect(within(tableRow2).getByText('1 Jan 2020')).toBeTruthy();
     expect(within(tableRow2).getByText('Expired')).toBeTruthy();
+
+    expect(within(tableRow3).queryByText('Worker One')).toBeFalsy();
+    expect(within(tableRow3).getByText('Category name 3')).toBeTruthy();
+    expect(within(tableRow3).getByText('1 Jan 2020')).toBeTruthy();
+    expect(within(tableRow3).getByText('Expired')).toBeTruthy();
+
+    expect(within(tableRow4).getByText('Worker Two')).toBeTruthy();
+    expect(within(tableRow4).getByText('Category name 3')).toBeTruthy();
+    expect(within(tableRow4).getByText('1 May 2021')).toBeTruthy();
+    expect(within(tableRow4).getByText('Expired')).toBeTruthy();
   });
 
   it('should render the name as a link with href to the worker when the are canEditWorker Permissions', async () => {
@@ -165,35 +203,65 @@ describe('ExpiredTrainingComponent', () => {
   it('should not render the name as a link if there are not the correct permissions', async () => {
     const { getByTestId } = await setup(false);
 
-    expect(getByTestId('worker-0-noLink')).toBeTruthy();
-    expect(getByTestId('worker-1-noLink')).toBeTruthy();
+    expect(getByTestId(`worker-${workers[0].NameOrIdValue}-noLink`)).toBeTruthy();
+    expect(getByTestId(`worker-${workers[1].NameOrIdValue}-noLink`)).toBeTruthy();
   });
 
   it('should render an update link with href to the training when there are can edit permissions', async () => {
     const { component, getByTestId } = await setup();
 
-    const tableRow1 = getByTestId('table-row-0');
-    const tableRow2 = getByTestId('table-row-1');
+    const tableRow1 = getByTestId(`table-row-${workers[0].NameOrIdValue}-0`);
+    const tableRow2 = getByTestId(`table-row-${workers[0].NameOrIdValue}-1`);
+    const tableRow3 = getByTestId(`table-row-${workers[0].NameOrIdValue}-2`);
+    const tableRow4 = getByTestId(`table-row-${workers[1].NameOrIdValue}-0`);
 
     const table1UpdateLink = within(tableRow1).getByText('Update');
     const table2UpdateLink = within(tableRow2).getByText('Update');
+    const table3UpdateLink = within(tableRow3).getByText('Update');
+    const table4UpdateLink = within(tableRow4).getByText('Update');
 
     expect(table1UpdateLink.getAttribute('href').slice(0, table1UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-one-uid/training/mock-uid-one`,
     );
     expect(table2UpdateLink.getAttribute('href').slice(0, table2UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
-      `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-two-uid/training/mock-uid-two`,
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-one-uid/training/mock-uid-two`,
+    );
+    expect(table3UpdateLink.getAttribute('href').slice(0, table3UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-one-uid/training/mock-uid-three`,
+    );
+    expect(table4UpdateLink.getAttribute('href').slice(0, table4UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-two-uid/training/mock-uid-four`,
     );
   });
 
   it('should not render the update links if there are not the correct permissions', async () => {
     const { getByTestId } = await setup(false);
 
-    const tableRow1 = getByTestId('table-row-0');
-    const tableRow2 = getByTestId('table-row-1');
+    const tableRow1 = getByTestId(`table-row-${workers[0].NameOrIdValue}-0`);
+    const tableRow2 = getByTestId(`table-row-${workers[0].NameOrIdValue}-1`);
+    const tableRow3 = getByTestId(`table-row-${workers[0].NameOrIdValue}-2`);
+    const tableRow4 = getByTestId(`table-row-${workers[1].NameOrIdValue}-0`);
 
     expect(within(tableRow1).queryByText('Update')).toBeFalsy();
     expect(within(tableRow2).queryByText('Update')).toBeFalsy();
+    expect(within(tableRow3).queryByText('Update')).toBeFalsy();
+    expect(within(tableRow4).queryByText('Update')).toBeFalsy();
+  });
+
+  it('should apply conditionaly classes on rows when there is more than 1 training for a worker', async () => {
+    const { getByTestId } = await setup(false);
+
+    const tableRow1CategoryCell = getByTestId(`cell-${workers[0].NameOrIdValue}-0`);
+    const tableRow2CategoryCell = getByTestId(`cell-${workers[0].NameOrIdValue}-1`);
+    const tableRow3CategoryCell = getByTestId(`cell-${workers[0].NameOrIdValue}-2`);
+    const tableRow4CategoryCell = getByTestId(`cell-${workers[1].NameOrIdValue}-0`);
+
+    expect(tableRow1CategoryCell.getAttribute('class')).toContain('govuk-table__cell-no-border__top-row');
+    expect(tableRow2CategoryCell.getAttribute('class')).toContain('govuk-table__cell-no-border__middle-row');
+    expect(tableRow3CategoryCell.getAttribute('class')).toContain('govuk-table__cell-no-border__bottom-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('govuk-table__cell-no-border__top-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('govuk-table__cell-no-border__middle-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('govuk-table__cell-no-border__bottom-row');
   });
 
   it('should navigate back to the dashboard when clicking the return to home button in a parent or stand alone account', async () => {
@@ -224,13 +292,13 @@ describe('ExpiredTrainingComponent', () => {
       expect(queryByTestId('sortBy')).toBeFalsy();
     });
 
-    it('should handle sort by staff name', async () => {
+    it('should handle sort by staff name asc', async () => {
       const { component, getByLabelText, trainingServiceSpy } = await setup();
 
       expect(trainingServiceSpy).not.toHaveBeenCalled();
 
       const select = getByLabelText('Sort by', { exact: false });
-      fireEvent.change(select, { target: { value: '0_worker' } });
+      fireEvent.change(select, { target: { value: '0_asc' } });
 
       expect(trainingServiceSpy).toHaveBeenCalledWith(component.workplaceUid, 'expired', {
         sortBy: 'staffNameAsc',
@@ -239,31 +307,16 @@ describe('ExpiredTrainingComponent', () => {
       });
     });
 
-    it('should handle sort by expired date', async () => {
+    it('should handle sort by staff name desc', async () => {
       const { component, getByLabelText, trainingServiceSpy } = await setup();
 
       expect(trainingServiceSpy).not.toHaveBeenCalled();
 
       const select = getByLabelText('Sort by', { exact: false });
-      fireEvent.change(select, { target: { value: '1_expired' } });
+      fireEvent.change(select, { target: { value: '1_desc' } });
 
       expect(trainingServiceSpy).toHaveBeenCalledWith(component.workplaceUid, 'expired', {
-        sortBy: 'expiryDateDesc',
-        pageIndex: 0,
-        itemsPerPage: 15,
-      });
-    });
-
-    it('should handle sort by expiring soon', async () => {
-      const { component, getByLabelText, trainingServiceSpy } = await setup();
-
-      expect(trainingServiceSpy).not.toHaveBeenCalled();
-
-      const select = getByLabelText('Sort by', { exact: false });
-      fireEvent.change(select, { target: { value: '2_category' } });
-
-      expect(trainingServiceSpy).toHaveBeenCalledWith(component.workplaceUid, 'expired', {
-        sortBy: 'categoryNameAsc',
+        sortBy: 'staffNameDesc',
         pageIndex: 0,
         itemsPerPage: 15,
       });
@@ -281,7 +334,7 @@ describe('ExpiredTrainingComponent', () => {
     it('shoud call getAllTrainingByStatus with the correct search term passed', async () => {
       const { component, fixture, getByLabelText, trainingServiceSpy } = await setup();
 
-      component.totalTrainingCount = 16;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
 
       const searchInput = getByLabelText('Search staff training records');
@@ -301,13 +354,13 @@ describe('ExpiredTrainingComponent', () => {
     it('should render the no results returned message when 0 workers returned from getAllWorkers after search', async () => {
       const { component, fixture, getByLabelText, getByText, trainingService } = await setup();
 
-      component.totalTrainingCount = 16;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
 
       sinon.stub(trainingService, 'getAllTrainingByStatus').returns(
         of({
-          training: [],
-          trainingCount: 0,
+          workers: [],
+          workerCount: 0,
         }),
       );
 
@@ -330,7 +383,7 @@ describe('ExpiredTrainingComponent', () => {
 
       const { component, fixture, getByLabelText } = await setup(true, false, qsParamGetMock);
 
-      component.totalTrainingCount = 16;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
       expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
     });

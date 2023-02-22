@@ -2186,6 +2186,59 @@ module.exports = function (sequelize, DataTypes) {
     }
   };
 
+  Establishment.getWorkerWithExpiredOrExpiringTraining = async function (
+    establishmentId,
+    status,
+    limit = 0,
+    pageIndex = 0,
+    sortBy = '',
+    searchTerm = '',
+  ) {
+    const currentDate = moment().toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+    const offset = pageIndex * limit;
+
+    const pagination = {
+      subQuery: false,
+      limit,
+      offset,
+    };
+
+    const conditionalSQL =
+      status === 'expiring'
+        ? `"Expires" BETWEEN '${currentDate}' AND '${expiresSoon}'`
+        : `"Expires" < '${currentDate}'`;
+
+    const trainingCount = sequelize.literal(
+      `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND ${conditionalSQL})`,
+    );
+
+    const order = {
+      staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
+      staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
+    }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
+
+    return await this.findAndCountAll({
+      where: {
+        id: establishmentId,
+        col1: sequelize.where(trainingCount, '>', 0),
+      },
+      attributes: ['NameValue'],
+      include: {
+        model: sequelize.models.worker,
+        attributes: ['id', 'uid', 'NameOrIdValue'],
+        as: 'workers',
+        where: {
+          archived: false,
+          ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `${searchTerm}` } } : {}),
+        },
+      },
+      order,
+      ...(limit ? pagination : {}),
+    });
+  };
+
   Establishment.getWorkersWithMissingMandatoryTraining = async function (
     establishmentId,
     limit = 0,
@@ -2194,17 +2247,12 @@ module.exports = function (sequelize, DataTypes) {
     searchTerm = '',
   ) {
     const offset = pageIndex * limit;
-    const workerPagination = {
-      subQuery: false,
-      limit,
-      offset,
-    };
+    const workerPagination = { subQuery: false, limit, offset };
 
     const order = {
       staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
       staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
     }[sortBy];
-
     return await this.findAndCountAll({
       where: {
         id: establishmentId,
