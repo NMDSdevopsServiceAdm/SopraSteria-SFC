@@ -763,6 +763,52 @@ class Training extends EntityValidator {
     });
   }
 
+  static async getWorkersTrainingByStatus(establishmentId, workerIds, status) {
+    const currentDate = moment().toISOString();
+    const expiresSoonAlertDate = await models.establishment.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+
+    let filter = { [Op.lt]: currentDate };
+
+    if (status === 'expiring') {
+      filter = { [Op.gt]: currentDate, [Op.lt]: expiresSoon };
+    }
+
+    const customOrder = (values) => {
+      let orderByClause = 'CASE ';
+
+      values.forEach((value, index) => {
+        orderByClause += `WHEN "worker"."ID" = ${value} THEN '${index}' `;
+      });
+
+      orderByClause += 'ELSE "worker"."ID" END';
+      return [models.sequelize.literal(orderByClause, 'asc')];
+    };
+
+    return await models.worker.findAll({
+      attributes: ['id', 'uid', 'NameOrIdValue'],
+      where: {
+        id: {
+          [Op.in]: workerIds,
+        },
+      },
+      include: {
+        model: models.workerTraining,
+        as: 'workerTraining',
+        attributes: ['categoryFk', 'expires', 'uid'],
+        where: {
+          expires: filter,
+        },
+        include: {
+          model: models.workerTrainingCategories,
+          as: 'category',
+          attributes: ['id', 'category'],
+        },
+      },
+      order: [customOrder(workerIds), [models.sequelize.literal('"workerTraining.category.category"'), 'ASC']],
+    });
+  }
+
   // returns a set of Workers' Training Records based on given filter criteria (all if no filters defined) - restricted to the given Worker
   static async fetch(establishmentId, workerId, categoryId = null, filters = null) {
     if (filters) throw new Error('Filters not implemented');

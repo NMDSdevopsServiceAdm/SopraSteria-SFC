@@ -2186,5 +2186,156 @@ module.exports = function (sequelize, DataTypes) {
     }
   };
 
+  Establishment.getWorkerTrainingByStatus = async function (
+    establishmentId,
+    status,
+    limit = 0,
+    pageIndex = 0,
+    sortBy = '',
+    searchTerm = '',
+  ) {
+    const currentDate = moment().toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+    const offset = pageIndex * limit;
+
+    const pagination = {
+      subQuery: false,
+      limit,
+      offset,
+    };
+
+    let filter = { [Op.lt]: currentDate };
+
+    if (status === 'expiring') {
+      filter = { [Op.gt]: currentDate, [Op.lt]: expiresSoon };
+    }
+
+    const order = {
+      staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
+      expiryDateDesc: [
+        ['expires', 'DESC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+      categoryNameAsc: [
+        ['category', 'category', 'ASC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
+    }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
+
+    return await this.findAndCountAll({
+      logging: console.log,
+      where: {
+        id: establishmentId,
+      },
+      attributes: ['NameValue'],
+      include: {
+        model: sequelize.models.worker,
+        attributes: ['id', 'uid', 'NameOrIdValue'],
+        as: 'workers',
+        where: {
+          archived: false,
+          ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `${searchTerm}` } } : {}),
+        },
+        include: {
+          // model: sequelize.models.job,
+          // as: 'mainJob',
+          // attributes: ['id', 'title'],
+          // required: false,
+
+          model: sequelize.models.workerTraining,
+          as: 'workerTraining',
+          attributes: ['categoryFk', 'expires', 'uid'],
+          where: {
+            expires: filter,
+          },
+          required: true,
+          // include: {
+          //   model: sequelize.models.workerTrainingCategories,
+          //   as: 'category',
+          //   attrributes: ['id', 'category'],
+          // },
+        },
+      },
+      order,
+      ...(limit ? pagination : {}),
+    });
+  };
+
+  Establishment.getWorkerWithExpiredOrExpiringTraining = async function (
+    establishmentId,
+    status,
+    limit = 0,
+    pageIndex = 0,
+    sortBy = '',
+    searchTerm = '',
+  ) {
+    const currentDate = moment().toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+    const offset = pageIndex * limit;
+
+    const pagination = {
+      subQuery: false,
+      limit,
+      offset,
+    };
+
+    let attributes = [
+      'id',
+      'uid',
+      'NameOrIdValue',
+      [
+        sequelize.literal(
+          `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
+        ),
+        'expiredTrainingCount',
+      ],
+      // [
+      //   sequelize.literal(
+      //     `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}')`,
+      //   ),
+      //   'expiringTrainingCount',
+      // ],
+    ];
+
+    const order = {
+      staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
+      staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
+      // expiryDateDesc: [
+      //   ['expires', 'DESC'],
+      //   ['workers', 'NameOrIdValue', 'ASC'],
+      // ],
+      // categoryNameAsc: [
+      //   ['category', 'category', 'ASC'],
+      //   ['workers', 'NameOrIdValue', 'ASC'],
+      // ],
+    }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
+
+    return await this.findAndCountAll({
+      where: {
+        id: establishmentId,
+        col1: sequelize.where(
+          sequelize.literal(
+            `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND "Expires" < '${currentDate}')`,
+          ),
+          '>',
+          0,
+        ),
+      },
+      attributes: ['NameValue'],
+      include: {
+        model: sequelize.models.worker,
+        attributes,
+        as: 'workers',
+        where: {
+          archived: false,
+          ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `${searchTerm}` } } : {}),
+        },
+      },
+      order,
+      ...(limit ? pagination : {}),
+    });
+  };
   return Establishment;
 };
