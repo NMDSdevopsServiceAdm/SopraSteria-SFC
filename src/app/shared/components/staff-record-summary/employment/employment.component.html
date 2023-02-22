@@ -17,7 +17,7 @@
           worker.wdf?.mainJobStartDate.isEligible === 'Yes' &&
           !worker.wdf?.mainJobStartDate.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('main-job-start-date')"
+        [changeLink]="getRoutePath('main-job-start-date',wdfView)"
         (fieldConfirmation)="this.confirmField('mainJobStartDate')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"
@@ -155,7 +155,7 @@
           worker.wdf?.daysSick.isEligible === 'Yes' &&
           !worker.wdf?.daysSick.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('days-of-sickness')"
+        [changeLink]="getRoutePath('days-of-sickness',wdfView)"
         (fieldConfirmation)="this.confirmField('daysSick')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"
@@ -191,7 +191,7 @@
           worker.wdf?.zeroHoursContract.isEligible === 'Yes' &&
           !worker.wdf?.zeroHoursContract.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('contract-with-zero-hours')"
+        [changeLink]="getRoutePath('contract-with-zero-hours',wdfView)"
         (fieldConfirmation)="this.confirmField('zeroHoursContract')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"
@@ -235,7 +235,7 @@
           worker.wdf?.weeklyHoursAverage.isEligible === 'Yes' &&
           !worker.wdf?.weeklyHoursAverage.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('average-weekly-hours')"
+        [changeLink]="getRoutePath('average-weekly-hours',wdfView)"
         (fieldConfirmation)="this.confirmField('weeklyHoursAverage')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"
@@ -284,7 +284,7 @@
           worker.wdf?.weeklyHoursContracted.isEligible === 'Yes' &&
           !worker.wdf?.weeklyHoursContracted.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('weekly-contracted-hours')"
+        [changeLink]="getRoutePath('weekly-contracted-hours',wdfView)"
         (fieldConfirmation)="this.confirmField('weeklyHoursContracted')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"
@@ -330,7 +330,7 @@
           worker.wdf?.annualHourlyPay.isEligible === 'Yes' &&
           !worker.wdf?.annualHourlyPay.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('salary')"
+        [changeLink]="getRoutePath('salary',wdfView)"
         (fieldConfirmation)="this.confirmField('annualHourlyPay')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"

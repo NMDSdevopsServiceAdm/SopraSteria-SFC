@@ -19,7 +19,7 @@
           !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
           worker.careCertificate !== 'Yes, completed'
         "
-        [changeLink]="getRoutePath('care-certificate')"
+        [changeLink]="getRoutePath('care-certificate',wdfView)"
         (fieldConfirmation)="this.confirmField('careCertificate')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"
@@ -76,7 +76,7 @@
           !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
           worker.qualificationInSocialCare !== 'Yes'
         "
-        [changeLink]="getRoutePath('social-care-qualification')"
+        [changeLink]="getRoutePath('social-care-qualification',wdfView)"
         (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"
@@ -117,7 +117,7 @@
           worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
           !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('social-care-qualification-level')"
+        [changeLink]="getRoutePath('social-care-qualification-level',wdfView)"
         (fieldConfirmation)="
           this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')
         "
@@ -160,7 +160,7 @@
           !worker.wdf?.otherQualification.updatedSinceEffectiveDate &&
           worker.otherQualification !== 'Yes'
         "
-        [changeLink]="getRoutePath('other-qualifications')"
+        [changeLink]="getRoutePath('other-qualifications',wdfView)"
         (fieldConfirmation)="this.confirmField('otherQualification')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"
@@ -193,7 +193,7 @@
           worker.wdf?.highestQualification.isEligible === 'Yes' &&
           !worker.wdf?.highestQualification.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('other-qualifications-level')"
+        [changeLink]="getRoutePath('other-qualifications-level',wdfView)"
         (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
         (setReturnClicked)="this.setReturn()"
         [workerUid]="worker.uid"

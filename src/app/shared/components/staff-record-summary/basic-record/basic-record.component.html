@@ -36,7 +36,7 @@
           worker.wdf?.mainJob.isEligible === 'Yes' &&
           !worker.wdf?.mainJob.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('staff-details')"
+        [changeLink]="getRoutePath('staff-details',wdfView)"
         (fieldConfirmation)="this.confirmField('mainJob')"
         [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
@@ -63,7 +63,7 @@
           worker.wdf?.contract.isEligible === 'Yes' &&
           !worker.wdf?.contract.updatedSinceEffectiveDate
         "
-        [changeLink]="getRoutePath('staff-details')"
+        [changeLink]="getRoutePath('staff-details',wdfView)"
         (fieldConfirmation)="this.confirmField('contract')"
         [workerUid]="worker.uid"
       ></app-wdf-field-confirmation>
