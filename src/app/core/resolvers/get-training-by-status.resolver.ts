@@ -23,7 +23,7 @@ export class GetTrainingByStatusResolver implements Resolve<any> {
 
     return this.trainingService.getAllTrainingByStatus(workplaceUid, status, paginationParams).pipe(
       map((response) => {
-        if (response.trainingCount > 0) {
+        if (response.workerCount > 0) {
           return response;
         } else {
           const redirectUrl = workplaceUid === primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', workplaceUid];

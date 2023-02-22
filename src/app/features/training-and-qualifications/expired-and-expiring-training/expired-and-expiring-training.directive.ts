@@ -13,23 +13,27 @@ import { take } from 'rxjs/operators';
 @Directive()
 export class ExpiredAndExpiringTrainingDirective implements OnInit {
   public title: string;
-  public trainingList;
+  public workers;
   public workplaceUid: string;
   public canEditWorker: boolean;
   public primaryWorkplaceUid: string;
   public flagText: string;
   public img: string;
   public searchTerm = '';
-  public trainingCount: number;
-  public totalTrainingCount: number;
+  public workerCount: number;
+  public totalWorkerCount: number;
   public sortTrainingOptions = SortTrainingOptionsStatus;
   public sortByValue = 'staffNameAsc';
   public status: string;
   private subscriptions: Subscription = new Subscription();
+  // public sortByParamMap = {
+  //   '0_worker': 'staffNameAsc',
+  //   '1_expired': 'expiryDateDesc',
+  //   '2_category': 'categoryNameAsc',
+  // };
   public sortByParamMap = {
-    '0_worker': 'staffNameAsc',
-    '1_expired': 'expiryDateDesc',
-    '2_category': 'categoryNameAsc',
+    '0_asc': 'staffNameAsc',
+    '1_desc': 'staffNameDesc',
   };
 
   constructor(
@@ -70,10 +74,12 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   }
 
   private setTrainingAndCount(): void {
-    const { training = [], trainingCount } = this.route.snapshot.data.training;
-    this.trainingList = training;
-    this.totalTrainingCount = trainingCount;
-    this.trainingCount = trainingCount;
+    const { workers = [], workerCount } = this.route.snapshot.data.training;
+    console.log('******************');
+    console.log(this.route.snapshot.data.training);
+    this.workers = workers;
+    this.totalWorkerCount = workerCount;
+    this.workerCount = workerCount;
   }
 
   public returnToHome(): void {
@@ -99,9 +105,20 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
         })
         .pipe(take(1))
         .subscribe((data) => {
-          this.trainingList = data.training;
-          this.trainingCount = data.trainingCount;
+          this.workers = data.workers;
+          this.workerCount = data.workerCount;
         }),
     );
+  }
+
+  public tableRowConditionalClass(training, index): string | null {
+    if (training.length > 1 && index === 0) {
+      return 'govuk-table__cell-no-border__top-row';
+    } else if (training.length > 1 && index < training.length - 1) {
+      return 'govuk-table__cell-no-border__middle-row';
+    } else if (training.length > 1 && index === training.length - 1) {
+      return 'govuk-table__cell-no-border__bottom-row';
+    }
+    return null;
   }
 }
