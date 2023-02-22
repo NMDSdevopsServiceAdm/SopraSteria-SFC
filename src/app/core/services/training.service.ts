@@ -1,15 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
-import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
+import { Params } from '@angular/router';
+import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-<<<<<<< HEAD
-=======
-import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
-import { Worker } from '@core/model/worker.model';
->>>>>>> test
 @Injectable({
   providedIn: 'root',
 })
@@ -27,16 +23,15 @@ export class TrainingService {
       .pipe(map((res) => res.trainingCategories));
   }
 
-  getAllTrainingByStatus(workplaceUid: string, status: string): Observable<TrainingAndQualificationRecords> {
-    return this.http.get<TrainingAndQualificationRecords>(
-      `/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`,
-    );
+  getAllTrainingByStatus(workplaceUid: string, status: string, queryParams?: Params): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`, {
+      params: queryParams,
+    });
   }
 
   getMissingMandatoryTraining(workplaceId): Observable<any> {
     return this.http.get<any>(`/api/establishment/${workplaceId}/trainingAndQualifications/missing-training`);
   }
-
 
   getCategoryById(categoryId): Observable<TrainingCategory[]> {
     return this.http

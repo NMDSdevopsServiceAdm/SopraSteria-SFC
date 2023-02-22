@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -26,7 +25,6 @@ describe('AddEditTrainingComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
           WindowRef,
-          AlertService,
           {
             provide: ActivatedRoute,
             useValue: new MockActivatedRoute({
@@ -60,9 +58,6 @@ describe('AddEditTrainingComponent', () => {
     const updateSpy = spyOn(workerService, 'updateTrainingRecord').and.callThrough();
     const createSpy = spyOn(workerService, 'createTrainingRecord').and.callThrough();
 
-    const alertService = injector.inject(AlertService) as AlertService;
-    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
-
     const component = fixture.componentInstance;
 
     return {
@@ -75,7 +70,6 @@ describe('AddEditTrainingComponent', () => {
       queryByText,
       queryByTestId,
       getByLabelText,
-      alertSpy,
       updateSpy,
       createSpy,
       workerService,
@@ -256,21 +250,8 @@ describe('AddEditTrainingComponent', () => {
           notes: 'Some notes added to this training',
         },
       );
-      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
-    });
-
-    it('should show an alert when successfully updating training', async () => {
-      const { component, fixture, getByText, alertSpy } = await setup();
-
-      component.previousUrl = ['/goToPreviousUrl'];
-      fixture.detectChanges();
-
-      fireEvent.click(getByText('Save and return'));
-      fixture.detectChanges();
-
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Training record updated',
+      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl'], {
+        state: { alertMessage: 'Training record updated' },
       });
     });
 
@@ -315,32 +296,9 @@ describe('AddEditTrainingComponent', () => {
         expires: '2022-04-10',
         notes: 'Some notes for this training',
       });
-      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
-    });
-
-    it('should show an alert when successfully adding a training record', async () => {
-      const { component, fixture, getByText, getByLabelText, getByTestId, alertSpy } = await setup(null);
-
-      component.previousUrl = ['/goToPreviousUrl'];
-      fixture.detectChanges();
-
-      userEvent.selectOptions(getByLabelText('Training category'), `${component.categories[0].id}`);
-      userEvent.type(getByLabelText('Training name'), 'Some training');
-      userEvent.click(getByLabelText('Yes'));
-      const completedDate = getByTestId('completedDate');
-      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
-      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
-      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
-      const expiresDate = getByTestId('expiresDate');
-      userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
-      userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
-      userEvent.type(within(expiresDate).getByLabelText('Year'), '2022');
-      userEvent.type(getByLabelText('Add notes'), 'Some notes for this training');
-
-      fireEvent.click(getByText('Save record'));
-      fixture.detectChanges();
-
-      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: 'Training record added' });
+      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl'], {
+        state: { alertMessage: 'Training record added' },
+      });
     });
   });
 

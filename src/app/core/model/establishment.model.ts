@@ -269,6 +269,11 @@ export enum WdfParentSortWorkplacesOptions {
   '4_dsc' = 'Workplace name (Z to A)',
 }
 
+export enum SortTrainingOptionsStatus {
+  '0_asc' = 'Staff name (A to Z)',
+  '1_desc' = 'Staff name (Z to A)',
+}
+
 export enum SortTrainingAndQualsOptionsWorker {
   '0_expired' = 'Expired',
   '1_expires_soon' = 'Expires soon',
