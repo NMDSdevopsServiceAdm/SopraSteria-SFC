@@ -23,7 +23,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public turnoverContent = MetricsContent.Turnover;
   public qualificationsContent = MetricsContent.Qualifications;
   public sicknessContent = MetricsContent.Sickness;
-
+  public canViewFullBenchmarks: boolean;
   public tilesData: BenchmarksResponse;
 
   constructor(
@@ -34,19 +34,17 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
+    this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
 
-    if (canViewBenchmarks) {
-      this.subscriptions.add(
-        this.benchmarksService
-          .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
-          .subscribe((data) => {
-            if (data) {
-              this.tilesData = data;
-            }
-          }),
-      );
-    }
+    this.subscriptions.add(
+      this.benchmarksService
+        .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
+        .subscribe((data) => {
+          if (data) {
+            this.tilesData = data;
+          }
+        }),
+    );
   }
 
   ngOnDestroy(): void {

@@ -26,7 +26,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public totalStaffRecords: number;
   public workplace: Establishment;
   public trainingAlert: number;
-  public canViewBenchmarks: boolean;
   public workplaceUid: string | null;
   public showSecondUserBanner: boolean;
   public canAddUser: boolean;
@@ -77,7 +76,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getPermissions(): void {
-    this.canViewBenchmarks = true // this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
     this.canViewListOfUsers = this.permissionsService.can(this.workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');

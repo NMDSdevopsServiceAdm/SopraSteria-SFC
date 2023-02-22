@@ -25,12 +25,33 @@
     [workplaceID]="workplace.uid"
   ></app-comparison-group-header>
   <div class="govuk-grid-row">
-    <app-benchmark-tile [content]="payContent" [tile]="payTile" [workplaceID]="workplace.uid"> </app-benchmark-tile>
-    <app-benchmark-tile [content]="turnoverContent" [tile]="turnoverTile" [workplaceID]="workplace.uid">
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="payContent"
+      [tile]="payTile"
+      [workplaceID]="workplace.uid"
+    >
     </app-benchmark-tile>
-    <app-benchmark-tile [content]="sicknessContent" [tile]="sicknessTile" [workplaceID]="workplace.uid">
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="turnoverContent"
+      [tile]="turnoverTile"
+      [workplaceID]="workplace.uid"
+    >
     </app-benchmark-tile>
-    <app-benchmark-tile [content]="qualificationsContent" [tile]="qualificationsTile" [workplaceID]="workplace.uid">
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="sicknessContent"
+      [tile]="sicknessTile"
+      [workplaceID]="workplace.uid"
+    >
+    </app-benchmark-tile>
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="qualificationsContent"
+      [tile]="qualificationsTile"
+      [workplaceID]="workplace.uid"
+    >
     </app-benchmark-tile>
   </div>
   <app-benchmarks-about-the-data #aboutData class="hidden" [workplace]="workplace"></app-benchmarks-about-the-data>
