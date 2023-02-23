@@ -327,7 +327,7 @@ describe('ExpiredTrainingComponent', () => {
     it('does not render the search bar when there are fewer than 15 training records', async () => {
       const { queryByLabelText } = await setup();
 
-      const searchInput = queryByLabelText('Search staff training records');
+      const searchInput = queryByLabelText('Search', { exact: false });
       expect(searchInput).toBeNull();
     });
 
@@ -337,7 +337,7 @@ describe('ExpiredTrainingComponent', () => {
       component.totalWorkerCount = 16;
       fixture.detectChanges();
 
-      const searchInput = getByLabelText('Search staff training records');
+      const searchInput = getByLabelText('Search', { exact: false });
       expect(searchInput).toBeTruthy();
 
       userEvent.type(searchInput, 'search term here{enter}');
@@ -364,7 +364,7 @@ describe('ExpiredTrainingComponent', () => {
         }),
       );
 
-      const searchInput = getByLabelText('Search staff training records');
+      const searchInput = getByLabelText('Search', { exact: false });
       expect(searchInput).toBeTruthy();
 
       userEvent.type(searchInput, 'search term here{enter}');
@@ -385,7 +385,7 @@ describe('ExpiredTrainingComponent', () => {
 
       component.totalWorkerCount = 16;
       fixture.detectChanges();
-      expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
+      expect((getByLabelText('Search', { exact: false }) as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
 });

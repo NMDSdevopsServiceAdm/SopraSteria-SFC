@@ -743,7 +743,7 @@ class Training extends EntityValidator {
           attributes: ['id', 'category'],
         },
       },
-      order: [customOrder, ['workerTraining', 'expires', 'ASC']],
+      order: [customOrder, [models.sequelize.literal('"workerTraining.category.category"'), 'ASC']],
     });
   }
 
