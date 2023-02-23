@@ -718,7 +718,7 @@ class Training extends EntityValidator {
       });
 
       orderByClause += 'ELSE "worker"."ID" END';
-      return [models.sequelize.literal(orderByClause, 'asc')];
+      return [models.sequelize.literal(orderByClause, 'ASC')];
     };
 
     return await models.worker.findAll({
@@ -746,6 +746,17 @@ class Training extends EntityValidator {
   }
 
   static async getWorkersMissingTraining(establishmentId, workerIds) {
+    const customOrder = (values) => {
+      let orderByClause = 'CASE ';
+
+      values.forEach((value, index) => {
+        orderByClause += `WHEN "worker"."ID" = ${value} THEN '${index}' `;
+      });
+
+      orderByClause += 'ELSE "worker"."ID" END';
+      return [models.sequelize.literal(orderByClause, 'ASC')];
+    };
+
     return await models.worker.findAll({
       attributes: ['id', 'uid', 'NameOrIdValue'],
       where: {
@@ -797,6 +808,10 @@ class Training extends EntityValidator {
             },
           ],
         },
+      ],
+      order: [
+        customOrder(workerIds),
+        [models.sequelize.literal('"mainJob.MandatoryTraining.workerTrainingCategories.category"'), 'ASC'],
       ],
     });
   }

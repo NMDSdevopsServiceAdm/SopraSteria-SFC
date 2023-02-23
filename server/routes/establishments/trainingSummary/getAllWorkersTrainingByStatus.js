@@ -62,19 +62,9 @@ const getMissingMandatoryTraining = async (req, res) => {
       searchTerm,
     );
 
-    // const { count, rows } = await models.establishment.getWorkersWithMissingMandatoryTraining(
-    //   establishmentId,
-    //   itemsPerPage && +itemsPerPage,
-    //   pageIndex && +pageIndex,
-    //   sortBy,
-    //   searchTerm,
-    // );
-
     if (rows.length === 0) {
       return res.status(200).json({ workers: [], workerCount: 0 });
     }
-
-    // const missingTraining = transformWorkersWithMissingMandatoryTraining(rows[0].workers);
 
     const workerIds = rows[0].workers.map((worker) => worker.id);
 
@@ -82,9 +72,7 @@ const getMissingMandatoryTraining = async (req, res) => {
 
     const transformedWorkers = transformWorkersWithMissingMandatoryTraining(workers);
 
-    return res.status(200).json({ workers: transformedWorkers, workerCount });
-
-    // return res.status(200).json({ missingTraining, count, response });
+    return res.status(200).json({ workers: transformedWorkers, workerCount, rows: rows[0].workers });
   } catch (err) {
     console.error('Training::root getMissingMandatoryTraining - failed', err);
     res.status(500).send(`Failed to get missing training for establishment ${establishmentId}`);
