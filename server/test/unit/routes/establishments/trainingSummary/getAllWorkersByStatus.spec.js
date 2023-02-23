@@ -145,7 +145,10 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
           name: worker.NameOrIdValue,
           uid: worker.uid,
           missingTraining: worker.mainJob.MandatoryTraining.map((training) => {
-            return { category: training.workerTrainingCategories.get('category') };
+            return {
+              category: training.workerTrainingCategories.get('category'),
+              id: training.workerTrainingCategories.get('id'),
+            };
           }),
         };
       });
