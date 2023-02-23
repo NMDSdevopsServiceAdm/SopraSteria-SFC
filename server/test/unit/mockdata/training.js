@@ -215,7 +215,7 @@ exports.mockMissingMandatoryTraining = [
           workerTrainingCategories: {
             get() {
               return {
-                cate: 'Autism',
+                category: 'Autism',
                 id: 9,
                 seq: 11,
               };
@@ -246,7 +246,7 @@ exports.mockMissingMandatoryTraining = [
           workerTrainingCategories: {
             get() {
               return {
-                cate: 'Autism',
+                category: 'Autism',
                 id: 9,
                 seq: 11,
               };
@@ -265,7 +265,7 @@ exports.mockMissingMandatoryTraining = [
           workerTrainingCategories: {
             get() {
               return {
-                cate: 'COSHH',
+                category: 'COSHH',
                 id: 5,
                 seq: 11,
               };

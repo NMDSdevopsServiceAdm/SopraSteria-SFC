@@ -15,35 +15,33 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
     sinon.restore();
   });
 
+  const returnedWorkers = [
+    {
+      NameValue: 'Establishment Name',
+      workers: [
+        {
+          NameOrIdValue: 'Person 1',
+          id: 34,
+          uid: 'mock-uid-1',
+        },
+        {
+          NameOrIdValue: 'Person 2',
+          id: 45,
+          uid: 'mock-uid-2',
+        },
+        {
+          NameOrIdValue: 'Person 3',
+          id: 79,
+          uid: 'mock-uid-3',
+        },
+      ],
+    },
+  ];
+
   describe('getAllTrainingByStatus', () => {
     let req;
     let res;
 
-    const returnedWorkers = [
-      {
-        NameValue: 'Establishment Name',
-        workers: [
-          {
-            NameOrIdValue: 'Person 1',
-            expiredTrainingCount: 2,
-            id: 34,
-            uid: 'mock-uid-1',
-          },
-          {
-            NameOrIdValue: 'Person 2',
-            expiredTrainingCount: 1,
-            id: 45,
-            uid: 'mock-uid-2',
-          },
-          {
-            NameOrIdValue: 'Person 3',
-            expiredTrainingCount: 1,
-            id: 79,
-            uid: 'mock-uid-3',
-          },
-        ],
-      },
-    ];
     beforeEach(() => {
       const request = {
         method: 'GET',
@@ -59,7 +57,7 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
 
     it('should return a status of 200 when retrieving expired or expiring training', async () => {
       sinon
-        .stub(models.establishment, 'getWorkerWithExpiredOrExpiringTraining')
+        .stub(models.establishment, 'getWorkerWithExpiredExpiringOrMissingTraining')
         .returns({ rows: returnedWorkers, count: 3 });
       sinon.stub(Training, 'getWorkersTrainingByStatus').returns(mockExpiredTrainingRecords);
 
@@ -70,7 +68,7 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
     });
 
     it('should return a status of 200 and an empty array if there are no results', async () => {
-      sinon.stub(models.establishment, 'getWorkerWithExpiredOrExpiringTraining').returns({ rows: [], count: 0 });
+      sinon.stub(models.establishment, 'getWorkerWithExpiredExpiringOrMissingTraining').returns({ rows: [], count: 0 });
 
       await getAllTrainingByStatus(req, res);
 
@@ -96,8 +94,8 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
       expect(res._getData()).to.deep.equal('The establishment id and status must be given');
     });
 
-    it('should return a status of 500 when an error is thrown on getWorkerWithExpiredOrExpiringTraining', async () => {
-      sinon.stub(models.establishment, 'getWorkerWithExpiredOrExpiringTraining').throws(new Error());
+    it('should return a status of 500 when an error is thrown on getWorkerWithExpiredExpiringOrMissingTraining', async () => {
+      sinon.stub(models.establishment, 'getWorkerWithExpiredExpiringOrMissingTraining').throws(new Error());
 
       await getAllTrainingByStatus(req, res);
 
@@ -107,7 +105,7 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
 
     it('should return a status of 500 when an error is thrown on getWorkersTrainingByStatus', async () => {
       sinon
-        .stub(models.establishment, 'getWorkerWithExpiredOrExpiringTraining')
+        .stub(models.establishment, 'getWorkerWithExpiredExpiringOrMissingTraining')
         .returns({ rows: returnedWorkers, count: 3 });
       sinon.stub(Training, 'getWorkersTrainingByStatus').throws(new Error());
 
@@ -136,8 +134,9 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
 
     it('should return a status of 200 when retrieving missing mandatory training', async () => {
       sinon
-        .stub(models.establishment, 'getWorkersWithMissingMandatoryTraining')
-        .returns({ rows: [{ workers: mockMissingMandatoryTraining }], count: 2 });
+        .stub(models.establishment, 'getWorkerWithExpiredExpiringOrMissingTraining')
+        .returns({ rows: [returnedWorkers[0], returnedWorkers[1]], count: 2 });
+      sinon.stub(Training, 'getWorkersMissingTraining').returns(mockMissingMandatoryTraining);
 
       await getMissingMandatoryTraining(req, res);
 
@@ -146,22 +145,22 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
           name: worker.NameOrIdValue,
           uid: worker.uid,
           missingTraining: worker.mainJob.MandatoryTraining.map((training) => {
-            return { category: training.workerTrainingCategories.get('cate') };
+            return { category: training.workerTrainingCategories.get('category') };
           }),
         };
       });
 
       expect(res.statusCode).to.deep.equal(200);
-      expect(res._getJSONData()).to.deep.equal({ missingTraining: formattedTraining, count: 2 });
+      expect(res._getJSONData()).to.deep.equal({ workers: formattedTraining, workerCount: 2 });
     });
 
     it('should return a status of 200 and an empty array if there are no results', async () => {
-      sinon.stub(models.establishment, 'getWorkersWithMissingMandatoryTraining').returns({ rows: [], count: 0 });
+      sinon.stub(models.establishment, 'getWorkerWithExpiredExpiringOrMissingTraining').returns({ rows: [], count: 0 });
 
       await getMissingMandatoryTraining(req, res);
 
       expect(res.statusCode).to.deep.equal(200);
-      expect(res._getJSONData()).to.deep.equal({ missingTraining: [], count: 0 });
+      expect(res._getJSONData()).to.deep.equal({ workers: [], workerCount: 0 });
     });
 
     it('should return a status of 400 and error message if there is no establishment id', async () => {
@@ -173,8 +172,20 @@ describe('server/routes/establishments/trainingSummary/getAllTrainingByStatus.js
       expect(res._getData()).to.deep.equal('The establishment id must be given');
     });
 
-    it('should return a status of 500 when an error is thrown', async () => {
-      sinon.stub(models.establishment, 'getWorkersWithMissingMandatoryTraining').throws(new Error());
+    it('should return a status of 500 when an error is thrown on getWorkerWithExpiredExpiringOrMissingTraining', async () => {
+      sinon.stub(models.establishment, 'getWorkerWithExpiredExpiringOrMissingTraining').throws(new Error());
+
+      await getMissingMandatoryTraining(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+      expect(res._getData()).to.deep.equal('Failed to get missing training for establishment mocked-uid');
+    });
+
+    it('should return a status of 500 when an error is thrown on getWorkersTrainingByStatus', async () => {
+      sinon
+        .stub(models.establishment, 'getWorkerWithExpiredExpiringOrMissingTraining')
+        .returns({ rows: returnedWorkers, count: 3 });
+      sinon.stub(Training, 'getWorkersMissingTraining').throws(new Error());
 
       await getMissingMandatoryTraining(req, res);
 

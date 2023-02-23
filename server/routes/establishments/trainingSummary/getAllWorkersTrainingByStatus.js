@@ -72,7 +72,7 @@ const getMissingMandatoryTraining = async (req, res) => {
 
     const transformedWorkers = transformWorkersWithMissingMandatoryTraining(workers);
 
-    return res.status(200).json({ workers: transformedWorkers, workerCount, rows: rows[0].workers });
+    return res.status(200).json({ workers: transformedWorkers, workerCount });
   } catch (err) {
     console.error('Training::root getMissingMandatoryTraining - failed', err);
     res.status(500).send(`Failed to get missing training for establishment ${establishmentId}`);

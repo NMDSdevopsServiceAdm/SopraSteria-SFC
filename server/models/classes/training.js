@@ -699,6 +699,17 @@ class Training extends EntityValidator {
     }
   }
 
+  static buildCustomOrder(values) {
+    let orderByClause = 'CASE ';
+
+    values.forEach((value, index) => {
+      orderByClause += `WHEN "worker"."ID" = ${value} THEN '${index}' `;
+    });
+
+    orderByClause += 'ELSE "worker"."ID" END';
+    return [models.sequelize.literal(orderByClause, 'ASC')];
+  }
+
   static async getWorkersTrainingByStatus(establishmentId, workerIds, status) {
     const currentDate = moment().toISOString();
     const expiresSoonAlertDate = await models.establishment.getExpiresSoonAlertDate(establishmentId);
@@ -710,16 +721,7 @@ class Training extends EntityValidator {
       filter = { [Op.gt]: currentDate, [Op.lt]: expiresSoon };
     }
 
-    const customOrder = (values) => {
-      let orderByClause = 'CASE ';
-
-      values.forEach((value, index) => {
-        orderByClause += `WHEN "worker"."ID" = ${value} THEN '${index}' `;
-      });
-
-      orderByClause += 'ELSE "worker"."ID" END';
-      return [models.sequelize.literal(orderByClause, 'ASC')];
-    };
+    const customOrder = this.buildCustomOrder(workerIds);
 
     return await models.worker.findAll({
       attributes: ['id', 'uid', 'NameOrIdValue'],
@@ -741,21 +743,12 @@ class Training extends EntityValidator {
           attributes: ['id', 'category'],
         },
       },
-      order: [customOrder(workerIds), [models.sequelize.literal('"workerTraining.category.category"'), 'ASC']],
+      order: [customOrder, ['workerTraining', 'expires', 'ASC']],
     });
   }
 
   static async getWorkersMissingTraining(establishmentId, workerIds) {
-    const customOrder = (values) => {
-      let orderByClause = 'CASE ';
-
-      values.forEach((value, index) => {
-        orderByClause += `WHEN "worker"."ID" = ${value} THEN '${index}' `;
-      });
-
-      orderByClause += 'ELSE "worker"."ID" END';
-      return [models.sequelize.literal(orderByClause, 'ASC')];
-    };
+    const customOrder = this.buildCustomOrder(workerIds);
 
     return await models.worker.findAll({
       attributes: ['id', 'uid', 'NameOrIdValue'],
@@ -810,7 +803,7 @@ class Training extends EntityValidator {
         },
       ],
       order: [
-        customOrder(workerIds),
+        customOrder,
         [models.sequelize.literal('"mainJob.MandatoryTraining.workerTrainingCategories.category"'), 'ASC'],
       ],
     });
