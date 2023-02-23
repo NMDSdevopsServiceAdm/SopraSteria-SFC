@@ -33,4 +33,13 @@ describe('TrainingService', () => {
       expect(req.request.method).toBe('GET');
     });
   });
+
+  describe('getMissingMandatoryTraining', () => {
+    it('should call the endpoint for getting missing mandatory training', async () => {
+      service.getMissingMandatoryTraining('mock-uid').subscribe();
+
+      const req = http.expectOne('/api/establishment/mock-uid/trainingAndQualifications/missing-training');
+      expect(req.request.method).toBe('GET');
+    });
+  });
 });

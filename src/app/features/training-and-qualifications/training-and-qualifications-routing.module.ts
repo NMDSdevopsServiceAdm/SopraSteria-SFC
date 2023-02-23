@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GetTrainingByStatusResolver } from '@core/resolvers/get-training-by-status.resolver';
+import { MissingMandatoryTrainingResolver } from '@core/resolvers/missing-mandatory-training.resolver';
 
 import { ExpiredTrainingComponent } from './expired-training/expired-training.component';
 import { ExpiringSoonTrainingComponent } from './expiring-soon-training/expiring-soon-training.component';
-import {
-  MissingMandatoryTrainingStatusComponent,
-} from './missing-mandatory-training/missing-mandatory-training-status.component';
+import { MissingMandatoryTrainingStatusComponent } from './missing-mandatory-training/missing-mandatory-training-status.component';
 
 const routes: Routes = [
   {
@@ -28,8 +27,10 @@ const routes: Routes = [
   {
     path: 'missing-mandatory-training',
     component: MissingMandatoryTrainingStatusComponent,
-
-    data: { title: 'Missing mandatory training', training: 'missing' },
+    resolve: {
+      training: MissingMandatoryTrainingResolver,
+    },
+    data: { title: 'Missing mandatory training' },
   },
 ];
 

@@ -152,7 +152,7 @@ describe('ExpiringSoonTrainingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render an alert banner if there is an aler message in state', async () => {
+  it('should render an alert banner if there is an alert message in state', async () => {
     const { component, fixture, alertSpy } = await setup(true, false, sinon.fake(), true);
 
     component.ngOnInit();
@@ -264,12 +264,12 @@ describe('ExpiringSoonTrainingComponent', () => {
     const tableRow3CategoryCell = getByTestId(`cell-${workers[0].NameOrIdValue}-2`);
     const tableRow4CategoryCell = getByTestId(`cell-${workers[1].NameOrIdValue}-0`);
 
-    expect(tableRow1CategoryCell.getAttribute('class')).toContain('govuk-table__cell-no-border__top-row');
-    expect(tableRow2CategoryCell.getAttribute('class')).toContain('govuk-table__cell-no-border__middle-row');
-    expect(tableRow3CategoryCell.getAttribute('class')).toContain('govuk-table__cell-no-border__bottom-row');
-    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('govuk-table__cell-no-border__top-row');
-    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('govuk-table__cell-no-border__middle-row');
-    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('govuk-table__cell-no-border__bottom-row');
+    expect(tableRow1CategoryCell.getAttribute('class')).toContain('asc-table__cell-no-border__top-row');
+    expect(tableRow2CategoryCell.getAttribute('class')).toContain('asc-table__cell-no-border__middle-row');
+    expect(tableRow3CategoryCell.getAttribute('class')).toContain('asc-table__cell-no-border__bottom-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__top-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__middle-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__bottom-row');
   });
 
   it('should navigate back to the dashboard when clicking the return to home button in a parent or stand alone account', async () => {
@@ -335,7 +335,7 @@ describe('ExpiringSoonTrainingComponent', () => {
     it('does not render the search bar when there are fewer than 15 training records', async () => {
       const { queryByLabelText } = await setup();
 
-      const searchInput = queryByLabelText('Search staff training records');
+      const searchInput = queryByLabelText('Search', { exact: false });
       expect(searchInput).toBeNull();
     });
 
@@ -345,7 +345,7 @@ describe('ExpiringSoonTrainingComponent', () => {
       component.totalWorkerCount = 16;
       fixture.detectChanges();
 
-      const searchInput = getByLabelText('Search staff training records');
+      const searchInput = getByLabelText('Search', { exact: false });
       expect(searchInput).toBeTruthy();
 
       userEvent.type(searchInput, 'search term here{enter}');
@@ -372,7 +372,7 @@ describe('ExpiringSoonTrainingComponent', () => {
         }),
       );
 
-      const searchInput = getByLabelText('Search staff training records');
+      const searchInput = getByLabelText('Search', { exact: false });
       expect(searchInput).toBeTruthy();
 
       userEvent.type(searchInput, 'search term here{enter}');
@@ -393,7 +393,7 @@ describe('ExpiringSoonTrainingComponent', () => {
 
       component.totalWorkerCount = 16;
       fixture.detectChanges();
-      expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
+      expect((getByLabelText('Search', { exact: false }) as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
 });
