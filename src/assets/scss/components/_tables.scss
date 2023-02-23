@@ -12,6 +12,22 @@ $error_row_padding: $govuk-gutter-half;
   .govuk-table__cell:last-of-type {
     padding-right: math.div($error-row-padding, 2);
   }
+
+  .asc-table__cell-no-border {
+    &__top-row {
+      border: none;
+      padding-bottom: 0;
+    }
+
+    &__middle-row {
+      border: none;
+      padding: 0;
+    }
+
+    &__bottom-row {
+      padding-top: 0;
+    }
+  }
 }
 
 .govuk-table__with-action {

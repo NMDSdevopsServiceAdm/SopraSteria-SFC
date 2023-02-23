@@ -9,9 +9,7 @@ import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/trainin
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
-import {
-  ViewTrainingComponent,
-} from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
+import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
@@ -91,6 +89,7 @@ const routes: Routes = [
     resolve: { training: TrainingRecordsForCategoryResolver },
     data: { title: 'View Training Categories' },
   },
+
   {
     path: ':id',
     canActivate: [CheckPermissionsGuard],

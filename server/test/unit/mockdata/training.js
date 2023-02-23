@@ -192,3 +192,147 @@ exports.mockMandatoryTraining = [
     },
   },
 ];
+
+exports.mockMissingMandatoryTraining = [
+  {
+    id: 1,
+    uid: 'worker-uid1',
+    NameOrIdValue: 'Someone',
+    mainJob: {
+      id: 15,
+      other: false,
+      title: 'Advisor',
+      MandatoryTraining: [
+        {
+          TrainingCategoryFK: 9,
+          created: '01/02/2022',
+          createdBy: 'admin',
+          establishmentFK: 23,
+          id: 4,
+          jobFK: 15,
+          updated: '01/02/2022',
+          updatedBy: 'admin',
+          workerTrainingCategories: {
+            get() {
+              return {
+                category: 'Autism',
+                id: 9,
+                seq: 11,
+              };
+            },
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 2,
+    uid: 'worker-uid2',
+    NameOrIdValue: 'Another',
+    mainJob: {
+      id: 5,
+      other: false,
+      title: 'Nurse',
+      MandatoryTraining: [
+        {
+          TrainingCategoryFK: 9,
+          created: '01/02/2022',
+          createdBy: 'admin',
+          establishmentFK: 23,
+          id: 4,
+          jobFK: 5,
+          updated: '01/02/2022',
+          updatedBy: 'admin',
+          workerTrainingCategories: {
+            get() {
+              return {
+                category: 'Autism',
+                id: 9,
+                seq: 11,
+              };
+            },
+          },
+        },
+        {
+          TrainingCategoryFK: 5,
+          created: '01/02/2022',
+          createdBy: 'admin',
+          establishmentFK: 23,
+          id: 4,
+          jobFK: 5,
+          updated: '01/02/2022',
+          updatedBy: 'admin',
+          workerTrainingCategories: {
+            get() {
+              return {
+                category: 'COSHH',
+                id: 5,
+                seq: 11,
+              };
+            },
+          },
+        },
+      ],
+    },
+  },
+];
+
+exports.mockExpiredTrainingRecords = [
+  {
+    NameOrIdValue: 'Person 1',
+    id: 34,
+    uid: 'mock-uid-1',
+    workerTraining: [
+      {
+        category: {
+          id: 1,
+          category: 'Some category',
+        },
+        categoryFk: 1,
+        expires: '01/02/2022',
+        uid: 'training-uid-1',
+      },
+      {
+        category: {
+          id: 2,
+          category: 'Different category',
+        },
+        categoryFk: 2,
+        expires: '01/02/2022',
+        uid: 'training-uid-2',
+      },
+    ],
+  },
+  {
+    NameOrIdValue: 'Person 2',
+    id: 45,
+    uid: 'mock-uid-2',
+    workerTraining: [
+      {
+        category: {
+          id: 5,
+          category: 'Another category',
+        },
+        categoryFk: 5,
+        expires: '01/02/2022',
+        uid: 'training-uid-3',
+      },
+    ],
+  },
+  {
+    NameOrIdValue: 'Person 3',
+    id: 79,
+    uid: 'mock-uid-3',
+    workerTraining: [
+      {
+        category: {
+          id: 1,
+          category: 'Some category',
+        },
+        categoryFk: 1,
+        expires: '01/02/2022',
+        uid: 'training-uid-4',
+      },
+    ],
+  },
+];

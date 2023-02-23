@@ -84,5 +84,22 @@ const transformTrainingCategoriesWithMandatoryTraining = function (establishment
     });
 };
 
+const transformWorkersWithMissingMandatoryTraining = (workers) => {
+  const formattedTraining = workers.map((worker) => {
+    return {
+      name: worker.NameOrIdValue,
+      uid: worker.uid,
+      missingTraining: worker.mainJob.MandatoryTraining.map((training) => {
+        return {
+          category: training.workerTrainingCategories.get('category'),
+          id: training.workerTrainingCategories.get('id'),
+        };
+      }),
+    };
+  });
+  return formattedTraining;
+};
+
 module.exports.transformTrainingCategories = transformTrainingCategories;
 module.exports.transformTrainingCategoriesWithMandatoryTraining = transformTrainingCategoriesWithMandatoryTraining;
+module.exports.transformWorkersWithMissingMandatoryTraining = transformWorkersWithMissingMandatoryTraining;

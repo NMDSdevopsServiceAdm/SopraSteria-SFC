@@ -54,6 +54,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   ) {}
 
   public ngOnInit(): void {
+    const alertMessage = history.state?.alertMessage;
+    alertMessage && this.showAlert(alertMessage);
+
     this.setPageData();
     this.setBreadcrumbs();
     this.setUpTabSubscription();
@@ -62,6 +65,13 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setTraining();
     this.setUpAlertSubscription();
     this.setReturnRoute();
+  }
+
+  private showAlert(message: string): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message,
+    });
   }
 
   private setPageData(): void {
@@ -243,6 +253,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
           this.worker.uid,
           'training',
           actionListItem.uid,
+          { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
         ]
       : [
           'workplace',

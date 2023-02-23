@@ -40,7 +40,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     jobRoleMandatoryTraining = [],
     noQualifications = false,
     fragment = 'all-records',
+    addAlert = false,
   ) {
+    if (addAlert) {
+      window.history.pushState({ alertMessage: 'Updated record' }, '');
+    }
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -306,6 +310,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
       component,
       fixture,
@@ -318,6 +325,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       queryByText,
       workplaceUid,
       workerUid,
+      alertSpy,
     };
   }
 
@@ -385,6 +393,16 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
       expect(getByText('Not answered', { exact: false })).toBeTruthy();
+    });
+
+    it('should render an alert banner if there is an alert message in state', async () => {
+      const { component, fixture, alertSpy } = await setup(false, true, [], [], false, 'all-records', true);
+      component.ngOnInit();
+      fixture.detectChanges();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Updated record',
+      });
     });
   });
 

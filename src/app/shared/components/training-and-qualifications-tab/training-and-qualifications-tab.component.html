@@ -17,6 +17,7 @@
   <app-training-info-panel
     *ngIf="workers"
     data-testid="trainingInfoPanel"
+    [workplaceUid]="workplace.uid"
     [totalExpiredTraining]="totalExpiredTraining"
     [totalExpiringTraining]="totalExpiringTraining"
     [totalStaffMissingMandatoryTraining]="staffMissingMandatoryTraining"
