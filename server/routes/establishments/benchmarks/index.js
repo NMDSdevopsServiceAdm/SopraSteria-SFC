@@ -6,8 +6,6 @@ const rankings = require('./rankings');
 const usage = require('./usage');
 const { getPay, getQualifications, getSickness, getTurnover } = require('./benchmarksService');
 
-const { hasPermission } = require('../../../utils/security/hasPermission');
-
 const comparisonJson = {
   value: 0,
   hasValue: false,
@@ -107,7 +105,6 @@ const viewBenchmarks = async (req, res) => {
   }
 };
 
-// router.use('/', hasPermission('canViewBenchmarks'));
 router.route('/').get(viewBenchmarks);
 
 router.use('/rankings', rankings);
