@@ -69,8 +69,6 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
 
   private setMissingTrainingAndCount(): void {
     const { workers = [], workerCount } = this.route.snapshot.data.training;
-    console.log('*******************');
-    console.log(this.route.snapshot.data.training);
     this.workers = workers;
     this.totalWorkerCount = workerCount;
     this.workerCount = workerCount;

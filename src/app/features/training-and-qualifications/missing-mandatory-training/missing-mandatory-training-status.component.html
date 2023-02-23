@@ -41,7 +41,7 @@
                   <a
                     [routerLink]="[
                       '/workplace',
-                      this.workplace.uid,
+                      workplaceUid,
                       'training-and-qualifications-record',
                       worker.uid,
                       'training'
@@ -51,7 +51,7 @@
                   >
                 </ng-container>
                 <ng-template #nameOrId>
-                  <span [attr.data-testid]="'worker-' + i + '-noLink'">
+                  <span [attr.data-testid]="'worker-' + worker.name + '-noLink'">
                     {{ worker.name }}
                   </span>
                 </ng-template>
@@ -60,6 +60,7 @@
 
             <td
               class="govuk-table__cell govuk-!-font-weight-regular"
+              [attr.data-testid]="'cell-' + worker.name + '-' + i"
               [ngClass]="tableRowConditionalClass(worker.missingTraining, i)"
             >
               {{ training.category }}

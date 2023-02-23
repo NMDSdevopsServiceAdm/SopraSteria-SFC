@@ -256,12 +256,12 @@ describe('ExpiredTrainingComponent', () => {
     const tableRow3CategoryCell = getByTestId(`cell-${workers[0].NameOrIdValue}-2`);
     const tableRow4CategoryCell = getByTestId(`cell-${workers[1].NameOrIdValue}-0`);
 
-    expect(tableRow1CategoryCell.getAttribute('class')).toContain('govuk-table__cell-no-border__top-row');
-    expect(tableRow2CategoryCell.getAttribute('class')).toContain('govuk-table__cell-no-border__middle-row');
-    expect(tableRow3CategoryCell.getAttribute('class')).toContain('govuk-table__cell-no-border__bottom-row');
-    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('govuk-table__cell-no-border__top-row');
-    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('govuk-table__cell-no-border__middle-row');
-    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('govuk-table__cell-no-border__bottom-row');
+    expect(tableRow1CategoryCell.getAttribute('class')).toContain('asc-table__cell-no-border__top-row');
+    expect(tableRow2CategoryCell.getAttribute('class')).toContain('asc-table__cell-no-border__middle-row');
+    expect(tableRow3CategoryCell.getAttribute('class')).toContain('asc-table__cell-no-border__bottom-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__top-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__middle-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__bottom-row');
   });
 
   it('should navigate back to the dashboard when clicking the return to home button in a parent or stand alone account', async () => {

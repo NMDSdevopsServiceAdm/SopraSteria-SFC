@@ -22,11 +22,11 @@ import sinon from 'sinon';
 
 import { MissingMandatoryTrainingStatusComponent } from './missing-mandatory-training-status.component';
 
-const missingTraining = [
+const workers = [
   {
     name: 'Worker One',
     uid: 'mock-uid-1',
-    missingTraining: [{ category: 'Category 1' }, { category: 'Category 2' }],
+    missingTraining: [{ category: 'Category 1' }, { category: 'Category 2' }, { category: 'Category 3' }],
   },
   {
     name: 'Worker Two',
@@ -42,12 +42,12 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     qsParamGetMock = sinon.fake(),
     addAlert = false,
   ) {
-    let missingTrainingObj = {
-      missingTraining,
-      count: 3,
+    let workerObj = {
+      workers,
+      workerCount: 2,
     };
     const permissions = addPermissions ? ['canEditWorker'] : [];
-    if (fixTrainingCount) missingTrainingObj = { missingTraining: [missingTraining[0]], count: 1 };
+    if (fixTrainingCount) workerObj = { workers: [workers[0]], workerCount: 1 };
 
     if (addAlert) {
       window.history.pushState({ alertMessage: 'Record added' }, '');
@@ -80,7 +80,7 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
                   get: qsParamGetMock,
                 },
                 data: {
-                  training: missingTrainingObj,
+                  training: workerObj,
                 },
                 params: {
                   establishmentuid: '1234-5678',
@@ -99,7 +99,7 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
 
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const trainingServiceSpy = spyOn(trainingService, 'getMissingMandatoryTraining').and.returnValue(
-      of({ missingTraining, count: 3 }),
+      of({ workers, workerCount: 2 }),
     );
 
     const alertService = injector.inject(AlertService) as AlertService;
@@ -138,43 +138,72 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
   it('should render the table with a list of workers and their missing training', async () => {
     const { getByTestId } = await setup();
 
-    const tableRow1 = getByTestId('table-row-0');
-    const tableRow2 = getByTestId('table-row-1');
+    const tableRow1 = getByTestId(`table-row-${workers[0].name}-0`);
+    const tableRow2 = getByTestId(`table-row-${workers[0].name}-1`);
+    const tableRow3 = getByTestId(`table-row-${workers[0].name}-2`);
+    const tableRow4 = getByTestId(`table-row-${workers[1].name}-0`);
 
-    expect(true).toBeTruthy();
     expect(getByTestId('table')).toBeTruthy();
+
     expect(within(tableRow1).getByText('Worker One')).toBeTruthy();
     expect(within(tableRow1).getByText('Category 1')).toBeTruthy();
-    expect(within(tableRow1).getByText('Category 2')).toBeTruthy();
-    expect(within(tableRow1).getAllByText('Missing').length).toEqual(2);
-    expect(within(tableRow2).getByText('Worker Two')).toBeTruthy();
-    expect(within(tableRow2).getByText('Category 1')).toBeTruthy();
+    expect(within(tableRow1).getByText('Missing')).toBeTruthy();
+
+    expect(within(tableRow2).queryByText('Worker One')).toBeFalsy();
+    expect(within(tableRow2).getByText('Category 2')).toBeTruthy();
     expect(within(tableRow2).getByText('Missing')).toBeTruthy();
+
+    expect(within(tableRow3).queryByText('Worker One')).toBeFalsy();
+    expect(within(tableRow3).getByText('Category 3')).toBeTruthy();
+    expect(within(tableRow3).getByText('Missing')).toBeTruthy();
+
+    expect(within(tableRow4).getByText('Worker Two')).toBeTruthy();
+    expect(within(tableRow4).getByText('Category 1')).toBeTruthy();
+    expect(within(tableRow4).getByText('Missing')).toBeTruthy();
+  });
+
+  it('should render the name as a link with href to the worker when the are canEditWorker Permissions', async () => {
+    const { component, getByText } = await setup();
+
+    expect(getByText('Worker One').getAttribute('href')).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/training`,
+    );
+    expect(getByText('Worker Two').getAttribute('href')).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-2/training`,
+    );
   });
 
   it('should not render the name as a link if there are not the correct permissions', async () => {
     const { getByTestId } = await setup(false);
 
-    expect(getByTestId('worker-0-noLink')).toBeTruthy();
-    expect(getByTestId('worker-1-noLink')).toBeTruthy();
+    expect(getByTestId(`worker-${workers[0].name}-noLink`)).toBeTruthy();
+    expect(getByTestId(`worker-${workers[1].name}-noLink`)).toBeTruthy();
   });
 
   it('should render an add link with href for each missing training when there are can edit permissions', async () => {
     const { component, getByTestId } = await setup();
 
-    const tableRow1 = getByTestId('table-row-0');
-    const tableRow2 = getByTestId('table-row-1');
+    const tableRow1 = getByTestId(`table-row-${workers[0].name}-0`);
+    const tableRow2 = getByTestId(`table-row-${workers[0].name}-1`);
+    const tableRow3 = getByTestId(`table-row-${workers[0].name}-2`);
+    const tableRow4 = getByTestId(`table-row-${workers[1].name}-0`);
 
-    const table1UpdateLink = within(tableRow1).getAllByText('Add');
+    const table1UpdateLink = within(tableRow1).getByText('Add');
     const table2UpdateLink = within(tableRow2).getByText('Add');
+    const table3UpdateLink = within(tableRow3).getByText('Add');
+    const table4UpdateLink = within(tableRow4).getByText('Add');
 
-    expect(
-      table1UpdateLink[0].getAttribute('href').slice(0, table1UpdateLink[0].getAttribute('href').indexOf(';')),
-    ).toEqual(`/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`);
-    expect(
-      table1UpdateLink[1].getAttribute('href').slice(0, table1UpdateLink[1].getAttribute('href').indexOf(';')),
-    ).toEqual(`/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`);
+    expect(table1UpdateLink.getAttribute('href').slice(0, table1UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`,
+    );
+
     expect(table2UpdateLink.getAttribute('href').slice(0, table2UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`,
+    );
+    expect(table3UpdateLink.getAttribute('href').slice(0, table3UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`,
+    );
+    expect(table4UpdateLink.getAttribute('href').slice(0, table4UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-2/add-training`,
     );
   });
@@ -182,11 +211,31 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
   it('should not render the add links if there are not the correct permissions', async () => {
     const { getByTestId } = await setup(false);
 
-    const tableRow1 = getByTestId('table-row-0');
-    const tableRow2 = getByTestId('table-row-1');
+    const tableRow1 = getByTestId(`table-row-${workers[0].name}-0`);
+    const tableRow2 = getByTestId(`table-row-${workers[0].name}-1`);
+    const tableRow3 = getByTestId(`table-row-${workers[0].name}-2`);
+    const tableRow4 = getByTestId(`table-row-${workers[1].name}-0`);
 
-    expect(within(tableRow1).queryAllByText('Add').length).toEqual(0);
+    expect(within(tableRow1).queryByText('Add')).toBeFalsy();
     expect(within(tableRow2).queryByText('Add')).toBeFalsy();
+    expect(within(tableRow3).queryByText('Add')).toBeFalsy();
+    expect(within(tableRow4).queryByText('Add')).toBeFalsy();
+  });
+
+  it('should apply conditionaly classes on rows when there is more than 1 training for a worker', async () => {
+    const { getByTestId } = await setup(false);
+
+    const tableRow1CategoryCell = getByTestId(`cell-${workers[0].name}-0`);
+    const tableRow2CategoryCell = getByTestId(`cell-${workers[0].name}-1`);
+    const tableRow3CategoryCell = getByTestId(`cell-${workers[0].name}-2`);
+    const tableRow4CategoryCell = getByTestId(`cell-${workers[1].name}-0`);
+
+    expect(tableRow1CategoryCell.getAttribute('class')).toContain('asc-table__cell-no-border__top-row');
+    expect(tableRow2CategoryCell.getAttribute('class')).toContain('asc-table__cell-no-border__middle-row');
+    expect(tableRow3CategoryCell.getAttribute('class')).toContain('asc-table__cell-no-border__bottom-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__top-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__middle-row');
+    expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__bottom-row');
   });
 
   it('should navigate back to the dashboard when clicking the return to home button in a parent or stand alone account', async () => {
@@ -255,7 +304,7 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     it('shoud call getAllTrainingByStatus with the correct search term passed', async () => {
       const { component, fixture, getByLabelText, trainingServiceSpy } = await setup();
 
-      component.totalMissingTrainingCount = 16;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
 
       const searchInput = getByLabelText('Search', { exact: false });
@@ -275,13 +324,13 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     it('should render the no results returned message when 0 workers returned from getAllWorkers after search', async () => {
       const { component, fixture, getByLabelText, getByText, trainingService } = await setup();
 
-      component.totalMissingTrainingCount = 16;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
 
       sinon.stub(trainingService, 'getMissingMandatoryTraining').returns(
         of({
-          missingTraining: [],
-          count: 0,
+          workers: [],
+          workerCount: 0,
         }),
       );
 
@@ -304,7 +353,7 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
 
       const { component, fixture, getByLabelText } = await setup(true, false, qsParamGetMock);
 
-      component.totalMissingTrainingCount = 16;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
       expect((getByLabelText('Search', { exact: false }) as HTMLInputElement).value).toBe('mysupersearch');
     });
