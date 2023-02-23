@@ -90,7 +90,7 @@ const transformWorkersWithMissingMandatoryTraining = (workers) => {
       name: worker.NameOrIdValue,
       uid: worker.uid,
       missingTraining: worker.mainJob.MandatoryTraining.map((training) => {
-        return { category: training.workerTrainingCategories.get('cate') };
+        return { category: training.workerTrainingCategories.get('category') };
       }),
     };
   });

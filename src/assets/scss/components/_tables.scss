@@ -12,10 +12,8 @@ $error_row_padding: $govuk-gutter-half;
   .govuk-table__cell:last-of-type {
     padding-right: math.div($error-row-padding, 2);
   }
-}
 
-.govuk-training-table__row {
-  .govuk-table__cell-no-border {
+  .asc-table__cell-no-border {
     &__top-row {
       border: none;
       padding-bottom: 0;

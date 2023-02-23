@@ -22,7 +22,7 @@ export class MissingMandatoryTrainingResolver implements Resolve<any> {
 
     return this.trainingService.getMissingMandatoryTraining(workplaceUid, paginationParams).pipe(
       map((response) => {
-        if (response.count > 0) {
+        if (response.workerCount > 0) {
           return response;
         } else {
           const redirectUrl = workplaceUid === primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', workplaceUid];

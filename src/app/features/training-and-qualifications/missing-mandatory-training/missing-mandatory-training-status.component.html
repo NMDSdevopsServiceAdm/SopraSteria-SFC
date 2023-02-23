@@ -7,16 +7,16 @@
   </div>
 </div>
 <app-table-pagination-wrapper
-  [totalCount]="totalMissingTrainingCount"
-  [count]="missingTrainingCount"
+  [totalCount]="totalWorkerCount"
+  [count]="workerCount"
   [searchTerm]="searchTerm"
   [sortByParamMap]="sortByParamMap"
   [sortByValue]="sortByValue"
-  [sortOptions]="sortMissingTrainingOptions"
+  [sortOptions]="sortTrainingOptions"
   [accessibleLabel]="'missing mandatory training'"
   (fetchData)="getMissingMandatoryTraining($event)"
 >
-  <table class="govuk-table" data-testid="table" *ngIf="missingTrainingCount; else noTrainingFoundInSearch">
+  <table class="govuk-table" data-testid="table" *ngIf="workerCount; else noTrainingFoundInSearch">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th class="govuk-table__header" scope="col" style="width: 30%">Name or ID number</th>
@@ -26,43 +26,46 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <ng-container>
-        <tr
-          class="govuk-table__row govuk-util__vertical-align-top"
-          *ngFor="let worker of missingTrainingList; let i = index"
-          [attr.data-testid]="'table-row-' + i"
-        >
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <div class="govuk-!-margin-bottom-1">
-              <ng-container *ngIf="canEditWorker; else nameOrId">
-                <a
-                  [routerLink]="[
-                    '/workplace',
-                    this.workplace.uid,
-                    'training-and-qualifications-record',
-                    worker.uid,
-                    'training'
-                  ]"
-                >
-                  {{ worker.name }}</a
-                >
+      <ng-container *ngFor="let worker of workers">
+        <ng-container *ngFor="let training of worker.missingTraining; let i = index">
+          <tr
+            class="govuk-table__row govuk-util__vertical-align-top"
+            [attr.data-testid]="'table-row-' + worker.name + '-' + i"
+          >
+            <td
+              class="govuk-table__cell govuk-!-font-weight-regular"
+              [ngClass]="tableRowConditionalClass(worker.missingTraining, i)"
+            >
+              <ng-container *ngIf="i === 0">
+                <ng-container *ngIf="canEditWorker; else nameOrId">
+                  <a
+                    [routerLink]="[
+                      '/workplace',
+                      this.workplace.uid,
+                      'training-and-qualifications-record',
+                      worker.uid,
+                      'training'
+                    ]"
+                  >
+                    {{ worker.name }}</a
+                  >
+                </ng-container>
+                <ng-template #nameOrId>
+                  <span [attr.data-testid]="'worker-' + i + '-noLink'">
+                    {{ worker.name }}
+                  </span>
+                </ng-template>
               </ng-container>
-              <ng-template #nameOrId>
-                <span [attr.data-testid]="'worker-' + i + '-noLink'">
-                  {{ worker.name }}
-                </span>
-              </ng-template>
-            </div>
-          </td>
+            </td>
 
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <div *ngFor="let training of worker.missingTraining" class="govuk-!-margin-bottom-1">
+            <td
+              class="govuk-table__cell govuk-!-font-weight-regular"
+              [ngClass]="tableRowConditionalClass(worker.missingTraining, i)"
+            >
               {{ training.category }}
-            </div>
-          </td>
+            </td>
 
-          <td class="govuk-table__cell">
-            <div *ngFor="let training of worker.missingTraining">
+            <td class="govuk-table__cell" [ngClass]="tableRowConditionalClass(worker.missingTraining, i)">
               <div class="govuk-!-margin-bottom-1">
                 <img
                   src="/assets/images/flag-red.svg"
@@ -71,12 +74,10 @@
                 />
                 Missing
               </div>
-            </div>
-          </td>
+            </td>
 
-          <td class="govuk-table__cell">
-            <div *ngFor="let training of worker.missingTraining">
-              <div *ngIf="canEditWorker" class="govuk-!-margin-bottom-1">
+            <td class="govuk-table__cell" [ngClass]="tableRowConditionalClass(worker.missingTraining, i)">
+              <div *ngIf="canEditWorker">
                 <a
                   [routerLink]="[
                     '/workplace',
@@ -89,9 +90,9 @@
                   >Add</a
                 >
               </div>
-            </div>
-          </td>
-        </tr>
+            </td>
+          </tr>
+        </ng-container>
       </ng-container>
     </tbody>
   </table>

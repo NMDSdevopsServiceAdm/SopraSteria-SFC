@@ -745,6 +745,62 @@ class Training extends EntityValidator {
     });
   }
 
+  static async getWorkersMissingTraining(establishmentId, workerIds) {
+    return await models.worker.findAll({
+      attributes: ['id', 'uid', 'NameOrIdValue'],
+      where: {
+        id: {
+          [Op.in]: workerIds,
+        },
+        '$mainJob.MandatoryTraining.workerTrainingCategories.workerTraining.Title$': null,
+      },
+      include: [
+        {
+          model: models.job,
+          as: 'mainJob',
+          required: true,
+          include: [
+            {
+              model: models.MandatoryTraining,
+              as: 'MandatoryTraining',
+              where: {
+                establishmentFK: establishmentId,
+              },
+              include: [
+                {
+                  model: models.workerTrainingCategories,
+                  as: 'workerTrainingCategories',
+                  include: [
+                    {
+                      model: models.workerTraining,
+                      as: 'workerTraining',
+                      on: {
+                        col1: models.sequelize.where(
+                          models.sequelize.col('mainJob.MandatoryTraining.workerTrainingCategories.ID'),
+                          '=',
+                          models.sequelize.col(
+                            'mainJob.MandatoryTraining.workerTrainingCategories.workerTraining.CategoryFK',
+                          ),
+                        ),
+                        col2: models.sequelize.where(
+                          models.sequelize.col(
+                            'mainJob.MandatoryTraining.workerTrainingCategories.workerTraining.WorkerFK',
+                          ),
+                          '=',
+                          models.sequelize.col('worker.ID'),
+                        ),
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  }
+
   // returns a set of Workers' Training Records based on given filter criteria (all if no filters defined) - restricted to the given Worker
   static async fetch(establishmentId, workerId, categoryId = null, filters = null) {
     if (filters) throw new Error('Filters not implemented');

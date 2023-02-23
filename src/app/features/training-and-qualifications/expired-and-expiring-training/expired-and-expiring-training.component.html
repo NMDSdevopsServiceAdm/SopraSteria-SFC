@@ -30,7 +30,7 @@
       <ng-container *ngFor="let worker of workers">
         <ng-container *ngFor="let training of worker.workerTraining; let i = index">
           <tr
-            class="govuk-training-table__row govuk-util__vertical-align-top"
+            class="govuk-table__row govuk-util__vertical-align-top"
             [attr.data-testid]="'table-row-' + worker.NameOrIdValue + '-' + i"
           >
             <td

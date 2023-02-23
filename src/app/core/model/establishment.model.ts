@@ -274,11 +274,6 @@ export enum SortTrainingOptionsStatus {
   '1_desc' = 'Staff name (Z to A)',
 }
 
-export enum SortTrainingOptionsMissing {
-  '0_asc' = 'Staff name (A to Z)',
-  '1_desc' = 'Staff name (Z to A)',
-}
-
 export enum SortTrainingAndQualsOptionsWorker {
   '0_expired' = 'Expired',
   '1_expires_soon' = 'Expires soon',

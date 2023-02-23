@@ -18,7 +18,7 @@ const getAllTrainingByStatus = async (req, res) => {
       return res.status(400).send('The establishment id and status must be given');
     }
 
-    const { count: workerCount, rows } = await models.establishment.getWorkerWithExpiredOrExpiringTraining(
+    const { count: workerCount, rows } = await models.establishment.getWorkerWithExpiredExpiringOrMissingTraining(
       establishmentId,
       status,
       itemsPerPage && +itemsPerPage,
@@ -45,27 +45,46 @@ const getAllTrainingByStatus = async (req, res) => {
 const getMissingMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
   const { itemsPerPage, pageIndex, sortBy, searchTerm } = req.query;
+  const status = 'missing';
+
   try {
     if (!establishmentId) {
       console.error('Training::root getMissingMandatoryTraining - failed: establishment id not given');
       return res.status(400).send('The establishment id must be given');
     }
 
-    const { count, rows } = await models.establishment.getWorkersWithMissingMandatoryTraining(
+    const { count: workerCount, rows } = await models.establishment.getWorkerWithExpiredExpiringOrMissingTraining(
       establishmentId,
+      status,
       itemsPerPage && +itemsPerPage,
       pageIndex && +pageIndex,
       sortBy,
       searchTerm,
     );
 
+    // const { count, rows } = await models.establishment.getWorkersWithMissingMandatoryTraining(
+    //   establishmentId,
+    //   itemsPerPage && +itemsPerPage,
+    //   pageIndex && +pageIndex,
+    //   sortBy,
+    //   searchTerm,
+    // );
+
     if (rows.length === 0) {
-      return res.status(200).json({ missingTraining: [], count: 0 });
+      return res.status(200).json({ workers: [], workerCount: 0 });
     }
 
-    const missingTraining = transformWorkersWithMissingMandatoryTraining(rows[0].workers);
+    // const missingTraining = transformWorkersWithMissingMandatoryTraining(rows[0].workers);
 
-    return res.status(200).json({ missingTraining, count });
+    const workerIds = rows[0].workers.map((worker) => worker.id);
+
+    const workers = await Training.getWorkersMissingTraining(establishmentId, workerIds);
+
+    const transformedWorkers = transformWorkersWithMissingMandatoryTraining(workers);
+
+    return res.status(200).json({ workers: transformedWorkers, workerCount });
+
+    // return res.status(200).json({ missingTraining, count, response });
   } catch (err) {
     console.error('Training::root getMissingMandatoryTraining - failed', err);
     res.status(500).send(`Failed to get missing training for establishment ${establishmentId}`);

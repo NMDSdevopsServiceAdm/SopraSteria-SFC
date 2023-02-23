@@ -2186,7 +2186,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   };
 
-  Establishment.getWorkerWithExpiredOrExpiringTraining = async function (
+  Establishment.getWorkerWithExpiredExpiringOrMissingTraining = async function (
     establishmentId,
     status,
     limit = 0,
@@ -2205,14 +2205,32 @@ module.exports = function (sequelize, DataTypes) {
       offset,
     };
 
-    const conditionalSQL =
-      status === 'expiring'
-        ? `"Expires" BETWEEN '${currentDate}' AND '${expiresSoon}'`
-        : `"Expires" < '${currentDate}'`;
+    let trainingCount;
 
-    const trainingCount = sequelize.literal(
-      `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND ${conditionalSQL})`,
-    );
+    if (status === 'missing') {
+      trainingCount = sequelize.literal(`(
+        SELECT
+            COUNT(0)
+          FROM cqc."MandatoryTraining"
+          WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+          AND "JobFK" = "workers"."MainJobFKValue"
+          AND "TrainingCategoryFK" NOT IN (
+            SELECT
+              DISTINCT "CategoryFK"
+            FROM cqc."WorkerTraining"
+            WHERE "WorkerFK" = "workers"."ID"
+          )
+      )`);
+    } else {
+      const conditionalSQL =
+        status === 'expiring'
+          ? `"Expires" BETWEEN '${currentDate}' AND '${expiresSoon}'`
+          : `"Expires" < '${currentDate}'`;
+
+      trainingCount = sequelize.literal(
+        `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND ${conditionalSQL})`,
+      );
+    }
 
     const order = {
       staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],

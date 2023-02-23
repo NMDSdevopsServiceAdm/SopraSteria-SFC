@@ -26,11 +26,6 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   public sortByValue = 'staffNameAsc';
   public status: string;
   private subscriptions: Subscription = new Subscription();
-  // public sortByParamMap = {
-  //   '0_worker': 'staffNameAsc',
-  //   '1_expired': 'expiryDateDesc',
-  //   '2_category': 'categoryNameAsc',
-  // };
   public sortByParamMap = {
     '0_asc': 'staffNameAsc',
     '1_desc': 'staffNameDesc',
@@ -111,11 +106,11 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
 
   public tableRowConditionalClass(training, index): string | null {
     if (training.length > 1 && index === 0) {
-      return 'govuk-table__cell-no-border__top-row';
+      return 'asc-table__cell-no-border__top-row';
     } else if (training.length > 1 && index < training.length - 1) {
-      return 'govuk-table__cell-no-border__middle-row';
+      return 'asc-table__cell-no-border__middle-row';
     } else if (training.length > 1 && index === training.length - 1) {
-      return 'govuk-table__cell-no-border__bottom-row';
+      return 'asc-table__cell-no-border__bottom-row';
     }
     return null;
   }

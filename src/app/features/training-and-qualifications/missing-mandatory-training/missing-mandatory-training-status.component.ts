@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Establishment, SortTrainingOptionsMissing } from '@core/model/establishment.model';
+import { Establishment, SortTrainingOptionsStatus } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,13 +18,13 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
   public workplace: Establishment;
   public canEditWorker = false;
   private subscriptions: Subscription = new Subscription();
-  public missingTrainingList;
+  public workers;
   public groupByName;
   public workplaceUid: string;
   public searchTerm = '';
-  public missingTrainingCount: number;
-  public totalMissingTrainingCount: number;
-  public sortMissingTrainingOptions = SortTrainingOptionsMissing;
+  public workerCount: number;
+  public totalWorkerCount: number;
+  public sortTrainingOptions = SortTrainingOptionsStatus;
   public sortByValue = 'staffNameAsc';
   public sortByParamMap = {
     '0_asc': 'staffNameAsc',
@@ -68,10 +68,12 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
   }
 
   private setMissingTrainingAndCount(): void {
-    const { missingTraining = [], count } = this.route.snapshot.data.training;
-    this.missingTrainingList = missingTraining;
-    this.totalMissingTrainingCount = count;
-    this.missingTrainingCount = count;
+    const { workers = [], workerCount } = this.route.snapshot.data.training;
+    console.log('*******************');
+    console.log(this.route.snapshot.data.training);
+    this.workers = workers;
+    this.totalWorkerCount = workerCount;
+    this.workerCount = workerCount;
   }
 
   public getMissingMandatoryTraining(properties: {
@@ -91,10 +93,21 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
         })
         .pipe(take(1))
         .subscribe((data) => {
-          this.missingTrainingList = data.missingTraining;
-          this.missingTrainingCount = data.count;
+          this.workers = data.workers;
+          this.workerCount = data.workerCount;
         }),
     );
+  }
+
+  public tableRowConditionalClass(training, index): string | null {
+    if (training.length > 1 && index === 0) {
+      return 'asc-table__cell-no-border__top-row';
+    } else if (training.length > 1 && index < training.length - 1) {
+      return 'asc-table__cell-no-border__middle-row';
+    } else if (training.length > 1 && index === training.length - 1) {
+      return 'asc-table__cell-no-border__bottom-row';
+    }
+    return null;
   }
 
   protected setBackLink(): void {
