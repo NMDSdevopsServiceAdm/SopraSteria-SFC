@@ -33,6 +33,7 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
     //handle tab changes home page link
     this.subscriptions.add(
       this.workerService.tabChanged.subscribe((displayStaffTab: boolean) => {
+        console.log('***** tab changed *****');
         let activeTabs: any[] = [];
         if (this.tabs) {
           activeTabs = this.tabs.filter((tab) => tab.active);

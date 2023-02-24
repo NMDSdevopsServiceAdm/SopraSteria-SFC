@@ -77,6 +77,7 @@ export class EstablishmentService {
   public mainServiceCQC: boolean = null;
   private _employerTypeHasValue: boolean = null;
   private _inStaffRecruitmentFlow: boolean;
+  private _standAloneAccount$: boolean;
 
   constructor(private http: HttpClient) {}
 
@@ -92,6 +93,14 @@ export class EstablishmentService {
 
   public get employerTypeHasValue(): boolean {
     return this._employerTypeHasValue;
+  }
+
+  public get standAloneAccount(): boolean {
+    return this._standAloneAccount$;
+  }
+
+  public set standAloneAccount(value: boolean) {
+    this._standAloneAccount$ = value;
   }
 
   public setEmployerTypeHasValue(hasValue: boolean) {

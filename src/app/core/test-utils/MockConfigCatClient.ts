@@ -68,6 +68,11 @@ export const mockConfigCatClient = {
         return resolve(false);
       });
     }
+    if (flagName === 'homePageNewDesign') {
+      return new Promise((resolve) => {
+        return resolve(true);
+      });
+    }
 
     return new Promise((resolve) => {
       return resolve(defaultSetting);

@@ -94,5 +94,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     } else {
       this.authService.logoutByUser();
     }
+    this.establishmentService.standAloneAccount = false;
   }
 }

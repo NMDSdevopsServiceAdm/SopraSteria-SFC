@@ -1,0 +1,36 @@
+<div id="content">
+  <div style="background-color: #e6e5e3">
+    <div class="govuk-width-container">
+      <app-new-tabs (selectedTabClick)="tabClickEvent($event)" (viewTab)="handleTabChange($event)">
+        <app-new-tab title="Home"></app-new-tab>
+        <app-new-tab *ngIf="workplaceUid && canViewEstablishment" title="Workplace"></app-new-tab>
+        <app-new-tab *ngIf="workplaceUid && canViewListOfWorkers" title="Staff records"></app-new-tab>
+        <app-new-tab *ngIf="workplaceUid && canViewListOfWorkers" title="Training and qualifications"></app-new-tab>
+        <app-new-tab *ngIf="workplaceUid && canViewBenchmarks" title="Benchmarks"></app-new-tab>
+      </app-new-tabs>
+    </div>
+  </div>
+
+  <div [ngStyle]="{ 'background-color': dashboardView ? '#f3f2f1' : 'white' }">
+    <div class="govuk-width-container">
+      <app-back-link></app-back-link>
+      <app-new-back-link></app-new-back-link>
+      <app-breadcrumbs></app-breadcrumbs>
+      <app-alert></app-alert>
+      <div class="govuk-!-padding-top-9" *ngIf="dashboardView">
+        <app-dashboard-header></app-dashboard-header>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-width-container">
+    <main
+      id="main-content"
+      class="govuk-main-wrapper app-main-class govuk-util__no-focus"
+      #content
+      role="main"
+      tabindex="-1"
+    >
+      <router-outlet> </router-outlet>
+    </main>
+  </div>
+</div>

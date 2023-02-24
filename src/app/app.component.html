@@ -2,18 +2,8 @@
   <a class="govuk-skip-link" href="#main-content" (click)="skip($event)">Skip to main content</a>
   <app-header></app-header>
 
-  <ng-container *ngIf="standAloneAccount; else otherView">
-    <div id="content">
-      <main
-        id="main-content"
-        class="govuk-main-wrapper app-main-class govuk-util__no-focus govuk-!-padding-top-0"
-        #content
-        role="main"
-        tabindex="-1"
-      >
-        <router-outlet> </router-outlet>
-      </main>
-    </div>
+  <ng-container *ngIf="standAloneAccount && newHomeDesignFlag; else otherView">
+    <app-stand-alone-account [dashboardView]="dashboardView"></app-stand-alone-account>
   </ng-container>
   <ng-template #otherView>
     <div

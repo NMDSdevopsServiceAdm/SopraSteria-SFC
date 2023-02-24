@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
   public isAdminSection = false;
   public dashboardView = false;
   public standAloneAccount = false;
+  public newHomeDesignFlag: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -51,11 +52,11 @@ export class AppComponent implements OnInit {
     this.featureFlagsService.start();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
       this.dashboardView = nav.url.includes('dashboard');
-
+      console.log('dashboardView:', this.dashboardView);
       this.checkIfStandAloneAccount();
       // console.log('****************');
       // console.log(this.route.snapshot);
@@ -85,12 +86,13 @@ export class AppComponent implements OnInit {
         this.idleService.clear();
       }
     });
+
+    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
+    this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
   }
 
   private checkIfStandAloneAccount(): void {
-    const workplace = this.establishmentService.primaryWorkplace;
-    this.standAloneAccount = !(workplace?.isParent || workplace?.parentUid);
-    console.log('standAloneAccount:', this.standAloneAccount);
+    this.standAloneAccount = this.establishmentService.standAloneAccount;
   }
 
   public skip(event: Event) {

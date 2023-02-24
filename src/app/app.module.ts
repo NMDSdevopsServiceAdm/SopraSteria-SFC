@@ -8,6 +8,7 @@ import { ProblemWithTheServiceComponent } from '@core/components/error/problem-w
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
+import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
@@ -74,6 +75,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
 
 @NgModule({
   declarations: [
+    StandAloneAccountComponent,
     AppComponent,
     AscWdsCertificateComponent,
     DashboardComponent,
