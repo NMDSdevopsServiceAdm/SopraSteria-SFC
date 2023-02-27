@@ -108,12 +108,18 @@ module.exports = function (sequelize, DataTypes) {
     sortBy = '',
     searchTerm = '',
     isMandatory,
+    jobIds,
   ) {
     const addSearchToCount = searchTerm ? `AND "worker"."NameOrIdValue" ILIKE '%${searchTerm}%'` : '';
     const joinTypeOnCount = isMandatory ? 'RIGHT OUTER JOIN' : 'INNER JOIN';
+    const jobIdsWithMandatoryTraining = isMandatory ? `AND "worker->mainJob"."JobID" IN (${jobIds})` : '';
 
-    const count =
-      await sequelize.query(`SELECT count("worker"."ID") AS "count" FROM "cqc"."WorkerTraining" AS "workerTraining" ${joinTypeOnCount} "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}' WHERE "worker"."EstablishmentFK" = '${establishmentId}' AND "worker"."Archived" = false ${addSearchToCount};
+    const count = await sequelize.query(`
+        SELECT count("worker"."ID") AS "count"
+          FROM "cqc"."WorkerTraining" AS "workerTraining"
+          ${joinTypeOnCount} "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}'
+          LEFT OUTER JOIN "cqc"."Job" AS "worker->mainJob" ON "worker"."MainJobFKValue" = "worker->mainJob"."JobID"
+          WHERE "worker"."EstablishmentFK" = '${establishmentId}' AND "worker"."Archived" = false ${addSearchToCount} ${jobIdsWithMandatoryTraining};
     `);
 
     const category = await sequelize.models.workerTrainingCategories.findOne({
@@ -209,6 +215,7 @@ module.exports = function (sequelize, DataTypes) {
         '$worker.EstablishmentFK$': establishmentId,
         '$worker.Archived$': false,
         ...(searchTerm ? { '$worker.NameOrIdValue$': { [Op.iLike]: `%${searchTerm}%` } } : {}),
+        ...(jobIds && { '$worker.mainJob.JobID$': { [Op.in]: jobIds } }),
       },
       include: [
         {
