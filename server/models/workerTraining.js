@@ -210,7 +210,6 @@ module.exports = function (sequelize, DataTypes) {
     }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
 
     const response = await this.findAll({
-      logging: console.log,
       attributes: trainingAttributes,
       where: {
         '$worker.EstablishmentFK$': establishmentId,
