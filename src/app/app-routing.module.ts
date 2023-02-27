@@ -30,7 +30,6 @@ import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dasboard-wrapper.component';
-import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 
@@ -132,17 +131,6 @@ const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardWrapperComponent,
-        resolve: {
-          articleList: ArticleListResolver,
-          users: AllUsersForEstablishmentResolver,
-          workers: WorkersResolver,
-          totalStaffRecords: TotalStaffRecordsResolver,
-        },
-        data: { title: 'Dashboard', workerPagination: true },
-      },
-      {
-        path: 'new/dashboard',
-        component: NewDashboardComponent,
         resolve: {
           articleList: ArticleListResolver,
           users: AllUsersForEstablishmentResolver,

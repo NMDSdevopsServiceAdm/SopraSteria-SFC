@@ -55,8 +55,9 @@ export class AppComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
-      this.dashboardView = nav.url.includes('dashboard');
-      console.log('dashboardView:', this.dashboardView);
+      this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
+      // console.log(nav.url);
+      // console.log('app.ts dashboardView:', this.dashboardView);
       this.checkIfStandAloneAccount();
       // console.log('****************');
       // console.log(this.route.snapshot);

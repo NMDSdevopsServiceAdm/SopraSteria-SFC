@@ -153,6 +153,7 @@ export class AuthService {
     this.userService.resetReturnUrl;
     this.establishmentService.resetState();
     this.permissionsService.clearPermissions();
+    this.establishmentService.standAloneAccount = false;
     Sentry.configureScope((scope) => {
       scope.setUser({
         id: '',

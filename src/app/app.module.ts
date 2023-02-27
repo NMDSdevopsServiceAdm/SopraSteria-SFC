@@ -53,8 +53,13 @@ import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
+import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-tab/benchmarks-tab.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dasboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
+import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
+import { NewStaffTabComponent } from '@features/new-dashboard/staff-tab/staff-tab.component';
+import { NewTrainingTabComponent } from '@features/new-dashboard/training-tab/training-tab.component';
+import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/workplace-tab.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
@@ -106,6 +111,11 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     TailoredSeminarsComponent,
     NewDashboardComponent,
     DashboardWrapperComponent,
+    NewHomeTabComponent,
+    NewStaffTabComponent,
+    NewWorkplaceTabComponent,
+    NewTrainingTabComponent,
+    NewBenchmarksTabComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

@@ -1,10 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 
 @Component({
   selector: 'app-stand-alone-account',
   templateUrl: './standAloneAccount.component.html',
+  styleUrls: ['./standAloneAccount.component.scss'],
 })
 export class StandAloneAccountComponent implements OnInit {
   @Input() dashboardView: boolean;
@@ -15,12 +17,18 @@ export class StandAloneAccountComponent implements OnInit {
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
   public canAddUser: boolean;
+  public tabs: { title: string; slug: string; active: boolean }[];
 
-  constructor(private establishmentService: EstablishmentService, private permissionsService: PermissionsService) {}
+  constructor(
+    private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
+    private tabsService: TabsService,
+  ) {}
 
   ngOnInit(): void {
     this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.getPermissions();
+    this.getTabs();
   }
 
   public tabClickEvent($event: Event): void {
@@ -32,10 +40,17 @@ export class StandAloneAccountComponent implements OnInit {
   }
 
   private getPermissions(): void {
-    this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks');
+    this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks') || true;
     this.canViewListOfUsers = this.permissionsService.can(this.workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
     this.canAddUser = this.permissionsService.can(this.workplaceUid, 'canAddUser');
+  }
+
+  private getTabs(): void {
+    this.tabs = [this.tabsService.homeTab];
+    this.canViewEstablishment && this.tabs.push(this.tabsService.workplaceTab);
+    this.canViewListOfWorkers && this.tabs.push(this.tabsService.staffRecordsTab, this.tabsService.tAndQTab);
+    this.canViewBenchmarks && this.tabs.push(this.tabsService.benchmarksTab);
   }
 }

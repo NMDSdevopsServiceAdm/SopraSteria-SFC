@@ -38,7 +38,6 @@ import { LinkToParentDialogComponent } from './components/link-to-parent/link-to
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
 import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
-import { NewTabComponent } from './components/new-tabs/new-tab.component';
 import { NewTabsComponent } from './components/new-tabs/new-tabs.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
@@ -205,7 +204,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     ViewTrainingComponent,
     MissingMandatoryTrainingComponent,
     TrainingSelectViewPanelComponent,
-    NewTabComponent,
     NewTabsComponent,
   ],
   exports: [
@@ -306,7 +304,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     MissingMandatoryTrainingComponent,
     AbsoluteNumberPipe,
     TrainingSelectViewPanelComponent,
-    NewTabComponent,
     NewTabsComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],

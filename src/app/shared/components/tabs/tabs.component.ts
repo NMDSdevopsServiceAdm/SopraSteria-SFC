@@ -33,7 +33,6 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
     //handle tab changes home page link
     this.subscriptions.add(
       this.workerService.tabChanged.subscribe((displayStaffTab: boolean) => {
-        console.log('***** tab changed *****');
         let activeTabs: any[] = [];
         if (this.tabs) {
           activeTabs = this.tabs.filter((tab) => tab.active);
@@ -47,6 +46,7 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
 
   ngAfterContentInit() {
     const hash = this.route.snapshot.fragment;
+
     if (hash) {
       const activeTab = this.tabs.toArray().findIndex((tab) => tab.slug === hash);
       if (activeTab) {
@@ -102,12 +102,12 @@ export class TabsComponent implements AfterContentInit, OnDestroy {
 
     this.unselectTabs();
     tab.active = true;
-
+    console.log('****** tabs *****');
+    console.log(tab);
     this.selectedTabClick.emit({ tabSlug: tab.slug });
 
     const path = hasCurrentTab ? this.location.path().split('?')[0] : this.location.path();
     this.location.replaceState(`${path}#${tab.slug}`);
-
     if (focus) {
       setTimeout(() => {
         this.tablist.nativeElement.querySelector('.govuk-tabs__tab--selected').focus();
