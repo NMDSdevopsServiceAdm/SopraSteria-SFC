@@ -4,6 +4,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -17,6 +18,9 @@ import { filter, take, takeWhile } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   private baseTitle = 'Skills for Care';
   public isAdminSection = false;
+  public dashboardView = false;
+  public standAloneAccount = false;
+  public newHomeDesignFlag: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -28,6 +32,7 @@ export class AppComponent implements OnInit {
     private idleService: IdleService,
     private angulartics2GoogleTagManager: Angulartics2GoogleTagManager,
     private featureFlagsService: FeatureFlagsService,
+    private establishmentService: EstablishmentService,
   ) {
     this.nestedRoutesService.routes$.subscribe((routes) => {
       if (routes) {
@@ -47,9 +52,12 @@ export class AppComponent implements OnInit {
     this.featureFlagsService.start();
   }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
+      this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
+      this.standAloneAccount = this.establishmentService.standAloneAccount;
+
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {
         (document.activeElement as HTMLElement).blur();
@@ -73,6 +81,10 @@ export class AppComponent implements OnInit {
         this.idleService.clear();
       }
     });
+
+    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
+    this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
+    console.log(this.newHomeDesignFlag);
   }
 
   public skip(event: Event) {
