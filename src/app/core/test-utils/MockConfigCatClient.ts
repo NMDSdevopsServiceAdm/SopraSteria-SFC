@@ -42,22 +42,6 @@ export const mockConfigCatClient = {
   },
 
   getValueAsync: (flagName, defaultSetting) => {
-    if (flagName === 'changingexpirydatelink') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
-
-    if (flagName === 'endorsedProvidersLink') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
-    if (flagName === 'bulkUploadHelp') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
     if (flagName === 'wdfUser') {
       return new Promise((resolve) => {
         return resolve(false);
