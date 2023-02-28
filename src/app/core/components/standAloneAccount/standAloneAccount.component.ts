@@ -16,7 +16,6 @@ export class StandAloneAccountComponent implements OnInit {
   public canViewListOfUsers: boolean;
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
-  public canAddUser: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
 
   constructor(
@@ -44,13 +43,12 @@ export class StandAloneAccountComponent implements OnInit {
     this.canViewListOfUsers = this.permissionsService.can(this.workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
-    this.canAddUser = this.permissionsService.can(this.workplaceUid, 'canAddUser');
   }
 
   private getTabs(): void {
     this.tabs = [this.tabsService.homeTab];
     this.canViewEstablishment && this.tabs.push(this.tabsService.workplaceTab);
     this.canViewListOfWorkers && this.tabs.push(this.tabsService.staffRecordsTab, this.tabsService.tAndQTab);
-    this.canViewBenchmarks && this.tabs.push(this.tabsService.benchmarksTab);
+    this.tabs.push(this.tabsService.benchmarksTab);
   }
 }

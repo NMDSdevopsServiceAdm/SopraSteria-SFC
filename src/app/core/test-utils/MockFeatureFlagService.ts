@@ -33,7 +33,7 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
       }
       if (flagName === 'homePageNewDesign') {
         return new Promise((resolve) => {
-          return resolve(false);
+          return resolve(true);
         });
       }
       return new Promise((resolve) => {
