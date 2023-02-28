@@ -10,7 +10,8 @@
 }
 
 li {
-  padding: 10px 0;
+  padding: 10px 40px !important;
+  background-color: #e6e5e3 !important;
 }
 
 .asc-active {
@@ -18,10 +19,10 @@ li {
 }
 
 .asc-tab {
-  padding: 0 40px;
   color: black;
   width: 100%;
   font-weight: bold;
+  font-size: 16px;
 
   &--active {
     text-decoration: none;
@@ -29,10 +30,5 @@ li {
 
   &:hover {
     text-decoration: none;
-  }
-
-  &:focus {
-    outline: 4px solid #e6e5e3;
-    background-color: #e6e5e3;
   }
 }
