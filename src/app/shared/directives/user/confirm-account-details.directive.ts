@@ -66,7 +66,7 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
         type: [
           {
             name: 'required',
-            message: 'Please agree to the terms and conditions.',
+            message: 'Confirm that you agree to the terms and conditions',
           },
         ],
       },

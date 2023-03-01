@@ -8,7 +8,6 @@ import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { UserPermissionsType } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -35,14 +34,14 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
     protected route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private featureFlagsService: FeatureFlagsService,
-    protected backService: BackService,
+
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
     private userService: UserService,
   ) {
-    super(backService, backLinkService, errorSummaryService, fb, router, route);
+    super(backLinkService, errorSummaryService, fb, router, route);
   }
 
   protected init(): void {
