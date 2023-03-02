@@ -6,7 +6,6 @@ import { Establishment } from '@core/model/establishment.model';
 import { Worker, WorkersResponse } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import {
   longTermAbsentWorker,
   MockWorkerService,
@@ -17,7 +16,6 @@ import {
   workerWithUpToDateTraining,
 } from '@core/test-utils/MockWorkerService';
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
@@ -25,6 +23,7 @@ import sinon from 'sinon';
 
 import { PaginationComponent } from '../pagination/pagination.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/table-pagination-wrapper.component';
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
 
 const establishmentBuilder = build('Establishment', {
@@ -49,15 +48,13 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     can: sinon.stub<['uid', 'canViewUser'], boolean>().returns(true),
   });
 
-  async function setup(qsParamGetMock = sinon.fake()) {
-    const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText } = await render(
-      TrainingAndQualificationsSummaryComponent,
-      {
+  async function setup(qsParamGetMock = sinon.fake(), totalRecords = 5) {
+    const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText, getByTestId, queryByTestId } =
+      await render(TrainingAndQualificationsSummaryComponent, {
         imports: [HttpClientTestingModule, RouterTestingModule],
-        declarations: [PaginationComponent, SearchInputComponent],
+        declarations: [TablePaginationWrapperComponent, PaginationComponent, SearchInputComponent],
         providers: [
           { provide: PermissionsService, useValue: mockPermissionsService },
-          { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
           {
             provide: WorkerService,
             useClass: MockWorkerService,
@@ -77,20 +74,18 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
           workplace: establishmentBuilder() as Establishment,
           workers: workers as Worker[],
           workerCount: workers.length,
+          totalRecords,
+          sortByValue: 'trainingExpired',
         },
-      },
-    );
+      });
 
     const component = fixture.componentInstance;
 
     const router = TestBed.inject(Router) as Router;
     const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
     const workerService = TestBed.inject(WorkerService) as WorkerService;
     const workerServiceSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
-
-    const sortBySpy = spyOn(component, 'handleSortUpdate').and.callThrough();
-    const searchSpy = spyOn(component, 'handleSearch').and.callThrough();
+    const emitSpy = spyOn(component.changeStaffSortBy, 'emit');
 
     return {
       component,
@@ -99,11 +94,12 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
       getByLabelText,
       getAllByText,
       getByText,
+      getByTestId,
+      queryByTestId,
       spy,
       workerServiceSpy,
-      sortBySpy,
-      searchSpy,
       workerService,
+      emitSpy,
     };
   }
 
@@ -112,50 +108,65 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should show the no records text, when there are no t and q records for an establishment', async () => {
+    const { getByTestId } = await setup(sinon.fake(), 0);
+
+    expect(getByTestId('noRecords')).toBeTruthy();
+  });
+
+  it('should not show the sort by dropdown if there is only 1 staff record', async () => {
+    const { component, fixture, queryByTestId } = await setup();
+    component.workerCount = 1;
+    fixture.detectChanges();
+    expect(queryByTestId('sortBy')).toBeFalsy();
+  });
+
+  it('should handle sort by expired', async () => {
+    const { component, getByLabelText, workerServiceSpy, emitSpy } = await setup();
+
+    expect(workerServiceSpy).not.toHaveBeenCalled();
+
+    const select = getByLabelText('Sort by', { exact: false });
+    fireEvent.change(select, { target: { value: '0_expired' } });
+
+    expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, {
+      sortBy: 'trainingExpired',
+      pageIndex: 0,
+      itemsPerPage: 15,
+    });
+    expect(emitSpy).toHaveBeenCalledOnceWith({ section: 'staff-summary', sortByValue: 'trainingExpired' });
+  });
+
   it('should handle sort by expiring soon', async () => {
-    const { component, getByLabelText, sortBySpy, workerServiceSpy } = await setup();
+    const { component, getByLabelText, workerServiceSpy, emitSpy } = await setup();
 
     expect(workerServiceSpy).not.toHaveBeenCalled();
 
     const select = getByLabelText('Sort by', { exact: false });
     fireEvent.change(select, { target: { value: '1_expires_soon' } });
 
-    expect(sortBySpy).toHaveBeenCalledOnceWith('1_expires_soon');
     expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, {
       sortBy: 'trainingExpiringSoon',
       pageIndex: 0,
       itemsPerPage: 15,
     });
+    expect(emitSpy).toHaveBeenCalledOnceWith({ section: 'staff-summary', sortByValue: 'trainingExpiringSoon' });
   });
 
   it('should handle sort by missing', async () => {
-    const { component, getByLabelText, sortBySpy, workerServiceSpy } = await setup();
+    const { component, getByLabelText, workerServiceSpy, emitSpy } = await setup();
 
     expect(workerServiceSpy).not.toHaveBeenCalled();
 
     const select = getByLabelText('Sort by', { exact: false });
     fireEvent.change(select, { target: { value: '2_missing' } });
 
-    expect(sortBySpy).toHaveBeenCalledOnceWith('2_missing');
     expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, {
       sortBy: 'trainingMissing',
       pageIndex: 0,
       itemsPerPage: 15,
     });
-  });
-
-  it('resets the pageIndex if sort by is changed', async () => {
-    const { fixture, component, getByLabelText } = await setup();
-
-    component.currentPageIndex = 1;
-    fixture.detectChanges();
-
-    expect(component.currentPageIndex).toBe(1);
-
-    const select = getByLabelText('Sort by', { exact: false });
-    fireEvent.change(select, { target: { value: '2_missing' } });
-
-    expect(component.currentPageIndex).toBe(0);
+    expect(emitSpy).toHaveBeenCalledOnceWith({ section: 'staff-summary', sortByValue: 'trainingMissing' });
   });
 
   it('should display the "OK" message if training is up to date', async () => {
@@ -191,13 +202,10 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     const workplaceUid = component.workplace.uid;
     const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');
 
-    expect(spy).toHaveBeenCalledWith([
-      '/workplace',
-      workplaceUid,
-      'training-and-qualifications-record',
-      worker.uid,
-      'training',
-    ]);
+    expect(spy).toHaveBeenCalledWith(
+      ['/workplace', workplaceUid, 'training-and-qualifications-record', worker.uid, 'training'],
+      { fragment: 'all-records' },
+    );
   });
 
   it('should navigate to the persons wdf training, when the wdfView flag is true', async () => {
@@ -213,28 +221,24 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     const workplaceUid = component.workplace.uid;
     const worker = component.workers.find((worker) => worker.nameOrId === 'Darlyn');
 
-    expect(spy).toHaveBeenCalledWith([
-      '/workplace',
-      workplaceUid,
-      'training-and-qualifications-record',
-      worker.uid,
-      'training',
-      'wdf-summary',
-    ]);
+    expect(spy).toHaveBeenCalledWith(
+      ['/workplace', workplaceUid, 'training-and-qualifications-record', worker.uid, 'training', 'wdf-summary'],
+      { fragment: 'all-records' },
+    );
   });
 
   describe('calls getAllWorkers on workerService when using search', () => {
     it('it does not render the search bar when pagination threshold is not met', async () => {
       const { queryByLabelText } = await setup();
 
-      const searchInput = queryByLabelText('Search staff training records');
+      const searchInput = queryByLabelText('Search by name or ID number staff training records');
       expect(searchInput).toBeNull();
     });
 
     it('should call getAllWorkers with correct search term if passed', async () => {
-      const { fixture, getByLabelText, workerServiceSpy, searchSpy } = await setup();
-      // show search bar
-      fixture.componentInstance.showSearchBar = true;
+      const { component, fixture, getByLabelText, workerServiceSpy } = await setup();
+
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
 
       const searchInput = getByLabelText('Search by name or ID number staff training records');
@@ -248,15 +252,14 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
         sortBy: 'trainingExpired',
         searchTerm: 'search term here',
       };
+
       expect(workerServiceSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
-      expect(searchSpy).toHaveBeenCalledOnceWith('search term here');
     });
 
     it('should reset the pageIndex before calling getAllWorkers when handling search', async () => {
-      const { fixture, getByLabelText, workerServiceSpy } = await setup();
+      const { component, fixture, getByLabelText, workerServiceSpy } = await setup();
 
-      fixture.componentInstance.showSearchBar = true;
-      fixture.componentInstance.currentPageIndex = 1;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
 
       userEvent.type(getByLabelText('Search by name or ID number staff training records'), 'search term here{enter}');
@@ -264,9 +267,9 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     });
 
     it('should render the no results returned message when 0 workers returned from getAllWorkers after search', async () => {
-      const { fixture, getByLabelText, workerService, getByText } = await setup();
+      const { component, fixture, getByLabelText, getByText, workerService } = await setup();
 
-      fixture.componentInstance.showSearchBar = true;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
 
       sinon.stub(workerService, 'getAllWorkers').returns(
@@ -287,30 +290,15 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   });
 
   describe('Query search params update correctly', () => {
-    it('adds the search and tab as "training-and-qualifications" query params to the url on search', async () => {
-      const { spy, fixture, getByLabelText } = await setup();
-
-      fixture.componentInstance.showSearchBar = true;
-      fixture.detectChanges();
-
-      userEvent.type(getByLabelText('Search by name or ID number staff training records'), 'search term here{enter}');
-      expect(spy).toHaveBeenCalledWith([], {
-        fragment: 'training-and-qualifications',
-        queryParams: { search: 'search term here', tab: 'training' },
-        queryParamsHandling: 'merge',
-      });
-    });
-
     it('sets the searchTerm for staff record input if query params are found on render', async () => {
       const qsParamGetMock = sinon.stub();
       qsParamGetMock.onCall(0).returns('mysupersearch');
       qsParamGetMock.onCall(1).returns('training');
 
-      const { fixture, getByLabelText } = await setup(qsParamGetMock);
+      const { component, fixture, getByLabelText } = await setup(qsParamGetMock);
 
-      fixture.componentInstance.showSearchBar = true;
+      component.totalWorkerCount = 16;
       fixture.detectChanges();
-
       expect((getByLabelText('Search by name or ID number staff training records') as HTMLInputElement).value).toBe(
         'mysupersearch',
       );

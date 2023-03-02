@@ -126,7 +126,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
             temp[question.questionId] = {
               question: question.question,
               value: temp[question.questionId] ? question.question + question.answer : question.answer,
-              service: ` (${capacity.service.split(':')[1].trim().toLowerCase()})`,
+              service: ` ${capacity.service.split(':')[1]}`,
             };
           });
         });
@@ -135,11 +135,13 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
           Object.keys(temp).forEach((key) => {
             if (this.pluralMap[temp[key].question]) {
               const message =
-                this.i18nPluralPipe.transform(temp[key].value, this.pluralMap[temp[key].question]) +
-                (temp[key].value ? temp[key].service : '');
-              this.capacityMessages.push(message);
+                (temp[key].value ? temp[key].service + ': ' : '') +
+                this.i18nPluralPipe.transform(temp[key].value, this.pluralMap[temp[key].question]);
+
+              this.capacityMessages.push({ message, service: temp[key].service });
             }
           });
+          this.sortedCapacityService(this.capacityMessages);
         }
       }),
     );
@@ -154,6 +156,12 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
         }
       }),
     );
+  }
+
+  public sortedCapacityService(capacityService: any) {
+    capacityService.sort((serviceA: any, serviceB: any) => {
+      return serviceA.service.localeCompare(serviceB.service);
+    });
   }
 
   ngOnDestroy(): void {
@@ -174,10 +182,14 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     return unformattedMoneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
-  public filterAndSortOtherServices(services: Service[]): Service[] {
+  public filterAndSortOtherServices(services: any): Service[] {
+    let servicesArr = new Array<Service>();
+    for(const service of services) {
+      servicesArr = servicesArr.concat(service.services)
+    }
     return sortBy(
-      services.filter((service) => service.name !== this.workplace.mainService.name),
-      'id',
+      servicesArr.filter((service) => service.name !== this.workplace.mainService.name),
+      'name',
     );
   }
 

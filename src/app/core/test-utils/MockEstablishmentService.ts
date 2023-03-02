@@ -160,8 +160,8 @@ export class MockEstablishmentService extends EstablishmentService {
     return of('');
   }
 
-  public getExpiresSoonAlertDates(): Observable<string> {
-    return of('90');
+  public getExpiresSoonAlertDates(): Observable<any> {
+    return of({ expiresSoonAlertDate: '90' });
   }
 
   public setExpiresSoonAlertDates(establishmentUid, data): Observable<string> {

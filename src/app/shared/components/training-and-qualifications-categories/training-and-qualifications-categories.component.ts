@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Establishment, SortTrainingAndQualsOptionsCat } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
@@ -12,11 +12,14 @@ import { Subscription } from 'rxjs';
 export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() trainingCategories: Array<any>;
+  @Input() totalTraining: number;
+  @Input() sortByValue: string;
+
+  @Output() changeTrainingSortBy = new EventEmitter<{ section: string; sortByValue: string }>();
 
   public workerDetails = [];
   public workerDetailsLabel = [];
   public sortTrainingAndQualsOptions;
-  public sortByDefault: string;
   public showMandatoryTraining = false;
   private subscriptions: Subscription = new Subscription();
 
@@ -27,8 +30,8 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnD
 
   ngOnInit(): void {
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsCat;
-    this.sortByDefault = '0_expired';
-    this.orderTrainingCategories(this.sortByDefault);
+
+    this.orderTrainingCategories(this.sortByValue);
     this.setExpiresSoonAlertDates();
   }
 
@@ -65,6 +68,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnD
         ['desc', 'asc'],
       );
     }
+    this.changeTrainingSortBy.emit({ section: 'training-summary', sortByValue: dropdownValue });
   }
 
   public toggleDetails(id, event): void {

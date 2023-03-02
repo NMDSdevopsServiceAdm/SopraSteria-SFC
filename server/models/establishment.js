@@ -1,6 +1,5 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
-const { query } = require('express');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -886,6 +885,11 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'Approvals',
     });
+    Establishment.hasMany(models.MandatoryTraining, {
+      foreignKey: 'establishmentFK',
+      sourceKey: 'id',
+      as: 'MandatoryTraining',
+    });
   };
 
   Establishment.turnoverData = function (establishmentId) {
@@ -1421,7 +1425,6 @@ module.exports = function (sequelize, DataTypes) {
             'WeeklyHoursContractedHours',
             'WeeklyHoursAverageValue',
             'WeeklyHoursAverageHours',
-            'OtherJobsValue',
             'NurseSpecialismsValue',
             'RegisteredNurseValue',
             'ApprovedMentalHealthWorkerValue',
@@ -1448,10 +1451,6 @@ module.exports = function (sequelize, DataTypes) {
             {
               model: sequelize.models.recruitedFrom,
               as: 'recruitedFrom',
-            },
-            {
-              model: sequelize.models.job,
-              as: 'otherJobs',
             },
             {
               model: sequelize.models.job,
@@ -1839,6 +1838,7 @@ module.exports = function (sequelize, DataTypes) {
           ],
         },
       ],
+      logging: console.log,
     });
   };
 
@@ -2184,6 +2184,77 @@ module.exports = function (sequelize, DataTypes) {
     } catch (error) {
       console.log({ error });
     }
+  };
+
+  Establishment.getWorkerWithExpiredExpiringOrMissingTraining = async function (
+    establishmentId,
+    status,
+    limit = 0,
+    pageIndex = 0,
+    sortBy = '',
+    searchTerm = '',
+  ) {
+    const currentDate = moment().toISOString();
+    const expiresSoonAlertDate = await this.getExpiresSoonAlertDate(establishmentId);
+    const expiresSoon = moment().add(expiresSoonAlertDate.get('ExpiresSoonAlertDate'), 'days').toISOString();
+    const offset = pageIndex * limit;
+
+    const pagination = {
+      subQuery: false,
+      limit,
+      offset,
+    };
+
+    let trainingCount;
+
+    if (status === 'missing') {
+      trainingCount = sequelize.literal(`(
+        SELECT
+            COUNT(0)
+          FROM cqc."MandatoryTraining"
+          WHERE "EstablishmentFK" = "workers"."EstablishmentFK"
+          AND "JobFK" = "workers"."MainJobFKValue"
+          AND "TrainingCategoryFK" NOT IN (
+            SELECT
+              DISTINCT "CategoryFK"
+            FROM cqc."WorkerTraining"
+            WHERE "WorkerFK" = "workers"."ID"
+          )
+      )`);
+    } else {
+      const conditionalSQL =
+        status === 'expiring'
+          ? `"Expires" BETWEEN '${currentDate}' AND '${expiresSoon}'`
+          : `"Expires" < '${currentDate}'`;
+
+      trainingCount = sequelize.literal(
+        `(SELECT COUNT(0) FROM cqc."WorkerTraining" WHERE "WorkerFK" = "workers"."ID" AND ${conditionalSQL})`,
+      );
+    }
+
+    const order = {
+      staffNameAsc: [['workers', 'NameOrIdValue', 'ASC']],
+      staffNameDesc: [['workers', 'NameOrIdValue', 'DESC']],
+    }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
+
+    return await this.findAndCountAll({
+      where: {
+        id: establishmentId,
+        col1: sequelize.where(trainingCount, '>', 0),
+      },
+      attributes: ['NameValue'],
+      include: {
+        model: sequelize.models.worker,
+        attributes: ['id', 'uid', 'NameOrIdValue'],
+        as: 'workers',
+        where: {
+          archived: false,
+          ...(searchTerm ? { NameOrIdValue: { [Op.iLike]: `${searchTerm}` } } : {}),
+        },
+      },
+      order,
+      ...(limit ? pagination : {}),
+    });
   };
 
   return Establishment;

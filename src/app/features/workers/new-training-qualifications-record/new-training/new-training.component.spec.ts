@@ -5,11 +5,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { NewTrainingComponent } from './new-training.component';
 
-describe('NewTrainingComponent', () => {
+describe('NewTrainingComponent', async () => {
   let component: NewTrainingComponent;
   let fixture: ComponentFixture<NewTrainingComponent>;
 
-  const trainingRecords = [
+  const trainingCategories = [
     {
       category: 'Autism',
       id: 2,
@@ -63,7 +63,7 @@ describe('NewTrainingComponent', () => {
       id: 1,
       trainingRecords: [
         {
-          accredited: true,
+          accredited: false,
           completed: new Date('10/20/2021'),
           expires: new Date('10/20/2022'),
           title: 'Health training',
@@ -75,7 +75,7 @@ describe('NewTrainingComponent', () => {
           updated: new Date('10/20/2021'),
         },
         {
-          accredited: true,
+          accredited: false,
           completed: new Date('10/20/2021'),
           expires: new Date('10/20/2022'),
           title: '',
@@ -102,7 +102,8 @@ describe('NewTrainingComponent', () => {
     fixture = TestBed.createComponent(NewTrainingComponent);
     component = fixture.componentInstance;
     component.canEditWorker = true;
-    component.trainingRecords = trainingRecords;
+    component.trainingCategories = trainingCategories;
+    component.isMandatoryTraining = false;
     fixture.detectChanges();
   });
 
@@ -110,7 +111,7 @@ describe('NewTrainingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('training record table contents', () => {
+  describe('training record table contents', async () => {
     it('should render a category heading name for each training record category', async () => {
       const autismCategory = fixture.debugElement.query(By.css('[data-testid="category-Autism"]')).nativeElement;
       const communicationCategory = fixture.debugElement.query(
@@ -118,29 +119,9 @@ describe('NewTrainingComponent', () => {
       ).nativeElement;
       const healthCategory = fixture.debugElement.query(By.css('[data-testid="category-Health"]')).nativeElement;
 
-      expect(autismCategory.textContent).toContain('Category: Autism (2)');
-      expect(communicationCategory.textContent).toContain('Category: Communication (1)');
-      expect(healthCategory.textContent).toContain('Category: Health (2)');
-    });
-
-    it('should render a different status when given a different status number', async () => {
-      const autismTrainingStatus = fixture.debugElement.query(
-        By.css('[data-testid="Status-someAutismUid"]'),
-      ).nativeElement;
-      const autismTraining2Status = fixture.debugElement.query(
-        By.css('[data-testid="Status-someAutismUid2"]'),
-      ).nativeElement;
-      const communicationTrainingStatus = fixture.debugElement.query(
-        By.css('[data-testid="Status-someCommunicationUid"]'),
-      ).nativeElement;
-      const healthTrainingStatus = fixture.debugElement.query(
-        By.css('[data-testid="Status-someHealthUid"]'),
-      ).nativeElement;
-
-      expect(autismTrainingStatus.textContent).toContain('Expires soon');
-      expect(autismTraining2Status.textContent).toContain('Missing');
-      expect(communicationTrainingStatus.textContent).toContain('Expired');
-      expect(healthTrainingStatus.textContent).toContain('OK');
+      expect(autismCategory.textContent).toContain('Autism');
+      expect(communicationCategory.textContent).toContain('Communication');
+      expect(healthCategory.textContent).toContain('Health');
     });
 
     it('should render missing training name when there is no title for a training record', async () => {
@@ -155,11 +136,11 @@ describe('NewTrainingComponent', () => {
       ).nativeElement;
 
       expect(healthTrainingTitle.textContent).toContain('Health training');
-      expect(healthTraining2Title.textContent).toContain('Missing training name - Add');
+      expect(healthTraining2Title.textContent).toContain('Missing training name (Add)');
     });
   });
 
-  describe('training record links', () => {
+  describe('training record links', async () => {
     it('training title should have link to training records if you are an edit user', () => {
       component.canEditWorker = true;
       fixture.detectChanges();
@@ -180,11 +161,31 @@ describe('NewTrainingComponent', () => {
         By.css('[data-testid="Title-someHealthUid2"]'),
       ).nativeElement;
 
-      expect(autismTrainingTitleLink.getAttribute('href')).toBe('/training/someAutismUid');
-      expect(autismTraining2TitleLink.getAttribute('href')).toBe('/training/someAutismUid2');
-      expect(communicationTrainingTitleLink.getAttribute('href')).toBe('/training/someCommunicationUid');
-      expect(healthTrainingTitleLink.getAttribute('href')).toBe('/training/someHealthUid');
-      expect(healthTraining2TitleLink.getAttribute('href')).toBe('/training/someHealthUid2');
+      expect(
+        autismTrainingTitleLink
+          .getAttribute('href')
+          .slice(0, autismTrainingTitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someAutismUid');
+      expect(
+        autismTraining2TitleLink
+          .getAttribute('href')
+          .slice(0, autismTraining2TitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someAutismUid2');
+      expect(
+        communicationTrainingTitleLink
+          .getAttribute('href')
+          .slice(0, communicationTrainingTitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someCommunicationUid');
+      expect(
+        healthTrainingTitleLink
+          .getAttribute('href')
+          .slice(0, healthTrainingTitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someHealthUid');
+      expect(
+        healthTraining2TitleLink
+          .getAttribute('href')
+          .slice(0, healthTraining2TitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someHealthUid2');
     });
 
     it('training title should not link to training records if you are a read only user', () => {
@@ -209,6 +210,49 @@ describe('NewTrainingComponent', () => {
       expect(communicationTrainingTitleLink).toBeTruthy();
       expect(healthTrainingTitleLink).toBeTruthy();
       expect(healthTraining2TitleLink).toBeTruthy();
+    });
+  });
+
+  describe('no training', async () => {
+    it('should display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is true', async () => {
+      component.trainingCategories = [];
+      fixture.detectChanges();
+      const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
+
+      expect(noTrainingLink).toBeTruthy();
+      expect(noTrainingLink.getAttribute('href')).toBe('/add-training');
+    });
+
+    it('should not display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is false', async () => {
+      component.trainingCategories = [];
+      component.canEditWorker = false;
+      fixture.detectChanges();
+      const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]'));
+
+      expect(noTrainingLink).toBeFalsy();
+    });
+
+    it('should display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true and canEditWorker is true', async () => {
+      component.trainingCategories = [];
+      component.isMandatoryTraining = true;
+      component.workplaceUid = '123';
+      fixture.detectChanges();
+      const noMandatoryTrainingLink = fixture.debugElement.query(
+        By.css('[data-testid="no-mandatory-training-link"]'),
+      ).nativeElement;
+      expect(noMandatoryTrainingLink).toBeTruthy();
+      expect(noMandatoryTrainingLink.getAttribute('href')).toBe('/workplace/123/add-and-manage-mandatory-training');
+    });
+
+    it('should not display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true and canEditWorker is false', async () => {
+      component.trainingCategories = [];
+      component.isMandatoryTraining = true;
+      component.workplaceUid = '123';
+      component.canEditWorker = false;
+      fixture.detectChanges();
+      const noMandatoryTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
+
+      expect(noMandatoryTrainingLink).toBeFalsy();
     });
   });
 });

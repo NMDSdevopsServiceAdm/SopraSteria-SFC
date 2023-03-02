@@ -77,7 +77,7 @@
             !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
             workplace.numberOfStaff === workerCount
           "
-          [changeLink]="getRoutePath('total-staff')"
+          [changeLink]="getRoutePath('total-staff',wdfView)"
           (fieldConfirmation)="this.confirmField('numberOfStaff')"
           (setReturnClicked)="this.setReturn()"
         ></app-wdf-field-confirmation>
@@ -209,7 +209,7 @@
             workplace.wdf?.mainService.isEligible === 'Yes' &&
             !workplace.wdf?.mainService.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('main-service-cqc')"
+          [changeLink]="getRoutePath('main-service-cqc',wdfView)"
           (fieldConfirmation)="this.confirmField('mainService')"
           (setReturnClicked)="this.setReturn()"
         >
@@ -257,9 +257,9 @@
           <span *ngSwitchCase="'No'"> None </span>
           <div *ngSwitchCase="'Yes'">
             <ul class="govuk-list govuk-!-margin-bottom-0">
-              <ng-container *ngFor="let categories of workplace.otherServices.services">
-                <li *ngFor="let service of filterAndSortOtherServices(categories.services)">
-                  {{ service.name }}<ng-container *ngIf="service.other"> - {{ service.other }}</ng-container>
+              <ng-container *ngFor="let service of filterAndSortOtherServices(workplace.otherServices.services)">
+                <li>
+                  {{ service.name }}<ng-container *ngIf="service.other">: {{ service.other }}</ng-container>
                 </li>
               </ng-container>
             </ul>
@@ -287,7 +287,7 @@
           <ng-container *ngIf="!workplace.capacities?.length; else capacities"> - </ng-container>
           <ng-template #capacities>
             <ul class="govuk-list govuk-!-margin-bottom-0">
-              <li *ngFor="let capacity of capacityMessages">{{ capacity }}</li>
+              <li *ngFor="let capacity of capacityMessages">{{ capacity.message }}</li>
             </ul>
           </ng-template>
         </app-summary-record-value>
@@ -298,7 +298,7 @@
             workplace.wdf?.capacities.isEligible === 'Yes' &&
             !workplace.wdf?.capacities.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('capacity-of-services')"
+          [changeLink]="getRoutePath('capacity-of-services',wdfView)"
           (fieldConfirmation)="this.confirmField('capacities')"
           (setReturnClicked)="this.setReturn()"
         >
@@ -346,7 +346,7 @@
             workplace.wdf?.serviceUsers.isEligible === 'Yes' &&
             !workplace.wdf?.serviceUsers.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('service-users')"
+          [changeLink]="getRoutePath('service-users',wdfView)"
           (fieldConfirmation)="this.confirmField('serviceUsers')"
           (setReturnClicked)="this.setReturn()"
         ></app-wdf-field-confirmation>
@@ -402,7 +402,7 @@
             workplace.wdf?.vacancies.isEligible === 'Yes' &&
             !workplace.wdf?.vacancies.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('vacancies')"
+          [changeLink]="getRoutePath('vacancies',wdfView)"
           (fieldConfirmation)="this.confirmField('vacancies')"
           (setReturnClicked)="this.setReturn()"
         >
@@ -452,7 +452,7 @@
             workplace.wdf?.starters.isEligible === 'Yes' &&
             !workplace.wdf?.starters.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('starters')"
+          [changeLink]="getRoutePath('starters',wdfView)"
           (fieldConfirmation)="this.confirmField('starters')"
           (setReturnClicked)="this.setReturn()"
         >
@@ -502,7 +502,7 @@
             workplace.wdf?.leavers.isEligible === 'Yes' &&
             !workplace.wdf?.leavers.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('leavers')"
+          [changeLink]="getRoutePath('leavers',wdfView)"
           (fieldConfirmation)="this.confirmField('leavers')"
           (setReturnClicked)="this.setReturn()"
         >

@@ -158,23 +158,12 @@ describe('DashboardComponent', () => {
       expect(getByTestId('tab_wdf')).toBeTruthy();
     });
 
-    it('should display the Benchmarks tab when canViewBenchmarks is true', async () => {
-      const { component, fixture, getByTestId } = await setup();
+    it('should display the Benchmarks tab', async () => {
+      const { fixture, getByTestId } = await setup();
 
-      component.canViewBenchmarks = true;
       fixture.detectChanges();
 
       expect(getByTestId('tab_benchmarks')).toBeTruthy();
-    });
-
-    it('should not display the Benchmarks tab when canViewBenchmarks is false', async () => {
-      const { component, fixture, queryByTestId } = await setup();
-
-      component.canViewBenchmarks = false;
-
-      fixture.detectChanges();
-
-      expect(queryByTestId('tab_benchmarks')).toBeNull();
     });
 
     it('should display a flag on the workplace tab when the sharing permissions banner flag is true', async () => {
@@ -229,7 +218,6 @@ describe('DashboardComponent', () => {
       it('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
         const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
 
-        component.canViewBenchmarks = true;
         fixture.detectChanges();
 
         const benchmarksTab = getByTestId('tab_benchmarks');
@@ -241,7 +229,6 @@ describe('DashboardComponent', () => {
       it('should not call postBenchmarkTabUsage when the other dashboard tabs are clicked', async () => {
         const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
 
-        component.canViewBenchmarks = true;
         fixture.detectChanges();
 
         const homeTab = getByTestId('tab_home');

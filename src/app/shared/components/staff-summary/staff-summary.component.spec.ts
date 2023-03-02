@@ -16,6 +16,7 @@ import sinon from 'sinon';
 
 import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models';
 import { PaginationComponent } from '../pagination/pagination.component';
+import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/table-pagination-wrapper.component';
 import { StaffSummaryComponent } from './staff-summary.component';
 
 describe('StaffSummaryComponent', () => {
@@ -25,7 +26,7 @@ describe('StaffSummaryComponent', () => {
 
     const component = await render(StaffSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [PaginationComponent],
+      declarations: [PaginationComponent, TablePaginationWrapperComponent],
       providers: [
         {
           provide: PermissionsService,
@@ -53,8 +54,9 @@ describe('StaffSummaryComponent', () => {
     });
 
     const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService) as WorkerService;
-    const router = injector.inject(Router);
+
     const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
       of({ workers: [...workers, ...workers, ...workers, ...workers, ...workers, ...workers], workerCount: 18 }),
     );
@@ -156,7 +158,6 @@ describe('StaffSummaryComponent', () => {
       const { component, getAllWorkersSpy } = await setup();
 
       component.fixture.componentInstance.totalWorkerCount = 16;
-      component.fixture.componentInstance.currentPageIndex = 1;
       component.fixture.detectChanges();
 
       userEvent.type(component.getByLabelText('Search for staff records'), 'search term here{enter}');
@@ -176,23 +177,6 @@ describe('StaffSummaryComponent', () => {
   });
 
   describe('Query search params update correctly', () => {
-    it('adds the search and tab as "staff-records" query params to the url on search', async () => {
-      const { router, component } = await setup();
-
-      await component.fixture.whenStable();
-      component.fixture.componentInstance.totalWorkerCount = 16;
-      component.fixture.detectChanges();
-
-      const routerSpy = spyOn(router, 'navigate');
-
-      userEvent.type(component.getByLabelText('Search for staff records'), 'search term here{enter}');
-      expect(routerSpy).toHaveBeenCalledWith([], {
-        fragment: 'staff-records',
-        queryParams: { search: 'search term here', tab: 'staff' },
-        queryParamsHandling: 'merge',
-      });
-    });
-
     it('sets the searchTerm for staff record input if query params are found on render', async () => {
       const qsParamGetMock = sinon.stub();
       qsParamGetMock.onCall(0).returns('mysupersearch');

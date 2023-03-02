@@ -9,7 +9,7 @@ import { NewQualificationsComponent } from './new-qualifications.component';
 
 describe('NewQualificationsComponent', () => {
   async function setup() {
-    const { fixture, getByText, getAllByText } = await render(NewQualificationsComponent, {
+    const { fixture, getByText, getAllByText, queryByText } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
       providers: [],
       componentProperties: {
@@ -25,6 +25,7 @@ describe('NewQualificationsComponent', () => {
       component,
       getByText,
       getAllByText,
+      queryByText,
     };
   }
 
@@ -33,15 +34,10 @@ describe('NewQualificationsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show type heading (Health) with number of records', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Type: Health (1)')).toBeTruthy();
-  });
-
   it('should show qualification table headings for each type with records (2)', async () => {
     const { getAllByText } = await setup();
 
-    expect(getAllByText('Qualification name').length).toBe(2);
+    expect(getAllByText('Certificate Name').length).toBe(2);
     expect(getAllByText('Year achieved').length).toBe(2);
     expect(getAllByText('Notes').length).toBe(2);
   });
@@ -68,6 +64,33 @@ describe('NewQualificationsComponent', () => {
     expect(getByText('Another name for qual')).toBeTruthy();
     expect(getByText('2012')).toBeTruthy();
     expect(getByText('These are some more notes in the second row of the cert table')).toBeTruthy();
+  });
+
+  describe('no qualifications', async () => {
+    it('should navigate to select record type to add page when Add a qualification record is clicked when there are no records', async () => {
+      const { component, getByText } = await setup();
+      component.qualificationsByGroup = {
+        count: 0,
+        lastUpdated: null,
+        groups: null,
+      };
+
+      const addAQualifcationLink = getByText('Add a qualification record');
+      expect(addAQualifcationLink.getAttribute('href')).toEqual('/add-qualification');
+    });
+
+    it('should display a title, no qualifications found and add a qualification link if there are no records', async () => {
+      const { component, getByText } = await setup();
+      component.qualificationsByGroup = {
+        count: 0,
+        lastUpdated: null,
+        groups: null,
+      };
+
+      expect(getByText('Qualifications')).toBeTruthy();
+      expect(getByText('No qualification records have been added for this person yet.')).toBeTruthy();
+      expect(getByText('Add a qualification record')).toBeTruthy();
+    });
   });
 
   describe('Link titles', () => {
@@ -121,6 +144,27 @@ describe('NewQualificationsComponent', () => {
       );
 
       expect(firstCertificateTitle).toBeTruthy();
+    });
+  });
+
+  describe('no training', () => {
+    it('should render an add a qualification link if canEditWorker is true', async () => {
+      const { fixture, component, getByText } = await setup();
+      component.qualificationsByGroup.count = 0;
+      fixture.detectChanges();
+
+      const addQualificationLink = getByText('Add a qualification record');
+      expect(addQualificationLink).toBeTruthy();
+    });
+
+    it('should not render an add a qualification link if canEditWorker is true', async () => {
+      const { fixture, component, queryByText } = await setup();
+      component.qualificationsByGroup.count = 0;
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
+      const addQualificationLink = queryByText('Add a qualification record');
+      expect(addQualificationLink).toBeFalsy();
     });
   });
 });

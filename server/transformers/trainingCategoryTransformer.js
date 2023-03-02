@@ -76,14 +76,30 @@ const transformTrainingCategoriesWithMandatoryTraining = function (establishment
         seq: trainingCategory.seq,
         category: trainingCategory.category,
         training: training,
-        isMandatory: trainingCategory.MandatoryTraining && trainingCategory.MandatoryTraining.length > 0
+        isMandatory: trainingCategory.MandatoryTraining && trainingCategory.MandatoryTraining.length > 0,
       };
     })
     .filter((trainingCategory) => {
       return trainingCategory.training.length > 0;
     });
+};
 
+const transformWorkersWithMissingMandatoryTraining = (workers) => {
+  const formattedTraining = workers.map((worker) => {
+    return {
+      name: worker.NameOrIdValue,
+      uid: worker.uid,
+      missingTraining: worker.mainJob.MandatoryTraining.map((training) => {
+        return {
+          category: training.workerTrainingCategories.get('category'),
+          id: training.workerTrainingCategories.get('id'),
+        };
+      }),
+    };
+  });
+  return formattedTraining;
 };
 
 module.exports.transformTrainingCategories = transformTrainingCategories;
 module.exports.transformTrainingCategoriesWithMandatoryTraining = transformTrainingCategoriesWithMandatoryTraining;
+module.exports.transformWorkersWithMissingMandatoryTraining = transformWorkersWithMissingMandatoryTraining;

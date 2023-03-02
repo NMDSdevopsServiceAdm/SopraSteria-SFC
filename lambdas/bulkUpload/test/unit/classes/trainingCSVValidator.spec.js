@@ -113,7 +113,7 @@ describe('trainingCSVValidator', () => {
       });
 
       it('should add CATEGORY_ERROR to validationErrors if the Category provided is not a valid category number', async () => {
-        trainingCsv.CATEGORY = 41;
+        trainingCsv.CATEGORY = 145;
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
@@ -127,7 +127,7 @@ describe('trainingCSVValidator', () => {
             error: 'CATEGORY has not been supplied',
             lineNumber: 1,
             name: 'foo',
-            source: 41,
+            source: 145,
             column: 'CATEGORY',
             worker: 'bar',
           },
@@ -549,52 +549,6 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_getValidateDescriptionErrMessage()', async () => {
-      it('should add DESCRIPTION_ERROR to validationErrors and set description as null if DESCRIPTION is an empty string', async () => {
-        trainingCsv.DESCRIPTION = '';
-
-        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
-
-        await validator._validateDescription();
-
-        expect(validator.description).to.equal(null);
-        expect(validator.validationErrors).to.deep.equal([
-          {
-            origin: 'Training',
-            errCode: 1040,
-            errType: 'DESCRIPTION_ERROR',
-            error: 'DESCRIPTION has not been supplied',
-            source: trainingCsv.DESCRIPTION,
-            column: 'DESCRIPTION',
-            lineNumber: 1,
-            name: 'foo',
-            worker: 'bar',
-          },
-        ]);
-      });
-
-      it('should add DESCRIPTION_ERROR to validationErrors and set description as null if DESCRIPTION is null', async () => {
-        trainingCsv.DESCRIPTION = null;
-
-        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
-
-        await validator._validateDescription();
-
-        expect(validator.description).to.equal(null);
-        expect(validator.validationErrors).to.deep.equal([
-          {
-            origin: 'Training',
-            errCode: 1040,
-            errType: 'DESCRIPTION_ERROR',
-            error: 'DESCRIPTION has not been supplied',
-            source: trainingCsv.DESCRIPTION,
-            column: 'DESCRIPTION',
-            lineNumber: 1,
-            name: 'foo',
-            worker: 'bar',
-          },
-        ]);
-      });
-
       it('should add DESCRIPTION_ERROR to validationErrors and set description as null if DESCRIPTION is longer than MAX_LENGTH', async () => {
         trainingCsv.DESCRIPTION =
           'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis nato';

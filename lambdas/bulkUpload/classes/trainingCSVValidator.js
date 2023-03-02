@@ -167,7 +167,6 @@ class TrainingCsvValidator {
     const description = this.currentLine.DESCRIPTION;
     const MAX_LENGTH = 120;
     const errMessage = errors._getValidateDescriptionErrMessage(description, MAX_LENGTH);
-
     if (!errMessage) {
       this.description = description;
       return;

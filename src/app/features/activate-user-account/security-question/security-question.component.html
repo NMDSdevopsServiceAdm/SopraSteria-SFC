@@ -1,17 +1,17 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
-
-<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds-from-desktop">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">User account</span>
-          <h1 class="govuk-fieldset__heading">
-            Create security question
-          </h1>
+          <h1 class="govuk-fieldset__heading">Create and answer your security question</h1>
         </legend>
 
-        <p>You will need this if you forget your username or if you speak to Skills for Care about your account.</p>
+        <p class="govuk-!-margin-bottom-6">
+          You'll need to be able to answer this question if you forget your username or need to speak to Skills for Care
+          about your account.
+        </p>
 
         <ng-container *ngFor="let item of formControlsMap">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
@@ -36,7 +36,8 @@
           </div>
         </ng-container>
       </fieldset>
-    </div>
+
+      <app-registration-submit-buttons [insideFlow]="insideFlow" [returnRoute]="flow"></app-registration-submit-buttons>
+    </form>
   </div>
-  <app-submit-exit-buttons [return]="return"></app-submit-exit-buttons>
-</form>
+</div>

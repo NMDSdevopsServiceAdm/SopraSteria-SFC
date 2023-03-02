@@ -233,6 +233,7 @@ export interface mandatoryJobs {
 export interface mandatoryTraining {
   trainingCategoryId: number;
   allJobRoles: boolean;
+  category?: string;
   selectedJobRoles?: boolean;
   jobs: mandatoryJobs[];
 }
@@ -268,12 +269,24 @@ export enum WdfParentSortWorkplacesOptions {
   '4_dsc' = 'Workplace name (Z to A)',
 }
 
+export enum SortTrainingOptionsStatus {
+  '0_asc' = 'Staff name (A to Z)',
+  '1_desc' = 'Staff name (Z to A)',
+}
+
 export enum SortTrainingAndQualsOptionsWorker {
   '0_expired' = 'Expired',
   '1_expires_soon' = 'Expires soon',
   '2_missing' = 'Missing',
   '3_worker' = 'Staff name',
 }
+
+export enum SortTrainingAndQualsOptionsWorkerNoMissing {
+  '0_expired' = 'Expired',
+  '1_expires_soon' = 'Expires soon',
+  '2_worker' = 'Staff name',
+}
+
 export enum SortTrainingAndQualsOptionsCat {
   '0_expired' = 'Expired',
   '1_expires_soon' = 'Expires soon',

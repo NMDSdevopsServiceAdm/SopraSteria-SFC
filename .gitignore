@@ -36,6 +36,7 @@ testem.log
 /typings
 /oldtest
 TESTS.xml
+*.csv
 
 # System Files
 .DS_Store

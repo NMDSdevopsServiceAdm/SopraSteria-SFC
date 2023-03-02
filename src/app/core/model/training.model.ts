@@ -13,7 +13,7 @@ export interface TrainingRecordRequest {
     id: number;
   };
   title: string;
-  accredited?: boolean;
+  accredited?: string;
   completed?: string;
   expires?: string;
   notes?: string;
@@ -82,9 +82,10 @@ export interface MultipleTrainingResponse {
 
 export interface Training {
   id: number;
-  uid: string;
-  title: string;
-  expires: Date;
+  uid?: string;
+  title?: string;
+  expires?: Date;
+  missing?: boolean;
   worker: {
     id: number;
     uid: string;

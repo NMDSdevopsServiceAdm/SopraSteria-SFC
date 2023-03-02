@@ -1,18 +1,19 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -28,7 +29,11 @@ const establishmentBuilder = build('Establishment', {
 });
 
 describe('TrainingAndQualificationsTabComponent', () => {
-  async function setup(withWorkers = true, totalRecords = 4) {
+  async function setup(withWorkers = true, totalRecords = 4, addAlert = false) {
+    if (addAlert) {
+      window.history.pushState({ alertMessage: 'Updated record' }, '');
+    }
+
     const workers = withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(
       TrainingAndQualificationsTabComponent,
@@ -36,14 +41,11 @@ describe('TrainingAndQualificationsTabComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
         declarations: [TrainingLinkPanelComponent],
         providers: [
+          WindowRef,
           TrainingCategoryService,
           {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,
-          },
-          {
-            provide: FeatureFlagsService,
-            useClass: MockFeatureFlagsService,
           },
           {
             provide: PermissionsService,
@@ -62,6 +64,8 @@ describe('TrainingAndQualificationsTabComponent', () => {
     );
 
     const component = fixture.componentInstance;
+    const alertService = TestBed.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     return {
       component,
@@ -70,12 +74,23 @@ describe('TrainingAndQualificationsTabComponent', () => {
       queryByText,
       getByTestId,
       queryByTestId,
+      alertSpy,
     };
   }
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render an alert banner if there is an alert message in state', async () => {
+    const { component, fixture, alertSpy } = await setup(true, 4, true);
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(alertSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'Updated record',
+    });
   });
 
   it('renders the training link panel', async () => {
@@ -93,7 +108,7 @@ describe('TrainingAndQualificationsTabComponent', () => {
   it('should show the inset text if there are no records', async () => {
     const { getByTestId } = await setup(true, 0);
 
-    expect(getByTestId('noRecords')).toBeTruthy();
+    expect(getByTestId('noTandQRecords')).toBeTruthy();
   });
 
   it('should not render the training info panel if there are no workers', async () => {
@@ -106,6 +121,28 @@ describe('TrainingAndQualificationsTabComponent', () => {
     const { getByTestId } = await setup(false);
 
     expect(getByTestId('noStaffRecordsWarningBanner')).toBeTruthy();
+  });
+
+  describe('updateSortByValue', () => {
+    it('should update the staff sort by value when called with staff-summary section', async () => {
+      const { component } = await setup();
+
+      const properties = { section: 'staff-summary', sortByValue: 'trainingExpiresSoon' };
+      component.updateSortByValue(properties);
+
+      expect(component.staffSortByValue).toEqual('trainingExpiresSoon');
+      expect(component.trainingSortByValue).toEqual('0_expired');
+    });
+
+    it('should update the training sort by value when called with training-summary section', async () => {
+      const { component } = await setup();
+
+      const properties = { section: 'training-summary', sortByValue: '1_expires_soon' };
+      component.updateSortByValue(properties);
+
+      expect(component.trainingSortByValue).toEqual('1_expires_soon');
+      expect(component.staffSortByValue).toEqual('trainingExpired');
+    });
   });
 
   describe('staff and training views when there are workers', () => {

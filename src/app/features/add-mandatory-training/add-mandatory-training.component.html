@@ -38,7 +38,7 @@
                 id="trainingCategory"
                 name="trainingCategory"
               >
-                <option [ngValue]="null">Select training category</option>
+                <option [ngValue]="null">Select</option>
                 <option *ngFor="let training of trainings" [value]="training.id">
                   {{ training.category }}
                 </option>
@@ -48,7 +48,7 @@
               *ngIf="renderAsEditMandatoryTraining"
               class="govuk-grid-column-one-quarter govuk-list govuk-!-margin-top-1 govuk-!-padding-left-1"
             >
-              <a href="#" class="govuk__nowrap" [routerLink]="['../', 'delete-mandatory-training-category']"
+              <a class="govuk__nowrap govuk-link" [routerLink]="['../', 'delete-mandatory-training-category']"
                 >Remove this mandatory training category
               </a>
             </div>

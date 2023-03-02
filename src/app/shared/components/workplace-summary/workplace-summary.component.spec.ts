@@ -583,8 +583,7 @@ describe('WorkplaceSummaryComponent', () => {
         component.workplace.capacities = [
           { answer: 4, question: 'Number of people receiving care on the completion date', questionId: 2, seq: 0 },
         ];
-        component.capacityMessages = ['4 people receiving care'];
-        component.canEditEstablishment = true;
+        component.capacityMessages = [{ message: '4 people receiving care', service: ' (some kind of service)' }];
         fixture.detectChanges();
 
         const serviceCapacityRow = within(document.body).queryByTestId('serviceCapacity');
@@ -602,7 +601,10 @@ describe('WorkplaceSummaryComponent', () => {
           { answer: 4, question: 'How many people do you currently have', questionId: 1, seq: 0 },
           { answer: 1, question: 'Number of people receiving care on the completion date', questionId: 5, seq: 4 },
         ];
-        component.capacityMessages = ['1 bed available', '4 people receiving care'];
+        component.capacityMessages = [
+          { message: '1 bed available', service: ' (some kind of service)' },
+          { message: '4 people receiving care', service: ' (some kind of service)' },
+        ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
 

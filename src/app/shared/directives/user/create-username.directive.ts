@@ -6,7 +6,6 @@ import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { URLStructure } from '@core/model/url.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -37,7 +36,6 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   protected userNameMinLength = 3;
 
   constructor(
-    protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -113,7 +111,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
         passwordGroup: this.formBuilder.group(
           {
             createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
-            confirmPasswordInput: ['', [Validators.required]],
+            confirmPasswordInput: [''],
           },
           { validators: [CustomValidators.matchInputValues], updateOn: 'submit' },
         ),
@@ -121,7 +119,6 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
       { updateOn: 'submit' },
     );
   }
-
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -163,6 +160,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
           },
         ],
       },
+
       {
         item: 'passwordGroup.confirmPasswordInput',
         type: [
@@ -172,7 +170,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
           },
           {
             name: 'notMatched',
-            message: 'Confirmation password does not match the password you entered',
+            message: 'Password confirmation does not match the password you entered',
           },
         ],
       },
@@ -213,8 +211,15 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
         ),
     );
   }
+  confirmPassValidationMessages() {
+    if (this.getPassword.status === 'VALID') {
+      this.getConfirmPassword.setValidators(Validators.required);
+      this.getConfirmPassword.updateValueAndValidity();
+    }
+  }
 
   private onSubmit(): void {
+    this.confirmPassValidationMessages();
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.invalid || this.serverError) {

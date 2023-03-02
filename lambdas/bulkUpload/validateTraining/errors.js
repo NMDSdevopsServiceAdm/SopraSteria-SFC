@@ -33,9 +33,7 @@ exports._getValidateExpiryErrDetails = (expiredDate, dateCompleted) => {
 };
 
 exports._getValidateDescriptionErrMessage = (description, MAX_LENGTH) => {
-  if (!description) {
-    return 'DESCRIPTION has not been supplied';
-  } else if (description.length > MAX_LENGTH) {
+  if (description.length > MAX_LENGTH) {
     return `DESCRIPTION is longer than ${MAX_LENGTH} characters`;
   }
 };

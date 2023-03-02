@@ -105,9 +105,9 @@ describe('StaffRecordComponent', () => {
     expect(getAllByText(component.worker.nameOrId).length).toBe(2);
   });
 
-  it('should render the Complete record button and correct text when worker.completed is false', async () => {
+  it('should render the Complete record button and correct text when worker.completed is false and canEditWorker is true', async () => {
     const { component, fixture, getByText, queryByText } = await setup();
-
+    component.canEditWorker = true;
     component.worker.completed = false;
     fixture.detectChanges();
     const button = getByText('Confirm record details');
@@ -117,6 +117,22 @@ describe('StaffRecordComponent', () => {
 
     expect(button).toBeTruthy();
     expect(text).toBeTruthy();
+    expect(flagLongTermAbsenceLink).toBeFalsy();
+    expect(deleteRecordLink).toBeFalsy();
+  });
+
+  it('should not render the Complete record button when worker.completed is false and canEditWorker is false', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.worker.completed = false;
+    fixture.detectChanges();
+    const button = queryByText('Confirm record details');
+    const text = queryByText(`Check these details before you confirm them.`);
+    const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
+    const deleteRecordLink = queryByText('Delete staff record');
+
+    expect(button).toBeFalsy();
+    expect(text).toBeFalsy();
     expect(flagLongTermAbsenceLink).toBeFalsy();
     expect(deleteRecordLink).toBeFalsy();
   });
@@ -227,6 +243,7 @@ describe('StaffRecordComponent', () => {
     it('should call updateWorker on the worker service when button is clicked', async () => {
       const { component, fixture, workerService, getByText } = await setup();
 
+      component.canEditWorker = true;
       component.worker.completed = false;
       fixture.detectChanges();
 
@@ -243,6 +260,7 @@ describe('StaffRecordComponent', () => {
     it('should redirect back to the dashboard when worker is confirmed if workplace and establishment are the same', async () => {
       const { component, fixture, routerSpy, getByText } = await setup();
 
+      component.canEditWorker = true;
       component.workplace.uid = 'mock-uid';
       component.worker.completed = false;
       fixture.detectChanges();
@@ -259,6 +277,7 @@ describe('StaffRecordComponent', () => {
     it('should redirect back to the child workplace when the worker is confirmed if a parent is in a child workplace', async () => {
       const { component, fixture, routerSpy, getByText } = await setup();
 
+      component.canEditWorker = true;
       component.worker.completed = false;
       fixture.detectChanges();
 
