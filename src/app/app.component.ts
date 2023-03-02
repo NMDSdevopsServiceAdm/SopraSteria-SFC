@@ -84,7 +84,6 @@ export class AppComponent implements OnInit {
 
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
-    console.log(this.newHomeDesignFlag);
   }
 
   public skip(event: Event) {
