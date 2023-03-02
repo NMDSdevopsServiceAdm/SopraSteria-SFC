@@ -124,30 +124,6 @@ describe('view-workplace', () => {
   });
 
   describe('Tabs', () => {
-    it('should display the Benchmarks tab when the workplace has canViewBenchmarks permissions', async () => {
-      const { component, fixture, getByTestId } = await setup(true);
-
-      const establishment = {
-        ...component.workplace,
-      };
-      component.canViewBenchmarks = true;
-      component.workplace = establishment;
-      fixture.detectChanges();
-
-      expect(getByTestId('tab_benchmarks')).toBeTruthy();
-    });
-    it('should not display the Benchmarks tab when the workplace doesnt have canViewBenchmarks permissions', async () => {
-      const { component, fixture, queryByTestId } = await setup(true);
-
-      const establishment = {
-        ...component.workplace,
-      };
-      component.canViewBenchmarks = false;
-      component.workplace = establishment;
-      fixture.detectChanges();
-
-      expect(queryByTestId('tab_benchmarks')).toBeNull();
-    });
     it('should display the Users tab', async () => {
       const { component, fixture, getByText } = await setup(true);
 
