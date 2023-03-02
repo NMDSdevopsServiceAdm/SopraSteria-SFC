@@ -137,6 +137,19 @@ describe('view-workplace', () => {
       expect(getByText('Workplace users')).toBeTruthy();
     });
 
+    it('should display the Benchmarks tab', async () => {
+      const { component, fixture, getByText } = await setup(true);
+
+      const establishment = {
+        ...component.workplace,
+      };
+      establishment.isRegulated = false;
+      component.workplace = establishment;
+      fixture.detectChanges();
+
+      expect(getByText('Benchmarks')).toBeTruthy();
+    });
+
     it('should display a flag on the workplace tab when the sharing permisson banner is true', async () => {
       const { component, fixture, getByTestId } = await setup();
 
