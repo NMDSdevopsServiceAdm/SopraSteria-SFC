@@ -361,9 +361,18 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   User.searchUsers = async function (where) {
-    const userQuery = buildSearchQuery(where.name, 'FullNameValue');
-    const emailQuery = buildSearchQuery(where.emailAddress, 'EmailValue');
-    const loginQuery = buildSearchQuery(where.username, 'username');
+    const userQuery = buildSearchQuery(where.name, '$user.FullNameValue$');
+    const emailQuery = buildSearchQuery(where.emailAddress, '$user.EmailValue$');
+
+    const whereClause = where.username
+      ? {
+          '$login.Username$': { [Op.iLike]: where.username },
+        }
+      : {
+          '$user.Archived$': false,
+          ...userQuery,
+          ...emailQuery,
+        };
 
     return await this.findAll({
       attributes: [
@@ -375,19 +384,13 @@ module.exports = function (sequelize, DataTypes) {
         'EmailValue',
         'PhoneValue',
       ],
-      where: {
-        archived: false,
-        ...userQuery,
-        ...emailQuery,
-      },
+      where: whereClause,
       include: [
         {
           model: sequelize.models.login,
           attributes: ['username', 'isActive', 'passwdLastChanged', 'invalidAttempt', 'lastLogin'],
-          where: {
-            ...loginQuery,
-          },
-          required: true,
+          where: whereClause,
+          required: false,
         },
         {
           model: sequelize.models.establishment,
