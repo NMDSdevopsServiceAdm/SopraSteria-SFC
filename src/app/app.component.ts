@@ -7,6 +7,7 @@ import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { NestedRoutesService } from '@core/services/nested-routes.service';
+import { TabsService } from '@core/services/tabs.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit {
     private angulartics2GoogleTagManager: Angulartics2GoogleTagManager,
     private featureFlagsService: FeatureFlagsService,
     private establishmentService: EstablishmentService,
+    private tabsService: TabsService,
   ) {
     this.nestedRoutesService.routes$.subscribe((routes) => {
       if (routes) {
@@ -56,6 +58,7 @@ export class AppComponent implements OnInit {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
       this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
+      if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
 
       window.scrollTo(0, 0);
