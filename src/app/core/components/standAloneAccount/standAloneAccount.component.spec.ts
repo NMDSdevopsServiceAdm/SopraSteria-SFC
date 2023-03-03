@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -33,6 +35,7 @@ describe('StandAloneAccountComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
+        BenchmarksService,
         {
           provide: FeatureFlagsService,
           useClass: MockFeatureFlagsService,
@@ -55,12 +58,16 @@ describe('StandAloneAccountComponent', () => {
 
     const component = fixture.componentInstance;
 
+    const benchmarksService = TestBed.inject(BenchmarksService);
+    const benchmarksSpy = spyOn(benchmarksService, 'postBenchmarkTabUsage').and.callThrough();
+
     return {
       component,
       fixture,
       getByTestId,
       queryByTestId,
       getByRole,
+      benchmarksSpy,
     };
   };
 
@@ -102,6 +109,22 @@ describe('StandAloneAccountComponent', () => {
       const { component } = await setup(true, permissions);
 
       expect(component.tabs).toEqual([homeTab, workplaceTab, benchmarksTab]);
+    });
+  });
+
+  describe('tabClickEvent', () => {
+    it('should run postBenchmarkTabUsage when called with a tab slug of benchmarks', async () => {
+      const { component, benchmarksSpy } = await setup();
+      const workplaceId = component.workplaceId;
+      component.tabClickEvent({ tabSlug: 'benchmarks' });
+      expect(benchmarksSpy).toHaveBeenCalledWith(workplaceId);
+    });
+
+    it('should not run postBenchmarkTabUsage when called with a tab slug that is not benchmarks', async () => {
+      const { component, benchmarksSpy } = await setup();
+
+      component.tabClickEvent({ tabSlug: 'home' });
+      expect(benchmarksSpy).not.toHaveBeenCalled();
     });
   });
 });

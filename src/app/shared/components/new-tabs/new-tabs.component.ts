@@ -2,7 +2,6 @@ import { Location } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TabsService } from '@core/services/tabs.service';
-import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -11,9 +10,10 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./new-tabs.component.scss'],
 })
 export class NewTabsComponent implements OnInit, OnDestroy {
-  @Output() selectedTabClick = new EventEmitter();
+  @Output() selectedTabClick = new EventEmitter<{ tabSlug: string }>();
   @Input() tabs: { title: string; slug: string; active: boolean }[];
   @Input() dashboardView: boolean;
+
   private currentTab: number;
   private subscriptions: Subscription = new Subscription();
   private focus: boolean;
@@ -23,7 +23,6 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   constructor(
     private location: Location,
     private route: ActivatedRoute,
-    private workerService: WorkerService,
     private tabsService: TabsService,
     private router: Router,
   ) {}
@@ -32,7 +31,6 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     this.selectedTabSubscription();
 
     const hash = this.route.snapshot.fragment;
-
     if (hash) {
       const activeTab = this.tabs.findIndex((tab) => tab.slug === hash);
       if (activeTab) {
@@ -50,19 +48,16 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.tabsService.selectedTab$.subscribe((selectedTab) => {
         this.unselectTabs();
-
         const tabIndex = this.tabs.findIndex((tab) => tab.slug === selectedTab);
-
         if (tabIndex > -1) {
           const tab = this.tabs[tabIndex];
           tab.active = true;
-
           if (this.dashboardView) {
             this.location.replaceState(`/dashboard#${tab.slug}`);
           } else {
             this.router.navigate(['/dashboard'], { fragment: tab.slug });
           }
-          if (focus) {
+          if (this.focus) {
             setTimeout(() => {
               this.tablist.nativeElement.querySelector('.asc-active').focus();
             });
@@ -109,6 +104,8 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
     this.focus = focus;
     const tab = this.tabs[index];
+    this.currentTab = index;
+
     this.selectedTabClick.emit({ tabSlug: tab.slug });
     this.tabsService.selectedTab = tab.slug;
   }

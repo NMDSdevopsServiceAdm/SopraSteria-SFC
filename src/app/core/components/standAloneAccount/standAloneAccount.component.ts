@@ -37,8 +37,8 @@ export class StandAloneAccountComponent implements OnInit {
     this.setTabs();
   }
 
-  public tabClickEvent($event): void {
-    if ($event.tabSlug === 'benchmarks') {
+  public tabClickEvent(properties: { tabSlug: string }): void {
+    if (properties.tabSlug === 'benchmarks') {
       this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplaceId).subscribe());
     }
   }
