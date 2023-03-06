@@ -1,0 +1,33 @@
+<div class="govuk-grid-row govuk-!-padding-bottom-5 govuk-!-margin-top-8 govuk__flex govuk__align-items-flex-end">
+  <div class="govuk-grid-column-one-half">
+    <ng-container *ngIf="selectedTab === 'home'; else otherTab">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+        {{ workplace?.name }}
+      </h1>
+    </ng-container>
+    <ng-template #otherTab>
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+        <span class="govuk-caption-xl govuk-!-margin-bottom-0">{{ workplace?.name }}</span>
+        Workplace
+      </h1>
+    </ng-template>
+    <p class="govuk-!-font-size-16 govuk-!-margin-top-2 govuk-!-margin-bottom-0">
+      <span class="govuk-!-margin-right-2">Workplace ID: {{ workplace?.nmdsId }}</span>
+      <span *ngIf="selectedTab !== 'home'" data-testid="separator">|</span>
+      <span *ngIf="showLastUpdatedDate" class="govuk-!-margin-left-2" data-testid="lastUpdatedDate"
+        >Last update, {{ workplace?.updated | date: 'd MMMM y' }}
+      </span>
+    </p>
+  </div>
+  <div class="govuk-grid-column-one-half">
+    <div class="govuk-util__float-right" *ngIf="selectedTab === 'home'" data-testid="contact-info">
+      <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Contact Skills for Care</h2>
+      <p class="govuk-!-font-size-16 govuk-!-margin-top-2 govuk-!-margin-bottom-0">
+        <span class="govuk-!-margin-right-2">0113 241 0969</span> |
+        <span class="govuk-!-margin-left-2">
+          <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support@skillsforcare.org.uk</a>
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
