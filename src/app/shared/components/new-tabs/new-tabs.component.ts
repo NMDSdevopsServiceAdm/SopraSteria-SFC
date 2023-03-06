@@ -1,17 +1,7 @@
 import { Location } from '@angular/common';
-import {
-  AfterContentInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output,
-  ViewChild,
-} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TabsService } from '@core/services/tabs.service';
-import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -19,37 +9,27 @@ import { Subscription } from 'rxjs';
   templateUrl: './new-tabs.component.html',
   styleUrls: ['./new-tabs.component.scss'],
 })
-export class NewTabsComponent implements AfterContentInit, OnDestroy {
-  @Output() selectedTabClick = new EventEmitter();
-  @Output() viewTab: EventEmitter<string> = new EventEmitter();
+export class NewTabsComponent implements OnInit, OnDestroy {
+  @Output() selectedTabClick = new EventEmitter<{ tabSlug: string }>();
   @Input() tabs: { title: string; slug: string; active: boolean }[];
+  @Input() dashboardView: boolean;
+
   private currentTab: number;
   private subscriptions: Subscription = new Subscription();
+  private focus: boolean;
 
   @ViewChild('tablist') tablist: ElementRef;
 
   constructor(
     private location: Location,
     private route: ActivatedRoute,
-    private workerService: WorkerService,
     private tabsService: TabsService,
-  ) {
-    //handle tab changes home page link
-    // ????????????
-    this.subscriptions.add(
-      this.workerService.tabChanged.subscribe((displayStaffTab: boolean) => {
-        let activeTabs: any[] = [];
-        if (this.tabs) {
-          activeTabs = this.tabs.filter((tab) => tab.active);
-        }
-        if (displayStaffTab && activeTabs.length !== 0) {
-          this.location.path().includes('dashboard') ? this.selectTab(null, 2) : this.selectTab(null, 1); //2 for staff tab;
-        }
-      }),
-    );
-  }
+    private router: Router,
+  ) {}
 
-  ngAfterContentInit(): void {
+  ngOnInit(): void {
+    this.selectedTabSubscription();
+
     const hash = this.route.snapshot.fragment;
     if (hash) {
       const activeTab = this.tabs.findIndex((tab) => tab.slug === hash);
@@ -64,7 +44,30 @@ export class NewTabsComponent implements AfterContentInit, OnDestroy {
     }
   }
 
-  public onKeyUp(event: KeyboardEvent) {
+  private selectedTabSubscription(): void {
+    this.subscriptions.add(
+      this.tabsService.selectedTab$.subscribe((selectedTab) => {
+        this.unselectTabs();
+        const tabIndex = this.tabs.findIndex((tab) => tab.slug === selectedTab);
+        if (tabIndex > -1) {
+          const tab = this.tabs[tabIndex];
+          tab.active = true;
+          if (this.dashboardView) {
+            this.location.replaceState(`/dashboard#${tab.slug}`);
+          } else {
+            this.router.navigate(['/dashboard'], { fragment: tab.slug });
+          }
+          if (this.focus) {
+            setTimeout(() => {
+              this.tablist.nativeElement.querySelector('.asc-active').focus();
+            });
+          }
+        }
+      }),
+    );
+  }
+
+  public onKeyUp(event: KeyboardEvent): void {
     switch (event.key) {
       case 'Right':
       case 'ArrowRight':
@@ -85,7 +88,7 @@ export class NewTabsComponent implements AfterContentInit, OnDestroy {
     }
   }
 
-  public onKeyDown(event: KeyboardEvent) {
+  public onKeyDown(event: KeyboardEvent): void {
     switch (event.key) {
       case 'Home':
         this.selectTab(event, 0);
@@ -96,35 +99,24 @@ export class NewTabsComponent implements AfterContentInit, OnDestroy {
     }
   }
 
-  public selectTab(event: Event, index: number, focus: boolean = true) {
-    if (event) {
-      event.preventDefault();
-    }
+  public selectTab(event: Event, index: number, focus: boolean = true): void {
+    event?.preventDefault();
 
-    const hasCurrentTab = Boolean(this.currentTab);
+    this.focus = focus;
     const tab = this.tabs[index];
     this.currentTab = index;
 
-    this.unselectTabs();
-    tab.active = true;
-
+    this.selectedTabClick.emit({ tabSlug: tab.slug });
     this.tabsService.selectedTab = tab.slug;
-
-    const path = hasCurrentTab ? this.location.path().split('?')[0] : this.location.path();
-    this.location.replaceState(`${path}#${tab.slug}`);
-
-    if (focus) {
-      setTimeout(() => {
-        this.tablist.nativeElement.querySelector('.asc-active').focus();
-      });
-    }
   }
 
   private unselectTabs() {
     this.tabs.forEach((t) => (t.active = false));
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.unselectTabs();
+    this.tabsService.selectedTab = null;
   }
 }

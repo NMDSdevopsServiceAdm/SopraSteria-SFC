@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-stand-alone-account',
@@ -11,7 +13,9 @@ import { TabsService } from '@core/services/tabs.service';
 export class StandAloneAccountComponent implements OnInit {
   @Input() dashboardView: boolean;
 
+  private subscriptions: Subscription = new Subscription();
   public workplaceUid: string;
+  public workplaceId: number;
   public canViewEstablishment: boolean;
   public canViewListOfUsers: boolean;
   public canViewListOfWorkers: boolean;
@@ -22,20 +26,21 @@ export class StandAloneAccountComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private tabsService: TabsService,
+    private benchmarksService: BenchmarksService,
   ) {}
 
   ngOnInit(): void {
-    this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+    const { uid, id } = this.establishmentService.primaryWorkplace;
+    this.workplaceUid = uid;
+    this.workplaceId = id;
     this.getPermissions();
-    this.getTabs();
+    this.setTabs();
   }
 
-  public tabClickEvent($event: Event): void {
-    console.log('tabClickEvent');
-  }
-
-  public handleTabChange($event: Event): void {
-    console.log('handleTabChange');
+  public tabClickEvent(properties: { tabSlug: string }): void {
+    if (properties.tabSlug === 'benchmarks') {
+      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplaceId).subscribe());
+    }
   }
 
   private getPermissions(): void {
@@ -45,10 +50,12 @@ export class StandAloneAccountComponent implements OnInit {
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
   }
 
-  private getTabs(): void {
-    this.tabs = [this.tabsService.homeTab];
-    this.canViewEstablishment && this.tabs.push(this.tabsService.workplaceTab);
-    this.canViewListOfWorkers && this.tabs.push(this.tabsService.staffRecordsTab, this.tabsService.tAndQTab);
-    this.tabs.push(this.tabsService.benchmarksTab);
+  private setTabs(): void {
+    const tabs = [this.tabsService.homeTab];
+    this.canViewEstablishment && tabs.push(this.tabsService.workplaceTab);
+    this.canViewListOfWorkers && tabs.push(this.tabsService.staffRecordsTab, this.tabsService.tAndQTab);
+    tabs.push(this.tabsService.benchmarksTab);
+
+    this.tabs = tabs;
   }
 }

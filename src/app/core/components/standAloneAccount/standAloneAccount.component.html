@@ -1,7 +1,7 @@
 <div id="content">
   <div class="asc-tabs-container">
     <div class="govuk-width-container">
-      <app-new-tabs (selectedTabClick)="tabClickEvent($event)" (viewTab)="handleTabChange($event)" [tabs]="tabs">
+      <app-new-tabs (selectedTabClick)="tabClickEvent($event)" [tabs]="tabs" [dashboardView]="dashboardView">
       </app-new-tabs>
     </div>
   </div>

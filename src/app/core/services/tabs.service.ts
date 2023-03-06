@@ -17,7 +17,7 @@ export class TabsService {
   public tAndQTab: Tab = { title: 'Training and qualifications', slug: 'training-and-qualifications', active: false };
   public benchmarksTab: Tab = { title: 'Benchmarks', slug: 'benchmarks', active: false };
 
-  private _selectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private _selectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   public get selectedTab$(): Observable<string> {
     return this._selectedTab$.asObservable();
