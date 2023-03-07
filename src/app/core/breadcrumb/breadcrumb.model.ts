@@ -25,6 +25,7 @@ export enum JourneyType {
   BENEFITS_BUNDLE,
   CQC_MAIN_SERVICE_CHANGE,
   ADMIN_USERS,
+  WORKPLACE_TAB,
 }
 
 export interface JourneyRoute {

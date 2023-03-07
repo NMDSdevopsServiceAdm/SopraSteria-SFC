@@ -14,6 +14,15 @@ enum Path {
   MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
 }
 
+export const workplaceTabJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Home',
+      path: Path.DASHBOARD,
+    },
+  ],
+};
+
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
     {

@@ -29,7 +29,7 @@ import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
 import { publicJourney } from '@core/breadcrumb/journey.public';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
-import { allWorkplacesJourney, myWorkplaceJourney } from '@core/breadcrumb/journey.workplaces';
+import { allWorkplacesJourney, myWorkplaceJourney, workplaceTabJourney } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { parse } from 'url';
@@ -249,6 +249,10 @@ export class BreadcrumbService {
       }
       case JourneyType.ADMIN_USERS: {
         routes = adminUserJourney;
+        break;
+      }
+      case JourneyType.WORKPLACE_TAB: {
+        routes = workplaceTabJourney;
         break;
       }
       default: {

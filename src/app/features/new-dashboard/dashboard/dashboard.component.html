@@ -3,7 +3,11 @@
     <div class="govuk-grid-column-full">
       <div [ngSwitch]="selectedTab">
         <app-new-home-tab *ngSwitchCase="'home'" [workplace]="workplace"></app-new-home-tab>
-        <app-new-workplace-tab *ngSwitchCase="'workplace'" [workplace]="workplace"></app-new-workplace-tab>
+        <app-new-workplace-tab
+          *ngSwitchCase="'workplace'"
+          [workplace]="workplace"
+          [workerCount]="workerCount"
+        ></app-new-workplace-tab>
         <app-new-staff-tab *ngSwitchCase="'staff-records'" [workplace]="workplace"></app-new-staff-tab>
         <app-new-training-tab
           *ngSwitchCase="'training-and-qualifications'"
