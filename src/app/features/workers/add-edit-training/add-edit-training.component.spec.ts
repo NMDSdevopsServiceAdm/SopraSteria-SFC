@@ -222,7 +222,7 @@ describe('AddEditTrainingComponent', () => {
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
 
-      userEvent.type(getByLabelText('Add notes'), 'Some notes added to this training');
+      userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
@@ -272,7 +272,7 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
       userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
       userEvent.type(within(expiresDate).getByLabelText('Year'), '2022');
-      userEvent.type(getByLabelText('Add notes'), 'Some notes for this training');
+      userEvent.type(getByLabelText('Notes'), 'Some notes for this training');
 
       fireEvent.click(getByText('Save record'));
       fixture.detectChanges();
@@ -509,7 +509,7 @@ describe('AddEditTrainingComponent', () => {
         const veryLongString =
           'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
 
-        userEvent.type(getByLabelText('Add notes'), veryLongString);
+        userEvent.type(getByLabelText('Notes'), veryLongString);
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();

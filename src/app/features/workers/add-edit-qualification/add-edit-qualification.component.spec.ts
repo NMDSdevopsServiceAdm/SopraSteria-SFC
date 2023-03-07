@@ -177,7 +177,7 @@ describe('AddEditQualificationComponent', () => {
     it('should show error messages if no qualification type is selected', async () => {
       const { getByText, getAllByText } = await setup(null);
 
-      fireEvent.click(getByText('Save record'));
+      fireEvent.click(getByText('Save and return'));
       expect(getAllByText('Select the qualification type').length).toEqual(2);
     });
 
@@ -187,7 +187,7 @@ describe('AddEditQualificationComponent', () => {
       const degreeRadio = getByLabelText('Degree');
       fireEvent.click(degreeRadio);
       fixture.detectChanges();
-      fireEvent.click(getByText('Save record'));
+      fireEvent.click(getByText('Save and return'));
       expect(getAllByText('Select the qualification name').length).toEqual(2);
     });
 
@@ -199,7 +199,7 @@ describe('AddEditQualificationComponent', () => {
       fireEvent.click(degreeRadio);
       fixture.detectChanges();
       userEvent.type(within(conditionalForm).getByLabelText('Year achieved'), '1000');
-      fireEvent.click(getByText('Save record'));
+      fireEvent.click(getByText('Save and return'));
       expect(getAllByText('Year achieved must be this year or fewer than 100 years in the past').length).toEqual(2);
     });
 
@@ -214,7 +214,7 @@ describe('AddEditQualificationComponent', () => {
         within(conditionalForm).getByLabelText('Notes'),
         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
       );
-      fireEvent.click(getByText('Save record'));
+      fireEvent.click(getByText('Save and return'));
       expect(getAllByText('Notes must be 500 characters or fewer').length).toEqual(2);
     });
   });

@@ -127,7 +127,7 @@
 
         <div class="govuk-character-count govuk-!-margin-bottom-4">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
-            <label class="govuk-label" for="notes">Add notes </label>
+            <label class="govuk-label" for="notes">Notes</label>
             <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
             </span>

@@ -129,7 +129,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     userEvent.type(within(expiryDate).getByLabelText('Day'), '1');
     userEvent.type(within(expiryDate).getByLabelText('Month'), '1');
     userEvent.type(within(expiryDate).getByLabelText('Year'), '2022');
-    userEvent.type(getByLabelText('Add notes'), 'Notes for training');
+    userEvent.type(getByLabelText('Notes'), 'Notes for training');
 
     const finishButton = getByText('Continue');
     userEvent.click(finishButton);

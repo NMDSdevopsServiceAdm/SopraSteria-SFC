@@ -77,16 +77,18 @@
     </div>
   </div>
   <div class="govuk-grid-row">
-    <div class="govuk-button-group govuk-!-margin-top-4">
-      <button type="submit" class="govuk-button govuk-!-margin-right-5">Save record</button>
-      <a
-        class="govuk-button govuk-button--link govuk-!-margin-left-9"
-        role="button"
-        draggable="false"
-        (click)="navigateToPreviousPage()"
-      >
-        Cancel
-      </a>
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-button-group govuk-!-margin-top-4">
+        <button type="submit" class="govuk-button govuk-!-margin-right-5">Save and return</button>
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          (click)="navigateToPreviousPage()"
+        >
+          Cancel
+        </a>
+      </div>
     </div>
   </div>
 </form>
