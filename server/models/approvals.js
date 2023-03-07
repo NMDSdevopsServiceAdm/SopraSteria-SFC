@@ -140,8 +140,12 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
   Approvals.findbyEstablishmentId = function (establishmentId, approvalType, status) {
-    const params = status ? status : { [Op.or]: ['Pending', 'In progress'] };
-
+    let params;
+    if (status) {
+      params = status != 'Pending' ? status : { [Op.or]: ['Pending', 'In progress'] };
+    } else {
+      params = { [Op.or]: ['Pending', 'In progress'] };
+    }
     return this.findOne({
       where: {
         EstablishmentID: establishmentId,
