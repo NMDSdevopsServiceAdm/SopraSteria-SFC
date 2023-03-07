@@ -36,6 +36,7 @@ const createNotificationType = async (req, res) => {
 
 const getEstablishmentNotifications = async (req, res) => {
   const establishmentNotifications = await notifications.selectNotificationByEstablishment(req.params.establishmentUid);
+  console.log(establishmentNotifications);
   return res.status(200).send(establishmentNotifications);
 };
 
@@ -128,6 +129,7 @@ const addTypeContent = async (notification) => {
     }
     case 'BECOMEAPARENT': {
       let becomeAParentNotificationDetails = await models.Approvals.findbyUuid(notification.notificationContentUid);
+      console.log(becomeAParentNotificationDetails);
 
       if (becomeAParentNotificationDetails) {
         notification.typeContent = {
@@ -187,7 +189,7 @@ const getOneNotification = async (notificationUid) => {
     establishmentNotification: establishmentNotification,
     notification: notification[0],
   };
-  console.log(notificationData);
+
   return notificationData;
 };
 
@@ -205,28 +207,18 @@ const setNotificationRead = async (req, res) => {
     };
 
     const notificationData = await getOneNotification(req.params.notificationUid);
-
-    console.log(params);
-
-    let notification;
+    console.log(notificationData);
     if (notificationData.establishmentNotification) {
       await notifications.markEstablishmentNotificationAsRead(params);
-      notification = await notifications.selectOneEstablishmentNotification(params);
     } else {
       await notifications.markUserNotificationAsRead(params);
-      notification = await notifications.selectOneUserNotification(params);
     }
+    notificationData.isViewed = true;
 
-    if (notification.length !== 1) {
-      return res.status(404).send({
-        message: 'Not found',
-      });
-    }
-
-    await addTypeContent(notification[0]);
+    await addTypeContent(notificationData);
 
     //return the list
-    return res.status(200).send(notification[0]);
+    return res.status(200).send(notificationData);
   } catch (e) {
     return res.status(500).send({ message: e });
   }
@@ -235,10 +227,9 @@ const setNotificationRead = async (req, res) => {
 const sendEstablishmentNotification = async (req, res) => {
   try {
     console.log(req.body.notificationContentUid);
-    const typeData = await notifications.selectNotificationTypeByTypeName(req.body.type);
     const params = {
       establishmentUid: req.params.establishmentUid,
-      notificationTypeUid: typeData[0].id,
+      type: req.params.type,
       notificationContentUid: req.body.notificationContentUid,
       userUid: req.body.userUid,
     };
@@ -254,11 +245,10 @@ const sendEstablishmentNotification = async (req, res) => {
 const sendUserNotification = async (req, res) => {
   try {
     console.log(req.body.notificationContentUid);
-    const typeData = await notifications.selectNotificationTypeByTypeName(req.body.type);
     const params = {
-      notificationTypeUid: typeData[0].id,
+      type: req.body.type,
       notificationContentUid: req.body.notificationContentUid,
-      userUid: req.params.userUid,
+      recipientUserUid: req.params.userUid,
       senderUid: req.body.senderUid,
     };
     await notifications.insertNewUserNotification(params);

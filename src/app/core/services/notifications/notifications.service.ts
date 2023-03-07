@@ -17,6 +17,8 @@ export class NotificationsService {
     const notificationsUser = this.getUserNotifications();
     if (establishmentId) {
       const notificationsEstablishment = this.getEstablishmentNotifications(establishmentId);
+      console.log(notificationsUser);
+      console.log(notificationsEstablishment);
       return zip(notificationsUser, notificationsEstablishment).pipe(map((x) => x[0].concat(x[1])));
     } else {
       return notificationsUser;

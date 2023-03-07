@@ -108,20 +108,21 @@ const _makeWorkplaceIntoParent = async (id) => {
 const _notify = async (approvalId, userUid, establishmentId) => {
   const approval = await models.Approvals.findbyId(approvalId);
   const typUid = approval.UUID;
+  console.log(typUid);
   const params = {
     type: 'BECOMEAPARENT',
-    typeUid: typUid,
-    userUid: userUid,
+    notificationContentUid: typUid,
+    senderUid: userUid,
   };
   const users = await notifications.getAllUser({ establishmentId: establishmentId });
   await Promise.all(
-    users.map(async (user) => {
+    users.map(async () => {
       const userparams = {
         ...params,
-        targetUid: user.UserUID,
+        establishmentUid: establishmentId,
         notificationUid: uuid.v4(),
       };
-      await notifications.insertNewUserNotification(userparams);
+      await notifications.insertNewEstablishmentNotification(userparams);
     }),
   );
 };
