@@ -163,8 +163,6 @@ const getNotification = async (req, res) => {
     // return the item
     return res.status(200).send(notificationData.notification);
   } catch (e) {
-    console.log(e);
-    console.log(req.params);
     return res.status(500).send({
       message: e.message,
     });
@@ -207,7 +205,6 @@ const setNotificationRead = async (req, res) => {
     };
 
     const notificationData = await getOneNotification(req.params.notificationUid);
-    console.log(notificationData);
     if (notificationData.establishmentNotification) {
       await notifications.markEstablishmentNotificationAsRead(params);
     } else {
