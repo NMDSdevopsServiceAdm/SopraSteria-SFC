@@ -21,10 +21,6 @@ export class NotificationsService {
     } else {
       return notificationsUser;
     }
-
-    // console.log(output.subscribe((x) => x));
-
-    // return output;
   }
 
   set notifications(notifications: Notification[]) {
