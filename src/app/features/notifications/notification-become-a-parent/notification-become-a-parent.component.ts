@@ -38,7 +38,6 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
         this.notification = details;
       }),
     );
-    console.log(this.notification);
     this.setNotificationViewed(this.notificationUid);
   }
 
