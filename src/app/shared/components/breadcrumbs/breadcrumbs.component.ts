@@ -28,8 +28,9 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
   }
 
   private getBreadcrumbs(routes: JourneyRoute[]) {
+    console.log('**** get breadcrumbs ****');
     const routesWithReferrers = routes.filter((route) => route.referrer);
-
+    console.log(routes);
     routes = [
       {
         title: 'Home',

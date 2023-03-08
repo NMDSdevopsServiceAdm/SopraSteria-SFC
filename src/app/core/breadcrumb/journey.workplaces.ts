@@ -20,10 +20,6 @@ export const workplaceTabJourney: JourneyRoute = {
       title: 'Workplace',
       path: Path.DASHBOARD,
       fragment: 'workplace',
-      referrer: {
-        path: Path.DASHBOARD,
-        fragment: 'home',
-      },
     },
   ],
 };
