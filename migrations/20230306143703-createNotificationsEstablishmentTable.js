@@ -21,6 +21,7 @@ module.exports = {
   down: async (queryInterface) => {
     await queryInterface.sequelize.query(`
     DROP TABLE IF EXISTS cqc."NotificationsEstablishment";
+    ALTER TABLE cqc."Notifications" ALTER COLUMN "notificationUid" DROP DEFAULT;
     `);
   },
 };
