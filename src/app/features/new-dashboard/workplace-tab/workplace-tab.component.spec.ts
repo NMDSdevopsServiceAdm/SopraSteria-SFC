@@ -3,9 +3,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -29,6 +31,10 @@ describe('NewWorkplaceTabComponent', () => {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(),
           deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
         },
         {
           provide: EstablishmentService,
