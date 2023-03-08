@@ -10,7 +10,6 @@ const routes: Routes = [
   {
     path: 'about-the-data',
     component: BenchmarksAboutTheDataComponent,
-    canActivate: [CheckPermissionsGuard],
     data: {
       title: 'About the data',
     },
@@ -18,7 +17,7 @@ const routes: Routes = [
   {
     path: 'rankings',
     component: BenchmarksRankingsComponent,
-    canActivate: [CheckPermissionsGuard],
+
     data: {
       title: 'Rankings',
     },
@@ -26,7 +25,7 @@ const routes: Routes = [
   {
     path: 'pay',
     component: BenchmarksMetricComponent,
-    canActivate: [CheckPermissionsGuard],
+
     data: {
       ...MetricsContent.Pay,
     },
@@ -34,7 +33,6 @@ const routes: Routes = [
   {
     path: 'turnover',
     component: BenchmarksMetricComponent,
-    canActivate: [CheckPermissionsGuard],
     data: {
       ...MetricsContent.Turnover,
     },
@@ -42,7 +40,6 @@ const routes: Routes = [
   {
     path: 'qualifications',
     component: BenchmarksMetricComponent,
-    canActivate: [CheckPermissionsGuard],
     data: {
       ...MetricsContent.Qualifications,
     },
@@ -50,7 +47,6 @@ const routes: Routes = [
   {
     path: 'sickness',
     component: BenchmarksMetricComponent,
-    canActivate: [CheckPermissionsGuard],
     data: {
       ...MetricsContent.Sickness,
     },

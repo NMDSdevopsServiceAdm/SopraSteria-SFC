@@ -35,17 +35,13 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     this.fragment = this.benchmarksService.returnTo?.fragment;
     const workplaceUid = this.workplace?.id ? this.workplace.id : this.route.snapshot.params.establishmentuid;
 
-    const canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-
-    if (canViewBenchmarks) {
-      this.subscriptions.add(
-        this.benchmarksService.getTileData(workplaceUid, []).subscribe((data) => {
-          if (data) {
-            this.meta = data.meta;
-          }
-        }),
-      );
-    }
+    this.subscriptions.add(
+      this.benchmarksService.getTileData(workplaceUid, []).subscribe((data) => {
+        if (data) {
+          this.meta = data.meta;
+        }
+      }),
+    );
 
     this.backService.setBackLink(this.benchmarksService.returnTo);
   }
