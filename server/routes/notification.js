@@ -36,7 +36,6 @@ const createNotificationType = async (req, res) => {
 
 const getEstablishmentNotifications = async (req, res) => {
   const establishmentNotifications = await notifications.selectNotificationByEstablishment(req.params.establishmentUid);
-  console.log(establishmentNotifications);
   return res.status(200).send(establishmentNotifications);
 };
 
@@ -57,9 +56,7 @@ const getNotificationDetails = async (notification) => {
 };
 
 const addTypeContent = async (notification) => {
-  console.log(notification);
   notification.typeContent = {};
-
   switch (notification.type) {
     case 'OWNERCHANGE': {
       const subQuery = await ownershipChangeRequests.getOwnershipNotificationDetails({
@@ -223,7 +220,6 @@ const setNotificationRead = async (req, res) => {
 
 const sendEstablishmentNotification = async (req, res) => {
   try {
-    console.log(req.body.notificationContentUid);
     const params = {
       establishmentUid: req.params.establishmentUid,
       type: req.params.type,
@@ -241,7 +237,6 @@ const sendEstablishmentNotification = async (req, res) => {
 
 const sendUserNotification = async (req, res) => {
   try {
-    console.log(req.body.notificationContentUid);
     const params = {
       type: req.body.type,
       notificationContentUid: req.body.notificationContentUid,

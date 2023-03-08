@@ -17,8 +17,6 @@ export class NotificationsService {
     const notificationsUser = this.getUserNotifications();
     if (establishmentId) {
       const notificationsEstablishment = this.getEstablishmentNotifications(establishmentId);
-      console.log(notificationsUser);
-      console.log(notificationsEstablishment);
       return zip(notificationsUser, notificationsEstablishment).pipe(map((x) => x[0].concat(x[1])));
     } else {
       return notificationsUser;
@@ -39,10 +37,6 @@ export class NotificationsService {
 
   public createNotificationType(typeParams): Observable<NotificationTypes> {
     return this.http.post<any>('/api/notification/type', typeParams);
-  }
-
-  public getNotificationTypes(): Observable<NotificationTypes> {
-    return this.http.get<any>('/api/notification/type');
   }
 
   public getUserNotifications(): Observable<Notification[]> {

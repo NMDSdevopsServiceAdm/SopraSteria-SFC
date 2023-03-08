@@ -20,7 +20,6 @@ export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
   public notification;
   public notificationUid: string;
   public status: string;
-  public route1: any;
 
   constructor(
     private route: ActivatedRoute,

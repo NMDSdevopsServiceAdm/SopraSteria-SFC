@@ -108,7 +108,6 @@ const _makeWorkplaceIntoParent = async (id) => {
 const _notify = async (approvalId, userUid, establishmentId) => {
   const approval = await models.Approvals.findbyId(approvalId);
   const typUid = approval.UUID;
-  console.log(typUid);
   const params = {
     type: 'BECOMEAPARENT',
     notificationContentUid: typUid,

@@ -54,7 +54,7 @@ const ownershipChangeRequest = async (req, res) => {
               console.error('Invalid owner change request UUID');
               return res.status(400).send();
             }
-            params.targetUid = getRecipientUserDetails[i].UserUID;
+            params.recipientUserUid = getRecipientUserDetails[i].UserUID;
             params.type = 'OWNERCHANGE';
             let changeRequestResp = await ownership.changeOwnershipRequest(params);
             if (!changeRequestResp) {
@@ -67,7 +67,7 @@ const ownershipChangeRequest = async (req, res) => {
                 console.error('Invalid notification UUID');
                 return res.status(400).send();
               }
-              await notifications.insertNewNotification(params);
+              await notifications.insertNewUserNotification(params);
             }
           }
           params.timeValue = 'NOW()';
