@@ -6,6 +6,11 @@
 
 .asc-header-section {
   background-color: govuk-colour('light-grey');
+  height: 226px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
   &__top {
     border-bottom: 1px solid #e6e5e3;
   }

@@ -2,7 +2,7 @@
   <a class="govuk-skip-link" href="#main-content" (click)="skip($event)">Skip to main content</a>
   <app-header></app-header>
 
-  <ng-container *ngIf="standAloneAccount && newHomeDesignFlag; else otherView">
+  <ng-container *ngIf="standAloneAccount && newHomeDesignFlag && !isAdminSection; else otherView">
     <app-stand-alone-account [dashboardView]="dashboardView"></app-stand-alone-account>
   </ng-container>
   <ng-template #otherView>

@@ -17,8 +17,13 @@ enum Path {
 export const workplaceTabJourney: JourneyRoute = {
   children: [
     {
-      title: 'Home',
+      title: 'Workplace',
       path: Path.DASHBOARD,
+      fragment: 'workplace',
+      referrer: {
+        path: Path.DASHBOARD,
+        fragment: 'home',
+      },
     },
   ],
 };

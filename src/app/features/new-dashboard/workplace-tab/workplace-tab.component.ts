@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -18,7 +19,6 @@ export class NewWorkplaceTabComponent implements OnInit {
 
   ngOnInit(): void {
     this.establishmentService.setInStaffRecruitmentFlow(false);
-    console.log('****');
-    // this.breadcrumbService.show(JourneyType.WORKPLACE_TAB);
+    this.breadcrumbService.show(JourneyType.WORKPLACE_TAB);
   }
 }
