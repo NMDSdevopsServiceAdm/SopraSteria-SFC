@@ -13,10 +13,7 @@ const getPay = async function (establishmentId) {
 };
 
 const getQualifications = async function (establishmentId) {
-  const qualifications = await models.worker.countSocialCareQualificationsAndNoQualifications(
-    establishmentId,
-    models.services.careProvidingStaff,
-  );
+  const qualifications = await models.worker.countSocialCareQualificationsAndNoQualifications(establishmentId);
   const denominator = qualifications.noQuals + qualifications.quals;
   if (denominator <= 0) {
     return {
