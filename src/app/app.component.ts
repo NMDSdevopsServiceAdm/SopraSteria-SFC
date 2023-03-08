@@ -56,8 +56,6 @@ export class AppComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
-      console.log('****** navigation event *********');
-      console.log(nav.url);
       this.isAdminSection = nav.url.includes('sfcadmin');
       this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
       if (nav.url === '/') this.tabsService.selectedTab = 'home';

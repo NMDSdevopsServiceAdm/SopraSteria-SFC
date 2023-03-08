@@ -60,7 +60,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
           }
           if (this.focus) {
             setTimeout(() => {
-              this.tablist.nativeElement.querySelector('.asc-active').focus();
+              this.tablist.nativeElement.querySelector('.asc-tab--active').focus();
             });
           }
         }

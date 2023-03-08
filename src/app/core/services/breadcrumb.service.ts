@@ -63,6 +63,10 @@ export class BreadcrumbService {
     this._routes$.next(routes);
   }
 
+  public removeRoutes(): void {
+    this._routes$.next(null);
+  }
+
   private getRoutes(currentRoute: JourneyRoute, segments: UrlSegment[], routes: JourneyRoute[] = []) {
     if (!currentRoute) {
       return routes;
