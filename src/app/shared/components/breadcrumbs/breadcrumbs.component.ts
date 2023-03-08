@@ -34,6 +34,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
       {
         title: 'Home',
         path: '/dashboard',
+        fragment: 'home',
       },
       ...routes,
     ];
@@ -55,7 +56,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
 
   public selectTab(event: Event, route: { path: string; fragment: string }): void {
     event.preventDefault();
-    if (route.path === '/dashboard' && !route.fragment) {
+    if (route.path === '/dashboard' && route.fragment === 'home') {
       this.tabsService.selectedTab = 'home';
     }
   }
