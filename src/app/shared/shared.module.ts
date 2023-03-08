@@ -39,6 +39,7 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
 import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
 import { NewTabsComponent } from './components/new-tabs/new-tabs.component';
+import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/workplace-summary.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
@@ -209,6 +210,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TablePaginationWrapperComponent,
     DontKnowPipe,
     NewTabsComponent,
+    NewWorkplaceSummaryComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -310,6 +312,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TablePaginationWrapperComponent,
     DontKnowPipe,
     NewTabsComponent,
+    NewWorkplaceSummaryComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

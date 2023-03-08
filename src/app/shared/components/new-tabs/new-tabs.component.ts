@@ -17,6 +17,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   private currentTab: number;
   private subscriptions: Subscription = new Subscription();
   private focus: boolean;
+  private clickEvent: boolean;
 
   @ViewChild('tablist') tablist: ElementRef;
 
@@ -34,13 +35,13 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     if (hash) {
       const activeTab = this.tabs.findIndex((tab) => tab.slug === hash);
       if (activeTab) {
-        this.selectTab(null, activeTab, false);
+        this.selectTab(null, activeTab, false, false);
       }
     }
     const activeTabs = this.tabs.filter((tab) => tab.active);
 
     if (activeTabs.length === 0) {
-      this.selectTab(null, 0, false);
+      this.selectTab(null, 0, false, false);
     }
   }
 
@@ -54,12 +55,12 @@ export class NewTabsComponent implements OnInit, OnDestroy {
           tab.active = true;
           if (this.dashboardView) {
             this.location.replaceState(`/dashboard#${tab.slug}`);
-          } else {
+          } else if (this.clickEvent) {
             this.router.navigate(['/dashboard'], { fragment: tab.slug });
           }
           if (this.focus) {
             setTimeout(() => {
-              this.tablist.nativeElement.querySelector('.asc-active').focus();
+              this.tablist.nativeElement.querySelector('.asc-tab--active').focus();
             });
           }
         }
@@ -99,9 +100,10 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public selectTab(event: Event, index: number, focus: boolean = true): void {
+  public selectTab(event: Event, index: number, focus: boolean = true, clicked = true): void {
     event?.preventDefault();
 
+    this.clickEvent = clicked;
     this.focus = focus;
     const tab = this.tabs[index];
     this.currentTab = index;

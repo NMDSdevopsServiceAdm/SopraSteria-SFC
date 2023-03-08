@@ -142,6 +142,7 @@ export class EstablishmentService {
     this._establishmentId = null;
     this._establishment$.next(null);
     this._inStaffRecruitmentFlow = false;
+    this.standAloneAccount = false;
     this.setPrimaryWorkplace(null);
     this.setCheckCQCDetailsBanner(false);
   }
