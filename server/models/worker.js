@@ -1157,7 +1157,7 @@ module.exports = function (sequelize, DataTypes) {
       },
     });
   };
-  Worker.countSocialCareQualificationsAndNoQualifications = async function (establishmentId) {
+  Worker.countSocialCareQualificationsAndNoQualifications = async function (establishmentId, jobArray) {
     return this.findOne({
       attributes: [
         [
@@ -1197,6 +1197,7 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         establishmentFk: establishmentId,
+        MainJobFkValue: jobArray,
         archived: false,
       },
       raw: true,
@@ -1207,6 +1208,7 @@ module.exports = function (sequelize, DataTypes) {
     return this.findOne({
       attributes: [[sequelize.fn('avg', sequelize.col('AnnualHourlyPayRate')), 'amount']],
       where: {
+        MainJobFkValue: 10,
         archived: false,
         AnnualHourlyPayValue: 'Hourly',
         AnnualHourlyPayRate: {
