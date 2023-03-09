@@ -16,5 +16,7 @@ export class NewStaffTabComponent implements OnInit {
 
   ngOnInit(): void {
     this.workerService.setAddStaffRecordInProgress(false);
+    this.workers = null;
+    this.workerCount = 0;
   }
 }

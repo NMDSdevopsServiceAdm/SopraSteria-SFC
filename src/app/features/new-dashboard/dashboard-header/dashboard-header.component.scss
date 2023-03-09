@@ -1,0 +1,9 @@
+@import '~govuk-frontend/govuk/base';
+
+.asc-dashboard-header {
+  background-color: govuk-colour('light-grey');
+  height: 215px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}

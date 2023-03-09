@@ -15,13 +15,13 @@
         <app-alert></app-alert>
       </div>
     </div>
-    <div *ngIf="dashboardView">
+    <!-- <div *ngIf="dashboardView">
       <div class="govuk-width-container" data-testid="dashboard-header">
         <app-new-dashboard-header></app-new-dashboard-header>
       </div>
-    </div>
+    </div> -->
   </div>
-  <div class="govuk-width-container">
+  <div [class]="{ 'govuk-width-container': !dashboardView }">
     <main
       id="main-content"
       class="govuk-main-wrapper app-main-class govuk-util__no-focus"

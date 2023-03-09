@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-new-dashboard-header',
   templateUrl: './dashboard-header.component.html',
+  styleUrls: ['./dashboard-header.component.scss'],
 })
 export class NewDashboardHeaderComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
