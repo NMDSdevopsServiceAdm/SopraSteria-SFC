@@ -27,7 +27,6 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksService,
     protected backService: BackService,
-    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit(): void {
