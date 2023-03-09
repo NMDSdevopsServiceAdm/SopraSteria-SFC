@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Metric, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksUtil } from '@core/utils/benchmarks-util';
 
@@ -8,6 +8,7 @@ import { BenchmarksUtil } from '@core/utils/benchmarks-util';
   styleUrls: ['./benchmark-tile.component.scss'],
 })
 export class BenchmarkTileComponent {
+  @Input() public canViewFullContent: boolean;
   @Input() public content: MetricsContent;
   @Input() public tile: Tile;
   @Input() public workplaceID: string;
