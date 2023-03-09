@@ -15,12 +15,18 @@ import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceW
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import sinon from 'sinon';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
 
 describe('MultipleTrainingDetailsComponent', () => {
-  async function setup(accessedFromSummary = false, prefill = false, isPrimaryWorkplace = true) {
+  async function setup(
+    accessedFromSummary = false,
+    prefill = false,
+    isPrimaryWorkplace = true,
+    qsParamGetMock = sinon.fake(),
+  ) {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText } = await render(
       MultipleTrainingDetailsComponent,
       {
@@ -35,6 +41,9 @@ describe('MultipleTrainingDetailsComponent', () => {
                 params: { trainingRecordId: '1' },
                 parent: {
                   url: [{ path: accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
+                },
+                queryParamMap: {
+                  get: qsParamGetMock,
                 },
               },
               parent: {

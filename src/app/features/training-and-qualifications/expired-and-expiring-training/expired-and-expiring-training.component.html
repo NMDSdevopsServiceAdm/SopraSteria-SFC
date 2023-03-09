@@ -90,9 +90,9 @@
                     'training-and-qualifications-record',
                     worker.uid,
                     'training',
-                    training.uid,
-                    { trainingCategory: training.category | json }
+                    training.uid
                   ]"
+                  [quryParams]="{ trainingCategory: training.category | json }"
                   >Update</a
                 >
               </div>

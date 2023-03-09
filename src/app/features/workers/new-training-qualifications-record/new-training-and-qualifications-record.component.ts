@@ -253,17 +253,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
           this.worker.uid,
           'training',
           actionListItem.uid,
-          { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
         ]
-      : [
-          'workplace',
-          this.workplace.uid,
-          'training-and-qualifications-record',
-          this.worker.uid,
-          'add-training',
-          { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
-        ];
-    this.router.navigate(url);
+      : ['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'add-training'];
+    this.router.navigate(url, { queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) } });
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]): TrainingRecordCategory[] {

@@ -188,7 +188,7 @@ describe('ViewTrainingComponent', () => {
       within(tableRow)
         .getByText('Update')
         .getAttribute('href')
-        .slice(0, within(tableRow).getByText('Update').getAttribute('href').indexOf(';')),
+        .slice(0, within(tableRow).getByText('Update').getAttribute('href').indexOf('?')),
     ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`);
   });
 
@@ -210,7 +210,7 @@ describe('ViewTrainingComponent', () => {
       within(tableRow)
         .getByText('Update')
         .getAttribute('href')
-        .slice(0, within(tableRow).getByText('Update').getAttribute('href').indexOf(';')),
+        .slice(0, within(tableRow).getByText('Update').getAttribute('href').indexOf('?')),
     ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`);
   });
 
@@ -230,7 +230,7 @@ describe('ViewTrainingComponent', () => {
       within(tableRow)
         .getByText('Add')
         .getAttribute('href')
-        .slice(0, within(tableRow).getByText('Add').getAttribute('href').indexOf(';')),
+        .slice(0, within(tableRow).getByText('Add').getAttribute('href').indexOf('?')),
     ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/add-training`);
   });
 

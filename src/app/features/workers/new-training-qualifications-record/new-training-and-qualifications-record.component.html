@@ -1,7 +1,7 @@
-<div class="govuk-grid-row govuk-!-margin-bottom-0">
+<div *ngIf="worker.longTermAbsence" class="govuk-grid-row govuk-!-margin-bottom-0">
   <div class="govuk-grid-column-two-thirds">
     <div class="govuk-list--inline govuk-list">
-      <p *ngIf="worker.longTermAbsence" class="govuk-tag govuk-tag--grey asc-tag govuk-!-margin-bottom-0">
+      <p class="govuk-tag govuk-tag--grey asc-tag govuk-!-margin-bottom-0">
         Long-term absent
         <a
           (click)="navigateToLongTermAbsence()"
@@ -17,7 +17,7 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <span class="govuk-caption-xl" data-testid="workerNameAndRole"> {{ worker.nameOrId }} </span>
+    <span class="govuk-caption-l" data-testid="workerNameAndRole"> {{ worker.nameOrId }} </span>
   </div>
 </div>
 <div class="govuk-grid-row govuk-!-margin-bottom-5">
@@ -201,7 +201,7 @@
   <div class="govuk-grid-column-full">
     <app-new-training
       [trainingCategories]="mandatoryTraining"
-      [trainingType]="'Mandatory Training'"
+      [trainingType]="'Mandatory training'"
       [isMandatoryTraining]="true"
       [canEditWorker]="canEditWorker"
       [setReturnRoute]="setReturnRoute"

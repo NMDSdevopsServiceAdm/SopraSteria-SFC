@@ -37,7 +37,7 @@ describe('NewQualificationsComponent', () => {
   it('should show qualification table headings for each type with records (2)', async () => {
     const { getAllByText } = await setup();
 
-    expect(getAllByText('Certificate Name').length).toBe(2);
+    expect(getAllByText('Certificate name').length).toBe(2);
     expect(getAllByText('Year achieved').length).toBe(2);
     expect(getAllByText('Notes').length).toBe(2);
   });

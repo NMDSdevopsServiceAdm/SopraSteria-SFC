@@ -7,18 +7,18 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
+import sinon from 'sinon';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
-  async function setup(trainingRecordId = '1', trainingCategoryData = null) {
+  async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
       {
@@ -27,9 +27,12 @@ describe('AddEditTrainingComponent', () => {
           WindowRef,
           {
             provide: ActivatedRoute,
-            useValue: new MockActivatedRoute({
+            useValue: {
               snapshot: {
-                params: { trainingRecordId, trainingCategory: trainingCategoryData },
+                params: { trainingRecordId },
+                queryParamMap: {
+                  get: qsParamGetMock,
+                },
               },
               parent: {
                 snapshot: {
@@ -40,7 +43,7 @@ describe('AddEditTrainingComponent', () => {
                   },
                 },
               },
-            }),
+            },
           },
           FormBuilder,
           ErrorSummaryService,
@@ -95,13 +98,16 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
+      const qsParamGetMock = sinon.stub();
       const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
         null,
-        JSON.stringify({
-          category: 'Autism',
-          id: 1,
-        }),
+        qsParamGetMock,
       );
+
+      component.trainingCategory = {
+        category: 'Autism',
+        id: 1,
+      };
 
       spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
       component.ngOnInit();
