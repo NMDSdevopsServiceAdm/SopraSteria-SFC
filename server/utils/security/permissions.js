@@ -137,7 +137,6 @@ const getAdditionalEditPermissions = (estabType, establishmentAndUserInfo, isLog
 };
 
 const getAdditionalReadPermissions = (establishmentAndUserInfo) => {
-  console.log({ establishmentAndUserInfo });
   const additionalPermissions = [_canViewBenchmarks(establishmentAndUserInfo)];
 
   return additionalPermissions.filter((item) => item !== undefined);
