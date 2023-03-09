@@ -15,6 +15,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
+import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { NewStaffTabComponent } from './staff-tab.component';
 
 describe('NewStaffTabComponent', () => {
@@ -34,7 +35,7 @@ describe('NewStaffTabComponent', () => {
           useClass: MockPermissionsService,
         },
       ],
-      declarations: [],
+      declarations: [NewDashboardHeaderComponent],
       componentProperties: {
         workplace: establishment,
         workers: workerArr as Worker[],

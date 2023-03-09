@@ -4,18 +4,7 @@
   background-color: #e6e5e3;
 }
 
-.asc-header-section {
+.asc-navigation-container {
   background-color: govuk-colour('light-grey');
-  // height: 215px;
-  // display: flex;
-  // flex-direction: column;
-  // justify-content: space-between;
-
-  &__no-fixed-height {
-    height: unset;
-  }
-
-  &__top {
-    border-bottom: 1px solid #e6e5e3;
-  }
+  border-bottom: 1px solid #e6e5e3;
 }

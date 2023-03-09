@@ -6,20 +6,13 @@
     </div>
   </div>
 
-  <div class="asc-header-section" [class.asc-header-section__no-fixed-height]="!dashboardView">
-    <div class="asc-header-section__top">
-      <div class="govuk-width-container">
-        <app-back-link></app-back-link>
-        <app-new-back-link></app-new-back-link>
-        <app-breadcrumbs></app-breadcrumbs>
-        <app-alert></app-alert>
-      </div>
+  <div class="asc-navigation-container">
+    <div class="govuk-width-container">
+      <app-back-link></app-back-link>
+      <app-new-back-link></app-new-back-link>
+      <app-breadcrumbs></app-breadcrumbs>
+      <app-alert></app-alert>
     </div>
-    <!-- <div *ngIf="dashboardView">
-      <div class="govuk-width-container" data-testid="dashboard-header">
-        <app-new-dashboard-header></app-new-dashboard-header>
-      </div>
-    </div> -->
   </div>
   <div [class]="{ 'govuk-width-container': !dashboardView }">
     <main

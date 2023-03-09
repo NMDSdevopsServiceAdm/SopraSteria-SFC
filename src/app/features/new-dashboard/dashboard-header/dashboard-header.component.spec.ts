@@ -1,22 +1,16 @@
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
-import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
 
 describe('NewDashboardHeaderComponent', () => {
-  const setup = async (tab = 'home', permissions = []) => {
+  const setup = async (tab = 'home', canAddWorker = true) => {
     const { fixture, getByTestId, queryByTestId, getByText, queryByText } = await render(NewDashboardHeaderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -24,17 +18,11 @@ describe('NewDashboardHeaderComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(permissions),
-          deps: [HttpClient, Router, UserService],
-        },
-        {
-          provide: TabsService,
-          useFactory: MockTabsService.factory(tab),
-        },
       ],
-      declarations: [],
+      componentProperties: {
+        tab,
+        canAddWorker,
+      },
     });
 
     const component = fixture.componentInstance;
@@ -112,7 +100,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should display the add a staff record button if canAddWorker is true with correct href', async () => {
-      const { component, getByText } = await setup('staff-records', ['canAddWorker']);
+      const { component, getByText } = await setup('staff-records');
 
       const workplaceUid = component.workplace.uid;
       const button = getByText('Add a staff record');
@@ -122,7 +110,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not display the add a staff record button if canAddWorker is not true', async () => {
-      const { queryByText } = await setup('staff-record');
+      const { queryByText } = await setup('staff-record', false);
 
       expect(queryByText('Add a staff record')).toBeFalsy();
     });

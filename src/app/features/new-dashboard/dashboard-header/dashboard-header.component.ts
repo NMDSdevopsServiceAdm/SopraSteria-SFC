@@ -1,21 +1,18 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-dashboard-header',
   templateUrl: './dashboard-header.component.html',
   styleUrls: ['./dashboard-header.component.scss'],
 })
-export class NewDashboardHeaderComponent implements OnInit, OnDestroy {
+export class NewDashboardHeaderComponent implements OnInit {
+  @Input() tab: string;
+  @Input() canAddWorker = false;
+
   public workplace: Establishment;
-  public selectedTab: string;
   public showLastUpdatedDate: boolean;
-  private subscriptions: Subscription = new Subscription();
-  public canAddWorker: boolean;
   public tabsMap = {
     workplace: 'Workplace',
     'staff-records': 'Staff records',
@@ -23,36 +20,31 @@ export class NewDashboardHeaderComponent implements OnInit, OnDestroy {
     benchmarks: 'Benchmarks',
   };
 
-  constructor(
-    private establishmentService: EstablishmentService,
-    private tabsService: TabsService,
-    private permissionsService: PermissionsService,
-  ) {}
+  constructor(private establishmentService: EstablishmentService) {}
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.selectedTabSubscription();
-    this.getPermissions();
+    this.showLastUpdatedDate = this.tab !== 'home' && this.tab !== 'benchmarks';
   }
 
-  private selectedTabSubscription(): void {
-    this.subscriptions.add(
-      this.tabsService.selectedTab$.subscribe((selectedTab) => {
-        if (selectedTab !== 'home' && selectedTab !== 'benchmarks') {
-          this.showLastUpdatedDate = true;
-        } else {
-          this.showLastUpdatedDate = false;
-        }
-        this.selectedTab = selectedTab;
-      }),
-    );
-  }
+  // private selectedTabSubscription(): void {
+  //   this.subscriptions.add(
+  //     this.tabsService.selectedTab$.subscribe((selectedTab) => {
+  //       if (selectedTab !== 'home' && selectedTab !== 'benchmarks') {
+  //         this.showLastUpdatedDate = true;
+  //       } else {
+  //         this.showLastUpdatedDate = false;
+  //       }
+  //       this.selectedTab = selectedTab;
+  //     }),
+  //   );
+  // }
 
-  private getPermissions(): void {
-    this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
-  }
+  // private getPermissions(): void {
+  //   this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
+  // }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
+  // ngOnDestroy(): void {
+  //   this.subscriptions.unsubscribe();
+  // }
 }
