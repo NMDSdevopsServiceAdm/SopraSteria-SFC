@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
@@ -9,6 +10,7 @@ import { WorkerService } from '@core/services/worker.service';
 export class NewStaffTabComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workers: Worker[];
+  @Input() workerCount: number;
 
   constructor(private workerService: WorkerService) {}
 
