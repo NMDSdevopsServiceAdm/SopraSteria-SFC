@@ -8,7 +8,11 @@
           [workplace]="workplace"
           [workerCount]="workerCount"
         ></app-new-workplace-tab>
-        <app-new-staff-tab *ngSwitchCase="'staff-records'" [workplace]="workplace"></app-new-staff-tab>
+        <app-new-staff-tab
+          *ngSwitchCase="'staff-records'"
+          [workplace]="workplace"
+          [workers]="workers"
+        ></app-new-staff-tab>
         <app-new-training-tab
           *ngSwitchCase="'training-and-qualifications'"
           [workplace]="workplace"

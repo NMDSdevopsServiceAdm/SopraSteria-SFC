@@ -1,10 +1,14 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
+import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -12,13 +16,18 @@ import { render } from '@testing-library/angular';
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
 
 describe('NewDashboardHeaderComponent', () => {
-  const setup = async (tab = 'home') => {
-    const { fixture, getByTestId, queryByTestId, getByText } = await render(NewDashboardHeaderComponent, {
+  const setup = async (tab = 'home', permissions = []) => {
+    const { fixture, getByTestId, queryByTestId, getByText, queryByText } = await render(NewDashboardHeaderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(permissions),
+          deps: [HttpClient, Router, UserService],
         },
         {
           provide: TabsService,
@@ -35,6 +44,7 @@ describe('NewDashboardHeaderComponent', () => {
       getByTestId,
       queryByTestId,
       getByText,
+      queryByText,
     };
   };
 
@@ -79,6 +89,42 @@ describe('NewDashboardHeaderComponent', () => {
       const { queryByTestId } = await setup('workplace');
 
       expect(queryByTestId('contact-info')).toBeFalsy();
+    });
+  });
+
+  describe('staff records tab', () => {
+    it('should display the workplace name, the tab name, the nmdsId number and the last updated date', async () => {
+      const { component, getByText, getByTestId } = await setup('staff-records');
+
+      const workplace = component.workplace;
+
+      expect(getByText(workplace.name)).toBeTruthy();
+      expect(getByText('Staff records')).toBeTruthy();
+      expect(getByText(`Workplace ID: ${workplace.nmdsId}`)).toBeTruthy();
+      expect(getByTestId('separator')).toBeTruthy();
+      expect(getByTestId('lastUpdatedDate')).toBeTruthy();
+    });
+
+    it('should not display the contact info', async () => {
+      const { queryByTestId } = await setup('staff-records');
+
+      expect(queryByTestId('contact-info')).toBeFalsy();
+    });
+
+    it('should display the add a staff record button if canAddWorker is true with correct href', async () => {
+      const { component, getByText } = await setup('staff-records', ['canAddWorker']);
+
+      const workplaceUid = component.workplace.uid;
+      const button = getByText('Add a staff record');
+
+      expect(button).toBeTruthy();
+      expect(button.getAttribute('href')).toEqual(`/workplace/${workplaceUid}/staff-record/create-staff-record`);
+    });
+
+    it('should not display the add a staff record button if canAddWorker is not true', async () => {
+      const { queryByText } = await setup('staff-record');
+
+      expect(queryByText('Add a staff record')).toBeFalsy();
     });
   });
 });

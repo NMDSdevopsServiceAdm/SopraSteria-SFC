@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -10,11 +11,12 @@ import { Subscription } from 'rxjs';
   selector: 'app-new-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class NewDashboardComponent implements OnInit {
+export class NewDashboardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public selectedTab: string;
   public workplace: Establishment;
   public workerCount: number;
+  public workers: Worker[];
   public canViewListOfWorkers: boolean;
 
   constructor(
@@ -46,7 +48,12 @@ export class NewDashboardComponent implements OnInit {
   }
 
   private setWorkersAndTrainingValues(): void {
-    const { workerCount = 0 } = this.route.snapshot.data.workers;
+    const { workers = [], workerCount = 0 } = this.route.snapshot.data.workers;
+    this.workers = workers;
     this.workerCount = workerCount;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
