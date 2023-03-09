@@ -178,7 +178,7 @@ describe('AddEditQualificationComponent', () => {
       const { getByText, getAllByText } = await setup(null);
 
       fireEvent.click(getByText('Save and return'));
-      expect(getAllByText('Select the qualification type').length).toEqual(2);
+      expect(getAllByText('Select the type of qualification').length).toEqual(3);
     });
 
     it('should show error messages if no qualification name is selected', async () => {
@@ -191,16 +191,38 @@ describe('AddEditQualificationComponent', () => {
       expect(getAllByText('Select the qualification name').length).toEqual(2);
     });
 
-    it('should show error messages if year achieved is out of acceptable range', async () => {
+    it('should show error message if year achieved is more than 100 years ago', async () => {
       const { fixture, getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
+
+      const pastDate = new Date();
+      pastDate.setFullYear(pastDate.getFullYear() - 101);
 
       const degreeRadio = getByLabelText('Degree');
       const conditionalForm = getByTestId('Degree');
       fireEvent.click(degreeRadio);
       fixture.detectChanges();
-      userEvent.type(within(conditionalForm).getByLabelText('Year achieved'), '1000');
+
+      userEvent.type(within(conditionalForm).getByLabelText('Year achieved'), `${pastDate.getFullYear()}`);
       fireEvent.click(getByText('Save and return'));
-      expect(getAllByText('Year achieved must be this year or fewer than 100 years in the past').length).toEqual(2);
+
+      expect(getAllByText('Year achieved must be this year or no more than 100 years ago').length).toEqual(2);
+    });
+
+    it('should show error message if year achieved is in the future', async () => {
+      const { fixture, getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
+
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+
+      const degreeRadio = getByLabelText('Degree');
+      const conditionalForm = getByTestId('Degree');
+      fireEvent.click(degreeRadio);
+      fixture.detectChanges();
+
+      userEvent.type(within(conditionalForm).getByLabelText('Year achieved'), `${futureDate.getFullYear()}`);
+      fireEvent.click(getByText('Save and return'));
+
+      expect(getAllByText('Year achieved must be this year or no more than 100 years ago').length).toEqual(2);
     });
 
     it('should show error messages if too many characters are entered into the notes input', async () => {
