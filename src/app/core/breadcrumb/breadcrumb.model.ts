@@ -26,6 +26,7 @@ export enum JourneyType {
   CQC_MAIN_SERVICE_CHANGE,
   ADMIN_USERS,
   WORKPLACE_TAB,
+  STAFF_RECORDS_TAB,
 }
 
 export interface JourneyRoute {

@@ -24,6 +24,34 @@ export const workplaceTabJourney: JourneyRoute = {
   ],
 };
 
+export const staffRecordsTabJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Staff records',
+      path: Path.DASHBOARD,
+      fragment: 'staff-records',
+      children: [
+        {
+          title: 'Staff record',
+          path: Path.STAFF_RECORD,
+          referrer: {
+            path: Path.DASHBOARD,
+            fragment: 'staff-records',
+          },
+        },
+        {
+          title: 'Staff record',
+          path: Path.MANDATORY_DETAILS,
+          referrer: {
+            path: Path.DASHBOARD,
+            fragment: 'staff-records',
+          },
+        },
+      ],
+    },
+  ],
+};
+
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
     {
