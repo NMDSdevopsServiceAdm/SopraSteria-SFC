@@ -173,7 +173,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
         ],
       },
     ];
-    this.selectedJobRolesArray.controls.forEach((selectedJobRolesItem, index) => {
+    this.selectedJobRolesArray.controls.forEach((_, index) => {
       this.formErrorsMap.push({
         item: `selectedJobRoles.id.${index}`,
         type: [
@@ -234,6 +234,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
 
   protected generateUpdateProps(): any {
     return {
+      previousTrainingCategoryId: this.preExistingTraining?.trainingCategoryId,
       trainingCategoryId: parseInt(this.form.get('trainingCategory').value, 10),
       allJobRoles: this.form.get('allOrSelectedJobRoles').value === mandatoryTrainingJobOption.all ? true : false,
       jobs: this.form.get('selectedJobRoles').value,
@@ -276,6 +277,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   public onSubmit(): void {
     this.submitted = true;
     this.setupFormErrorsMap();
+
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
