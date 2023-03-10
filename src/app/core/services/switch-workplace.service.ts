@@ -68,6 +68,7 @@ export class SwitchWorkplaceService {
               this.establishmentService.setState(workplace);
               this.establishmentService.setPrimaryWorkplace(workplace);
               this.establishmentService.establishmentId = workplace.uid;
+              this.establishmentService.standAloneAccount = !(workplace.isParent || workplace.parentUid);
               this.router.navigate(['/dashboard']);
             });
           },
