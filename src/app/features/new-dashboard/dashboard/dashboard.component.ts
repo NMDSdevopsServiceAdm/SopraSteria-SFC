@@ -18,6 +18,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public workerCount: number;
   public workers: Worker[];
   public canViewListOfWorkers: boolean;
+  public staffLastUpdatedDate: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -51,6 +52,12 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     const { workers = [], workerCount = 0 } = this.route.snapshot.data.workers;
     this.workers = workers;
     this.workerCount = workerCount;
+    this.getStaffLastUpdatedDate();
+  }
+
+  private getStaffLastUpdatedDate(): void {
+    const lastUpdatedDates = this.workers.map((worker) => new Date(worker.updated).getTime());
+    this.staffLastUpdatedDate = new Date(Math.max(...lastUpdatedDates)).toISOString();
   }
 
   ngOnDestroy(): void {

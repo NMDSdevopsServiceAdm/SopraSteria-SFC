@@ -5,8 +5,10 @@ import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
@@ -33,6 +35,10 @@ describe('NewStaffTabComponent', () => {
         {
           provide: PermissionsService,
           useClass: MockPermissionsService,
+        },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
         },
       ],
       declarations: [NewDashboardHeaderComponent],

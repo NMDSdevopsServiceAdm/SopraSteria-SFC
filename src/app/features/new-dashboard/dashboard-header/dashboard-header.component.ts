@@ -10,6 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class NewDashboardHeaderComponent implements OnInit {
   @Input() tab: string;
   @Input() canAddWorker = false;
+  @Input() updatedDate: string;
 
   public workplace: Establishment;
   public showLastUpdatedDate: boolean;
@@ -26,25 +27,4 @@ export class NewDashboardHeaderComponent implements OnInit {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.showLastUpdatedDate = this.tab !== 'home' && this.tab !== 'benchmarks';
   }
-
-  // private selectedTabSubscription(): void {
-  //   this.subscriptions.add(
-  //     this.tabsService.selectedTab$.subscribe((selectedTab) => {
-  //       if (selectedTab !== 'home' && selectedTab !== 'benchmarks') {
-  //         this.showLastUpdatedDate = true;
-  //       } else {
-  //         this.showLastUpdatedDate = false;
-  //       }
-  //       this.selectedTab = selectedTab;
-  //     }),
-  //   );
-  // }
-
-  // private getPermissions(): void {
-  //   this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
-  // }
-
-  // ngOnDestroy(): void {
-  //   this.subscriptions.unsubscribe();
-  // }
 }

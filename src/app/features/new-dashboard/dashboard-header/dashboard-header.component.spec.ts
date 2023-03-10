@@ -10,7 +10,8 @@ import { render } from '@testing-library/angular';
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
 
 describe('NewDashboardHeaderComponent', () => {
-  const setup = async (tab = 'home', canAddWorker = true) => {
+  const setup = async (tab = 'home', updateDate = false, canAddWorker = true) => {
+    const updatedDate = updateDate ? '01/02/2023' : null;
     const { fixture, getByTestId, queryByTestId, getByText, queryByText } = await render(NewDashboardHeaderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -22,6 +23,7 @@ describe('NewDashboardHeaderComponent', () => {
       componentProperties: {
         tab,
         canAddWorker,
+        updatedDate,
       },
     });
 
@@ -62,7 +64,7 @@ describe('NewDashboardHeaderComponent', () => {
 
   describe('Workplace tab', () => {
     it('should display the workplace name, the tab name, the nmdsId number and the last updated date', async () => {
-      const { component, getByText, getByTestId } = await setup('workplace');
+      const { component, getByText, getByTestId } = await setup('workplace', true);
 
       const workplace = component.workplace;
 
@@ -82,7 +84,7 @@ describe('NewDashboardHeaderComponent', () => {
 
   describe('staff records tab', () => {
     it('should display the workplace name, the tab name, the nmdsId number and the last updated date', async () => {
-      const { component, getByText, getByTestId } = await setup('staff-records');
+      const { component, getByText, getByTestId } = await setup('staff-records', true);
 
       const workplace = component.workplace;
 
@@ -91,6 +93,13 @@ describe('NewDashboardHeaderComponent', () => {
       expect(getByText(`Workplace ID: ${workplace.nmdsId}`)).toBeTruthy();
       expect(getByTestId('separator')).toBeTruthy();
       expect(getByTestId('lastUpdatedDate')).toBeTruthy();
+    });
+
+    it('should not display date if an updated date is not given', async () => {
+      const { queryByTestId } = await setup('staff-records', false);
+
+      expect(queryByTestId('separator')).toBeFalsy();
+      expect(queryByTestId('lastUpdatedDate')).toBeFalsy();
     });
 
     it('should not display the contact info', async () => {
