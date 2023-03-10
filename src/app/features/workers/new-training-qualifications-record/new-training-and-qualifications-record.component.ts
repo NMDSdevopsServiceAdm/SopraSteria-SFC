@@ -61,7 +61,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setBreadcrumbs();
     this.setUpTabSubscription();
     this.updateTrainingExpiresSoonDate();
-    this.updateTrainingExpiresSoonDate();
     this.setTraining();
     this.setUpAlertSubscription();
     this.setReturnRoute();
@@ -194,7 +193,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   private getTrainingCount(training: TrainingRecordCategory[]): number {
     let count = 0;
     training.forEach((category) => {
-      count += category.trainingRecords.length;
+      const trainingRecordsWithoutMissing = category.trainingRecords.filter((record) => record.uid);
+      count += trainingRecordsWithoutMissing.length;
     });
     return count;
   }

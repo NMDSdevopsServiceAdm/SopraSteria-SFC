@@ -24,16 +24,30 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the total number of training and qualification records', async () => {
-    component.trainingCount = 6;
-    component.qualificationsCount = 1;
-    fixture.detectChanges();
+  describe('records added', () => {
+    it('should render the total number of training and qualification records added', async () => {
+      component.trainingCount = 1;
+      component.qualificationsCount = 0;
+      fixture.detectChanges();
 
-    const totalTrainingAndQualsText = fixture.debugElement.query(By.css('.asc-total-records--text')).nativeElement;
-    const totalTrainingAndQualsCount = fixture.debugElement.query(By.css('.asc-total-records--count')).nativeElement;
+      const totalTrainingAndQualsText = fixture.debugElement.query(By.css('.asc-total-records--text')).nativeElement;
+      const totalTrainingAndQualsCount = fixture.debugElement.query(By.css('.asc-total-records--count')).nativeElement;
 
-    expect(totalTrainingAndQualsText.textContent).toContain('records added');
-    expect(totalTrainingAndQualsCount.textContent).toContain('7');
+      expect(totalTrainingAndQualsText.textContent).toContain('record added');
+      expect(totalTrainingAndQualsCount.textContent).toContain('1');
+    });
+
+    it('should render the total number of training and qualification records pluralised if records added is more than 1', async () => {
+      component.trainingCount = 6;
+      component.qualificationsCount = 1;
+      fixture.detectChanges();
+
+      const totalTrainingAndQualsText = fixture.debugElement.query(By.css('.asc-total-records--text')).nativeElement;
+      const totalTrainingAndQualsCount = fixture.debugElement.query(By.css('.asc-total-records--count')).nativeElement;
+
+      expect(totalTrainingAndQualsText.textContent).toContain('records added');
+      expect(totalTrainingAndQualsCount.textContent).toContain('7');
+    });
   });
 
   describe('training records', () => {
@@ -49,7 +63,7 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       expect(totalTrainingText.textContent).toContain('training record');
     });
 
-    it('should render the total number of training records pluralized if training count is not 1', async () => {
+    it('should render the total number of training records pluralised if training count is not 1', async () => {
       component.trainingCount = 2;
       component.qualificationsCount = 1;
       fixture.detectChanges();
@@ -79,7 +93,7 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
       expect(totalQualificationsText.textContent).toContain('qualification record');
     });
 
-    it('should render the total number of qualifications records pluralized if qualification count is not 1', async () => {
+    it('should render the total number of qualifications records pluralised if qualification count is not 1', async () => {
       component.trainingCount = 1;
       component.qualificationsCount = 2;
       fixture.detectChanges();
