@@ -24,7 +24,9 @@
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Training name</dt>
-          <dd class="govuk-summary-list__value" data-testid="trainingName">{{ trainingRecord.title }}</dd>
+          <dd class="govuk-summary-list__value" data-testid="trainingName">
+            {{ trainingRecord.title ? trainingRecord.title : '-' }}
+          </dd>
         </div>
       </dl>
     </ng-container>
@@ -46,7 +48,7 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">{{ qualificationRecord.qualification.group }} name</dt>
           <dd class="govuk-summary-list__value" data-testid="qualificationName">
-            {{ qualificationRecord.qualification.title }}
+            {{ qualificationRecord.qualification.title ? qualificationRecord.qualification.title : '-' }}
           </dd>
         </div>
       </dl>

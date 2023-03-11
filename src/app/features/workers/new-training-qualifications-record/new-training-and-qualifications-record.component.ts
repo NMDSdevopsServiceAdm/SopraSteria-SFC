@@ -61,7 +61,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setBreadcrumbs();
     this.setUpTabSubscription();
     this.updateTrainingExpiresSoonDate();
-    this.updateTrainingExpiresSoonDate();
     this.setTraining();
     this.setUpAlertSubscription();
     this.setReturnRoute();
@@ -194,7 +193,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   private getTrainingCount(training: TrainingRecordCategory[]): number {
     let count = 0;
     training.forEach((category) => {
-      count += category.trainingRecords.length;
+      const trainingRecordsWithoutMissing = category.trainingRecords.filter((record) => record.uid);
+      count += trainingRecordsWithoutMissing.length;
     });
     return count;
   }
@@ -253,17 +253,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
           this.worker.uid,
           'training',
           actionListItem.uid,
-          { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
         ]
-      : [
-          'workplace',
-          this.workplace.uid,
-          'training-and-qualifications-record',
-          this.worker.uid,
-          'add-training',
-          { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
-        ];
-    this.router.navigate(url);
+      : ['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'add-training'];
+    this.router.navigate(url, { queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) } });
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]): TrainingRecordCategory[] {
@@ -290,14 +282,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   public navigateToLongTermAbsence(): void {
-    this.router.navigate([
-      '/workplace',
-      this.workplace.uid,
-      'training-and-qualifications-record',
-      this.worker.uid,
-      'long-term-absence',
-      { returnToTrainingAndQuals: 'true' },
-    ]);
+    this.router.navigate(
+      ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'long-term-absence'],
+      { queryParams: { returnToTrainingAndQuals: 'true' } },
+    );
   }
 
   public ngOnDestroy(): void {
