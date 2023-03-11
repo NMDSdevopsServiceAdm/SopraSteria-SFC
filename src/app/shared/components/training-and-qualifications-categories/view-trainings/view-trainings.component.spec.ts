@@ -184,12 +184,9 @@ describe('ViewTrainingComponent', () => {
 
     expect(within(tableRow).getByTestId('expired-flag')).toBeTruthy();
     expect(within(tableRow).getByText('1 expired')).toBeTruthy();
-    expect(
-      within(tableRow)
-        .getByText('Update')
-        .getAttribute('href')
-        .slice(0, within(tableRow).getByText('Update').getAttribute('href').indexOf('?')),
-    ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`);
+    expect(within(tableRow).getByText('Update').getAttribute('href')).toEqual(
+      `/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`,
+    );
   });
 
   it(`should render a flag with the expires soon status and update link with the correct url for an expires soon training`, async () => {
@@ -206,12 +203,9 @@ describe('ViewTrainingComponent', () => {
 
     expect(within(tableRow).getByTestId('expiring-flag')).toBeTruthy();
     expect(within(tableRow).getByText('1 expires soon')).toBeTruthy();
-    expect(
-      within(tableRow)
-        .getByText('Update')
-        .getAttribute('href')
-        .slice(0, within(tableRow).getByText('Update').getAttribute('href').indexOf('?')),
-    ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`);
+    expect(within(tableRow).getByText('Update').getAttribute('href')).toEqual(
+      `/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/training/${trainingUid}`,
+    );
   });
 
   it(`should render a flag with the missing status and an add link with the correct url for missing training`, async () => {

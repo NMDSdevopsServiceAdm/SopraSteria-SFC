@@ -220,16 +220,16 @@ describe('ExpiredTrainingComponent', () => {
     const table3UpdateLink = within(tableRow3).getByText('Update');
     const table4UpdateLink = within(tableRow4).getByText('Update');
 
-    expect(table1UpdateLink.getAttribute('href').slice(0, table1UpdateLink.getAttribute('href').indexOf('?'))).toEqual(
+    expect(table1UpdateLink.getAttribute('href')).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-one-uid/training/mock-uid-one`,
     );
-    expect(table2UpdateLink.getAttribute('href').slice(0, table2UpdateLink.getAttribute('href').indexOf('?'))).toEqual(
+    expect(table2UpdateLink.getAttribute('href')).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-one-uid/training/mock-uid-two`,
     );
-    expect(table3UpdateLink.getAttribute('href').slice(0, table3UpdateLink.getAttribute('href').indexOf('?'))).toEqual(
+    expect(table3UpdateLink.getAttribute('href')).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-one-uid/training/mock-uid-three`,
     );
-    expect(table4UpdateLink.getAttribute('href').slice(0, table4UpdateLink.getAttribute('href').indexOf('?'))).toEqual(
+    expect(table4UpdateLink.getAttribute('href')).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/worker-two-uid/training/mock-uid-four`,
     );
   });
