@@ -328,9 +328,7 @@ describe('NewWorkplaceSummaryComponent', () => {
     describe('Other services', () => {
       it('should show dash and have Add information button on when otherServices is null', async () => {
         const { component, fixture } = await setup();
-        console.log(component.workplace.otherServices);
         component.workplace.otherServices = { value: null, services: [] };
-        console.log(component.workplace.otherServices);
 
         component.canEditEstablishment = true;
         fixture.detectChanges();

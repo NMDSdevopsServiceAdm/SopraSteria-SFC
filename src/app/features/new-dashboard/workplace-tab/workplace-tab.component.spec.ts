@@ -16,6 +16,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
+import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { NewWorkplaceTabComponent } from './workplace-tab.component';
 
 describe('NewWorkplaceTabComponent', () => {
@@ -44,6 +45,7 @@ describe('NewWorkplaceTabComponent', () => {
       componentProperties: {
         workplace: Establishment,
       },
+      declarations: [NewDashboardHeaderComponent],
     });
 
     const component = fixture.componentInstance;

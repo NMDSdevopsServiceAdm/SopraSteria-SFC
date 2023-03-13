@@ -7,6 +7,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
+import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
 
 describe('NewHomeTabComponent', () => {
@@ -19,7 +20,7 @@ describe('NewHomeTabComponent', () => {
           useClass: MockFeatureFlagsService,
         },
       ],
-      declarations: [],
+      declarations: [NewDashboardHeaderComponent],
     });
 
     const component = fixture.componentInstance;

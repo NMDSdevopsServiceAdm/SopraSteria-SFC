@@ -76,17 +76,15 @@ describe('StandAloneAccountComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the app-header if dashboardView is true and conditional class on main component', async () => {
-    const { getByTestId, getByRole } = await setup();
+  it('should show the conditional class on main component', async () => {
+    const { getByRole } = await setup();
 
-    expect(getByTestId('dashboard-header')).toBeTruthy();
     expect(getByRole('main').getAttribute('class')).toContain('govuk-!-padding-top-0');
   });
 
-  it('should not show the app-header if dashboardView is false and conditional class should not be on main component', async () => {
-    const { queryByTestId, getByRole } = await setup(false);
+  it('should not show the conditional class should not be on main component', async () => {
+    const { getByRole } = await setup(false);
 
-    expect(queryByTestId('dashboard-header')).toBeFalsy();
     expect(getByRole('main').getAttribute('class')).not.toContain('govuk-!-padding-top-0');
   });
 

@@ -1,20 +1,17 @@
-<div class="govuk-width-container">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <div [ngSwitch]="selectedTab">
-        <app-new-home-tab *ngSwitchCase="'home'" [workplace]="workplace"></app-new-home-tab>
-        <app-new-workplace-tab
-          *ngSwitchCase="'workplace'"
-          [workplace]="workplace"
-          [workerCount]="workerCount"
-        ></app-new-workplace-tab>
-        <app-new-staff-tab *ngSwitchCase="'staff-records'" [workplace]="workplace"></app-new-staff-tab>
-        <app-new-training-tab
-          *ngSwitchCase="'training-and-qualifications'"
-          [workplace]="workplace"
-        ></app-new-training-tab>
-        <app-new-benchmarks-tab *ngSwitchCase="'benchmarks'" class="asc-benchmarks-tab"></app-new-benchmarks-tab>
-      </div>
-    </div>
-  </div>
+<div [ngSwitch]="selectedTab">
+  <app-new-home-tab *ngSwitchCase="'home'" [workplace]="workplace"></app-new-home-tab>
+  <app-new-workplace-tab
+    *ngSwitchCase="'workplace'"
+    [workplace]="workplace"
+    [workerCount]="workerCount"
+  ></app-new-workplace-tab>
+  <app-new-staff-tab
+    *ngSwitchCase="'staff-records'"
+    [workplace]="workplace"
+    [workers]="workers"
+    [workerCount]="workerCount"
+    [staffLastUpdated]="staffLastUpdatedDate"
+  ></app-new-staff-tab>
+  <app-new-training-tab *ngSwitchCase="'training-and-qualifications'" [workplace]="workplace"></app-new-training-tab>
+  <app-new-benchmarks-tab *ngSwitchCase="'benchmarks'" class="asc-benchmarks-tab"></app-new-benchmarks-tab>
 </div>

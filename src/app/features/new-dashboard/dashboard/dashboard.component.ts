@@ -1,6 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
+import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -10,23 +12,27 @@ import { Subscription } from 'rxjs';
   selector: 'app-new-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class NewDashboardComponent implements OnInit {
+export class NewDashboardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public selectedTab: string;
   public workplace: Establishment;
   public workerCount: number;
+  public workers: Worker[];
   public canViewListOfWorkers: boolean;
+  public staffLastUpdatedDate: string;
 
   constructor(
     private route: ActivatedRoute,
     private tabsService: TabsService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
+    private authService: AuthService,
     private cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.authService.isOnAdminScreen = false;
     this.subscriptions.add(
       this.tabsService.selectedTab$.subscribe((selectedTab) => {
         this.selectedTab = selectedTab;
@@ -46,7 +52,18 @@ export class NewDashboardComponent implements OnInit {
   }
 
   private setWorkersAndTrainingValues(): void {
-    const { workerCount = 0 } = this.route.snapshot.data.workers;
+    const { workers = [], workerCount = 0 } = this.route.snapshot.data.workers;
+    this.workers = workers;
     this.workerCount = workerCount;
+    this.getStaffLastUpdatedDate();
+  }
+
+  private getStaffLastUpdatedDate(): void {
+    const lastUpdatedDates = this.workers.map((worker) => new Date(worker.updated).getTime());
+    this.staffLastUpdatedDate = new Date(Math.max(...lastUpdatedDates)).toISOString();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
