@@ -98,7 +98,7 @@ describe('LeaversComponent', () => {
 
     const inputRow = getByTestId('row-0');
 
-    expect(getByText('Add your staff leavers from the last 12 months')).toBeTruthy();
+    expect(getByText('How many staff leavers have you had in the last 12 months?')).toBeTruthy();
     expect(inputRow).toBeTruthy();
     expect(inputRow.innerText).toContain('Job role 1');
     expect(getByText('Add another job role')).toBeTruthy();
