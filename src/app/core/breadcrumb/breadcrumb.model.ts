@@ -27,6 +27,7 @@ export enum JourneyType {
   ADMIN_USERS,
   WORKPLACE_TAB,
   STAFF_RECORDS_TAB,
+  TRAINING_AND_QUALIFICATIONS_TAB,
 }
 
 export interface JourneyRoute {
