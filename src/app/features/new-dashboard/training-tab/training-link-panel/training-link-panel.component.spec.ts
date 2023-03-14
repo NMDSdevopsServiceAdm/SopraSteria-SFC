@@ -3,7 +3,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
+import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
@@ -14,10 +16,11 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
+import { Establishment as MockEstablishment } from '../../../../../mockdata/establishment';
 import { NewTrainingLinkPanelComponent } from './training-link-panel.component';
 
 describe('NewTrainingLinkPanelComponent', () => {
-  async function setup(totalRecords = 6) {
+  async function setup(totalRecords = 6, canEditEstablishment = true) {
     const { fixture, getByText, queryByText } = await render(NewTrainingLinkPanelComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -36,16 +39,16 @@ describe('NewTrainingLinkPanelComponent', () => {
           deps: [HttpClient, Router, UserService],
         },
       ],
-      // componentProperties: {
-      //   workplace: MockEstablishment as Establishment,
-      //   workers: [
-      //     {
-      //       trainingCount: 1,
-      //     },
-      //   ] as Worker[],
-      //   totalRecords,
-      //   tAndQsLastUpdated: new Date('2020-01-01').toISOString(),
-      // },
+      componentProperties: {
+        workplace: MockEstablishment as Establishment,
+        workers: [
+          {
+            trainingCount: 1,
+          },
+        ] as Worker[],
+        totalRecords,
+        canEditEstablishment,
+      },
     });
 
     const component = fixture.componentInstance;
@@ -58,17 +61,6 @@ describe('NewTrainingLinkPanelComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the total number of records', async () => {
-    const { getByText } = await setup();
-
-    expect(getByText('Training and qualifications (6)'));
-  });
-
-  it('should show the latest date of any training record (1/1/20)', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Last update, 1 January 2020')).toBeTruthy();
-  });
-
   it('should show the `Add and manage mandatory training categories` link when canEditEstablishment in permissions service is true', async () => {
     const { getByText } = await setup();
 
@@ -76,28 +68,19 @@ describe('NewTrainingLinkPanelComponent', () => {
   });
 
   it('should not show the `Add and manage mandatory training categories` link when user does not have edit access', async () => {
-    const { component, fixture, queryByText } = await setup();
-
-    component.canEditEstablishment = false;
-    fixture.detectChanges();
+    const { queryByText } = await setup(6, false);
 
     expect(queryByText('Add and manage mandatory training categories')).toBeFalsy();
   });
 
   it('should show the `Manage expiry alerts` link when canEditEstablishment in permissions service is true', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
+    const { getByText } = await setup();
 
     expect(getByText('Manage expiry alerts')).toBeTruthy();
   });
 
   it('should not show the `Manage expiry alerts` link when canEditEstablishment in permissions service is false', async () => {
-    const { component, fixture, queryByText } = await setup();
-
-    component.canEditEstablishment = false;
-    fixture.detectChanges();
+    const { queryByText } = await setup(6, false);
 
     expect(queryByText(`Manage expiry alerts' alerts`)).toBeFalsy();
   });
@@ -123,69 +106,6 @@ describe('NewTrainingLinkPanelComponent', () => {
 
       expect(reportServiceSpy).toHaveBeenCalledWith(component.establishmentUid);
       expect(saveFileSpy).toHaveBeenCalled();
-    });
-  });
-
-  it('should display the `Add multiple training records` button with the correct link when the user has edit permission', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.canEditWorker = true;
-    fixture.detectChanges();
-
-    const workplaceUid = component.workplace.uid;
-    const multipleTrainingButton = getByText('Add multiple training records');
-    expect(multipleTrainingButton).toBeTruthy();
-    expect(multipleTrainingButton.getAttribute('href')).toEqual(
-      `/workplace/${workplaceUid}/add-multiple-training/select-staff`,
-    );
-  });
-
-  it('should not display the `Add multiple training records` button when the user does not have edit permission', async () => {
-    const { queryByText } = await setup();
-
-    const multipleTrainingButton = queryByText('Add multiple training records');
-    expect(multipleTrainingButton).toBeFalsy();
-  });
-
-  describe('Parent training and quals report', () => {
-    it('should call getParentTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      const reportService = TestBed.inject(ReportService);
-      const reportServiceSpy = spyOn(reportService, 'getParentTrainingAndQualificationsReport').and.returnValue(
-        of(null),
-      );
-      const saveFileSpy = spyOn(component, 'saveFile').and.returnValue(null);
-
-      component.isParent = true;
-      fixture.detectChanges();
-
-      const downloadTrainingButton = getByText('Download parent training report');
-      downloadTrainingButton.click();
-      fixture.detectChanges();
-
-      expect(reportServiceSpy).toHaveBeenCalledWith(component.establishmentUid);
-      expect(saveFileSpy).toHaveBeenCalled();
-    });
-
-    it('should only be visible for parents', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.isParent = true;
-      fixture.detectChanges();
-
-      const downloadTrainingButton = getByText('Download parent training report');
-      expect(downloadTrainingButton).toBeTruthy();
-    });
-
-    it('should not be visible for standalone workplaces', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.isParent = false;
-      fixture.detectChanges();
-
-      const downloadTrainingButton = queryByText('Download parent training report');
-      expect(downloadTrainingButton).toBeFalsy();
     });
   });
 });

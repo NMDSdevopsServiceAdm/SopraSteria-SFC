@@ -4,10 +4,12 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecordCategories } from '@core/model/training.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -27,7 +29,6 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
   public trainingCategories: TrainingRecordCategories[];
   public canEditWorker: boolean;
   public canEditEstablishment: boolean;
-  // public workers = [];
   public totalTraining: number;
   public totalRecords: number;
   public totalExpiredTraining: number;
@@ -43,15 +44,31 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private trainingCategoryService: TrainingCategoryService,
     private tabsService: TabsService,
+    private trainingService: TrainingService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
+    const alertMessage = history.state?.alertMessage;
+    alertMessage && this.showAlert(alertMessage);
+
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.breadcrumbService.show(JourneyType.TRAINING_AND_QUALIFICATIONS_TAB);
 
+    // if returning to this page from adding multiple training and using the back link
+    // we need to remove any staff that were selected
+    this.trainingService.resetSelectedStaff();
+
     this.getAllTrainingByCategory();
     this.trainingTotals();
+  }
+
+  private showAlert(message: string): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message,
+    });
   }
 
   private getAllTrainingByCategory(): void {

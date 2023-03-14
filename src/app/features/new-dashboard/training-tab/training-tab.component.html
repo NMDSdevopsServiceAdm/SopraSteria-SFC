@@ -1,6 +1,8 @@
 <app-new-dashboard-header
   [tab]="'training-and-qualifications'"
   [canEditWorker]="canEditWorker"
+  [updatedDate]="tAndQsLastUpdated"
+  [tAndQCount]="totalRecords"
   [hasWorkers]="workers?.length > 0"
 ></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
