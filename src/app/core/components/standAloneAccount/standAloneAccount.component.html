@@ -11,10 +11,13 @@
       <app-back-link></app-back-link>
       <app-new-back-link></app-new-back-link>
       <app-breadcrumbs></app-breadcrumbs>
-      <app-alert></app-alert>
     </div>
   </div>
   <div [class]="{ 'govuk-width-container': !dashboardView }">
+    <ng-container *ngIf="!dashboardView">
+      <app-alert></app-alert>
+    </ng-container>
+
     <main
       id="main-content"
       class="govuk-main-wrapper app-main-class govuk-util__no-focus"
