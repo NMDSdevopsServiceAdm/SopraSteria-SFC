@@ -227,10 +227,11 @@ export interface setPermission {
 }
 
 export interface mandatoryJobs {
-  id: number;
+  id: number | string;
 }
 
 export interface mandatoryTraining {
+  previousTrainingCategoryId?: number;
   trainingCategoryId: number;
   allJobRoles: boolean;
   category?: string;
@@ -267,6 +268,11 @@ export enum WdfParentSortWorkplacesOptions {
   '2_meeting' = 'WDF requirements (meeting)',
   '3_asc' = 'Workplace name (A to Z)',
   '4_dsc' = 'Workplace name (Z to A)',
+}
+
+export enum SortTrainingOptionsStatus {
+  '0_asc' = 'Staff name (A to Z)',
+  '1_desc' = 'Staff name (Z to A)',
 }
 
 export enum SortTrainingAndQualsOptionsWorker {

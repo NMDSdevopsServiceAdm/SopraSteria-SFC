@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -17,14 +16,14 @@ export class YourDetailsComponent extends AccountDetailsDirective {
   constructor(
     private userService: UserService,
     private registrationService: RegistrationService,
-    public backService: BackService,
+
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
   ) {
-    super(backService, backLinkService, errorSummaryService, fb, router, route);
+    super(backLinkService, errorSummaryService, fb, router, route);
   }
 
   protected init(): void {

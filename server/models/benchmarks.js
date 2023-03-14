@@ -162,7 +162,7 @@ module.exports = function (sequelize, DataTypes) {
               required: true,
             },
           ],
-          required: true,
+          required: false,
         },
       ],
       raw: true,

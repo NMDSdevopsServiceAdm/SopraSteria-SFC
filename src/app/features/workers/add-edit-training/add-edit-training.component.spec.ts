@@ -3,35 +3,36 @@ import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
+import sinon from 'sinon';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
-  async function setup(trainingRecordId = '1', trainingCategoryData = null) {
+  async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
           WindowRef,
-          AlertService,
           {
             provide: ActivatedRoute,
-            useValue: new MockActivatedRoute({
+            useValue: {
               snapshot: {
-                params: { trainingRecordId, trainingCategory: trainingCategoryData },
+                params: { trainingRecordId },
+                queryParamMap: {
+                  get: qsParamGetMock,
+                },
               },
               parent: {
                 snapshot: {
@@ -42,7 +43,7 @@ describe('AddEditTrainingComponent', () => {
                   },
                 },
               },
-            }),
+            },
           },
           FormBuilder,
           ErrorSummaryService,
@@ -60,9 +61,6 @@ describe('AddEditTrainingComponent', () => {
     const updateSpy = spyOn(workerService, 'updateTrainingRecord').and.callThrough();
     const createSpy = spyOn(workerService, 'createTrainingRecord').and.callThrough();
 
-    const alertService = injector.inject(AlertService) as AlertService;
-    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
-
     const component = fixture.componentInstance;
 
     return {
@@ -75,7 +73,6 @@ describe('AddEditTrainingComponent', () => {
       queryByText,
       queryByTestId,
       getByLabelText,
-      alertSpy,
       updateSpy,
       createSpy,
       workerService,
@@ -101,13 +98,16 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
+      const qsParamGetMock = sinon.stub();
       const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
         null,
-        JSON.stringify({
-          category: 'Autism',
-          id: 1,
-        }),
+        qsParamGetMock,
       );
+
+      component.trainingCategory = {
+        category: 'Autism',
+        id: 1,
+      };
 
       spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
       component.ngOnInit();
@@ -228,7 +228,7 @@ describe('AddEditTrainingComponent', () => {
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
 
-      userEvent.type(getByLabelText('Add notes'), 'Some notes added to this training');
+      userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
@@ -256,21 +256,8 @@ describe('AddEditTrainingComponent', () => {
           notes: 'Some notes added to this training',
         },
       );
-      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
-    });
-
-    it('should show an alert when successfully updating training', async () => {
-      const { component, fixture, getByText, alertSpy } = await setup();
-
-      component.previousUrl = ['/goToPreviousUrl'];
-      fixture.detectChanges();
-
-      fireEvent.click(getByText('Save and return'));
-      fixture.detectChanges();
-
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Training record updated',
+      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl'], {
+        state: { alertMessage: 'Training record updated' },
       });
     });
 
@@ -291,7 +278,7 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
       userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
       userEvent.type(within(expiresDate).getByLabelText('Year'), '2022');
-      userEvent.type(getByLabelText('Add notes'), 'Some notes for this training');
+      userEvent.type(getByLabelText('Notes'), 'Some notes for this training');
 
       fireEvent.click(getByText('Save record'));
       fixture.detectChanges();
@@ -315,32 +302,9 @@ describe('AddEditTrainingComponent', () => {
         expires: '2022-04-10',
         notes: 'Some notes for this training',
       });
-      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
-    });
-
-    it('should show an alert when successfully adding a training record', async () => {
-      const { component, fixture, getByText, getByLabelText, getByTestId, alertSpy } = await setup(null);
-
-      component.previousUrl = ['/goToPreviousUrl'];
-      fixture.detectChanges();
-
-      userEvent.selectOptions(getByLabelText('Training category'), `${component.categories[0].id}`);
-      userEvent.type(getByLabelText('Training name'), 'Some training');
-      userEvent.click(getByLabelText('Yes'));
-      const completedDate = getByTestId('completedDate');
-      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
-      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
-      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
-      const expiresDate = getByTestId('expiresDate');
-      userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
-      userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
-      userEvent.type(within(expiresDate).getByLabelText('Year'), '2022');
-      userEvent.type(getByLabelText('Add notes'), 'Some notes for this training');
-
-      fireEvent.click(getByText('Save record'));
-      fixture.detectChanges();
-
-      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: 'Training record added' });
+      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl'], {
+        state: { alertMessage: 'Training record added' },
+      });
     });
   });
 
@@ -551,7 +515,7 @@ describe('AddEditTrainingComponent', () => {
         const veryLongString =
           'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
 
-        userEvent.type(getByLabelText('Add notes'), veryLongString);
+        userEvent.type(getByLabelText('Notes'), veryLongString);
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();

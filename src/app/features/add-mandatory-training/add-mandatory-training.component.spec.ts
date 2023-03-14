@@ -159,7 +159,12 @@ describe('AddMandatoryTrainingComponent', () => {
       const submitButton = getByText('Save and return');
       fireEvent.click(submitButton);
 
-      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalled();
+      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(component.establishment.uid, {
+        previousTrainingCategoryId: undefined,
+        trainingCategoryId: 1,
+        allJobRoles: true,
+        jobs: [],
+      });
     });
 
     it('Should call createAndUpdateMandatoryTraining on submit when a training is selected and one specified job role is selected', async () => {
@@ -179,7 +184,12 @@ describe('AddMandatoryTrainingComponent', () => {
       const submitButton = getByText('Save and return');
       fireEvent.click(submitButton);
 
-      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalled();
+      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(component.establishment.uid, {
+        previousTrainingCategoryId: undefined,
+        trainingCategoryId: 1,
+        allJobRoles: false,
+        jobs: [{ id: '27' }],
+      });
     });
 
     it('Should call createAndUpdateMandatoryTraining on submit when a training is selected and multiple specified job roles are selected', async () => {
@@ -205,7 +215,43 @@ describe('AddMandatoryTrainingComponent', () => {
       const submitButton = getByText('Save and return');
       fireEvent.click(submitButton);
 
-      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalled();
+      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(component.establishment.uid, {
+        previousTrainingCategoryId: undefined,
+        trainingCategoryId: 1,
+        allJobRoles: false,
+        jobs: [{ id: '27' }, { id: '23' }],
+      });
+    });
+
+    it('should call createAndUpdateMandatoryTraining with the previous category id when updating an existing mandatory training category', async () => {
+      const { component, createAndUpdateMandatoryTrainingSpy, fixture, getByLabelText, getByText } = await setup(true);
+
+      const mandatoryTrainigCategorySelect = getByLabelText('Training category', { exact: false });
+      fireEvent.change(mandatoryTrainigCategorySelect, { target: { value: 1 } });
+
+      const allJobRolesRadioButton = getByLabelText(component.allOrSelectedJobRoleOptions[1].label);
+      fireEvent.click(allJobRolesRadioButton);
+
+      const addAnotherJobRoleButton = getByText('Add another job role');
+      fireEvent.click(addAnotherJobRoleButton);
+
+      fixture.detectChanges();
+
+      const specifiedJobRoleOne = getByLabelText('Job role 1', { exact: true });
+      const specifiedJobRoleTwo = getByLabelText('Job role 2', { exact: true });
+
+      fireEvent.change(specifiedJobRoleOne, { target: { value: 27 } });
+      fireEvent.change(specifiedJobRoleTwo, { target: { value: 23 } });
+
+      const submitButton = getByText('Save and return');
+      fireEvent.click(submitButton);
+
+      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(component.establishment.uid, {
+        previousTrainingCategoryId: 9,
+        trainingCategoryId: 1,
+        allJobRoles: false,
+        jobs: [{ id: '27' }, { id: '23' }],
+      });
     });
   });
 

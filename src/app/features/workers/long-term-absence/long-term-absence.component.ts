@@ -53,9 +53,7 @@ export class LongTermAbsenceComponent implements OnInit {
   }
 
   public setReturnUrl(): void {
-    const returnToTrainingAndQuals = this.route.snapshot.params.returnToTrainingAndQuals;
-
-    this.returnUrl = returnToTrainingAndQuals
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnToTrainingAndQuals')
       ? ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training']
       : ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
   }

@@ -239,6 +239,10 @@ class WorkerCsvValidator {
   static get START_DATE_WARNING() {
     return 3190;
   }
+
+  static get START_DATE_MISSING() {
+    return 2000;
+  }
   static get START_INSECT_WARNING() {
     return 3200;
   }
@@ -1144,8 +1148,8 @@ class WorkerCsvValidator {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: WorkerCsvValidator.START_DATE_WARNING,
-        warnType: 'START_DATE_WARNING',
+        warnCode: WorkerCsvValidator.START_DATE_MISSING,
+        warnType: 'START_DATE_MISSING',
         warning: 'STARTDATE is missing',
         source: this._currentLine.STARTDATE,
         column: 'STARTDATE',

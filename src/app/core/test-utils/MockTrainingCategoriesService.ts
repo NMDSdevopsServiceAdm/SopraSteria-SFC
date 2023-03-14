@@ -27,7 +27,7 @@ export const trainingBuilder = build('Training', {
     sortByExpiresSoon: 0,
     sortByMissing: 0,
     status: 'OK',
-    caetgoryFk: 1,
+    categoryFk: 1,
     worker: perBuild(() => {
       return workerBuilder();
     }),

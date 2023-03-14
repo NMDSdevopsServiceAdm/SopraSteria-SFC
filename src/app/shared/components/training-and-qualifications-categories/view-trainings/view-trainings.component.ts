@@ -29,13 +29,13 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
   public canEditWorker = false;
   public trainingCategoryId: number;
   private subscriptions: Subscription = new Subscription();
-  public sortTrainingAndQualOptions: any;
+  public sortTrainingAndQualOptions: Record<string, string>;
   public sortByValue = 'trainingExpired';
   public searchTerm = '';
   public trainingCount: number;
   public totalTrainingCount: number;
   public isMandatory: boolean;
-  public sortByParamMap: any;
+  public sortByParamMap: Record<string, string>;
   public trainings;
 
   constructor(

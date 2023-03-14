@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -20,6 +21,18 @@ export class TrainingService {
     return this.http
       .get<TrainingCategoryResponse>('/api/trainingCategories')
       .pipe(map((res) => res.trainingCategories));
+  }
+
+  getAllTrainingByStatus(workplaceUid: string, status: string, queryParams?: Params): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`, {
+      params: queryParams,
+    });
+  }
+
+  getMissingMandatoryTraining(workplaceUid: string, queryParams?: Params): Observable<any> {
+    return this.http.get<any>(`/api/establishment/${workplaceUid}/trainingAndQualifications/missing-training`, {
+      params: queryParams,
+    });
   }
 
   getCategoryById(categoryId): Observable<TrainingCategory[]> {

@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 export class TablePaginationWrapperComponent implements OnInit {
   @Input() totalCount: number;
   @Input() count: number;
-  @Input() sortByParamMap: any;
+  @Input() sortByParamMap: Record<string, string>;
   @Input() sortByValue: string;
-  @Input() sortOptions: any;
+  @Input() sortOptions: Record<string, string>;
   @Input() searchTerm: string;
   @Input() label = 'Search';
   @Input() accessibleLabel: string;

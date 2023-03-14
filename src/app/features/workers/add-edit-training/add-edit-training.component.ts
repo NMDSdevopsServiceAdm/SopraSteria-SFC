@@ -16,7 +16,7 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
-  public mandatoryTraining: boolean;
+  public category: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -42,12 +42,12 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   protected init(): void {
     this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
-    this.mandatoryTraining = history.state?.training;
     this.worker = this.workerService.worker;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
     if (this.trainingRecordId) {
       this.fillForm();
     } else if (this.trainingCategory) {
+      this.category = this.trainingCategory.category;
       this.form.patchValue({
         category: this.trainingCategory.id,
       });
@@ -72,7 +72,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         (trainingRecord) => {
           if (trainingRecord) {
             this.trainingRecord = trainingRecord;
-
+            this.category = this.trainingRecord.trainingCategory.category;
             const completed = this.trainingRecord.completed
               ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)
               : null;
@@ -128,11 +128,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   private onSuccess() {
     const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
-    this.router.navigate(this.previousUrl);
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
+    this.router.navigate(this.previousUrl, { state: { alertMessage: message } });
   }
 
   private onError(error) {

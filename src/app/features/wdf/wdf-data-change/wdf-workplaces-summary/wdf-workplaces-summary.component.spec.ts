@@ -13,6 +13,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
+import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -28,6 +29,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: ReportService, useClass: MockReportService },
+        { provide: UserService, useClass: MockUserService },
         {
           provide: PermissionsService,
           useFactory: viewPermission
@@ -102,6 +104,20 @@ describe('WdfWorkplacesSummaryComponent', () => {
       fixture.detectChanges();
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+    });
+  });
+
+  describe('workplace rendering', async () => {
+    it('Should not display a sub workplace with a ustatus of PENDING or IN PROGRESS', async () => {
+      const { fixture } = await setup();
+      const wdfWorkplaceTableRows = fixture.nativeElement.querySelectorAll('tr');
+      const rowOne = wdfWorkplaceTableRows[1];
+
+      //One array location as headings, another as the primary workplace and the final as the only valid sub account
+      expect(wdfWorkplaceTableRows.length).toEqual(3);
+      expect(rowOne.cells['0'].innerHTML).toContain('First Subsid Workplace');
+      expect(rowOne.cells['1'].innerHTML).toContain('Not meeting');
+      expect(rowOne.cells['2'].innerHTML).toContain('Not meeting');
     });
   });
 });

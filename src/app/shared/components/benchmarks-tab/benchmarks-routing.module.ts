@@ -10,7 +10,6 @@ const routes: Routes = [
   {
     path: 'about-the-data',
     component: BenchmarksAboutTheDataComponent,
-    canActivate: [CheckPermissionsGuard],
     data: {
       title: 'About the data',
     },
@@ -19,6 +18,7 @@ const routes: Routes = [
     path: 'rankings',
     component: BenchmarksRankingsComponent,
     canActivate: [CheckPermissionsGuard],
+
     data: {
       title: 'Rankings',
     },
@@ -27,6 +27,7 @@ const routes: Routes = [
     path: 'pay',
     component: BenchmarksMetricComponent,
     canActivate: [CheckPermissionsGuard],
+
     data: {
       ...MetricsContent.Pay,
     },

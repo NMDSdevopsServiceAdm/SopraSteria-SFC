@@ -1,12 +1,15 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
@@ -26,7 +29,11 @@ const establishmentBuilder = build('Establishment', {
 });
 
 describe('TrainingAndQualificationsTabComponent', () => {
-  async function setup(withWorkers = true, totalRecords = 4) {
+  async function setup(withWorkers = true, totalRecords = 4, addAlert = false) {
+    if (addAlert) {
+      window.history.pushState({ alertMessage: 'Updated record' }, '');
+    }
+
     const workers = withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(
       TrainingAndQualificationsTabComponent,
@@ -34,6 +41,7 @@ describe('TrainingAndQualificationsTabComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
         declarations: [TrainingLinkPanelComponent],
         providers: [
+          WindowRef,
           TrainingCategoryService,
           {
             provide: EstablishmentService,
@@ -56,6 +64,8 @@ describe('TrainingAndQualificationsTabComponent', () => {
     );
 
     const component = fixture.componentInstance;
+    const alertService = TestBed.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     return {
       component,
@@ -64,12 +74,23 @@ describe('TrainingAndQualificationsTabComponent', () => {
       queryByText,
       getByTestId,
       queryByTestId,
+      alertSpy,
     };
   }
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render an alert banner if there is an alert message in state', async () => {
+    const { component, fixture, alertSpy } = await setup(true, 4, true);
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(alertSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'Updated record',
+    });
   });
 
   it('renders the training link panel', async () => {
