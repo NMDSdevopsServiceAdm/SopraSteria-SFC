@@ -8,7 +8,7 @@
       <h1 class="govuk-fieldset__heading">Select all those who you want to add a record for</h1>
     </legend>
 
-    <div *ngIf="showSearchBar" class="govuk-!-margin-bottom-8">
+    <div *ngIf="showSearchBar" class="govuk-!-margin-bottom-6">
       <app-search-input
         label="Search for staff by name or ID number"
         (emitInput)="handleSearch($event)"
@@ -42,7 +42,7 @@
           </dl>
         </ng-container>
         <ng-template #noResults>
-          <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
+          <div class="govuk-!-font-size-19 govuk-!-margin-bottom-4">
             <span class="govuk-!-font-weight-bold">There are no matching results</span>
             <a href="#" (click)="handleResetSearch($event)" class="govuk-util__float-right"> Clear search results</a>
           </div>
