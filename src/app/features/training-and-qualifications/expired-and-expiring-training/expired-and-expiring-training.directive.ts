@@ -51,10 +51,15 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.backLinkService.showBackLink();
     this.setSearchIfPrevious();
+    this.determinePreviousUrl();
     localStorage.setItem('previousUrl', this.router.url);
   }
 
   protected init(): void {}
+
+  private determinePreviousUrl(): void {
+    console.log(this.workers);
+  }
 
   private showAlert(message: string): void {
     this.alertService.addAlert({

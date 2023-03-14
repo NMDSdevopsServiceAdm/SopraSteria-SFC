@@ -4,7 +4,7 @@
       <p class="govuk-!-margin-bottom-0">
         <span class="asc-total-records--count govuk-!-margin-right-2">{{ trainingCount + qualificationsCount }}</span
         ><span class="asc-total-records--text">
-          <ng-container [ngPlural]="trainingCount">
+          <ng-container [ngPlural]="trainingCount + qualificationsCount">
             <ng-template ngPluralCase="=1">
               <span>record added</span>
             </ng-template>

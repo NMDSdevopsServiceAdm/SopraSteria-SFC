@@ -177,7 +177,7 @@ describe('AddEditQualificationComponent', () => {
     it('should show error messages if no qualification type is selected', async () => {
       const { getByText, getAllByText } = await setup(null);
 
-      fireEvent.click(getByText('Save and return'));
+      fireEvent.click(getByText('Save record'));
       expect(getAllByText('Select the type of qualification').length).toEqual(3);
     });
 
@@ -187,7 +187,7 @@ describe('AddEditQualificationComponent', () => {
       const degreeRadio = getByLabelText('Degree');
       fireEvent.click(degreeRadio);
       fixture.detectChanges();
-      fireEvent.click(getByText('Save and return'));
+      fireEvent.click(getByText('Save record'));
       expect(getAllByText('Select the qualification name').length).toEqual(2);
     });
 
@@ -203,7 +203,7 @@ describe('AddEditQualificationComponent', () => {
       fixture.detectChanges();
 
       userEvent.type(within(conditionalForm).getByLabelText('Year achieved'), `${pastDate.getFullYear()}`);
-      fireEvent.click(getByText('Save and return'));
+      fireEvent.click(getByText('Save record'));
 
       expect(getAllByText('Year achieved must be this year or no more than 100 years ago').length).toEqual(2);
     });
@@ -220,7 +220,7 @@ describe('AddEditQualificationComponent', () => {
       fixture.detectChanges();
 
       userEvent.type(within(conditionalForm).getByLabelText('Year achieved'), `${futureDate.getFullYear()}`);
-      fireEvent.click(getByText('Save and return'));
+      fireEvent.click(getByText('Save record'));
 
       expect(getAllByText('Year achieved must be this year or no more than 100 years ago').length).toEqual(2);
     });
@@ -236,7 +236,7 @@ describe('AddEditQualificationComponent', () => {
         within(conditionalForm).getByLabelText('Notes'),
         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
       );
-      fireEvent.click(getByText('Save and return'));
+      fireEvent.click(getByText('Save record'));
       expect(getAllByText('Notes must be 500 characters or fewer').length).toEqual(2);
     });
   });

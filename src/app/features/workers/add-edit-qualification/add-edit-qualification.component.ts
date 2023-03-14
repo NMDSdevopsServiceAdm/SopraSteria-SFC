@@ -22,6 +22,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public qualificationTypes: QualificationType[] = [];
   public qualifications: any;
   public qualificationId: string;
+  public buttonText: string;
   public record: QualificationResponse;
   public worker: Worker;
   public workplace: Establishment;
@@ -55,6 +56,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.worker = this.workerService.worker;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.qualificationId = this.route.snapshot.params.qualificationId;
+
+    this.buttonText = this.qualificationId ? 'Save and return' : 'Save record';
 
     Object.keys(QualificationType).forEach((key) => {
       this.qualificationTypes[key] = QualificationType[key];
