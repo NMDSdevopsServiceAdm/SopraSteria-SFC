@@ -59,6 +59,7 @@ import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wra
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
 import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
 import { NewStaffTabComponent } from '@features/new-dashboard/staff-tab/staff-tab.component';
+import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
 import { NewTrainingTabComponent } from '@features/new-dashboard/training-tab/training-tab.component';
 import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/workplace-tab.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
@@ -118,6 +119,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     NewTrainingTabComponent,
     NewBenchmarksTabComponent,
     NewDashboardHeaderComponent,
+    NewTrainingLinkPanelComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

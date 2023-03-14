@@ -1,14 +1,12 @@
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { PermissionType } from '@core/model/permissions.model';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { UserService } from '@core/services/user.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -22,8 +20,8 @@ import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-heade
 import { NewTrainingTabComponent } from './training-tab.component';
 
 fdescribe('NewTrainingTabComponent', () => {
-  const setup = async (worker = true, permissions = ['canEditWorker']) => {
-    const workerArr = worker ? ([workerBuilder()] as Worker[]) : [];
+  const setup = async (withWorkers = true, totalRecords = 4) => {
+    const workers = withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const establishment = establishmentBuilder() as Establishment;
 
     const { fixture, getByTestId } = await render(NewTrainingTabComponent, {
@@ -35,8 +33,7 @@ fdescribe('NewTrainingTabComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
-          deps: [HttpClient, Router, UserService],
+          useClass: MockPermissionsService,
         },
         {
           provide: BreadcrumbService,
@@ -46,7 +43,11 @@ fdescribe('NewTrainingTabComponent', () => {
       declarations: [NewDashboardHeaderComponent],
       componentProperties: {
         workplace: establishment,
-        workers: workerArr as Worker[],
+        trainingCounts: {
+          totalRecords,
+        } as TrainingCounts,
+        workers: workers,
+        workerCount: workers.length,
       },
     });
 

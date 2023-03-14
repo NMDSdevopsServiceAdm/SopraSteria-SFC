@@ -1,17 +1,18 @@
 <app-new-dashboard-header
   [tab]="'training-and-qualifications'"
   [canEditWorker]="canEditWorker"
-  [hasWorkers]="workers.length > 0"
+  [hasWorkers]="workers?.length > 0"
 ></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
-  <!-- <app-training-link-panel
-    data-testid="trainingLinkPanel"
-    [workplace]="workplace"
-    [workers]="workers"
-    [totalRecords]="totalRecords"
-    [tAndQsLastUpdated]="tAndQsLastUpdated"
-  ></app-training-link-panel> -->
   <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
+    <app-new-training-link-panel
+      data-testid="trainingLinkPanel"
+      [workplace]="workplace"
+      [workers]="workers"
+      [totalRecords]="totalRecords"
+      [canEditWorker]="canEditWorker"
+      [canEditEstablishment]="canEditEstablishment"
+    ></app-new-training-link-panel>
     <div class="govuk-grid-row" *ngIf="totalRecords === 0" data-testid="noTandQRecords">
       <div class="govuk-grid-column-two-thirds">
         <p>
