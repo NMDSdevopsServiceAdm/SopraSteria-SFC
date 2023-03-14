@@ -21,6 +21,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public workers: Worker[];
   public trainingCounts: TrainingCounts;
   public canViewListOfWorkers: boolean;
+  public canViewEstablishment: boolean;
   public staffLastUpdatedDate: string;
   public tAndQsLastUpdated: string;
 
@@ -52,6 +53,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
 
   private getPermissions(): void {
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+    this.canViewEstablishment = this.permissionsService.can(this.workplace.uid, 'canViewEstablishment');
   }
 
   private setWorkersAndTrainingValues(): void {
@@ -60,7 +62,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     this.workerCount = workerCount;
     this.trainingCounts = trainingCounts;
     this.tAndQsLastUpdated = tAndQsLastUpdated;
-    this.getStaffLastUpdatedDate();
+    workers.length > 0 && this.getStaffLastUpdatedDate();
   }
 
   private getStaffLastUpdatedDate(): void {
