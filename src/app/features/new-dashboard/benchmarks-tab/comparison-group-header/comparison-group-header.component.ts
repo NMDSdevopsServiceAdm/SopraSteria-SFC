@@ -1,18 +1,17 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-comparison-group-header',
   templateUrl: './comparison-group-header.component.html',
 })
 export class NewComparisonGroupHeaderComponent {
-  protected subscriptions: Subscription = new Subscription();
-
   @Input() meta: Meta;
   @Input() workplaceID: string;
+
+  @Output() downloadPDF = new EventEmitter();
 
   constructor(
     protected router: Router,
@@ -20,18 +19,18 @@ export class NewComparisonGroupHeaderComponent {
     protected benchmarksService: BenchmarksService,
   ) {}
 
-  public setReturn() {
+  public setReturn(): void {
     this.benchmarksService.setReturnTo({
       url: [this.router.url.split('#')[0]],
       fragment: 'benchmarks',
     });
   }
-  public pluralizeWorkplaces(workplaces) {
+  public pluralizeWorkplaces(workplaces): string {
     return workplaces > 1 ? 'workplaces' : 'workplace';
   }
 
-  public downloadAsPDF(event: Event) {
+  public downloadAsPDF(event: Event): void {
     event.preventDefault();
-    console.log('**** donwload ***');
+    this.downloadPDF.emit();
   }
 }

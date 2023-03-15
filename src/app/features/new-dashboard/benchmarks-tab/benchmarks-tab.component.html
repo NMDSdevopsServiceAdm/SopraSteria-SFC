@@ -3,9 +3,9 @@
 <div class="govuk-width-container govuk-!-margin-top-7">
   <div id="benchmarks-tiles">
     <app-new-comparison-group-header
-      #comparisonGroupText
       [meta]="tilesData?.meta"
       [workplaceID]="workplace.uid"
+      (downloadPDF)="downloadAsPDF()"
     ></app-new-comparison-group-header>
     <div class="govuk-grid-row">
       <app-benchmark-tile
