@@ -128,7 +128,7 @@ describe('NewTrainingTabComponent', () => {
     const navigateSpy = spyOn(component, 'navigateToStaffRecords').and.callThrough();
     const setSelectedTabSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
 
-    fireEvent.click(getByText('add staff records'));
+    fireEvent.click(getByText('add some staff records'));
 
     expect(navigateSpy).toHaveBeenCalled();
     expect(setSelectedTabSpy).toHaveBeenCalledWith('staff-records');
