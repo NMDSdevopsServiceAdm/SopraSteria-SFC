@@ -1,3 +1,46 @@
-<div class="govuk-width-container">
-  <h1>This is the New Benchmarks tab</h1>
+<app-new-dashboard-header [tab]="'benchmarks'"></app-new-dashboard-header>
+
+<div class="govuk-width-container govuk-!-margin-top-7">
+  <div id="benchmarks-tiles">
+    <app-new-comparison-group-header
+      #comparisonGroupText
+      [meta]="tilesData?.meta"
+      [workplaceID]="workplace.uid"
+    ></app-new-comparison-group-header>
+    <div class="govuk-grid-row">
+      <app-benchmark-tile
+        [canViewFullContent]="canViewFullBenchmarks"
+        [content]="payContent"
+        [tile]="tilesData?.pay"
+        [workplaceID]="workplace.uid"
+      >
+      </app-benchmark-tile>
+      <app-benchmark-tile
+        [canViewFullContent]="canViewFullBenchmarks"
+        [content]="turnoverContent"
+        [tile]="tilesData?.turnover"
+        [workplaceID]="workplace.uid"
+      >
+      </app-benchmark-tile>
+      <app-benchmark-tile
+        [canViewFullContent]="canViewFullBenchmarks"
+        [content]="sicknessContent"
+        [tile]="tilesData?.sickness"
+        [workplaceID]="workplace.uid"
+      >
+      </app-benchmark-tile>
+      <app-benchmark-tile
+        [canViewFullContent]="canViewFullBenchmarks"
+        [content]="qualificationsContent"
+        [tile]="tilesData?.qualifications"
+        [workplaceID]="workplace.uid"
+      >
+      </app-benchmark-tile>
+    </div>
+    <app-benchmarks-about-the-data
+      #aboutData
+      class="govuk-visually-hidden"
+      [workplace]="workplace"
+    ></app-benchmarks-about-the-data>
+  </div>
 </div>

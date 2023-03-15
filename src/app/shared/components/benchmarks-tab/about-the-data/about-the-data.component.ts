@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
-import { BackService } from '@core/services/back.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
@@ -26,16 +25,15 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     protected router: Router,
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksService,
-    protected backService: BackService,
     private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit(): void {
     this.url = this.benchmarksService.returnTo?.url;
     this.fragment = this.benchmarksService.returnTo?.fragment;
-    const workplaceUid = this.workplace?.id ? this.workplace.id : this.route.snapshot.params.establishmentuid;
+    const workplaceUid = this.workplace ? this.workplace.uid : this.route.snapshot.params.establishmentuid;
 
-    const canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
+    const canViewBenchmarks = this.permissionsService.can(workplaceUid, 'canViewBenchmarks');
 
     if (canViewBenchmarks) {
       this.subscriptions.add(
@@ -46,8 +44,6 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
         }),
       );
     }
-
-    this.backService.setBackLink(this.benchmarksService.returnTo);
   }
 
   public pluralizeWorkplaces(workplaces) {

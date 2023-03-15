@@ -1,0 +1,40 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-2">
+  <div class="govuk-grid-column-two-thirds" data-testid="comparison-group-text">
+    <p *ngIf="meta && meta.staff && meta.workplaces; else noCompGroup">
+      <b>Your comparison group</b> is {{ meta.staff | number }} staff from {{ meta.workplaces | number }}
+      {{ pluralizeWorkplaces(meta.workplaces) }} providing the same main service as you in your local authority.
+      <span *ngIf="meta.lastUpdated">
+        The comparison group data was last updated {{ meta.lastUpdated | date: 'd MMMM yyyy' }}.
+      </span>
+    </p>
+    <ng-template #noCompGroup>
+      <p><b>Your comparison group</b> information is not available at the moment.</p>
+    </ng-template>
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-bottom-4">
+  <div class="govuk-grid-column-one-half">
+    <a
+      class="asc-font-19"
+      data-html2canvas-ignore
+      [routerLink]="['/workplace', workplaceID, 'benchmarks', 'about-the-data']"
+      (click)="setReturn()"
+      >About the data</a
+    >
+  </div>
+  <div class="govuk-grid-column-one-half">
+    <a
+      class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center govuk-util__float-right"
+      role="button"
+      draggable="false"
+      href="/benchmarks.pdf"
+      data-html2canvas-ignore
+      data-testid="download-button"
+      (click)="downloadAsPDF($event)"
+    >
+      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+        Download Benchmarks PDF (89KB, 2 pages)
+      </span>
+    </a>
+  </div>
+</div>
