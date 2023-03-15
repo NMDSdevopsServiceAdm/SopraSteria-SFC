@@ -11,6 +11,9 @@ export class NewDashboardHeaderComponent implements OnInit {
   @Input() tab: string;
   @Input() canAddWorker = false;
   @Input() updatedDate: string;
+  @Input() tAndQCount = 0;
+  @Input() canEditWorker = false;
+  @Input() hasWorkers = false;
 
   public workplace: Establishment;
   public showLastUpdatedDate: boolean;
@@ -20,11 +23,20 @@ export class NewDashboardHeaderComponent implements OnInit {
     'training-and-qualifications': 'Training and qualifications',
     benchmarks: 'Benchmarks',
   };
+  public header: string;
 
   constructor(private establishmentService: EstablishmentService) {}
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.showLastUpdatedDate = this.tab !== 'home' && this.tab !== 'benchmarks';
+    this.getHeader();
+  }
+
+  private getHeader(): void {
+    if (this.tab === 'training-and-qualifications') {
+      this.header = `${this.tabsMap[this.tab]} (${this.tAndQCount})`;
+    } else {
+      this.header = this.tabsMap[this.tab];
+    }
   }
 }

@@ -33,6 +33,7 @@ import {
   allWorkplacesJourney,
   myWorkplaceJourney,
   staffRecordsTabJourney,
+  trainingAndQualificationsTabJourney,
   workplaceTabJourney,
 } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -266,6 +267,10 @@ export class BreadcrumbService {
       }
       case JourneyType.STAFF_RECORDS_TAB: {
         routes = staffRecordsTabJourney;
+        break;
+      }
+      case JourneyType.TRAINING_AND_QUALIFICATIONS_TAB: {
+        routes = trainingAndQualificationsTabJourney;
         break;
       }
       default: {

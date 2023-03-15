@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,8 +19,11 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public workerCount: number;
   public workers: Worker[];
+  public trainingCounts: TrainingCounts;
   public canViewListOfWorkers: boolean;
+  public canViewEstablishment: boolean;
   public staffLastUpdatedDate: string;
+  public tAndQsLastUpdated: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,13 +53,16 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
 
   private getPermissions(): void {
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+    this.canViewEstablishment = this.permissionsService.can(this.workplace.uid, 'canViewEstablishment');
   }
 
   private setWorkersAndTrainingValues(): void {
-    const { workers = [], workerCount = 0 } = this.route.snapshot.data.workers;
+    const { workers = [], workerCount = 0, trainingCounts, tAndQsLastUpdated } = this.route.snapshot.data.workers;
     this.workers = workers;
     this.workerCount = workerCount;
-    this.getStaffLastUpdatedDate();
+    this.trainingCounts = trainingCounts;
+    this.tAndQsLastUpdated = tAndQsLastUpdated;
+    workers.length > 0 && this.getStaffLastUpdatedDate();
   }
 
   private getStaffLastUpdatedDate(): void {

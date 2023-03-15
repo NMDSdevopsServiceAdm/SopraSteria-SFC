@@ -10,7 +10,13 @@ import { render } from '@testing-library/angular';
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
 
 describe('NewDashboardHeaderComponent', () => {
-  const setup = async (tab = 'home', updateDate = false, canAddWorker = true) => {
+  const setup = async (
+    tab = 'home',
+    updateDate = false,
+    canAddWorker = true,
+    canEditWorker = false,
+    hasWorkers = true,
+  ) => {
     const updatedDate = updateDate ? '01/02/2023' : null;
     const { fixture, getByTestId, queryByTestId, getByText, queryByText } = await render(NewDashboardHeaderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -24,6 +30,9 @@ describe('NewDashboardHeaderComponent', () => {
         tab,
         canAddWorker,
         updatedDate,
+        tAndQCount: 5,
+        canEditWorker,
+        hasWorkers,
       },
     });
 
@@ -60,6 +69,16 @@ describe('NewDashboardHeaderComponent', () => {
 
       expect(getByTestId('contact-info')).toBeTruthy();
     });
+
+    it('should render conditional column width classes', async () => {
+      const { getByTestId } = await setup();
+
+      const column1 = getByTestId('column-one');
+      const column2 = getByTestId('column-two');
+
+      expect(column1.getAttribute('class')).toContain('govuk-grid-column-one-half');
+      expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-half');
+    });
   });
 
   describe('Workplace tab', () => {
@@ -79,6 +98,16 @@ describe('NewDashboardHeaderComponent', () => {
       const { queryByTestId } = await setup('workplace');
 
       expect(queryByTestId('contact-info')).toBeFalsy();
+    });
+
+    it('should render conditional column width classes', async () => {
+      const { getByTestId } = await setup('workplace');
+
+      const column1 = getByTestId('column-one');
+      const column2 = getByTestId('column-two');
+
+      expect(column1.getAttribute('class')).toContain('govuk-grid-column-two-thirds');
+      expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
     });
   });
 
@@ -119,9 +148,78 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not display the add a staff record button if canAddWorker is not true', async () => {
-      const { queryByText } = await setup('staff-record', false);
+      const { queryByText } = await setup('staff-records', true, false);
 
       expect(queryByText('Add a staff record')).toBeFalsy();
+    });
+
+    it('should render conditional column width classes', async () => {
+      const { getByTestId } = await setup('staff-records');
+
+      const column1 = getByTestId('column-one');
+      const column2 = getByTestId('column-two');
+
+      expect(column1.getAttribute('class')).toContain('govuk-grid-column-two-thirds');
+      expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
+    });
+  });
+
+  describe('training and qualifications tab', () => {
+    it('should display the workplace name, the tab name the number of t and qs, the nmdsId number and the last updated date', async () => {
+      const { component, getByText, getByTestId } = await setup('training-and-qualifications', true);
+
+      const workplace = component.workplace;
+
+      expect(getByText(workplace.name)).toBeTruthy();
+      expect(getByText('Training and qualifications (5)')).toBeTruthy();
+      expect(getByText(`Workplace ID: ${workplace.nmdsId}`)).toBeTruthy();
+      expect(getByTestId('separator')).toBeTruthy();
+      expect(getByTestId('lastUpdatedDate')).toBeTruthy();
+    });
+
+    it('should not display date if an updated date is not given', async () => {
+      const { queryByTestId } = await setup('training-and-qualifications', false);
+
+      expect(queryByTestId('separator')).toBeFalsy();
+      expect(queryByTestId('lastUpdatedDate')).toBeFalsy();
+    });
+
+    it('should not display the contact info', async () => {
+      const { queryByTestId } = await setup('training-and-qualifications');
+
+      expect(queryByTestId('contact-info')).toBeFalsy();
+    });
+
+    it('should display the add multiple staff records button if canEditWorker is true with correct href', async () => {
+      const { component, getByText } = await setup('training-and-qualifications', false, false, true);
+
+      const workplaceUid = component.workplace.uid;
+      const button = getByText('Add multiple training records');
+
+      expect(button).toBeTruthy();
+      expect(button.getAttribute('href')).toEqual(`/workplace/${workplaceUid}/add-multiple-training/select-staff`);
+    });
+
+    it('should not display the add multiple staff records button if canEditWorker is not true', async () => {
+      const { queryByText } = await setup('training-and-qualifications');
+
+      expect(queryByText('Add multiple training records')).toBeFalsy();
+    });
+
+    it('should not display the add multiple staff records button if there are no workers', async () => {
+      const { queryByText } = await setup('training-and-qualifications', false, false, true, false);
+
+      expect(queryByText('Add multiple training records')).toBeFalsy();
+    });
+
+    it('should render conditional column width classes', async () => {
+      const { getByTestId } = await setup('staff-records');
+
+      const column1 = getByTestId('column-one');
+      const column2 = getByTestId('column-two');
+
+      expect(column1.getAttribute('class')).toContain('govuk-grid-column-two-thirds');
+      expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
     });
   });
 });

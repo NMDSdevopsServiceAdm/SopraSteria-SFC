@@ -52,6 +52,26 @@ export const staffRecordsTabJourney: JourneyRoute = {
   ],
 };
 
+export const trainingAndQualificationsTabJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Training and qualifications',
+      path: Path.DASHBOARD,
+      fragment: 'training-and-qualifications',
+      children: [
+        {
+          title: 'Training and qualifications',
+          path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
+          referrer: {
+            path: Path.DASHBOARD,
+            fragment: 'training-and-qualifications',
+          },
+        },
+      ],
+    },
+  ],
+};
+
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
     {
