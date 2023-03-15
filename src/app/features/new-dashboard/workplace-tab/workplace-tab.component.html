@@ -1,0 +1,9 @@
+<app-new-dashboard-header [tab]="'workplace'" [updatedDate]="workplace.updated"></app-new-dashboard-header>
+<div class="govuk-width-container govuk-!-margin-top-9">
+  <app-new-workplace-summary
+    [workplace]="workplace"
+    [workerCount]="workerCount"
+    [return]="summaryReturnUrl"
+    data-testid="workplace-summary"
+  ></app-new-workplace-summary>
+</div>

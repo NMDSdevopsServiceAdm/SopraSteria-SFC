@@ -29,7 +29,13 @@ import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
 import { publicJourney } from '@core/breadcrumb/journey.public';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
-import { allWorkplacesJourney, myWorkplaceJourney } from '@core/breadcrumb/journey.workplaces';
+import {
+  allWorkplacesJourney,
+  myWorkplaceJourney,
+  staffRecordsTabJourney,
+  trainingAndQualificationsTabJourney,
+  workplaceTabJourney,
+} from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { parse } from 'url';
@@ -61,6 +67,10 @@ export class BreadcrumbService {
     const segments = segmentGroup ? segmentGroup.segments : null;
     const routes = this.getRoutes(this.getRoutesConfig(journey), segments);
     this._routes$.next(routes);
+  }
+
+  public removeRoutes(): void {
+    this._routes$.next(null);
   }
 
   private getRoutes(currentRoute: JourneyRoute, segments: UrlSegment[], routes: JourneyRoute[] = []) {
@@ -249,6 +259,18 @@ export class BreadcrumbService {
       }
       case JourneyType.ADMIN_USERS: {
         routes = adminUserJourney;
+        break;
+      }
+      case JourneyType.WORKPLACE_TAB: {
+        routes = workplaceTabJourney;
+        break;
+      }
+      case JourneyType.STAFF_RECORDS_TAB: {
+        routes = staffRecordsTabJourney;
+        break;
+      }
+      case JourneyType.TRAINING_AND_QUALIFICATIONS_TAB: {
+        routes = trainingAndQualificationsTabJourney;
         break;
       }
       default: {
