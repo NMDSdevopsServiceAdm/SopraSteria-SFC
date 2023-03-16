@@ -216,8 +216,6 @@ const updateUser = async (req, res) => {
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    console.log('******** error ************');
-    console.log(err);
     if (err instanceof User.UserExceptions.UserJsonException) {
       console.error('User PUT: ', err.message);
       return res.status(400).send(err.safe);

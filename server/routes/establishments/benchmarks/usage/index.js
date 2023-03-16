@@ -1,10 +1,10 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const models = require('../../../../models');
-const moment = require('moment');
 
 const postBenchmarkTabUsage = async (req, res) => {
-  const viewedTime = moment();
+  const { viewedTime } = req.body;
+
   try {
     await models.benchmarksViewed.create({
       EstablishmentID: req.establishmentId,
