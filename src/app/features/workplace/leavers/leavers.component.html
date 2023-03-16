@@ -17,10 +17,16 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
               <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-              Add your staff leavers from the last 12 months
+              How many staff leavers have you had in the last 12 months?
             </h1>
           </legend>
           <p>These should only be leavers who were permanent or temporary staff.</p>
+          <app-details [title]="'Why we ask for this information'">
+            <p>
+              To show DHSC and the government the size of staff retention issues and help them make national and local
+              policy and funding decisions.
+            </p>
+          </app-details>
           <ng-container formArrayName="leavers">
             <div
               *ngFor="let leaver of leavers.controls; let i = index"

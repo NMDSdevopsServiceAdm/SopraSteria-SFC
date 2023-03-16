@@ -98,7 +98,7 @@ describe('VacanciesComponent', () => {
 
     const inputRow = getByTestId('row-0');
 
-    expect(getByText('Add your current staff vacancies')).toBeTruthy();
+    expect(getByText('How many current staff vacancies do you have?')).toBeTruthy();
     expect(inputRow).toBeTruthy();
     expect(inputRow.innerText).toContain('Job role 1');
     expect(getByText('Add another job role')).toBeTruthy();

@@ -1,11 +1,31 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Benchmarks</h2>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <app-comparison-group-header
+    #comparisonGroupText
+    [canViewFullContent]="canViewFullBenchmarks"
+    [meta]="tilesData?.meta"
+    [workplaceID]="workplace.uid"
+  ></app-comparison-group-header>
+</div>
+
 <div id="benchmarks-tiles">
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-margin-bottom-3 govuk-!-margin-top-3">
     <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-m">Benchmarks</h2>
+      <a
+        class="asc-font-19"
+        data-html2canvas-ignore
+        [routerLink]="['/workplace', workplace.uid, 'benchmarks', 'about-the-data']"
+        (click)="setReturn()"
+        >About the data</a
+      >
     </div>
     <div class="govuk-grid-column-one-half">
       <a
-        class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+        class="govuk-list govuk-list--inline govuk-list govuk__flex govuk-util__align-right govuk-!-padding-left-8"
         role="button"
         draggable="false"
         href="/benchmarks.pdf"
@@ -19,11 +39,7 @@
       </a>
     </div>
   </div>
-  <app-comparison-group-header
-    #comparisonGroupText
-    [meta]="tilesData?.meta"
-    [workplaceID]="workplace.uid"
-  ></app-comparison-group-header>
+
   <div class="govuk-grid-row">
     <app-benchmark-tile
       [canViewFullContent]="canViewFullBenchmarks"

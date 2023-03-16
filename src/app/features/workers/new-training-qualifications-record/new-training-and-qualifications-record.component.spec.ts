@@ -425,14 +425,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       const longTermAbsenceLink = getByTestId('longTermAbsence');
       fireEvent.click(longTermAbsenceLink);
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        component.workplace.uid,
-        'training-and-qualifications-record',
-        123,
-        'long-term-absence',
-        { returnToTrainingAndQuals: 'true' },
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(
+        ['/workplace', component.workplace.uid, 'training-and-qualifications-record', 123, 'long-term-absence'],
+        { queryParams: { returnToTrainingAndQuals: 'true' } },
+      );
     });
   });
 
@@ -456,14 +452,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
       fireEvent.click(flagLongTermAbsenceLink);
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        component.workplace.uid,
-        'training-and-qualifications-record',
-        123,
-        'long-term-absence',
-        { returnToTrainingAndQuals: 'true' },
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(
+        ['/workplace', component.workplace.uid, 'training-and-qualifications-record', 123, 'long-term-absence'],
+        { queryParams: { returnToTrainingAndQuals: 'true' } },
+      );
     });
   });
 

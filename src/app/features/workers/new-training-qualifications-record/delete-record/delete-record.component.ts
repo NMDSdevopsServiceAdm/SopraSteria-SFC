@@ -69,14 +69,10 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   }
 
   public deleteRecord(): void {
+    const message = `${this.capitalizeFirstLetter(this.trainingOrQualification)} record deleted`;
     this.subscriptions.add(
       this.deleteTrainingOrQualificationRecord().subscribe(() => {
-        this.router.navigate(this.previousUrl);
-
-        this.alertService.addAlert({
-          type: 'success',
-          message: `${this.capitalizeFirstLetter(this.trainingOrQualification)} record deleted`,
-        });
+        this.router.navigate(this.previousUrl, { state: { alertMessage: message } });
       }),
     );
   }

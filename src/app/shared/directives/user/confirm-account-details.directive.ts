@@ -53,7 +53,7 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      termsAndConditions: [null, Validators.required],
+      termsAndConditions: [null, { validators: [Validators.required, Validators.requiredTrue], updateOn: 'submit' }],
     });
   }
 
@@ -66,7 +66,7 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
         type: [
           {
             name: 'required',
-            message: 'Please agree to the terms and conditions.',
+            message: 'Confirm that you agree to the terms and conditions',
           },
         ],
       },

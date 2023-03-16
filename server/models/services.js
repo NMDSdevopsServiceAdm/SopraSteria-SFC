@@ -102,6 +102,5 @@ module.exports = function (sequelize, DataTypes) {
     20, //otherCare,
     16, // nurseAssistant
   ];
-
   return Services;
 };

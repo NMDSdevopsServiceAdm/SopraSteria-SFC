@@ -2,21 +2,21 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import {
-  ComparisonGroupHeaderComponent,
-} from '@shared/components/benchmarks-tab/comparison-group-header/comparison-group-header.component';
+import { ComparisonGroupHeaderComponent } from '@shared/components/benchmarks-tab/comparison-group-header/comparison-group-header.component';
 
 describe('ComparisonGroupHeaderComponent', () => {
   let component: ComparisonGroupHeaderComponent;
   let fixture: ComponentFixture<ComparisonGroupHeaderComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
-      providers: [],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule, HttpClientTestingModule],
+        declarations: [],
+        providers: [],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ComparisonGroupHeaderComponent);
@@ -29,6 +29,7 @@ describe('ComparisonGroupHeaderComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should have the right text with only one workplace', async () => {
+    component.canViewFullContent = true;
     component.meta = { workplaces: 1, staff: 1 };
     fixture.detectChanges();
     const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
@@ -37,6 +38,7 @@ describe('ComparisonGroupHeaderComponent', () => {
     );
   });
   it('should have the right text with correct comma placement', async () => {
+    component.canViewFullContent = true;
     component.meta = { workplaces: 1000, staff: 1000 };
     fixture.detectChanges();
     const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
@@ -60,6 +62,7 @@ describe('ComparisonGroupHeaderComponent', () => {
     expect(number).toBe('workplace');
   });
   it('should have the last updated date if date supplied', () => {
+    component.canViewFullContent = true;
     component.meta = { workplaces: 1000, staff: 1000, lastUpdated: new Date('2020-11-10T13:20:29.304Z') };
     fixture.detectChanges();
     const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;

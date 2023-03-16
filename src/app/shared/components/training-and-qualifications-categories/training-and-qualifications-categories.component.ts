@@ -21,6 +21,7 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnD
   public workerDetailsLabel = [];
   public sortTrainingAndQualsOptions;
   public showMandatoryTraining = false;
+  public mandatoryTrainingCount = 0;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -29,10 +30,19 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnD
   ) {}
 
   ngOnInit(): void {
+    this.getMandatoryTrainingCount();
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsCat;
 
     this.orderTrainingCategories(this.sortByValue);
     this.setExpiresSoonAlertDates();
+  }
+
+  private getMandatoryTrainingCount(): void {
+    this.trainingCategories.forEach((trainingCategory) => {
+      if (trainingCategory.isMandatory) {
+        this.mandatoryTrainingCount += 1;
+      }
+    });
   }
 
   private setExpiresSoonAlertDates(): void {

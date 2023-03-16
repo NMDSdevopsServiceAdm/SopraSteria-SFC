@@ -99,13 +99,16 @@ const getReportData = async (date, thisEstablishment) => {
   };
 };
 
-const propsNeededToComplete = 'MainService,EmployerTypeValue,Capacities,Utilisations,ServiceUsers,NumberOfStaffValue,Vacancies,Starters,Leavers'.split(
-  ',',
-);
+const propsNeededToComplete =
+  'MainService,EmployerTypeValue,Capacities,Utilisations,ServiceUsers,NumberOfStaffValue,Vacancies,Starters,Leavers'.split(
+    ',',
+  );
 
 const getEstablishmentReportData = async (establishmentId) => {
   const establishmentReturnData = await getEstablishmentData(establishmentId);
-  const establishmentData = establishmentReturnData.filter((est) => est.Status !== 'PENDING');
+  const establishmentData = establishmentReturnData.filter(
+    (est) => est.Status !== 'PENDING' && est.Status !== 'IN PROGRESS',
+  );
   for (let i = 0; i < establishmentData.length; i++) {
     let value = establishmentData[i];
     let getServiceCapacityData = await getServiceCapacityDetails(value.MainServiceFKValue);

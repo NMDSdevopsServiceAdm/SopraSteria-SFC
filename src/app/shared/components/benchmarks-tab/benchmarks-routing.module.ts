@@ -18,6 +18,7 @@ const routes: Routes = [
     path: 'rankings',
     component: BenchmarksRankingsComponent,
     canActivate: [CheckPermissionsGuard],
+
     data: {
       title: 'Rankings',
       permissions: ['canViewBenchmarks'],
@@ -27,6 +28,7 @@ const routes: Routes = [
     path: 'pay',
     component: BenchmarksMetricComponent,
     canActivate: [CheckPermissionsGuard],
+
     data: {
       ...MetricsContent.Pay,
       permissions: ['canViewBenchmarks'],

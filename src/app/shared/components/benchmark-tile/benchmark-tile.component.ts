@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Metric, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksUtil } from '@core/utils/benchmarks-util';
 

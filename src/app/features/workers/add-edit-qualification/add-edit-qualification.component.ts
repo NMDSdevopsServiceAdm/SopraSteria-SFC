@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -17,10 +17,12 @@ import { Subscription } from 'rxjs';
   templateUrl: './add-edit-qualification.component.html',
 })
 export class AddEditQualificationComponent implements OnInit, OnDestroy {
+  @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public qualificationTypes: QualificationType[] = [];
   public qualifications: any;
   public qualificationId: string;
+  public buttonText: string;
   public record: QualificationResponse;
   public worker: Worker;
   public workplace: Establishment;
@@ -43,7 +45,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.yearValidators = [Validators.max(dayjs().year()), Validators.min(dayjs().subtract(100, 'years').year())];
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.trainingService.trainingOrQualificationPreviouslySelected = 'qualification';
 
@@ -54,6 +56,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.worker = this.workerService.worker;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.qualificationId = this.route.snapshot.params.qualificationId;
+
+    this.buttonText = this.qualificationId ? 'Save and return' : 'Save record';
 
     Object.keys(QualificationType).forEach((key) => {
       this.qualificationTypes[key] = QualificationType[key];
@@ -145,7 +149,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Select the qualification type',
+            message: 'Select the type of qualification',
           },
         ],
       },
@@ -168,11 +172,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
             type: [
               {
                 name: 'min',
-                message: 'Year achieved must be this year or fewer than 100 years in the past',
+                message: 'Year achieved must be this year or no more than 100 years ago',
               },
               {
                 name: 'max',
-                message: 'Year achieved must be this year or fewer than 100 years in the past',
+                message: 'Year achieved must be this year or no more than 100 years ago',
               },
             ],
           },
@@ -211,6 +215,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.addErrorLinkFunctionality();
 
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
@@ -276,6 +281,10 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       this.qualificationId,
       'delete',
     ]);
+  }
+
+  private addErrorLinkFunctionality(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   protected setBackLink(): void {

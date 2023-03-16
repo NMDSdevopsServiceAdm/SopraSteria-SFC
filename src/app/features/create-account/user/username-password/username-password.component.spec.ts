@@ -182,7 +182,7 @@ describe('UsernamePasswordComponent', () => {
 
     expect(form.invalid).toBeTruthy();
     expect(
-      component.getAllByText('Confirmation password does not match the password you entered', { exact: false }).length,
+      component.getAllByText('Password confirmation does not match the password you entered', { exact: false }).length,
     ).toBe(2);
   });
 

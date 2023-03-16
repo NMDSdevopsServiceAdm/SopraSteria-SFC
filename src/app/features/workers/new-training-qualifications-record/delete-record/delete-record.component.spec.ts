@@ -155,28 +155,15 @@ describe('DeleteRecordComponent', () => {
         );
       });
 
-      it('should navigate to the view training page when pressing the delete button', async () => {
+      it('should navigate to the view training page when pressing the delete button and set an alert message in thw history state', async () => {
         const { component, fixture, getByText, routerSpy } = await setup();
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
         const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
-        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
-      });
-
-      it('should display an alert when the delete button is clicked', async () => {
-        const { component, fixture, getByText, alertSpy } = await setup();
-
-        component.previousUrl = ['/goToPreviousUrl'];
-        fixture.detectChanges();
-
-        fireEvent.click(getByText('Delete record'));
-        fixture.detectChanges();
-
-        expect(alertSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Training record deleted',
+        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl'], {
+          state: { alertMessage: 'Training record deleted' },
         });
       });
     });
@@ -246,25 +233,15 @@ describe('DeleteRecordComponent', () => {
         );
       });
 
-      it('should navigate to the training page when pressing the delete button', async () => {
+      it('should navigate to the qualification page when pressing the delete button and set a alert message in the history state', async () => {
         const { component, fixture, getByText, routerSpy } = await setup(false);
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
         const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
-        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
-      });
-
-      it('should display an alert when the delete button is clicked', async () => {
-        const { getByText, alertSpy } = await setup(false);
-
-        const deleteButton = getByText('Delete record');
-        fireEvent.click(deleteButton);
-
-        expect(alertSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Qualification record deleted',
+        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl'], {
+          state: { alertMessage: 'Qualification record deleted' },
         });
       });
     });

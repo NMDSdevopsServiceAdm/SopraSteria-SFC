@@ -99,9 +99,9 @@
                   workplace.uid,
                   'training-and-qualifications-record',
                   training.worker.uid,
-                  'add-training',
-                  { trainingCategory: { id: trainingCategoryId, category: category } | json }
+                  'add-training'
                 ]"
+                [queryParams]="{ trainingCategory: { id: trainingCategoryId, category: category } | json }"
                 >Add</a
               >
             </div>
@@ -114,8 +114,7 @@
                   'training-and-qualifications-record',
                   training.worker.uid,
                   'training',
-                  training.uid,
-                  { trainingCategory: { id: trainingCategoryId, category: category } | json }
+                  training.uid
                 ]"
                 >Update</a
               >

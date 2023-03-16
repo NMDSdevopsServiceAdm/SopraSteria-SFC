@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivateAccountRequest } from '@core/model/account.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-account-details.directive';
@@ -16,10 +16,11 @@ import { combineLatest } from 'rxjs';
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirective {
   protected actionType = 'Account activation';
   private activationToken: string;
+  public termsAndConditionsCheckbox: boolean;
 
   constructor(
     protected route: ActivatedRoute,
-    private backService: BackService,
+    private backLinkService: BackLinkService,
     private createAccountService: CreateAccountService,
     private router: Router,
     protected errorSummaryService: ErrorSummaryService,
@@ -31,6 +32,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
   protected init() {
     this.activationToken = this.route.snapshot.params.activationToken;
     this.setupSubscriptions();
+    this.termsAndConditionsCheckbox = false;
     this.setBackLink();
   }
 
@@ -54,7 +56,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       {
         label: 'Full name',
         data: this.userDetails.fullname,
-        route: { url: ['/activate-account', this.activationToken, 'change-your-details'] },
+        route: { url: ['/activate-account', this.activationToken, 'confirm-account-details', 'change-your-details'] },
       },
       {
         label: 'Job title',
@@ -74,11 +76,11 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       {
         label: 'Username',
         data: this.loginCredentials.username,
-        route: { url: ['/activate-account', this.activationToken, 'create-username'] },
+        route: { url: ['/activate-account', this.activationToken, 'confirm-account-details', 'create-username'] },
       },
       {
         label: 'Password',
-        data: '******',
+        data: this.loginCredentials.password,
       },
     ];
 
@@ -86,17 +88,17 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
-        route: { url: ['/activate-account', this.activationToken, 'security-question'] },
+        route: { url: ['/activate-account', this.activationToken, 'confirm-account-details', 'security-question'] },
       },
       {
-        label: 'Security answer',
+        label: 'Answer',
         data: this.securityDetails.securityQuestionAnswer,
       },
     ];
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, 'security-question'] });
+    this.backLinkService.showBackLink();
   }
 
   private generatePayload(): ActivateAccountRequest {
@@ -112,8 +114,11 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       addUserUUID: this.activationToken,
     };
   }
-
-  protected save(): void {
+  public setTermsAndConditionsCheckbox() {
+    this.termsAndConditionsCheckbox = !this.form.get('termsAndConditions').value;
+    this.createAccountService.termsAndConditionsCheckbox$.next(this.termsAndConditionsCheckbox);
+  }
+  public save(): void {
     this.subscriptions.add(
       this.createAccountService.activateAccount(this.generatePayload()).subscribe(
         () => this.router.navigate(['/activate-account', this.activationToken, 'complete']),

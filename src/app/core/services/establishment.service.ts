@@ -342,7 +342,7 @@ export class EstablishmentService {
   }
 
   //update mandatory training
-  public createAndUpdateMandatoryTraining(establishmentId, data: mandatoryTraining[]) {
+  public createAndUpdateMandatoryTraining(establishmentId, data: mandatoryTraining) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/mandatoryTraining`, data);
   }
 

@@ -76,7 +76,7 @@
               {{ training.expires ? (training.expires | date: 'd MMM y') : '-' }}
             </td>
             <td class="govuk-table__cell" [ngClass]="tableRowConditionalClass(worker.workerTraining, i)">
-              <div class="govuk-!-margin-bottom-1">
+              <div class="govuk-!-margin-bottom-0">
                 <img src="{{ img }}" alt="" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
                 {{ flagText }}
               </div>
@@ -90,8 +90,7 @@
                     'training-and-qualifications-record',
                     worker.uid,
                     'training',
-                    training.uid,
-                    { trainingCategory: training.category | json }
+                    training.uid
                   ]"
                   >Update</a
                 >

@@ -5,7 +5,6 @@ const models = require('../../../models');
 const { workerBuilder, categoryBuilder, trainingBuilder, mandatoryTrainingBuilder } = require('../../factories/models');
 const { getTrainingByCategory, getCategoryTraining } = require('../../../routes/workerTrainingCategories');
 const { cloneDeep } = require('lodash');
-const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
 
 describe('workerTrainingCategories', () => {
   afterEach(() => {
@@ -267,7 +266,7 @@ describe('workerTrainingCategories', () => {
         training: trainingArr,
       };
 
-      sinon.stub(models.MandatoryTraining, 'checkIfTrainingCategoryIsMandatory').returns(null);
+      sinon.stub(models.MandatoryTraining, 'checkIfTrainingCategoryIsMandatory').returns([]);
       sinon
         .stub(models.workerTraining, 'fetchTrainingByCategoryForEstablishment')
         .returns({ category: category, count: 3, rows: trainingArr });
@@ -307,9 +306,7 @@ describe('workerTrainingCategories', () => {
         training: trainingArr,
       };
 
-      sinon
-        .stub(models.MandatoryTraining, 'checkIfTrainingCategoryIsMandatory')
-        .returns({ mandatoryTraining: 'mandatoryTraining' });
+      sinon.stub(models.MandatoryTraining, 'checkIfTrainingCategoryIsMandatory').returns([{ jobFK: category.id }]);
       sinon
         .stub(models.workerTraining, 'fetchTrainingByCategoryForEstablishment')
         .returns({ category: category, count: 4, rows: trainingArr });
