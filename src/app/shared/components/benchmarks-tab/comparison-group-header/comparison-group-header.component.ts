@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 })
 export class ComparisonGroupHeaderComponent {
   protected subscriptions: Subscription = new Subscription();
-  @Input() public canViewFullContent: boolean;
+
   @Input() meta: Meta;
   @Input() workplaceID: string;
 

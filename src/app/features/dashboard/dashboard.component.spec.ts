@@ -159,8 +159,8 @@ describe('DashboardComponent', () => {
     });
 
     it('should display the Benchmarks tab', async () => {
-      const { fixture, getByTestId } = await setup();
-
+      const { component, fixture, getByTestId } = await setup();
+      component.canViewBenchmarks = true;
       fixture.detectChanges();
 
       expect(getByTestId('tab_benchmarks')).toBeTruthy();
@@ -218,6 +218,7 @@ describe('DashboardComponent', () => {
       it('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
         const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
 
+        component.canViewBenchmarks = true;
         fixture.detectChanges();
 
         const benchmarksTab = getByTestId('tab_benchmarks');
@@ -228,7 +229,7 @@ describe('DashboardComponent', () => {
 
       it('should not call postBenchmarkTabUsage when the other dashboard tabs are clicked', async () => {
         const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
-
+        component.canViewBenchmarks = true;
         fixture.detectChanges();
 
         const homeTab = getByTestId('tab_home');

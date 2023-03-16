@@ -1,18 +1,12 @@
 <div class="govuk-grid-column-two-thirds" data-testid="comparison-group-text">
   <p>
     <ng-container *ngIf="meta && meta.staff && meta.workplaces; else noCompGroup">
-      <ng-container *ngIf="canViewFullContent">
-        <b>Your comparison group</b> is {{ meta.staff | number }} staff from {{ meta.workplaces | number }}
+      <b>Your comparison group</b> is {{ meta.staff | number }} staff from {{ meta.workplaces | number }}
 
-        {{ pluralizeWorkplaces(meta.workplaces) }} providing the same main service as you in your local authority.
-        <span *ngIf="meta.lastUpdated">
-          The comparison group data was last updated {{ meta.lastUpdated | date: 'd MMMM yyyy' }}.
-        </span>
-      </ng-container>
-      <ng-container *ngIf="!canViewFullContent">
-        <b>Your comparison group</b> is {{ meta.staff | number }} staff from {{ meta.workplaces | number }} workplaces
-        using ASC-WDS and providing adult social care in your local authority.
-      </ng-container>
+      {{ pluralizeWorkplaces(meta.workplaces) }} providing the same main service as you in your local authority.
+      <span *ngIf="meta.lastUpdated">
+        The comparison group data was last updated {{ meta.lastUpdated | date: 'd MMMM yyyy' }}.
+      </span>
     </ng-container>
     <ng-template #noCompGroup> <b>Your comparison group</b> information is not available at the moment. </ng-template>
   </p>

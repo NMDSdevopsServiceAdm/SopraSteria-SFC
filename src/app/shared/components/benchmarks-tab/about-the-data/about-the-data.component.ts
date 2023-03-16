@@ -27,6 +27,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksService,
     protected backService: BackService,
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit(): void {
@@ -34,13 +35,17 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     this.fragment = this.benchmarksService.returnTo?.fragment;
     const workplaceUid = this.workplace?.id ? this.workplace.id : this.route.snapshot.params.establishmentuid;
 
-    this.subscriptions.add(
-      this.benchmarksService.getTileData(workplaceUid, []).subscribe((data) => {
-        if (data) {
-          this.meta = data.meta;
-        }
-      }),
-    );
+    const canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
+
+    if (canViewBenchmarks) {
+      this.subscriptions.add(
+        this.benchmarksService.getTileData(workplaceUid, []).subscribe((data) => {
+          if (data) {
+            this.meta = data.meta;
+          }
+        }),
+      );
+    }
 
     this.backService.setBackLink(this.benchmarksService.returnTo);
   }
