@@ -38,12 +38,11 @@
   align-items: center;
 
   &__icon {
-    width: 6px;
-    height: 6px;
-    background: govuk-colour('red');
-    border-radius: 50%;
+    margin-top: 6px;
+    margin-right: 5px;
+    width: 80%;
+    height: 80%;
     display: inline-block;
-    margin-right: 6px;
   }
 }
 
