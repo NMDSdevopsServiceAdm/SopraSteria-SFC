@@ -141,6 +141,11 @@ module.exports = function (sequelize, DataTypes) {
 
   Benchmarks.getBenchmarkData = async function (establishmentId) {
     const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
+    const { MainServiceFKValue: mainServiceFKValue } = await sequelize.models.establishment.findbyId(establishmentId);
+
+    const specificMainServiceFKValues = [1, 2, 8];
+    const mainServiceFK = specificMainServiceFKValues.includes(mainServiceFKValue) ? mainServiceFKValue : 10;
+
     if (!cssr) return {};
     return await this.findOne({
       where: {
@@ -151,6 +156,9 @@ module.exports = function (sequelize, DataTypes) {
           attributes: ['id', 'reportingID'],
           model: sequelize.models.services,
           as: 'BenchmarkToService',
+          on: {
+            col1: sequelize.where(sequelize.col('benchmarks.MainServiceFK'), '=', mainServiceFK),
+          },
           include: [
             {
               attributes: ['id'],
@@ -162,7 +170,7 @@ module.exports = function (sequelize, DataTypes) {
               required: true,
             },
           ],
-          required: false,
+          required: true,
         },
       ],
       raw: true,
