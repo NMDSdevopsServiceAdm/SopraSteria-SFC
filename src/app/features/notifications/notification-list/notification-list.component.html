@@ -12,6 +12,7 @@
   </div>
   <div class="govuk-grid-column-one-third govuk-!-margin-top-6 govuk-!-padding-left-0">
     <a
+      *ngIf="allBoxesChecked || notificationsForDeletion.length > 0"
       class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-margin-bottom-1"
       draggable="false"
       href="#"
@@ -58,6 +59,7 @@
             type="checkbox"
             [checked]="allBoxesChecked"
             data-testid="checkbox-{{ i }}"
+            (click)="pushNotificationToDeleteArray(notification)"
           />
         </td>
         <td class="govuk-table__cell">
@@ -102,3 +104,6 @@
     </ng-container>
   </tbody>
 </table>
+<div *ngFor="let notificationForDeletion of notificationsForDeletion">
+  <p>{{ notificationForDeletion.type }}</p>
+</div>

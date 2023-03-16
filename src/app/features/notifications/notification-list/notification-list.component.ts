@@ -12,6 +12,7 @@ import { NotificationsService } from '@core/services/notifications/notifications
 })
 export class NotificationListComponent implements OnInit {
   workplace: Establishment;
+  public notificationsForDeletion: Array<any> = [];
   // notifications: Notification[];
   public notifications: any;
   public ownerChangeRequestUID;
@@ -42,25 +43,44 @@ export class NotificationListComponent implements OnInit {
       {
         created: '2021-11-01',
         type: 'OWNERCHANGE',
-        notificationUid: 'b88a2b8f-7ad4-4f53-a7f8-ee3f53432671',
+        notificationUid: 'b88a2b8f-7ad4-4f53-a7f8-ee3f53432672',
         isViewed: false,
         createdByUserUID: '4b1a6e5e-c45e-49d6-8580-616fdbe9ae80',
       },
       {
         created: '2023-01-02',
         type: 'DELINKTOPARENT',
-        notificationUid: 'b88a2b8f-7ad4-4f53-a7f8-ee3f53432671',
+        notificationUid: 'b88a2b8f-7ad4-4f53-a7f8-ee3f53432673',
         isViewed: true,
         createdByUserUID: '4b1a6e5e-c45e-49d6-8580-616fdbe9ae80',
       },
       {
         created: '2019-03-01',
         type: 'LINKTOPARENTREQUEST',
-        notificationUid: 'b88a2b8f-7ad4-4f53-a7f8-ee3f53432671',
+        notificationUid: 'b88a2b8f-7ad4-4f53-a7f8-ee3f53432674',
         isViewed: false,
         createdByUserUID: '4b1a6e5e-c45e-49d6-8580-616fdbe9ae80',
       },
     ];
     this.notifications = mockNotifcations;
   }
+
+  public pushNotificationToDeleteArray(notification): void {
+    const index = this.notificationsForDeletion.indexOf(notification);
+    if (index > -1) {
+      this.notificationsForDeletion.splice(index, 1);
+    } else {
+      this.notificationsForDeletion.push(notification);
+    }
+  }
+
+  // public pushAllNotificationsToDeleteArray(): void {
+  //   if (!this.allBoxesChecked) {
+  //     this.notifications.forEach((notification) => {
+  //       this.notificationsForDeletion.push(notification);
+  //     });
+  //   } else {
+  //     this.notificationsForDeletion = [];
+  //   }
+  // }
 }
