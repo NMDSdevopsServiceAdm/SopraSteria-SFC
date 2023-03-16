@@ -222,4 +222,41 @@ describe('NewDashboardHeaderComponent', () => {
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
     });
   });
+
+  describe('Benchmarks tab', () => {
+    it('should display the workplace name, the tab name, the nmdsId number and the benchmarks last updated date', async () => {
+      const { component, getByText, getByTestId } = await setup('benchmarks', true);
+
+      const workplace = component.workplace;
+
+      expect(getByText(workplace.name)).toBeTruthy();
+      expect(getByText('Benchmarks')).toBeTruthy();
+      expect(getByText(`Workplace ID: ${workplace.nmdsId}`)).toBeTruthy();
+      expect(getByTestId('separator')).toBeTruthy();
+      expect(getByTestId('benchmarksLastUpdatedDate')).toBeTruthy();
+    });
+
+    it('should not display date if an updated date is not given', async () => {
+      const { queryByTestId } = await setup('benchmarks', false);
+
+      expect(queryByTestId('separator')).toBeFalsy();
+      expect(queryByTestId('lastUpdatedDate')).toBeFalsy();
+    });
+
+    it('should not display the contact info', async () => {
+      const { queryByTestId } = await setup('benchmarks');
+
+      expect(queryByTestId('contact-info')).toBeFalsy();
+    });
+
+    it('should render conditional column width classes', async () => {
+      const { getByTestId } = await setup('benchmarks');
+
+      const column1 = getByTestId('column-one');
+      const column2 = getByTestId('column-two');
+
+      expect(column1.getAttribute('class')).toContain('govuk-grid-column-two-thirds');
+      expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
+    });
+  });
 });

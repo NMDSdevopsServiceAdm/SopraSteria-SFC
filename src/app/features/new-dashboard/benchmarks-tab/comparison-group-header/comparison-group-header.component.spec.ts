@@ -1,75 +1,91 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Meta } from '@core/model/benchmarks.model';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { NewComparisonGroupHeaderComponent } from './comparison-group-header.component';
 
 describe('NewComparisonGroupHeaderComponent', () => {
-  let component: NewComparisonGroupHeaderComponent;
-  let fixture: ComponentFixture<NewComparisonGroupHeaderComponent>;
+  const setup = async (metaData = {}) => {
+    const meta = metaData ? metaData : null;
+    const { fixture, getByText, getByTestId } = await render(NewComparisonGroupHeaderComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [],
+      componentProperties: {
+        meta: meta as Meta,
+        workplaceID: 'mock-uid',
+      },
+    });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [RouterTestingModule, HttpClientTestingModule],
-        declarations: [],
-        providers: [],
-      }).compileComponents();
-    }),
-  );
+    const component = fixture.componentInstance;
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(NewComparisonGroupHeaderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    return {
+      component,
+      fixture,
+      getByText,
+      getByTestId,
+    };
+  };
 
-  it('should create', () => {
-    component.meta = { workplaces: 1, staff: 1 };
+  it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
-  it('should have the right text with only one workplace', async () => {
-    component.meta = { workplaces: 1, staff: 1 };
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).toContain(
+
+  it('should render the comparison group text if there is a comparison group with the correct test if only one workplace', async () => {
+    const { getByTestId } = await setup({ workplaces: 1, staff: 1 });
+
+    const componentText = getByTestId('comparison-group-text');
+    expect(componentText.innerHTML).toContain(
       `<b>Your comparison group</b> is 1 staff from 1 workplace providing the same main service as you in your local authority.`,
     );
   });
+
   it('should have the right text with correct comma placement', async () => {
-    component.meta = { workplaces: 1000, staff: 1000 };
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).toContain(
+    const { getByTestId } = await setup({ workplaces: 1000, staff: 1000 });
+
+    const componentText = getByTestId('comparison-group-text');
+    expect(componentText.innerHTML).toContain(
       `<b>Your comparison group</b> is 1,000 staff from 1,000 workplaces providing the same main service as you in your local authority.`,
     );
   });
+
   it('should have the right text with no data', async () => {
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).toContain(
+    const { getByTestId } = await setup();
+
+    const componentText = getByTestId('no-comparison-group-text');
+    expect(componentText.innerHTML).toContain(
       `<b>Your comparison group</b> information is not available at the moment.`,
     );
   });
-  it('should pluralize workplaces correctly', () => {
-    const number = component.pluralizeWorkplaces(2);
-    expect(number).toBe('workplaces');
+
+  it('should show the about the data link with href', async () => {
+    const { component, getByText } = await setup();
+
+    const setReturnSpy = spyOn(component, 'setReturn');
+    const link = getByText('About the data');
+
+    expect(link).toBeTruthy();
+    expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplaceID}/benchmarks/about-the-data`);
+
+    fireEvent.click(link);
+    expect(setReturnSpy).toHaveBeenCalled();
   });
-  it('should singularize workplaces correctly', () => {
-    const number = component.pluralizeWorkplaces(1);
-    expect(number).toBe('workplace');
-  });
-  it('should have the last updated date if date supplied', () => {
-    component.meta = { workplaces: 1000, staff: 1000, lastUpdated: new Date('2020-11-10T13:20:29.304Z') };
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).toContain(`The comparison group data was last updated 10 November 2020`);
-  });
-  it('should not have the last updated date if date not supplied', () => {
-    component.meta = { workplaces: 1000, staff: 1000 };
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).not.toContain(`The comparison group data was last updated`);
+
+  it('should show the download link that emits event when clicked', async () => {
+    const { component, getByTestId } = await setup();
+
+    const downloadAsPDFSpy = spyOn(component, 'downloadAsPDF').and.callThrough();
+    const emitSpy = spyOn(component.downloadPDF, 'emit');
+    const link = getByTestId('download-link');
+
+    expect(link).toBeTruthy();
+    expect(link.getAttribute('href')).toEqual('/benchmarks.pdf');
+
+    fireEvent.click(link);
+    expect(downloadAsPDFSpy).toHaveBeenCalled();
+    expect(emitSpy).toHaveBeenCalled();
   });
 });

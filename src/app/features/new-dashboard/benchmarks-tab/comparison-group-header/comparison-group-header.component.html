@@ -1,11 +1,15 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-2">
-  <div class="govuk-grid-column-two-thirds" data-testid="comparison-group-text">
-    <p *ngIf="meta && meta.staff && meta.workplaces; else noCompGroup">
-      <b>Your comparison group</b> is {{ meta.staff | number }} staff from {{ meta.workplaces | number }}
-      {{ pluralizeWorkplaces(meta.workplaces) }} providing the same main service as you in your local authority.
-    </p>
+  <div class="govuk-grid-column-two-thirds">
+    <ng-container *ngIf="meta && meta.staff && meta.workplaces; else noCompGroup">
+      <p data-testid="comparison-group-text">
+        <b>Your comparison group</b> is {{ meta.staff | number }} staff from {{ meta.workplaces | number }}
+        {{ pluralizeWorkplaces(meta.workplaces) }} providing the same main service as you in your local authority.
+      </p>
+    </ng-container>
     <ng-template #noCompGroup>
-      <p><b>Your comparison group</b> information is not available at the moment.</p>
+      <p data-testid="no-comparison-group-text">
+        <b>Your comparison group</b> information is not available at the moment.
+      </p>
     </ng-template>
   </div>
 </div>
@@ -25,8 +29,8 @@
       role="button"
       draggable="false"
       href="/benchmarks.pdf"
+      data-testid="download-link"
       data-html2canvas-ignore
-      data-testid="download-button"
       (click)="downloadAsPDF($event)"
     >
       <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
