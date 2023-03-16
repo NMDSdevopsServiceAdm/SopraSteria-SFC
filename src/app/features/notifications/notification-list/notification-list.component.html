@@ -35,10 +35,11 @@
     <tr class="govuk-table__row">
       <th scope="col" class="govuk-table__header" style="width: 5%">
         <input
-          class="notification-checkbox"
+          class="govuk-!-margin-left-2"
           id="selectAllCheckBoxes"
           name="selectAllCheckBoxes"
           type="checkbox"
+          [(ngModel)]="allBoxesChecked"
           data-testid="selectAllCheckBoxes"
         />
       </th>
@@ -50,7 +51,14 @@
     <ng-container *ngFor="let notification of notifications; index as i">
       <tr class="govuk-table__row notification-list-row" [class.notification-list-row--unread]="!notification.isViewed">
         <td class="govuk-table__cell">
-          <input id="checkbox-{{ i }}" name="checkbox-{{ i }}" type="checkbox" data-testid="checkbox-{{ i }}" />
+          <input
+            class="govuk-!-margin-left-2"
+            id="checkbox-{{ i }}"
+            name="checkbox-{{ i }}"
+            type="checkbox"
+            [checked]="allBoxesChecked"
+            data-testid="checkbox-{{ i }}"
+          />
         </td>
         <td class="govuk-table__cell">
           <span class="notification-list-item">

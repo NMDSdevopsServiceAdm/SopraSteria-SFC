@@ -16,6 +16,7 @@ export class NotificationListComponent implements OnInit {
   public notifications: any;
   public ownerChangeRequestUID;
   public form;
+  public allBoxesChecked = false;
 
   constructor(
     protected formBuilder: FormBuilder,
