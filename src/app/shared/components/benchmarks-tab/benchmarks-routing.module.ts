@@ -10,6 +10,7 @@ const routes: Routes = [
   {
     path: 'about-the-data',
     component: BenchmarksAboutTheDataComponent,
+    canActivate: [CheckPermissionsGuard],
     data: {
       title: 'About the data',
     },
