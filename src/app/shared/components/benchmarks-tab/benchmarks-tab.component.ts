@@ -38,7 +38,6 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-
     this.subscriptions.add(
       this.benchmarksService
         .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
