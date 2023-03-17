@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 
+
 # dependencies
 /node_modules
 */node_modules
@@ -68,3 +69,8 @@ CQCLocationAPICall/.nyc_output/
 test-results.xml
 
 TESTS.xml
+
+#Cypress to ignore
+cypress/screenshots
+cypress/videos
+cypress/fixtures
