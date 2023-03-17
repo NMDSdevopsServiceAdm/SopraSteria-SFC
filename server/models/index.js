@@ -32,11 +32,14 @@ let sequelize;
 const config = {};
 
 // allow override of any config value from environment variable
-config.host = appConfig.get('db.host');
-config.port = appConfig.get('db.port');
-config.database = appConfig.get('db.database');
-config.username = appConfig.get('db.username');
-config.password = appConfig.get('db.password');
+const environment = appConfig.get('env');
+
+config.host = environment === 'e2etest' ? appConfig.get('e2etestdb.host') : appConfig.get('db.host');
+config.port = environment === 'e2etest' ? appConfig.get('e2etestdb.port') : appConfig.get('db.port');
+config.database = environment === 'e2etest' ? appConfig.get('e2etestdb.database') : appConfig.get('db.database');
+config.username = environment === 'e2etest' ? appConfig.get('e2etestdb.username') : appConfig.get('db.username');
+config.password = environment === 'e2etest' ? appConfig.get('e2etestdb.password') : appConfig.get('db.password');
+
 config.dialect = appConfig.get('db.dialect');
 config.dialectOptions = {
   ssl: appConfig.get('db.ssl'),

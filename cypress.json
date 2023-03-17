@@ -1,0 +1,8 @@
+{
+  "baseUrl": "http://localhost:8080",
+  "ignoreTestFiles": "**/examples/**/*",
+  "video": false,
+
+  "viewportWidth": 1000,
+  "viewportHeight": 1000
+}
