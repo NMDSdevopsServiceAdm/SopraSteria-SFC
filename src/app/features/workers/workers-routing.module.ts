@@ -11,8 +11,10 @@ import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-rec
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 
-import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
-import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
+import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
+import { AddEditTrainingComponent } from '../training-and-qualifications/add-edit-training/add-edit-training.component';
+import { DeleteRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
+import { NewTrainingAndQualificationsRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
@@ -34,10 +36,6 @@ import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
-import { DeleteRecordComponent } from './new-training-qualifications-record/delete-record/delete-record.component';
-import {
-  NewTrainingAndQualificationsRecordComponent,
-} from './new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
 import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
@@ -45,9 +43,7 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';

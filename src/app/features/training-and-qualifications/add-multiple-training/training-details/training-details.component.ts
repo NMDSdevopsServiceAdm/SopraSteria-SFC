@@ -9,11 +9,11 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 
-import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
+import { AddEditTrainingDirective } from '../../../../shared/directives/add-edit-training/add-edit-training.directive';
 
 @Component({
   selector: 'app-add-edit-training',
-  templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
+  templateUrl: '../../../../shared/directives/add-edit-training/add-edit-training.component.html',
 })
 export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public showWorkerCount = true;

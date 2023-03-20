@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { establishmentBuilder } from '../../../../../../server/test/factories/models';
-import { WorkersModule } from '../../workers.module';
+import { WorkersModule } from '../../../workers/workers.module';
 import { DeleteRecordComponent } from './delete-record.component';
 
 describe('DeleteRecordComponent', () => {
