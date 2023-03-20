@@ -50,11 +50,11 @@
             </ng-container>
 
             <ng-container *ngSwitchCase="'staff-records'">
-              <div *ngIf="canAddWorker" class="govuk-util__align-right">
+              <div *ngIf="canAddWorker" class="govuk-util__align-right" style="border: 1px solid black">
                 <a
                   role="button"
                   draggable="false"
-                  class="govuk-button"
+                  class="govuk-button govuk-!-margin-bottom-5"
                   [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'create-staff-record']"
                 >
                   Add a staff record
@@ -67,7 +67,7 @@
                 <a
                   role="button"
                   href="#"
-                  class="govuk-button"
+                  class="govuk-button govuk-!-margin-bottom-5"
                   [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
                 >
                   Add multiple training records
