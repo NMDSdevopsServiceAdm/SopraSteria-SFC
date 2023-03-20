@@ -72,6 +72,16 @@ export const trainingAndQualificationsTabJourney: JourneyRoute = {
   ],
 };
 
+export const brenchmarksTabJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Benchmarks',
+      path: Path.DASHBOARD,
+      fragment: 'benchmarks',
+    },
+  ],
+};
+
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
     {

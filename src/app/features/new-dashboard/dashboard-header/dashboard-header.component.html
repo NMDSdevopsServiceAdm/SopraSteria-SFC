@@ -20,9 +20,16 @@
           <p class="govuk-!-font-size-16 govuk-!-margin-top-2 govuk-!-margin-bottom-0">
             <span class="govuk-!-margin-right-2">Workplace ID: {{ workplace?.nmdsId }}</span>
             <span *ngIf="updatedDate" data-testid="separator">|</span>
-            <span *ngIf="updatedDate" class="govuk-!-margin-left-2" data-testid="lastUpdatedDate"
-              >Last update, {{ updatedDate | date: 'd MMMM y' }}
-            </span>
+            <ng-container *ngIf="tab === 'benchmarks'; else notBenchmarks">
+              <span *ngIf="updatedDate" class="govuk-!-margin-left-2" data-testid="benchmarksLastUpdatedDate"
+                >Comparison group data updated {{ updatedDate | date: 'd MMMM y' }}
+              </span>
+            </ng-container>
+            <ng-template #notBenchmarks>
+              <span *ngIf="updatedDate" class="govuk-!-margin-left-2" data-testid="lastUpdatedDate"
+                >Last update, {{ updatedDate | date: 'd MMMM y' }}
+              </span>
+            </ng-template>
           </p>
         </div>
         <div
