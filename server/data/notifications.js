@@ -146,9 +146,6 @@ exports.selectNotificationByEstablishment = async (establishmentUid, limit, offs
     type: db.QueryTypes.SELECT,
   });
 
-exports.getNotificationTypes = async () =>
-  db.query(selectNotificationTypeQuery, { replacements: {}, type: db.QueryTypes.SELECT });
-
 exports.markUserNotificationAsRead = async ({ notificationUid }) =>
   db.query(markUserNotificationReadQuery, {
     replacements: {

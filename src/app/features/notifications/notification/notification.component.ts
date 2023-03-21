@@ -9,7 +9,6 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
 import { Subject, Subscription } from 'rxjs';
 
 const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
@@ -37,11 +36,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
-    private router: Router,
-    private permissionsService: PermissionsService,
-    private alertService: AlertService,
     private notificationsService: NotificationsService,
-    private dialogService: DialogService,
   ) {}
 
   ngOnInit() {
@@ -84,58 +79,6 @@ export class NotificationComponent implements OnInit, OnDestroy {
     this.eventsSubject.next('REJECT');
   }
 
-  // public approveRequest() {
-  //   if (this.notification) {
-  //     if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
-  //       this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
-  //       return true;
-  //     }
-
-  //     const requestParameter = {
-  //       ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
-  //       approvalStatus: 'APPROVED',
-  //       approvalReason: '',
-  //       rejectionReason: null,
-  //       type: OWNERSHIP_APPROVED,
-  //       exsistingNotificationUid: this.notificationUid,
-  //       requestedOwnership: this.notification.typeContent.permissionRequest,
-  //     };
-  //     this.subscriptions.add(
-  //       this.notificationsService
-  //         .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
-  //         .subscribe(
-  //           (request) => {
-  //             if (request) {
-  //               this.establishmentService.getEstablishment(this.workplace.uid).subscribe((workplace) => {
-  //                 if (workplace) {
-  //                   this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermission) => {
-  //                     if (hasPermission) {
-  //                       this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
-  //                       this.establishmentService.setState(workplace);
-  //                       this.establishmentService.setPrimaryWorkplace(workplace);
-  //                       this.router.navigate(['/dashboard']);
-  //                       this.alertService.addAlert({
-  //                         type: 'success',
-  //                         message: `Your decision to transfer ownership of data has been sent to
-  //                     ${this.notification.typeContent.requestorName} `,
-  //                       });
-  //                     }
-  //                   });
-  //                 }
-  //               });
-  //               this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-  //                 this.notificationsService.notifications$.next(notify);
-  //               });
-  //             }
-  //           },
-  //           (error) => {
-  //             console.error(error.error.message);
-  //           },
-  //         ),
-  //     );
-  //   }
-  // }
-
   private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
       this.notificationsService.setNoticationViewed(notificationUid).subscribe(
@@ -153,54 +96,6 @@ export class NotificationComponent implements OnInit, OnDestroy {
       ),
     );
   }
-
-  // public rejectRequest() {
-  //   if (this.notification) {
-  //     if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
-  //       this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
-  //       return true;
-  //     }
-
-  //     const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
-  //     dialog.afterClosed.subscribe((requestRejected) => {
-  //       if (requestRejected) {
-  //         this.rejectPermissionRequest(requestRejected);
-  //       }
-  //     });
-  //   }
-  // }
-
-  // private rejectPermissionRequest(requestRejected) {
-  //   const requestParameter = {
-  //     ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
-  //     approvalStatus: 'DENIED',
-  //     rejectionReason: requestRejected.rejectionReason,
-  //     type: OWNERSHIP_REJECTED,
-  //     exsistingNotificationUid: this.notification.notificationUid,
-  //   };
-  //   this.subscriptions.add(
-  //     this.notificationsService
-  //       .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
-  //       .subscribe(
-  //         (request) => {
-  //           if (request) {
-  //             this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-  //               this.notificationsService.notifications$.next(notify);
-  //             });
-  //             this.router.navigate(['/dashboard']);
-  //             this.alertService.addAlert({
-  //               type: 'success',
-  //               message: `Your decision to transfer ownership of data has been sent to
-  //                 ${this.notification.typeContent.requestorName} `,
-  //             });
-  //           }
-  //         },
-  //         (error) => {
-  //           console.log('Could not update notification.');
-  //         },
-  //       ),
-  //   );
-  // }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
