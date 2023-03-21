@@ -126,7 +126,6 @@ const addTypeContent = async (notification) => {
     }
     case 'BECOMEAPARENT': {
       let becomeAParentNotificationDetails = await models.Approvals.findbyUuid(notification.notificationContentUid);
-      console.log(becomeAParentNotificationDetails);
 
       if (becomeAParentNotificationDetails) {
         notification.typeContent = {
