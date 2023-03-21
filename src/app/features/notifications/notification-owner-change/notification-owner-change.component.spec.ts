@@ -7,15 +7,15 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
-import { NotificationBecomeAParentComponent } from '@features/notifications/notification-become-a-parent/notification-become-a-parent.component';
 import { NotificationTypePipe } from '@shared/pipes/notification-type.pipe';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { NotificationOwnerChangeComponent } from './notification-owner-change.component';
 
 import createSpy = jasmine.createSpy;
 describe('NotificationBecomeAParentComponent', () => {
   async function setup(approved = true) {
-    const component = await render(NotificationBecomeAParentComponent, {
+    const component = await render(NotificationOwnerChangeComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [NotificationTypePipe],
       providers: [
