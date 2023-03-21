@@ -131,7 +131,6 @@ app.use(
   proxy(publicDownloadBaseUrl, {
     proxyReqPathResolver: function (req) {
       const updatedPath = publicDownloadBaseUrl + req.url;
-      console.log('public/download proxy API request to: ', `${updatedPath}`);
       return updatedPath;
     },
   }),
@@ -314,7 +313,6 @@ const startApp = () => {
   console.log('Listening on port: ' + app.get('port'));
 };
 
-console.log('AppConfig.ready', AppConfig.ready);
 if (AppConfig.ready) {
   startApp();
 } else {
