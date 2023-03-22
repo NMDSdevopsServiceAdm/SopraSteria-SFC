@@ -212,13 +212,13 @@ describe('BenefitsBundleComponent', () => {
       expect(link.getAttribute('target')).toBe('_blank');
     });
 
-    it('should display the care guide link in the 5 free downloads content', async () => {
+    it('should display the Recommendations for CQC providers link in the 5 free downloads content', async () => {
       const { getByText } = await setup();
 
-      const link = getByText('Good and outstanding care guide');
+      const link = getByText('Recommendations for CQC providers');
 
       expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Documents/Standards-legislation/CQC/Good-and-outstanding-care-guide.pdf',
+        'https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/good-and-outstanding-care/Recommendations-for-CQC-providers.pdf',
       );
       expect(link.getAttribute('target')).toBe('_blank');
     });
