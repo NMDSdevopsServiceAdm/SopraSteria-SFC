@@ -136,19 +136,19 @@ const config = convict({
       doc: 'Database name',
       format: String,
       default: 'sfc-test-db',
-      env: 'sfc-test-db',
+      env: 'DB_TEST_NAME',
     },
     username: {
       doc: 'Database username',
       format: String,
       default: 'sfc-test-user',
-      env: 'sfc-test-user',
+      env: 'DB_TEST_USER',
     },
     password: {
       doc: 'Database username',
       format: '*',
       default: 'sfc-test-pass',
-      env: 'sfc-test-pass',
+      env: 'DB_TEST_PASS',
     },
     port: {
       doc: 'Database port',

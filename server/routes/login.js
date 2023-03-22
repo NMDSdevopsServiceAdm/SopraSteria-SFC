@@ -37,12 +37,9 @@ const tribalHashCompare = (password, salt, expectedHash) => {
 
 router.use('/', authLimiter);
 router.post('/', async (req, res) => {
-  console.log('**************');
-  console.log('LOGIN');
   const givenUsername = req.body.username.toLowerCase();
   const givenPassword = req.body.password;
-  console.log(givenUsername);
-  console.log(givenPassword);
+
   const givenEstablishmentUid =
     req.body.establishment && req.body.establishment.uid ? req.body.establishment.uid : null;
 

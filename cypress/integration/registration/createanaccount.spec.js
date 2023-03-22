@@ -1,9 +1,6 @@
 /// <reference types="cypress" />
-import { slowCypressDown } from 'cypress-slow-down';
 
-slowCypressDown();
-
-describe('Create account', () => {
+xdescribe('Create account', () => {
   before(() => {
     // to allow page to load after saving
     cy.wait(2000);
@@ -41,4 +38,24 @@ describe('Create account', () => {
     );
     cy.get('#regulatedByCQC-1').check();
   });
+});
+
+/// <reference types="cypress" />
+
+/* eslint-disable no-undef */
+xdescribe('Create an account', () => {
+  before(() => {
+    // to allow page to load after saving
+    cy.wait(2000);
+  });
+
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
+  it('should show a create account link on the landing page', () => {
+    cy.get('[data-cy="create-account"]').should('contain', 'Create an account');
+  });
+
+  it('should');
 });

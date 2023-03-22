@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -23,3 +24,43 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('openLoginPage', () => {
+  cy.visit('/');
+});
+
+Cypress.Commands.add('loginAsAdmin', () => {
+  cy.visit('/');
+  cy.get('[data-cy="username"]').type(Cypress.env('adminUser'));
+  cy.get('[data-cy="password"]').type(Cypress.env('adminPassword'));
+  cy.get('[data-testid="signinButton"]').click();
+});
+
+Cypress.Commands.add('loginToParentAsEditUser', () => {
+  // logging into application headlessly
+  const loginCredentials = {
+    username: Cypress.env('editParentUser'),
+    password: Cypress.env('editParentPassword'),
+  };
+
+  cy.request('POST', Cypress.env('apiUrl') + 'api/login/', loginCredentials).then((response) => {
+    const token = response.headers.authorization;
+    const establishmentId = response.body.establishment.uid;
+    const agreedUpdatedTerms = response.body.agreedUpdatedTerms;
+
+    cy.visit('/', {
+      onBeforeLoad(window) {
+        window.localStorage.setItem('auth-token', token);
+        window.localStorage.setItem('establishmentId', establishmentId);
+        window.localStorage.setItem('agreedUpdatedTermsStatus', agreedUpdatedTerms);
+      },
+    });
+  });
+
+  // to login using the ui
+
+  // cy.visit('/');
+  // cy.get('[data-cy="username"]').type(Cypress.env('editParentUser'));
+  // cy.get('[data-cy="password"]').type(Cypress.env('editParentPassword'));
+  // cy.get('[data-testid="signinButton"]').click();
+});

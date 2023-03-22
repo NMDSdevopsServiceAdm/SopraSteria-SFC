@@ -1,4 +1,13 @@
 {
+  "env": {
+    "adminUser": "admin",
+    "adminPassword": "Password00!",
+    "editParentUser": "EditParent",
+    "editParentPassword": "Password00!",
+    "readOnlyParentUser": "ReadOnlyParent",
+    "readOnlyParentPassword": "Password00!",
+    "apiUrl": "http://localhost:8080/"
+  },
   "baseUrl": "http://localhost:8080",
   "ignoreTestFiles": "**/examples/**/*",
   "video": false,

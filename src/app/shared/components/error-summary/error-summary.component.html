@@ -12,7 +12,7 @@
     <ul class="govuk-list govuk-error-summary__list">
       <ng-container *ngIf="errors">
         <ng-container *ngIf="getCurrentRoute(); let currentRoute">
-          <li *ngFor="let i of errors; let index = index">
+          <li *ngFor="let i of errors">
             <a
               (click)="focusOnField(i.item)"
               [routerLink]="currentRoute"
@@ -20,7 +20,6 @@
               [fragment]="getErrorId(i.item)"
               [queryParamsHandling]="'merge'"
               [innerHTML]="getFormErrorMessage(i.item, i.errors[0])"
-              [attr.data-cy]="'error-' + index"
             >
             </a>
           </li>
