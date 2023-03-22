@@ -73,6 +73,18 @@ describe('DaysOfSicknessComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      `This data is used to help highlight staff wellbeing issues. It is also used to build an understanding of the financial cost to the sector due to days lost because of sickness or injury.`,
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button and 'View this staff record' link, if a return url is not provided`, async () => {
       const { getByText } = await setup();

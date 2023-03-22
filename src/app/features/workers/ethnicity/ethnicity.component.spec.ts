@@ -74,6 +74,18 @@ describe('EthnicityComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      'To see how the ethnicity of the workforce compares to that of the local population and to that of your service users. The data is also used to look at employment trends across different groups and to inform recruitment plans.',
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
   describe('progress bar', () => {
     it('should render the progress bar', async () => {
       const { queryByTestId } = await setup();

@@ -69,6 +69,18 @@ describe('NationalInsuranceNumberComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      'This National Insurance number will be mixed with their date of birth to create a unique reference number for them in ASC-WDS. This reference number lets us distinguish between staff without identifying them, shows us how many staff work for multiple workplaces and tracks their career progression within the sector.',
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
       const { getByTestId } = await setup();

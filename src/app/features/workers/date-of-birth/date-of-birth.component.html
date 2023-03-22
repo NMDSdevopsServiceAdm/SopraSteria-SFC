@@ -8,6 +8,12 @@
           <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
           <h1 class="govuk-fieldset__heading">What's their date of birth?</h1>
         </legend>
+        <app-details [title]="'Why we ask for this information'">
+          <p>
+            Knowing the age of the workforce is very important for workforce planning. This date of birth will also be
+            mixed with their National Insurance number to create a unique reference number for them in ASC-WDS.
+          </p>
+        </app-details>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <label class="govuk-label">Date of birth</label>
           <span id="dob-hint" class="govuk-hint"> For example, 31 3 1980 </span>
