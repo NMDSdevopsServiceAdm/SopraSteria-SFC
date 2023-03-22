@@ -17,7 +17,7 @@
     "api:server": "nodemon --inspect server.js",
     "server": "npm-run-all -p -l build:watch api:server",
     "server:test": "mocha server/test/**/*.spec.js",
-    "server:e2e": "export NODE_ENV=e2etest && npm-run-all -p -l build:watch api:server",
+    "server:e2e": "export NODE_ENV=e2etest PORT=8081 && npm-run-all -p -l build:watch api:server",
     "server:test:e2e": "cypress run",
     "server:test:e2e:open": "cypress open",
     "server:test:unit": "mocha --exit 'server/test/unit/**/*.spec.js'",

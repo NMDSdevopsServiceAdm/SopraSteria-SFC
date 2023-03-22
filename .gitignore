@@ -38,6 +38,7 @@ testem.log
 /oldtest
 TESTS.xml
 *.csv
+.env
 
 # System Files
 .DS_Store
@@ -74,3 +75,5 @@ TESTS.xml
 cypress/screenshots
 cypress/videos
 cypress/fixtures
+
+docker/*.sql
