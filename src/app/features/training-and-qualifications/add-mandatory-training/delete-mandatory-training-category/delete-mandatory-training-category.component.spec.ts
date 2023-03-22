@@ -11,7 +11,7 @@ import { MockArticlesService } from '@core/test-utils/MockArticlesService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPagesService } from '@core/test-utils/MockPagesService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
-import { AddMandatoryTrainingModule } from '@features/add-mandatory-training/add-mandatory-training.module';
+import { AddMandatoryTrainingModule } from '@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, getByText, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';

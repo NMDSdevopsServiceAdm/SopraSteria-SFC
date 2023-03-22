@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DeleteMandatoryTrainingCategoryComponent } from '@features/delete-mandatory-training-category/delete-mandatory-training-category.component';
+import { DeleteMandatoryTrainingCategoryComponent } from '@features/training-and-qualifications/add-mandatory-training/delete-mandatory-training-category/delete-mandatory-training-category.component';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training/add-and-manage-mandatory-training.component';
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';

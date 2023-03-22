@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { WorkersModule } from '../../workers.module';
+import { WorkersModule } from '../../../workers/workers.module';
 import { MissingMandatoryTrainingComponent } from './missing-mandatory-training.component';
 
 describe('MissingMandatoryTrainingComponent', () => {

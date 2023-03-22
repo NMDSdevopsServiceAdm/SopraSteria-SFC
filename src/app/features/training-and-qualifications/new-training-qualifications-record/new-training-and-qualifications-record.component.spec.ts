@@ -19,7 +19,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
-import { WorkersModule } from '../workers.module';
+import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 
 describe('NewTrainingAndQualificationsRecordComponent', () => {
