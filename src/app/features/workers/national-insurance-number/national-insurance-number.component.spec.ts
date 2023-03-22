@@ -74,7 +74,7 @@ describe('NationalInsuranceNumberComponent', () => {
 
     const reveal = getByText('Why we ask for this information');
     const revealText = getByText(
-      'This National Insurance number will be mixed with their date of birth to create a unique reference number for them in ASC-WDS. This reference number lets us distinguish between staff without identifying them, shows us how many staff work for multiple workplaces and tracks their career progression within the sector.',
+      'This National Insurance number will be mixed with their date of birth to create a unique reference number for them in ASC-WDS. This reference number lets us distinguish between staff without identifying them. It shows us how many staff work for multiple workplaces and tracks their career progression within the sector.',
     );
 
     expect(reveal).toBeTruthy();

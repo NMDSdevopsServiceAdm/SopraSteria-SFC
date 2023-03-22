@@ -79,7 +79,7 @@ describe('EthnicityComponent', () => {
 
     const reveal = getByText('Why we ask for this information');
     const revealText = getByText(
-      'To see how the ethnicity and ethnic backgrounds of the workforce compares to that of the local population and to that of the people you support. The data is also used to look at employment trends across different groups and to inform recruitment plans.',
+      'To see how the ethnicity of the workforce compares to that of the local population and to that of the people you support. The data is also used to look at employment trends across different groups and to inform recruitment plans.',
     );
 
     expect(reveal).toBeTruthy();
