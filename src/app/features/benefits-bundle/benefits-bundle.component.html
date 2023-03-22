@@ -1,6 +1,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-xl govuk-!-margin-bottom-2">{{ workplaceName }}</span>
+    <span class="govuk-caption-l govuk-!-margin-bottom-2">{{ workplaceName }}</span>
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8">The ASC-WDS Benefits Bundle</h1>
     <app-details [title]="revealTitle">
       <p>
@@ -24,6 +24,68 @@
           <span class="govuk-visually-hidden"> sections</span>
         </a>
       </div>
+
+      <app-benefit-accordion [benefit]="benefits[4]" [index]="4" (toggleEmitter)="toggleAccordion(4)">
+        <p>
+          <a
+            href="https://www.skillsforcare.org.uk/Recruitment-support/Application-and-selection-process/Digital-masterclasses.aspx"
+            target="_blank"
+            >Social media masterclasses by LikeMind Media</a
+          >
+        </p>
+        <p>
+          These masterclasses share top tips on using social media to recruit into social care. There are 1 hour
+          masterclasses for using Facebook, Twitter, Instagram, LinkedIn and TikTok.
+        </p>
+
+        <p>
+          <a
+            href="https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Supporting-a-diverse-workforce/LGBTQ-framework/LGBTQ-learning-framework.pdf"
+            target="_blank"
+            >(LGBTQ+) Care in Later Life</a
+          >
+        </p>
+        <p>
+          This learning framework sets out the knowledge, skills and values needed for working affirmatively with LGBTQ+
+          people in later life.
+        </p>
+
+        <p>
+          <a
+            href="https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Developing-leaders-and-managers/Supporting-the-development-of-leadership-skills/Supporting-the-development-of-leadership-skills-guide.pdf"
+            target="_blank"
+            >Supporting the development of leadership skills</a
+          >
+        </p>
+        <p>
+          This guide outlines Skills for Care’s leadership offerings. They include learning programmes and
+          qualifications, practical support for making connections through networking and relationship building.
+        </p>
+
+        <p>
+          <a
+            href="https://www.skillsforcare.org.uk/Documents/Standards-legislation/CQC/Good-and-outstanding-care-guide.pdf"
+            target="_blank"
+            >Good and outstanding care guide</a
+          >
+        </p>
+        <p>
+          This guide shares best practice from over 350 'good' and 'outstanding' CQC inspection reports to help you
+          prepare for inspections.
+        </p>
+
+        <p>
+          <a
+            href="https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Managing-people/Supervision/Effective-supervision-guide.pdf"
+            target="_blank"
+            >Effective supervision guide</a
+          >
+        </p>
+        <p>
+          This guide can be used by adult social care managers and supervisors to help them plan and implement effective
+          supervision.
+        </p>
+      </app-benefit-accordion>
 
       <app-benefit-accordion [benefit]="benefits[0]" [index]="0" (toggleEmitter)="toggleAccordion(0)">
         <p>
@@ -62,64 +124,6 @@
         </p>
         <p>
           <a [routerLink]="['tailored-seminars']">Read more about these tailored seminars</a>
-        </p>
-      </app-benefit-accordion>
-
-      <app-benefit-accordion [benefit]="benefits[4]" [index]="4" (toggleEmitter)="toggleAccordion(4)">
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Documents/Standards-legislation/CQC/Recommendations-for-CQC-providers.pdf"
-            target="_blank"
-            >Recommendations for CQC providers</a
-          >
-        </p>
-        <p>
-          Skills for Care's recommendations offer practical support to help you deliver 'good' and 'outstanding' care.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Documents/Standards-legislation/CQC/Good-and-outstanding-care-guide.pdf"
-            target="_blank"
-            >Good and outstanding care guide</a
-          >
-        </p>
-        <p>
-          This guide shares best practice from over 350 'good' and 'outstanding' CQC inspection reports to help you
-          prepare for inspections.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Documents/Leadership-and-management/Leadership-Qualities-Framework/Leadership-Qualities-Framework.pdf"
-            target="_blank"
-            >Leadership qualities framework</a
-          >
-        </p>
-        <p>This framework describes the values and behaviours needed for high quality leadership at all levels.</p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Documents/Learning-and-development/Effective-supervision/Effective-supervision-guide-ONLINE.pdf"
-            target="_blank"
-            >Effective supervision guide</a
-          >
-        </p>
-        <p>
-          This guide can be used by adult social care managers and supervisors to help them plan and implement effective
-          supervision.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Documents/Leadership-and-management/People-Performance-Management-Toolkit/People-Performance-Management-Toolkit.pdf"
-            target="_blank"
-            >The people performance management toolkit</a
-          >
-        </p>
-        <p>
-          This toolkit demonstrates how applying different skills and behaviours during the management process can help
-          you maintain a motivated team.
         </p>
       </app-benefit-accordion>
     </div>
