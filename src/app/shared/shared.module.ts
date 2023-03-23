@@ -9,7 +9,7 @@ import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
-import { MissingMandatoryTrainingComponent } from '@features/workers/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
+import { MissingMandatoryTrainingComponent } from '@features/training-and-qualifications/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/check-cqc-details.component';

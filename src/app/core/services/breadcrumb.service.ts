@@ -31,6 +31,7 @@ import { publicJourney } from '@core/breadcrumb/journey.public';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
+  brenchmarksTabJourney,
   myWorkplaceJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
@@ -271,6 +272,10 @@ export class BreadcrumbService {
       }
       case JourneyType.TRAINING_AND_QUALIFICATIONS_TAB: {
         routes = trainingAndQualificationsTabJourney;
+        break;
+      }
+      case JourneyType.BENCHMARKS_TAB: {
+        routes = brenchmarksTabJourney;
         break;
       }
       default: {

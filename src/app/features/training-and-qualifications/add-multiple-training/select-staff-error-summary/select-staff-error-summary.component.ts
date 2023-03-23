@@ -5,7 +5,7 @@ import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-select-staff-error-summary',
-  templateUrl: '../../../shared/directives/error-summary/error-summary.component.html',
+  templateUrl: '../../../../shared/directives/error-summary/error-summary.component.html',
 })
 export class SelectStaffErrorSummaryComponent extends ErrorSummaryDirective {
   protected init(): void {

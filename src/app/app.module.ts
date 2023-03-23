@@ -54,6 +54,7 @@ import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forg
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-tab/benchmarks-tab.component';
+import { NewComparisonGroupHeaderComponent } from '@features/new-dashboard/benchmarks-tab/comparison-group-header/comparison-group-header.component';
 import { NewDashboardHeaderComponent } from '@features/new-dashboard/dashboard-header/dashboard-header.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
@@ -120,6 +121,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     NewBenchmarksTabComponent,
     NewDashboardHeaderComponent,
     NewTrainingLinkPanelComponent,
+    NewComparisonGroupHeaderComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

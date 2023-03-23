@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { AddMandatoryTrainingRoutingModule } from '@features/add-mandatory-training/add-mandatory-routing.module';
-import { DeleteMandatoryTrainingCategoryComponent } from '@features/delete-mandatory-training-category/delete-mandatory-training-category.component';
+import { AddMandatoryTrainingRoutingModule } from '@features/training-and-qualifications/add-mandatory-training/add-mandatory-routing.module';
+import { DeleteMandatoryTrainingCategoryComponent } from '@features/training-and-qualifications/add-mandatory-training/delete-mandatory-training-category/delete-mandatory-training-category.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training/add-and-manage-mandatory-training.component';

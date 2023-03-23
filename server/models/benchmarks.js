@@ -141,10 +141,11 @@ module.exports = function (sequelize, DataTypes) {
 
   Benchmarks.getBenchmarkData = async function (establishmentId) {
     const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
-    const { MainServiceFKValue: mainServiceFKValue } = await sequelize.models.establishment.findbyId(establishmentId);
+    const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
 
-    const specificMainServiceFKValues = [1, 2, 8];
-    const mainServiceFK = specificMainServiceFKValues.includes(mainServiceFKValue) ? mainServiceFKValue : 10;
+    const reportingId = mainService.reportingID;
+    const specificMainServiceReportingIds = [1, 2, 8];
+    const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
 
     if (!cssr) return {};
     return await this.findOne({
@@ -157,7 +158,7 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.services,
           as: 'BenchmarkToService',
           on: {
-            col1: sequelize.where(sequelize.col('benchmarks.MainServiceFK'), '=', mainServiceFK),
+            col1: sequelize.where(sequelize.col('benchmarks.MainServiceFK'), '=', mainServiceReportingId),
           },
           include: [
             {
