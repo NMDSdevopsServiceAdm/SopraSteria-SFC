@@ -56,6 +56,7 @@ export class CreateUsernameComponent extends CreateUsernameDirective {
   }
 
   protected save(): void {
+    this.createAccountService.activationComplete$.next(true);
     this.router
       .navigate([
         '/activate-account',

@@ -1,4 +1,4 @@
-<ng-container *ngIf="totalTraining > 0; else noRecords">
+<ng-container *ngIf="totalTraining > 0 || mandatoryTrainingCount > 0; else noRecords">
   <div class="govuk-form-group govuk-!-margin-bottom-6">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-three-quarters govuk-!-padding-top-7 govuk-!-padding-bottom-2">
@@ -64,7 +64,7 @@
                   trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) >
                   0
                 "
-                class="govuk-!-margin-bottom-1"
+                class="govuk-!-margin-bottom-0"
               >
                 <img
                   src="/assets/images/flag-red.svg"
@@ -81,7 +81,7 @@
                   trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) >
                   0
                 "
-                class="govuk-!-margin-bottom-1"
+                class="govuk-!-margin-bottom-0"
               >
                 <img
                   src="/assets/images/flag-red.svg"
@@ -98,7 +98,7 @@
                   trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) >
                   0
                 "
-                class="govuk-!-margin-bottom-1"
+                class="govuk-!-margin-bottom-0"
               >
                 <img
                   src="/assets/images/flag-orange.svg"

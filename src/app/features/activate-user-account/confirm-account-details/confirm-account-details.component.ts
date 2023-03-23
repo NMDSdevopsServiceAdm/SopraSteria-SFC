@@ -16,6 +16,7 @@ import { combineLatest } from 'rxjs';
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirective {
   protected actionType = 'Account activation';
   private activationToken: string;
+  public termsAndConditionsCheckbox: boolean;
 
   constructor(
     protected route: ActivatedRoute,
@@ -31,6 +32,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
   protected init() {
     this.activationToken = this.route.snapshot.params.activationToken;
     this.setupSubscriptions();
+    this.termsAndConditionsCheckbox = false;
     this.setBackLink();
   }
 
@@ -112,7 +114,10 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       addUserUUID: this.activationToken,
     };
   }
-
+  public setTermsAndConditionsCheckbox() {
+    this.termsAndConditionsCheckbox = !this.form.get('termsAndConditions').value;
+    this.createAccountService.termsAndConditionsCheckbox$.next(this.termsAndConditionsCheckbox);
+  }
   public save(): void {
     this.subscriptions.add(
       this.createAccountService.activateAccount(this.generatePayload()).subscribe(

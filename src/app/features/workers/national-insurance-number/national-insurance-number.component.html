@@ -9,10 +9,17 @@
       >
         <h1 class="govuk-label-wrapper">
           <span class="govuk-caption-l">Personal details</span>
-          <label class="govuk-label govuk-label--l govuk-!-margin-bottom-8" for="nationalInsuranceNumber">
+          <label class="govuk-label govuk-label--l govuk-!-margin-bottom-6" for="nationalInsuranceNumber">
             What's their National Insurance number?
           </label>
         </h1>
+        <app-details [title]="'Why we ask for this information'">
+          <p>
+            This National Insurance number will be mixed with their date of birth to create a unique reference number
+            for them in ASC-WDS. This reference number lets us distinguish between staff without identifying them. It
+            shows us how many staff work for multiple workplaces and tracks their career progression within the sector.
+          </p>
+        </app-details>
 
         <label class="govuk-label govuk-date-input__label" for="nationalInsuranceNumber">
           National Insurance number

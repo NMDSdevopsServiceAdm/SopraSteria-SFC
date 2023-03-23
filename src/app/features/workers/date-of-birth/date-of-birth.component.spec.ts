@@ -76,6 +76,18 @@ describe('DateOfBirthComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      `Knowing the age of the workforce is very important for workforce planning. This date of birth will also be mixed with their National Insurance number to create a unique reference number for them in ASC-WDS.`,
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
       const { getByTestId } = await setup();

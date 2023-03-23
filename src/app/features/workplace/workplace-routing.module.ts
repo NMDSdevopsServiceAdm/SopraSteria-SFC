@@ -472,7 +472,7 @@ const routes: Routes = [
       {
         path: 'add-and-manage-mandatory-training',
         loadChildren: () =>
-          import('@features/add-mandatory-training/add-mandatory-training.module').then(
+          import('@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module').then(
             (m) => m.AddMandatoryTrainingModule,
           ),
         canActivate: [CheckPermissionsGuard],
@@ -484,7 +484,7 @@ const routes: Routes = [
       {
         path: 'add-multiple-training',
         loadChildren: () =>
-          import('@features/add-multiple-training/add-multiple-training.module').then(
+          import('@features/training-and-qualifications/add-multiple-training/add-multiple-training.module').then(
             (m) => m.AddMultipleTrainingModule,
           ),
         data: { title: 'Add Multiple Training' },

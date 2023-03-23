@@ -8,6 +8,7 @@ import { ProblemWithTheServiceComponent } from '@core/components/error/problem-w
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
+import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
@@ -41,6 +42,7 @@ import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bund
 import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { SelectMainServiceComponent } from '@features/create-account/workplace/select-main-service/select-main-service.component';
+import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
@@ -51,10 +53,19 @@ import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
+import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-tab/benchmarks-tab.component';
+import { NewComparisonGroupHeaderComponent } from '@features/new-dashboard/benchmarks-tab/comparison-group-header/comparison-group-header.component';
+import { NewDashboardHeaderComponent } from '@features/new-dashboard/dashboard-header/dashboard-header.component';
+import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
+import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
+import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
+import { NewStaffTabComponent } from '@features/new-dashboard/staff-tab/staff-tab.component';
+import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
+import { NewTrainingTabComponent } from '@features/new-dashboard/training-tab/training-tab.component';
+import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/workplace-tab.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
-import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -100,6 +111,17 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     BenefitsTrainingDiscountsComponent,
     BenefitsELearningComponent,
     TailoredSeminarsComponent,
+    StandAloneAccountComponent,
+    DashboardWrapperComponent,
+    NewDashboardComponent,
+    NewHomeTabComponent,
+    NewWorkplaceTabComponent,
+    NewStaffTabComponent,
+    NewTrainingTabComponent,
+    NewBenchmarksTabComponent,
+    NewDashboardHeaderComponent,
+    NewTrainingLinkPanelComponent,
+    NewComparisonGroupHeaderComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

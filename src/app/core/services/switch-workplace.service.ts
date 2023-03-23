@@ -63,11 +63,12 @@ export class SwitchWorkplaceService {
         .pipe(take(1))
         .subscribe(
           (workplace) => {
-            this.notificationsService.getAllNotifications().subscribe((notify) => {
+            this.notificationsService.getAllNotifications(data.body.establishmentUid).subscribe((notify) => {
               this.notificationsService.notifications$.next(this.notificationData ? this.notificationData : notify);
               this.establishmentService.setState(workplace);
               this.establishmentService.setPrimaryWorkplace(workplace);
               this.establishmentService.establishmentId = workplace.uid;
+              this.establishmentService.standAloneAccount = !(workplace.isParent || workplace.parentUid);
               this.router.navigate(['/dashboard']);
             });
           },

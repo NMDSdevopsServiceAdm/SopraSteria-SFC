@@ -136,10 +136,10 @@ const getNotificationDetailsQuery = `
   JOIN cqc."Establishment" as parent on sub."ParentEstablishmentID" =  parent."EstablishmentID"
   where "LinkToParentUID" = :uid `;
 
-exports.getNotificationDetails = async params =>
+exports.getLinkToParentDetails = async params =>
   db.query(getNotificationDetailsQuery, {
     replacements: {
-      uid: params.typeUid,
+      uid: params.notificationContentUid,
     },
     type: db.QueryTypes.SELECT,
   });
@@ -153,7 +153,7 @@ const getSubEstablishmentNameQuery = `
 exports.getSubEstablishmentName = async params =>
   db.query(getSubEstablishmentNameQuery, {
     replacements: {
-      uid: params.typeUid,
+      uid: params.notificationContentUid,
     },
     type: db.QueryTypes.SELECT,
   });

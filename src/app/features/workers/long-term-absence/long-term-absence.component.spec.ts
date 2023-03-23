@@ -8,6 +8,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import sinon from 'sinon';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WorkersModule } from '../workers.module';
@@ -17,7 +18,7 @@ describe('LongTermAbsenceComponent', () => {
   const worker = workerBuilder() as Worker;
   const workplace = establishmentBuilder() as Establishment;
 
-  async function setup(returnToTrainingAndQuals = false) {
+  async function setup(qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, queryByText } = await render(LongTermAbsenceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -30,8 +31,8 @@ describe('LongTermAbsenceComponent', () => {
                 establishment: workplace,
                 longTermAbsenceReasons: ['Maternity leave', 'Paternity leave', 'Illness', 'Injury', 'Other'],
               },
-              params: {
-                returnToTrainingAndQuals: returnToTrainingAndQuals,
+              queryParamMap: {
+                get: qsParamGetMock,
               },
             },
           },
@@ -180,7 +181,10 @@ describe('LongTermAbsenceComponent', () => {
   });
 
   it('should navigate to the training and quals individual view on submit when returnToTrainingAndQuals is true', async () => {
-    const { component, routerSpy, getByText } = await setup(true);
+    const qsParamGetMock = sinon.stub();
+    qsParamGetMock.onCall(0).returns(true);
+
+    const { component, routerSpy, getByText } = await setup(qsParamGetMock);
 
     const illnessRadioButton = getByText('Illness');
     fireEvent.click(illnessRadioButton);

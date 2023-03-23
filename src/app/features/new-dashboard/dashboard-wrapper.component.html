@@ -1,0 +1,6 @@
+<ng-container *ngIf="standAloneAccount && newHomeDesignFlag; else parentSubDashboard">
+  <app-new-dashboard data-testid="standAloneDashboard"></app-new-dashboard>
+</ng-container>
+<ng-template #parentSubDashboard>
+  <app-dashboard data-testid="parentSubDashboard"></app-dashboard>
+</ng-template>

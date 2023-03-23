@@ -1,0 +1,24 @@
+<div data-module="tabs">
+  <ul role="tablist" #tablist class="govuk-tabs__list asc-tabs-bar">
+    <ng-container *ngFor="let tab of tabs; let i = index">
+      <li class="govuk-tabs__list-item" [class.asc-active]="tab.active">
+        <a
+          id="tab_{{ tab.slug }}"
+          class="govuk-tabs__tab asc-tab"
+          [class.asc-tab--active]="tab.active"
+          href="#{{ tab.slug }}"
+          role="tab"
+          [attr.aria-controls]="tab.slug"
+          [attr.aria-selected]="tab.active"
+          [attr.tabindex]="tab.active ? 0 : -1"
+          (click)="selectTab($event, i)"
+          (keyup)="onKeyUp($event)"
+          (keydown)="onKeyDown($event)"
+          [attr.data-testid]="'tab_' + tab.slug"
+        >
+          {{ tab.title }}
+        </a>
+      </li>
+    </ng-container>
+  </ul>
+</div>

@@ -1,0 +1,41 @@
+<ng-container [ngSwitch]="selectedTab">
+  <ng-container *ngSwitchCase="'home'">
+    <app-new-home-tab [workplace]="workplace" data-testid="home-tab"></app-new-home-tab>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'workplace'">
+    <app-new-workplace-tab
+      *ngIf="canViewEstablishment && workplace"
+      [workplace]="workplace"
+      [workerCount]="workerCount"
+      data-testid="workplace-tab"
+    ></app-new-workplace-tab>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'staff-records'">
+    <app-new-staff-tab
+      *ngIf="canViewListOfWorkers && workplace"
+      [workplace]="workplace"
+      [workers]="workers"
+      [workerCount]="workerCount"
+      [staffLastUpdated]="staffLastUpdatedDate"
+      data-testid="staff-records-tab"
+    ></app-new-staff-tab>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'training-and-qualifications'">
+    <app-new-training-tab
+      *ngIf="canViewListOfWorkers && workplace"
+      [workplace]="workplace"
+      [workers]="workers"
+      [workerCount]="workerCount"
+      [trainingCounts]="trainingCounts"
+      [tAndQsLastUpdated]="tAndQsLastUpdated"
+      data-testid="training-and-qualifications-tab"
+    ></app-new-training-tab>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'benchmarks'">
+    <app-new-benchmarks-tab [workplace]="workplace" data-testid="benchmarks-tab"></app-new-benchmarks-tab>
+  </ng-container>
+</ng-container>

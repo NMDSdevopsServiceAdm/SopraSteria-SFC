@@ -1,0 +1,37 @@
+@import '~govuk-frontend/govuk/base';
+
+.asc-tabs-bar {
+  list-style: none;
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  margin: 0;
+  border-bottom: none;
+}
+
+li {
+  padding: 12px 28px !important;
+  background-color: #e6e5e3 !important;
+  display: flex;
+  align-items: center;
+  border-bottom: 8px solid #e6e5e3;
+  border-top: 8px solid #e6e5e3;
+}
+
+.asc-active {
+  border-bottom: 8px solid govuk-colour('blue');
+}
+
+.asc-tab {
+  color: black;
+  width: 100%;
+  font-weight: bold;
+
+  &--active {
+    text-decoration: none;
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+}
