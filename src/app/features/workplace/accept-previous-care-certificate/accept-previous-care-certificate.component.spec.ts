@@ -65,6 +65,18 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     expect(getByLabelText('No, never')).toBeTruthy();
   });
 
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      `This data is used to determine the cost to the social care sector of staff moving between employers and to monitor whether DHSC policies make training more transferable. It is also being used to check the effectiveness of the Care Certificate.`,
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
   it('should unselect previously selected radio button when another radio button is selected', async () => {
     const { component, fixture, getByLabelText, getByText } = await setup(false);
 
