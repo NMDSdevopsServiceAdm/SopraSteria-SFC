@@ -930,6 +930,10 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         id,
       },
+      include: {
+        model: sequelize.models.services,
+        as: 'mainService',
+      },
     });
   };
 
