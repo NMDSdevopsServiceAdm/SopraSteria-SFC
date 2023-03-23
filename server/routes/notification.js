@@ -18,8 +18,11 @@ const getEstablishmentNotifications = async (req, res) => {
  * @param notification
  */
 const getNotificationDetails = async (notification) => {
-  const notificationDetails = await linkSubToParent.getLinkToParentDetails(notification);
+  console.log(notification);
+  const notificationDetails = await linkSubToParent.getNotificationDetails(notification);
+  console.log(notificationDetails);
   const subEstablishmentName = await linkSubToParent.getSubEstablishmentName(notification);
+  console.log(subEstablishmentName);
   if (subEstablishmentName) {
     notificationDetails[0].subEstablishmentName = subEstablishmentName[0].subEstablishmentName;
     notificationDetails[0].subEstablishmentId = subEstablishmentName[0].subestablishmentid;
@@ -85,11 +88,17 @@ const addTypeContent = async (notification) => {
       break;
     }
     case 'DELINKTOPARENT': {
+      console.log('DELINK');
       let deLinkNotificationDetails = await notifications.getRequesterName(notification.createdByUserUID);
       if (deLinkNotificationDetails) {
+        console.log('1');
         let deLinkParentDetails = await notifications.getDeLinkParentDetails(notification.notificationContentUid);
+        console.log('2');
+        console.log(deLinkParentDetails);
         if (deLinkParentDetails) {
-          let deLinkParentName = await notifications.getDeLinkParentName(deLinkParentDetails[0].EstablishmentID);
+          let deLinkParentName = await notifications.getDeLinkParentName(deLinkParentDetails[0].establishmentUid);
+          console.log('3');
+          console.log(deLinkParentName);
           if (deLinkParentName) {
             notification.typeContent.parentEstablishmentName = deLinkParentName[0].NameValue;
             notification.typeContent.requestorName = deLinkNotificationDetails[0].NameValue;
@@ -118,7 +127,11 @@ const getNotification = async (req, res) => {
   try {
     const notificationData = await getOneNotification(req.params.notificationUid);
 
+    console.log('GET TYPE CONTENT');
+
     await addTypeContent(notificationData.notification);
+
+    console.log('GOT TYPE CONTENT');
 
     // this will fetch notification receiver name
     if (notificationData.notification.type === 'OWNERCHANGE') {
@@ -158,6 +171,8 @@ const getOneNotification = async (notificationUid) => {
     establishmentNotification: establishmentNotification,
     notification: notification[0],
   };
+
+  console.log(notificationData);
 
   return notificationData;
 };

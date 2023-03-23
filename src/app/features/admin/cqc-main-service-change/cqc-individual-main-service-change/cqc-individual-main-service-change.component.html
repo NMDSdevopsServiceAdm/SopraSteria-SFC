@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-three-quarters">
     <h2 class="govuk-heading-l">CQC main service change: {{ registration.establishment.name }}</h2>
     <p>
-      Receveived {{ registration.createdAt | date: 'dd MMM yyyy' }},
+      Received {{ registration.createdAt | date: 'dd MMM yyyy' }},
       {{ registration.createdAt | date: 'hh:mma' | lowercase }}
     </p>
     <app-review-checkbox
@@ -77,10 +77,7 @@
           Approve
         </button>
         <button
-          class="
-            govuk-button govuk-button--warning
-            govuk-!-padding-left-6 govuk-!-padding-right-6 govuk-!-margin-left-6
-          "
+          class="govuk-button govuk-button--warning govuk-!-padding-left-6 govuk-!-padding-right-6 govuk-!-margin-left-6"
           (click)="approveOrRejectCqcChange(false)"
         >
           Reject

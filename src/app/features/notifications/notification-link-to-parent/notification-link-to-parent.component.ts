@@ -138,6 +138,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
         (requestRejected) => {
           if (requestRejected) {
             this.rejectLinkToParentRequest(requestRejected);
+            console.log('reject');
           }
         },
         (error) => console.log('Could not update notification.'),

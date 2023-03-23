@@ -180,6 +180,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
       this.subscriptions.add(
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
           (data) => {
+            console.log(data);
             if (data) {
               const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
               this.router.navigate(['/dashboard']);
@@ -192,6 +193,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
           },
           (error) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+            console.log('BAD');
           },
         ),
       );

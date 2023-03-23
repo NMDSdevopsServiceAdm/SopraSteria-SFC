@@ -41,10 +41,7 @@
     <app-notification-delink-to-parent [notification]="notification"></app-notification-delink-to-parent>
   </div>
   <div *ngIf="notification.type === 'BECOMEAPARENT'">
-    <app-notification-become-a-parent
-      [notification]="notification"
-      [events]="eventsSubject.asObservable()"
-    ></app-notification-become-a-parent>
+    <app-notification-become-a-parent [notification]="notification"></app-notification-become-a-parent>
   </div>
   <div class="govuk-grid-row" *ngIf="displayActionButtons">
     <div class="govuk-grid-column-two-thirds">
