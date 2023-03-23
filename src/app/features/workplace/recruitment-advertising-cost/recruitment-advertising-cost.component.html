@@ -15,6 +15,13 @@
             How much money have you spent on advertising for staff in the last 4 weeks?
           </h1>
         </legend>
+        <app-details [title]="'Why we ask for this information'">
+          <p>
+            DHSC use this anonymised data to help them better understand the difficulties and cost of recruitment into
+            the adult social care sector. Your information helps DHSC to identify where policy changes could make staff
+            recruitment easier in the future.
+          </p>
+        </app-details>
         <div class="govuk-grid-row govuk-!-margin-bottom-4">
           <div class="govuk-grid-column-two-thirds">
             <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">

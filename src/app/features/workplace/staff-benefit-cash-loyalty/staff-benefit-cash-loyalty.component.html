@@ -18,6 +18,13 @@
         <div class="govuk-!-margin-bottom-6">
           <p>We only want to know about bonuses given for staying in a role, not for things like performance.</p>
         </div>
+        <app-details [title]="'Why we ask for this information'">
+          <p>
+            This data is used to determine whether rewards and benefits act as incentives when it comes to staff
+            retention. It also reveals the type of incentives that are being offered in the sector and how common they
+            are.
+          </p>
+        </app-details>
         <div class="govuk-form-group">
           <div class="govuk-radios govuk-radios--conditional govuk-!-margin-bottom-4">
             <ng-container *ngFor="let option of cashLoyaltyRequiredOptions; let i = index">

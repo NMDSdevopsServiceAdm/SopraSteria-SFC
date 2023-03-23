@@ -63,6 +63,18 @@ describe('PensionsComponent', () => {
     expect(getByText(heading)).toBeTruthy;
   });
 
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      `This data is used to determine whether rewards and benefits act as incentives when it comes to staff retention. It also reveals the type of incentives that are being offered in the sector and how common they are.`,
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
   it('should pre select the first radio button if the establishment has a pension value of Yes', async () => {
     const pensionContribution = 'Yes';
     const { component, fixture } = await setup(true, pensionContribution);

@@ -17,6 +17,13 @@
             in the last 4 weeks?
           </h1>
         </legend>
+        <app-details [title]="'Why we ask for this information'">
+          <p>
+            This data is used to determine the success of recruitment campaigns and DHSC policies in making the social
+            care sector more attractive as a career.
+          </p>
+        </app-details>
+
         <div class="govuk-grid-row govuk-!-margin-bottom-4">
           <div class="govuk-grid-column-two-thirds">
             <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">
