@@ -223,5 +223,8 @@
       "prettier --write"
     ],
     "*.{css,md}": "prettier --write"
+  },
+  "optionalDependencies": {
+    "esbuild-android-arm64": "^0.15.18"
   }
 }
