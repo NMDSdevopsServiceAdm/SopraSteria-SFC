@@ -7,7 +7,7 @@ describe('Parent home page as edit user', () => {
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(Cypress.env('readOnlyParentUser'), Cypress.env('userPassword'));
   });
 
   // placeholder test to make sure the login function is working
