@@ -44,7 +44,10 @@
               "url-parse",
               "rxjs/internal/operators/take",
               "pako",
-              "configcat-common"
+              "configcat-common",
+              "rxjs/internal/Subscription",
+              "core-js/modules/web.dom-collections.iterator.js",
+              "core-js/modules/es.promise.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
