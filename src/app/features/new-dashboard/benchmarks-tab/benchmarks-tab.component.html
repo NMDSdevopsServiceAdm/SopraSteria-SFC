@@ -3,6 +3,7 @@
 <div class="govuk-width-container govuk-!-margin-top-7">
   <div id="benchmarks-tiles">
     <app-new-comparison-group-header
+      [canViewFullContent]="canViewFullBenchmarks"
       [meta]="tilesData?.meta"
       [workplaceID]="workplace.uid"
       (downloadPDF)="downloadAsPDF()"

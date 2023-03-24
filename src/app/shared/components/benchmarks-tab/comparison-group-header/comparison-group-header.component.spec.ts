@@ -28,50 +28,84 @@ describe('ComparisonGroupHeaderComponent', () => {
     component.meta = { workplaces: 1, staff: 1 };
     expect(component).toBeTruthy();
   });
-  it('should have the right text with only one workplace', async () => {
-    component.canViewFullContent = true;
-    component.meta = { workplaces: 1, staff: 1 };
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).toContain(
-      `<b>Your comparison group</b> is 1 staff from 1 workplace providing the same main service as you in your local authority.`,
-    );
+
+  describe('can view full benchmarks content', () => {
+    it('should have the right text with only one workplace', async () => {
+      component.canViewFullContent = true;
+      component.meta = { workplaces: 1, staff: 1 };
+      fixture.detectChanges();
+      const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
+      expect(componenttext.innerHTML).toContain(
+        `<b>Your comparison group</b> is 1 staff from 1 workplace using ASC-WDS and providing the same main service as you in your local authority.`,
+      );
+    });
+
+    it('should have the right text with correct comma placement', async () => {
+      component.canViewFullContent = true;
+      component.meta = { workplaces: 1000, staff: 1000 };
+      fixture.detectChanges();
+      const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
+      expect(componenttext.innerHTML).toContain(
+        `<b>Your comparison group</b> is 1,000 staff from 1,000 workplaces using ASC-WDS and providing the same main service as you in your local authority.`,
+      );
+    });
+
+    it('should have the last updated date if date supplied', () => {
+      component.canViewFullContent = true;
+      component.meta = { workplaces: 1000, staff: 1000, lastUpdated: new Date('2020-11-10T13:20:29.304Z') };
+      fixture.detectChanges();
+      const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
+      expect(componenttext.innerHTML).toContain(`The comparison group data was last updated 10 November 2020`);
+    });
+    it('should not have the last updated date if date not supplied', () => {
+      component.canViewFullContent = true;
+      component.meta = { workplaces: 1000, staff: 1000 };
+      fixture.detectChanges();
+      const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
+      expect(componenttext.innerHTML).not.toContain(`The comparison group data was last updated`);
+    });
   });
-  it('should have the right text with correct comma placement', async () => {
-    component.canViewFullContent = true;
-    component.meta = { workplaces: 1000, staff: 1000 };
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).toContain(
-      `<b>Your comparison group</b> is 1,000 staff from 1,000 workplaces providing the same main service as you in your local authority.`,
-    );
+
+  describe('cannot view full benchmarks content', () => {
+    it('should have the right text with only one workplace', async () => {
+      component.meta = { workplaces: 1, staff: 1 };
+      fixture.detectChanges();
+      const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
+      expect(componenttext.innerHTML).toContain(
+        `<b>Your comparison group</b> is 1 staff from 1 workplace using ASC-WDS and providing adult social care in your local authority.`,
+      );
+    });
+
+    it('should have the right text with correct comma placement', async () => {
+      component.meta = { workplaces: 1000, staff: 1000 };
+      fixture.detectChanges();
+      const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
+      expect(componenttext.innerHTML).toContain(
+        `<b>Your comparison group</b> is 1,000 staff from 1,000 workplaces using ASC-WDS and providing adult social care in your local authority.`,
+      );
+    });
+
+    it('should have the last updated date if date supplied', () => {
+      component.meta = { workplaces: 1000, staff: 1000, lastUpdated: new Date('2020-11-10T13:20:29.304Z') };
+      fixture.detectChanges();
+      const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
+      expect(componenttext.innerHTML).toContain(`The comparison group data was last updated 10 November 2020`);
+    });
+    it('should not have the last updated date if date not supplied', () => {
+      component.meta = { workplaces: 1000, staff: 1000 };
+      fixture.detectChanges();
+      const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
+      expect(componenttext.innerHTML).not.toContain(`The comparison group data was last updated`);
+    });
   });
-  it('should have the right text with no data', async () => {
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).toContain(
-      `<b>Your comparison group</b> information is not available at the moment.`,
-    );
-  });
-  it('should pluralize workplaces correctly', () => {
-    const number = component.pluralizeWorkplaces(2);
-    expect(number).toBe('workplaces');
-  });
-  it('should singularize workplaces correctly', () => {
-    const number = component.pluralizeWorkplaces(1);
-    expect(number).toBe('workplace');
-  });
-  it('should have the last updated date if date supplied', () => {
-    component.canViewFullContent = true;
-    component.meta = { workplaces: 1000, staff: 1000, lastUpdated: new Date('2020-11-10T13:20:29.304Z') };
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).toContain(`The comparison group data was last updated 10 November 2020`);
-  });
-  it('should not have the last updated date if date not supplied', () => {
-    component.meta = { workplaces: 1000, staff: 1000 };
-    fixture.detectChanges();
-    const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
-    expect(componenttext.innerHTML).not.toContain(`The comparison group data was last updated`);
+
+  describe('no comparison group', () => {
+    it('should have the right text with no data', async () => {
+      fixture.detectChanges();
+      const componenttext = fixture.debugElement.query(By.css('p')).nativeElement;
+      expect(componenttext.innerHTML).toContain(
+        `<b>Your comparison group</b> information is not available at the moment.`,
+      );
+    });
   });
 });
