@@ -1,7 +1,6 @@
 // default route for accepting/rejecting change ownership request
 const express = require('express');
 const router = express.Router();
-const uuid = require('uuid');
 const Establishment = require('../../models/classes/establishment');
 const ownership = require('../../data/ownership');
 const notifications = require('../../data/notifications');
@@ -37,82 +36,76 @@ const ownershipRequest = async (req, res) => {
       let checkOwnerChangeRequestQuery = {
         ownerChangeRequestUID: id,
       };
-      const checkOwnerChangeRequest = await ownership.checkOwnershipRquestId(checkOwnerChangeRequestQuery);
+      const checkOwnerChangeRequest = await ownership.checkOwnershipRequestId(checkOwnerChangeRequestQuery);
       if (!checkOwnerChangeRequest.length) {
         return res.status(404).send('Ownership change request id not found');
       } else if (checkOwnerChangeRequest[0].approvalStatus !== 'REQUESTED') {
         return res.status(400).send('Ownership is already approved/rejected');
+      }
+      params.subEstablishmentId = checkOwnerChangeRequest[0].subEstablishmentID;
+      if (params.subEstablishmentId) {
+        params.establishmentId = req.establishment.id;
+      }
+      // let getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
+      // if (getRecipientUserDetails.length) {
+      //   //save records
+      //   params.recipientUserUid = getRecipientUserDetails[0].UserUID;
+      // }
+      const updateChangeRequest = await ownership.updateChangeRequest(params);
+      if (!updateChangeRequest) {
+        return res.status(400).send('Invalid request');
+      }
+
+      //update establishment dataOwner and dataPermissions property for ownership transfer
+      if (params.approvalStatus !== 'DENIED') {
+        receiverUpdate = await updateOwnership.update(req, checkOwnerChangeRequest);
       } else {
-        params.subEstablishmentId = checkOwnerChangeRequest[0].subEstablishmentID;
-        if (params.subEstablishmentId) {
-          params.establishmentId = req.establishment.id;
+        let recieverEstablishmentDetails = new Establishment.Establishment(req.username);
+        if (await recieverEstablishmentDetails.restore(req.establishment.id, false)) {
+          receiverUpdate = recieverEstablishmentDetails;
         }
-        let getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
-        if (getRecipientUserDetails.length) {
-          //save records
-          params.recipientUserUid = getRecipientUserDetails[0].UserUID;
-        }
-        const updateChangeRequest = await ownership.updateChangeRequest(params);
-        if (!updateChangeRequest) {
-          return res.status(400).send('Invalid request');
-        }
+      }
 
-        //update establishment dataOwner and dataPermissions property for ownership transfer
-        if (params.approvalStatus !== 'DENIED') {
-          receiverUpdate = await updateOwnership.update(req, checkOwnerChangeRequest);
-        } else {
-          let recieverEstablishmentDetails = new Establishment.Establishment(req.username);
-          if (await recieverEstablishmentDetails.restore(req.establishment.id, false)) {
-            receiverUpdate = recieverEstablishmentDetails;
-          }
-        }
-
-        // Update notifications after updating Establishment
-        if (receiverUpdate) {
-          params.exsistingNotificationUid = req.body.exsistingNotificationUid;
-          let updateNotificationParam = {
-            exsistingNotificationUid: params.exsistingNotificationUid,
-            ownerRequestChangeUid: params.ownerRequestChangeUid,
-            recipientUserUid: receiverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
-          };
-          let updatedNotificationResp = await notifications.updateNotification(updateNotificationParam);
-          if (updatedNotificationResp) {
-            let resp = await ownership.getUpdatedOwnershipRequest(params);
-            if (resp) {
-              // requester useruid to send notification in case his request for swap ownership gets approved or rejected
-              params.recipientUserUid = resp[0].createdByUserUID;
-              params.notificationUid = uuid.v4();
-              params.type = 'OWNERCHANGE';
-              if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
-                console.error('Invalid notification UUID');
-                return res.status(400).send();
-              }
-              //inserting new notification for requester to let him know his request is Approved or Denied
-              let addNotificationResp = await notifications.insertNewUserNotification(params);
-              if (!addNotificationResp) {
-                return res.status(400).send('Invalid request');
-              } else {
-                //clearing ownership requested column
-                let clearOwnershipParam = {
-                  timeValue: null,
-                  subEstablishmentId: params.subEstablishmentId,
-                  approvalStatus: req.body.approvalStatus,
-                  rejectionReason: req.body.rejectionReason,
-                  userUid: req.userUid,
-                };
-                let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
-                let updateOwnershipRequest = await ownership.updateOwnershipRequest(clearOwnershipParam);
-                if (!saveDataOwnershipRequested && !updateOwnershipRequest) {
-                  return res.status(400).send({
-                    message: 'Invalid request',
-                  });
-                }
+      // Update notifications after updating Establishment
+      if (receiverUpdate) {
+        params.exsistingNotificationUid = req.body.exsistingNotificationUid;
+        let updateNotificationParam = {
+          exsistingNotificationUid: params.exsistingNotificationUid,
+          ownerRequestChangeUid: params.ownerRequestChangeUid,
+          recipientUserUid: receiverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
+        };
+        let updatedNotificationResp = await notifications.updateNotification(updateNotificationParam);
+        if (updatedNotificationResp) {
+          let resp = await ownership.getUpdatedOwnershipRequest(params);
+          if (resp) {
+            // requester useruid to send notification in case his request for swap ownership gets approved or rejected
+            params.establishmentUid = params.owner;
+            params.type = 'OWNERSHIPCHANGE';
+            //inserting new notification for requester to let him know his request is Approved or Denied
+            let addNotificationResp = await notifications.insertNewEstablishmentNotification(params);
+            if (!addNotificationResp) {
+              return res.status(400).send('Invalid request');
+            } else {
+              //clearing ownership requested column
+              let clearOwnershipParam = {
+                timeValue: null,
+                subEstablishmentId: params.subEstablishmentId,
+                approvalStatus: req.body.approvalStatus,
+                rejectionReason: req.body.rejectionReason,
+                userUid: req.userUid,
+              };
+              let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
+              let updateOwnershipRequest = await ownership.updateOwnershipRequest(clearOwnershipParam);
+              if (!saveDataOwnershipRequested && !updateOwnershipRequest) {
+                return res.status(400).send({
+                  message: 'Invalid request',
+                });
               }
             }
-            return res.status(201).send(resp[0]);
-          } else {
-            return res.status(400).send('Invalid request');
           }
+          return res.status(201).send(resp[0]);
+        } else {
+          return res.status(400).send('Invalid request');
         }
       }
     }

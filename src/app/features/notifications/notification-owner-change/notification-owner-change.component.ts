@@ -44,8 +44,11 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    console.log(this.notification);
     this.eventsSubscription = this.events.subscribe((action) => this.performAction(action));
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.ownerShipRequestedFrom = this.notification.typeContent.requestorName;
+    this.ownerShipRequestedTo = this.notification.typeContent.requestorName;
     this.notificationUid = this.route.snapshot.params.notificationuid;
   }
 

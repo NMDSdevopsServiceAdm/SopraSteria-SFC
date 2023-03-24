@@ -31,6 +31,7 @@ const ownershipChangeRequest = async (req, res) => {
           message: 'Establishment is not a subsidiary',
         });
       } else {
+        console.log('CHECK ALREADY REQUESTED');
         //check already exists ownership records for posted sub establishment id
         let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnership(params);
         if (checkAlreadyRequestedOwnership.length) {
@@ -38,6 +39,7 @@ const ownershipChangeRequest = async (req, res) => {
             message: 'Ownership is already requested for posted establishment id',
           });
         }
+        console.log('GET RECIPIENT DETAILS');
         let getRecipientUserDetails;
         params.parentId = thisEstablishment._parentId;
         params.establishmentId = params.subEstablishmentId;
@@ -54,21 +56,17 @@ const ownershipChangeRequest = async (req, res) => {
               console.error('Invalid owner change request UUID');
               return res.status(400).send();
             }
-            params.recipientUserUid = getRecipientUserDetails[i].UserUID;
+            params.establishmentUid = req.body.notificationRecipientUid;
             params.type = 'OWNERCHANGE';
             let changeRequestResp = await ownership.changeOwnershipRequest(params);
             if (!changeRequestResp) {
               return res.status(400).send({
                 message: 'Invalid request',
               });
-            } else {
-              params.notificationUid = uuid.v4();
-              if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
-                console.error('Invalid notification UUID');
-                return res.status(400).send();
-              }
-              await notifications.insertNewUserNotification(params);
             }
+            params.notificationContentUid = params.ownerRequestChangeUid;
+            console.log(params);
+            await notifications.insertNewEstablishmentNotification(params);
           }
           params.timeValue = 'NOW()';
           let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);

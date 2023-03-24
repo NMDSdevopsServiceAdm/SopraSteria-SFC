@@ -127,11 +127,7 @@ const getNotification = async (req, res) => {
   try {
     const notificationData = await getOneNotification(req.params.notificationUid);
 
-    console.log('GET TYPE CONTENT');
-
     await addTypeContent(notificationData.notification);
-
-    console.log('GOT TYPE CONTENT');
 
     // this will fetch notification receiver name
     if (notificationData.notification.type === 'OWNERCHANGE') {
@@ -139,11 +135,11 @@ const getNotification = async (req, res) => {
         notificationData.notification,
       );
       if (notificationReciever.length === 1) {
-        notificationData.notification.forEach((element) => {
-          element.recieverName = notificationReciever[0].NameValue;
-        });
+        notificationData.notification.recieverName = notificationReciever[0].NameValue;
       }
     }
+
+    console.log(notificationData);
     // return the item
     return res.status(200).send(notificationData.notification);
   } catch (e) {
