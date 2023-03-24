@@ -317,7 +317,6 @@ const startApp = () => {
   console.log('Listening on port: ' + app.get('port'));
 };
 
-console.log('AppConfig.ready', AppConfig.ready);
 if (AppConfig.ready) {
   startApp();
 } else {
