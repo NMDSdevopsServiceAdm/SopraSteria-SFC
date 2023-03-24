@@ -5,6 +5,9 @@ import { DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
+import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { Subscription } from 'rxjs';
 import { isAdminRole } from 'server/utils/adminUtils';
@@ -28,7 +31,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public isLocalAuthority = false;
   public canRunLocalAuthorityReport: boolean;
   public canBulkUpload: boolean;
-  public canViewReports: boolean;
   public canEditEstablishment: boolean;
   public user: UserDetails;
 
@@ -67,7 +69,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
    * @param {void}
    * @return {void}
    */
-  public setPermissionLinks() {
+  public setPermissionLinks(): void {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
     // this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
@@ -84,9 +86,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
       this.workplace.parentUid != null &&
       this.workplace.dataOwner === 'Workplace' &&
       this.user.role != 'Read';
-    this.canViewReports =
-      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
-      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
 
     // if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
     //   this.isOwnershipRequested = true;
@@ -109,16 +108,54 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
 
   /**
    * Function used to open modal box for link a workplace to parent organisation
-   * @param {event} triggred event
+   * @param {event} triggered event
    * @return {void}
    */
-  public linkToParent($event: Event) {
+  public linkToParent($event: Event): void {
     $event.preventDefault();
     const dialog = this.dialogService.open(LinkToParentDialogComponent, this.workplace);
     dialog.afterClosed.subscribe((confirmToClose) => {
       if (confirmToClose) {
         this.linkToParentRequestedStatus = true;
         this.canBecomeAParent = false;
+      }
+    });
+  }
+
+  /**
+   * Function used to open modal box for link a workplace to parent organisation
+   * @param {event} triggered event
+   * @return {void}
+   */
+  public cancelLinkToParent($event: Event): void {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(LinkToParentCancelDialogComponent, this.workplace);
+    dialog.afterClosed.subscribe((confirmToClose) => {
+      if (confirmToClose) {
+        this.linkToParentRequestedStatus = false;
+        this.canBecomeAParent = true;
+      }
+    });
+  }
+
+  public becomeAParent($event: Event): void {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(BecomeAParentDialogComponent, null);
+    dialog.afterClosed.subscribe((confirmToClose) => {
+      if (confirmToClose) {
+        this.canLinkToParent = false;
+        this.parentStatusRequested = true;
+      }
+    });
+  }
+
+  public cancelBecomeAParent($event: Event): void {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(BecomeAParentCancelDialogComponent, null);
+    dialog.afterClosed.subscribe((confirmToClose) => {
+      if (confirmToClose) {
+        this.canLinkToParent = true;
+        this.parentStatusRequested = false;
       }
     });
   }

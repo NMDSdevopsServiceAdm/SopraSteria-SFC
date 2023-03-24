@@ -5,50 +5,52 @@
       <h1>First column</h1>
     </div>
     <div class="govuk-grid-column-one-third">
-      <app-new-article-list></app-new-article-list>
-      <h3 class="govuk-heading-s govuk-!-margin-top-4">Other links</h3>
-      <ul class="govuk-list govuk-!-margin-bottom-6">
-        <app-link-with-arrow>
-          <a [routerLink]="['/asc-wds-certificate']"
-            ><p class="govuk-tag govuk-tag--blue govuk-!-margin-right-8 asc-tag" style="float: right">NEW</p>
-            Get your ASC-WDS certificate</a
-          >
-        </app-link-with-arrow>
+      <app-new-article-list data-testid="article-list"></app-new-article-list>
+      <div class="govuk-!-margin-top-7">
+        <h3 class="govuk-heading-s">Other links</h3>
+        <ul class="govuk-list govuk-!-margin-bottom-6">
+          <app-link-with-arrow>
+            <a [routerLink]="['/asc-wds-certificate']"
+              ><p class="govuk-tag govuk-tag--blue govuk-!-margin-right-6 asc-tag" style="float: right">NEW</p>
+              Get your ASC-WDS certificate</a
+            >
+          </app-link-with-arrow>
 
-        <app-link-with-arrow *ngIf="canBulkUpload">
-          <a [routerLink]="['/bulk-upload']">Bulk upload your data</a>
-        </app-link-with-arrow>
+          <app-link-with-arrow *ngIf="canBulkUpload">
+            <a [routerLink]="['/bulk-upload']">Bulk upload your data</a>
+          </app-link-with-arrow>
 
-        <app-link-with-arrow *ngIf="canViewReports">
-          <a [routerLink]="['/wdf']">Does your data meet WDF requirements?</a>
-        </app-link-with-arrow>
+          <app-link-with-arrow>
+            <a [routerLink]="['/wdf']">Does your data meet WDF requirements?</a>
+          </app-link-with-arrow>
 
-        <app-link-with-arrow>
-          <a [routerLink]="['/about-ascwds']">About ASC-WDS</a>
-        </app-link-with-arrow>
+          <app-link-with-arrow>
+            <a [routerLink]="['/about-ascwds']">About ASC-WDS</a>
+          </app-link-with-arrow>
 
-        <app-link-with-arrow *ngIf="canLinkToParent && !workplace.isParent">
-          <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
-            <a (click)="cancelLinkToParent($event)" href="#">Link to my parent organisation pending</a>
-          </ng-container>
-          <ng-template #requestLinkToParent>
-            <a (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
-          </ng-template>
-        </app-link-with-arrow>
+          <app-link-with-arrow *ngIf="canLinkToParent && !workplace.isParent">
+            <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
+              <a (click)="cancelLinkToParent($event)" href="#">Link to my parent organisation pending</a>
+            </ng-container>
+            <ng-template #requestLinkToParent>
+              <a (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
+            </ng-template>
+          </app-link-with-arrow>
 
-        <app-link-with-arrow *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
-          <ng-container *ngIf="parentStatusRequested; else requestBecomeAParent">
-            <a (click)="cancelBecomeAParent($event)" href="#">Parent request pending</a>
-          </ng-container>
-          <ng-template #requestBecomeAParent>
-            <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
-          </ng-template>
-        </app-link-with-arrow>
+          <app-link-with-arrow *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
+            <ng-container *ngIf="parentStatusRequested; else requestBecomeAParent">
+              <a (click)="cancelBecomeAParent($event)" href="#">Parent request pending</a>
+            </ng-container>
+            <ng-template #requestBecomeAParent>
+              <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
+            </ng-template>
+          </app-link-with-arrow>
 
-        <app-link-with-arrow>
-          <a [routerLink]="['/first-login-wizard']">Help to get you started</a>
-        </app-link-with-arrow>
-      </ul>
+          <app-link-with-arrow>
+            <a [routerLink]="['/first-login-wizard']">Help to get you started</a>
+          </app-link-with-arrow>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
