@@ -12,11 +12,12 @@
   </div>
   <div class="govuk-grid-column-one-third govuk-!-margin-top-6 govuk-!-padding-left-0">
     <a
-      *ngIf="allBoxesChecked || notificationsForDeletion.length > 0"
+      *ngIf="notificationsForDeletion.length > 0"
       class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-margin-bottom-1"
       draggable="false"
-      href="#"
+      href="javascript:void(0)"
       data-testid="deleteButton"
+      (click)="deleteSelectedNotifications()"
     >
       <img src="/assets/images/bin.svg" alt="" />
       <span class="govuk-!-margin-left-1"> Delete notifications </span></a
@@ -42,6 +43,7 @@
           type="checkbox"
           [(ngModel)]="allBoxesChecked"
           data-testid="selectAllCheckBoxes"
+          (click)="pushAllNotificationsToDeleteArray()"
         />
       </th>
       <th scope="col" class="govuk-table__header" style="width: 47.5%">Subject</th>
@@ -105,5 +107,5 @@
   </tbody>
 </table>
 <div *ngFor="let notificationForDeletion of notificationsForDeletion">
-  <p>{{ notificationForDeletion.type }}</p>
+  <p>{{ notificationForDeletion }}</p>
 </div>

@@ -270,3 +270,14 @@ exports.getAllUser = async (params) =>
     },
     type: db.QueryTypes.SELECT,
   });
+
+const deleteNotificationsQuery = `
+  DELETE FROM cqc."NotificationsEstablishment"
+  WHERE "notificationUid" = :notificationUid
+`;
+
+exports.deleteNotifications = async (notificationUid) =>
+  db.query(deleteNotificationsQuery, {
+    replacements: { notificationUid },
+    type: db.QueryTypes.DELETE,
+  });

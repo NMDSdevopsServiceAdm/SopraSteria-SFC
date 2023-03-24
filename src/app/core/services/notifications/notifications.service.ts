@@ -1,9 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Notification, NotificationRequest, NotificationTypes } from '@core/model/notifications.model';
-import { escapeRegExp } from 'lodash';
-import filter from 'lodash/filter';
-import { BehaviorSubject, concat, Observable, zip } from 'rxjs';
+import { BehaviorSubject, Observable, zip } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -68,6 +66,10 @@ export class NotificationsService {
 
   public setNoticationViewed(notificationUid: string): Observable<Notification> {
     return this.http.patch<any>(`/api/notification/${notificationUid}`, { isViewed: true });
+  }
+
+  public deleteNotifications(notificationsForDeletion: Array<any>): Observable<any> {
+    return this.http.post<any>(`/api/notification/deleteNotifications`, { notificationsForDeletion });
   }
 
   public setNotificationRequestLinkToParent(establishmentId, data): Observable<NotificationRequest> {

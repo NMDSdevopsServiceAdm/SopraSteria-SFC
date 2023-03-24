@@ -251,11 +251,30 @@ const sendUserNotification = async (req, res) => {
   }
 };
 
+const deleteNotifications = async (req, res) => {
+  try {
+    if (req.body === null) {
+      return res.status(400).send({ message: 'Not enough data provided' });
+    }
+
+    req.body.notificationsForDeletion.forEach(async (notificationForDeletion) => {
+      await notifications.deleteNotifications(notificationForDeletion);
+    });
+
+    return res.status(200).send({ message: 'OK' });
+  } catch (e) {
+    return res.status(500).send({
+      message: e.message,
+    });
+  }
+};
+
 router.route('/type').get(getNotificationTypes);
 router.route('/type').post(createNotificationType);
 router.route('/user/:userUid').post(sendUserNotification);
 router.route('/establishment/:establishmentUid').get(getEstablishmentNotifications);
 router.route('/establishment/:establishmentUid').post(sendEstablishmentNotification);
+router.route('/deleteNotifications').post(deleteNotifications);
 router.route('/:notificationUid').patch(Authorization.isAuthorised, setNotificationRead);
 router.route('/:notificationUid').get(getNotification);
 router.use('/', Authorization.isAuthorised);
