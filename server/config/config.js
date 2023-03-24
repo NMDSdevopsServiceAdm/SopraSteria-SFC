@@ -24,6 +24,7 @@ const config = convict({
       'accessibility',
       'localhost',
       'example',
+      'e2etest',
     ],
     default: 'localhost',
     env: 'NODE_ENV',
@@ -79,7 +80,7 @@ const config = convict({
       env: 'DB_USER',
     },
     password: {
-      doc: 'Database username',
+      doc: 'Database password',
       format: '*',
       default: 'unknown', // note - bug in notify - must provide a default value for it to use env var
       env: 'DB_PASS',
@@ -122,6 +123,42 @@ const config = convict({
         format: 'int',
         default: 1000,
       },
+    },
+  },
+
+  e2etestdb: {
+    host: {
+      doc: 'Database host name/IP',
+      format: String,
+      default: '127.0.0.1',
+    },
+    database: {
+      doc: 'Database name',
+      format: String,
+      default: 'sfc-test-db',
+      env: 'DB_TEST_NAME',
+    },
+    username: {
+      doc: 'Database username',
+      format: String,
+      default: 'sfc-test-user',
+      env: 'DB_TEST_USER',
+    },
+    password: {
+      doc: 'Database username',
+      format: '*',
+      default: 'sfc-test-pass',
+      env: 'DB_TEST_PASS',
+    },
+    port: {
+      doc: 'Database port',
+      format: 'port',
+      default: 90,
+    },
+    dialect: {
+      doc: 'Database dialect (sequelize)',
+      format: String,
+      default: 'postgres',
     },
   },
   notify: {

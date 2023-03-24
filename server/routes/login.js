@@ -39,6 +39,7 @@ router.use('/', authLimiter);
 router.post('/', async (req, res) => {
   const givenUsername = req.body.username.toLowerCase();
   const givenPassword = req.body.password;
+
   const givenEstablishmentUid =
     req.body.establishment && req.body.establishment.uid ? req.body.establishment.uid : null;
 

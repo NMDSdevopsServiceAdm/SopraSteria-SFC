@@ -4,7 +4,7 @@
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l" data-cy="cqc-heading">
           <span class="govuk-caption-l">Workplace</span>
           <h1 class="govuk-fieldset__heading">{{ title }} regulated by the Care Quality Commission?</h1>
         </legend>
@@ -14,7 +14,7 @@
             or email <strong>ascwds-support@skillsforcare.org.uk</strong> for help.
           </p>
         </app-details>
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid" data-cy="cqc-error">
           <span *ngIf="submitted" id="regulated-error" class="govuk-error-message">
             <span *ngIf="this.form.get('regulatedByCQC').errors" data-testid="errorMessage" id="regulatedByCQC-error">{{
               getErrorMessage('regulatedByCQC')
@@ -49,7 +49,7 @@
         </div>
       </fieldset>
 
-      <button class="govuk-button govuk-!-margin-top-4" type="submit">Continue</button>
+      <button data-testid="continueButton" class="govuk-button govuk-!-margin-top-4" type="submit">Continue</button>
     </form>
   </div>
   <div class="govuk-grid-column-one-third" *ngIf="insideFlow">

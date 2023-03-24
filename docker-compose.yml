@@ -1,0 +1,13 @@
+version: '3'
+services:
+  sfc-test:
+    image: postgres:13
+    container_name: sfc-test
+    build:
+      context: ./docker
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 90:5432
