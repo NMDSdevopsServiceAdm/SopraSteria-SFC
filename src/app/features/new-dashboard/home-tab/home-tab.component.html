@@ -4,7 +4,28 @@
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
-          <app-card></app-card>
+          <app-card [benchmarksCard]="true">
+            <a class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold" href="#"
+              >See how you compare with other workplaces</a
+            >
+            <p class="govuk-!-margin-top-5">
+              There are 9 workplaces providing the same main service as you in your local authority area.
+            </p></app-card
+          >
+        </div>
+        <div class="govuk-grid-column-one-half">
+          <app-card>
+            <a
+              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+              routerLink="/benefits-bundle"
+              href="#"
+              >View the ASC-WDS Benefits Bundle</a
+            >
+            <p class="govuk-!-margin-top-5">
+              Get discounts and special offers from endorsed training providers and across Skills for Care's product
+              range.
+            </p></app-card
+          >
         </div>
       </div>
     </div>
