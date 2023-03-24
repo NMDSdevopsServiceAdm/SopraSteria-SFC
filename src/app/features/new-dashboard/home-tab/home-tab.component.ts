@@ -2,7 +2,6 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { DialogService } from '@core/services/dialog.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -36,7 +35,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private permissionsService: PermissionsService,
-    private establishmentService: EstablishmentService,
     private parentRequestsService: ParentRequestsService,
     private dialogService: DialogService,
   ) {}
