@@ -67,7 +67,7 @@ const ownershipChangeRequest = async (req, res) => {
                 console.error('Invalid notification UUID');
                 return res.status(400).send();
               }
-              await notifications.insertNewNotification(params);
+              await notifications.insertNewUserNotification(params);
             }
           }
           params.timeValue = 'NOW()';
