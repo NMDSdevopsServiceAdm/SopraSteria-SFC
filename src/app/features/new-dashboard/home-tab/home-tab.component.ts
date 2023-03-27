@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { DialogService } from '@core/services/dialog.service';
@@ -19,6 +20,7 @@ import { isAdminRole } from 'server/utils/adminUtils';
 })
 export class NewHomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
+  @Input() meta: Meta;
 
   private subscriptions: Subscription = new Subscription();
   public canViewWorkplaces: boolean;

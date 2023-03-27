@@ -4,6 +4,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -49,6 +50,7 @@ describe('NewHomeTabComponent', () => {
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent],
       componentProperties: {
         workplace: Establishment,
+        meta: { workplaces: 9, staff: 4 } as Meta,
       },
       schemas: [NO_ERRORS_SCHEMA],
     });
@@ -416,6 +418,16 @@ describe('NewHomeTabComponent', () => {
 
       expect(benchmarksLink).toBeTruthy();
       expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+    });
+
+    it('should render the number of workplaces to compare with', async () => {
+      const { getByText } = await setup();
+
+      const text = getByText(
+        'There are 9 workplaces providing the same main service as you in your local authority area.',
+      );
+
+      expect(text).toBeTruthy();
     });
 
     it('should show a card with a link that takes you to the benefits bundle page', async () => {
