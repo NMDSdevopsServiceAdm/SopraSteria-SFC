@@ -110,18 +110,18 @@ const _notify = async (approvalId, userUid, establishmentId) => {
   const typUid = approval.UUID;
   const params = {
     type: 'BECOMEAPARENT',
-    notificationContentUid: typUid,
-    senderUid: userUid,
+    typeUid: typUid,
+    userUid: userUid,
   };
   const users = await notifications.getAllUser({ establishmentId: establishmentId });
   await Promise.all(
-    users.map(async () => {
+    users.map(async (user) => {
       const userparams = {
         ...params,
-        establishmentUid: establishmentId,
+        recipientUserUid: user.UserUID,
         notificationUid: uuid.v4(),
       };
-      await notifications.insertNewEstablishmentNotification(userparams);
+      await notifications.insertNewNotification(userparams);
     }),
   );
 };
