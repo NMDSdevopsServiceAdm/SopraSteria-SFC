@@ -1,5 +1,5 @@
 <header class="govuk-header" role="banner" data-module="header" [class.open-dropdown]="showDropdown">
-  <div class="govuk-header__container govuk-width-container">
+  <div class="govuk-header__container govuk-width-container govuk-!-padding-bottom-3">
     <div>
       <img src="/assets/images/logo.png" alt="Skills for Care" />
     </div>
@@ -16,7 +16,7 @@
       </button>
     </div>
     <nav>
-      <ul class="govuk-header__navigation govuk-list--spaced" id="navigation" aria-label="Top Level Navigation">
+      <ul class="govuk-header__navigation" id="navigation" aria-label="Top Level Navigation">
         <ng-container *ngIf="!isLoggedIn()">
           <li class="govuk-header__navigation-item">
             <a [routerLink]="['/registration', 'create-account']" class="govuk-header__link">Create an account</a>

@@ -1,3 +1,5 @@
+@import '~govuk-frontend/govuk/base';
+
 li {
   margin-left: 15px;
 
@@ -10,4 +12,8 @@ li {
   &::after {
     content: none !important;
   }
+}
+
+header {
+  border-top: 30px $govuk-link-colour solid;
 }
