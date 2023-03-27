@@ -76,6 +76,8 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
         type: OWNERSHIP_APPROVED,
         exsistingNotificationUid: this.notificationUid,
         requestedOwnership: this.notification.typeContent.permissionRequest,
+        parentEstablishmentUid: this.notification.typeContent.parentEstablishmentUid,
+        subEstablishmentUid: this.notification.typeContent.subEstablishmentUid,
       };
       this.subscriptions.add(
         this.notificationsService

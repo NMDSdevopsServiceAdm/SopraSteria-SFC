@@ -70,19 +70,24 @@ const ownershipRequest = async (req, res) => {
       if (receiverUpdate) {
         params.exsistingNotificationUid = req.body.exsistingNotificationUid;
         let updateNotificationParam = {
-          exsistingNotificationUid: params.exsistingNotificationUid,
+          existingNotificationUid: params.exsistingNotificationUid,
           ownerRequestChangeUid: params.ownerRequestChangeUid,
-          recipientUserUid: receiverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
+          //recipientUserUid: receiverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
+          userUid: params.body.
         };
+        console.log('UPDATE NOTIFICATION');
         let updatedNotificationResp = await notifications.updateNotification(updateNotificationParam);
+        console.log('DONE');
         if (updatedNotificationResp) {
           let resp = await ownership.getUpdatedOwnershipRequest(params);
           if (resp) {
             // requester useruid to send notification in case his request for swap ownership gets approved or rejected
-            params.establishmentUid = params.owner;
             params.type = 'OWNERSHIPCHANGE';
+            params.establishmentUid = req.body.parentEstablishmentUid;
+            params.notificationContentUid = params.ownerRequestChangeUid;
             //inserting new notification for requester to let him know his request is Approved or Denied
             let addNotificationResp = await notifications.insertNewEstablishmentNotification(params);
+            console.log('ADDED NEW NOTIFICATION');
             if (!addNotificationResp) {
               return res.status(400).send('Invalid request');
             } else {
@@ -95,7 +100,9 @@ const ownershipRequest = async (req, res) => {
                 userUid: req.userUid,
               };
               let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
+              console.log('got request')
               let updateOwnershipRequest = await ownership.updateOwnershipRequest(clearOwnershipParam);
+              console.log('UPDATE REQUEST')
               if (!saveDataOwnershipRequested && !updateOwnershipRequest) {
                 return res.status(400).send({
                   message: 'Invalid request',

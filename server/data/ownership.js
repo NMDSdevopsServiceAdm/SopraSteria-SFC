@@ -190,7 +190,9 @@ SELECT
   "ownerChangeRequestUID",
   "createdByUserUID",
   parent."NameValue" as "parentEstablishmentName",
+  parent."EstablishmentUID" as "parentEstablishmentUid",
   sub."NameValue" as "subEstablishmentName",
+  sub."EstablishmentUID" as "subEstablishmentUid",
   CASE
       WHEN sub."DataOwner" = :parent THEN :workplace
       WHEN sub."DataOwner" = :workplace THEN :parent
