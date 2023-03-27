@@ -35,34 +35,44 @@
 <table class="govuk-table govuk-table__with-action govuk-!-margin-top-0">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header" style="width: 5%">
-        <input
-          class="govuk-!-margin-left-2"
-          id="selectAllCheckBoxes"
-          name="selectAllCheckBoxes"
-          type="checkbox"
-          [(ngModel)]="allBoxesChecked"
-          data-testid="selectAllCheckBoxes"
-          (click)="pushAllNotificationsToDeleteArray()"
-        />
+      <th scope="col" class="govuk-table__header govuk-!-padding-bottom-0" style="width: 5%">
+        <div class="govuk-checkboxes__item govuk-!-margin-left-2 govuk-!-padding-0 govuk-checkboxes--small">
+          <input
+            class="govuk-checkboxes__input"
+            id="selectAllCheckBoxes"
+            name="selectAllCheckBoxes"
+            type="checkbox"
+            [(ngModel)]="allBoxesChecked"
+            data-testid="selectAllCheckBoxes"
+            (click)="pushAllNotificationsToDeleteArray()"
+          />
+          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="selectAllCheckBoxes"></label>
+        </div>
       </th>
-      <th scope="col" class="govuk-table__header" style="width: 47.5%">Subject</th>
-      <th scope="col" class="govuk-table__header" style="width: 47.5%">Date received</th>
+      <th scope="col" class="govuk-table__header govuk-!-padding-0 govuk-!-padding-top-3" style="width: 47.5%">
+        Subject
+      </th>
+      <th scope="col" class="govuk-table__header govuk-!-padding-0 govuk-!-padding-top-3" style="width: 47.5%">
+        Date received
+      </th>
     </tr>
   </thead>
   <tbody class="govuk-table__body">
     <ng-container *ngFor="let notification of notifications; index as i">
       <tr class="govuk-table__row notification-list-row" [class.notification-list-row--unread]="!notification.isViewed">
         <td class="govuk-table__cell">
-          <input
-            class="govuk-!-margin-left-2"
-            id="checkbox-{{ i }}"
-            name="checkbox-{{ i }}"
-            type="checkbox"
-            [checked]="allBoxesChecked"
-            data-testid="checkbox-{{ i }}"
-            (click)="pushNotificationToDeleteArray(notification)"
-          />
+          <div class="govuk-checkboxes__item govuk-!-padding-0 govuk-!-margin-left-2 govuk-checkboxes--small">
+            <input
+              class="govuk-checkboxes__input"
+              id="checkbox-{{ i }}"
+              name="checkbox-{{ i }}"
+              type="checkbox"
+              [checked]="allBoxesChecked"
+              data-testid="checkbox-{{ i }}"
+              (click)="pushNotificationToDeleteArray(notification)"
+            />
+            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="checkbox-{{ i }}"></label>
+          </div>
         </td>
         <td class="govuk-table__cell">
           <span class="notification-list-item">
@@ -101,7 +111,7 @@
             >
           </span>
         </td>
-        <td class="govuk-table__cell">{{ notification.created | longDate }}</td>
+        <td class="govuk-table__cell govuk-!-padding-top-3">{{ notification.created | longDate }}</td>
       </tr>
     </ng-container>
   </tbody>

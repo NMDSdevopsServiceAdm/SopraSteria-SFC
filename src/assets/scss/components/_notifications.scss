@@ -25,10 +25,10 @@
 }
 
 .notification-list-row {
-  background: govuk-colour('light-grey');
+  background: none;
 
   &--unread {
-    background: none;
+    background: govuk-colour('light-grey');
     font-weight: bold;
   }
 }
@@ -38,8 +38,7 @@
   align-items: center;
 
   &__icon {
-    margin-top: 6px;
-    margin-right: 5px;
+    margin-top: 12px;
     width: 80%;
     height: 80%;
     display: inline-block;
@@ -48,8 +47,9 @@
 
 .notification-list-item__link {
   color: govuk-colour('blue');
-
+  margin-top: 6px;
   &:visited {
+    margin-top: 5px;
     color: govuk-colour('blue');
   }
 }

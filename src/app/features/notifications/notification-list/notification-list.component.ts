@@ -58,8 +58,9 @@ export class NotificationListComponent implements OnInit {
   }
 
   public deleteSelectedNotifications(): void {
-    this.notificationService
-      .deleteNotifications(this.notificationsForDeletion)
-      .subscribe(() => this.getNotifications());
+    this.notificationService.deleteNotifications(this.notificationsForDeletion).subscribe(() => {
+      this.getNotifications();
+      this.notificationsForDeletion = [];
+    });
   }
 }

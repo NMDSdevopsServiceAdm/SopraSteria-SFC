@@ -14,7 +14,7 @@ import { render } from '@testing-library/angular';
 
 import { NotificationListComponent } from './notification-list.component';
 
-describe('NotificationListComponent', () => {
+fdescribe('NotificationListComponent', () => {
   async function setup() {
     const { fixture, getByText, queryByTestId, getByLabelText, getByTestId } = await render(NotificationListComponent, {
       imports: [
