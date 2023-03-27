@@ -9,6 +9,7 @@ import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -59,6 +60,9 @@ describe('NewHomeTabComponent', () => {
 
     const parentsRequestService = TestBed.inject(ParentRequestsService);
 
+    const tabsService = TestBed.inject(TabsService);
+    const tabsServiceSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
+
     return {
       component,
       fixture,
@@ -67,6 +71,7 @@ describe('NewHomeTabComponent', () => {
       getByTestId,
       alertServiceSpy,
       parentsRequestService,
+      tabsServiceSpy,
     };
   };
 
@@ -399,6 +404,27 @@ describe('NewHomeTabComponent', () => {
 
       const firstLoginWizardLink = getByText('Help to get you started');
       expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
+    });
+  });
+
+  describe('cards', () => {
+    it('should show a card with a link that takes you to the benchmarks tab', async () => {
+      const { getByText, tabsServiceSpy } = await setup();
+
+      const benchmarksLink = getByText('See how you compare with other workplaces');
+      fireEvent.click(benchmarksLink);
+
+      expect(benchmarksLink).toBeTruthy();
+      expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+    });
+
+    it('should show a card with a link that takes you to the benefits bundle page', async () => {
+      const { getByText } = await setup();
+
+      const benefitsBundleLink = getByText('View the ASC-WDS Benefits Bundle');
+
+      expect(benefitsBundleLink).toBeTruthy();
+      expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
     });
   });
 });

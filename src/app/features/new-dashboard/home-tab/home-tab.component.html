@@ -4,8 +4,11 @@
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
-          <app-card [benchmarksCard]="true">
-            <a class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold" href="#"
+          <app-card [image]="'/assets/images/benchmarks.svg'">
+            <a
+              (click)="navigateToBenchmarksTab($event)"
+              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+              href="#"
               >See how you compare with other workplaces</a
             >
             <p class="govuk-!-margin-top-5">
@@ -14,7 +17,7 @@
           >
         </div>
         <div class="govuk-grid-column-one-half">
-          <app-card>
+          <app-card [image]="'/assets/images/benefits-bundle.svg'">
             <a
               class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
               routerLink="/benefits-bundle"

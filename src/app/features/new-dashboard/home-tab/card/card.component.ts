@@ -1,15 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss'],
 })
-export class CardComponent implements OnInit {
-  @Input() benchmarksCard: boolean;
-  public image: string;
-
-  ngOnInit(): void {
-    this.image = this.benchmarksCard ? '/assets/images/benchmarks.svg' : '/assets/images/benefits-bundle.svg';
-  }
+export class CardComponent {
+  @Input() image: string;
 }
