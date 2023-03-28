@@ -17,6 +17,7 @@ import { isAdminRole } from 'server/utils/adminUtils';
 @Component({
   selector: 'app-new-home-tab',
   templateUrl: './home-tab.component.html',
+  styleUrls: ['./home-tab.component.scss'],
 })
 export class NewHomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -68,9 +69,9 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  public navigateToBenchmarksTab(event: Event): void {
+  public navigateToTab(event: Event, selectedTab: string): void {
     event.preventDefault();
-    this.tabsService.selectedTab = 'benchmarks';
+    this.tabsService.selectedTab = selectedTab;
   }
 
   /**
