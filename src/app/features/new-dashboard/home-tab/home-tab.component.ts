@@ -1,9 +1,11 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
@@ -18,6 +20,7 @@ import { isAdminRole } from 'server/utils/adminUtils';
 })
 export class NewHomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
+  @Input() meta: Meta;
 
   private subscriptions: Subscription = new Subscription();
   public canViewWorkplaces: boolean;
@@ -39,6 +42,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private parentRequestsService: ParentRequestsService,
     private dialogService: DialogService,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
@@ -62,6 +66,11 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
         this.isLocalAuthority &&
         this.permissionsService.can(this.workplace.uid, 'canRunLocalAuthorityReport');
     }
+  }
+
+  public navigateToBenchmarksTab(event: Event): void {
+    event.preventDefault();
+    this.tabsService.selectedTab = 'benchmarks';
   }
 
   /**

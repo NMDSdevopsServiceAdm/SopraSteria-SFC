@@ -58,6 +58,7 @@ import { NewComparisonGroupHeaderComponent } from '@features/new-dashboard/bench
 import { NewDashboardHeaderComponent } from '@features/new-dashboard/dashboard-header/dashboard-header.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
+import { CardComponent } from '@features/new-dashboard/home-tab/card/card.component';
 import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
 import { NewStaffTabComponent } from '@features/new-dashboard/staff-tab/staff-tab.component';
 import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
@@ -122,6 +123,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     NewDashboardHeaderComponent,
     NewTrainingLinkPanelComponent,
     NewComparisonGroupHeaderComponent,
+    CardComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

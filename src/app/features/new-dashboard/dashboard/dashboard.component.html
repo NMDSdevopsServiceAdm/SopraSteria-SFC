@@ -1,6 +1,6 @@
 <ng-container [ngSwitch]="selectedTab">
   <ng-container *ngSwitchCase="'home'">
-    <app-new-home-tab [workplace]="workplace" data-testid="home-tab"></app-new-home-tab>
+    <app-new-home-tab [workplace]="workplace" [meta]="tilesData?.meta" data-testid="home-tab"></app-new-home-tab>
   </ng-container>
 
   <ng-container *ngSwitchCase="'workplace'">
@@ -36,6 +36,10 @@
   </ng-container>
 
   <ng-container *ngSwitchCase="'benchmarks'">
-    <app-new-benchmarks-tab [workplace]="workplace" data-testid="benchmarks-tab"></app-new-benchmarks-tab>
+    <app-new-benchmarks-tab
+      [workplace]="workplace"
+      [tilesData]="tilesData"
+      data-testid="benchmarks-tab"
+    ></app-new-benchmarks-tab>
   </ng-container>
 </ng-container>
