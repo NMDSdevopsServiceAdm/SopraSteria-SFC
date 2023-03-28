@@ -202,7 +202,7 @@ export interface LocalIdentifiersRequest {
 
 export interface LocalIdentifiersResponse {
   id: number;
-  localIdentifiers: { uid: string; value: string };
+  localIdentifiers: [{ uid: string; value: string }];
   name: string;
   uid: string;
   updated: string;

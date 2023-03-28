@@ -13,7 +13,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import find from 'lodash/find';
+import { find } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
