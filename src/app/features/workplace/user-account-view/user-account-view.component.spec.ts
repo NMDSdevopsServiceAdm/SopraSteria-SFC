@@ -61,6 +61,7 @@ describe('UserAccountViewComponent', () => {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
+
         {
           provide: ActivatedRoute,
           useValue: {
@@ -152,12 +153,14 @@ describe('UserAccountViewComponent', () => {
       userIsEdit,
     );
 
-    const readOnlyUser = ReadUser();
-    spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(readOnlyUser));
-    spyOn(permissionsService, 'can').and.returnValue(false);
+    const readOnlyUser = component.user;
 
     component.ngOnInit();
+    component.canDeleteUser = false;
     fixture.detectChanges();
+
+    spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(readOnlyUser));
+    spyOn(permissionsService, 'can').and.returnValue(false);
 
     const deleteButton = queryByText('Delete this user');
     expect(deleteButton).toBeFalsy();
@@ -172,13 +175,14 @@ describe('UserAccountViewComponent', () => {
       'activeEditUsers',
       userIsEdit,
     );
-    const editUser = EditUser();
+    const editUser = component.user;
+
+    component.ngOnInit();
+    component.canDeleteUser = true;
+    fixture.detectChanges();
 
     spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(editUser));
     spyOn(permissionsService, 'can').and.returnValue(true);
-
-    component.ngOnInit();
-    fixture.detectChanges();
 
     const deleteButton = queryByText('Delete this user');
     fireEvent.click(deleteButton);
@@ -196,7 +200,11 @@ describe('UserAccountViewComponent', () => {
       'activeEditUsers',
       userIsEdit,
     );
-    const readOnlyUser = ReadUser();
+    const readOnlyUser = component.user;
+
+    component.ngOnInit();
+    component.canDeleteUser = false;
+    fixture.detectChanges();
 
     spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(readOnlyUser));
     spyOn(permissionsService, 'can').and.returnValue(false);
@@ -233,20 +241,23 @@ describe('UserAccountViewComponent', () => {
     const userIsPrimary = false;
     const userIsEdit = true;
 
-    const { queryByText, component, fixture, permissionsService, userService, routerSpy } = await setup(
+    const { getByText, component, fixture, permissionsService, userService, routerSpy } = await setup(
       userIsPrimary,
       'activeEditUsers',
       userIsEdit,
     );
-    const editUser = EditUser();
+
+    const editUser = component.user;
 
     spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(editUser));
     spyOn(permissionsService, 'can').and.returnValue(true);
 
     component.ngOnInit();
+    component.canDeleteUser = true;
     fixture.detectChanges();
 
-    const deleteButton = queryByText('Delete this user');
+    const deleteButton = getByText('Delete this user');
+
     fireEvent.click(deleteButton);
 
     expect(deleteButton).toBeTruthy();
@@ -262,12 +273,13 @@ describe('UserAccountViewComponent', () => {
       'activeEditUsers',
       userIsEdit,
     );
-    const editUser = EditUser();
+    const editUser = component.user;
 
     spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(editUser));
     spyOn(permissionsService, 'can').and.returnValue(true);
 
     component.ngOnInit();
+    component.canDeleteUser = true;
     fixture.detectChanges();
 
     const deleteButton = queryByText('Delete this user');
