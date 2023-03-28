@@ -1,0 +1,13 @@
+.summary-section {
+  background-color: #f3f2f1;
+  margin: 0px 0px 0 5px;
+
+  &__links {
+    max-width: 42%;
+  }
+
+  &__summary-text {
+    line-height: 1.7 !important;
+    max-width: 58%;
+  }
+}

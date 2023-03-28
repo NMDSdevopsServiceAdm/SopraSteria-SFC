@@ -1,11 +1,11 @@
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { SummaryLinkComponent } from './summary-link.component';
+import { SummarySectionComponent } from './summary-section.component';
 
-describe('SummaryLink', () => {
+describe('Summary section', () => {
   const setup = async () => {
-    const { fixture, getByText } = await render(SummaryLinkComponent, {
+    const { fixture, getByText } = await render(SummarySectionComponent, {
       imports: [SharedModule],
     });
 
