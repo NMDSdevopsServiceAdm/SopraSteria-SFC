@@ -76,12 +76,12 @@ class OwnershipChange {
         approvalStatus: req.body.approvalStatus,
       };
 
-      await this.cancelOwnershipRequest(params);
-
       const requestedTimestampParams = {
         establishmentId: req.establishmentId,
         timeStamp: null,
       };
+
+      await this.cancelOwnershipRequest(params);
       await this.setOwnershipRequestedTimestamp(requestedTimestampParams);
 
       const resp = await ownership.getUpdatedOwnershipRequest(params);
@@ -178,7 +178,7 @@ const ownershipChangeRequest = async (req, res) => {
     const resp = await OwnershipChange.CreateRequest(req);
     return res.status(resp.status).send(resp.response);
   } catch (e) {
-    if (typeof e === HttpError) {
+    if (e.statusCode) {
       return res.status(e.statusCode).send({ message: e.message });
     }
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
@@ -192,7 +192,7 @@ const cancelOwnershipChangeRequest = async (req, res) => {
     const resp = await OwnershipChange.CancelRequest(req);
     return res.status(resp.statusCode).send(resp.response);
   } catch (e) {
-    if (typeof e === HttpError) {
+    if (e.statusCode) {
       return res.status(e.statusCode).send({ message: e.message });
     }
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
