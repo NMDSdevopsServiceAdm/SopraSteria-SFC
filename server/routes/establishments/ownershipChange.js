@@ -37,7 +37,6 @@ class OwnershipChange {
           userUid: req.userUid,
           recipientEstablishmentUid: recipientEstablishmentUid,
         };
-
         const resp = await this.createRequestAndNotify(params);
         return { status: 201, response: resp[0] };
       }
@@ -56,13 +55,13 @@ class OwnershipChange {
           throw new HttpError({ statusCode: 500 });
         }
       }
+    } else {
       throw new HttpError('Establishment is not found', 404);
     }
   }
 
   static async CancelRequest(req) {
     this.validateApprovalStatus(req.body.approvalStatus);
-
     const thisEstablishment = new Establishment.Establishment(req.username);
     if (await thisEstablishment.restore(req.establishmentId, false)) {
       this.validateIsSubsidiary(thisEstablishment);
@@ -104,7 +103,7 @@ class OwnershipChange {
     const requestParams = {
       ownerRequestChangeUid: ownerRequestChangeUid,
       subEstablishmentId: params.establishmentId,
-      permReq: params.permissionRequest,
+      permissionRequest: params.permissionRequest,
       userUid: params.userUid,
     };
     await this.createChangeOwnershipRequest(requestParams);
@@ -118,8 +117,8 @@ class OwnershipChange {
     await notifications.insertNewEstablishmentNotification(notificationParams);
 
     const requestedTimestampParams = {
-      subEstablishmentId: params.establishmentId,
-      timeValue: 'NOW()',
+      establishmentId: params.establishmentId,
+      timeStamp: 'NOW()',
     };
     await this.setOwnershipRequestedTimestamp(requestedTimestampParams);
 

@@ -43,7 +43,7 @@ LIMIT :limit;
 `;
 
 const getRecipientEstablishmentDetailsQuery = `
-SELECT "EstablishmentUID" as establishmentUid
+SELECT "EstablishmentUID" as "establishmentUid"
 FROM cqc."Establishment"
 WHERE "EstablishmentID" = :estID`;
 
