@@ -90,6 +90,39 @@ class OwnershipChange {
     }
   }
 
+  static async GetRequest(req) {
+    const thisEstablishment = new Establishment.Establishment(req.username);
+    if (await thisEstablishment.restore(req.establishmentId, false)) {
+      this.validateIsSubsidiary(thisEstablishment);
+      const getRecipientUserDetailsParams = {
+        userUid: req.userUid,
+        establishmentId: req.establishmentId,
+        permissionRequest: req.body.permissionRequest,
+      };
+      let getRecipientUserDetails;
+      if (thisEstablishment._dataOwner !== 'Parent') {
+        getRecipientUserDetails = await ownership.getRecipientSubUserDetails(getRecipientUserDetailsParams);
+      } else {
+        getRecipientUserDetails = await ownership.getRecipientUserDetails(getRecipientUserDetailsParams);
+      }
+      if (getRecipientUserDetails.length > 0) {
+        const params = {
+          subEstablishmentId: req.establishmentId,
+          limit: getRecipientUserDetails.length,
+        };
+        let ownershipChangeRequestDetails = await ownership.ownershipDetails(params);
+
+        if (!ownershipChangeRequestDetails.length) {
+          throw new HttpError('Ownership change request details not found.', 400);
+        } else {
+          return { statusCode: 200, response: ownershipChangeRequestDetails };
+        }
+      }
+    } else {
+      throw new HttpError('Establishment is not found', 404);
+    }
+  }
+
   static async cancelOwnershipRequest(params) {
     let changeRequestResp = await ownership.cancelOwnershipRequest(params);
     if (!changeRequestResp) {
@@ -202,48 +235,14 @@ const cancelOwnershipChangeRequest = async (req, res) => {
 // GET request to fetch changeownership request Id
 const getOwnershipChangeRequest = async (req, res) => {
   try {
-    const thisEstablishment = new Establishment.Establishment(req.username);
-    if (await thisEstablishment.restore(req.establishmentId, false)) {
-      if (thisEstablishment.isParent || thisEstablishment._parentId === null || thisEstablishment.archived) {
-        return res.status(404).send({
-          message: 'Establishment is not a subsidiary',
-        });
-      } else {
-        const getRecipientUserDetailsParams = {
-          userUid: req.userUid,
-          establishmentId: req.establishmentId,
-          permissionRequest: req.body.permissionRequest,
-        };
-        let getRecipientUserDetails;
-        if (thisEstablishment._dataOwner !== 'Parent') {
-          getRecipientUserDetails = await ownership.getRecipientSubUserDetails(getRecipientUserDetailsParams);
-        } else {
-          getRecipientUserDetails = await ownership.getRecipientUserDetails(getRecipientUserDetailsParams);
-        }
-        if (getRecipientUserDetails.length > 0) {
-          const params = {
-            subEstablishmentId: req.establishmentId,
-            limit: getRecipientUserDetails.length,
-          };
-          let owenershipChangeRequestDetails = await ownership.ownershipDetails(params);
-
-          if (!owenershipChangeRequestDetails.length) {
-            return res.status(400).send({
-              message: 'Ownership change request details not found.',
-            });
-          } else {
-            return res.status(200).send(owenershipChangeRequestDetails);
-          }
-        }
-      }
-    } else {
-      return res.status(404).send({
-        message: 'Establishment is not found',
-      });
-    }
+    const resp = await OwnershipChange.GetRequest(req);
+    return res.status(resp.statusCode).send(resp.response);
   } catch (e) {
-    console.error(' /establishment/:id/ownershipChange/details : ERR: ', e.message);
-    return res.status(500).send({}); //intentionally an empty JSON response
+    if (e.statusCode) {
+      return res.status(e.statusCode).send({ message: e.message });
+    }
+    console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
+    return res.status(500).send({}); // intentionally an empty JSON response
   }
 };
 
