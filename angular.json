@@ -47,7 +47,11 @@
               "configcat-common",
               "rxjs/internal/Subscription",
               "core-js/modules/web.dom-collections.iterator.js",
-              "core-js/modules/es.promise.js"
+              "dayjs",
+              "slugify",
+              "html2canvas",
+              "dompurify",
+              "rgbcolor"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
