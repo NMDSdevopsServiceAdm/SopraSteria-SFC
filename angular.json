@@ -170,7 +170,6 @@
       }
     }
   },
-  "defaultProject": "ng-sfc-v2",
   "cli": {
     "analytics": "21e74f90-72c7-4823-a125-19baa6f3668d"
   }
