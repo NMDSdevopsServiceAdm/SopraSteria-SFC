@@ -73,7 +73,7 @@ const ownershipRequest = async (req, res) => {
           existingNotificationUid: params.exsistingNotificationUid,
           ownerRequestChangeUid: params.ownerRequestChangeUid,
           //recipientUserUid: receiverUpdate.dataOwner !== 'Parent' ? req.userUid : params.recipientUserUid,
-          userUid: params.body.
+          // userUid: params.body.
         };
         console.log('UPDATE NOTIFICATION');
         let updatedNotificationResp = await notifications.updateNotification(updateNotificationParam);
@@ -99,10 +99,10 @@ const ownershipRequest = async (req, res) => {
                 rejectionReason: req.body.rejectionReason,
                 userUid: req.userUid,
               };
-              let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(clearOwnershipParam);
-              console.log('got request')
+              let saveDataOwnershipRequested = await ownership.setOwnershipRequestedTimestamp(clearOwnershipParam);
+              console.log('got request');
               let updateOwnershipRequest = await ownership.updateOwnershipRequest(clearOwnershipParam);
-              console.log('UPDATE REQUEST')
+              console.log('UPDATE REQUEST');
               if (!saveDataOwnershipRequested && !updateOwnershipRequest) {
                 return res.status(400).send({
                   message: 'Invalid request',

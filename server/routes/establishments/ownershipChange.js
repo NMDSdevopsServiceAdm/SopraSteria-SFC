@@ -7,104 +7,176 @@ const ownership = require('../../data/ownership');
 const models = require('../../models');
 const { isAdminRole } = require('../../utils/adminUtils');
 
-// POST request for ownership change request
-const ownershipChangeRequest = async (req, res) => {
-  try {
-    const permissionRequestArr = ['Workplace', 'Workplace and Staff', 'None'];
-    if (permissionRequestArr.indexOf(req.body.permissionRequest) === -1) {
-      console.error('Invalid permission request');
-      return res.status(400).send();
-    }
+class HttpError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
 
-    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-
-    const params = {
-      userUid: req.userUid,
-      subEstablishmentId: req.establishmentId,
-      permissionRequest: req.body.permissionRequest,
-    };
+class OwnershipChange {
+  static async CreateRequest(req) {
+    this.validateRequestType(req.body.permissionRequest);
 
     const thisEstablishment = new Establishment.Establishment(req.username);
     if (await thisEstablishment.restore(req.establishmentId, false)) {
-      if (thisEstablishment.isParent || thisEstablishment._parentId === null || thisEstablishment.archived) {
-        return res.status(404).send({
-          message: 'Establishment is not a subsidiary',
-        });
-      } else {
-        console.log('CHECK ALREADY REQUESTED');
-        //check already exists ownership records for posted sub establishment id
-        let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnership(params);
-        if (checkAlreadyRequestedOwnership.length) {
-          return res.status(400).send({
-            message: 'Ownership is already requested for posted establishment id',
-          });
-        }
-        console.log('GET RECIPIENT DETAILS');
-        let getRecipientUserDetails;
-        params.parentId = thisEstablishment._parentId;
-        params.establishmentId = params.subEstablishmentId;
-        if (thisEstablishment._dataOwner !== 'Parent') {
-          getRecipientUserDetails = await ownership.getRecipientSubUserDetails(params);
-        } else {
-          getRecipientUserDetails = await ownership.getRecipientUserDetails(params);
-        }
-        if (getRecipientUserDetails.length) {
-          for (let i = 0; i < getRecipientUserDetails.length; i++) {
-            //save records
-            params.ownerRequestChangeUid = uuid.v4();
-            if (!uuidRegex.test(params.ownerRequestChangeUid.toUpperCase())) {
-              console.error('Invalid owner change request UUID');
-              return res.status(400).send();
-            }
-            params.establishmentUid = req.body.notificationRecipientUid;
-            params.type = 'OWNERCHANGE';
-            let changeRequestResp = await ownership.changeOwnershipRequest(params);
-            if (!changeRequestResp) {
-              return res.status(400).send({
-                message: 'Invalid request',
-              });
-            }
-            params.notificationContentUid = params.ownerRequestChangeUid;
-            console.log(params);
-            await notifications.insertNewEstablishmentNotification(params);
-          }
-          params.timeValue = 'NOW()';
-          let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
-          if (!saveDataOwnershipRequested) {
-            return res.status(400).send({
-              message: 'Invalid request',
-            });
+      this.validateIsSubsidiary(thisEstablishment);
+      //check already exists ownership records for posted sub establishment id
+      if (await this.checkAlreadyRequested(req.establishmentId)) {
+        throw new HttpError('Ownership is already requested for posted establishment id', 400);
+      }
+
+      const recipientParams = { establishmentId: req.establishmentId };
+
+      // TODO: This needs pointing at the establishment instead
+      const recipientEstablishmentUid = await this.getRecipientUid(recipientParams);
+
+      if (recipientEstablishmentUid) {
+        const params = {
+          establishmentId: req.estabalishmentId,
+          permissionRequest: req.body.permissionRequest,
+          userUid: req.userUid,
+          recipientEstablishmentUid: recipientEstablishmentUid,
+        };
+
+        const resp = await this.createRequestAndNotify(params);
+
+        return { status: 201, response: resp[0] };
+      }
+      if (isAdminRole(req.role)) {
+        try {
+          let workplace = await models.establishment.findbyId(req.establishmentId);
+          if (workplace) {
+            workplace.dataOwner = 'Parent';
+            workplace.dataPermissions = req.body.permissionRequest;
+            await workplace.save();
+            return { statusCode: 200 };
           } else {
-            let resp = await ownership.lastOwnershipRequest(params);
-            return res.status(201).send(resp[0]);
+            throw new HttpError('Establishment is not found', 404);
           }
-        } else {
-          if (isAdminRole(req.role)) {
-            try {
-              let workplace = await models.establishment.findbyId(params.subEstablishmentId);
-              if (workplace) {
-                workplace.dataOwner = 'Parent';
-                workplace.dataPermissions = req.body.permissionRequest;
-                await workplace.save();
-                res.status(200).send({});
-              } else {
-                res.status(404).send({
-                  message: 'Establishment is not found',
-                });
-              }
-            } catch (err) {
-              console.error(err);
-              res.status(500).send({});
-            }
-          }
+        } catch (err) {
+          throw new HttpError({ statusCode: 500 });
         }
       }
-    } else {
-      return res.status(404).send({
-        message: 'Establishment is not found',
-      });
+      return { statusCode: 404, message: 'Establishment is not found' };
     }
+  }
+
+  static async CancelRequest(req) {
+    this.validateApprovalStatus(req.body.approvalStatus);
+
+    const thisEstablishment = new Establishment.Establishment(req.username);
+    if (await thisEstablishment.restore(req.establishmentId, false)) {
+      this.validateIsSubsidiary(thisEstablishment);
+
+      if (await !this.checkAlreadyRequested(req.establishmentId)) {
+        throw new HttpError('Ownership details cannot be found or already Approved/Rejected.', 400);
+      }
+
+      const params = {
+        ownerRequestChangeUid: req.params.id,
+        approvalStatus: req.body.approvalStatus,
+      };
+
+      await this.cancelOwnershipRequest(params);
+      await this.setOwnershipRequestedTimestamp(req.establishmentId);
+
+      const resp = await ownership.getUpdatedOwnershipRequest(params);
+      return { statusCode: 200, response: resp[0] };
+    } else {
+      throw new HttpError('Establishment is not found', 404);
+    }
+  }
+
+  static async cancelOwnershipRequest(params) {
+    let changeRequestResp = await ownership.cancelOwnershipRequest(params);
+    if (!changeRequestResp) {
+      throw new HttpError('Invalid request', 400);
+    }
+  }
+
+  static async createRequestAndNotify(params) {
+    const ownerRequestChangeUid = uuid.v4();
+
+    const requestParams = {
+      ownerRequestChangeUid: ownerRequestChangeUid,
+      subEstablishmentId: params.establishmentId,
+      permReq: params.permissionRequest,
+      userUid: params.userUid,
+    };
+    await this.createChangeOwnershipRequest(requestParams);
+
+    const notificationParams = {
+      notificationContentUid: ownerRequestChangeUid,
+      establishmentUid: params.recipientEstablishmentUid,
+      userUid: params.userUid,
+      type: 'OWNERCHANGE',
+    };
+    await notifications.insertNewEstablishmentNotification(notificationParams);
+    await this.setOwnershipRequestedTimestamp(params.establishmentId);
+
+    return await ownership.lastOwnershipRequest(params.establishmentId);
+  }
+
+  static async checkAlreadyRequested(subEstablishmentId) {
+    let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnership(subEstablishmentId);
+    return checkAlreadyRequestedOwnership.length ? true : false;
+  }
+
+  static async createChangeOwnershipRequest(params) {
+    let changeRequestResp = await ownership.createChangeOwnershipRequest(params);
+    if (!changeRequestResp) {
+      throw new HttpError('Invalid request', 400);
+    }
+  }
+
+  static validateApprovalStatus(status) {
+    if (status === undefined || status !== 'CANCELLED') {
+      console.error('Approval status should be "CANCELLED"');
+      throw new HttpError({ statusCode: 400 });
+    }
+  }
+
+  static async validateIsSubsidiary(establishment) {
+    if (establishment.isParent || establishment._parentId === null || establishment.archived) {
+      throw new HttpError('Establishment is not a subsidiary', 404);
+    }
+  }
+
+  static validateRequestType(request) {
+    const permissionRequestArr = ['Workplace', 'Workplace and Staff', 'None'];
+    if (permissionRequestArr.indexOf(request) === -1) {
+      console.error('Invalid permission request');
+      throw new HttpError({ statusCode: 400 });
+    }
+  }
+
+  static async getRecipientUid(params) {
+    const response = await ownership.getRecipientEstablishmentDetails(params);
+    return response[0].establishmentUid;
+  }
+
+  static async setOwnershipRequestedTimestamp(establishmentId) {
+    const params = {
+      subEstablishmentId: establishmentId,
+      timeValue: 'NOW()',
+    };
+    let saveDataOwnershipRequested = await ownership.setOwnershipRequestedTimestamp(params);
+    if (!saveDataOwnershipRequested) {
+      throw new HttpError('Invalid request', 400);
+    }
+  }
+}
+
+// POST request for ownership change request
+const ownershipChangeRequest = async (req, res) => {
+  try {
+    const resp = await OwnershipChange.CreateRequest(req);
+    return res.status(resp.status).send(resp.response);
   } catch (e) {
+    if (typeof e === HttpError) {
+      return res.status(e.statusCode).send({ message: e.message });
+    }
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
     return res.status(500).send({}); // intentionally an empty JSON response
   }
@@ -113,61 +185,12 @@ const ownershipChangeRequest = async (req, res) => {
 // POST request for cancel already requested ownership
 const cancelOwnershipChangeRequest = async (req, res) => {
   try {
-    if (req.body.approvalStatus === undefined || req.body.approvalStatus !== 'CANCELLED') {
-      console.error('Approval status should be "CANCELLED"');
-      return res.status(400).send();
-    }
-
-    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-
-    if (!uuidRegex.test(req.params.id.toUpperCase())) {
-      console.error('Invalid owner change request UUID');
-      return res.status(400).send();
-    }
-
-    const thisEstablishment = new Establishment.Establishment(req.username);
-    if (await thisEstablishment.restore(req.establishmentId, false)) {
-      if (thisEstablishment.isParent || thisEstablishment._parentId === null || thisEstablishment.archived) {
-        return res.status(404).send({
-          message: 'Establishment is not a subsidiary',
-        });
-      } else {
-        const params = {
-          ownerRequestChangeUid: req.params.id,
-          approvalStatus: req.body.approvalStatus,
-          subEstablishmentId: req.establishmentId,
-        };
-        //check already exists ownership records for posted sub establishment id
-        let checkAlreadyRequestedOwnership = await ownership.checkAlreadyRequestedOwnershipWithUID(params);
-        if (!checkAlreadyRequestedOwnership.length) {
-          return res.status(400).send({
-            message: 'Ownership details cannot be found or already Approved/Rejected.',
-          });
-        } else {
-          let changeRequestResp = await ownership.cancelOwnershipRequest(params);
-          if (!changeRequestResp) {
-            return res.status(400).send({
-              message: 'Invalid request',
-            });
-          } else {
-            params.timeValue = null;
-            let saveDataOwnershipRequested = await ownership.changedDataOwnershipRequested(params);
-            if (!saveDataOwnershipRequested) {
-              return res.status(400).send({
-                message: 'Invalid request',
-              });
-            }
-            let resp = await ownership.getUpdatedOwnershipRequest(params);
-            return res.status(201).send(resp);
-          }
-        }
-      }
-    } else {
-      return res.status(404).send({
-        message: 'Establishment is not found',
-      });
-    }
+    const resp = await OwnershipChange.CancelRequest(req);
+    return res.status(resp.statusCode).send(resp.response);
   } catch (e) {
+    if (typeof e === HttpError) {
+      return res.status(e.statusCode).send({ message: e.message });
+    }
     console.error('/establishment/:id/ownershipChange: ERR: ', e.message);
     return res.status(500).send({}); // intentionally an empty JSON response
   }

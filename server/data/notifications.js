@@ -172,7 +172,7 @@ exports.updateNotification = async (params) =>
   db.query(updateNotificationQuery, {
     replacements: {
       nuid: params.exsistingNotificationUid,
-      type: 'OWNERSHIPCHANGE',
+      type: 'OWNERCHANGE',
       typUid: params.ownerRequestChangeUid,
       establishmentUid: params.userUid,
       isViewed: false,

@@ -42,6 +42,11 @@ ORDER BY cqc."OwnerChangeRequest"."created" DESC
 LIMIT :limit;
 `;
 
+const getRecipientEstablishmentDetailsQuery = `
+SELECT "EstablishmentUID" as establishmentUid
+FROM cqc."Establishment"
+WHERE "EstablishmentID" = :estID`;
+
 const getRecipientUserDetailsQuery = `
 select "UserUID" from cqc."Establishment" est
 LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
@@ -69,7 +74,7 @@ FROM cqc."OwnerChangeRequest"
 WHERE "ownerChangeRequestUID" = :ownerChangeId;
 `;
 
-const changedDataOwnershipRequestedQuery = `
+const setOwnershipRequestedTimestampQuery = `
 UPDATE cqc."Establishment"
 SET "DataOwnershipRequested" = :timestamp
 WHERE "EstablishmentID" = :estId;
@@ -83,6 +88,7 @@ exports.getRecipientSubUserDetails = async (params) =>
     },
     type: db.QueryTypes.SELECT,
   });
+
 exports.getRecipientUserDetails = async (params) =>
   db.query(getRecipientUserDetailsQuery, {
     replacements: {
@@ -92,10 +98,19 @@ exports.getRecipientUserDetails = async (params) =>
     type: db.QueryTypes.SELECT,
   });
 
-exports.checkAlreadyRequestedOwnership = async (params) =>
+exports.getRecipientEstablishmentDetails = async (params) =>
+  db.query(getRecipientEstablishmentDetailsQuery, {
+    replacements: {
+      estID: params.establishmentId,
+      userRole: 'Edit',
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+exports.checkAlreadyRequestedOwnership = async (subEstablishmentId) =>
   db.query(checkAlreadyRequestedOwnershipQuery, {
     replacements: {
-      subEstId: params.subEstablishmentId,
+      subEstId: subEstablishmentId,
       status: 'REQUESTED',
     },
     type: db.QueryTypes.SELECT,
@@ -110,7 +125,7 @@ exports.checkAlreadyRequestedOwnershipWithUID = async (params) =>
     type: db.QueryTypes.SELECT,
   });
 
-exports.changeOwnershipRequest = async (params) =>
+exports.createChangeOwnershipRequest = async (params) =>
   db.query(insertChangeOwnershipQuery, {
     replacements: {
       uid: params.ownerRequestChangeUid,
@@ -122,10 +137,10 @@ exports.changeOwnershipRequest = async (params) =>
     type: db.QueryTypes.INSERT,
   });
 
-exports.lastOwnershipRequest = async (params) =>
+exports.lastOwnershipRequest = async (subEstablishmentId) =>
   db.query(lastOwnerChangeRequestQuery, {
     replacements: {
-      subEstId: params.subEstablishmentId,
+      subEstId: subEstablishmentId,
       limit: 1,
     },
     type: db.QueryTypes.SELECT,
@@ -148,6 +163,7 @@ exports.checkOwnershipRequestId = async (params) =>
     },
     type: db.QueryTypes.SELECT,
   });
+
 exports.getUpdatedOwnershipRequest = async (params) =>
   db.query(getUpdatedOwnershipRequestQuery, {
     replacements: {
@@ -176,8 +192,8 @@ exports.cancelOwnershipRequest = async (params) =>
     type: db.QueryTypes.UPDATE,
   });
 
-exports.changedDataOwnershipRequested = async (params) =>
-  db.query(changedDataOwnershipRequestedQuery, {
+exports.setOwnershipRequestedTimestamp = async (params) =>
+  db.query(setOwnershipRequestedTimestampQuery, {
     replacements: {
       estId: params.subEstablishmentId,
       timestamp: params.timeValue,
