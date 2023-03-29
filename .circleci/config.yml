@@ -190,7 +190,7 @@ jobs:
   test_frontend:
     resource_class: large
     docker:
-      - image: cimg/node:12.20.0-browsers
+      - image: cimg/node:14.15.2-browsers
     steps:
       - checkout
       - restore_cache:
@@ -213,7 +213,7 @@ jobs:
           flags: frontend
   test_backend:
     docker:
-      - image: cimg/node:12.20.0-browsers
+      - image: cimg/node:14.15.2-browsers
     steps:
       - checkout
       - restore_cache:
@@ -444,7 +444,7 @@ jobs:
           steps: << parameters.validate_steps >>
   sentry_release:
     docker:
-      - image: cimg/node:12.20.0-browsers
+      - image: cimg/node:14.15.2-browsers
     environment:
       SENTRY_ORG: skills-for-care
       SENTRY_PROJECT: skills-for-care
