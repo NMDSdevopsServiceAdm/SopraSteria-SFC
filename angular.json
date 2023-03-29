@@ -157,6 +157,9 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "styles": ["src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./node_modules"]
+            },
             "scripts": [],
             "assets": ["src/favicon.ico", "src/assets"],
             "sourceMap": false,
