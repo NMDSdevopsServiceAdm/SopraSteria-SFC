@@ -195,8 +195,8 @@ exports.cancelOwnershipRequest = async (params) =>
 exports.setOwnershipRequestedTimestamp = async (params) =>
   db.query(setOwnershipRequestedTimestampQuery, {
     replacements: {
-      estId: params.subEstablishmentId,
-      timestamp: params.timeValue,
+      estId: params.establishmentId,
+      timestamp: params.timeStamp,
     },
     type: db.QueryTypes.UPDATE,
   });

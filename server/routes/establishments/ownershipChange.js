@@ -28,19 +28,17 @@ class OwnershipChange {
 
       const recipientParams = { establishmentId: req.establishmentId };
 
-      // TODO: This needs pointing at the establishment instead
       const recipientEstablishmentUid = await this.getRecipientUid(recipientParams);
 
       if (recipientEstablishmentUid) {
         const params = {
-          establishmentId: req.estabalishmentId,
+          establishmentId: req.establishmentId,
           permissionRequest: req.body.permissionRequest,
           userUid: req.userUid,
           recipientEstablishmentUid: recipientEstablishmentUid,
         };
 
         const resp = await this.createRequestAndNotify(params);
-
         return { status: 201, response: resp[0] };
       }
       if (isAdminRole(req.role)) {
@@ -58,7 +56,7 @@ class OwnershipChange {
           throw new HttpError({ statusCode: 500 });
         }
       }
-      return { statusCode: 404, message: 'Establishment is not found' };
+      throw new HttpError('Establishment is not found', 404);
     }
   }
 
@@ -79,7 +77,12 @@ class OwnershipChange {
       };
 
       await this.cancelOwnershipRequest(params);
-      await this.setOwnershipRequestedTimestamp(req.establishmentId);
+
+      const requestedTimestampParams = {
+        establishmentId: req.establishmentId,
+        timeStamp: null,
+      };
+      await this.setOwnershipRequestedTimestamp(requestedTimestampParams);
 
       const resp = await ownership.getUpdatedOwnershipRequest(params);
       return { statusCode: 200, response: resp[0] };
@@ -113,7 +116,12 @@ class OwnershipChange {
       type: 'OWNERCHANGE',
     };
     await notifications.insertNewEstablishmentNotification(notificationParams);
-    await this.setOwnershipRequestedTimestamp(params.establishmentId);
+
+    const requestedTimestampParams = {
+      subEstablishmentId: params.establishmentId,
+      timeValue: 'NOW()',
+    };
+    await this.setOwnershipRequestedTimestamp(requestedTimestampParams);
 
     return await ownership.lastOwnershipRequest(params.establishmentId);
   }
@@ -156,11 +164,7 @@ class OwnershipChange {
     return response[0].establishmentUid;
   }
 
-  static async setOwnershipRequestedTimestamp(establishmentId) {
-    const params = {
-      subEstablishmentId: establishmentId,
-      timeValue: 'NOW()',
-    };
+  static async setOwnershipRequestedTimestamp(params) {
     let saveDataOwnershipRequested = await ownership.setOwnershipRequestedTimestamp(params);
     if (!saveDataOwnershipRequested) {
       throw new HttpError('Invalid request', 400);
