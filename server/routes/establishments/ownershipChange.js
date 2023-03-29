@@ -137,6 +137,18 @@ class OwnershipChange {
     }
   }
 
+  static async getRecipientUid(params) {
+    const response = await ownership.getRecipientEstablishmentDetails(params);
+    return response[0].establishmentUid;
+  }
+
+  static async setOwnershipRequestedTimestamp(params) {
+    let saveDataOwnershipRequested = await ownership.setOwnershipRequestedTimestamp(params);
+    if (!saveDataOwnershipRequested) {
+      throw new HttpError('Invalid request', 400);
+    }
+  }
+
   static validateApprovalStatus(status) {
     if (status === undefined || status !== 'CANCELLED') {
       console.error('Approval status should be "CANCELLED"');
@@ -155,18 +167,6 @@ class OwnershipChange {
     if (permissionRequestArr.indexOf(request) === -1) {
       console.error('Invalid permission request');
       throw new HttpError({ statusCode: 400 });
-    }
-  }
-
-  static async getRecipientUid(params) {
-    const response = await ownership.getRecipientEstablishmentDetails(params);
-    return response[0].establishmentUid;
-  }
-
-  static async setOwnershipRequestedTimestamp(params) {
-    let saveDataOwnershipRequested = await ownership.setOwnershipRequestedTimestamp(params);
-    if (!saveDataOwnershipRequested) {
-      throw new HttpError('Invalid request', 400);
     }
   }
 }
