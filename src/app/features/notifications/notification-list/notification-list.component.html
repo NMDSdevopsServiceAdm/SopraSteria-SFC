@@ -6,113 +6,125 @@
     </h1>
   </div>
 </div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-third govuk-!-margin-top-7">
-    <p class="govuk-body-m">Select which notifications to delete</p>
+<ng-container *ngIf="notifications.length > 0; else noNotifications">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third govuk-!-margin-top-7">
+      <p class="govuk-body-m">Select which notifications to delete</p>
+    </div>
+    <div class="govuk-grid-column-one-third govuk-!-margin-top-6 govuk-!-padding-left-0">
+      <a
+        *ngIf="notificationsForDeletion.length > 0"
+        class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-margin-bottom-1"
+        draggable="false"
+        href="javascript:void(0)"
+        data-testid="deleteButton"
+        (click)="deleteSelectedNotifications()"
+      >
+        <img src="/assets/images/bin.svg" alt="" />
+        <span class="govuk-!-margin-left-1"> Delete notifications </span></a
+      >
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <label class="govuk-label" for="sortBy"> Sort by </label>
+      <select class="govuk-select govuk-!-width-full" id="sortBy" name="sortBy">
+        <option *ngFor="let option of ['Latest', 'Unread', 'Read'] | keyvalue" value="{{ option.key }}">
+          {{ option.value }}
+        </option>
+      </select>
+    </div>
   </div>
-  <div class="govuk-grid-column-one-third govuk-!-margin-top-6 govuk-!-padding-left-0">
-    <a
-      *ngIf="notificationsForDeletion.length > 0"
-      class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-margin-bottom-1"
-      draggable="false"
-      href="javascript:void(0)"
-      data-testid="deleteButton"
-      (click)="deleteSelectedNotifications()"
-    >
-      <img src="/assets/images/bin.svg" alt="" />
-      <span class="govuk-!-margin-left-1"> Delete notifications </span></a
-    >
-  </div>
-  <div class="govuk-grid-column-one-third">
-    <label class="govuk-label" for="sortBy"> Sort by </label>
-    <select class="govuk-select govuk-!-width-full" id="sortBy" name="sortBy">
-      <option *ngFor="let option of ['Latest', 'Unread', 'Read'] | keyvalue" value="{{ option.key }}">
-        {{ option.value }}
-      </option>
-    </select>
-  </div>
-</div>
-<table class="govuk-table govuk-table__with-action govuk-!-margin-top-0">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header govuk-!-padding-bottom-0" style="width: 5%">
-        <div class="govuk-checkboxes__item govuk-!-margin-left-2 govuk-!-padding-0 govuk-checkboxes--small">
-          <input
-            class="govuk-checkboxes__input"
-            id="selectAllCheckBoxes"
-            name="selectAllCheckBoxes"
-            type="checkbox"
-            [(ngModel)]="allBoxesChecked"
-            data-testid="selectAllCheckBoxes"
-            (click)="pushAllNotificationsToDeleteArray()"
-          />
-          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="selectAllCheckBoxes"></label>
-        </div>
-      </th>
-      <th scope="col" class="govuk-table__header govuk-!-padding-0 govuk-!-padding-top-3" style="width: 47.5%">
-        Subject
-      </th>
-      <th scope="col" class="govuk-table__header govuk-!-padding-0 govuk-!-padding-top-3" style="width: 47.5%">
-        Date received
-      </th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <ng-container *ngFor="let notification of notifications; index as i">
-      <tr class="govuk-table__row notification-list-row" [class.notification-list-row--unread]="!notification.isViewed">
-        <td class="govuk-table__cell">
-          <div class="govuk-checkboxes__item govuk-!-padding-0 govuk-!-margin-left-2 govuk-checkboxes--small">
+  <table class="govuk-table govuk-table__with-action govuk-!-margin-top-0">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header govuk-!-padding-bottom-0" style="width: 5%">
+          <div class="govuk-checkboxes__item govuk-!-margin-left-2 govuk-!-padding-0 govuk-checkboxes--small">
             <input
               class="govuk-checkboxes__input"
-              id="checkbox-{{ i }}"
-              name="checkbox-{{ i }}"
+              id="selectAllCheckBoxes"
+              name="selectAllCheckBoxes"
               type="checkbox"
-              [checked]="allBoxesChecked"
-              data-testid="checkbox-{{ i }}"
-              (click)="pushNotificationToDeleteArray(notification)"
+              [(ngModel)]="allBoxesChecked"
+              data-testid="selectAllCheckBoxes"
+              (click)="pushAllNotificationsToDeleteArray()"
             />
-            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="checkbox-{{ i }}"></label>
+            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="selectAllCheckBoxes"></label>
           </div>
-        </td>
-        <td class="govuk-table__cell">
-          <span class="notification-list-item">
-            <div *ngIf="!notification.isViewed">
-              <span class="govuk-visually-hidden">Unread: </span>
-              <img src="/assets/images/new-icon.png" alt="" class="notification-list-item__icon" />
-            </div>
-
-            <a
-              *ngIf="notification.type === 'OWNERCHANGE'"
-              [routerLink]="[notification.notificationUid]"
-              class="notification-list-item__link"
-              >{{ notification.type | notificationType }}</a
-            >
-            <a
-              *ngIf="
-                notification.type === 'LINKTOPARENTREQUEST' ||
-                notification.type === 'LINKTOPARENTAPPROVED' ||
-                notification.type === 'LINKTOPARENTREJECTED'
-              "
-              [routerLink]="['/notifications', 'notification-link-to-parent', notification.notificationUid]"
-              class="notification-list-item__link"
-              >{{ notification.type | notificationType }}</a
-            >
-            <a
-              *ngIf="notification.type === 'DELINKTOPARENT'"
-              [routerLink]="['/notifications', 'notification-delink-to-parent', notification.notificationUid]"
-              class="notification-list-item__link"
-              >{{ notification.type | notificationType }}</a
-            >
-            <a
-              *ngIf="notification.type === 'BECOMEAPARENT'"
-              [routerLink]="['/notifications', 'notification-become-a-parent', notification.notificationUid]"
-              class="notification-list-item__link"
-              >{{ notification.type | notificationType }}</a
-            >
-          </span>
-        </td>
-        <td class="govuk-table__cell govuk-!-padding-top-3">{{ notification.created | longDate }}</td>
+        </th>
+        <th scope="col" class="govuk-table__header govuk-!-padding-0 govuk-!-padding-top-3" style="width: 47.5%">
+          Subject
+        </th>
+        <th scope="col" class="govuk-table__header govuk-!-padding-0 govuk-!-padding-top-3" style="width: 47.5%">
+          Date received
+        </th>
       </tr>
-    </ng-container>
-  </tbody>
-</table>
+    </thead>
+    <tbody class="govuk-table__body">
+      <ng-container *ngFor="let notification of notifications; index as i">
+        <tr
+          class="govuk-table__row notification-list-row"
+          [class.notification-list-row--unread]="!notification.isViewed"
+        >
+          <td class="govuk-table__cell">
+            <div class="govuk-checkboxes__item govuk-!-padding-0 govuk-!-margin-left-2 govuk-checkboxes--small">
+              <input
+                class="govuk-checkboxes__input"
+                id="checkbox-{{ i }}"
+                name="checkbox-{{ i }}"
+                type="checkbox"
+                [checked]="allBoxesChecked"
+                data-testid="checkbox-{{ i }}"
+                (click)="pushNotificationToDeleteArray(notification)"
+              />
+              <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="checkbox-{{ i }}"></label>
+            </div>
+          </td>
+          <td class="govuk-table__cell">
+            <span class="notification-list-item">
+              <div *ngIf="!notification.isViewed">
+                <span class="govuk-visually-hidden">Unread: </span>
+                <img src="/assets/images/new-icon.png" alt="" class="notification-list-item__icon" />
+              </div>
+
+              <a
+                *ngIf="notification.type === 'OWNERCHANGE'"
+                [routerLink]="[notification.notificationUid]"
+                class="notification-list-item__link"
+                >{{ notification.type | notificationType }}</a
+              >
+              <a
+                *ngIf="
+                  notification.type === 'LINKTOPARENTREQUEST' ||
+                  notification.type === 'LINKTOPARENTAPPROVED' ||
+                  notification.type === 'LINKTOPARENTREJECTED'
+                "
+                [routerLink]="['/notifications', 'notification-link-to-parent', notification.notificationUid]"
+                class="notification-list-item__link"
+                >{{ notification.type | notificationType }}</a
+              >
+              <a
+                *ngIf="notification.type === 'DELINKTOPARENT'"
+                [routerLink]="['/notifications', 'notification-delink-to-parent', notification.notificationUid]"
+                class="notification-list-item__link"
+                >{{ notification.type | notificationType }}</a
+              >
+              <a
+                *ngIf="notification.type === 'BECOMEAPARENT'"
+                [routerLink]="['/notifications', 'notification-become-a-parent', notification.notificationUid]"
+                class="notification-list-item__link"
+                >{{ notification.type | notificationType }}</a
+              >
+            </span>
+          </td>
+          <td class="govuk-table__cell govuk-!-padding-top-3">{{ notification.created | longDate }}</td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</ng-container>
+<ng-template #noNotifications>
+  <div class="govuk-grid-row govuk-!-margin-top-6">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body-m">You have no notifications</p>
+    </div>
+  </div>
+</ng-template>

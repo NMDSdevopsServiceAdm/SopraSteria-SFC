@@ -25,8 +25,31 @@ export class MockNotificationsService extends NotificationsService {
       created: '2020-01-01',
       type: 'BECOMEAPARENT',
       typeContent: {
-        status: this.approved ? 'Approved' : 'Rejected'
-      }
+        status: this.approved ? 'Approved' : 'Rejected',
+      },
     });
+  }
+
+  public getAllNotifications(): Observable<any> {
+    return of([
+      {
+        created: '2020-01-01',
+        type: 'BECOMEAPARENT',
+        typeContent: {
+          status: 'Rejected',
+        },
+      },
+      {
+        created: '2023-01-01',
+        type: 'OWNERCHANGE',
+        typeContent: {
+          status: 'Approved',
+        },
+      },
+    ]);
+  }
+
+  public deleteNotifications(notificationsForDeletion: Array<any>): Observable<any> {
+    return of({});
   }
 }
