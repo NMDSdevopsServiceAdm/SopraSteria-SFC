@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -19,7 +19,7 @@ export class FindYourWorkplaceComponent extends FindYourWorkplaceDirective {
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     public workplaceService: WorkplaceService,
     protected locationService: LocationService,
   ) {
