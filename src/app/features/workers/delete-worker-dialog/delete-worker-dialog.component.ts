@@ -1,5 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 export class DeleteWorkerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public reasons: Reason[];
   public maxLength = 500;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
@@ -27,7 +27,7 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
     @Inject(DIALOG_DATA) public data: { worker: Worker; workplace: Establishment; primaryWorkplaceUid: string },
     public dialog: Dialog<DeleteWorkerDialogComponent>,
     private router: Router,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private alertService: AlertService,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,

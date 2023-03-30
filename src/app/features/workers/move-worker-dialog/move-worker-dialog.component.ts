@@ -1,5 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './move-worker-dialog.component.html',
 })
 export class MoveWorkerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
@@ -31,7 +31,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     @Inject(DIALOG_DATA) public data: { worker: Worker; workplace: Establishment; primaryWorkplaceUid: string },
     public dialog: Dialog<MoveWorkerDialogComponent>,
     private router: Router,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private alertService: AlertService,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,

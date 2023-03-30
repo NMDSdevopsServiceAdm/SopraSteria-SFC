@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 export class LongTermAbsenceComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   public worker: Worker;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted: boolean;
   public longTermAbsenceReasons: Array<string>;
   public backAtWork = false;
@@ -28,7 +28,7 @@ export class LongTermAbsenceComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private workerService: WorkerService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private errorSummaryService: ErrorSummaryService,
     private router: Router,
     public backLinkService: BackLinkService,
@@ -63,7 +63,7 @@ export class LongTermAbsenceComponent implements OnInit {
 
     this.form = this.formBuilder.group(
       {
-        longTermAbsence: new FormControl(workerLongTermAbsence, [this.radioButtonOrCheckboxRequired.bind(this)]),
+        longTermAbsence: new UntypedFormControl(workerLongTermAbsence, [this.radioButtonOrCheckboxRequired.bind(this)]),
       },
       {
         updateOn: 'submit',
@@ -71,7 +71,7 @@ export class LongTermAbsenceComponent implements OnInit {
     );
   };
 
-  private radioButtonOrCheckboxRequired(control: FormControl): { [key: string]: boolean } {
+  private radioButtonOrCheckboxRequired(control: UntypedFormControl): { [key: string]: boolean } {
     if (control.value === null && !this.backAtWork) {
       return { radioButtonOrCheckboxRequired: true };
     } else {

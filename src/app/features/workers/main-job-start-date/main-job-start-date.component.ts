@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_FULL, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -20,7 +20,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
   public section = 'Employment details';
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected backLinkService: BackLinkService,

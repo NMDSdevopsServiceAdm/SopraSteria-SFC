@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Ethnicity, EthnicityResponse } from '@core/model/ethnicity.model';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -30,7 +30,7 @@ export class EthnicityComponent extends QuestionComponent {
   public savedStateEthnicityGroup = null;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected backLinkService: BackLinkService,

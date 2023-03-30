@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_DEFAULT, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -23,7 +23,7 @@ export class DateOfBirthComponent extends QuestionComponent implements AfterView
   public section = 'Personal details';
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected backLinkService: BackLinkService,
