@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -21,7 +21,7 @@ export class SelectRecordTypeComponent implements OnInit, AfterViewInit {
   public trainingOrQualificationPreviouslySelected: string;
   constructor(
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected route: ActivatedRoute,
     private workerService: WorkerService,
     protected router: Router,
@@ -30,7 +30,7 @@ export class SelectRecordTypeComponent implements OnInit, AfterViewInit {
     private trainingService: TrainingService,
   ) {}
   public formErrorsMap: ErrorDetails[];
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public url: string;
   public selectRecordTypes: SelectRecordTypes[];
   public submitted = false;
