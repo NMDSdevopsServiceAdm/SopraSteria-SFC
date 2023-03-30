@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
@@ -18,7 +18,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
   @ViewChild('formEl') formEl: ElementRef;
   public flow: string;
   public enteredPostcode: string;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public locationAddresses: Array<LocationAddress>;
   public submitted = false;
@@ -36,7 +36,7 @@ export class SelectWorkplaceAddressDirective implements OnInit, OnDestroy, After
     protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected workplaceInterfaceService: WorkplaceInterfaceService,

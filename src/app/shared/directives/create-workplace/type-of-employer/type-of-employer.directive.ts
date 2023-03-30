@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
@@ -15,7 +15,7 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
   public flow: string;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: ErrorDetails[];
   public submitted = false;
   public serverError: string;
@@ -35,7 +35,7 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
   public insideFlow: boolean;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     public backService: BackService,
     protected backLinkService: BackLinkService,
     protected router: Router,

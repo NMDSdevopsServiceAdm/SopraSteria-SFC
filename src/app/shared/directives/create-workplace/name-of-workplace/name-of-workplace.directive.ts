@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,7 +16,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
 
   public flow: string;
   public insideFlow: boolean;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public serverError: string;
@@ -26,7 +26,7 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
   public userAccountSections: string[];
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     public backService: BackService,
     protected backLinkService: BackLinkService,
     protected router: Router,

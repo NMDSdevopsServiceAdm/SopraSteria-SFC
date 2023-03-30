@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -14,7 +14,7 @@ import { SelectPrimaryUserDirective } from '@shared/directives/user/select-prima
 })
 export class SelectPrimaryUserDeleteComponent extends SelectPrimaryUserDirective {
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected userService: UserService,
     protected establishmentService: EstablishmentService,

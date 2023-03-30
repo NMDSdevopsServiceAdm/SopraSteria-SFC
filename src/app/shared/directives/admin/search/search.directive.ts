@@ -1,5 +1,5 @@
 import { Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -12,13 +12,13 @@ import { Subscription } from 'rxjs';
 @Directive()
 export class SearchDirective implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public searchDetails = [];
   public searchDetailsLabel = [];
   protected subscriptions: Subscription = new Subscription();
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected searchService: SearchService,
     protected switchWorkplaceService: SwitchWorkplaceService,
     protected alertService: AlertService,

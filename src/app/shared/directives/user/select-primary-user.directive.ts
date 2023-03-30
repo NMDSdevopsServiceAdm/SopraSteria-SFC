@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Roles } from '@core/model/roles.enum';
@@ -17,7 +17,7 @@ export class SelectPrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
   @ViewChild('formEl') formEl: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public users: UserDetails[];
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
@@ -27,7 +27,7 @@ export class SelectPrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
   public workplaceUid: string;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected userService: UserService,
     protected establishmentService: EstablishmentService,

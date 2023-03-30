@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/constants/constants';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -20,7 +20,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   @ViewChild('formEl') formEl: ElementRef;
 
   public callToActionLabel: string;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public flow: string;
   public insideFlow: boolean;
   public serverError: string;
@@ -38,7 +38,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
   constructor(
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected registrationService: RegistrationService,
     protected route: ActivatedRoute,
     protected router: Router,

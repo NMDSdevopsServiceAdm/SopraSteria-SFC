@@ -1,7 +1,7 @@
 /*eslint @typescript-eslint/no-empty-function: ["error", { allow: ['methods'] }]*/
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMAIL_PATTERN, PHONE_PATTERN } from '@core/constants/constants';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -18,7 +18,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public callToActionLabel = 'Continue';
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formControlsMap: any[] = [
     {
       label: 'Full name',
@@ -50,7 +50,7 @@ export abstract class AccountDetailsDirective implements OnInit, OnDestroy, Afte
   constructor(
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected fb: FormBuilder,
+    protected fb: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
   ) {}

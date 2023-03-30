@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { POSTCODE_PATTERN } from '@core/constants/constants';
 import { LocationSearchResponse } from '@core/model/location.model';
@@ -12,14 +12,14 @@ import { Subscription } from 'rxjs';
 @Directive()
 export class WorkplaceNotFound implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public serverError: string;
   public submitted: boolean;
   protected flow: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected locationService: LocationService,

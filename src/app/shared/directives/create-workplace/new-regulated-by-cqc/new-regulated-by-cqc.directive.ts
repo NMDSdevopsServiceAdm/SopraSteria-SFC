@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { BackService } from '@core/services/back.service';
@@ -11,7 +11,7 @@ import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 @Directive()
 export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   protected flow: string;
@@ -22,7 +22,7 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
   public title: string;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
     public backService: BackService,

@@ -1,5 +1,5 @@
 import { Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -15,7 +15,7 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
   public invalidPostcodeEntered: string;
   public workplace: Establishment;
   public isParent: boolean;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted: boolean;
   public insideFlow: boolean;
@@ -27,7 +27,7 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
     protected workplaceInterfaceService: WorkplaceInterfaceService,
     public backService: BackService,
     protected establishmentService: EstablishmentService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected router: Router,
     protected route: ActivatedRoute,

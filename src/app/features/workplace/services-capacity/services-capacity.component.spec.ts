@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -32,7 +32,7 @@ describe('ServicesCapacityComponent', () => {
             useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl),
             deps: [HttpClient],
           },
-          FormBuilder,
+          UntypedFormBuilder,
           ErrorSummaryService,
           SubmitButtonComponent,
           QuestionComponent,

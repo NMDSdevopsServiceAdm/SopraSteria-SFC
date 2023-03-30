@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
@@ -18,7 +18,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
   @ViewChild('formEl') formEl: ElementRef;
   public flow: string;
   public locationAddresses: Array<LocationAddress>;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public isCQCLocationUpdate: boolean;
@@ -38,7 +38,7 @@ export class SelectWorkplaceDirective implements OnInit, OnDestroy, AfterViewIni
     protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected workplaceInterfaceService: WorkplaceInterfaceService,

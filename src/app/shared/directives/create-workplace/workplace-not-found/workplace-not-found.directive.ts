@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -13,7 +13,7 @@ import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
 @Directive()
 export class WorkplaceNotFoundDirective implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public submitted: boolean;
@@ -28,7 +28,7 @@ export class WorkplaceNotFoundDirective implements OnInit, AfterViewInit {
 
   constructor(
     protected establishmentService: EstablishmentService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workplaceInterfaceService: WorkplaceInterfaceService,

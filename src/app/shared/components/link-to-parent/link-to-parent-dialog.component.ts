@@ -1,5 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class LinkToParentDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public workplace: Workplace;
   protected subscriptions: Subscription = new Subscription();
@@ -31,7 +31,7 @@ export class LinkToParentDialogComponent extends DialogComponent implements OnIn
   constructor(
     @Inject(DIALOG_DATA) public data,
     private establishmentService: EstablishmentService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private errorSummaryService: ErrorSummaryService,
     public dialog: Dialog<LinkToParentDialogComponent>,
     private alertService: AlertService,
