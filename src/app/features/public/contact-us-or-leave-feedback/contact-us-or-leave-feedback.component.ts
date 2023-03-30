@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -14,13 +14,13 @@ import { FeedbackService } from '@core/services/feedback.service';
 })
 export class ContactUsOrLeaveFeedbackComponent {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public formErrorsMap: ErrorDetails[] = [];
   public returnTo: URLStructure;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private breadcrumbService: BreadcrumbService,

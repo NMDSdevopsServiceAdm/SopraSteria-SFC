@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
@@ -21,7 +21,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     public backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected workplaceService: WorkplaceService,
     private route: ActivatedRoute,

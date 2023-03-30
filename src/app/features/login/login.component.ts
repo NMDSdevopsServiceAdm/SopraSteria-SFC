@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { AuthService } from '@core/services/auth.service';
@@ -19,7 +19,7 @@ import { isAdminRole } from '../../../../server/utils/adminUtils';
 export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   private subscriptions: Subscription = new Subscription();
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   public serverErrorsMap: Array<ErrorDefinition>;
@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     private userService: UserService,
     private establishmentService: EstablishmentService,
     private router: Router,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private errorSummaryService: ErrorSummaryService,
   ) {}
 
