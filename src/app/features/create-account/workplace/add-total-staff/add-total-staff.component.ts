@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -20,7 +20,7 @@ export class AddTotalStaffComponent extends AddTotalStaffDirective {
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     public registrationService: RegistrationService,
     public totalStaffFormService: TotalStaffFormService,
     public establishmentService: EstablishmentService,

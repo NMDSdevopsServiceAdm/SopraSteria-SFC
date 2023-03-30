@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Workplace } from '@core/model/my-workplaces.model';
@@ -77,7 +77,7 @@ describe('MissingWorkplaceReferencesComponent', () => {
           },
         },
         BackService,
-        FormBuilder,
+        UntypedFormBuilder,
         ErrorSummaryService,
         AdminSkipService,
       ],

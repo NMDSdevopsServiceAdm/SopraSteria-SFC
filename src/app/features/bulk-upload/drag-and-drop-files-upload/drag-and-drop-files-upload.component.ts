@@ -1,6 +1,6 @@
 import { HttpEventType } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
@@ -20,7 +20,7 @@ import { tap } from 'rxjs/operators';
 })
 export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public filesUploading = false;
   public submitted = false;
   public selectedFiles: File[];
@@ -36,7 +36,7 @@ export class DragAndDropFilesUploadComponent implements OnInit, AfterViewInit {
     private bulkUploadService: BulkUploadService,
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
   ) {}
 
   ngOnInit() {

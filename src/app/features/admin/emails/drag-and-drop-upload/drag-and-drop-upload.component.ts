@@ -1,17 +1,17 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-drag-and-drop-upload',
   templateUrl: './drag-and-drop-upload.component.html',
 })
 export class DragAndDropUploadComponent implements OnInit {
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public invalidFileErrorMessage: string | null = null;
   @Output() fileUploadEvent: EventEmitter<File> = new EventEmitter();
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: UntypedFormBuilder) {}
 
   ngOnInit(): void {
     this.setupForm();

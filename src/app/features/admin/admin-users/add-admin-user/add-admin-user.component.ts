@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Roles } from '@core/model/roles.enum';
@@ -27,7 +27,7 @@ export class AddAdminUserComponent extends AccountDetailsDirective {
     private breadcrumbService: BreadcrumbService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected fb: FormBuilder,
+    protected fb: UntypedFormBuilder,
     protected router: Router,
     private adminUsersService: AdminUsersService,
     private alertService: AlertService,
@@ -45,7 +45,7 @@ export class AddAdminUserComponent extends AccountDetailsDirective {
   private addFormControls(): void {
     this.form.addControl(
       'permissionsType',
-      new FormControl(null, { validators: [Validators.required], updateOn: 'submit' }),
+      new UntypedFormControl(null, { validators: [Validators.required], updateOn: 'submit' }),
     );
 
     this.formErrorsMap.push({

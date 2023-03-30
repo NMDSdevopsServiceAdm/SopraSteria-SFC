@@ -1,11 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { IndividualLA } from '@core/model/admin/local-authorities-return.model';
-import {
-  LocalAuthoritiesReturnService,
-} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
+import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
@@ -14,11 +12,11 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 })
 export class LocalAuthorityComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public localAuthority: IndividualLA;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private breadcrumbService: BreadcrumbService,

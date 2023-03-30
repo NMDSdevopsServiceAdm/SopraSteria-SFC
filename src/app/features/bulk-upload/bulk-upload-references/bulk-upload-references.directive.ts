@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment, LocalIdentifiersRequest } from '@core/model/establishment.model';
@@ -16,7 +16,7 @@ import orderBy from 'lodash/orderBy';
 @Directive()
 export class BulkUploadReferencesDirective implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public references: Array<Workplace | Worker> = [];
   public maxLength = 50;
@@ -27,7 +27,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
 
   constructor(
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected alertService: AlertService,
     protected backService: BackService,
     protected router: Router,
@@ -96,7 +96,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
         `reference-${reference.uid}`,
-        new FormControl(reference.localIdentifier, {
+        new UntypedFormControl(reference.localIdentifier, {
           validators: [Validators.required, Validators.maxLength(this.maxLength)],
           updateOn: 'submit',
         }),
@@ -122,7 +122,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
     });
   }
 
-  public checkDuplicates(group: FormGroup): void {
+  public checkDuplicates(group: UntypedFormGroup): void {
     const controls = Object.values(group.controls);
     controls.map((control) => {
       if (control?.errors?.duplicate) {

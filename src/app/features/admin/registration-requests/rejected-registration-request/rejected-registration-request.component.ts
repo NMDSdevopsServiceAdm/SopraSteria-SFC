@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -16,7 +16,7 @@ export class RejectedRegistrationRequestComponent extends RegistrationRequestDir
     protected breadcrumbService: BreadcrumbService,
     public registrationsService: RegistrationsService,
     protected route: ActivatedRoute,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected switchWorkplaceService: SwitchWorkplaceService,
   ) {
     super(registrationsService, breadcrumbService, route, formBuilder, switchWorkplaceService);

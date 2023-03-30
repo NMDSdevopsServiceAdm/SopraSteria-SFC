@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { RegistrationApprovalOrRejectionRequestBody } from '@core/model/registrations.model';
@@ -18,7 +18,7 @@ import { ApprovalOrRejectionDialogComponent } from '../../components/approval-or
   templateUrl: './registration-request.component.html',
 })
 export class RegistrationRequestComponent extends RegistrationRequestDirective {
-  public workplaceIdForm: FormGroup;
+  public workplaceIdForm: UntypedFormGroup;
   public invalidWorkplaceIdEntered: boolean;
   public submitted: boolean;
   public userFullName: string;
@@ -30,7 +30,7 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
     protected breadcrumbService: BreadcrumbService,
     protected route: ActivatedRoute,
     protected switchWorkplaceService: SwitchWorkplaceService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     private alertService: AlertService,
     private dialogService: DialogService,
     private router: Router,
@@ -48,8 +48,8 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
   }
 
   private setupForm(): void {
-    this.workplaceIdForm = new FormGroup({
-      nmdsId: new FormControl(this.registration.establishment.nmdsId, [
+    this.workplaceIdForm = new UntypedFormGroup({
+      nmdsId: new UntypedFormControl(this.registration.establishment.nmdsId, [
         Validators.required,
         Validators.minLength(8),
         Validators.maxLength(8),

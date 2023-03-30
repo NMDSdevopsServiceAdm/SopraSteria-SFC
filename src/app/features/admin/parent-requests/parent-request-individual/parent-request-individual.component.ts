@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Note } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
@@ -20,7 +20,7 @@ export class ParentRequestIndividualComponent implements OnInit, OnDestroy {
   public loggedInUser;
   public userFullName: string;
   public notes: Note[];
-  public notesForm: FormGroup;
+  public notesForm: UntypedFormGroup;
   public notesError: string;
   public checkBoxError: string;
   public approvalOrRejectionServerError: string;
@@ -32,7 +32,7 @@ export class ParentRequestIndividualComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialogService: DialogService,
     private alertService: AlertService,
-    public formBuilder: FormBuilder,
+    public formBuilder: UntypedFormBuilder,
     public switchWorkplaceService: SwitchWorkplaceService,
     public parentRequestsService: ParentRequestsService,
   ) {}

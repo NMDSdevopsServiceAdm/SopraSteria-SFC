@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { WorkplaceSearchItem } from '@core/model/admin/search.model';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
@@ -12,12 +12,12 @@ import { SearchDirective } from '@shared/directives/admin/search/search.directiv
   templateUrl: './search-for-group.component.html',
 })
 export class SearchForGroupComponent extends SearchDirective {
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public results: WorkplaceSearchItem[] = [];
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected searchService: SearchService,
     protected switchWorkplaceService: SwitchWorkplaceService,
     protected alertService: AlertService,

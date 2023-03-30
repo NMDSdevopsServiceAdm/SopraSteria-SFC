@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -15,7 +15,7 @@ export class SearchForWorkplaceComponent extends SearchDirective {
   public submitted = false;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected searchService: SearchService,
     protected switchWorkplaceService: SwitchWorkplaceService,
     protected alertService: AlertService,

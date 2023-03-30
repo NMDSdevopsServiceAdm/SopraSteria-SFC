@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { CqcStatusChange } from '@core/model/cqc-status-change.model';
@@ -11,9 +11,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import {
-  ApprovalOrRejectionDialogComponent,
-} from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
   selector: 'app-cqc-individual-main-service-change',
@@ -24,7 +22,7 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
   public loggedInUser;
   public userFullName: string;
   public notes: Note[];
-  public notesForm: FormGroup;
+  public notesForm: UntypedFormGroup;
   public notesError: string;
   public checkBoxError: string;
   public approvalOrRejectionServerError: string;
@@ -34,7 +32,7 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
     private route: ActivatedRoute,
     private dialogService: DialogService,
     private alertService: AlertService,
-    public formBuilder: FormBuilder,
+    public formBuilder: UntypedFormBuilder,
     public switchWorkplaceService: SwitchWorkplaceService,
     public breadcrumbService: BreadcrumbService,
     public cqcStatusChangeService: CqcStatusChangeService,

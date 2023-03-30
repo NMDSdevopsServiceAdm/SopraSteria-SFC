@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { EmployerType } from '@core/model/establishment.model';
@@ -27,7 +27,7 @@ export class ConfirmDetailsComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   public serverError: string;
   public submitted: boolean;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
   public termsAndConditionsCheckbox: boolean;
@@ -50,7 +50,7 @@ export class ConfirmDetailsComponent implements OnInit {
     public backService: BackService,
     protected backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private userService: UserService,
     private router: Router,
   ) {}

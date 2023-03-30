@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -17,7 +17,7 @@ export class CouldNotFindWorkplaceAddressComponent extends CouldNotFindWorkplace
     public registrationService: RegistrationService,
     public backService: BackService,
     protected establishmentService: EstablishmentService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected router: Router,
     protected route: ActivatedRoute,
