@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -9,9 +9,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import {
-  StaffRecruitmentCaptureTrainingRequirementComponent,
-} from './staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(returnUrl = true, repeatTraining = undefined) {
@@ -20,10 +18,10 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
-          FormBuilder,
+          UntypedFormBuilder,
           {
             provide: EstablishmentService,
-            useClass: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
+            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
               doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: repeatTraining,
             }),
             deps: [HttpClient],
