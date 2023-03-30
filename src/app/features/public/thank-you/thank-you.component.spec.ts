@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -15,7 +15,11 @@ describe('ThankYouComponent', () => {
   const setup = async () => {
     const { fixture } = await render(ThankYouComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
-      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService },{ provide: FeatureFlagsService, useClass: MockFeatureFlagsService }, FormBuilder],
+      providers: [
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        UntypedFormBuilder,
+      ],
     });
     const component = fixture.componentInstance;
 

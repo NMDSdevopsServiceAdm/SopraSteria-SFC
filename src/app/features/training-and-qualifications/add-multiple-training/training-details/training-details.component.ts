@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TrainingRecordRequest } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
@@ -21,7 +21,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   private accessedFromSummary = false;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
     protected backLinkService: BackLinkService,

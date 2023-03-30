@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Worker } from '@core/model/worker.model';
@@ -20,7 +20,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   @ViewChild(SearchInputComponent) searchInput: SearchInputComponent;
 
   public workers: Array<Worker>;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted: boolean;
   public primaryWorkplaceUid: string;
   public returnLink: Array<string>;

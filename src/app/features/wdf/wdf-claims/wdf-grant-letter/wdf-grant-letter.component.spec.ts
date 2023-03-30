@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -21,7 +21,7 @@ describe('WdfGrantLetterComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-        FormBuilder,
+        UntypedFormBuilder,
         ErrorSummaryService,
       ],
     });

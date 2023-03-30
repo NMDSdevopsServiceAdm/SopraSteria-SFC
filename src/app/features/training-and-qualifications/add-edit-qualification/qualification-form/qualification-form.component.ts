@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { INT_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 export class QualificationFormComponent implements OnInit, OnDestroy {
   @Input() worker: Worker;
   @Input() workplace: Establishment;
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() type: { key: string; value: string };
   @Input() preselectedQualification: Qualification;
   @Input() notesMaxLength: number;

@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -45,7 +45,7 @@ describe('AddEditTrainingComponent', () => {
               },
             },
           },
-          FormBuilder,
+          UntypedFormBuilder,
           ErrorSummaryService,
           { provide: TrainingService, useClass: MockTrainingService },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },

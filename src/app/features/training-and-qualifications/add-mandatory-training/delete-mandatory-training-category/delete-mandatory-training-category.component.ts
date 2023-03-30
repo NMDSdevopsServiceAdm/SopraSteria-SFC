@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCategory } from '@core/model/training.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
   public categories: TrainingCategory[];
   public selectedCategory: TrainingCategory;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public establishment: Establishment;
   private subscriptions: Subscription = new Subscription();
   constructor(

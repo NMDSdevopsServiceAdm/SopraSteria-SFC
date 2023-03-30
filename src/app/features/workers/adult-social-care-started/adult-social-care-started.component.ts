@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
@@ -19,7 +19,7 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected backLinkService: BackLinkService,

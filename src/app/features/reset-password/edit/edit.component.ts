@@ -10,7 +10,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { PASSWORD_PATTERN } from '@core/constants/constants';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -24,7 +24,7 @@ import { Subscription } from 'rxjs';
 })
 export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   @Input() validatePasswordResetResponse;
   @Input() headerToken: string;
   public submitted: boolean;
@@ -36,7 +36,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy, AfterViewI
   @Output() resetPasswordOutput = new EventEmitter();
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private passwordResetService: PasswordResetService,
     private errorSummaryService: ErrorSummaryService,
   ) {}

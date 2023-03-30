@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CountryResponse, CountryService } from '@core/services/country.service';
@@ -17,7 +17,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
   public availableCountries: CountryResponse[];
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     public route: ActivatedRoute,
     protected backLinkService: BackLinkService,
