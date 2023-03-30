@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import {
   BulkUploadFileType,
   BulkUploadLock,
@@ -36,7 +36,7 @@ export interface isFirstBulkupload {
 export class BulkUploadService {
   private _workPlaceReferences$: BehaviorSubject<Workplace[]> = new BehaviorSubject(null);
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
-  public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
+  public exposeForm$: BehaviorSubject<UntypedFormGroup> = new BehaviorSubject(null);
   public preValidationError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public preValidateFiles$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
