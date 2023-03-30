@@ -6,13 +6,7 @@ const notifications = require('../../data/notifications');
 const ownership = require('../../data/ownership');
 const models = require('../../models');
 const { isAdminRole } = require('../../utils/adminUtils');
-
-class HttpError extends Error {
-  constructor(message, statusCode) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
+const HttpError = require('../../utils/errors/httpError');
 
 class OwnershipChange {
   static async CreateRequest(req) {
@@ -26,10 +20,12 @@ class OwnershipChange {
         throw new HttpError('Ownership is already requested for posted establishment id', 400);
       }
 
-      const recipientParams = { establishmentId: req.establishmentId };
+      const recipientParams = {
+        establishmentId: req.establishmentId,
+        dataOwner: thisEstablishment._dataOwner,
+      };
 
       const recipientEstablishmentUid = await this.getRecipientUid(recipientParams);
-
       if (recipientEstablishmentUid) {
         const params = {
           establishmentId: req.establishmentId,
@@ -47,7 +43,7 @@ class OwnershipChange {
             workplace.dataOwner = 'Parent';
             workplace.dataPermissions = req.body.permissionRequest;
             await workplace.save();
-            return { statusCode: 200 };
+            return { status: 200, response: '' };
           } else {
             throw new HttpError('Establishment is not found', 404);
           }
@@ -154,7 +150,6 @@ class OwnershipChange {
       timeStamp: 'NOW()',
     };
     await this.setOwnershipRequestedTimestamp(requestedTimestampParams);
-
     return await ownership.lastOwnershipRequest(params.establishmentId);
   }
 
@@ -171,7 +166,13 @@ class OwnershipChange {
   }
 
   static async getRecipientUid(params) {
-    const response = await ownership.getRecipientEstablishmentDetails(params);
+    let response;
+    if (params.dataOwner !== 'Parent') {
+      response = await ownership.getRecipientSubEstablishmentDetails(params);
+    } else {
+      response = await ownership.getRecipientEstablishmentDetails(params);
+    }
+
     return response[0].establishmentUid;
   }
 

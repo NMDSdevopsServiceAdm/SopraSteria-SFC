@@ -42,10 +42,15 @@ ORDER BY cqc."OwnerChangeRequest"."created" DESC
 LIMIT :limit;
 `;
 
-const getRecipientEstablishmentDetailsQuery = `
+const getRecipientSubEstablishmentDetailsQuery = `
 SELECT "EstablishmentUID" as "establishmentUid"
 FROM cqc."Establishment"
 WHERE "EstablishmentID" = :estID`;
+
+const getRecipientEstablishmentDetailsQuery = `
+SELECT parent."EstablishmentUID" from cqc."Establishment" est
+LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
+WHERE est."EstablishmentID" = :estID`;
 
 const getRecipientUserDetailsQuery = `
 select "UserUID" from cqc."Establishment" est
@@ -102,7 +107,14 @@ exports.getRecipientEstablishmentDetails = async (params) =>
   db.query(getRecipientEstablishmentDetailsQuery, {
     replacements: {
       estID: params.establishmentId,
-      userRole: 'Edit',
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+exports.getRecipientSubEstablishmentDetails = async (params) =>
+  db.query(getRecipientSubEstablishmentDetailsQuery, {
+    replacements: {
+      estID: params.establishmentId,
     },
     type: db.QueryTypes.SELECT,
   });

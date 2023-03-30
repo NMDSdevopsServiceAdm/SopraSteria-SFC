@@ -30,6 +30,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
   public ownershipFromName: string;
   public isSubWorkplace: boolean;
   public ownershipToUid: string;
+  public ownershipFromUid: string;
 
   constructor(
     @Inject(DIALOG_DATA) public data,
@@ -57,16 +58,27 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
 
     console.log(this.workplace);
     console.log(this.isSubWorkplace);
+    console.log(this.workplace.dataOwner);
+    console.log(this.dataPermissionsRequester);
+
+    if (this.isSubWorkplace) {
+      this.ownershipToName = this.workplace.name;
+      this.ownershipToUid = this.workplace.uid;
+    }
+
     if (this.workplace.dataOwner === 'Workplace') {
       this.ownershipToName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
       this.ownershipToUid = this.isSubWorkplace ? this.workplace.uid : this.dataPermissionsRequester.uid;
       this.ownershipFromName = this.workplace.name;
+      this.ownershipFromUid = this.workplace.uid;
     } else {
       this.ownershipToName = this.workplace.name;
       this.ownershipToUid = this.workplace.uid;
       this.ownershipFromName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
+      this.ownershipFromUid = this.isSubWorkplace ? this.workplace.parentUid : this.dataPermissionsRequester.parentUid;
     }
-    console.log(this.ownershipToUid);
+    console.log(this.ownershipToName);
+    console.log(this.ownershipFromName);
   }
 
   private setDataPermissions(): void {
