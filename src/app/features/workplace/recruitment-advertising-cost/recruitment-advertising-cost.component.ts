@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FLOAT_PATTERN } from '@core/constants/constants';
 import { jobOptionsEnum } from '@core/model/establishment.model';
@@ -29,7 +29,7 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   public section: string;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,

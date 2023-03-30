@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
@@ -32,7 +32,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   public section = 'Vacancies and turnover';
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -42,8 +42,8 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
-  get leavers(): FormArray {
-    return this.form.get('leavers') as FormArray;
+  get leavers(): UntypedFormArray {
+    return this.form.get('leavers') as UntypedFormArray;
   }
 
   get allJobsSelected(): boolean {
@@ -204,7 +204,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
     this.submitted = false;
   }
 
-  private createLeaverControl(jobId = null, total = null): FormGroup {
+  private createLeaverControl(jobId = null, total = null): UntypedFormGroup {
     return this.formBuilder.group({
       jobRole: [jobId, [Validators.required]],
       total: [total, [Validators.required, Validators.min(this.minTotal), Validators.max(this.maxTotal)]],

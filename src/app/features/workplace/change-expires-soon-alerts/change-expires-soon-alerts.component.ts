@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class ChangeExpiresSoonAlertsComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public expiresSoonDate: string;
   public workplaceUid: string;
   public returnUrl: URLStructure;
@@ -21,7 +21,7 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private backLinkService: BackLinkService,
     private router: Router,
     private alertService: AlertService,

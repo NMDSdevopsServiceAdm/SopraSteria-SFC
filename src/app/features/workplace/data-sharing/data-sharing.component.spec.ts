@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
@@ -31,7 +31,7 @@ describe('DataSharingComponent', () => {
         providers: [
           ErrorSummaryService,
           BackService,
-          FormBuilder,
+          UntypedFormBuilder,
           {
             provide: EstablishmentService,
             useFactory: MockEstablishmentService.factory(shareWith, returnUrl),

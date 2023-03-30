@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { CreateAccountRequest } from '@core/model/account.model';
@@ -37,7 +37,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
 
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected fb: FormBuilder,
+    protected fb: UntypedFormBuilder,
     protected router: Router,
     private userService: UserService,
   ) {
@@ -74,7 +74,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   private addFormControls(): void {
     this.form.addControl(
       'permissionsType',
-      new FormControl(null, {
+      new UntypedFormControl(null, {
         validators: [Validators.required],
         updateOn: 'submit',
       }),
