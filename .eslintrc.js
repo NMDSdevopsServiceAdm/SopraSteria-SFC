@@ -1,7 +1,7 @@
 module.exports = {
   env: {
     node: true,
-    es2021: true,
+    es6: true,
     mocha: true,
     jasmine: true,
     commonjs: true,
@@ -12,7 +12,7 @@ module.exports = {
     'no-unused-vars': ['error', { argsIgnorePattern: '^next$' }],
   },
   parserOptions: {
-    ecmaVersion: 12,
+    ecmaVersion: 2018,
   },
   ignorePatterns: ['/dist'],
   overrides: [
