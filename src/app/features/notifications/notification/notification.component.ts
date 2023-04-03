@@ -50,15 +50,6 @@ export class NotificationComponent implements OnInit, OnDestroy {
       this.isSubWorkplace =
         this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
 
-      this.ownerShipRequestedFrom =
-        details.typeContent.requestedOwnerType === 'Workplace'
-          ? details.typeContent.parentEstablishmentName
-          : details.typeContent.subEstablishmentName;
-      this.ownerShipRequestedTo =
-        details.typeContent.requestedOwnerType === 'Workplace'
-          ? details.typeContent.subEstablishmentName
-          : details.typeContent.parentEstablishmentName;
-
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
     });

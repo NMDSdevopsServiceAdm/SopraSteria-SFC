@@ -47,8 +47,16 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
     console.log(this.notification);
     this.eventsSubscription = this.events.subscribe((action) => this.performAction(action));
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.ownerShipRequestedFrom = this.notification.typeContent.requestorName;
-    this.ownerShipRequestedTo = this.notification.typeContent.requestorName;
+
+    this.ownerShipRequestedFrom =
+      this.notification.typeContent.requestedOwnerType === 'Workplace'
+        ? this.notification.typeContent.parentEstablishmentName
+        : this.notification.typeContent.subEstablishmentName;
+    this.ownerShipRequestedTo =
+      this.notification.typeContent.requestedOwnerType === 'Workplace'
+        ? this.notification.typeContent.subEstablishmentName
+        : this.notification.typeContent.parentEstablishmentName;
+
     this.notificationUid = this.route.snapshot.params.notificationuid;
 
     if (this.notification.typeContent.approvalStatus === 'APPROVED') {
