@@ -5,11 +5,11 @@ const sinonChai = require('sinon-chai');
 chai.should();
 chai.use(sinonChai);
 
-const updateOwnership = require('../../../../routes/ownershipRequest/updateOwnership');
+const updateOwnership = require('../../../../routes/ownershipRequest/ownershipChange').updateOwnership;
 const { Establishment } = require('../../../../models/classes/establishment');
 const ownership = require('../../../../data/ownership');
 
-describe('routes/ownershipRequest/updateOwnership.js', () => {
+describe('routes/ownershipRequest/ownershipChange.js', () => {
   describe('update', () => {
     let ownershipStub;
     let establishmentStub;

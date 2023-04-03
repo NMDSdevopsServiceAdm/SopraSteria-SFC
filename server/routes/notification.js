@@ -39,7 +39,6 @@ const addTypeContent = async (notification) => {
       const subQuery = await ownershipChangeRequests.getOwnershipNotificationDetails({
         ownerChangeRequestUid: notification.notificationContentUid,
       });
-      console.log(subQuery);
       if (subQuery.length === 1) {
         if (subQuery[0].createdByUserUID) {
           const requestorName = await notifications.getRequesterName(notification.createdByUserUID);

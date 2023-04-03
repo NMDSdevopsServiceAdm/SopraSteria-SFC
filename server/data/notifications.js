@@ -111,8 +111,7 @@ VALUES (:notificationContentUid, :type, :establishmentUid, :isViewed, :createdBy
 const updateNotificationQuery = `
   UPDATE cqc."NotificationsEstablishment"
   SET "isViewed" = :isViewed
-  WHERE "Notifications"."notificationUid" = :nuid
-  AND "Notifications"."establishmentUid" = :establishmentUid;
+  WHERE "notificationUid" = :nuid
 `;
 
 exports.selectNotificationByEstablishment = async (establishmentUid, limit, offset) =>
@@ -171,10 +170,9 @@ exports.insertNewEstablishmentNotification = async (params) => {
 exports.updateNotification = async (params) =>
   db.query(updateNotificationQuery, {
     replacements: {
-      nuid: params.exsistingNotificationUid,
+      nuid: params.existingNotificationUid,
       type: 'OWNERCHANGE',
       typUid: params.ownerRequestChangeUid,
-      establishmentUid: params.userUid,
       isViewed: false,
     },
     type: db.QueryTypes.UPDATE,

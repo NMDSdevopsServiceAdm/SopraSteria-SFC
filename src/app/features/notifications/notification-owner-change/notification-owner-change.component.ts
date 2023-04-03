@@ -50,6 +50,12 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
     this.ownerShipRequestedFrom = this.notification.typeContent.requestorName;
     this.ownerShipRequestedTo = this.notification.typeContent.requestorName;
     this.notificationUid = this.route.snapshot.params.notificationuid;
+
+    if (this.notification.typeContent.approvalStatus === 'APPROVED') {
+      this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
+    } else {
+      this.isWorkPlaceIsRequester = this.workplace.name === this.ownerShipRequestedFrom;
+    }
   }
 
   private performAction(action: string) {
@@ -74,7 +80,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
         approvalReason: '',
         rejectionReason: null,
         type: OWNERSHIP_APPROVED,
-        exsistingNotificationUid: this.notificationUid,
+        existingNotificationUid: this.notificationUid,
         requestedOwnership: this.notification.typeContent.permissionRequest,
         parentEstablishmentUid: this.notification.typeContent.parentEstablishmentUid,
         subEstablishmentUid: this.notification.typeContent.subEstablishmentUid,
@@ -137,7 +143,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
       approvalStatus: 'DENIED',
       rejectionReason: requestRejected.rejectionReason,
       type: OWNERSHIP_REJECTED,
-      exsistingNotificationUid: this.notification.notificationUid,
+      existingNotificationUid: this.notification.notificationUid,
     };
     this.subscriptions.add(
       this.notificationsService

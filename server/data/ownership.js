@@ -48,7 +48,8 @@ FROM cqc."Establishment"
 WHERE "EstablishmentID" = :estID`;
 
 const getRecipientEstablishmentDetailsQuery = `
-SELECT parent."EstablishmentUID" from cqc."Establishment" est
+SELECT parent."EstablishmentUID" as "establishmentUid"
+FROM cqc."Establishment" est
 LEFT JOIN cqc."Establishment" parent ON parent."EstablishmentID" = est."ParentID"
 WHERE est."EstablishmentID" = :estID`;
 
@@ -84,6 +85,27 @@ UPDATE cqc."Establishment"
 SET "DataOwnershipRequested" = :timestamp
 WHERE "EstablishmentID" = :estId;
 `;
+
+const getRequestorEstablishmentQuery = `
+SELECT e."EstablishmentUID" as "establishmentUid"
+FROM cqc."User" u
+JOIN cqc."OwnerChangeRequest" ocr ON ocr."createdByUserUID" = u."UserUID"
+JOIN cqc."Establishment" e ON e."EstablishmentID" = u."EstablishmentID"
+WHERE ocr."ownerChangeRequestUID" = :ownershipRequestUid;
+`;
+
+exports.getRequestorEstablishment = async (ownershipRequestUid) => {
+  console.log('****************************');
+  console.log(ownershipRequestUid);
+  const x = await db.query(getRequestorEstablishmentQuery, {
+    replacements: {
+      ownershipRequestUid: ownershipRequestUid,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+  console.log(x);
+  return x;
+};
 
 exports.getRecipientSubUserDetails = async (params) =>
   db.query(getRecipientSubUserDetailsQuery, {
