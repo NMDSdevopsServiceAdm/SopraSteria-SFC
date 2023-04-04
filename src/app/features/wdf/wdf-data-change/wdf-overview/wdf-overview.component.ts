@@ -29,6 +29,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplaceUid: string;
   public workplaces = [];
   private subscriptions: Subscription = new Subscription();
+  public establishmentWdfEligibility = new Date();
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -41,13 +42,17 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.WDF);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace.isParent;
-
+    this.updteEstablishmentWdfEligibility();
     this.getParentAndSubs();
     this.getWdfReport();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  public updteEstablishmentWdfEligibility(): void {
+    this.subscriptions.add(
+      this.establishmentService
+        .updateWdfEstablishmentEligibility(this.workplace.uid, this.establishmentWdfEligibility)
+        .subscribe(),
+    );
   }
 
   private getParentAndSubs(): void {
@@ -90,5 +95,9 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
     this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
     this.overallEligibilityDate = dayjs(report.wdf.overallWdfEligibility).format('D MMMM YYYY');
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

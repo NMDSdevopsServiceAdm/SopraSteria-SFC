@@ -43,7 +43,43 @@ const updateEstablishment = async (req, res) => {
   }
 };
 
-router.route('/').post(hasPermission('canEditEstablishment'), updateEstablishment);
+const updateEstablishmentWdfEligibility = async (req, res) => {
+  const establishmentId = req.establishmentId;
+  const thisEstablishment = new Establishment.Establishment(req.username);
 
+  try {
+    if (await thisEstablishment.restore(establishmentId)) {
+      const isValidEstablishment = await thisEstablishment.load({
+        establishmentWdfEligibility: req.body.establishmentWdfEligibility,
+      });
+
+      // this is an update to an existing Establishment, so no mandatory properties!
+      if (isValidEstablishment) {
+        await thisEstablishment.save(req.username);
+
+        return res.status(200);
+      } else {
+        return res.status(400).send('Unexpected Input.');
+      }
+    } else {
+      return res.status(404).send('Not Found');
+    }
+  } catch (err) {
+    if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
+      console.error('Establishment::share POST: ', err.message);
+      return res.status(400).send(err.safe);
+    } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
+      console.error('Establishment::share POST: ', err.message);
+      return res.status(500).send(err.safe);
+    } else {
+      console.error('Unexpected exception: ', err);
+      return res.status(500).send(err.safe);
+    }
+  }
+};
+
+router.route('/').post(hasPermission('canEditEstablishment'), updateEstablishment);
+router.route('/EstablishmentWdfEligibility').post(updateEstablishmentWdfEligibility);
 module.exports = router;
 module.exports.updateEstablishment = updateEstablishment;
+module.exports.updateEstablishmentWdfEligibility = updateEstablishmentWdfEligibility;

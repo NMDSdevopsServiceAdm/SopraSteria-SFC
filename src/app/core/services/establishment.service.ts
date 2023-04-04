@@ -265,6 +265,12 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/establishment/${establishmentId}/updateSingleEstablishmentField`, data);
   }
 
+  updateWdfEstablishmentEligibility(establishmentId: string, data): Observable<any> {
+    return this.http.post<any>(
+      `/api/establishment/${establishmentId}/updateSingleEstablishmentField/EstablishmentWdfEligibility`,
+      { data },
+    );
+  }
   updateLocalAuthorities(establishmentId, data) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }
