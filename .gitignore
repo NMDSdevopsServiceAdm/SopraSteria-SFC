@@ -9,8 +9,6 @@
 /node_modules
 */node_modules
 
-/.angular/cache
-
 # IDEs and editors
 .idea
 .project
