@@ -44,7 +44,6 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    console.log(this.notification);
     this.eventsSubscription = this.events.subscribe((action) => this.performAction(action));
     this.workplace = this.establishmentService.primaryWorkplace;
 
@@ -83,15 +82,10 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
       }
 
       const requestParameter = {
-        ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
         approvalStatus: 'APPROVED',
-        approvalReason: '',
         rejectionReason: null,
         type: OWNERSHIP_APPROVED,
         existingNotificationUid: this.notificationUid,
-        requestedOwnership: this.notification.typeContent.permissionRequest,
-        parentEstablishmentUid: this.notification.typeContent.parentEstablishmentUid,
-        subEstablishmentUid: this.notification.typeContent.subEstablishmentUid,
       };
       this.subscriptions.add(
         this.notificationsService
@@ -147,7 +141,6 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
 
   private rejectPermissionRequest(requestRejected) {
     const requestParameter = {
-      ownerRequestChangeUid: this.notification.typeContent.ownerChangeRequestUID,
       approvalStatus: 'DENIED',
       rejectionReason: requestRejected.rejectionReason,
       type: OWNERSHIP_REJECTED,

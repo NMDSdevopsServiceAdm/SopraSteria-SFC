@@ -94,18 +94,13 @@ JOIN cqc."Establishment" e ON e."EstablishmentID" = u."EstablishmentID"
 WHERE ocr."ownerChangeRequestUID" = :ownershipRequestUid;
 `;
 
-exports.getRequestorEstablishment = async (ownershipRequestUid) => {
-  console.log('****************************');
-  console.log(ownershipRequestUid);
-  const x = await db.query(getRequestorEstablishmentQuery, {
+exports.getRequestorEstablishment = async (ownershipRequestUid) =>
+  db.query(getRequestorEstablishmentQuery, {
     replacements: {
       ownershipRequestUid: ownershipRequestUid,
     },
     type: db.QueryTypes.SELECT,
   });
-  console.log(x);
-  return x;
-};
 
 exports.getRecipientSubUserDetails = async (params) =>
   db.query(getRecipientSubUserDetailsQuery, {

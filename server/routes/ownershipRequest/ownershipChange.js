@@ -254,8 +254,6 @@ class OwnershipChange {
   }
 
   static async updateAndSendNotifications(params) {
-    console.log('************ UPDATE EXISTING NOTIFICATION *************');
-    console.log(params);
     await this.updateExistingNotification(params);
     const updatedOwnershipRequest = await this.getUpdatedOwnershipRequest(params);
     const newNotificationParams = {
@@ -264,10 +262,7 @@ class OwnershipChange {
       notificationContentUid: params.ownerRequestChangeUid,
       userUid: params.userUid,
     };
-    console.log('INSERT NEW NOTIFICATION');
-    console.log(newNotificationParams);
     await notifications.insertNewEstablishmentNotification(newNotificationParams);
-    console.log('SUCCESS');
     const setTimestampParams = {
       timeStamp: null,
       establishmentId: params.subEstablishmentId,
