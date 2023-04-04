@@ -111,9 +111,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     this.checkAnswersPage = this.return?.url.includes('check-answers');
 
     this.setTotalStaffWarning();
-    if (this.canEditEstablishment && this.wdfView) {
-      this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
-    }
 
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
@@ -184,8 +181,8 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
 
   public filterAndSortOtherServices(services: any): Service[] {
     let servicesArr = new Array<Service>();
-    for(const service of services) {
-      servicesArr = servicesArr.concat(service.services)
+    for (const service of services) {
+      servicesArr = servicesArr.concat(service.services);
     }
     return sortBy(
       servicesArr.filter((service) => service.name !== this.workplace.mainService.name),
@@ -235,12 +232,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
 
   public convertToDate(dateString: string): Date {
     return new Date(dateString);
-  }
-
-  public updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {
-    if (this.workplace.wdf?.employerType.isEligible && !this.workplace.wdf?.employerType.updatedSinceEffectiveDate) {
-      this.confirmField('employerType');
-    }
   }
 
   public allRequiredFieldsUpdated(): boolean {
