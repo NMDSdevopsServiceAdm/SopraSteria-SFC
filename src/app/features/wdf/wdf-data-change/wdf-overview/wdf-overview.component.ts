@@ -10,6 +10,7 @@ import { UserService } from '@core/services/user.service';
 import dayjs from 'dayjs';
 import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-wdf-overview',
@@ -43,7 +44,6 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace.isParent;
     this.updteEstablishmentWdfEligibility();
-    this.getParentAndSubs();
     this.getWdfReport();
   }
 
@@ -51,21 +51,16 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService
         .updateWdfEstablishmentEligibility(this.workplace.uid, this.establishmentWdfEligibility)
-        .subscribe(),
-    );
-  }
-
-  private getParentAndSubs(): void {
-    this.subscriptions.add(
-      this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
-        if (workplaces.subsidaries) {
-          this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
-        }
-        this.workplaces.push(workplaces.primary);
-        this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
-        this.getParentOverallWdfEligibility();
-        this.getLastOverallEligibilityDate();
-      }),
+        .pipe(concatMap(() => this.userService.getEstablishments(true)))
+        .subscribe((workplaces: GetWorkplacesResponse) => {
+          if (workplaces.subsidaries) {
+            this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
+          }
+          this.workplaces.push(workplaces.primary);
+          this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
+          this.getParentOverallWdfEligibility();
+          this.getLastOverallEligibilityDate();
+        }),
     );
   }
 

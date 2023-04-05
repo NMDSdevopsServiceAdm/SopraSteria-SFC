@@ -5,8 +5,10 @@ import { URLStructure } from '@core/model/url.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
+
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -78,6 +80,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     private permissionsService: PermissionsService,
     private workerService: WorkerService,
     private cqcStatusChangeService: CqcStatusChangeService,
+    private wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -111,6 +114,10 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     this.checkAnswersPage = this.return?.url.includes('check-answers');
 
     this.setTotalStaffWarning();
+
+    if (this.canEditEstablishment && this.wdfView) {
+      this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
+    }
 
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.workplace.uid, true).subscribe((response) => {
@@ -163,6 +170,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.wdfConfirmFieldsService.clearConfirmFields();
   }
   public setTotalStaffWarning(): void {
     if (this.workplace.workerCount === null && this.workerCount === null) {
@@ -224,7 +232,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
       this.establishmentService.updateWorkplace(this.workplace.uid, props).subscribe((data) => {
         this.confirmedFields.push(dataField);
         if (this.allRequiredFieldsUpdated()) {
-          this.allFieldsConfirmed.emit();
+          this.updateFieldsWhichDontRequireConfirmation();
         }
       }),
     );
@@ -234,19 +242,38 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     return new Date(dateString);
   }
 
+  public updateEmployerTypeIfNotUpdatedSinceEffectiveDate(): void {
+    if (this.workplace.wdf?.employerType.isEligible && !this.workplace.wdf?.employerType.updatedSinceEffectiveDate) {
+      this.confirmField('employerType');
+    }
+  }
+
   public allRequiredFieldsUpdated(): boolean {
-    const requiredFields = [
-      'employerType',
-      'leavers',
-      'mainService',
-      'numberOfStaff',
-      'serviceUsers',
-      'starters',
-      'vacancies',
-    ];
+    const requiredFields = ['leavers', 'mainService', 'numberOfStaff', 'serviceUsers', 'starters', 'vacancies'];
 
     return requiredFields.every(
       (field) => this.workplace.wdf[field].updatedSinceEffectiveDate || this.confirmedFields.includes(field),
     );
+  }
+
+  public async updateFieldsWhichDontRequireConfirmation(): Promise<void> {
+    const fieldsWhichDontRequireConfirmation = ['employerType'];
+
+    const props = {};
+
+    await Promise.all(
+      fieldsWhichDontRequireConfirmation.map(async (fieldCheck) => {
+        if (
+          this.workplace.wdf?.[fieldCheck]?.isEligible &&
+          this.workplace.wdf?.[fieldCheck].isEligible === 'Yes' &&
+          !this.workplace.wdf?.[fieldCheck].updatedSinceEffectiveDate
+        ) {
+          return (props[fieldCheck] = this.workplace[fieldCheck]);
+        }
+      }),
+    );
+
+    await this.establishmentService.updateWorkplace(this.workplace.uid, props).toPromise();
+    this.allFieldsConfirmed.emit();
   }
 }
