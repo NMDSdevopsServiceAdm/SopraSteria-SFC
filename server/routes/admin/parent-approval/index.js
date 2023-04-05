@@ -3,7 +3,6 @@ const router = express.Router();
 const models = require('../../../models');
 const notifications = require('../../../data/notifications');
 const { convertIndividualParentRequest } = require('../../../utils/parentIndividualRequestUtils');
-const uuid = require('uuid');
 
 const parentApprovalConfirmation = 'Parent request approved';
 const parentRejectionConfirmation = 'Parent request rejected';
@@ -71,7 +70,7 @@ const _mapResults = async (approvalResults) => {
 };
 
 const _approveParent = async (req, res) => {
-  await _notify(req.body.parentRequestId, req.userUid, req.body.establishmentId);
+  await _notify(req.body.parentRequestId, req.userUid, req.body.establishmentUid);
   await _updateApprovalStatus(req.body.parentRequestId, 'Approved');
   await _makeWorkplaceIntoParent(req.body.establishmentId);
 
@@ -79,7 +78,7 @@ const _approveParent = async (req, res) => {
 };
 
 const _rejectParent = async (req, res) => {
-  await _notify(req.body.parentRequestId, req.userUid, req.body.establishmentId);
+  await _notify(req.body.parentRequestId, req.userUid, req.body.establishmentUid);
   await _updateApprovalStatus(req.body.parentRequestId, 'Rejected');
 
   return res.status(200).json({ status: '0', message: parentRejectionConfirmation });
@@ -105,25 +104,18 @@ const _makeWorkplaceIntoParent = async (id) => {
   }
 };
 
-const _notify = async (approvalId, userUid, establishmentId) => {
+const _notify = async (approvalId, userUid, establishmentUid) => {
   const approval = await models.Approvals.findbyId(approvalId);
   const typUid = approval.UUID;
   const params = {
     type: 'BECOMEAPARENT',
     notificationContentUid: typUid,
-    senderUid: userUid,
+    userUid: userUid,
+    establishmentUid: establishmentUid,
   };
-  const users = await notifications.getAllUser({ establishmentId: establishmentId });
-  await Promise.all(
-    users.map(async () => {
-      const userparams = {
-        ...params,
-        establishmentUid: establishmentId,
-        notificationUid: uuid.v4(),
-      };
-      await notifications.insertNewEstablishmentNotification(userparams);
-    }),
-  );
+  console.log('*******NOTIFY*******');
+  console.log(params);
+  await notifications.insertNewEstablishmentNotification(params);
 };
 
 router.route('/').post(parentApproval);

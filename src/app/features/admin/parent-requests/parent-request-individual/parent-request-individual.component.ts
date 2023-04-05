@@ -48,11 +48,14 @@ export class ParentRequestIndividualComponent implements OnInit, OnDestroy {
   public approveOrRejectParentRequest(isApproval: boolean): void {
     const dialog = this.openApprovalOrRejectionDialog(isApproval);
 
+    console.log(this.registration);
+
     dialog.afterClosed.subscribe((confirmed) => {
       if (confirmed) {
         const data = {
           parentRequestId: this.registration.requestId,
           establishmentId: this.registration.establishment.establishmentId,
+          establishmentUid: this.registration.establishment.establishmentUid,
           userId: this.registration.userId,
           rejectionReason: isApproval ? 'Approved' : 'Rejected',
           approve: isApproval,
