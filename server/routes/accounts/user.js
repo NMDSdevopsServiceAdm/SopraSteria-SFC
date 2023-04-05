@@ -15,13 +15,11 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
-const linkSubToParent = require('../../data/linkToParent');
 const { authLimiter } = require('../../utils/middleware/rateLimiting');
 
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 const notifications = require('../../data/notifications');
-const ownershipChangeRequests = require('../../data/ownership');
 
 // default route
 const return200 = async (req, res) => {
@@ -810,8 +808,11 @@ router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) =>
     const getEstablishmentId = await notifications.getEstablishmentId(params);
     if (getEstablishmentId) {
       params.establishmentId = getEstablishmentId[0].EstablishmentID;
-      const getAllUser = await notifications.getAllUser(params);
       let notificationArr = [];
+
+      const establishmentNotifications = await notifications.selectNotificationByEstablishment(req.body.establishmentUid);
+      if(establishmentNotifications) notificationArr.push(establishmentNotifications);
+      const getAllUser = await notifications.getAllUser(params);
       if (getAllUser) {
         for (let i = 0; i < getAllUser.length; i++) {
           let userParams = {
@@ -819,8 +820,8 @@ router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) =>
           };
           notificationArr.push(...(await notifications.getListByUser(userParams)));
         }
-        return res.status(200).send(notificationArr);
       }
+      return res.status(200).send(notificationArr);
     }
   } catch (e) {
     return res.status(500).send({
