@@ -30,7 +30,6 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplaceUid: string;
   public workplaces = [];
   private subscriptions: Subscription = new Subscription();
-  public establishmentWdfEligibility = new Date();
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -43,24 +42,21 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.WDF);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace.isParent;
-    this.updteEstablishmentWdfEligibility();
+    this.getParentAndSubs();
     this.getWdfReport();
   }
 
-  public updteEstablishmentWdfEligibility(): void {
+  private getParentAndSubs(): void {
     this.subscriptions.add(
-      this.establishmentService
-        .updateWdfEstablishmentEligibility(this.workplace.uid, this.establishmentWdfEligibility)
-        .pipe(concatMap(() => this.userService.getEstablishments(true)))
-        .subscribe((workplaces: GetWorkplacesResponse) => {
-          if (workplaces.subsidaries) {
-            this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
-          }
-          this.workplaces.push(workplaces.primary);
-          this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
-          this.getParentOverallWdfEligibility();
-          this.getLastOverallEligibilityDate();
-        }),
+      this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
+        if (workplaces.subsidaries) {
+          this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
+        }
+        this.workplaces.push(workplaces.primary);
+        this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
+        this.getParentOverallWdfEligibility();
+        this.getLastOverallEligibilityDate();
+      }),
     );
   }
 
