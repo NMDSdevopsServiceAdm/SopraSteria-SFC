@@ -1,41 +1,50 @@
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
 import { NotificationTypePipe } from '@shared/pipes/notification-type.pipe';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { Observable } from 'rxjs';
 import { NotificationOwnerChangeComponent } from './notification-owner-change.component';
 
-import createSpy = jasmine.createSpy;
-describe('NotificationBecomeAParentComponent', () => {
+describe('NotificationOwnerChangeComponent', () => {
   async function setup(approved = true) {
+    // TODO: stub notification data
+    const notificationData = {
+      notificationUid: 'SOME UID',
+      typeContent: {
+        requestedOwnerType: 'Workplace',
+        parentEstablishmentName: 'Test Parent',
+        subEstablishmentName: 'Test sub',
+        approvalStatus: 'APPROVED',
+        ownerChangeRequestUid: 'REQUEST UID',
+      },
+    };
+
     const component = await render(NotificationOwnerChangeComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [NotificationTypePipe],
       providers: [
-        {
-          provide: NotificationsService,
-          useFactory: MockNotificationsService.factory(approved),
-          deps: [HttpClient],
-        },
+        AlertService,
+        WindowRef,
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-        {
-          provide: BreadcrumbService,
-          useValue: {
-            show: createSpy(),
-          },
-        },
       ],
+      componentProperties: {
+        events: new Observable<string>(),
+        notification: notificationData,
+      },
     });
+
+    const injector = getTestBed();
+    injector.inject(AlertService) as AlertService;
 
     return {
       component,

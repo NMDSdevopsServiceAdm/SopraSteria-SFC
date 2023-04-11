@@ -305,9 +305,6 @@ class OwnershipChange {
 
     const isSubsidiary = currentDataOwnerDetails[0].IsParent === false && currentDataOwnerDetails[0].ParentID;
 
-    console.log(currentDataOwnerDetails);
-    console.log('IS SUBSIDIARY: ' + isSubsidiary);
-
     const workplaceEstablishmentId = isSubsidiary ? params.establishmentId : params.ownershipRequest.subEstablishmentID;
 
     const updateDetails = {
