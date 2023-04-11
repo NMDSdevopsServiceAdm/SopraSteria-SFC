@@ -10,7 +10,6 @@ import { UserService } from '@core/services/user.service';
 import dayjs from 'dayjs';
 import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-wdf-overview',
@@ -42,8 +41,13 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.WDF);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace.isParent;
+
     this.getParentAndSubs();
     this.getWdfReport();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   private getParentAndSubs(): void {
@@ -86,9 +90,5 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
     this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
     this.overallEligibilityDate = dayjs(report.wdf.overallWdfEligibility).format('D MMMM YYYY');
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }

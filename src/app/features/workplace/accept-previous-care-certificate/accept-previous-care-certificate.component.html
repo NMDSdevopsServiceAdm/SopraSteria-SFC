@@ -8,6 +8,13 @@
             Would you accept a Care Certificate from a worker's previous employer?
           </h1>
         </legend>
+        <app-details [title]="'Why we ask for this information'">
+          <p>
+            This data is used to determine the cost to the social care sector of staff moving between employers and to
+            monitor whether DHSC policies make training more transferable. It is also being used to check the
+            effectiveness of the Care Certificate.
+          </p>
+        </app-details>
         <div class="govuk-form-group">
           <div class="govuk-radios govuk-!-margin-bottom-4">
             <ng-container *ngFor="let option of previousCareCertificateOptions; let i = index">

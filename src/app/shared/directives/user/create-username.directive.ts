@@ -215,6 +215,7 @@ export class CreateUsernameDirective implements OnInit, OnDestroy, AfterViewInit
     if (this.getPassword.status === 'VALID') {
       this.getConfirmPassword.setValidators(Validators.required);
       this.getConfirmPassword.updateValueAndValidity();
+      this.errorSummaryService.formEl$.next(this.formEl);
     }
   }
 

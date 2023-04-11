@@ -130,7 +130,6 @@ describe('view-workplace', () => {
       const establishment = {
         ...component.workplace,
       };
-
       establishment.isRegulated = false;
       component.workplace = establishment;
       fixture.detectChanges();
@@ -144,8 +143,7 @@ describe('view-workplace', () => {
       const establishment = {
         ...component.workplace,
       };
-      component.canViewBenchmarks = true;
-
+      establishment.isRegulated = false;
       component.workplace = establishment;
       fixture.detectChanges();
 

@@ -1,0 +1,31 @@
+<div *ngIf="workers?.length" class="govuk-grid-row govuk-!-margin-bottom-7">
+  <div class="govuk-grid-column-two-thirds">
+    <ng-container *ngIf="canEditEstablishment">
+      <div class="govuk-!-margin-bottom-4">
+        <a class="govuk-list" [routerLink]="['/workplace', workplace.uid, 'add-and-manage-mandatory-training']"
+          >Add and manage mandatory training categories
+        </a>
+      </div>
+      <div>
+        <a class="govuk-list" [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
+          >Manage expiry alerts
+        </a>
+      </div>
+    </ng-container>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <ng-container *ngIf="totalRecords">
+      <a
+        class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+        role="button"
+        draggable="false"
+        href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
+        (click)="downloadTrainingReport($event)"
+      >
+        <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+          Download training report
+        </span>
+      </a>
+    </ng-container>
+  </div>
+</div>

@@ -130,7 +130,7 @@ const releaseLock = async (req, res, next, nextState = null) => {
 
 const lockStatusGet = async (req, res) => {
   const { establishmentId } = req;
-  res.setTimeout(100, () => {
+  res.setTimeout(1000, () => {
     res.status(200).send({
       establishmentId,
       bulkUploadState: buStates.UNKNOWN,

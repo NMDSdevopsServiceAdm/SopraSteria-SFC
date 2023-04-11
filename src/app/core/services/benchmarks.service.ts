@@ -21,7 +21,8 @@ export class BenchmarksService {
   }
 
   postBenchmarkTabUsage(establishmentId: number) {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/benchmarks/usage`, ' ');
+    const viewedTime = new Date();
+    return this.http.post<any>(`/api/establishment/${establishmentId}/benchmarks/usage`, { viewedTime });
   }
 
   getTileData(establishmentId: string, tilesNeeded: string[]): Observable<BenchmarksResponse> {

@@ -14,6 +14,74 @@ enum Path {
   MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
 }
 
+export const workplaceTabJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Workplace',
+      path: Path.DASHBOARD,
+      fragment: 'workplace',
+    },
+  ],
+};
+
+export const staffRecordsTabJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Staff records',
+      path: Path.DASHBOARD,
+      fragment: 'staff-records',
+      children: [
+        {
+          title: 'Staff record',
+          path: Path.STAFF_RECORD,
+          referrer: {
+            path: Path.DASHBOARD,
+            fragment: 'staff-records',
+          },
+        },
+        {
+          title: 'Staff record',
+          path: Path.MANDATORY_DETAILS,
+          referrer: {
+            path: Path.DASHBOARD,
+            fragment: 'staff-records',
+          },
+        },
+      ],
+    },
+  ],
+};
+
+export const trainingAndQualificationsTabJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Training and qualifications',
+      path: Path.DASHBOARD,
+      fragment: 'training-and-qualifications',
+      children: [
+        {
+          title: 'Training and qualifications',
+          path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
+          referrer: {
+            path: Path.DASHBOARD,
+            fragment: 'training-and-qualifications',
+          },
+        },
+      ],
+    },
+  ],
+};
+
+export const brenchmarksTabJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Benchmarks',
+      path: Path.DASHBOARD,
+      fragment: 'benchmarks',
+    },
+  ],
+};
+
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
     {

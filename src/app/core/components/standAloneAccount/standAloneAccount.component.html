@@ -1,0 +1,32 @@
+<div id="content">
+  <div class="asc-tabs-container">
+    <div class="govuk-width-container">
+      <app-new-tabs (selectedTabClick)="tabClickEvent($event)" [tabs]="tabs" [dashboardView]="dashboardView">
+      </app-new-tabs>
+    </div>
+  </div>
+
+  <div class="asc-navigation-container">
+    <div class="govuk-width-container">
+      <app-back-link></app-back-link>
+      <app-new-back-link></app-new-back-link>
+      <app-breadcrumbs></app-breadcrumbs>
+    </div>
+  </div>
+  <div [class]="{ 'govuk-width-container': !dashboardView }">
+    <ng-container *ngIf="!dashboardView">
+      <app-alert></app-alert>
+    </ng-container>
+
+    <main
+      id="main-content"
+      class="govuk-main-wrapper app-main-class govuk-util__no-focus"
+      [ngClass]="{ 'govuk-!-padding-top-0': dashboardView }"
+      #content
+      role="main"
+      tabindex="-1"
+    >
+      <router-outlet> </router-outlet>
+    </main>
+  </div>
+</div>

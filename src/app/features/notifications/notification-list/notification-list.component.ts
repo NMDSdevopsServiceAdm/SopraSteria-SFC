@@ -1,3 +1,4 @@
+import { not } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -24,7 +25,7 @@ export class NotificationListComponent implements OnInit {
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.notifications = orderBy(this.notificationService.notifications, (notification) => notification.created, [
+        this.notifications = orderBy(this.notificationService.notifications, (notification) => notification.created, [
       'desc',
     ]);
   }

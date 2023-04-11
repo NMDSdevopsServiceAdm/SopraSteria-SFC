@@ -1,0 +1,97 @@
+<app-new-dashboard-header
+  [tab]="'training-and-qualifications'"
+  [canEditWorker]="canEditWorker"
+  [updatedDate]="tAndQsLastUpdated"
+  [tAndQCount]="totalRecords"
+  [hasWorkers]="workers?.length > 0"
+></app-new-dashboard-header>
+<div class="govuk-width-container govuk-!-padding-top-2">
+  <app-alert></app-alert>
+  <div class="govuk-!-margin-top-6">
+    <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
+      <app-new-training-link-panel
+        data-testid="trainingLinkPanel"
+        [workplace]="workplace"
+        [workers]="workers"
+        [totalRecords]="totalRecords"
+        [canEditWorker]="canEditWorker"
+        [canEditEstablishment]="canEditEstablishment"
+      ></app-new-training-link-panel>
+      <div class="govuk-grid-row" *ngIf="totalRecords === 0" data-testid="noTandQRecords">
+        <div class="govuk-grid-column-two-thirds">
+          <p>
+            You've not added any training or qualification records yet. Many care providers store their staff training
+            and qualification records in ASC-WDS and get alerts when training is about to expire.
+          </p>
+        </div>
+      </div>
+      <app-training-info-panel
+        *ngIf="workers"
+        data-testid="trainingInfoPanel"
+        [workplaceUid]="workplace.uid"
+        [totalExpiredTraining]="totalExpiredTraining"
+        [totalExpiringTraining]="totalExpiringTraining"
+        [totalStaffMissingMandatoryTraining]="staffMissingMandatoryTraining"
+      ></app-training-info-panel>
+
+      <app-training-select-view-panel
+        [viewTrainingByCategory]="viewTrainingByCategory"
+        (handleViewToggle)="handleViewTrainingByCategory($event)"
+      >
+      </app-training-select-view-panel>
+      <app-training-and-qualifications-summary
+        *ngIf="!viewTrainingByCategory"
+        data-testid="trainingAndQualsSummary"
+        [workplace]="workplace"
+        [workers]="workers"
+        [workerCount]="workerCount"
+        [totalRecords]="totalRecords"
+        [sortByValue]="staffSortByValue"
+        (changeStaffSortBy)="updateSortByValue($event)"
+      ></app-training-and-qualifications-summary>
+
+      <app-training-and-qualifications-categories
+        *ngIf="viewTrainingByCategory"
+        data-testid="trainingAndQualsCategories"
+        [workplace]="workplace"
+        [trainingCategories]="trainingCategories"
+        [totalTraining]="totalTraining"
+        [sortByValue]="trainingSortByValue"
+        (changeTrainingSortBy)="updateSortByValue($event)"
+      ></app-training-and-qualifications-categories>
+    </ng-container>
+    <ng-template #noStaffRecords>
+      <div data-testid="no-staff-records">
+        <app-inset-text color="warning" [removeTopMargin]="true"
+          >You need to <a href="#" (click)="navigateToStaffRecords($event)">add some staff records</a> before you can
+          add training and qualification records</app-inset-text
+        >
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-three-quarters">
+            <h2 class="govuk-!-margin-bottom-6">Why add training and qualification records in ASC-WDS?</h2>
+            <p>
+              This training and qualifications section allows you to add, store, view and keep track of your staff
+              training.
+            </p>
+            <p>
+              You can set specific training as mandatory for each job role you have, so you'll know when a staff member
+              is missing that training. You will also get alerts when training has expired or is about to expire (you
+              can even choose how far in advance to be alerted, so that you can plan in a way that suits your
+              organisation).
+            </p>
+            <p>
+              If a group of staff have attended a training course together, the 'Add training for multiple staff' option
+              lets you update all their records in one go.
+            </p>
+            <p>
+              Training and qualification records can be viewed for individual staff members or grouped together by
+              training type. This makes it ideal for one-to-one reviews and for planning learning and development across
+              the whole team. Records and summaries can be downloaded as reports to use offline, share with colleagues
+              or collected as evidence for inspections.
+            </p>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

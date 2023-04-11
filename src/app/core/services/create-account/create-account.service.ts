@@ -24,6 +24,7 @@ export class CreateAccountService {
   public activationComplete$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public returnTo$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
   public userDetails$: Observable<UserDetails> = this._userDetails$.asObservable();
+  public termsAndConditionsCheckbox$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public token: string;
 
   constructor(private http: HttpClient) {}

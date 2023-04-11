@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-participation',
   templateUrl: './participation.component.html',
 })
-export class ParticipationComponent implements OnInit {
+export class ParticipationComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   public nextPage: URLStructure;
@@ -85,6 +85,5 @@ export class ParticipationComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-    this.updateRouteToNextPage();
   }
 }

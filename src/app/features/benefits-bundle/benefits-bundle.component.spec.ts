@@ -67,7 +67,7 @@ describe('BenefitsBundleComponent', () => {
   it(`should display the "What's the ASC-WDS Benefits Bundle?" reveal and its contents`, async () => {
     const { getByText } = await setup();
 
-    const reveal = getByText("What's the ASC-WDS Benefits Bundle?");
+    const reveal = getByText(`What's the ASC-WDS Benefits Bundle?`);
     const revealContent = getByText(
       'The ASC-WDS Benefits Bundle is our way of saying thank you for using the Adult Social Care Workforce Data Set (ASC-WDS).',
       { exact: false },
@@ -76,6 +76,7 @@ describe('BenefitsBundleComponent', () => {
     expect(reveal).toBeTruthy();
     expect(revealContent).toBeTruthy();
   });
+
   describe('Accordions', () => {
     it('should display accordion headings', async () => {
       const { fixture, getByText } = await setup();
@@ -86,7 +87,7 @@ describe('BenefitsBundleComponent', () => {
       expect(getByText(`10% off Skills for Care’s eLearning modules`)).toBeTruthy();
       expect(getByText('10% off all publications in the Skills for Care bookshop')).toBeTruthy();
       expect(getByText('10% off tailored seminars from Skills for Care')).toBeTruthy();
-      expect(getByText('5 of our top FREE digital downloads')).toBeTruthy();
+      expect(getByText('5 FREE resources')).toBeTruthy();
     });
 
     describe('Open all/Close all', () => {
@@ -169,7 +170,7 @@ describe('BenefitsBundleComponent', () => {
         fireEvent.click(getByText(`10% off Skills for Care’s eLearning modules`));
         fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
         fireEvent.click(getByText('10% off tailored seminars from Skills for Care'));
-        fireEvent.click(getByText('5 of our top FREE digital downloads'));
+        fireEvent.click(getByText('5 FREE resources'));
 
         fixture.detectChanges();
 
@@ -200,46 +201,35 @@ describe('BenefitsBundleComponent', () => {
       expect(link.getAttribute('target')).toBe('_blank');
     });
 
-    it('should display the Recommendations for CQC link in the learning for managers content', async () => {
+    it('should display the Supporting the development of leadership skills link the 5 free downloads content', async () => {
+      const { getByText } = await setup();
+
+      const link = getByText('Supporting the development of leadership skills');
+
+      expect(link.getAttribute('href')).toBe(
+        'https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Developing-leaders-and-managers/Supporting-the-development-of-leadership-skills/Supporting-the-development-of-leadership-skills-guide.pdf',
+      );
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+
+    it('should display the Recommendations for CQC providers link in the 5 free downloads content', async () => {
       const { getByText } = await setup();
 
       const link = getByText('Recommendations for CQC providers');
 
       expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Documents/Standards-legislation/CQC/Recommendations-for-CQC-providers.pdf',
+        'https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/good-and-outstanding-care/Recommendations-for-CQC-providers.pdf',
       );
       expect(link.getAttribute('target')).toBe('_blank');
     });
 
-    it('should display the leadership link in the 5 free downloads content', async () => {
+    it('should display the LGBTQ+ link in the 5 free downloads content', async () => {
       const { getByText } = await setup();
 
-      const link = getByText('Leadership qualities framework');
+      const link = getByText('(LGBTQ+) Care in Later Life');
 
       expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Documents/Leadership-and-management/Leadership-Qualities-Framework/Leadership-Qualities-Framework.pdf',
-      );
-      expect(link.getAttribute('target')).toBe('_blank');
-    });
-
-    it('should display the care guide link in the 5 free downloads content', async () => {
-      const { getByText } = await setup();
-
-      const link = getByText('Good and outstanding care guide');
-
-      expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Documents/Standards-legislation/CQC/Good-and-outstanding-care-guide.pdf',
-      );
-      expect(link.getAttribute('target')).toBe('_blank');
-    });
-
-    it('should display the leadership link in the 5 free downloads content', async () => {
-      const { getByText } = await setup();
-
-      const link = getByText('Leadership qualities framework');
-
-      expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Documents/Leadership-and-management/Leadership-Qualities-Framework/Leadership-Qualities-Framework.pdf',
+        'https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Supporting-a-diverse-workforce/LGBTQ-framework/LGBTQ-learning-framework.pdf',
       );
       expect(link.getAttribute('target')).toBe('_blank');
     });
@@ -250,18 +240,18 @@ describe('BenefitsBundleComponent', () => {
       const link = getByText('Effective supervision guide');
 
       expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Documents/Learning-and-development/Effective-supervision/Effective-supervision-guide-ONLINE.pdf',
+        'https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Managing-people/Supervision/Effective-supervision-guide.pdf',
       );
       expect(link.getAttribute('target')).toBe('_blank');
     });
 
-    it('should display the management toolkit link in the 5 free downloads content', async () => {
+    it('should display the Social media masterclasses by LikeMind Media link in the 5 free downloads content', async () => {
       const { getByText } = await setup();
 
-      const link = getByText('The people performance management toolkit');
+      const link = getByText('Social media masterclasses by LikeMind Media');
 
       expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Documents/Leadership-and-management/People-Performance-Management-Toolkit/People-Performance-Management-Toolkit.pdf',
+        'https://www.skillsforcare.org.uk/Recruitment-support/Application-and-selection-process/Digital-masterclasses.aspx',
       );
       expect(link.getAttribute('target')).toBe('_blank');
     });

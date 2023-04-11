@@ -5,7 +5,6 @@ import { URLStructure } from '@core/model/url.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
 import { ReturnType, WorkplaceUtil } from '@core/utils/workplace-util';
 
@@ -80,7 +79,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     private permissionsService: PermissionsService,
     private workerService: WorkerService,
     private cqcStatusChangeService: CqcStatusChangeService,
-    private wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -114,7 +112,6 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     this.checkAnswersPage = this.return?.url.includes('check-answers');
 
     this.setTotalStaffWarning();
-
     if (this.canEditEstablishment && this.wdfView) {
       this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
     }

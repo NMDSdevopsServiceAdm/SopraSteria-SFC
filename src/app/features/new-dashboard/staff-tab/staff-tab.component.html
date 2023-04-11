@@ -1,0 +1,49 @@
+<app-new-dashboard-header
+  [tab]="'staff-records'"
+  [canAddWorker]="canAddWorker"
+  [updatedDate]="staffLastUpdated"
+></app-new-dashboard-header>
+<div class="govuk-width-container govuk-!-margin-top-7">
+  <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
+    <div data-testid="staff-records">
+      <app-total-staff-panel
+        [workplace]="workplace"
+        [totalStaff]="this.workplace.numberOfStaff"
+        [totalWorkers]="workerCount"
+        [returnToDash]="true"
+      ></app-total-staff-panel>
+
+      <app-staff-summary
+        *ngIf="workers"
+        [workplace]="workplace"
+        [workers]="workers"
+        [workerCount]="workerCount"
+      ></app-staff-summary>
+    </div>
+  </ng-container>
+
+  <ng-template #noStaffRecords>
+    <div data-testid="no-staff-records">
+      <app-inset-text color="warning" [removeTopMargin]="true">Start to add your staff records</app-inset-text>
+
+      <h2 class="govuk-!-margin-bottom-6 govuk-!-padding-top-2">To add a staff record</h2>
+      <p class="govuk-!-margin-bottom-3">You need to know the staff member's:</p>
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+        <li>name or ID number</li>
+        <li>main job role</li>
+        <li>contract type</li>
+      </ul>
+
+      <p class="govuk-!-margin-bottom-6">
+        After you save this mandatory information you can continue to add more details, so <br />that you get a complete
+        record for that staff member.
+      </p>
+      <p class="govuk-!-margin-bottom-3">You'll be asked about that staff member's:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>personal details, like their date of birth and National Insurance number</li>
+        <li>employment details, like when they started their main job role</li>
+        <li>qualifications and training</li>
+      </ul>
+    </div>
+  </ng-template>
+</div>

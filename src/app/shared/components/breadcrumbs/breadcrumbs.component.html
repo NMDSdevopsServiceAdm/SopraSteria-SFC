@@ -1,5 +1,5 @@
 <ng-container *ngIf="breadcrumbs">
-  <div class="govuk-breadcrumbs">
+  <div class="govuk-breadcrumbs govuk-!-margin-top-0 govuk-!-padding-top-3">
     Go back to:
     <ol class="govuk-breadcrumbs__list">
       <li
@@ -8,9 +8,13 @@
         [attr.aria-current]="i + 1 === breadcrumbs.length ? 'page' : null"
       >
         <ng-container *ngIf="i + 1 !== breadcrumbs.length; else final">
-          <a class="govuk-breadcrumbs__link" [routerLink]="breadcrumb.path" [fragment]="breadcrumb.fragment">{{
-            breadcrumb.title
-          }}</a>
+          <a
+            class="govuk-breadcrumbs__link"
+            (click)="selectTab($event, { path: breadcrumb.path, fragment: breadcrumb.fragment })"
+            [routerLink]="breadcrumb.path"
+            [fragment]="breadcrumb.fragment"
+            >{{ breadcrumb.title }}</a
+          >
         </ng-container>
         <ng-template #final>
           {{ breadcrumb.title }}

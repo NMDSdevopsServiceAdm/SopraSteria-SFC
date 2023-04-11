@@ -5,7 +5,6 @@ const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
 const usage = require('./usage');
 const { getPay, getQualifications, getSickness, getTurnover } = require('./benchmarksService');
-const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const comparisonJson = {
   value: 0,
@@ -105,7 +104,7 @@ const viewBenchmarks = async (req, res) => {
     return res.status(500).send();
   }
 };
-router.use('/', hasPermission('canViewBenchmarks'));
+
 router.route('/').get(viewBenchmarks);
 
 router.use('/rankings', rankings);

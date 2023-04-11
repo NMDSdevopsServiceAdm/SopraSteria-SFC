@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ActivationCompleteWithOutChildGuard } from '@core/guards/activation-complete/activation-complete-without-child.guard';
 import { ActivationCompleteGuard } from '@core/guards/activation-complete/activation-complete.guard';
 import { CreateUserGuard } from '@core/guards/create-user/create-user.guard';
 import { ActivationCompleteComponent } from '@features/activate-user-account/activation-complete/activation-complete.component';
@@ -18,7 +19,7 @@ const routes: Routes = [
   {
     path: ':activationToken',
     canActivate: [CreateUserGuard],
-    canActivateChild: [ActivationCompleteGuard],
+
     data: { title: 'Activate User Account' },
     children: [
       {
@@ -34,11 +35,13 @@ const routes: Routes = [
       {
         path: 'security-question',
         component: SecurityQuestionComponent,
+        canActivate: [ActivationCompleteWithOutChildGuard],
         data: { title: 'Security Question' },
       },
 
       {
         path: 'confirm-account-details',
+        canActivateChild: [ActivationCompleteGuard],
         children: [
           {
             path: '',

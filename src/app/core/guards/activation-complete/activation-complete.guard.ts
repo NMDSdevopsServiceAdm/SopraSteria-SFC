@@ -6,17 +6,31 @@ import { CreateAccountService } from '@core/services/create-account/create-accou
   providedIn: 'root',
 })
 export class ActivationCompleteGuard implements CanActivateChild {
-  constructor(
-    private createAccountService: CreateAccountService,
-    private router: Router
-  ) {}
+  constructor(private createAccountService: CreateAccountService, private router: Router) {}
 
-  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (!this.createAccountService.activationComplete$.value) {
-      return true;
-    } else {
+  async canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+    try {
+      const allowed = await this.canActivate();
+
+      if (!allowed) {
+        this.router.navigate(['/activate-account', 'expired-activation-link']);
+        return false;
+      }
+      return allowed;
+    } catch (error) {
       this.router.navigate(['/activate-account', 'expired-activation-link']);
       return false;
     }
+  }
+
+  private async canActivate(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.createAccountService.activationComplete$.subscribe((res) => {
+        if (res) {
+          return resolve(true);
+        }
+        return resolve(false);
+      });
+    });
   }
 }
