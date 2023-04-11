@@ -66,9 +66,7 @@
           </app-link-with-arrow>
 
           <app-link-with-arrow *ngIf="canBulkUpload">
-            <a [routerLink]="['/bulk-upload']" (click)="pushLinkToHistoryState('/bulk-upload')"
-              >Bulk upload your data</a
-            >
+            <a [routerLink]="['/bulk-upload']">Bulk upload your data</a>
           </app-link-with-arrow>
 
           <app-link-with-arrow>
@@ -81,31 +79,19 @@
 
           <app-link-with-arrow *ngIf="canLinkToParent && !workplace.isParent">
             <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
-              <a
-                (click)="cancelLinkToParent($event); pushLinkToHistoryState('#cancel-link-to-parent')"
-                href="#cancel-link-to-parent"
-                >Link to my parent organisation pending</a
-              >
+              <a (click)="cancelLinkToParent($event)" href="#">Link to my parent organisation pending</a>
             </ng-container>
             <ng-template #requestLinkToParent>
-              <a (click)="linkToParent($event); pushLinkToHistoryState('#link-to-parent')" href="#link-to-parent"
-                >Link to my parent organisation</a
-              >
+              <a (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
             </ng-template>
           </app-link-with-arrow>
 
           <app-link-with-arrow *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
             <ng-container *ngIf="parentStatusRequested; else requestBecomeAParent">
-              <a
-                (click)="cancelBecomeAParent($event); pushLinkToHistoryState('#cancel-parent-request')"
-                href="#cancel-parent-request"
-                >Parent request pending</a
-              >
+              <a (click)="cancelBecomeAParent($event)" href="#">Parent request pending</a>
             </ng-container>
             <ng-template #requestBecomeAParent>
-              <a (click)="becomeAParent($event); pushLinkToHistoryState('#parent-request')" href="#parent-request"
-                >Become a parent organisation</a
-              >
+              <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
             </ng-template>
           </app-link-with-arrow>
 

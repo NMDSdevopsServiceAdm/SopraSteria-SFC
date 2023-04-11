@@ -116,10 +116,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
       this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.linkToParentRequestedStatus;
   }
 
-  public pushLinkToHistoryState(urlLink: string): void {
-    history.pushState({}, '', urlLink);
-  }
-
   /**
    * Function used to open modal box for link a workplace to parent organisation
    * @param {event} triggered event

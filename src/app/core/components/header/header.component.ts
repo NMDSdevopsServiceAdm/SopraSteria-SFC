@@ -1,11 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { UserService } from '@core/services/user.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { Subscription } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -13,6 +14,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  @Input() standAloneAccount: boolean;
   private subscriptions: Subscription = new Subscription();
   public isOnAdminScreen = true;
   public users: Array<UserDetails>;
@@ -27,15 +29,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private idleService: IdleService,
     private userService: UserService,
     private establishmentService: EstablishmentService,
+    private notificationsService: NotificationsService,
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.getUser();
     this.setupUserSubscription();
     this.onAdminScreen();
     this.workplaceId && this.getUsers();
+    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
+    this.newHomeDesignFlag && this.setUpNotificationSubscription();
   }
 
   ngOnDestroy(): void {
@@ -80,6 +84,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.getEstablishmentId();
       }),
     );
+  }
+
+  private setUpNotificationSubscription(): void {
+    // get latest notification after every 30 seconds
+    this.subscriptions.add(
+      interval(30000).subscribe(() => {
+        this.notificationsService.getAllNotifications().subscribe(
+          (notifications) => {
+            this.notificationsService.notifications$.next(notifications);
+          },
+          (error) => {
+            console.error(error.error);
+          },
+        );
+      }),
+    );
+  }
+
+  get numberOfNewNotifications(): number {
+    const newNotifications = this.notificationsService.notifications.filter((notification) => !notification.isViewed);
+    return newNotifications.length;
   }
 
   private getEstablishmentId(): void {

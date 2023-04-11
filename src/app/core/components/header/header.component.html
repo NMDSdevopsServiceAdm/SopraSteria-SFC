@@ -48,8 +48,13 @@
                 data-testid="singleUserNotification"
             /></a>
           </li>
-          <li *ngIf="newHomeDesignFlag" class="govuk-header__navigation-item">
-            <a class="govuk-header__link" [routerLink]="['/']">Notifications</a>
+          <li *ngIf="newHomeDesignFlag && !isOnAdminScreen && standAloneAccount" class="govuk-header__navigation-item">
+            <a class="govuk-header__link" [routerLink]="['/notifications']">Notifications</a>
+            <ng-container *ngIf="numberOfNewNotifications > 0">
+              <span class="notification-alert__count" data-testid="new-notifications">{{
+                numberOfNewNotifications
+              }}</span>
+            </ng-container>
           </li>
           <li class="govuk-header__navigation-item">
             <a href="#" (click)="signOut($event)" class="govuk-header__link">Sign out</a>
