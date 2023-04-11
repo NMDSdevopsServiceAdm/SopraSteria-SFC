@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -13,7 +13,7 @@ export class SatisfactionSurveyComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   private uid: string;
   private wid: string;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   public didYouDoEverythingMaxLength = 500;
@@ -23,7 +23,7 @@ export class SatisfactionSurveyComponent implements AfterViewInit {
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     route: ActivatedRoute,
-    formBuilder: FormBuilder,
+    formBuilder: UntypedFormBuilder,
   ) {
     this.form = formBuilder.group({
       didYouDoEverything: null,

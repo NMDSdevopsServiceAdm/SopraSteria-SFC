@@ -2,7 +2,7 @@ import 'rxjs/add/observable/from';
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
@@ -78,7 +78,7 @@ describe('MissingStaffReferencesComponent', () => {
           },
         },
         BackService,
-        FormBuilder,
+        UntypedFormBuilder,
         ErrorSummaryService,
         AdminSkipService,
       ],

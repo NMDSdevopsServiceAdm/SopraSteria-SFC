@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class TotalStaffComponent implements OnInit {
   @Input() establishmentUid: string;
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() formErrorsMap: Array<ErrorDetails>;
   @Input() submitted: boolean;
   @Input() errorSummaryService: ErrorSummaryService;

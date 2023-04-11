@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -21,7 +21,7 @@ export class ServicesCapacityComponent extends Question {
   public errorsSummaryErrorsMap: ErrorDetails[] = [];
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -58,7 +58,7 @@ export class ServicesCapacityComponent extends Question {
             const formControlName = this.generateFormControlName(question);
             group.addControl(
               formControlName,
-              new FormControl(question.answer, {
+              new UntypedFormControl(question.answer, {
                 validators: [Validators.min(1), Validators.max(999), Validators.pattern(this.intPattern)],
                 updateOn: 'submit',
               }),
@@ -122,7 +122,7 @@ export class ServicesCapacityComponent extends Question {
     );
   }
 
-  protected requiredValidator(group: FormGroup): ValidationErrors {
+  protected requiredValidator(group: UntypedFormGroup): ValidationErrors {
     const controls = [];
     Object.keys(group.controls).forEach((key) => {
       controls.push(group.get(key));
@@ -135,7 +135,7 @@ export class ServicesCapacityComponent extends Question {
     return null;
   }
 
-  protected capacityUtilisationValidator(group: FormGroup): ValidationErrors {
+  protected capacityUtilisationValidator(group: UntypedFormGroup): ValidationErrors {
     const controls = [];
 
     Object.keys(group.controls).forEach((key) => {
@@ -156,7 +156,7 @@ export class ServicesCapacityComponent extends Question {
     this.capacities.forEach((service) => {
       const questions = service.questions;
       const id = this.generateFormGroupName(service.service);
-      const group = this.form.get(id) as FormGroup;
+      const group = this.form.get(id) as UntypedFormGroup;
 
       questions.forEach((question) => {
         const formControlName = this.generateFormControlName(question);

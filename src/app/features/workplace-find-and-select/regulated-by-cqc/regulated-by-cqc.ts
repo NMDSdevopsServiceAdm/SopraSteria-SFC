@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
@@ -19,7 +19,7 @@ export class RegulatedByCQCDirective implements OnInit, OnDestroy, AfterViewInit
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected isCQCLocationUpdate: boolean;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public submitted = false;
@@ -27,7 +27,7 @@ export class RegulatedByCQCDirective implements OnInit, OnDestroy, AfterViewInit
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected locationService: LocationService,
     protected route: ActivatedRoute,
     protected router: Router,

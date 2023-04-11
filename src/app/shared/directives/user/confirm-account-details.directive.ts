@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
@@ -24,7 +24,7 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
   public securityInfo: SummaryList[];
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
   public serverError: string;
@@ -34,7 +34,7 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
 
   constructor(
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected route: ActivatedRoute,
   ) {}
 

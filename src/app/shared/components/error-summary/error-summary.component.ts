@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -11,7 +11,7 @@ import { filter } from 'rxjs/operators';
   templateUrl: './error-summary.component.html',
 })
 export class ErrorSummaryComponent implements OnInit, OnDestroy {
-  @Input() public form: FormGroup;
+  @Input() public form: UntypedFormGroup;
   @Input() public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError?: string;
   @Input() public customErrors?: Array<ErrorDefinition>;
@@ -62,9 +62,9 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
     this.errors = [];
 
     Object.keys(this.form.controls).forEach((key) => {
-      const isFormControl: boolean = this.form.get(key) instanceof FormControl;
-      const isFormGroup: boolean = this.form.get(key) instanceof FormGroup;
-      const isFormArray: boolean = this.form.get(key) instanceof FormArray;
+      const isFormControl: boolean = this.form.get(key) instanceof UntypedFormControl;
+      const isFormGroup: boolean = this.form.get(key) instanceof UntypedFormGroup;
+      const isFormArray: boolean = this.form.get(key) instanceof UntypedFormArray;
 
       if (isFormControl) {
         this.collectError(this.form.get(key), key);
@@ -78,7 +78,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
           this.collectError(formGroup, key);
         }
       } else if (isFormArray) {
-        const formArray = this.form.get(key) as FormArray;
+        const formArray = this.form.get(key) as UntypedFormArray;
         if (formArray.errors) {
           Object.keys(formArray.errors).forEach(() => this.collectError(formArray, key));
         }
@@ -92,7 +92,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
 
           if (formGroupControls) {
             Object.keys(formGroupControls).forEach((i) => {
-              if (formGroupControls[i] instanceof FormArray) {
+              if (formGroupControls[i] instanceof UntypedFormArray) {
                 formGroupControls[i].controls.forEach((frmGroup) => {
                   const frmGroupControls: AbstractControl = frmGroup[`controls`];
                   if (frmGroupControls) {

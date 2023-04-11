@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
@@ -31,7 +31,7 @@ export class StartersComponent extends Question {
   private maxStarters = 999;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -41,12 +41,12 @@ export class StartersComponent extends Question {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
-  get starterRecords(): FormArray {
-    return this.form.get('starterRecords') as FormArray;
+  get starterRecords(): UntypedFormArray {
+    return this.form.get('starterRecords') as UntypedFormArray;
   }
 
   get noRecordsReason(): AbstractControl {
-    return this.form.get('noRecordsReason') as FormControl;
+    return this.form.get('noRecordsReason') as UntypedFormControl;
   }
 
   get allJobsSelected(): boolean {
@@ -220,7 +220,7 @@ export class StartersComponent extends Question {
     this.submitted = false;
   }
 
-  private createRecordItem(jobRole: number = null, total: number = null): FormGroup {
+  private createRecordItem(jobRole: number = null, total: number = null): UntypedFormGroup {
     return this.formBuilder.group({
       jobRole: [jobRole, [Validators.required]],
       total: [total, [Validators.required, Validators.min(this.minStarters), Validators.max(this.maxStarters)]],

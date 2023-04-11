@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public serverError: string;
   public doingWhatCharacterLimit = 500;
@@ -28,7 +28,7 @@ export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private errorSummaryService: ErrorSummaryService,
     private feedbackService: FeedbackService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private breadcrumbService: BreadcrumbService,
     private router: Router,
   ) {}
