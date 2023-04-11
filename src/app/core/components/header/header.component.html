@@ -44,9 +44,12 @@
                 alt="Add more users"
                 class="govuk-!-margin-right-1 govuk-!-margin-bottom-1"
                 style="height: 16px; width: 16px"
-                *ngIf="users && users.length == 1"
+                *ngIf="users?.length === 1"
                 data-testid="singleUserNotification"
             /></a>
+          </li>
+          <li *ngIf="newHomeDesignFlag" class="govuk-header__navigation-item">
+            <a class="govuk-header__link" [routerLink]="['/']">Notifications</a>
           </li>
           <li class="govuk-header__navigation-item">
             <a href="#" (click)="signOut($event)" class="govuk-header__link">Sign out</a>

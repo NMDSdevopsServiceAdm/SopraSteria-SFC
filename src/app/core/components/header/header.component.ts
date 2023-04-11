@@ -4,6 +4,7 @@ import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -19,15 +20,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public user: UserDetails;
   public showDropdown = false;
   public workplaceId: string;
+  public newHomeDesignFlag: boolean;
 
   constructor(
     private authService: AuthService,
     private idleService: IdleService,
     private userService: UserService,
     private establishmentService: EstablishmentService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.getUser();
     this.setupUserSubscription();
     this.onAdminScreen();
