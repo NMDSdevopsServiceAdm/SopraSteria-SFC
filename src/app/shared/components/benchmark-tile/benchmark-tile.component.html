@@ -2,9 +2,14 @@
   <div class="asc-tile">
     <div class="asc-tile-description">
       <h2 class="govuk-heading-l govuk-!-margin-bottom-2">
-        <a class="asc-tile-link" [routerLink]="['/workplace', workplaceID, 'benchmarks', type]">
+        <a
+          *ngIf="canViewFullContent"
+          class="asc-tile-link"
+          [routerLink]="['/workplace', workplaceID, 'benchmarks', type]"
+        >
           {{ title }}
         </a>
+        <span *ngIf="!canViewFullContent">{{ title }}</span>
       </h2>
       <p class="govuk-body-s govuk-!-margin-bottom-0">{{ tileDescription }}</p>
     </div>

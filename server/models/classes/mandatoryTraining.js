@@ -195,10 +195,13 @@ class MandatoryTraining extends EntityValidator {
   }
 
   async checkIfMandatoryTrainingAlreadyExists() {
+    const { trainingCategoryId, previousTrainingCategoryId } = this.mandatorytrainingDetails;
+    const trainingCatId = previousTrainingCategoryId ? previousTrainingCategoryId : trainingCategoryId;
+
     const fetchQuery = {
       where: {
         establishmentFK: this.establishmentId,
-        TrainingCategoryFK: this.mandatorytrainingDetails.trainingCategoryId,
+        TrainingCategoryFK: trainingCatId,
       },
     };
     await models.MandatoryTraining.destroy(fetchQuery);

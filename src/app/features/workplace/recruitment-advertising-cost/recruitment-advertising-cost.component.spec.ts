@@ -225,6 +225,18 @@ describe('RecruitmentAdvertisingCostComponent', () => {
       });
     });
 
+    it('should render the reveal', async () => {
+      const { getByText } = await setup();
+
+      const reveal = getByText('Why we ask for this information');
+      const revealText = getByText(
+        `DHSC use this anonymised data to help them better understand the difficulties and cost of recruitment into the adult social care sector. Your information helps DHSC to identify where policy changes could make staff recruitment easier in the future.`,
+      );
+
+      expect(reveal).toBeTruthy();
+      expect(revealText).toBeTruthy();
+    });
+
     it('should call the updateSingleEstablishmentField when submitting form with a radio button selected', async () => {
       const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 

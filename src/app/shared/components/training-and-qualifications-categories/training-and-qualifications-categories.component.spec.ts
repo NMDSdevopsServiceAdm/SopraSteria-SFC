@@ -146,8 +146,9 @@ describe('TrainingAndQualificationsCategoriesComponent', () => {
   });
 
   it('should show the no records text, when there are no t and q records for an establishment', async () => {
-    const { getByTestId } = await setup(0);
-
+    const { getByTestId, fixture, component } = await setup(0);
+    component.mandatoryTrainingCount = 0;
+    fixture.detectChanges();
     expect(getByTestId('noRecords')).toBeTruthy();
   });
 

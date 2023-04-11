@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { JourneyRoute } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -11,7 +13,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
   public breadcrumbs: JourneyRoute[];
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private breadcrumbService: BreadcrumbService) {}
+  constructor(private breadcrumbService: BreadcrumbService, private router: Router, private tabsService: TabsService) {}
 
   ngOnInit(): void {
     this.subscriptions.add(
@@ -32,6 +34,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
       {
         title: 'Home',
         path: '/dashboard',
+        fragment: 'home',
       },
       ...routes,
     ];
@@ -49,5 +52,12 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
     });
 
     return routes;
+  }
+
+  public selectTab(event: Event, route: { path: string; fragment: string }): void {
+    event.preventDefault();
+    if (route.path === '/dashboard' && route.fragment === 'home') {
+      this.tabsService.selectedTab = 'home';
+    }
   }
 }

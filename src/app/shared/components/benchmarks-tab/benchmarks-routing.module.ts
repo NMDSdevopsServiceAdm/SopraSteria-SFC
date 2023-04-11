@@ -17,38 +17,48 @@ const routes: Routes = [
   {
     path: 'rankings',
     component: BenchmarksRankingsComponent,
+    canActivate: [CheckPermissionsGuard],
 
     data: {
       title: 'Rankings',
+      permissions: ['canViewBenchmarks'],
     },
   },
   {
     path: 'pay',
     component: BenchmarksMetricComponent,
+    canActivate: [CheckPermissionsGuard],
 
     data: {
       ...MetricsContent.Pay,
+      permissions: ['canViewBenchmarks'],
     },
   },
   {
     path: 'turnover',
     component: BenchmarksMetricComponent,
+    canActivate: [CheckPermissionsGuard],
     data: {
       ...MetricsContent.Turnover,
+      permissions: ['canViewBenchmarks'],
     },
   },
   {
     path: 'qualifications',
     component: BenchmarksMetricComponent,
+    canActivate: [CheckPermissionsGuard],
     data: {
       ...MetricsContent.Qualifications,
+      permissions: ['canViewBenchmarks'],
     },
   },
   {
     path: 'sickness',
     component: BenchmarksMetricComponent,
+    canActivate: [CheckPermissionsGuard],
     data: {
       ...MetricsContent.Sickness,
+      permissions: ['canViewBenchmarks'],
     },
   },
 ];

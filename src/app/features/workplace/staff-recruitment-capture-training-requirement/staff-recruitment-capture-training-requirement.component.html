@@ -11,6 +11,12 @@
         <div class="govuk-!-margin-bottom-6">
           <p>Training could be things like 'moving and handling' and 'dementia care'.</p>
         </div>
+        <app-details [title]="'Why we ask for this information'">
+          <p>
+            This data is used to determine the cost to the social care sector of staff moving between employers and to
+            monitor whether DHSC policies make training more transferable.
+          </p>
+        </app-details>
         <div class="govuk-form-group">
           <div class="govuk-radios govuk-!-margin-bottom-4">
             <ng-container *ngFor="let option of trainingRequiredOptions; let i = index">

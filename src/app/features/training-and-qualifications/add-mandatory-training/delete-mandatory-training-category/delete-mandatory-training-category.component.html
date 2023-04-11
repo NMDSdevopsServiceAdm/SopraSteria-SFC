@@ -1,0 +1,39 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <h1 class="govuk-heading-l">You're about to remove this mandatory training category</h1>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters govuk-!-margin-top-2">
+    <p class="govuk-!-margin-bottom-7">
+      If you do this, '{{ selectedCategory?.category | lowercase }}' will not be mandatory for any of your staff at the
+      moment.
+    </p>
+    <dl class="govuk-summary-list asc-summarylist-border-top">
+      <div class="govuk-summary-list__row" scope="row">
+        <dt class="govuk-summary-list__key govuk-!-width-one-half">Training category</dt>
+        <dd class="govuk-summary-list__value" data-testid="trainingCategory">{{ selectedCategory?.category }}</dd>
+      </div>
+      <div class="govuk-summary-list__row" scope="row">
+        <dt class="govuk-summary-list__key">Job roles</dt>
+        <dd class="govuk-summary-list__value">All</dd>
+      </div>
+    </dl>
+
+    <ng-container>
+      <button
+        type="submit"
+        (click)="onDelete()"
+        class="govuk-button govuk-!-margin-right-9 govuk-!-margin-top-5 govuk-button--warning"
+      >
+        Remove category
+      </button>
+
+      <span class="govuk-visually-hidden">or</span>
+      <a class="govuk-button govuk-button--link govuk-!-margin-left-9 govuk-!-margin-top-5" (click)="onCancel()"
+        >Cancel</a
+      >
+    </ng-container>
+  </div>
+</div>

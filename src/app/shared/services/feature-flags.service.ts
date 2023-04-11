@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 
 export class FeatureFlagsService {
   public configCatClient: IConfigCatClient;
+  private _newHomeDesignFlag: boolean;
 
   constructor() {}
 
@@ -14,5 +15,13 @@ export class FeatureFlagsService {
     } else {
       this.configCatClient = configcat.createClientWithManualPoll(environment.configCatKey, {});
     }
+  }
+
+  public get newHomeDesignFlag(): boolean {
+    return this._newHomeDesignFlag;
+  }
+
+  public set newHomeDesignFlag(value: boolean) {
+    this._newHomeDesignFlag = value;
   }
 }

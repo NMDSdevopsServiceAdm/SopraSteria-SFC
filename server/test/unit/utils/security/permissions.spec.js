@@ -504,6 +504,65 @@ describe('permissions', () => {
         ]);
       });
 
+      describe('canViewBenchmarks', async () => {
+        beforeEach(() => {
+          models.establishment.getInfoForPermissions.restore();
+        });
+
+        it('should return canViewBenchmarks permission when isRegulated and main service id is in [24, 25, 20]', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return {
+              mainService: { id: 20 },
+              dataOwnershipRequested: false,
+              get: (field) => {
+                if (field === 'hasParent') return false;
+                if (field === 'hasRequestedToBecomeAParent') return false;
+                if (field === 'IsRegulated') return true;
+              },
+            };
+          });
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canViewBenchmarks');
+        });
+
+        it('should not return canViewBenchmarks permission when main service id is in [24, 25, 20] but isRegulated is false', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return {
+              mainService: { id: 20 },
+              dataOwnershipRequested: false,
+              get: (field) => {
+                if (field === 'hasParent') return false;
+                if (field === 'hasRequestedToBecomeAParent') return false;
+                if (field === 'IsRegulated') return false;
+              },
+            };
+          });
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canViewBenchmarks');
+        });
+
+        it('should not return canViewBenchmarks permission when isRegulated but main service id is not in [24, 25, 20]', async () => {
+          sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
+            return {
+              mainService: { id: 12 },
+              get: (field) => {
+                if (field === 'hasParent') return false;
+                if (field === 'hasRequestedToBecomeAParent') return false;
+                if (field === 'IsRegulated') return false;
+              },
+            };
+          });
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canViewBenchmarks');
+        });
+      });
+
       describe('canManageWdfClaims', async () => {
         it('should not include canManageWdfClaims in returned array when canManageWdfClaims is false', async () => {
           const returnedPermissions = await getPermissions(req);
@@ -634,6 +693,20 @@ describe('permissions', () => {
         mainServiceId: 1,
         dataOwnershipRequested: false,
       };
+    });
+
+    describe('canViewBenchmarks', () => {
+      it('should return only dataPermissionNone() if user has no viewing permissions without canViewBenchmarks', () => {
+        const permissions = getViewingPermissions('None', establishmentInfo);
+        expect(permissions).to.deep.equal(['canRemoveParentAssociation']);
+      });
+
+      it('should return only dataPermissionNone() if user has no viewing permissions with canViewBenchmarks if regulated and has correct main service', () => {
+        establishmentInfo.mainServiceId = 20;
+
+        const permissions = getViewingPermissions('None', establishmentInfo);
+        expect(permissions).to.deep.equal(['canRemoveParentAssociation', 'canViewBenchmarks']);
+      });
     });
 
     it('should return only dataPermissionNone() if user has no viewing permissions', () => {

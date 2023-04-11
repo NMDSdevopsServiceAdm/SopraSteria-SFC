@@ -53,8 +53,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    if (this.route.snapshot.params.trainingCategory) {
-      this.trainingCategory = JSON.parse(this.route.snapshot.params.trainingCategory);
+    if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
+      this.trainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
     }
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();

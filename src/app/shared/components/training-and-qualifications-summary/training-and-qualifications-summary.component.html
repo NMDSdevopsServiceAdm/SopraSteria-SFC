@@ -45,7 +45,7 @@
         </td>
         <td class="govuk-table__cell">{{ worker.trainingCount + worker.qualificationCount }}</td>
         <td class="govuk-table__cell">
-          <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-1">
+          <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-0">
             <img
               src="/assets/images/flag-red.svg"
               alt=""
@@ -54,7 +54,7 @@
             {{ worker.expiredTrainingCount }}
             expired
           </div>
-          <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-1">
+          <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-0">
             <img
               src="/assets/images/flag-red.svg"
               alt=""
@@ -63,7 +63,7 @@
             {{ worker.missingMandatoryTrainingCount }}
             missing
           </div>
-          <div *ngIf="worker.expiringTrainingCount > 0" class="govuk-!-margin-bottom-1">
+          <div *ngIf="worker.expiringTrainingCount > 0" class="govuk-!-margin-bottom-0">
             <img
               src="/assets/images/flag-orange.svg"
               alt=""

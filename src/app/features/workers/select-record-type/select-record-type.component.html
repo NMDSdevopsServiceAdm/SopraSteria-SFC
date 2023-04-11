@@ -5,21 +5,14 @@
   [serverError]="serverError"
 >
 </app-error-summary>
-<ng-container *ngIf="worker">
-  <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-full">
-      <span class="govuk-caption-xl govuk-!-margin-right-3" data-testid="workerNameAndRole">
-        {{ worker.nameOrId }}
-      </span>
-    </div>
-  </div>
-</ng-container>
-
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span *ngIf="worker" class="govuk-caption-l" data-testid="workerNameAndRole">
+            {{ worker.nameOrId }}
+          </span>
           <h1 class="govuk-fieldset__heading govuk-!-margin-bottom-3">Select the type of record you want to add</h1>
         </legend>
 
@@ -49,7 +42,7 @@
         </div>
       </fieldset>
 
-      <button class="govuk-button govuk-!-margin-right-7" type="submit" (click)="addRecord()">Continue</button>
+      <button class="govuk-button govuk-!-margin-right-7" type="submit">Continue</button>
       <a
         class="govuk-button govuk-button--link govuk-!-margin-left-9"
         role="button"

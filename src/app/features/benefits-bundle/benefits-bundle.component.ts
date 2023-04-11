@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-benefits-bundle',
@@ -11,7 +10,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class BenefitsBundleComponent implements OnInit {
   public workplaceName: string;
   public workplaceId: string;
-  public revealTitle = "What's the ASC-WDS Benefits Bundle?";
+  public revealTitle = `What's the ASC-WDS Benefits Bundle?`;
   public allOpen = false;
   public endorsedProvidersLinkFlag: boolean;
   public benefits = [
@@ -32,16 +31,12 @@ export class BenefitsBundleComponent implements OnInit {
       open: false,
     },
     {
-      title: '5 of our top FREE digital downloads',
+      title: '5 FREE resources',
       open: false,
     },
   ];
 
-  constructor(
-    private establishmentService: EstablishmentService,
-    private breadcrumbService: BreadcrumbService,
-    private featureFlagsService: FeatureFlagsService,
-  ) {}
+  constructor(private establishmentService: EstablishmentService, private breadcrumbService: BreadcrumbService) {}
 
   public async ngOnInit(): Promise<void> {
     this.workplaceName = this.establishmentService.primaryWorkplace.name;

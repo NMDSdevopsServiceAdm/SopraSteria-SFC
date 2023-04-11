@@ -60,9 +60,12 @@ export class SelectRecordTypeComponent implements OnInit, AfterViewInit {
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group({
-      selectRecordType: [null, Validators.required],
-    });
+    this.form = this.formBuilder.group(
+      {
+        selectRecordType: [null, Validators.required],
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   private setupFormErrorsMap(): void {
@@ -87,8 +90,9 @@ export class SelectRecordTypeComponent implements OnInit, AfterViewInit {
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (this.form.invalid) {
+    if (this.form.valid) {
+      this.addRecord();
+    } else if (this.form.invalid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }

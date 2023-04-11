@@ -14,16 +14,18 @@ describe('BenchmarksTabComponent', () => {
   let component: BenchmarksTabComponent;
   let fixture: ComponentFixture<BenchmarksTabComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
-      providers: [
-        { provide: BenchmarksService, useClass: MockBenchmarksService },
-        { provide: PermissionsService, useClass: MockPermissionsService },
-      ],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule, HttpClientTestingModule],
+        declarations: [],
+        providers: [
+          { provide: BenchmarksService, useClass: MockBenchmarksService },
+          { provide: PermissionsService, useClass: MockPermissionsService },
+        ],
+      }).compileComponents();
+    }),
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(BenchmarksTabComponent);

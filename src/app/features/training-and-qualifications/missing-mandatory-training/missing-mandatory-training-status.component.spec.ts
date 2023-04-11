@@ -192,22 +192,22 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     const tableRow3 = getByTestId(`table-row-${workers[0].name}-2`);
     const tableRow4 = getByTestId(`table-row-${workers[1].name}-0`);
 
-    const table1UpdateLink = within(tableRow1).getByText('Add');
-    const table2UpdateLink = within(tableRow2).getByText('Add');
-    const table3UpdateLink = within(tableRow3).getByText('Add');
-    const table4UpdateLink = within(tableRow4).getByText('Add');
+    const table1AddLink = within(tableRow1).getByText('Add');
+    const table2AddLink = within(tableRow2).getByText('Add');
+    const table3AddLink = within(tableRow3).getByText('Add');
+    const table4AddLink = within(tableRow4).getByText('Add');
 
-    expect(table1UpdateLink.getAttribute('href').slice(0, table1UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
+    expect(table1AddLink.getAttribute('href').slice(0, table1AddLink.getAttribute('href').indexOf('?'))).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`,
     );
 
-    expect(table2UpdateLink.getAttribute('href').slice(0, table2UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
+    expect(table2AddLink.getAttribute('href').slice(0, table2AddLink.getAttribute('href').indexOf('?'))).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`,
     );
-    expect(table3UpdateLink.getAttribute('href').slice(0, table3UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
+    expect(table3AddLink.getAttribute('href').slice(0, table3AddLink.getAttribute('href').indexOf('?'))).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`,
     );
-    expect(table4UpdateLink.getAttribute('href').slice(0, table4UpdateLink.getAttribute('href').indexOf(';'))).toEqual(
+    expect(table4AddLink.getAttribute('href').slice(0, table4AddLink.getAttribute('href').indexOf('?'))).toEqual(
       `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-2/add-training`,
     );
   });

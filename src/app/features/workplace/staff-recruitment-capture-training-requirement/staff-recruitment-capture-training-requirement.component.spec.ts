@@ -9,9 +9,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import {
-  StaffRecruitmentCaptureTrainingRequirementComponent,
-} from './staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(returnUrl = true, repeatTraining = undefined) {
@@ -66,6 +64,18 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     expect(getByLabelText('Yes, very often')).toBeTruthy();
     expect(getByLabelText('Yes, but not very often')).toBeTruthy();
     expect(getByLabelText('No, never')).toBeTruthy();
+  });
+
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      `This data is used to determine the cost to the social care sector of staff moving between employers and to monitor whether DHSC policies make training more transferable.`,
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
   });
 
   it('should unselect previously selected radio button when another radio button is selected', async () => {

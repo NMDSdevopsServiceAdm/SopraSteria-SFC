@@ -10,16 +10,6 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
   constructor() {
     super();
     this.configCatClient.getValueAsync = (flagName, defaultSetting) => {
-      if (flagName === 'endorsedProvidersLink') {
-        return new Promise((resolve) => {
-          return resolve(true);
-        });
-      }
-      if (flagName === 'bulkUploadHelp') {
-        return new Promise((resolve) => {
-          return resolve(true);
-        });
-      }
       if (flagName === 'wdfUser') {
         return new Promise((resolve) => {
           return resolve(true);
@@ -27,6 +17,11 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
       }
 
       if (flagName === 'wdfNewDesign') {
+        return new Promise((resolve) => {
+          return resolve(true);
+        });
+      }
+      if (flagName === 'homePageNewDesign') {
         return new Promise((resolve) => {
           return resolve(true);
         });

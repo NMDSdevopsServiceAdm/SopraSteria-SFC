@@ -53,6 +53,7 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
   }
 
   protected save(): void {
+    this.createAccountService.activationComplete$.next(true);
     this.router.navigate(['/activate-account', this.activationToken, 'confirm-account-details']).then(() => {
       this.createAccountService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,

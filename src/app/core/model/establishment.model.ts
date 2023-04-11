@@ -227,10 +227,11 @@ export interface setPermission {
 }
 
 export interface mandatoryJobs {
-  id: number;
+  id: number | string;
 }
 
 export interface mandatoryTraining {
+  previousTrainingCategoryId?: number;
   trainingCategoryId: number;
   allJobRoles: boolean;
   category?: string;

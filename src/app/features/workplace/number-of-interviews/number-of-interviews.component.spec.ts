@@ -85,6 +85,18 @@ describe('NumberOfInterviews', () => {
     expect(form.value).toEqual({ numberOfInterviews: '4', numberOfInterviewsKnown: null });
   });
 
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      `This data is used to determine the success of recruitment campaigns and DHSC policies in making the social care sector more attractive as a career.`,
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
   it('should clear the input when a radio button is selected and there is a value in the input', async () => {
     const { component, fixture, getByLabelText } = await setup();
 

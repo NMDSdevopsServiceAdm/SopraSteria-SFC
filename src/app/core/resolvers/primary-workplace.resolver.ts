@@ -15,6 +15,8 @@ export class PrimaryWorkplaceResolver implements Resolve<any> {
       return this.establishmentService.getEstablishment(workplaceUid).pipe(
         tap((workplace) => {
           this.establishmentService.setPrimaryWorkplace(workplace);
+          const standAloneAccount = !(workplace?.isParent || workplace?.parentUid);
+          this.establishmentService.standAloneAccount = standAloneAccount;
         }),
       );
     }
