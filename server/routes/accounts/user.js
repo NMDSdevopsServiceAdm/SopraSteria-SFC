@@ -799,6 +799,171 @@ const listNotifications = async (req, res) => {
   }
 };
 
+/**
+ * Method will fetch the notification details.
+ * @param notification
+ */
+const getNotificationDetails = async (notification) => {
+  let notificationDetailsParams = {
+    typeUid: notification.typeUid,
+  };
+  const notificationDetails = await linkSubToParent.getNotificationDetails(notificationDetailsParams);
+  const subEstablishmentName = await linkSubToParent.getSubEstablishmentName(notificationDetailsParams);
+  if (subEstablishmentName) {
+    notificationDetails[0].subEstablishmentName = subEstablishmentName[0].subEstablishmentName;
+    notificationDetails[0].subEstablishmentId = subEstablishmentName[0].subestablishmentid;
+    notificationDetails[0].parentEstablishmentId = subEstablishmentName[0].parentestablishmentid;
+    notificationDetails[0].rejectionReason = subEstablishmentName[0].rejectionreason;
+  }
+  return notificationDetails;
+};
+
+const addTypeContent = async (notification) => {
+  notification.typeContent = {};
+
+  switch (notification.type) {
+    case 'OWNERCHANGE': {
+      const subQuery = await ownershipChangeRequests.getOwnershipNotificationDetails({
+        ownerChangeRequestUid: notification.typeUid,
+      });
+      if (subQuery.length === 1) {
+        if (subQuery[0].createdByUserUID) {
+          const requestorName = await notifications.getRequesterName(notification.createdByUserUID);
+          if (requestorName) {
+            subQuery.forEach(function (element) {
+              element.requestorName = requestorName[0].NameValue;
+            });
+          }
+          // fetch reject reason if available
+          let rejectionReasonParam = {
+            ownerRequestChangeUid: subQuery[0].ownerChangeRequestUID,
+          };
+          let rejectionReason = await ownershipChangeRequests.getUpdatedOwnershipRequest(rejectionReasonParam);
+          if (rejectionReason.length === 1 && rejectionReason[0].approvalStatus === 'DENIED') {
+            subQuery.forEach(function (element) {
+              element.rejectionReason = rejectionReason[0].approvalReason;
+            });
+          }
+        }
+        notification.typeContent = subQuery[0];
+      }
+      break;
+    }
+    case 'LINKTOPARENTREQUEST': {
+      let fetchNotificationDetails = await getNotificationDetails(notification);
+      if (fetchNotificationDetails) {
+        fetchNotificationDetails[0].requestorName = fetchNotificationDetails[0].subEstablishmentName;
+        notification.typeContent = fetchNotificationDetails[0];
+      }
+      break;
+    }
+    case 'LINKTOPARENTAPPROVED': {
+      let fetchApprovedNotificationDetails = await getNotificationDetails(notification);
+      if (fetchApprovedNotificationDetails) {
+        fetchApprovedNotificationDetails[0].requestorName = fetchApprovedNotificationDetails[0].parentEstablishmentName;
+        notification.typeContent = fetchApprovedNotificationDetails[0];
+      }
+      break;
+    }
+    case 'LINKTOPARENTREJECTED': {
+      let fetchRejectNotificationDetails = await getNotificationDetails(notification);
+      if (fetchRejectNotificationDetails) {
+        fetchRejectNotificationDetails[0].requestorName = fetchRejectNotificationDetails[0].parentEstablishmentName;
+        notification.typeContent = fetchRejectNotificationDetails[0];
+      }
+      break;
+    }
+    case 'DELINKTOPARENT': {
+      let deLinkNotificationDetails = await notifications.getRequesterName(notification.createdByUserUID);
+      if (deLinkNotificationDetails) {
+        let deLinkParentDetails = await notifications.getDeLinkParentDetails(notification.typeUid);
+        if (deLinkParentDetails) {
+          let deLinkParentName = await notifications.getDeLinkParentName(deLinkParentDetails[0].EstablishmentID);
+          if (deLinkParentName) {
+            notification.typeContent.parentEstablishmentName = deLinkParentName[0].NameValue;
+            notification.typeContent.requestorName = deLinkNotificationDetails[0].NameValue;
+          }
+        }
+      }
+      break;
+    }
+    case 'BECOMEAPARENT': {
+      let becomeAParentNotificationDetails = await models.Approvals.findbyUuid(notification.typeUid);
+      if (becomeAParentNotificationDetails) {
+        notification.typeContent = {
+          status: becomeAParentNotificationDetails.Status,
+        };
+      }
+      break;
+    }
+  }
+
+  delete notification.typeUid;
+};
+
+const getNotification = async (req, res) => {
+  try {
+    const params = {
+      userUid: req.userUid, // pull the user's uuid out of JWT
+      notificationUid: req.params.notificationUid, // and the notificationUid from the url
+    };
+    const notification = await notifications.getOne(params);
+    if (notification.length !== 1) {
+      return res.status(404).send({
+        message: 'Not found',
+      });
+    }
+
+    await addTypeContent(notification[0]);
+    // this will fetch notification receiver name
+    if (notification[0].type === 'OWNERCHANGE') {
+      const notificationReciever = await ownershipChangeRequests.getNotificationRecieverName(params);
+      if (notificationReciever.length === 1) {
+        notification.forEach((element) => {
+          element.recieverName = notificationReciever[0].NameValue;
+        });
+      }
+    }
+    // return the item
+    return res.status(200).send(notification[0]);
+  } catch (e) {
+    return res.status(500).send({
+      message: e.message,
+    });
+  }
+};
+
+const readNotification = async (req, res) => {
+  try {
+    if (req.body.isViewed !== true) {
+      return res.status(400).send({
+        message: 'The isViewed field is required to be true',
+      });
+    }
+
+    const params = {
+      userUid: req.userUid, //pull the user's uuid out of JWT
+      notificationUid: req.params.notificationUid, // and the notificationUid from the url
+    };
+    const notification = await notifications.markOneAsRead(params).then(() => notifications.getOne(params));
+
+    if (notification.length !== 1) {
+      return res.status(404).send({
+        message: 'Not found',
+      });
+    }
+
+    await addTypeContent(notification[0]);
+
+    //return the list
+    return res.status(200).send(notification[0]);
+  } catch (e) {
+    return res.status(500).send({
+      message: e.message,
+    });
+  }
+};
+
 router.use('/swap/establishment/notification/:nmsdId', Authorization.isAdmin);
 router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) => {
   try {
@@ -953,7 +1118,8 @@ router.route('/my/establishments').get(Authorization.isAuthorised, listEstablish
 router.route('/admin/:userId').get(Authorization.isAuthorised, getUser);
 router.use('/my/notifications', Authorization.isAuthorised);
 router.route('/my/notifications').get(listNotifications);
-
+router.route('/my/notifications/:notificationUid').get(getNotification);
+router.route('/my/notifications/:notificationUid').post(readNotification);
 router.use('/swap/establishment/:id', authLimiter);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
 

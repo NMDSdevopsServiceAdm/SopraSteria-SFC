@@ -88,7 +88,7 @@ const ownershipRequest = async (req, res) => {
                 return res.status(400).send();
               }
               //inserting new notification for requester to let him know his request is Approved or Denied
-              let addNotificationResp = await notifications.insertNewUserNotification(params);
+              let addNotificationResp = await notifications.insertNewNotification(params);
               if (!addNotificationResp) {
                 return res.status(400).send('Invalid request');
               } else {

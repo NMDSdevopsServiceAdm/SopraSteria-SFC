@@ -1,12 +1,32 @@
 <app-new-dashboard-header tab="home"></app-new-dashboard-header>
-<div class="govuk-width-container">
+<div class="govuk-width-container govuk-!-margin-top-7 summary-box" data-testid="summaryBox">
+  <app-summary-section>
+    <a (click)="navigateToTab($event, 'workplace')" class="govuk-link--no-visited-state" href="#"> Workplace </a>
+  </app-summary-section>
+
+  <hr class="govuk-section-break govuk-section-break--visible summary-section-break" />
+  <app-summary-section>
+    <a (click)="navigateToTab($event, 'staff-records')" class="govuk-link--no-visited-state" href="#">
+      Staff records
+    </a>
+  </app-summary-section>
+
+  <hr class="govuk-section-break govuk-section-break--visible summary-section-break" />
+
+  <app-summary-section>
+    <a (click)="navigateToTab($event, 'training-and-qualifications')" class="govuk-link--no-visited-state" href="#">
+      Training and qualifications</a
+    >
+  </app-summary-section>
+</div>
+<div class="govuk-width-container govuk-!-margin-top-4">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
           <app-card [image]="'/assets/images/benchmarks.svg'">
             <a
-              (click)="navigateToBenchmarksTab($event)"
+              (click)="navigateToTab($event, 'benchmarks')"
               class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
               href="#"
               >See how you compare with other workplaces</a
@@ -46,7 +66,9 @@
           </app-link-with-arrow>
 
           <app-link-with-arrow *ngIf="canBulkUpload">
-            <a [routerLink]="['/bulk-upload']">Bulk upload your data</a>
+            <a [routerLink]="['/bulk-upload']" (click)="pushLinkToHistoryState('/bulk-upload')"
+              >Bulk upload your data</a
+            >
           </app-link-with-arrow>
 
           <app-link-with-arrow>
@@ -59,19 +81,31 @@
 
           <app-link-with-arrow *ngIf="canLinkToParent && !workplace.isParent">
             <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
-              <a (click)="cancelLinkToParent($event)" href="#">Link to my parent organisation pending</a>
+              <a
+                (click)="cancelLinkToParent($event); pushLinkToHistoryState('#cancel-link-to-parent')"
+                href="#cancel-link-to-parent"
+                >Link to my parent organisation pending</a
+              >
             </ng-container>
             <ng-template #requestLinkToParent>
-              <a (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
+              <a (click)="linkToParent($event); pushLinkToHistoryState('#link-to-parent')" href="#link-to-parent"
+                >Link to my parent organisation</a
+              >
             </ng-template>
           </app-link-with-arrow>
 
           <app-link-with-arrow *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
             <ng-container *ngIf="parentStatusRequested; else requestBecomeAParent">
-              <a (click)="cancelBecomeAParent($event)" href="#">Parent request pending</a>
+              <a
+                (click)="cancelBecomeAParent($event); pushLinkToHistoryState('#cancel-parent-request')"
+                href="#cancel-parent-request"
+                >Parent request pending</a
+              >
             </ng-container>
             <ng-template #requestBecomeAParent>
-              <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
+              <a (click)="becomeAParent($event); pushLinkToHistoryState('#parent-request')" href="#parent-request"
+                >Become a parent organisation</a
+              >
             </ng-template>
           </app-link-with-arrow>
 

@@ -439,4 +439,44 @@ describe('NewHomeTabComponent', () => {
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
     });
   });
+
+  describe('summary', () => {
+    it('should show summary box', async () => {
+      const { getByTestId } = await setup();
+
+      const summaryBox = getByTestId('summaryBox');
+
+      expect(summaryBox).toBeTruthy();
+    });
+
+    it('should show workplace link and take you to the workplace tab', async () => {
+      const { getByText, tabsServiceSpy } = await setup();
+
+      const workplaceLink = getByText('Workplace');
+      fireEvent.click(workplaceLink);
+
+      expect(workplaceLink).toBeTruthy();
+      expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+    });
+
+    it('should show staff records link and take you to the staff records tab', async () => {
+      const { getByText, tabsServiceSpy } = await setup();
+
+      const staffRecordsLink = getByText('Staff records');
+      fireEvent.click(staffRecordsLink);
+
+      expect(staffRecordsLink).toBeTruthy();
+      expect(tabsServiceSpy).toHaveBeenCalledWith('staff-records');
+    });
+
+    it('should show training and qualifications link that take you the training and qualifications tab', async () => {
+      const { getByText, tabsServiceSpy } = await setup();
+
+      const trainingAndQualificationsLink = getByText('Training and qualifications');
+      fireEvent.click(trainingAndQualificationsLink);
+
+      expect(trainingAndQualificationsLink).toBeTruthy();
+      expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+    });
+  });
 });
