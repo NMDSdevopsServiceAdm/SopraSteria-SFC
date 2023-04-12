@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 @Directive()
 export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   protected serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
@@ -41,7 +41,7 @@ export class IsThisYourWorkplaceDirective implements OnInit, AfterViewInit, OnDe
     protected route: ActivatedRoute,
     protected router: Router,
     public workplaceInterfaceService: WorkplaceInterfaceService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
   ) {}
 
   ngOnInit(): void {

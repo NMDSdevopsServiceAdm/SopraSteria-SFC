@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 @Directive()
 export class Question implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public establishment: Establishment;
   public primaryWorkplace: Establishment;
   public submitted = false;
@@ -37,7 +37,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public staffBenefitsSections: string[] = ProgressBarUtil.staffBenefitsMiniFlowProgressBarSections();
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,

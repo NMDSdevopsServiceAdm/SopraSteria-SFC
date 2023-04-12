@@ -1,12 +1,10 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { SetDates } from '@core/model/admin/local-authorities-return.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import {
-  LocalAuthoritiesReturnService,
-} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
+import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormatUtil } from '@core/utils/format-util';
@@ -18,14 +16,14 @@ import { DateValidator } from '@shared/validators/date.validator';
 })
 export class SetDatesComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted: boolean;
   public serverError: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   public formErrorsMap: Array<ErrorDetails>;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private localAuthoritiesReturnService: LocalAuthoritiesReturnService,
     private errorSummaryService: ErrorSummaryService,
     private breadcrumbService: BreadcrumbService,

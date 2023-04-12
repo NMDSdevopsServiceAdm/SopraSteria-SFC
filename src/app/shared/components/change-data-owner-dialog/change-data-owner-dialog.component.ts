@@ -1,5 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class ChangeDataOwnerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: ErrorDetails[];
   public submitted = false;
   public workplace: Workplace;
@@ -35,7 +35,7 @@ export class ChangeDataOwnerDialogComponent extends DialogComponent implements O
     @Inject(DIALOG_DATA) public data,
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     public dialog: Dialog<ChangeDataOwnerDialogComponent>,
   ) {
     super(data, dialog);

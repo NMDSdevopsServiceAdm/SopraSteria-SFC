@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RequestPasswordResetResponse } from '@core/services/password-reset.service';
@@ -10,13 +10,13 @@ import { RequestPasswordResetResponse } from '@core/services/password-reset.serv
 })
 export class ForgotYourPasswordEditComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError: string;
   @Output() formDataOutput = new EventEmitter<RequestPasswordResetResponse>();
 
-  constructor(private formBuilder: FormBuilder, private errorSummaryService: ErrorSummaryService) {}
+  constructor(private formBuilder: UntypedFormBuilder, private errorSummaryService: ErrorSummaryService) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({

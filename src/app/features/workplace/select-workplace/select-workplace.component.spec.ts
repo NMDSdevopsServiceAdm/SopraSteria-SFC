@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
@@ -22,7 +22,7 @@ describe('SelectWorkplaceComponent', () => {
       {
         imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
         providers: [
-          FormBuilder,
+          UntypedFormBuilder,
           {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,

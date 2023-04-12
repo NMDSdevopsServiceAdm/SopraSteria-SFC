@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ServiceUser } from '@core/model/establishment.model';
 import { ServiceForUser, ServiceUserGroup } from '@core/model/services.model';
@@ -23,7 +23,7 @@ export class ServiceUsersComponent extends Question {
   public section = 'Services';
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -66,7 +66,7 @@ export class ServiceUsersComponent extends Question {
     filter(this.allUserServices, { other: true }).forEach((service: ServiceForUser) => {
       this.form.addControl(
         `serviceUsers-${service.id}-otherService`,
-        new FormControl(null, [Validators.maxLength(this.otherMaxLength)]),
+        new UntypedFormControl(null, [Validators.maxLength(this.otherMaxLength)]),
       );
 
       this.formErrorsMap.push({

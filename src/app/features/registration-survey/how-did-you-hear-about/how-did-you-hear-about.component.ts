@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
@@ -22,12 +22,12 @@ export class HowDidYouHearAboutComponent implements OnInit {
     'Other',
   ];
 
-  public form: FormGroup;
+  public form: UntypedFormGroup;
 
   constructor(
     protected backService: BackService,
     protected registrationSurveyService: RegistrationSurveyService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
   ) {}
 
@@ -37,7 +37,7 @@ export class HowDidYouHearAboutComponent implements OnInit {
   }
 
   get howDidYouHearAboutArray() {
-    return this.form.get('howDidYouHearAbout') as FormArray;
+    return this.form.get('howDidYouHearAbout') as UntypedFormArray;
   }
 
   private setupForm = () => {

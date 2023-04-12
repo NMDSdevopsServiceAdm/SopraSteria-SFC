@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -14,7 +14,7 @@ import { NameOfWorkplaceDirective } from '@shared/directives/create-workplace/na
 })
 export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     public backService: BackService,
     protected backLinkService: BackLinkService,
     protected router: Router,

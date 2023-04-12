@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -55,7 +55,7 @@ describe('MainJobStartDateComponent', () => {
         imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         declarations: [DatePickerComponent, SubmitButtonComponent, ErrorSummaryComponent, ProgressBarComponent],
         providers: [
-          FormBuilder,
+          UntypedFormBuilder,
           ReactiveFormsModule,
           ErrorSummaryService,
           QuestionComponent,

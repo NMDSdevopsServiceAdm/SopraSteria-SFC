@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -15,7 +15,7 @@ export class UsernamePasswordComponent extends CreateUsernameDirective {
   constructor(
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected registrationService: RegistrationService,
     protected route: ActivatedRoute,
     protected router: Router,

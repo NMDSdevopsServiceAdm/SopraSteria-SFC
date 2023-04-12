@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -19,7 +19,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
   protected serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
   public return: URLStructure;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public serverError: string;
   public formErrorsMap: Array<ErrorDetails>;
   public workplaceTotalStaff;
@@ -38,7 +38,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
     public totalStaffFormService: TotalStaffFormService,
     public establishmentService: EstablishmentService,
