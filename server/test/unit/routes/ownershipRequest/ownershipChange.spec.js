@@ -5,11 +5,11 @@ const sinonChai = require('sinon-chai');
 chai.should();
 chai.use(sinonChai);
 
-const updateOwnership = require('../../../../routes/ownershipRequest/updateOwnership');
+const ownershipChange = require('../../../../routes/ownershipRequest/ownershipChange');
 const { Establishment } = require('../../../../models/classes/establishment');
 const ownership = require('../../../../data/ownership');
 
-describe('routes/ownershipRequest/updateOwnership.js', () => {
+describe('routes/ownershipRequest/ownershipChange.js', () => {
   describe('update', () => {
     let ownershipStub;
     let establishmentStub;
@@ -25,9 +25,7 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
 
     describe('Parent requesting ownership', () => {
       const request = {
-        establishment: {
-          id: 2320,
-        },
+        establishmentId: 2320,
       };
 
       const currentDataOwnerDetails = [
@@ -38,17 +36,15 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
       ];
 
       it('Gets the Ownership Requester details', async () => {
-        const ownershipChangeRequest = [
-          {
-            permissionRequest: 'Workplace',
-          },
-        ];
+        request.ownershipRequest = {
+          permissionRequest: 'Workplace',
+        };
 
-        ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
+        ownershipStub.withArgs(request.establishmentId).returns(currentDataOwnerDetails);
 
-        await updateOwnership.update(request, ownershipChangeRequest);
+        await ownershipChange.updateEstablishmentDetails(request);
 
-        ownershipStub.should.have.been.calledWith(request.establishment.id);
+        ownershipStub.should.have.been.calledWith(request.establishmentId);
       });
 
       it('Updates the data owner to Parent with "Workplace" permission', async () => {
@@ -57,17 +53,15 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
           dataPermissions: 'Workplace',
         };
 
-        const ownershipChangeRequest = [
-          {
-            permissionRequest: 'Workplace',
-          },
-        ];
+        request.ownershipRequest = {
+          permissionRequest: 'Workplace',
+        };
 
-        ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
+        ownershipStub.withArgs(request.establishmentId).returns(currentDataOwnerDetails);
 
-        await updateOwnership.update(request, ownershipChangeRequest);
+        await ownershipChange.updateEstablishmentDetails(request);
 
-        establishmentStub.should.have.been.calledWith(request.establishment.id, updateDetails);
+        establishmentStub.should.have.been.calledWith(request.establishmentId, updateDetails);
       });
 
       it('Updates the data owner to Parent with "Workplace and Staff" permission', async () => {
@@ -76,25 +70,21 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
           dataPermissions: 'Workplace and Staff',
         };
 
-        const checkOwnerChangeRequestResult = [
-          {
-            permissionRequest: 'Workplace and Staff',
-          },
-        ];
+        request.ownershipRequest = {
+          permissionRequest: 'Workplace and Staff',
+        };
 
-        ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
+        ownershipStub.withArgs(request.establishmentId).returns(currentDataOwnerDetails);
 
-        await updateOwnership.update(request, checkOwnerChangeRequestResult);
+        await ownershipChange.updateEstablishmentDetails(request);
 
-        establishmentStub.should.have.been.calledWith(request.establishment.id, updateDetails);
+        establishmentStub.should.have.been.calledWith(request.establishmentId, updateDetails);
       });
     });
 
     describe('Subsiduary requesting ownership', () => {
       const request = {
-        establishment: {
-          id: 479,
-        },
+        establishmentId: 479,
       };
 
       let currentDataOwnerDetails = [
@@ -105,17 +95,17 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
       ];
 
       it('Gets the Ownership Requester details', async () => {
-        const checkOwnerChangeRequest = [
+        request.ownershipRequest = [
           {
             permissionRequest: 'Workplace',
           },
         ];
 
-        ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
+        ownershipStub.withArgs(request.establishmentId).returns(currentDataOwnerDetails);
 
-        await updateOwnership.update(request, checkOwnerChangeRequest);
+        await ownershipChange.updateEstablishmentDetails(request);
 
-        ownershipStub.should.have.been.calledWith(request.establishment.id);
+        ownershipStub.should.have.been.calledWith(request.establishmentId);
       });
 
       it('Updates the data owner to Workplace with "Workplace" permission', async () => {
@@ -124,15 +114,13 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
           dataPermissions: 'Workplace',
         };
 
-        const checkOwnerChangeRequestResult = [
-          {
-            permissionRequest: 'Workplace',
-          },
-        ];
+        request.ownershipRequest = {
+          permissionRequest: 'Workplace',
+        };
 
-        ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
+        ownershipStub.withArgs(request.establishmentId).returns(currentDataOwnerDetails);
 
-        await updateOwnership.update(request, checkOwnerChangeRequestResult);
+        await ownershipChange.updateEstablishmentDetails(request);
 
         establishmentStub.should.have.been.calledWith(currentDataOwnerDetails.SubEstablishmentID, updateDetails);
       });
@@ -143,15 +131,13 @@ describe('routes/ownershipRequest/updateOwnership.js', () => {
           dataPermissions: 'Workplace and Staff',
         };
 
-        const checkOwnerChangeRequestResult = [
-          {
-            permissionRequest: 'Workplace and Staff',
-          },
-        ];
+        request.ownershipRequest = {
+          permissionRequest: 'Workplace and Staff',
+        };
 
-        ownershipStub.withArgs(request.establishment.id).returns(currentDataOwnerDetails);
+        ownershipStub.withArgs(request.establishmentId).returns(currentDataOwnerDetails);
 
-        await updateOwnership.update(request, checkOwnerChangeRequestResult);
+        await ownershipChange.updateEstablishmentDetails(request);
 
         establishmentStub.should.have.been.calledWith(currentDataOwnerDetails.SubEstablishmentID, updateDetails);
       });

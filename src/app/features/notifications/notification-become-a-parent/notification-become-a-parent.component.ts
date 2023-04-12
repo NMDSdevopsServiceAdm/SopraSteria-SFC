@@ -1,64 +1,11 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment } from '@core/model/establishment.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { NotificationsService } from '@core/services/notifications/notifications.service';
-import { Subscription } from 'rxjs';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-notification-become-a-parent',
   templateUrl: './notification-become-a-parent.component.html',
   providers: [Overlay],
 })
-export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription = new Subscription();
-
-  public workplace: Establishment;
-  public notification;
-  public notificationUid: string;
-  public status: string;
-
-  constructor(
-    private route: ActivatedRoute,
-    private breadcrumbService: BreadcrumbService,
-    private establishmentService: EstablishmentService,
-    private notificationsService: NotificationsService,
-  ) {}
-
-  ngOnInit() {
-    this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
-    this.workplace = this.establishmentService.primaryWorkplace;
-    this.route.params.subscribe((x) => (this.notificationUid = x.notificationuid));
-    this.subscriptions.add(
-      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe((details) => {
-        this.notification = details;
-      }),
-    );
-    this.setNotificationViewed(this.notificationUid);
-  }
-
-  private setNotificationViewed(notificationUid) {
-    this.subscriptions.add(
-      this.notificationsService.setNoticationViewed(notificationUid).subscribe(
-        (resp) => {
-          if (resp) {
-            this.notificationsService.notifications.forEach((notification, i) => {
-              if (notification.notificationUid === resp.notificationUid) {
-                this.notificationsService.notifications[i] = resp;
-              }
-            });
-            this.notificationsService.notifications$.next(this.notificationsService.notifications);
-          }
-        },
-        (error) => console.log('Could not update notification.'),
-      ),
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
+export class NotificationBecomeAParentComponent {
+  @Input() public notification;
 }

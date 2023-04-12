@@ -1,17 +1,3 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Notification</h1>
-  </div>
-</div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds" *ngIf="notification">
-    <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-2">From:</h2>
-    <p class="govuk-util__inline-block">{{ requestorName }}, {{ notification.created | longDate }}</p>
-    <br />
-    <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-2">Subject:</h2>
-    <p class="govuk-util__inline-block">{{ notification?.type | notificationType }}</p>
-  </div>
-</div>
 <ng-container *ngIf="notification">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
