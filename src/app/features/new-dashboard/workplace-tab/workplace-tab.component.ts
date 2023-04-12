@@ -4,6 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 @Component({
   selector: 'app-new-workplace-tab',
@@ -14,12 +15,20 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
   @Input() workerCount: number;
 
   public summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
+  public canEditEstablishment: boolean;
+  public addWorkplaceDetailsBanner: boolean;
 
-  constructor(private breadcrumbService: BreadcrumbService, private establishmentService: EstablishmentService) {}
+  constructor(
+    private breadcrumbService: BreadcrumbService,
+    private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
+  ) {}
 
   ngOnInit(): void {
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.breadcrumbService.show(JourneyType.WORKPLACE_TAB);
+    this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
+    this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
   }
 
   ngOnDestroy(): void {

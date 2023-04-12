@@ -441,7 +441,7 @@ describe('NewHomeTabComponent', () => {
     });
   });
 
-  fdescribe('summary', () => {
+  describe('summary', () => {
     it('should show summary box', async () => {
       const { getByTestId } = await setup();
 
