@@ -58,8 +58,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
         }),
       );
 
-      this.getWorkplaceSummaryMessage();
-
       this.isLocalAuthority =
         this.workplace.employerType && this.workplace.employerType.value.toLowerCase().startsWith('local authority');
 
@@ -67,14 +65,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
         this.workplace.isParent &&
         this.isLocalAuthority &&
         this.permissionsService.can(this.workplace.uid, 'canRunLocalAuthorityReport');
-    }
-  }
-
-  public getWorkplaceSummaryMessage(): void {
-    console.log('***** getWorkplaceSummaryMessage ******');
-    console.log(this.workplace.showAddWorkplaceDetailsBanner);
-    if (this.workplace.showAddWorkplaceDetailsBanner) {
-      this.workplaceSummaryMessage = 'Add more details to your workplace';
     }
   }
 

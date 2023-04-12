@@ -138,5 +138,5 @@ module.exports.Establishment = {
   dataPermissions: 'Workplace and Staff',
   dataOwnershipRequested: '',
   ownershipChangeRequestId: '',
-  showAddWorkplaceDetailsBanner: true,
+  showAddWorkplaceDetailsBanner: false,
 };

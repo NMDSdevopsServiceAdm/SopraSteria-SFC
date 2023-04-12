@@ -27,8 +27,8 @@ import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-heade
 import { NewHomeTabComponent } from './home-tab.component';
 import { SummarySectionComponent } from './summary-section/summary-section.component';
 
-fdescribe('NewHomeTabComponent', () => {
-  const setup = async () => {
+describe('NewHomeTabComponent', () => {
+  const setup = async (establishment = Establishment) => {
     const { fixture, getByText, queryByText, getByTestId } = await render(NewHomeTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -50,7 +50,7 @@ fdescribe('NewHomeTabComponent', () => {
       ],
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
-        workplace: Establishment,
+        workplace: establishment,
         meta: { workplaces: 9, staff: 4 } as Meta,
       },
       schemas: [NO_ERRORS_SCHEMA],
@@ -441,7 +441,7 @@ fdescribe('NewHomeTabComponent', () => {
     });
   });
 
-  describe('summary', () => {
+  fdescribe('summary', () => {
     it('should show summary box', async () => {
       const { getByTestId } = await setup();
 
@@ -450,26 +450,25 @@ fdescribe('NewHomeTabComponent', () => {
       expect(summaryBox).toBeTruthy();
     });
 
-    fdescribe('workplace summary section', () => {
-      it('should show workplace link and take you to the workplace tab', async () => {
+    describe('workplace summary section', () => {
+      it('should take you to the workplace tab when clicking the workplace link', async () => {
         const { getByText, tabsServiceSpy } = await setup();
 
         const workplaceLink = getByText('Workplace');
         fireEvent.click(workplaceLink);
 
-        expect(workplaceLink).toBeTruthy();
         expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
       });
 
       it('should show the add more details link if the showAddWorkplaceDetailsBanner is true', async () => {
-        const { getByText, tabsServiceSpy } = await setup();
+        const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
+        const { getByText, tabsServiceSpy } = await setup(establishment);
 
-        // console.log(component.workplace);
         const link = getByText('Add more details to your workplace');
-        // fireEvent.click(link);
+        fireEvent.click(link);
 
-        expect(true).toBeTruthy();
         expect(link).toBeTruthy();
+        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
       });
     });
 
@@ -480,7 +479,6 @@ fdescribe('NewHomeTabComponent', () => {
         const staffRecordsLink = getByText('Staff records');
         fireEvent.click(staffRecordsLink);
 
-        expect(staffRecordsLink).toBeTruthy();
         expect(tabsServiceSpy).toHaveBeenCalledWith('staff-records');
       });
     });
@@ -492,7 +490,6 @@ fdescribe('NewHomeTabComponent', () => {
         const trainingAndQualificationsLink = getByText('Training and qualifications');
         fireEvent.click(trainingAndQualificationsLink);
 
-        expect(trainingAndQualificationsLink).toBeTruthy();
         expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
       });
     });
