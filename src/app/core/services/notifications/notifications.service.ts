@@ -1,6 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Notification, NotificationRequest, NotificationTypes } from '@core/model/notifications.model';
+import {
+  Notification,
+  NotificationData,
+  NotificationRequest,
+  NotificationTypes,
+} from '@core/model/notifications.model';
 import { BehaviorSubject, Observable, zip } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -64,7 +69,7 @@ export class NotificationsService {
     return this.http.put<any>(`/api/ownershipRequest/${ownershipChangeRequestId}`, data);
   }
 
-  public setNoticationViewed(notificationUid: string): Observable<Notification> {
+  public setNoticationViewed(notificationUid: string): Observable<NotificationData> {
     return this.http.patch<any>(`/api/notification/${notificationUid}`, { isViewed: true });
   }
 

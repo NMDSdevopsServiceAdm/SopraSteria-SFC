@@ -8,7 +8,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { NewComparisonGroupHeaderComponent } from './comparison-group-header.component';
 
 describe('NewComparisonGroupHeaderComponent', () => {
-  const setup = async (metaData = {}) => {
+  const setup = async (metaData = {}, canViewFullContent = true) => {
     const meta = metaData ? metaData : null;
     const { fixture, getByText, getByTestId } = await render(NewComparisonGroupHeaderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -16,6 +16,7 @@ describe('NewComparisonGroupHeaderComponent', () => {
       componentProperties: {
         meta: meta as Meta,
         workplaceID: 'mock-uid',
+        canViewFullContent,
       },
     });
 
@@ -34,31 +35,55 @@ describe('NewComparisonGroupHeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the comparison group text if there is a comparison group with the correct test if only one workplace', async () => {
-    const { getByTestId } = await setup({ workplaces: 1, staff: 1 });
+  describe('can view full benchmarks content', () => {
+    it('should render the comparison group text if there is a comparison group with the correct test if only one workplace', async () => {
+      const { getByTestId } = await setup({ workplaces: 1, staff: 1 });
 
-    const componentText = getByTestId('comparison-group-text');
-    expect(componentText.innerHTML).toContain(
-      `<b>Your comparison group</b> is 1 staff from 1 workplace providing the same main service as you in your local authority.`,
-    );
+      const componentText = getByTestId('comparison-group-text');
+      expect(componentText.innerHTML).toContain(
+        `<b>Your comparison group</b> is 1 staff from 1 workplace using ASC-WDS and providing the same main service as you in your local authority.`,
+      );
+    });
+
+    it('should have the right text with correct comma placement', async () => {
+      const { getByTestId } = await setup({ workplaces: 1000, staff: 1000 });
+
+      const componentText = getByTestId('comparison-group-text');
+      expect(componentText.innerHTML).toContain(
+        `<b>Your comparison group</b> is 1,000 staff from 1,000 workplaces using ASC-WDS and providing the same main service as you in your local authority.`,
+      );
+    });
   });
 
-  it('should have the right text with correct comma placement', async () => {
-    const { getByTestId } = await setup({ workplaces: 1000, staff: 1000 });
+  describe('cannot view full benchmarks content', () => {
+    it('should render the comparison group text if there is a comparison group with the correct test if only one workplace', async () => {
+      const { getByTestId } = await setup({ workplaces: 1, staff: 1 }, false);
 
-    const componentText = getByTestId('comparison-group-text');
-    expect(componentText.innerHTML).toContain(
-      `<b>Your comparison group</b> is 1,000 staff from 1,000 workplaces providing the same main service as you in your local authority.`,
-    );
+      const componentText = getByTestId('comparison-group-text');
+      expect(componentText.innerHTML).toContain(
+        `<b>Your comparison group</b> is 1 staff from 1 workplace using ASC-WDS and providing adult social care in your local authority.`,
+      );
+    });
+
+    it('should have the right text with correct comma placement', async () => {
+      const { getByTestId } = await setup({ workplaces: 1000, staff: 1000 }, false);
+
+      const componentText = getByTestId('comparison-group-text');
+      expect(componentText.innerHTML).toContain(
+        `<b>Your comparison group</b> is 1,000 staff from 1,000 workplaces using ASC-WDS and providing adult social care in your local authority.`,
+      );
+    });
   });
 
-  it('should have the right text with no data', async () => {
-    const { getByTestId } = await setup();
+  describe('no comparison group', () => {
+    it('should have the right text with no data', async () => {
+      const { getByTestId } = await setup();
 
-    const componentText = getByTestId('no-comparison-group-text');
-    expect(componentText.innerHTML).toContain(
-      `<b>Your comparison group</b> information is not available at the moment.`,
-    );
+      const componentText = getByTestId('no-comparison-group-text');
+      expect(componentText.innerHTML).toContain(
+        `<b>Your comparison group</b> information is not available at the moment.`,
+      );
+    });
   });
 
   it('should show the about the data link with href', async () => {

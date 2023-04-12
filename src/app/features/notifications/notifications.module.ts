@@ -11,6 +11,7 @@ import { NotificationLinkToParentComponent } from './notification-link-to-parent
 import { NotificationListComponent } from './notification-list/notification-list.component';
 import { NotificationComponent } from './notification/notification.component';
 import { NotificationsRoutingModule } from './notifications-routing.module';
+import { NotificationOwnerChangeComponent } from './notification-owner-change/notification-owner-change.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { NotificationsRoutingModule } from './notifications-routing.module';
     NotificationLinkToParentComponent,
     NotificationDeLinkToParentComponent,
     NotificationBecomeAParentComponent,
+    NotificationOwnerChangeComponent,
   ],
   imports: [CommonModule, NotificationsRoutingModule, SharedModule, FormsModule, ReactiveFormsModule],
   exports: [NotificationTypePipe],

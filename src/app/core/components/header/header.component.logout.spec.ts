@@ -8,11 +8,13 @@ import { HeaderComponent } from '@core/components/header/header.component';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { TestRootComponent } from '@core/test-utils/TestRootComponent';
 import { LogoutComponent } from '@features/logout/logout.component';
@@ -45,6 +47,10 @@ async function renderHeaderComponent(isAdmin: boolean) {
       {
         provide: FeatureFlagsService,
         useClass: MockFeatureFlagsService,
+      },
+      {
+        provide: NotificationsService,
+        useClass: MockNotificationsService,
       },
       {
         provide: AuthService,

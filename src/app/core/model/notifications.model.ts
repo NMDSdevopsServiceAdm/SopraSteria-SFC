@@ -13,6 +13,11 @@ export interface NotificationRequest {
   approvalReason: string;
 }
 
+export interface NotificationData {
+  establishmentNotification: boolean;
+  notification: Notification;
+}
+
 export interface NotificationTypes {
   uid: string;
   type: string;

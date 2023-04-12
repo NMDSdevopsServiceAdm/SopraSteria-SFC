@@ -10,6 +10,7 @@ import { BenchmarksService } from '@core/services/benchmarks.service';
 export class NewComparisonGroupHeaderComponent {
   @Input() meta: Meta;
   @Input() workplaceID: string;
+  @Input() canViewFullContent: boolean;
 
   @Output() downloadPDF = new EventEmitter();
 

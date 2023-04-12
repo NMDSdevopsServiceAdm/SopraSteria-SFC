@@ -1,5 +1,5 @@
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -10,7 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-notification-link-to-parent',
@@ -19,8 +19,10 @@ import { Subscription } from 'rxjs';
 })
 export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
-  public notification;
+  @Input() public notification: any;
+  @Input() public events: Observable<string>;
   private subscriptions: Subscription = new Subscription();
+  private eventsSubscription: Subscription;
   public displayActionButtons;
   public notificationUid: string;
   public isWorkPlaceRequester: boolean;
@@ -43,30 +45,32 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.eventsSubscription = this.events.subscribe((action) => this.performAction(action));
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
     this.notificationUid = this.route.snapshot.params.notificationuid;
-    this.subscriptions.add(
-      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe((details) => {
-        this.notification = details;
-        this.notificationRequestedTo = details.typeContent.parentEstablishmentName;
-        this.notificationRequestedFrom = details.typeContent.subEstablishmentName;
-        this.requestorName = details.typeContent.requestorName;
-        this.postCode = details.typeContent.postCode;
-        this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
-        this.displayActionButtons =
-          details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
-      }),
-    );
-
-    this.setNotificationViewed(this.notificationUid);
+    this.notificationRequestedTo = this.notification.typeContent.parentEstablishmentName;
+    this.notificationRequestedFrom = this.notification.typeContent.subEstablishmentName;
+    this.requestorName = this.notification.typeContent.requestorName;
+    this.postCode = this.notification.typeContent.postCode;
+    this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
   }
+
+  private performAction(action: string) {
+    if (action === 'APPROVE') {
+      this.approveRequest();
+    }
+    if (action === 'REJECT') {
+      this.rejectRequest();
+    }
+  }
+
   /**
    * Function used to approve link to parent request
    * @param {void}
    * @return {void}
    */
-  public approveRequest() {
+  private approveRequest() {
     if (this.notification) {
       if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
         this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
@@ -117,49 +121,24 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       );
     }
   }
-  /**
-   * Function used to set nothification as read
-   * @param {string} notification uid
-   * @return {void}
-   */
-  private setNotificationViewed(notificationUid) {
-    this.subscriptions.add(
-      this.notificationsService.setNoticationViewed(notificationUid).subscribe(
-        (resp) => {
-          if (resp) {
-            this.notificationsService.notifications.forEach((notification, i) => {
-              if (notification.notificationUid === resp.notificationUid) {
-                this.notificationsService.notifications[i] = resp;
-              }
-            });
-            this.notificationsService.notifications$.next(this.notificationsService.notifications);
-          }
-        },
-        (error) => console.log('Could not update notification.'),
-      ),
-    );
-  }
+
   /**
    * Function used to get reject request event for link to parent request rejection
    * @param {$event} triggred event
    * @return {void}
    */
-  public rejectRequest($event: Event) {
-    $event.preventDefault();
+  private rejectRequest() {
     if (this.notification) {
       if (this.notification.typeContent.approvalStatus === 'CANCELLED') {
         this.router.navigate(['/notifications/notification-cancelled', this.notification.notificationUid]);
         return true;
       }
       const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
-      dialog.afterClosed.subscribe(
-        (requestRejected) => {
-          if (requestRejected) {
-            this.rejectLinkToParentRequest(requestRejected);
-          }
-        },
-        (error) => console.log('Could not update notification.'),
-      );
+      dialog.afterClosed.subscribe((requestRejected) => {
+        if (requestRejected) {
+          this.rejectLinkToParentRequest(requestRejected);
+        }
+      });
     }
   }
   /**
@@ -180,28 +159,24 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.notificationsService
         .setNotificationRequestLinkToParent(this.establishmentService.establishmentId, requestParameter)
-        .subscribe(
-          (request) => {
-            if (request) {
-              //get all notification and update with latest status
-              this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-                this.notificationsService.notifications$.next(notify);
-              });
-              this.router.navigate(['/dashboard']);
-              this.alertService.addAlert({
-                type: 'success',
-                message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
-              });
-            }
-          },
-          (error) => {
-            console.log('Could not update notification.');
-          },
-        ),
+        .subscribe((request) => {
+          if (request) {
+            //get all notification and update with latest status
+            this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
+              this.notificationsService.notifications$.next(notify);
+            });
+            this.router.navigate(['/dashboard']);
+            this.alertService.addAlert({
+              type: 'success',
+              message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
+            });
+          }
+        }),
     );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.eventsSubscription.unsubscribe();
   }
 }
