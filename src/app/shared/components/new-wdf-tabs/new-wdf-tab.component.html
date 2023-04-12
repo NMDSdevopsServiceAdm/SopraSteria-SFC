@@ -1,0 +1,35 @@
+<div class="govuk-!-margin-top-5 govuk-!-margin-bottom-4">
+  <ul class="govuk-tabs__list asc-tabs__list" role="tablist">
+    <li
+      class="govuk-tabs__list-item asc-tabs__list-item"
+      data-testid="workplaceListItem"
+      [class.asc-tabs__list-item--active]="!viewWDFData"
+    >
+      <a
+        id="tab_workplace"
+        class="govuk-tabs__tab asc-tabs__link"
+        [class.asc-tabs__link--active]="!viewWDFData"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event)"
+        >Workplace</a
+      >
+    </li>
+    <li
+      class="govuk-tabs__list-item asc-tabs__list-item"
+      data-testid="staffListItem"
+      [class.asc-tabs__list-item--active]="viewWDFData"
+    >
+      <a
+        id="tab_staff"
+        class="govuk-tabs__tab asc-tabs__link"
+        [class.asc-tabs__link--active]="viewWDFData"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event)"
+        >Staff</a
+      >
+    </li>
+  </ul>
+</div>
+<ng-content></ng-content>
