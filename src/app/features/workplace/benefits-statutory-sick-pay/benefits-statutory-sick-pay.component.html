@@ -8,6 +8,13 @@
             Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?
           </h1>
         </legend>
+        <app-details [title]="'Why we ask for this information'">
+          <p>
+            This data is used to determine whether rewards and benefits act as incentives when it comes to staff
+            retention. It also reveals the type of incentives that are being offered in the sector and how common they
+            are.
+          </p>
+        </app-details>
         <div class="govuk-form-group">
           <div class="govuk-radios govuk-!-margin-bottom-4">
             <ng-container *ngFor="let option of statuorySickPayOptions; let i = index">
