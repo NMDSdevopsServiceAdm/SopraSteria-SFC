@@ -1,6 +1,6 @@
 .summary-section {
   background-color: #f3f2f1;
-  margin: 0px 0px 0 5px;
+  margin: 0px 0px 0px 5px;
   padding: 5px 0px;
 
   &__links {
@@ -11,4 +11,12 @@
     line-height: 1.7 !important;
     max-width: 58%;
   }
+  &__break {
+    margin: 0px 20px;
+    max-width: 95%;
+  }
+}
+
+.summary-box {
+  background-color: #f3f2f1;
 }
