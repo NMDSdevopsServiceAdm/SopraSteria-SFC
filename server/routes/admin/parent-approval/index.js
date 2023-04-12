@@ -113,8 +113,6 @@ const _notify = async (approvalId, userUid, establishmentUid) => {
     userUid: userUid,
     establishmentUid: establishmentUid,
   };
-  console.log('*******NOTIFY*******');
-  console.log(params);
   await notifications.insertNewEstablishmentNotification(params);
 };
 

@@ -44,7 +44,6 @@ class OwnershipChange {
       };
 
       const response = await this.updateAndSendNotifications(notificationParams);
-      console.log(response);
       return { statusCode: 201, response: response };
     }
   }

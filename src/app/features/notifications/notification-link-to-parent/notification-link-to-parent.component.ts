@@ -134,15 +134,11 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
         return true;
       }
       const dialog = this.dialogService.open(RejectRequestDialogComponent, this.notification);
-      dialog.afterClosed.subscribe(
-        (requestRejected) => {
-          if (requestRejected) {
-            this.rejectLinkToParentRequest(requestRejected);
-            console.log('reject');
-          }
-        },
-        (error) => console.log('Could not update notification.'),
-      );
+      dialog.afterClosed.subscribe((requestRejected) => {
+        if (requestRejected) {
+          this.rejectLinkToParentRequest(requestRejected);
+        }
+      });
     }
   }
   /**
@@ -163,24 +159,19 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.notificationsService
         .setNotificationRequestLinkToParent(this.establishmentService.establishmentId, requestParameter)
-        .subscribe(
-          (request) => {
-            if (request) {
-              //get all notification and update with latest status
-              this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-                this.notificationsService.notifications$.next(notify);
-              });
-              this.router.navigate(['/dashboard']);
-              this.alertService.addAlert({
-                type: 'success',
-                message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
-              });
-            }
-          },
-          (error) => {
-            console.log('Could not update notification.');
-          },
-        ),
+        .subscribe((request) => {
+          if (request) {
+            //get all notification and update with latest status
+            this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
+              this.notificationsService.notifications$.next(notify);
+            });
+            this.router.navigate(['/dashboard']);
+            this.alertService.addAlert({
+              type: 'success',
+              message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
+            });
+          }
+        }),
     );
   }
 

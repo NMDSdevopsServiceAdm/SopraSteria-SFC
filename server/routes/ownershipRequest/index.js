@@ -9,7 +9,6 @@ const OwnershipChange = require('../ownershipRequest/ownershipChange');
 const ownershipRequest = async (req, res) => {
   try {
     const resp = await OwnershipChange.ActionRequest(req);
-    console.log(resp);
     return res.status(resp.statusCode).send(resp.response);
   } catch (e) {
     if (e.statusCode) {

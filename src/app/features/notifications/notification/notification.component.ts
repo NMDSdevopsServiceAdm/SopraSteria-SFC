@@ -46,7 +46,6 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
     this.notificationsService.getNotificationDetails(this.notificationUid).subscribe((details) => {
       this.notification = details;
-      console.log(this.notification);
       this.isSubWorkplace =
         this.workplace.isParent && this.workplace.uid === this.establishmentService.primaryWorkplace.uid ? true : false;
 
@@ -67,19 +66,16 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
-      this.notificationsService.setNoticationViewed(notificationUid).subscribe(
-        (resp) => {
-          if (resp) {
-            this.notificationsService.notifications.forEach((notification, i) => {
-              if (notification.notificationUid === resp.notification.notificationUid) {
-                this.notificationsService.notifications[i] = resp.notification;
-              }
-            });
-            this.notificationsService.notifications$.next(this.notificationsService.notifications);
-          }
-        },
-        (error) => console.log('Could not update notification.'),
-      ),
+      this.notificationsService.setNoticationViewed(notificationUid).subscribe((resp) => {
+        if (resp) {
+          this.notificationsService.notifications.forEach((notification, i) => {
+            if (notification.notificationUid === resp.notification.notificationUid) {
+              this.notificationsService.notifications[i] = resp.notification;
+            }
+          });
+          this.notificationsService.notifications$.next(this.notificationsService.notifications);
+        }
+      }),
     );
   }
 
