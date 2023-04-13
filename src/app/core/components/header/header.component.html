@@ -50,11 +50,14 @@
           </li>
           <li *ngIf="newHomeDesignFlag && !isOnAdminScreen && standAloneAccount" class="govuk-header__navigation-item">
             <a class="govuk-header__link" [routerLink]="['/notifications']">Notifications</a>
-            <ng-container *ngIf="numberOfNewNotifications > 0">
-              <span class="notification-alert__count" data-testid="new-notifications">{{
-                numberOfNewNotifications
-              }}</span>
-            </ng-container>
+            <img
+              src="/assets/images/flag-orange.svg"
+              alt="Add more users"
+              class="govuk-!-margin-right-1 govuk-!-margin-bottom-1"
+              style="height: 16px; width: 16px"
+              *ngIf="numberOfNewNotifications > 0"
+              data-testid="new-notifications"
+            />
           </li>
           <li class="govuk-header__navigation-item">
             <a href="#" (click)="signOut($event)" class="govuk-header__link">Sign out</a>
