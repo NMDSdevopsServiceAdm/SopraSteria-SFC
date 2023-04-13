@@ -19,7 +19,7 @@
   </div>
 </div>
 <ng-container *ngIf="notification">
-  <div *ngIf="notification.type === 'OWNERCHANGE'">
+  <div *ngIf="notification.type === 'OWNERCHANGE'" data-testid="OWNERCHANGE">
     <app-notification-owner-change
       [notification]="notification"
       [events]="eventsSubject.asObservable()"
@@ -31,19 +31,20 @@
       notification.type === 'LINKTOPARENTAPPROVED' ||
       notification.type === 'LINKTOPARENTREJECTED'
     "
+    data-testid="LINKTOPARENT"
   >
     <app-notification-link-to-parent
       [notification]="notification"
       [events]="eventsSubject.asObservable()"
     ></app-notification-link-to-parent>
   </div>
-  <div *ngIf="notification.type === 'DELINKTOPARENT'">
+  <div *ngIf="notification.type === 'DELINKTOPARENT'" data-testid="DELINKTOPARENT">
     <app-notification-delink-to-parent [notification]="notification"></app-notification-delink-to-parent>
   </div>
-  <div *ngIf="notification.type === 'BECOMEAPARENT'">
+  <div *ngIf="notification.type === 'BECOMEAPARENT'" data-testid="BECOMEAPARENT">
     <app-notification-become-a-parent [notification]="notification"></app-notification-become-a-parent>
   </div>
-  <div class="govuk-grid-row" *ngIf="displayActionButtons">
+  <div class="govuk-grid-row" *ngIf="displayActionButtons" data-testid="actionButtons">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-!-margin-top-2">
         <button (click)="approveRequest()" type="submit" class="govuk-button">Approve request</button>

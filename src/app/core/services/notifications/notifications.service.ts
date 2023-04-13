@@ -69,7 +69,7 @@ export class NotificationsService {
     return this.http.put<any>(`/api/ownershipRequest/${ownershipChangeRequestId}`, data);
   }
 
-  public setNoticationViewed(notificationUid: string): Observable<NotificationData> {
+  public setNotificationViewed(notificationUid: string): Observable<NotificationData> {
     return this.http.patch<any>(`/api/notification/${notificationUid}`, { isViewed: true });
   }
 
