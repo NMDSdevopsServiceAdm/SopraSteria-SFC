@@ -15,12 +15,18 @@
 
 <ng-container *ngIf="standAloneAccount && newHomeDesignFlag; else parentView">
   <app-new-wdf-tab
-    [viewTrainingByCategory]="viewTrainingByCategory"
+    [viewWDFData]="viewWDFData"
     (handleViewToggle)="handleViewTrainingByCategory($event)"
+    [greenTick]="wdfEligibilityStatus.currentWorkplace"
+    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
+    [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
+    [greenTick]="wdfEligibilityStatus.currentStaff"
+    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
+    [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
   >
   </app-new-wdf-tab>
   <app-workplace-summary
-    *ngIf="!viewTrainingByCategory && workplace"
+    *ngIf="!viewWDFData && workplace"
     [workplace]="workplace"
     [workerCount]="workerCount"
     [return]="returnUrl"
@@ -30,7 +36,7 @@
   ></app-workplace-summary>
 
   <app-wdf-staff-summary
-    *ngIf="viewTrainingByCategory && workers && workplace"
+    *ngIf="viewWDFData && workers && workplace"
     [workplace]="workplace"
     [workers]="workers"
     [canEditWorker]="canEditWorker"
