@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
@@ -19,7 +19,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   public flow: string;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public submitted = false;
@@ -30,7 +30,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     public backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected locationService: LocationService,
     protected router: Router,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
@@ -119,7 +119,7 @@ export class FindWorkplaceAddressDirective implements OnInit, OnDestroy, AfterVi
     }
   }
 
-  private validPostcode(control: FormControl): { [s: string]: boolean } {
+  private validPostcode(control: UntypedFormControl): { [s: string]: boolean } {
     if (!SanitizePostcodeUtil.sanitizePostcode(control.value)) {
       return { invalidPostcode: true };
     }

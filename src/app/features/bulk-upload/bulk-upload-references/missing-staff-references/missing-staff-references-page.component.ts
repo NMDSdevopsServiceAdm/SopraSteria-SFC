@@ -1,7 +1,7 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { EstablishmentList } from '@core/model/bulk-upload.model';
 import { URLStructure } from '@core/model/url.model';
@@ -41,7 +41,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     protected bulkUploadService: BulkUploadService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected alertService: AlertService,
     private workerService: WorkerService,

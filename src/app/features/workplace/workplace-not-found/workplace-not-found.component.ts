@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { LocationSearchResponse } from '@core/model/location.model';
@@ -18,7 +18,7 @@ export class WorkplaceNotFoundComponent extends WorkplaceNotFound {
   public workplace: Establishment;
   constructor(
     private registrationService: RegistrationService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected locationService: LocationService,
     protected router: Router,

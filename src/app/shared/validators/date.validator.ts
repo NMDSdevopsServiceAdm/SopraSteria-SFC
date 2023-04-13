@@ -1,4 +1,4 @@
-import { FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { UntypedFormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { DATE_DAY_VALID, DATE_MONTH_VALID, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { FormatUtil } from '@core/utils/format-util';
 import dayjs from 'dayjs';
@@ -21,7 +21,7 @@ export abstract class DateValidator {
   }
 
   static required(): ValidatorFn {
-    return (formGroup: FormGroup): ValidationErrors | null => {
+    return (formGroup: UntypedFormGroup): ValidationErrors | null => {
       const { day, month, year } = formGroup.controls;
       return isEmptyInputValue(day.value) || isEmptyInputValue(month.value) || isEmptyInputValue(year.value)
         ? { required: true }
@@ -30,7 +30,7 @@ export abstract class DateValidator {
   }
 
   static dateValid(): ValidatorFn {
-    return (formGroup: FormGroup): { [key: string]: any } | null => {
+    return (formGroup: UntypedFormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
       if (day.value == !DATE_DAY_VALID || month.value == !DATE_MONTH_VALID) {
@@ -57,7 +57,7 @@ export abstract class DateValidator {
   }
 
   static beforeStartDate(control: string, before = true, ignoreBlankStartDate = false): ValidatorFn {
-    return (formGroup: FormGroup): { [key: string]: any } | null => {
+    return (formGroup: UntypedFormGroup): { [key: string]: any } | null => {
       const formControlValue = formGroup.parent.get(control).value;
 
       const comparisonDate = FormatUtil.formatDate(formControlValue);
@@ -90,7 +90,7 @@ export abstract class DateValidator {
   }
 
   static beforeToday(): ValidatorFn {
-    return (formGroup: FormGroup): { [key: string]: any } | null => {
+    return (formGroup: UntypedFormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
@@ -112,7 +112,7 @@ export abstract class DateValidator {
   }
 
   static todayOrBefore(): ValidatorFn {
-    return (formGroup: FormGroup): { [key: string]: any } | null => {
+    return (formGroup: UntypedFormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
@@ -134,7 +134,7 @@ export abstract class DateValidator {
   }
 
   static afterToday(): ValidatorFn {
-    return (formGroup: FormGroup): { [key: string]: any } | null => {
+    return (formGroup: UntypedFormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
@@ -156,7 +156,7 @@ export abstract class DateValidator {
   }
 
   static todayOrAfter(): ValidatorFn {
-    return (formGroup: FormGroup): { [key: string]: any } | null => {
+    return (formGroup: UntypedFormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
@@ -178,7 +178,7 @@ export abstract class DateValidator {
   }
 
   static between(min: dayjs.Dayjs, max: dayjs.Dayjs): ValidatorFn {
-    return (formGroup: FormGroup): { [key: string]: any } | null => {
+    return (formGroup: UntypedFormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {
@@ -200,7 +200,7 @@ export abstract class DateValidator {
   }
 
   static min(min: dayjs.Dayjs): ValidatorFn {
-    return (formGroup: FormGroup): { [key: string]: any } | null => {
+    return (formGroup: UntypedFormGroup): { [key: string]: any } | null => {
       const { day, month, year } = formGroup.controls;
 
       if (day.value && month.value && year.value) {

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EMAIL_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -20,7 +20,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
   public workplace: Establishment;
   public workplaceUid: string;
   public primaryWorkplaceUid: string;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails> = [];
   public flow: string;
@@ -31,7 +31,7 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
 
   private subscriptions: Subscription = new Subscription();
   constructor(
-    public formBuilder: FormBuilder,
+    public formBuilder: UntypedFormBuilder,
     public errorSummaryService: ErrorSummaryService,
     public router: Router,
     public grantLetterService: GrantLetterService,
@@ -132,10 +132,10 @@ export class WdfGrantLetterComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   public addControl() {
-    this.form.addControl('fullName', new FormControl(null, { updateOn: 'submit' }));
+    this.form.addControl('fullName', new UntypedFormControl(null, { updateOn: 'submit' }));
     this.form.addControl(
       'emailAddress',
-      new FormControl(null, {
+      new UntypedFormControl(null, {
         updateOn: 'submit',
       }),
     );

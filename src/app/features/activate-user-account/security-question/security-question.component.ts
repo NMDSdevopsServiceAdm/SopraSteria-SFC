@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -21,7 +21,7 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
     private route: ActivatedRoute,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
   ) {
     super(backLinkService, errorSummaryService, formBuilder, router);

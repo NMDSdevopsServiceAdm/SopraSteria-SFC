@@ -1,5 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
 })
 export class SetDataPermissionDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public workplace: Workplace;
   public dataPermissionsRequester: Establishment;
@@ -28,7 +28,7 @@ export class SetDataPermissionDialogComponent extends DialogComponent implements
   constructor(
     @Inject(DIALOG_DATA) public data,
     private establishmentService: EstablishmentService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private errorSummaryService: ErrorSummaryService,
     public dialog: Dialog<SetDataPermissionDialogComponent>,
   ) {

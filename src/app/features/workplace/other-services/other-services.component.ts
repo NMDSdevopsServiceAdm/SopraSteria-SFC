@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
@@ -22,7 +22,7 @@ export class OtherServicesComponent extends Question {
   public section = 'Services';
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -61,7 +61,7 @@ export class OtherServicesComponent extends Question {
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
   }
 
-  private oneCheckboxRequiredIfYes(form: FormGroup) {
+  private oneCheckboxRequiredIfYes(form: UntypedFormGroup) {
     if (form?.value?.otherServicesValue === 'Yes' && form?.value?.otherServices?.length === 0) {
       form.controls.otherServices.setErrors({
         oneCheckboxRequiredIfYes: true,
@@ -86,7 +86,7 @@ export class OtherServicesComponent extends Question {
       if (service.other) {
         this.form.addControl(
           `additionalOtherService${service.id}`,
-          new FormControl(null, [Validators.maxLength(this.additionalOtherServiceMaxLength)]),
+          new UntypedFormControl(null, [Validators.maxLength(this.additionalOtherServiceMaxLength)]),
         );
 
         this.formErrorsMap.push({

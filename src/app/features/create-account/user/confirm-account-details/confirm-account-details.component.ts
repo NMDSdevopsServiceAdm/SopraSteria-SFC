@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegistrationPayload } from '@core/model/registration.model';
 import { BackService } from '@core/services/back.service';
@@ -22,7 +22,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     private router: Router,
     private userService: UserService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected route: ActivatedRoute,
   ) {
     super(errorSummaryService, formBuilder, route);
