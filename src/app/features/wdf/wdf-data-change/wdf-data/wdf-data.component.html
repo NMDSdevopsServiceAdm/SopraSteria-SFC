@@ -17,12 +17,12 @@
   <app-new-wdf-tab
     [viewWDFData]="viewWDFData"
     (handleViewToggle)="handleViewTrainingByCategory($event)"
-    [greenTick]="wdfEligibilityStatus.currentWorkplace"
-    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-    [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-    [greenTick]="wdfEligibilityStatus.currentStaff"
-    [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
-    [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
+    [workplaceGreenTick]="wdfEligibilityStatus.currentWorkplace"
+    [workplaceAlert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
+    [workplaceRedCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
+    [staffGreenTick]="wdfEligibilityStatus.currentStaff"
+    [staffAlert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
+    [staffRedCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
   >
   </app-new-wdf-tab>
   <app-workplace-summary
