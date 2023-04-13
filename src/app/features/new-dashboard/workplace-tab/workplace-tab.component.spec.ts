@@ -3,6 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PermissionType } from '@core/model/permissions.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -20,8 +21,8 @@ import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-heade
 import { NewWorkplaceTabComponent } from './workplace-tab.component';
 
 describe('NewWorkplaceTabComponent', () => {
-  const setup = async () => {
-    const { fixture, getByTestId } = await render(NewWorkplaceTabComponent, {
+  const setup = async (permissions = ['canEditEstablishment'], establishment = Establishment) => {
+    const { fixture, getByText, queryByText, getByTestId } = await render(NewWorkplaceTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
@@ -30,7 +31,7 @@ describe('NewWorkplaceTabComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
+          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -43,7 +44,7 @@ describe('NewWorkplaceTabComponent', () => {
         },
       ],
       componentProperties: {
-        workplace: Establishment,
+        workplace: establishment,
       },
       declarations: [NewDashboardHeaderComponent],
     });
@@ -52,6 +53,8 @@ describe('NewWorkplaceTabComponent', () => {
 
     return {
       component,
+      getByText,
+      queryByText,
       getByTestId,
     };
   };
@@ -65,5 +68,30 @@ describe('NewWorkplaceTabComponent', () => {
     const { getByTestId } = await setup();
 
     expect(getByTestId('workplace-summary')).toBeTruthy();
+  });
+
+  describe('banners', () => {
+    it('should show the add more details banner with correct href when the showAddWorkplaceDetailsBanner is true and have the correct permissions', async () => {
+      const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
+      const { getByText } = await setup(['canEditEstablishment'], establishment);
+
+      const banner = getByText('Start to add more details about your workplace');
+
+      expect(banner).toBeTruthy();
+      expect(banner.getAttribute('href')).toEqual(`/workplace/${establishment.uid}/start`);
+    });
+
+    it('should not show the add more details banner when the showAddWorkplaceDetailsBanner is false', async () => {
+      const { queryByText } = await setup();
+
+      expect(queryByText('Start to add more details about your workplace')).toBeFalsy();
+    });
+
+    it('should not show the add more details banner when there are not the correct permissions', async () => {
+      const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
+      const { queryByText } = await setup([], establishment);
+
+      expect(queryByText('Start to add more details about your workplace')).toBeFalsy();
+    });
   });
 });
