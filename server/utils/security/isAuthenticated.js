@@ -153,7 +153,8 @@ const handleExceptions = (req, res, claim, establishmentMatchesClaim, roleCheck)
   }
 };
 
-const parentNoWriteAccess = (req) => req.method !== 'GET' && req.path.split('/')[1] !== 'ownershipChange';
+const parentNoWriteAccess = (req) =>
+  req.method !== 'GET' && req.path.split('/')[1] !== 'ownershipChange' && req.path !== '/benchmarks/usage';
 
 const noDataPermissions = (referencedEstablishment) => referencedEstablishment.dataPermissions === null;
 
