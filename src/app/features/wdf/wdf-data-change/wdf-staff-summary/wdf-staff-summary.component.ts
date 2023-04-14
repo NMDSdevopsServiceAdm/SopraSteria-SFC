@@ -5,6 +5,7 @@ import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
+import { TabsService } from '@core/services/tabs.service';
 import dayjs from 'dayjs';
 import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
@@ -17,6 +18,7 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
   @Input() canEditWorker: boolean;
+  @Input() standAloneAccount: boolean;
   public workplaceUid: string;
   public primaryWorkplaceUid: string;
   public canViewWorker: boolean;
@@ -30,6 +32,7 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
     private reportService: ReportService,
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
+    private tabsService: TabsService,
   ) {}
 
   public lastUpdated(timestamp: string): string {
@@ -118,5 +121,9 @@ export class WdfStaffSummaryComponent implements OnInit, OnChanges {
         this.overallWdfEligibility = report.wdf.overall;
       }),
     );
+  }
+  public navigateToStaffRecords(event: Event): void {
+    event.preventDefault();
+    this.tabsService.selectedTab = 'staff-records';
   }
 }
