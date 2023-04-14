@@ -7,7 +7,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { WorkplaceUtil } from '@core/utils/workplace-util';
+import { ReturnType, WorkplaceUtil } from '@core/utils/workplace-util';
 
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -223,12 +223,12 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   }
 
   public confirmField(dataField: string): void {
-    // if (this._workplace.employerType) {
-    //   this._workplace.employerType.value = WorkplaceUtil.formatTypeOfEmployer(
-    //     this._workplace.employerType.value,
-    //     ReturnType.Value,
-    //   );
-    // }
+    if (this._workplace.employerType) {
+      this._workplace.employerType.value = WorkplaceUtil.formatTypeOfEmployer(
+        this._workplace.employerType.value,
+        ReturnType.Value,
+      );
+    }
 
     const props = { [dataField]: this.workplace[dataField] };
 
