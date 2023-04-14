@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
 @Directive({})
 export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
@@ -41,7 +41,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public notesValue = '';
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
     protected backLinkService: BackLinkService,
@@ -227,8 +227,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     }
 
     const { title, category, accredited, completed, expires, notes } = this.form.controls;
-    const completedDate = this.dateGroupToDayjs(completed as FormGroup);
-    const expiresDate = this.dateGroupToDayjs(expires as FormGroup);
+    const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
+    const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
@@ -244,15 +244,15 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.submit(record);
   }
 
-  dateGroupToDayjs(group: FormGroup): dayjs.Dayjs {
+  dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs {
     const { day, month, year } = group.value;
     return day && month && year ? dayjs(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
   }
 
   // TODO: Expiry Date validation cannot be before completed date
-  expiresDateValidator(group: FormGroup): ValidationErrors {
-    const completed = group.get('completed') as FormGroup;
-    const expires = group.get('expires') as FormGroup;
+  expiresDateValidator(group: UntypedFormGroup): ValidationErrors {
+    const completed = group.get('completed') as UntypedFormGroup;
+    const expires = group.get('expires') as UntypedFormGroup;
 
     if (expires.get('day').value && expires.get('month').value && expires.get('year').value) {
       if (completed.get('day').value && completed.get('month').value && completed.get('year').value) {

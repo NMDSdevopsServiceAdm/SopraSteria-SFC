@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
@@ -26,7 +26,7 @@ describe('MoveWorkerDialog', () => {
       declarations: [],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         {
           provide: UserService,
           useFactory: MockUserService.factory(subsidiaries, role),

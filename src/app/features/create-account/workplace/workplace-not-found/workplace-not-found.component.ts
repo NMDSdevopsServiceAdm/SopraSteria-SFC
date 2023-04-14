@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -14,7 +14,7 @@ import { WorkplaceNotFoundDirective } from '@shared/directives/create-workplace/
 export class WorkplaceNotFoundComponent extends WorkplaceNotFoundDirective {
   constructor(
     protected establishmentService: EstablishmentService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     public backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected registrationService: RegistrationService,

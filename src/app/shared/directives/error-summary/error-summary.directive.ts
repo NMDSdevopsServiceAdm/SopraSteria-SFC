@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Directive, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 
 @Directive()
 export class ErrorSummaryDirective implements OnInit, OnDestroy {
-  @Input() public form: FormGroup;
+  @Input() public form: UntypedFormGroup;
   @Input() public formErrorsMap: ErrorDetails[];
   @Input() public serverError?: string;
   @Input() public customErrors?: ErrorDefinition[];

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { UserSearchItem } from '@core/model/admin/search.model';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
@@ -16,7 +16,7 @@ export class SearchForUserComponent extends SearchDirective {
   public results: UserSearchItem[] = [];
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected searchService: SearchService,
     protected switchWorkplaceService: SwitchWorkplaceService,
     protected alertService: AlertService,

@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 export class CharacterCountComponent implements OnInit, OnDestroy {
   public remaining: number;
   private subscriptions: Subscription = new Subscription();
-  @Input() control: FormControl;
+  @Input() control: UntypedFormControl;
   @Input() max: number;
   @Input() words = false;
 

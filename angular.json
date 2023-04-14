@@ -33,6 +33,9 @@
               }
             ],
             "styles": ["./src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./node_modules"]
+            },
             "allowedCommonJsDependencies": [
               "@babel",
               "raf",
@@ -44,7 +47,14 @@
               "url-parse",
               "rxjs/internal/operators/take",
               "pako",
-              "configcat-common"
+              "configcat-common",
+              "rxjs/internal/Subscription",
+              "core-js/modules/web.dom-collections.iterator.js",
+              "dayjs",
+              "slugify",
+              "html2canvas",
+              "dompurify",
+              "rgbcolor"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -108,7 +118,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
+                  "maximumWarning": "4mb",
                   "maximumError": "5mb"
                 },
                 {
@@ -147,6 +157,9 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "styles": ["src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./node_modules"]
+            },
             "scripts": [],
             "assets": ["src/favicon.ico", "src/assets"],
             "sourceMap": false,
@@ -167,7 +180,6 @@
       }
     }
   },
-  "defaultProject": "ng-sfc-v2",
   "cli": {
     "analytics": "21e74f90-72c7-4823-a125-19baa6f3668d"
   }

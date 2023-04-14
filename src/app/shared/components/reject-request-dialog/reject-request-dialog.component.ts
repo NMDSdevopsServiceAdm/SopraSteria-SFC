@@ -1,5 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { RejectOptions } from '@core/model/my-workplaces.model';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './reject-request-dialog.component.html',
 })
 export class RejectRequestDialogComponent extends DialogComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: ErrorDetails[];
   public submitted = false;
   protected subscriptions: Subscription = new Subscription();
@@ -26,7 +26,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   constructor(
     @Inject(DIALOG_DATA) public data,
     private errorSummaryService: ErrorSummaryService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     public dialog: Dialog<RejectRequestDialogComponent>,
   ) {
     super(data, dialog);
@@ -94,7 +94,7 @@ export class RejectRequestDialogComponent extends DialogComponent implements OnI
   }
 
   public handleChange(evt) {
-    const group = this.form as FormGroup;
+    const group = this.form as UntypedFormGroup;
     const { reason } = group.controls;
     reason.clearValidators();
     reason.setValue('');

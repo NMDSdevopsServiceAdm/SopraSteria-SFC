@@ -25,9 +25,10 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
+import { SummarySectionComponent } from './summary-section/summary-section.component';
 
 describe('NewHomeTabComponent', () => {
-  const setup = async () => {
+  const setup = async (establishment = Establishment) => {
     const { fixture, getByText, queryByText, getByTestId } = await render(NewHomeTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -47,9 +48,9 @@ describe('NewHomeTabComponent', () => {
           deps: [HttpClient],
         },
       ],
-      declarations: [NewDashboardHeaderComponent, NewArticleListComponent],
+      declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
-        workplace: Establishment,
+        workplace: establishment,
         meta: { workplaces: 9, staff: 4 } as Meta,
       },
       schemas: [NO_ERRORS_SCHEMA],
@@ -449,34 +450,48 @@ describe('NewHomeTabComponent', () => {
       expect(summaryBox).toBeTruthy();
     });
 
-    it('should show workplace link and take you to the workplace tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('workplace summary section', () => {
+      it('should take you to the workplace tab when clicking the workplace link', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
 
-      const workplaceLink = getByText('Workplace');
-      fireEvent.click(workplaceLink);
+        const workplaceLink = getByText('Workplace');
+        fireEvent.click(workplaceLink);
 
-      expect(workplaceLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      });
+
+      it('should show the add more details link if the showAddWorkplaceDetailsBanner is true', async () => {
+        const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
+        const { getByText, tabsServiceSpy } = await setup(establishment);
+
+        const link = getByText('Add more details to your workplace');
+        fireEvent.click(link);
+
+        expect(link).toBeTruthy();
+        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      });
     });
 
-    it('should show staff records link and take you to the staff records tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('staff records summary section', () => {
+      it('should show staff records link and take you to the staff records tab', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
 
-      const staffRecordsLink = getByText('Staff records');
-      fireEvent.click(staffRecordsLink);
+        const staffRecordsLink = getByText('Staff records');
+        fireEvent.click(staffRecordsLink);
 
-      expect(staffRecordsLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('staff-records');
+        expect(tabsServiceSpy).toHaveBeenCalledWith('staff-records');
+      });
     });
 
-    it('should show training and qualifications link that take you the training and qualifications tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('training and qualifications summary section', () => {
+      it('should show training and qualifications link that take you the training and qualifications tab', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
 
-      const trainingAndQualificationsLink = getByText('Training and qualifications');
-      fireEvent.click(trainingAndQualificationsLink);
+        const trainingAndQualificationsLink = getByText('Training and qualifications');
+        fireEvent.click(trainingAndQualificationsLink);
 
-      expect(trainingAndQualificationsLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+        expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+      });
     });
   });
 });

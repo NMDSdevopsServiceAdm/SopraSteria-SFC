@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, ValidatorFn } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -18,7 +18,7 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
   private wholeNumberCheckRegex = /^-?[A-Za-z0-9]*$/;
   private positiveNumberCheckRegex = /^[A-Za-z\d*(.\d*)]*$/;
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,

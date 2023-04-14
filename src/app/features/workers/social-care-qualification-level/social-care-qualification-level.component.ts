@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QualificationLevel } from '@core/model/qualification.model';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -19,7 +19,7 @@ export class SocialCareQualificationLevelComponent extends QuestionComponent {
   public insideSocialCareQualificationLevelSummaryFlow: boolean;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected backLinkService: BackLinkService,

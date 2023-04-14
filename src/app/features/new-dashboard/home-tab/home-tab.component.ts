@@ -17,7 +17,6 @@ import { isAdminRole } from 'server/utils/adminUtils';
 @Component({
   selector: 'app-new-home-tab',
   templateUrl: './home-tab.component.html',
-  styleUrls: ['./home-tab.component.scss'],
 })
 export class NewHomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -37,6 +36,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public canBulkUpload: boolean;
   public canEditEstablishment: boolean;
   public user: UserDetails;
+  public workplaceSummaryMessage: string;
 
   constructor(
     private userService: UserService,
@@ -48,7 +48,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.user = this.userService.loggedInUser;
-
     this.setPermissionLinks();
 
     if (this.workplace) {
@@ -114,10 +113,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
     }
     this.canBecomeAParent =
       this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.linkToParentRequestedStatus;
-  }
-
-  public pushLinkToHistoryState(urlLink: string): void {
-    history.pushState({}, '', urlLink);
   }
 
   /**

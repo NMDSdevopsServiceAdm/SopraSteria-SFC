@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 // TODO: Update Auto Suggest to use CDK Overlay and scroll results
 
@@ -18,7 +18,7 @@ export class AutoSuggestComponent implements ControlValueAccessor {
   onChange: Function;
   onTouched: Function;
   @Input() formControlName: string;
-  @Input() formGroup: FormGroup;
+  @Input() formGroup: UntypedFormGroup;
   @Input() dataProvider: Function;
   @Input() error = false;
 

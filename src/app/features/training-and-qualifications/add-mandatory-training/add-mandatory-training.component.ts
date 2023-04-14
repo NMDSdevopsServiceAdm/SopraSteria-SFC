@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment, mandatoryTrainingJobOption } from '@core/model/establishment.model';
@@ -21,7 +21,7 @@ import { take } from 'rxjs/internal/operators/take';
 })
 export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public renderAsEditMandatoryTraining: boolean;
   public submitted = false;
   public preExistingTraining: any;
@@ -51,7 +51,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   constructor(
     protected backLinkService: BackLinkService,
     private trainingService: TrainingService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private jobService: JobService,
@@ -60,8 +60,8 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
   ) {}
 
-  get selectedJobRolesArray(): FormArray {
-    return this.form.get('selectedJobRoles') as FormArray;
+  get selectedJobRolesArray(): UntypedFormArray {
+    return this.form.get('selectedJobRoles') as UntypedFormArray;
   }
 
   ngOnInit(): void {
@@ -226,7 +226,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     this.selectedJobRolesArray.removeAt(jobIndex);
   }
 
-  private createVacancyControl(jobId = null): FormGroup {
+  private createVacancyControl(jobId = null): UntypedFormGroup {
     return this.formBuilder.group({
       id: [jobId, [Validators.required]],
     });
