@@ -16,6 +16,7 @@ import { take } from 'rxjs/operators';
 
 import { WdfEligibilityStatus } from '../../../../core/model/wdf.model';
 import { Worker } from '../../../../core/model/worker.model';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-wdf-data',
@@ -35,7 +36,10 @@ export class WdfDataComponent implements OnInit {
   public returnUrl: URLStructure;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
   public isStandalone = true;
+  public newHomeDesignFlag: boolean;
+  public standAloneAccount = false;
   private subscriptions: Subscription = new Subscription();
+  public viewWDFData = false;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -44,10 +48,14 @@ export class WdfDataComponent implements OnInit {
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-  ) {}
+    private featureFlagsService: FeatureFlagsService,
+  ) {
+    this.featureFlagsService.start();
+  }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
+    this.standAloneAccount = this.establishmentService.standAloneAccount;
 
     if (this.route.snapshot.params.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
@@ -64,6 +72,15 @@ export class WdfDataComponent implements OnInit {
     this.setWorkplace();
     this.getWdfReport();
     this.setWorkerCount();
+
+    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
+    this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
+
+    this.route.fragment.subscribe((params) => {
+      if (params === 'workplace') {
+        this.viewWDFData = true;
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -103,6 +120,10 @@ export class WdfDataComponent implements OnInit {
         this.setWdfEligibility(report);
       }),
     );
+  }
+
+  public handleViewTrainingByCategory(visible: boolean): void {
+    this.viewWDFData = visible;
   }
 
   private setWorkerCount() {
