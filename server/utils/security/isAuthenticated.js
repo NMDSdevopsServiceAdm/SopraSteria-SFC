@@ -91,7 +91,8 @@ const establishmentIDorUIDIsInvalid = (claim) => isEstablishmentIDNaN(claim) || 
 
 const isEstablishmentIdUID = (req) => uuidV4Regex.test(req.params.id);
 
-const isReadOnlyTryingToNotGET = (roleCheck, req, claim) => roleCheck && req.method !== 'GET' && claim.role == 'Read';
+const isReadOnlyTryingToNotGET = (roleCheck, req, claim) =>
+  roleCheck && req.method !== 'GET' && claim.role == 'Read' && req.path !== '/benchmarks/usage';
 
 const subsidaryEstablishmentClaimMismatch = (establishmentMatchesClaim, claim) =>
   !establishmentMatchesClaim && !claim.isParent;
