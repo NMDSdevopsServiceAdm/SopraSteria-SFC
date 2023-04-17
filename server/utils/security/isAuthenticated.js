@@ -208,8 +208,6 @@ const buildRequest = (req, claim, referencedEstablishment) => {
 };
 
 const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret) => {
-  console.log('******************** check authorisation *******************');
-  console.log(roleCheck);
   const claim = jwt.verify(token, Token_Secret);
   const establishmentIdIsUID = isEstablishmentIdUID(req);
   const establishmentMatchesClaim = reqMatchClaimEstablishment(establishmentIdIsUID, req, claim);
