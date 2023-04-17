@@ -20,8 +20,8 @@
         [class.govuk-tabs__tab--green-tick]="workplaceGreenTick"
       >
         <span *ngIf="workplaceAlert" class="govuk-visually-hidden" data-testid="orange-flag">Orange warning flag</span>
-        <span *ngIf="workplaceRedCross" class="govuk-visually-hidden">Red cross</span>
-        <span *ngIf="workplaceGreenTick" class="govuk-visually-hidden">Green tick</span>
+        <span *ngIf="workplaceRedCross" class="govuk-visually-hidden" data-testid="red-cross">Red cross</span>
+        <span *ngIf="workplaceGreenTick" class="govuk-visually-hidden" data-testid="green-tick">Green tick</span>
       </i>
     </li>
     <li
@@ -43,9 +43,11 @@
         [class.govuk-tabs__tab--green-tick]="staffGreenTick"
         [class.govuk-tabs__tab--red-cross]="staffRedCross"
       >
-        <span *ngIf="staffAlert" class="govuk-visually-hidden" data-testid="orange-flag">Orange warning flag</span>
-        <span *ngIf="staffRedCross" class="govuk-visually-hidden">Red cross</span>
-        <span *ngIf="staffGreenTick" class="govuk-visually-hidden">Green tick</span>
+        <span *ngIf="staffAlert" class="govuk-visually-hidden" data-testid="staff-orange-flag"
+          >Orange warning flag</span
+        >
+        <span *ngIf="staffRedCross" class="govuk-visually-hidden" data-testid="staff-red-cross">Red cross</span>
+        <span *ngIf="staffGreenTick" class="govuk-visually-hidden" data-testid="staff-green-tick">Green tick</span>
       </i>
     </li>
   </ul>
