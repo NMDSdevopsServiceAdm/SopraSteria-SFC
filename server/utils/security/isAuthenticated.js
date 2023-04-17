@@ -208,6 +208,8 @@ const buildRequest = (req, claim, referencedEstablishment) => {
 };
 
 const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret) => {
+  console.log('******************** check authorisation *******************');
+  console.log(roleCheck);
   const claim = jwt.verify(token, Token_Secret);
   const establishmentIdIsUID = isEstablishmentIdUID(req);
   const establishmentMatchesClaim = reqMatchClaimEstablishment(establishmentIdIsUID, req, claim);
@@ -385,8 +387,6 @@ const isAdminManager = (req, res, next) => {
     // var dec = getverify(token, Token_Secret);
 
     jwt.verify(token, Token_Secret, function (err, claim) {
-      console.log('****** is Admin Manager ******');
-      console.log(claim);
       if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send('Invalid Token');
       } else {
@@ -474,3 +474,5 @@ exports.isAdminManager = isAdminManager;
 exports.isAuthorisedRegistrationApproval = isAuthorisedRegistrationApproval;
 exports.isAdminOrOnDemandReporting = isAdminOrOnDemandReporting;
 exports.authorisedEstablishmentPermissionCheck = authorisedEstablishmentPermissionCheck;
+exports.isReadOnlyTryingToNotGET = isReadOnlyTryingToNotGET;
+exports.parentNoWriteAccess = parentNoWriteAccess;
