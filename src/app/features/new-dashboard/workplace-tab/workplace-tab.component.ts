@@ -17,6 +17,7 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
   public summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
   public canEditEstablishment: boolean;
   public addWorkplaceDetailsBanner: boolean;
+  public showCqcDetailsBanner: boolean;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -29,6 +30,7 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.WORKPLACE_TAB);
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
+    this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
   }
 
   ngOnDestroy(): void {

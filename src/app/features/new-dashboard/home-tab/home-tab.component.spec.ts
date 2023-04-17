@@ -28,7 +28,7 @@ import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-heade
 import { NewHomeTabComponent } from './home-tab.component';
 import { SummarySectionComponent } from './summary-section/summary-section.component';
 
-fdescribe('NewHomeTabComponent', () => {
+describe('NewHomeTabComponent', () => {
   const setup = async (checkCqcDetails = false, establishment = Establishment) => {
     const { fixture, getByText, queryByText, getByTestId } = await render(NewHomeTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
