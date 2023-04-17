@@ -289,3 +289,20 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     return;
   }
 }
+
+@Injectable()
+export class MockEstablishmentServiceCheckCQCDetails extends MockEstablishmentService {
+  private cqcDetailsBanner;
+
+  public static factory(checkCqcDetailsBanner = false) {
+    return (httpClient: HttpClient) => {
+      const service = new MockEstablishmentServiceCheckCQCDetails(httpClient);
+      service.cqcDetailsBanner = checkCqcDetailsBanner;
+      return service;
+    };
+  }
+
+  public get checkCQCDetailsBanner(): boolean {
+    return this.cqcDetailsBanner;
+  }
+}

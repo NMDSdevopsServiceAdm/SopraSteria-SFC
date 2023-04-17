@@ -13,6 +13,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -27,8 +28,8 @@ import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-heade
 import { NewHomeTabComponent } from './home-tab.component';
 import { SummarySectionComponent } from './summary-section/summary-section.component';
 
-describe('NewHomeTabComponent', () => {
-  const setup = async (establishment = Establishment) => {
+fdescribe('NewHomeTabComponent', () => {
+  const setup = async (checkCqcDetails = false, establishment = Establishment) => {
     const { fixture, getByText, queryByText, getByTestId } = await render(NewHomeTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -45,6 +46,11 @@ describe('NewHomeTabComponent', () => {
         {
           provide: UserService,
           useFactory: MockUserService.factory(1, Roles.Admin),
+          deps: [HttpClient],
+        },
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
           deps: [HttpClient],
         },
       ],
@@ -462,9 +468,19 @@ describe('NewHomeTabComponent', () => {
 
       it('should show the add more details link if the showAddWorkplaceDetailsBanner is true', async () => {
         const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-        const { getByText, tabsServiceSpy } = await setup(establishment);
+        const { getByText, tabsServiceSpy } = await setup(true, establishment);
 
         const link = getByText('Add more details to your workplace');
+        fireEvent.click(link);
+
+        expect(link).toBeTruthy();
+        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      });
+
+      it('should show the check cqc details message if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
+        const { getByText, tabsServiceSpy } = await setup(true);
+
+        const link = getByText('You need to check your CQC details');
         fireEvent.click(link);
 
         expect(link).toBeTruthy();

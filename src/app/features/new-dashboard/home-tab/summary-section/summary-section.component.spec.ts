@@ -1,4 +1,8 @@
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
+import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -7,13 +11,18 @@ import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
 describe('Summary section', () => {
-  const setup = async (workplace = Establishment) => {
+  const setup = async (checkCqcDetails = false, workplace = Establishment) => {
     const { fixture, getByText, getByTestId } = await render(SummarySectionComponent, {
-      imports: [SharedModule],
+      imports: [SharedModule, HttpClientTestingModule],
       providers: [
         {
           provide: TabsService,
           useClass: MockTabsService,
+        },
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
+          deps: [HttpClient],
         },
       ],
       componentProperties: {
@@ -53,9 +62,16 @@ describe('Summary section', () => {
 
     it('should show the add workplace details message if the showAddWorkplaceDetailsBanner is true', async () => {
       const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-      const { getByText, getByTestId } = await setup(establishment);
+      const { getByText, getByTestId } = await setup(true, establishment);
 
       expect(getByText('Add more details to your workplace')).toBeTruthy();
+      expect(getByTestId('orange-flag')).toBeTruthy();
+    });
+
+    it('should show the check cqc details message if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
+      const { getByText, getByTestId } = await setup(true);
+
+      expect(getByText('You need to check your CQC details')).toBeTruthy();
       expect(getByTestId('orange-flag')).toBeTruthy();
     });
   });
