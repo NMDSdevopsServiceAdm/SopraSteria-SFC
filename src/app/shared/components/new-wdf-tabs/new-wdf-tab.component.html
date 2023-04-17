@@ -14,11 +14,10 @@
         (click)="this.handleViewChange($event)"
         >Workplace</a
       >
-
       <i
         [class.govuk-tabs__tab--alert]="workplaceAlert"
-        [class.govuk-tabs__tab--green-tick]="workplaceGreenTick"
         [class.govuk-tabs__tab--red-cross]="workplaceRedCross"
+        [class.govuk-tabs__tab--green-tick]="workplaceGreenTick"
       >
         <span *ngIf="workplaceAlert" class="govuk-visually-hidden" data-testid="orange-flag">Orange warning flag</span>
         <span *ngIf="workplaceRedCross" class="govuk-visually-hidden">Red cross</span>
