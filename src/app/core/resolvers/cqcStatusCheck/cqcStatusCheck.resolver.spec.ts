@@ -7,7 +7,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 
 import { CqcStatusCheckResolver } from './cqcStatusCheck.resolver';
 
-fdescribe('CqcStatusCheckResolver', () => {
+describe('CqcStatusCheckResolver', () => {
   const setup = () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
@@ -23,10 +23,6 @@ fdescribe('CqcStatusCheckResolver', () => {
     const route = TestBed.inject(ActivatedRoute);
 
     const establishmentService = TestBed.inject(EstablishmentService);
-    // const getCqcRegistrationStatusSpy = spyOn(establishmentService, 'getCQCRegistrationStatus').and.returnValue(
-    //   of({ cqcStatusMatch: false }),
-    // );
-    // const setCheckCqcDetailsBanner = spyOn(establishmentService, 'setCheckCQCDetailsBanner').and.callThrough();
 
     return { resolver, route, establishmentService };
   };
