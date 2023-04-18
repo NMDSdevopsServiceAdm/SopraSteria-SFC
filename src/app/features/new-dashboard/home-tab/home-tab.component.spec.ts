@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
@@ -20,6 +20,7 @@ import { NewArticleListComponent } from '@features/articles/new-article-list/new
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+
 import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
@@ -42,10 +43,23 @@ describe('NewHomeTabComponent', () => {
           useFactory: MockPermissionsService.factory(),
           deps: [HttpClient, Router, UserService],
         },
+
         {
           provide: UserService,
           useFactory: MockUserService.factory(1, Roles.Admin),
           deps: [HttpClient],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                workers: { workers: [] },
+              },
+            },
+            queryParams: of({ view: null }),
+            url: of(null),
+          },
         },
       ],
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],

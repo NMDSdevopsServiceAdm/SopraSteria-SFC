@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { TabsService } from '@core/services/tabs.service';
 
 @Component({
   selector: 'app-summary-section',
@@ -10,7 +11,8 @@ import { Establishment } from '@core/model/establishment.model';
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
-  public workers: Worker[];
+
+  @Input() workers: Worker[];
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '' },
@@ -18,11 +20,9 @@ export class SummarySectionComponent implements OnInit {
     { linkText: 'Training and qualifications', fragment: 'training-and-qualifications', message: '' },
   ];
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private tabsService: TabsService) {}
 
   ngOnInit(): void {
-    this.workers = this.route.snapshot.data.workers.workers;
-
     this.getWorkplaceSummaryMessage();
     this.getStaffSummaryMessage();
   }
