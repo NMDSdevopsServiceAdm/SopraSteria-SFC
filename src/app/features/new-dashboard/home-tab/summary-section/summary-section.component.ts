@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { TabsService } from '@core/services/tabs.service';
 
 @Component({
   selector: 'app-summary-section',
@@ -10,7 +10,7 @@ import { TabsService } from '@core/services/tabs.service';
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
-  @Input() workers: Worker[];
+  public workers: Worker[];
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '' },
@@ -18,9 +18,11 @@ export class SummarySectionComponent implements OnInit {
     { linkText: 'Training and qualifications', fragment: 'training-and-qualifications', message: '' },
   ];
 
-  constructor(private tabsService: TabsService) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.workers = this.route.snapshot.data.workers.workers;
+
     this.getWorkplaceSummaryMessage();
     this.getStaffSummaryMessage();
   }
@@ -32,7 +34,7 @@ export class SummarySectionComponent implements OnInit {
   }
 
   public getStaffSummaryMessage(): void {
-    if (this.workplace.showAddWorkplaceDetailsBanner) {
+    if (this.workers?.length <= 0) {
       this.sections[1].message = 'You can start to add your staff records now';
     }
   }
