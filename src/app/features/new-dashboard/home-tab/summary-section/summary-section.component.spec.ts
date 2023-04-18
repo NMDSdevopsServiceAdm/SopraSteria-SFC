@@ -7,7 +7,7 @@ import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
 describe('Summary section', () => {
-  const setup = async (workplace = Establishment) => {
+  const setup = async (workplace = Establishment, workers = []) => {
     const { fixture, getByText, getByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule],
       providers: [
@@ -18,6 +18,7 @@ describe('Summary section', () => {
       ],
       componentProperties: {
         workplace: workplace,
+        workers: workers,
         navigateToTab: (event, selectedTab) => {
           event.preventDefault();
         },
@@ -28,6 +29,7 @@ describe('Summary section', () => {
 
     return {
       component,
+      fixture,
       getByText,
       getByTestId,
     };
@@ -56,7 +58,7 @@ describe('Summary section', () => {
       const { getByText, getByTestId } = await setup(establishment);
 
       expect(getByText('Add more details to your workplace')).toBeTruthy();
-      expect(getByTestId('orange-flag')).toBeTruthy();
+      expect(getByTestId('orange-flag-0')).toBeTruthy();
     });
   });
 
@@ -67,8 +69,17 @@ describe('Summary section', () => {
       expect(getByText('Staff records')).toBeTruthy();
     });
 
+    it('should show start to add your staff message when there is no staff records', async () => {
+      const { component, getByTestId } = await setup();
+
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).getByText('You can start to add your staff records now')).toBeTruthy();
+      expect(getByTestId('orange-flag-1')).toBeTruthy();
+    });
+
     it('should show default summary message when no data needs to be adding or updating', async () => {
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(Establishment, [1]);
+
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).getByText('Remember to check and update this data often')).toBeTruthy();
     });
