@@ -9,6 +9,9 @@
       </div>
     </app-inset-text>
   </ng-container>
+  <ng-container *ngIf="canEditEstablishment && showCqcDetailsBanner">
+    <app-check-cqc-details data-testid="check-cqc-details-banner"></app-check-cqc-details>
+  </ng-container>
 
   <app-new-workplace-summary
     [workplace]="workplace"

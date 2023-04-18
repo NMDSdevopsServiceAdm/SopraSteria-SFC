@@ -10,6 +10,7 @@ import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/ha
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
@@ -136,6 +137,7 @@ const routes: Routes = [
           users: AllUsersForEstablishmentResolver,
           workers: WorkersResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
+          cqcStatusCheck: CqcStatusCheckResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },

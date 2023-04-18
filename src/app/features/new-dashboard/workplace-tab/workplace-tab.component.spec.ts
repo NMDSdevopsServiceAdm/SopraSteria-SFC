@@ -9,7 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -21,8 +21,12 @@ import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-heade
 import { NewWorkplaceTabComponent } from './workplace-tab.component';
 
 describe('NewWorkplaceTabComponent', () => {
-  const setup = async (permissions = ['canEditEstablishment'], establishment = Establishment) => {
-    const { fixture, getByText, queryByText, getByTestId } = await render(NewWorkplaceTabComponent, {
+  const setup = async (
+    permissions = ['canEditEstablishment'],
+    checkCqcDetails = false,
+    establishment = Establishment,
+  ) => {
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
@@ -40,7 +44,8 @@ describe('NewWorkplaceTabComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
+          deps: [HttpClient],
         },
       ],
       componentProperties: {
@@ -56,6 +61,7 @@ describe('NewWorkplaceTabComponent', () => {
       getByText,
       queryByText,
       getByTestId,
+      queryByTestId,
     };
   };
 
@@ -73,7 +79,7 @@ describe('NewWorkplaceTabComponent', () => {
   describe('banners', () => {
     it('should show the add more details banner with correct href when the showAddWorkplaceDetailsBanner is true and have the correct permissions', async () => {
       const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-      const { getByText } = await setup(['canEditEstablishment'], establishment);
+      const { getByText } = await setup(['canEditEstablishment'], false, establishment);
 
       const banner = getByText('Start to add more details about your workplace');
 
@@ -89,9 +95,21 @@ describe('NewWorkplaceTabComponent', () => {
 
     it('should not show the add more details banner when there are not the correct permissions', async () => {
       const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-      const { queryByText } = await setup([], establishment);
+      const { queryByText } = await setup([], false, establishment);
 
       expect(queryByText('Start to add more details about your workplace')).toBeFalsy();
+    });
+
+    it('should show the check cqc details banner when checkCQCDetails is true', async () => {
+      const { getByTestId } = await setup(['canEditEstablishment'], true);
+
+      expect(getByTestId('check-cqc-details-banner')).toBeTruthy();
+    });
+
+    it('should not show the check cqc details banner when there are not the correct permissions', async () => {
+      const { queryByTestId } = await setup([], true);
+
+      expect(queryByTestId('check-cqc-details-banner')).toBeFalsy();
     });
   });
 });
