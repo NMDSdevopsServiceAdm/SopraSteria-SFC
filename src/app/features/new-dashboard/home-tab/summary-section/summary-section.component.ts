@@ -11,6 +11,7 @@ import { TabsService } from '@core/services/tabs.service';
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
+  public redFlag: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '' },
@@ -27,8 +28,13 @@ export class SummarySectionComponent implements OnInit {
   public getWorkplaceSummaryMessage(): void {
     if (this.workplace.showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
+      this.redFlag = false;
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
+      this.redFlag = false;
+    } else if (!this.workplace.numberOfStaff) {
+      this.sections[0].message = `You've not added your total number of staff`;
+      this.redFlag = true;
     }
   }
 }

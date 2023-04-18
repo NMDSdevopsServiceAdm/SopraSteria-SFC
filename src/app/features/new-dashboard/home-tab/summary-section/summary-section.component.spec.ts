@@ -74,6 +74,14 @@ describe('Summary section', () => {
       expect(getByText('You need to check your CQC details')).toBeTruthy();
       expect(getByTestId('orange-flag')).toBeTruthy();
     });
+
+    it('should show the total staff error if it is not available', async () => {
+      const establishment = { ...Establishment, numberOfStaff: undefined };
+      const { getByText, getByTestId } = await setup(false, establishment);
+
+      expect(getByText(`You've not added your total number of staff`)).toBeTruthy();
+      expect(getByTestId('red-flag')).toBeTruthy();
+    });
   });
 
   describe('staff record summary section', () => {
