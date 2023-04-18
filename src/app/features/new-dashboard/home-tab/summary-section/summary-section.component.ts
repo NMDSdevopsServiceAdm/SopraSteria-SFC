@@ -10,6 +10,7 @@ import { TabsService } from '@core/services/tabs.service';
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
+  @Input() workers: Worker[];
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '' },
@@ -21,11 +22,18 @@ export class SummarySectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
+    this.getStaffSummaryMessage();
   }
 
   public getWorkplaceSummaryMessage(): void {
     if (this.workplace.showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
+    }
+  }
+
+  public getStaffSummaryMessage(): void {
+    if (this.workplace.showAddWorkplaceDetailsBanner) {
+      this.sections[1].message = 'You can start to add your staff records now';
     }
   }
 }
