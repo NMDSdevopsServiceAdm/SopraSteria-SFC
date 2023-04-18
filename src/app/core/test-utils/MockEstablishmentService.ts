@@ -135,12 +135,12 @@ export class MockEstablishmentService extends EstablishmentService {
       isRegulated: false,
       leavers: undefined,
       localAuthorities: [],
-      mainService: undefined,
+      mainService: { name: 'Care', id: 123, isCQC: true },
       name: 'Test Workplace',
       nmdsId: 'AB12345',
       numberOfStaff: 0,
       otherServices: { value: null, services: [] },
-      postcode: '',
+      postcode: 'AB1 2CD',
       primaryAuthority: undefined,
       serviceUsers: [],
       shareWith: this.shareWith,
@@ -153,6 +153,7 @@ export class MockEstablishmentService extends EstablishmentService {
       updated: undefined,
       updatedBy: '',
       vacancies: undefined,
+      locationId: '1-11111111',
     };
   }
 
@@ -287,5 +288,22 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
   }
   public get returnTo(): URLStructure {
     return;
+  }
+}
+
+@Injectable()
+export class MockEstablishmentServiceCheckCQCDetails extends MockEstablishmentService {
+  private cqcDetailsBanner;
+
+  public static factory(checkCqcDetailsBanner = false) {
+    return (httpClient: HttpClient) => {
+      const service = new MockEstablishmentServiceCheckCQCDetails(httpClient);
+      service.cqcDetailsBanner = checkCqcDetailsBanner;
+      return service;
+    };
+  }
+
+  public get checkCQCDetailsBanner(): boolean {
+    return this.cqcDetailsBanner;
   }
 }

@@ -107,6 +107,8 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { WDFTabComponent } from './components/new-wdf-tabs/new-wdf-tab.component';
+import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-summary/wdf-workplace-summary.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -215,6 +217,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewWorkplaceSummaryComponent,
     NewArticleListComponent,
     LinkWithArrowComponent,
+    WDFTabComponent,
+    WDFWorkplaceSummaryComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -319,6 +323,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewWorkplaceSummaryComponent,
     NewArticleListComponent,
     LinkWithArrowComponent,
+    WDFTabComponent,
+    WDFWorkplaceSummaryComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

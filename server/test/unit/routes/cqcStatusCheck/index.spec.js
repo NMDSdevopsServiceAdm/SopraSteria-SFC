@@ -19,7 +19,7 @@ const locationIDs = [
   {
     locationID: '1-2008736163',
     mainService:
-      'Hospital services for people with mental health needs, learning disabilities and/or problems with substance misuse',
+      'Hospital services for people with mental health needs, learning disabilities, problems with substance misuse',
   },
   { locationID: '1-4413548038', mainService: 'Long term conditions services' },
   { locationID: '1-118864375', mainService: 'Nurses agency' },
