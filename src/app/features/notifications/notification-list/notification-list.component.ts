@@ -17,7 +17,9 @@ export class NotificationListComponent implements OnInit {
   public ownerChangeRequestUID;
   public form;
   public allBoxesChecked = false;
+  public sortOptions = ['Latest', 'Unread', 'Read'];
 
+  private selectedSort;
   constructor(
     protected formBuilder: FormBuilder,
     private establishmentService: EstablishmentService,
@@ -33,8 +35,14 @@ export class NotificationListComponent implements OnInit {
 
   public getNotifications(): void {
     this.notificationService
-      .getAllNotifications(this.establishmentService.establishmentId)
+      .getAllNotifications(this.establishmentService.establishmentId, this.selectedSort)
       .subscribe((notification) => (this.notifications = notification));
+  }
+
+  public onSortChange($event): void {
+    this.selectedSort = $event.target.value;
+    console.log(this.selectedSort);
+    this.getNotifications();
   }
 
   public pushNotificationToDeleteArray(notification): void {

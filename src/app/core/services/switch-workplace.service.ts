@@ -35,11 +35,12 @@ export class SwitchWorkplaceService {
         }
 
         if (!username && nmdsId) {
-          this.getAllNotificationWorkplace(nmdsId, params).subscribe((data) => {
-            if (data) {
-              this.notificationData = data;
-            }
-          });
+          this.notificationsService.getAllNotifications(data.body.establishment.uid);
+          // this.getAllNotificationWorkplace(nmdsId, params).subscribe((data) => {
+          //   if (data) {
+          //     this.notificationData = data;
+          //   }
+          // });
         }
       },
       (error) => this.onError(error),

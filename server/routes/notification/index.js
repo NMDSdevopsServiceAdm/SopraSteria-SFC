@@ -2,14 +2,15 @@
 const express = require('express');
 const router = express.Router();
 
-const Authorization = require('../utils/security/isAuthenticated');
-const models = require('../models');
-const linkSubToParent = require('../data/linkToParent');
-const ownershipChangeRequests = require('../data/ownership');
-const notifications = require('../data/notifications');
+const Authorization = require('../../utils/security/isAuthenticated');
+const models = require('../../models');
+const linkSubToParent = require('../../data/linkToParent');
+const ownershipChangeRequests = require('../../data/ownership');
+const notifications = require('../../data/notifications');
+const Notifications = require('./notifications');
 
 const getEstablishmentNotifications = async (req, res) => {
-  const establishmentNotifications = await notifications.selectNotificationByEstablishment(req.params.establishmentUid);
+  const establishmentNotifications = await Notifications.GetByEstablishment(req.params.establishmentUid, req.query.order);
   return res.status(200).send(establishmentNotifications);
 };
 

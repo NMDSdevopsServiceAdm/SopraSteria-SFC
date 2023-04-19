@@ -16,14 +16,10 @@ export class NotificationsService {
   public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject(null);
   constructor(private http: HttpClient) {}
 
-  public getAllNotifications(establishmentId) {
-    const notificationsUser = this.getUserNotifications();
-    if (establishmentId) {
-      const notificationsEstablishment = this.getEstablishmentNotifications(establishmentId);
-      return zip(notificationsUser, notificationsEstablishment).pipe(map((x) => x[0].concat(x[1])));
-    } else {
-      return notificationsUser;
-    }
+  public getAllNotifications(establishmentUid, sort = undefined) {
+    const queryString = sort ? `?sort=${sort}` : '';
+    console.log(queryString);
+    return this.http.get<Notification[]>(`/api/notification/establishment/${establishmentUid}${queryString}`)
   }
 
   set notifications(notifications: Notification[]) {
@@ -40,10 +36,6 @@ export class NotificationsService {
 
   public getUserNotifications(): Observable<Notification[]> {
     return this.http.get<Notification[]>('/api/user/my/notifications');
-  }
-
-  public getEstablishmentNotifications(establishmentUid): Observable<Notification[]> {
-    return this.http.get<any>(`/api/notification/establishment/${establishmentUid}`);
   }
 
   public getNotificationDetails(notificationUid): Observable<any> {
