@@ -103,22 +103,51 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should render a Change link', async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.name = 'Care Home';
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const workplaceRow = within(document.body).queryByTestId('workplace-section');
+        const workplaceRow = getByTestId('workplace-name-and-address');
         const link = within(workplaceRow).queryByText('Change');
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-workplace-details`);
       });
+
+      it('should render a conditional class to not show the bottom border if the workplace is not regulated and there is no number of staff', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = false;
+        component.workplace.numberOfStaff = null;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('workplace-name-and-address');
+
+        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+      });
+
+      it('should not render a conditional class if the workplace is regulated and there is no number of staff', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = true;
+        component.workplace.numberOfStaff = null;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('workplace-name-and-address');
+
+        expect(workplaceRow.getAttribute('class')).not.toContain('govuk-summary-list__row--no-bottom-border');
+      });
     });
+
     describe('CQC Location ID', () => {
       it('should render the locationID and a Change link if the workplace is regulated', async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.isRegulated = true;
         component.canEditEstablishment = true;
@@ -126,7 +155,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         fixture.detectChanges();
 
-        const cqcLocationIdRow = within(document.body).queryByTestId('cqcLocationId');
+        const cqcLocationIdRow = getByTestId('cqcLocationId');
         const link = within(cqcLocationIdRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -142,10 +171,24 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(queryByTestId('cqcLocationId')).toBeFalsy();
       });
+
+      it('should render a conditional class if there is no number of staff', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = true;
+        component.workplace.numberOfStaff = null;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('cqcLocationId');
+
+        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+      });
     });
 
     describe('Number of staff', () => {
-      it('should render the number of staff and a Change link', async () => {
+      it('should render the number of staff and a Change link without conditional classes', async () => {
         const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
@@ -159,6 +202,10 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/total-staff`);
         expect(within(numberOfStaffRow).queryByText('4')).toBeTruthy();
+        expect(numberOfStaffRow.getAttribute('class')).not.toContain('govuk-summary-list__error');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).not.toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
       });
 
       it('should render a dash and an Add link if there is not a value for number of staff', async () => {
@@ -175,6 +222,23 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/total-staff`);
         expect(within(numberOfStaffRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should render an error message and conditional classes if there is not a value for the number of staff', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = null;
+
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+
+        expect(within(numberOfStaffRow).getByText('You need to add your total number of staff')).toBeTruthy();
+        expect(numberOfStaffRow.getAttribute('class')).toContain('govuk-summary-list__error');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
       });
     });
 

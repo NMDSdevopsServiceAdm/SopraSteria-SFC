@@ -11,20 +11,22 @@ export class CqcStatusCheckResolver implements Resolve<any> {
   resolve(route: ActivatedRouteSnapshot) {
     const { locationId, postcode, mainService } = this.establishmentService.primaryWorkplace;
 
-    return this.establishmentService
-      .getCQCRegistrationStatus(locationId, {
-        postcode,
-        mainService: mainService.name,
-      })
-      .pipe(
-        tap(({ cqcStatusMatch }) => {
-          this.establishmentService.setCheckCQCDetailsBanner(cqcStatusMatch === false);
-        }),
-      )
-      .pipe(
-        catchError(() => {
-          return of(null);
-        }),
-      );
+    if (locationId) {
+      return this.establishmentService
+        .getCQCRegistrationStatus(locationId, {
+          postcode,
+          mainService: mainService.name,
+        })
+        .pipe(
+          tap(({ cqcStatusMatch }) => {
+            this.establishmentService.setCheckCQCDetailsBanner(cqcStatusMatch === false);
+          }),
+        )
+        .pipe(
+          catchError(() => {
+            return of(null);
+          }),
+        );
+    }
   }
 }

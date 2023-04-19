@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-new-workplace-summary',
   templateUrl: './workplace-summary.component.html',
+  styleUrls: ['./workplace-summary.component.scss'],
   providers: [I18nPluralPipe],
 })
 export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
