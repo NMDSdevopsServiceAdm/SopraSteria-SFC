@@ -37,8 +37,16 @@ export class SummarySectionComponent implements OnInit {
   }
 
   public getStaffSummaryMessage(): void {
+    const dateCheck = new Date(this.workplace.eightWeeksFromFirstLogin);
+
     if (this.workers?.length <= 0) {
       this.sections[1].message = 'You can start to add your staff records now';
+    } else if (
+      this.workers?.length !== this.workplace.numberOfStaff &&
+      this.workers?.length > 0 &&
+      dateCheck < new Date()
+    ) {
+      this.sections[1].message = 'Staff records added does not match staff total';
     }
   }
 }
