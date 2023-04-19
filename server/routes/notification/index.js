@@ -10,7 +10,10 @@ const notifications = require('../../data/notifications');
 const Notifications = require('./notifications');
 
 const getEstablishmentNotifications = async (req, res) => {
-  const establishmentNotifications = await Notifications.GetByEstablishment(req.params.establishmentUid, req.query.order);
+  const establishmentNotifications = await Notifications.GetByEstablishment(
+    req.params.establishmentUid,
+    req.query.sort,
+  );
   return res.status(200).send(establishmentNotifications);
 };
 
@@ -241,7 +244,6 @@ const deleteNotifications = async (req, res) => {
     });
   }
 };
-
 
 router.route('/user/:userUid').post(sendUserNotification);
 router.route('/establishment/:establishmentUid').get(getEstablishmentNotifications);

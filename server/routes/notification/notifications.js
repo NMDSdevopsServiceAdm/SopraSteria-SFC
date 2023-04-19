@@ -13,6 +13,8 @@ class Notifications {
       order: sortOrder,
     };
 
+    console.log(sortOrder);
+
     const resp = await notifications.selectNotificationByEstablishment(params);
     return resp;
   }

@@ -37,6 +37,7 @@ export class NotificationListComponent implements OnInit {
     this.notificationService
       .getAllNotifications(this.establishmentService.establishmentId, this.selectedSort)
       .subscribe((notification) => (this.notifications = notification));
+    console.log(this.notifications);
   }
 
   public onSortChange($event): void {
