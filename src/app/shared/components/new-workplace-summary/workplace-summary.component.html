@@ -78,7 +78,10 @@
             ></app-summary-record-change>
           </dd>
         </div>
-        <div *ngIf="!workplace.numberOfStaff" class="govuk-summary-list__row">
+        <div
+          *ngIf="!workplace.numberOfStaff"
+          class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
+        >
           <dt class="govuk-summary-list__key govuk-error-message govuk__nowrap">
             You need to add your total number of staff
           </dt>
@@ -119,13 +122,6 @@
     class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
     data-testid="services-section"
   >
-    <!-- <div class="govuk-summary-list__row" data-testid="services-section">
-    <dt class="govuk-summary-list__key">
-      <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Services</h2>
-    </dt>
-    <dd class="govuk-summary-list__value"></dd>
-    <dd class="govuk-summary-list__actions"></dd>
-  </div> -->
     <div
       class="govuk-summary-list__row"
       [ngClass]="{ 'govuk-panel--light-blue': cqcStatusRequested }"
@@ -245,24 +241,17 @@
   </dl>
 
   <ng-container *ngIf="!workplace?.showAddWorkplaceDetailsBanner">
-    <div class="warning">
-      <h2 class="govuk-heading-m govuk-!-padding-top-1" [ngClass]="'govuk-!-margin-bottom-1'">
+    <div [class.govuk-summary-list__warning]="noVacancyAndTurnoverData" data-testid="vacancies-and-turnover-section">
+      <h2
+        class="govuk-heading-m govuk-!-padding-top-1"
+        [ngClass]="{ 'govuk-!-margin-bottom-1': noVacancyAndTurnoverData }"
+      >
         Vacancies and turnover
       </h2>
-      <span class="warning-message"
-        ><span class="govuk-visually-hidden">Error:</span> You've not added any vacancy and turnover data</span
+      <span *ngIf="noVacancyAndTurnoverData" class="govuk-error-message govuk-summary-list__warning-message"
+        >You've not added any vacancy and turnover data</span
       >
-      <dl
-        class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
-        data-testid="vacancies-and-turnover-section"
-      >
-        <!-- <div class="govuk-summary-list__row" data-testid="vacancies-and-turnover-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Vacancies and turnover</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div> -->
+      <dl class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border">
         <div class="govuk-summary-list__row" data-testid="vacancies">
           <dt class="govuk-summary-list__key">Current staff vacancies</dt>
           <dd class="govuk-summary-list__value">
@@ -349,13 +338,6 @@
       class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
       data-testid="recruitment-section"
     >
-      <!-- <div class="govuk-summary-list__row" data-testid="recruitment-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Recruitment</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div> -->
       <div class="govuk-summary-list__row" data-testid="advertising-spend">
         <dt class="govuk-summary-list__key">Advertising spend</dt>
         <dd class="govuk-summary-list__value">
@@ -481,13 +463,6 @@
       class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
       data-testid="staff-benefits-section"
     >
-      <!-- <div class="govuk-summary-list__row" data-testid="staff-benefits-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Staff benefits</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div> -->
       <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
         <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
         <dd class="govuk-summary-list__value">
@@ -595,13 +570,6 @@
       class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
       data-testid="permissions-section"
     >
-      <!-- <div class="govuk-summary-list__row" data-testid="permissions-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Permissions</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div> -->
       <div class="govuk-summary-list__row" data-testid="data-sharing">
         <dt class="govuk-summary-list__key">Data sharing</dt>
         <dd class="govuk-summary-list__value">
