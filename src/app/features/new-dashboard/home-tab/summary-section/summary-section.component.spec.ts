@@ -9,6 +9,7 @@ import { render, within } from '@testing-library/angular';
 
 import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
+import dayjs from 'dayjs';
 
 describe('Summary section', () => {
   const setup = async (workplace = Establishment, workers = []) => {
@@ -86,19 +87,69 @@ describe('Summary section', () => {
         expect(getByText('Staff records')).toBeTruthy();
       });
 
+      it('should show default summary message when no data needs to be adding or updating', async () => {
+        const { getByTestId } = await setup(Establishment, [1]);
+
+        const staffRecordsRow = getByTestId('staff-records-row');
+        expect(within(staffRecordsRow).getByText('Remember to check and update this data often')).toBeTruthy();
+      });
+
       it('should show start to add your staff message when there is no staff records', async () => {
-        const { component, getByTestId } = await setup();
+        const { getByTestId } = await setup();
 
         const staffRecordsRow = getByTestId('staff-records-row');
         expect(within(staffRecordsRow).getByText('You can start to add your staff records now')).toBeTruthy();
         expect(getByTestId('orange-flag-1')).toBeTruthy();
       });
 
-      it('should show default summary message when no data needs to be adding or updating', async () => {
-        const { getByTestId } = await setup(Establishment, [1]);
+      it('should show staff record does not match  message when the number of staff is more than the staff record', async () => {
+        const establishment = {
+          ...Establishment,
+          eightWeeksFromFirstLogin: dayjs(new Date()).subtract(1, 'day').toString(),
+          numberOfStaff: 10,
+        };
+        const { fixture, component, getByTestId } = await setup(establishment, [15]);
 
+        fixture.detectChanges();
         const staffRecordsRow = getByTestId('staff-records-row');
-        expect(within(staffRecordsRow).getByText('Remember to check and update this data often')).toBeTruthy();
+        expect(within(staffRecordsRow).getByText('Staff records added does not match staff total')).toBeTruthy();
+        expect(getByTestId('orange-flag-1')).toBeTruthy();
+      });
+
+      it('should not show staff record does not match  message when the number of staff is equal to the staff record', async () => {
+        const establishment = {
+          ...Establishment,
+          eightWeeksFromFirstLogin: new Date('1970-01-01').toString(),
+          numberOfStaff: 10,
+        };
+        const { fixture, getByTestId } = await setup(establishment, [10]);
+        fixture.detectChanges();
+        const staffRecordsRow = getByTestId('staff-records-row');
+        expect(within(staffRecordsRow).getByText('Staff records added does not match staff total')).toBeFalsy();
+      });
+
+      it('should not show staff record does not match  message when there is no staff record', async () => {
+        const establishment = {
+          ...Establishment,
+          eightWeeksFromFirstLogin: new Date('1970-01-01').toString(),
+          numberOfStaff: 10,
+        };
+        const { fixture, getByTestId } = await setup(establishment);
+        fixture.detectChanges();
+        const staffRecordsRow = getByTestId('staff-records-row');
+        expect(within(staffRecordsRow).getByText('Staff records added does not match staff total')).toBeFalsy();
+      });
+
+      it('should not show staff record does not match  message when the eight week date is in the future ', async () => {
+        const establishment = {
+          ...Establishment,
+          eightWeeksFromFirstLogin: new Date('2999-01-01').toString(),
+          numberOfStaff: 10,
+        };
+        const { fixture, getByTestId } = await setup(establishment);
+        fixture.detectChanges();
+        const staffRecordsRow = getByTestId('staff-records-row');
+        expect(within(staffRecordsRow).getByText('Staff records added does not match staff total')).toBeFalsy();
       });
     });
 
