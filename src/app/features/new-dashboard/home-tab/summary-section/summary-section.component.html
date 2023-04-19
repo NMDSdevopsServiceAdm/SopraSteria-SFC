@@ -16,7 +16,7 @@
             src="/assets/images/flag-orange.svg"
             alt="action-required-orange-flag"
             class="govuk-!-margin-right-2"
-            data-testid="orange-flag"
+            [attr.data-testid]="'orange-flag-' + index"
           />
           <a (click)="navigateToTab($event, section.fragment)" href="#"> {{ section.message }}</a>
         </ng-container>
