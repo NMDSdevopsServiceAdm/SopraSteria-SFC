@@ -6,9 +6,7 @@ import {
   NotificationRequest,
   NotificationTypes,
 } from '@core/model/notifications.model';
-import { escapeRegExp } from 'lodash';
-import filter from 'lodash/filter';
-import { BehaviorSubject, concat, Observable, zip } from 'rxjs';
+import { BehaviorSubject, Observable, zip } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -18,14 +16,19 @@ export class NotificationsService {
   public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject(null);
   constructor(private http: HttpClient) {}
 
-  public getAllNotifications(establishmentId) {
-    const notificationsUser = this.getUserNotifications();
-    if (establishmentId) {
-      const notificationsEstablishment = this.getEstablishmentNotifications(establishmentId);
-      return zip(notificationsUser, notificationsEstablishment).pipe(map((x) => x[0].concat(x[1])));
-    } else {
-      return notificationsUser;
+  public getAllNotifications(establishmentUid, limit = undefined, sort = undefined, page = undefined) {
+    const queryParams = [];
+    if (limit) queryParams.push(`limit=${limit}`);
+    if (sort) queryParams.push(`sort=${sort}`);
+    if (page) queryParams.push(`page=${page}`);
+
+    let queryString = '';
+    for (const param of queryParams) {
+      const punctuation = queryString ? `&` : `?`;
+      queryString = `${queryString}${punctuation}${param}`;
     }
+
+    return this.http.get<Notification[]>(`/api/notification/establishment/${establishmentUid}${queryString}`);
   }
 
   set notifications(notifications: Notification[]) {
@@ -42,10 +45,6 @@ export class NotificationsService {
 
   public getUserNotifications(): Observable<Notification[]> {
     return this.http.get<Notification[]>('/api/user/my/notifications');
-  }
-
-  public getEstablishmentNotifications(establishmentUid): Observable<Notification[]> {
-    return this.http.get<any>(`/api/notification/establishment/${establishmentUid}`);
   }
 
   public getNotificationDetails(notificationUid): Observable<any> {
@@ -71,8 +70,12 @@ export class NotificationsService {
     return this.http.put<any>(`/api/ownershipRequest/${ownershipChangeRequestId}`, data);
   }
 
-  public setNoticationViewed(notificationUid: string): Observable<NotificationData> {
+  public setNotificationViewed(notificationUid: string): Observable<NotificationData> {
     return this.http.patch<any>(`/api/notification/${notificationUid}`, { isViewed: true });
+  }
+
+  public deleteNotifications(notificationsForDeletion: Array<any>): Observable<any> {
+    return this.http.post<any>(`/api/notification/deleteNotifications`, { notificationsForDeletion });
   }
 
   public setNotificationRequestLinkToParent(establishmentId, data): Observable<NotificationRequest> {

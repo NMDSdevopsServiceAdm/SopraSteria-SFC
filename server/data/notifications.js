@@ -15,15 +15,15 @@ const getListQuery = `
   OFFSET :offset;
   `;
 
-const selectEstablishmentNotifications = `
-  SELECT
-    "notificationUid",
-    "type",
-    "created",
-    "isViewed",
-    "createdByUserUID"
-  FROM cqc."NotificationsEstablishment"
-  WHERE "establishmentUid" = :establishmentUid
+const selectEstablishmentNotifications = (order) => `
+(SELECT "notificationUid", type, "recipientUserUid", created, "isViewed", "createdByUserUID"
+	FROM cqc."Notifications"
+    WHERE "recipientUserUid" IN (:userUids)
+UNION
+SELECT "notificationUid", type, "establishmentUid", created, "isViewed", "createdByUserUID"
+    FROM cqc."NotificationsEstablishment"
+    WHERE "establishmentUid" = :establishmentUid)
+  ORDER BY ${order}
   LIMIT :limit
   OFFSET :offset;
   `;
@@ -114,15 +114,18 @@ const updateNotificationQuery = `
   WHERE "notificationUid" = :nuid
 `;
 
-exports.selectNotificationByEstablishment = async (establishmentUid, limit, offset) =>
-  db.query(selectEstablishmentNotifications, {
+exports.selectNotificationByEstablishment = async (params) => {
+  const order = params.order ? params.order : 'created ASC';
+  return db.query(selectEstablishmentNotifications(order), {
     replacements: {
-      establishmentUid: establishmentUid,
-      limit: Number.isInteger(limit) && limit > 0 ? limit : null,
-      offset: Number.isInteger(offset) && offset > 0 ? offset : 0,
+      establishmentUid: params.establishmentUid,
+      userUids: params.userUids,
+      limit: Number.isInteger(params.limit) && params.limit > 0 ? params.limit : null,
+      offset: Number.isInteger(params.offset) && params.offset > 0 ? params.offset : 0,
     },
     type: db.QueryTypes.SELECT,
   });
+};
 
 exports.markUserNotificationAsRead = async ({ notificationUid }) =>
   db.query(markUserNotificationReadQuery, {
@@ -233,14 +236,37 @@ exports.getEstablishmentId = async (params) =>
   });
 
 const getAllUserQuery = `
-  select "UserUID" from cqc."User"
-  WHERE "EstablishmentID" = :establishmentId;
+SELECT "UserUID" from cqc."User" u
+JOIN cqc."Establishment" e ON e."EstablishmentID" = u."EstablishmentID"
+WHERE e."EstablishmentUID" = :establishmentUid;
   `;
 
-exports.getAllUser = async (params) =>
+exports.getAllUsers = async (establishmentUid) =>
   db.query(getAllUserQuery, {
     replacements: {
-      establishmentId: params.establishmentId,
+      establishmentUid: establishmentUid,
     },
     type: db.QueryTypes.SELECT,
   });
+
+const deleteNotificationsEstablishmentQuery = `
+  DELETE FROM cqc."NotificationsEstablishment"
+  WHERE "notificationUid" = :notificationUid
+`;
+
+const deleteNotificationsQuery = `
+  DELETE FROM cqc."Notifications"
+  WHERE "notificationUid" = :notificationUid
+`;
+
+exports.deleteNotifications = async (notificationUid) => {
+  db.query(deleteNotificationsEstablishmentQuery, {
+    replacements: { notificationUid },
+    type: db.QueryTypes.DELETE,
+  });
+
+  db.query(deleteNotificationsQuery, {
+    replacements: { notificationUid },
+    type: db.QueryTypes.DELETE,
+  });
+};

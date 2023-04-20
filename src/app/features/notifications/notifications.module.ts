@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NotificationBecomeAParentComponent } from '@features/notifications/notification-become-a-parent/notification-become-a-parent.component';
 import { NotificationTypePipe } from '@shared/pipes/notification-type.pipe';
 import { SharedModule } from '@shared/shared.module';
 
@@ -9,7 +11,6 @@ import { NotificationLinkToParentComponent } from './notification-link-to-parent
 import { NotificationListComponent } from './notification-list/notification-list.component';
 import { NotificationComponent } from './notification/notification.component';
 import { NotificationsRoutingModule } from './notifications-routing.module';
-import { NotificationBecomeAParentComponent } from '@features/notifications/notification-become-a-parent/notification-become-a-parent.component';
 import { NotificationOwnerChangeComponent } from './notification-owner-change/notification-owner-change.component';
 
 @NgModule({
@@ -23,7 +24,7 @@ import { NotificationOwnerChangeComponent } from './notification-owner-change/no
     NotificationBecomeAParentComponent,
     NotificationOwnerChangeComponent,
   ],
-  imports: [CommonModule, NotificationsRoutingModule, SharedModule],
+  imports: [CommonModule, NotificationsRoutingModule, SharedModule, FormsModule, ReactiveFormsModule],
   exports: [NotificationTypePipe],
 })
 export class NotificationsModule {}

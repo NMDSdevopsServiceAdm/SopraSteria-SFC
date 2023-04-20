@@ -17,7 +17,6 @@ const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
-  providers: [DialogService, Overlay],
 })
 export class NotificationComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
@@ -66,7 +65,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   private setNotificationViewed(notificationUid) {
     this.subscriptions.add(
-      this.notificationsService.setNoticationViewed(notificationUid).subscribe((resp) => {
+      this.notificationsService.setNotificationViewed(notificationUid).subscribe((resp) => {
         if (resp) {
           this.notificationsService.notifications.forEach((notification, i) => {
             if (notification.notificationUid === resp.notification.notificationUid) {

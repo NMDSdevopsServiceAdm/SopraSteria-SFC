@@ -35,7 +35,7 @@ export class SwitchWorkplaceService {
         }
 
         if (!username && nmdsId) {
-          this.getAllNotificationWorkplace(nmdsId, params).subscribe((data) => {
+          this.notificationsService.getAllNotifications(data.body.establishment.uid).subscribe((data) => {
             if (data) {
               this.notificationData = data;
             }

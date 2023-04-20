@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Authorization = require('../../utils/security/isAuthenticated');
 const { hasPermission } = require('../../utils/security/hasPermission');
-const OwnershipChange = require('../ownershipRequest/ownershipChange');
+const OwnershipChange = require('./ownershipChange');
 
 // PUT request for ownership change request approve/reject
 const ownershipRequest = async (req, res) => {

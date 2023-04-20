@@ -808,17 +808,8 @@ router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) =>
       params.establishmentId = getEstablishmentId[0].EstablishmentID;
       let notificationArr = [];
 
-      const establishmentNotifications = await notifications.selectNotificationByEstablishment(req.body.establishmentUid);
+      const establishmentNotifications = await notifications.selectNotificationByEstablishment(req.establishmentUid);
       if(establishmentNotifications) notificationArr.push(establishmentNotifications);
-      const getAllUser = await notifications.getAllUser(params);
-      if (getAllUser) {
-        for (let i = 0; i < getAllUser.length; i++) {
-          let userParams = {
-            userUid: getAllUser[i].UserUID,
-          };
-          notificationArr.push(...(await notifications.getListByUser(userParams)));
-        }
-      }
       return res.status(200).send(notificationArr);
     }
   } catch (e) {
