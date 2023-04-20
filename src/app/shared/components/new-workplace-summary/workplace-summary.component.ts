@@ -30,6 +30,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   private capacities: any;
   public hasCapacity: boolean;
   public capacityMessages = [];
+  public noVacancyAndTurnoverData: boolean;
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
@@ -71,6 +72,16 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     this.getCapacityMessages();
     this.getPermissions();
     this.getCqcStatus();
+
+    this.checkVacancyAndTurnoverData();
+  }
+
+  public checkVacancyAndTurnoverData(): void {
+    this.noVacancyAndTurnoverData = !(
+      !!this.workplace.vacancies?.length ||
+      this.workplace.starters?.length ||
+      !!this.workplace.leavers?.length
+    );
   }
 
   private getPermissions(): void {

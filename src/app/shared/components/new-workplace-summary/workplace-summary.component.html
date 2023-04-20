@@ -1,89 +1,127 @@
-<dl *ngIf="workplace" class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-top-7">
-  <ng-container>
-    <div class="govuk-summary-list__row" data-testid="workplace-section">
-      <dt class="govuk-summary-list__key">
-        <div>Name</div>
-        <div *ngIf="workplace && workplace.address" class="govuk-!-padding-top-2">Address</div>
-      </dt>
-      <dd class="govuk-summary-list__value">
-        <div>
-          {{ workplace.name }}
+<ng-container *ngIf="workplace">
+  <div data-testid="workplace-section">
+    <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-top-7 govuk-!-margin-bottom-0">
+      <div
+        class="govuk-summary-list__row"
+        [class.govuk-summary-list__row--no-bottom-border]="!workplace.isRegulated && !workplace.numberOfStaff"
+        data-testid="workplace-name-and-address"
+      >
+        <dt class="govuk-summary-list__key">
+          <div>Name</div>
+          <div *ngIf="workplace && workplace.address" class="govuk-!-padding-top-2">Address</div>
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <div>
+            {{ workplace.name }}
+          </div>
+          <div *ngIf="workplace" class="govuk-!-padding-top-2">
+            <div *ngIf="workplace.address1">{{ workplace.address1 }}</div>
+            <div *ngIf="workplace.address2">{{ workplace.address2 }}</div>
+            <div *ngIf="workplace.address3">{{ workplace.address3 }}</div>
+            <div *ngIf="workplace.town">{{ workplace.town }}</div>
+            <div *ngIf="workplace.county">{{ workplace.county }}</div>
+            <div *ngIf="workplace.postcode">{{ workplace.postcode }}</div>
+          </div>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="''"
+            [link]="['/workplace', workplace.uid, 'update-workplace-details']"
+            [hasData]="workplace.name"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
+    </dl>
+    <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0">
+      <div
+        *ngIf="workplace?.isRegulated"
+        class="govuk-summary-list__row"
+        [class.govuk-summary-list__row--no-bottom-border]="!workplace.numberOfStaff"
+        data-testid="cqcLocationId"
+      >
+        <dt class="govuk-summary-list__key">CQC location ID</dt>
+        <dd class="govuk-summary-list__value">
+          {{ workplace.locationId }}
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()"> Change </a>
+        </dd>
+      </div>
+    </dl>
+
+    <div [class.govuk-summary-list__error]="!workplace.numberOfStaff" data-testid="numberOfStaff">
+      <dl
+        class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0"
+        [class.govuk-summary-list--top-border]="!workplace.numberOfStaff"
+      >
+        <div
+          class="govuk-summary-list__row"
+          [ngClass]="{
+            'govuk-summary-list__row--no-bottom-border': !workplace.numberOfStaff,
+            'govuk-summary-list__row--no-bottom-padding': !workplace.numberOfStaff
+          }"
+          data-testid="number-of-staff-top-row"
+        >
+          <dt class="govuk-summary-list__key">Number of staff</dt>
+          <dd class="govuk-summary-list__value">
+            <app-summary-record-value>
+              {{ workplace.numberOfStaff | numericAnswer }}
+            </app-summary-record-value>
+          </dd>
+          <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+            <app-summary-record-change
+              [explanationText]="' total number of staff'"
+              [link]="['/workplace', workplace.uid, 'total-staff']"
+              [hasData]="workplace.numberOfStaff"
+              (setReturnClicked)="this.setReturn()"
+            ></app-summary-record-change>
+          </dd>
         </div>
-        <div *ngIf="workplace" class="govuk-!-padding-top-2">
-          <div *ngIf="workplace.address1">{{ workplace.address1 }}</div>
-          <div *ngIf="workplace.address2">{{ workplace.address2 }}</div>
-          <div *ngIf="workplace.address3">{{ workplace.address3 }}</div>
-          <div *ngIf="workplace.town">{{ workplace.town }}</div>
-          <div *ngIf="workplace.county">{{ workplace.county }}</div>
-          <div *ngIf="workplace.postcode">{{ workplace.postcode }}</div>
+        <div
+          *ngIf="!workplace.numberOfStaff"
+          class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
+        >
+          <dt class="govuk-summary-list__key govuk-error-message govuk__nowrap">
+            You need to add your total number of staff
+          </dt>
+          <dd class="govuk-summary-list__value"></dd>
+          <dd class="govuk-summary-list__actions"></dd>
         </div>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="''"
-          [link]="['/workplace', workplace.uid, 'update-workplace-details']"
-          [hasData]="workplace.name"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-    <div class="govuk-summary-list__row" *ngIf="workplace?.isRegulated" data-testid="cqcLocationId">
-      <dt class="govuk-summary-list__key">CQC location ID</dt>
-      <dd class="govuk-summary-list__value">
-        {{ workplace.locationId }}
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()"> Change </a>
-      </dd>
+      </dl>
     </div>
 
-    <div class="govuk-summary-list__row" data-testid="numberOfStaff">
-      <dt class="govuk-summary-list__key">Number of staff</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          {{ workplace.numberOfStaff | numericAnswer }}
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' total number of staff'"
-          [link]="['/workplace', workplace.uid, 'total-staff']"
-          [hasData]="workplace.numberOfStaff"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-    <div class="govuk-summary-list__row" data-testid="employerType">
-      <dt class="govuk-summary-list__key">Employer type</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
-            -
-          </ng-container>
-          <ng-template #employertype>
-            {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="'employer type'"
-          [link]="['/workplace', workplace.uid, 'type-of-employer']"
-          [hasData]="workplace.employerType?.other || workplace.employerType?.value"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-  </ng-container>
+    <dl class="govuk-summary-list govuk-summary-list--medium">
+      <div class="govuk-summary-list__row" data-testid="employerType">
+        <dt class="govuk-summary-list__key">Employer type</dt>
+        <dd class="govuk-summary-list__value">
+          <app-summary-record-value>
+            <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
+              -
+            </ng-container>
+            <ng-template #employertype>
+              {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
+            </ng-template>
+          </app-summary-record-value>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="'employer type'"
+            [link]="['/workplace', workplace.uid, 'type-of-employer']"
+            [hasData]="workplace.employerType?.other || workplace.employerType?.value"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
+    </dl>
+  </div>
 
-  <ng-container>
-    <div class="govuk-summary-list__row" data-testid="services-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Services</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div>
+  <h2 class="govuk-heading-m govuk-!-padding-top-1">Services</h2>
+  <dl
+    *ngIf="workplace"
+    class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
+    data-testid="services-section"
+  >
     <div
       class="govuk-summary-list__row"
       [ngClass]="{ 'govuk-panel--light-blue': cqcStatusRequested }"
@@ -200,369 +238,366 @@
         ></app-summary-record-change>
       </dd>
     </div>
-  </ng-container>
+  </dl>
 
-  <ng-container *ngIf="!workplace.showAddWorkplaceDetailsBanner">
-    <div class="govuk-summary-list__row" data-testid="vacancies-and-turnover-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Vacancies and turnover</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div>
-    <div class="govuk-summary-list__row" data-testid="vacancies">
-      <dt class="govuk-summary-list__key">Current staff vacancies</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container *ngIf="!workplace.vacancies?.length; else vacancies"> - </ng-container>
-          <ng-template #vacancies>
-            <ng-container *ngIf="isArray(workplace.vacancies)">
-              <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
-              </ul>
-            </ng-container>
-            <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' staff vacancies'"
-          [link]="['/workplace', workplace.uid, 'vacancies']"
-          [hasData]="workplace.vacancies?.length"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
+  <ng-container *ngIf="!workplace?.showAddWorkplaceDetailsBanner">
+    <div [class.govuk-summary-list__warning]="noVacancyAndTurnoverData" data-testid="vacancies-and-turnover-section">
+      <h2
+        class="govuk-heading-m govuk-!-padding-top-1"
+        [ngClass]="{ 'govuk-!-margin-bottom-1': noVacancyAndTurnoverData }"
+      >
+        Vacancies and turnover
+      </h2>
+      <span *ngIf="noVacancyAndTurnoverData" class="govuk-error-message govuk-summary-list__warning-message"
+        >You've not added any vacancy and turnover data</span
+      >
+      <dl class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border">
+        <div class="govuk-summary-list__row" data-testid="vacancies">
+          <dt class="govuk-summary-list__key">Current staff vacancies</dt>
+          <dd class="govuk-summary-list__value">
+            <app-summary-record-value>
+              <ng-container *ngIf="!workplace.vacancies?.length; else vacancies"> - </ng-container>
+              <ng-template #vacancies>
+                <ng-container *ngIf="isArray(workplace.vacancies)">
+                  <ul class="govuk-list govuk-!-margin-bottom-0">
+                    <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
+                  </ul>
+                </ng-container>
+                <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
+              </ng-template>
+            </app-summary-record-value>
+          </dd>
+          <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+            <app-summary-record-change
+              [explanationText]="' staff vacancies'"
+              [link]="['/workplace', workplace.uid, 'vacancies']"
+              [hasData]="workplace.vacancies?.length"
+              (setReturnClicked)="this.setReturn()"
+            ></app-summary-record-change>
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row" data-testid="starters">
+          <dt class="govuk-summary-list__key">New starters</dt>
+          <dd class="govuk-summary-list__value">
+            <app-summary-record-value>
+              <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
+              <ng-template #starters>
+                <ng-container *ngIf="isArray(workplace.starters)">
+                  <ul class="govuk-list govuk-!-margin-bottom-0">
+                    <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
+                  </ul>
+                </ng-container>
+                <ng-container *ngIf="!isArray(workplace.starters)">
+                  {{ workplace.starters }}
+                </ng-container>
+              </ng-template>
+            </app-summary-record-value>
+          </dd>
+          <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+            <app-summary-record-change
+              [explanationText]="' new starters'"
+              [link]="['/workplace', workplace.uid, 'starters']"
+              [hasData]="workplace.starters?.length"
+              (setReturnClicked)="this.setReturn()"
+            ></app-summary-record-change>
+          </dd>
+        </div>
+
+        <div class="govuk-summary-list__row" data-testid="leavers">
+          <dt class="govuk-summary-list__key">Leavers</dt>
+          <dd class="govuk-summary-list__value">
+            <app-summary-record-value>
+              <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
+              <ng-template #leavers>
+                <ng-container *ngIf="isArray(workplace.leavers)">
+                  <ul class="govuk-list govuk-!-margin-bottom-0">
+                    <li *ngFor="let leaver of workplace.leavers">{{ leaver.total }} {{ leaver.title }}</li>
+                  </ul>
+                </ng-container>
+                <ng-container *ngIf="!isArray(workplace.leavers)">
+                  {{ workplace.leavers }}
+                </ng-container>
+              </ng-template>
+            </app-summary-record-value>
+          </dd>
+          <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+            <app-summary-record-change
+              [explanationText]="' leavers'"
+              [link]="['/workplace', workplace.uid, 'leavers']"
+              [hasData]="workplace.leavers?.length"
+              (setReturnClicked)="this.setReturn()"
+            ></app-summary-record-change>
+          </dd>
+        </div>
+      </dl>
     </div>
 
-    <div class="govuk-summary-list__row" data-testid="starters">
-      <dt class="govuk-summary-list__key">New starters</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
-          <ng-template #starters>
-            <ng-container *ngIf="isArray(workplace.starters)">
-              <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
-              </ul>
-            </ng-container>
-            <ng-container *ngIf="!isArray(workplace.starters)">
-              {{ workplace.starters }}
-            </ng-container>
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' new starters'"
-          [link]="['/workplace', workplace.uid, 'starters']"
-          [hasData]="workplace.starters?.length"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-
-    <div class="govuk-summary-list__row" data-testid="leavers">
-      <dt class="govuk-summary-list__key">Leavers</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
-          <ng-template #leavers>
-            <ng-container *ngIf="isArray(workplace.leavers)">
-              <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let leaver of workplace.leavers">{{ leaver.total }} {{ leaver.title }}</li>
-              </ul>
-            </ng-container>
-            <ng-container *ngIf="!isArray(workplace.leavers)">
-              {{ workplace.leavers }}
-            </ng-container>
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' leavers'"
-          [link]="['/workplace', workplace.uid, 'leavers']"
-          [hasData]="workplace.leavers?.length"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="!workplace.showAddWorkplaceDetailsBanner">
-    <div class="govuk-summary-list__row" data-testid="recruitment-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Recruitment</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div>
-    <div class="govuk-summary-list__row" data-testid="advertising-spend">
-      <dt class="govuk-summary-list__key">Advertising spend</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container
-            *ngIf="
-              !workplace.moneySpentOnAdvertisingInTheLastFourWeeks;
-              else moneySpentOnAdvertisingInTheLastFourWeeksType
-            "
-          >
-            -
-          </ng-container>
-          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksType>
+    <h2 class="govuk-heading-m govuk-!-padding-top-1">Recruitment</h2>
+    <dl
+      class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
+      data-testid="recruitment-section"
+    >
+      <div class="govuk-summary-list__row" data-testid="advertising-spend">
+        <dt class="govuk-summary-list__key">Advertising spend</dt>
+        <dd class="govuk-summary-list__value">
+          <app-summary-record-value>
             <ng-container
               *ngIf="
-                workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'None' ||
-                  workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'Don\'t know';
-                then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
-                else moneySpentOnAdvertisingInTheLastFourWeeksKnown
+                !workplace.moneySpentOnAdvertisingInTheLastFourWeeks;
+                else moneySpentOnAdvertisingInTheLastFourWeeksType
               "
             >
+              -
             </ng-container>
-            <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
-              {{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
+            <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksType>
+              <ng-container
+                *ngIf="
+                  workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'None' ||
+                    workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'Don\'t know';
+                  then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
+                  else moneySpentOnAdvertisingInTheLastFourWeeksKnown
+                "
+              >
+              </ng-container>
+              <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
+                {{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
+              </ng-template>
+              <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
+                £{{ this.formatMonetaryValue(workplace.moneySpentOnAdvertisingInTheLastFourWeeks) }}
+              </ng-template>
             </ng-template>
-            <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
-              £{{ this.formatMonetaryValue(workplace.moneySpentOnAdvertisingInTheLastFourWeeks) }}
+          </app-summary-record-value>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' advertising spend'"
+            [link]="['/workplace', workplace.uid, 'recruitment-advertising-cost']"
+            [hasData]="workplace.moneySpentOnAdvertisingInTheLastFourWeeks"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row" data-testid="people-interviewed">
+        <dt class="govuk-summary-list__key">People interviewed</dt>
+        <dd class="govuk-summary-list__value">
+          <app-summary-record-value>
+            <ng-container
+              *ngIf="!workplace.peopleInterviewedInTheLastFourWeeks; else peopleInterviewedInTheLastFourWeeksType"
+            >
+              -
+            </ng-container>
+            <ng-template #peopleInterviewedInTheLastFourWeeksType>
+              {{ workplace.peopleInterviewedInTheLastFourWeeks }}
             </ng-template>
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' advertising spend'"
-          [link]="['/workplace', workplace.uid, 'recruitment-advertising-cost']"
-          [hasData]="workplace.moneySpentOnAdvertisingInTheLastFourWeeks"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
+          </app-summary-record-value>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' people interviewed'"
+            [link]="['/workplace', workplace.uid, 'number-of-interviews']"
+            [hasData]="workplace.peopleInterviewedInTheLastFourWeeks"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
 
-    <div class="govuk-summary-list__row" data-testid="people-interviewed">
-      <dt class="govuk-summary-list__key">People interviewed</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container
-            *ngIf="!workplace.peopleInterviewedInTheLastFourWeeks; else peopleInterviewedInTheLastFourWeeksType"
-          >
-            -
-          </ng-container>
-          <ng-template #peopleInterviewedInTheLastFourWeeksType>
-            {{ workplace.peopleInterviewedInTheLastFourWeeks }}
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' people interviewed'"
-          [link]="['/workplace', workplace.uid, 'number-of-interviews']"
-          [hasData]="workplace.peopleInterviewedInTheLastFourWeeks"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-
-    <div class="govuk-summary-list__row" data-testid="repeat-training">
-      <dt class="govuk-summary-list__key">Repeat training</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container
-            *ngIf="
-              !workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-              else doNewStartersRepeatMandatoryTrainingFromPreviousEmploymentType
-            "
-          >
-            -
-          </ng-container>
-          <ng-template #doNewStartersRepeatMandatoryTrainingFromPreviousEmploymentType>
-            {{ workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment }}
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' repeat training'"
-          [link]="['/workplace', workplace.uid, 'staff-recruitment-capture-training-requirement']"
-          [hasData]="workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-
-    <div class="govuk-summary-list__row" data-testid="accept-care-certificate">
-      <dt class="govuk-summary-list__key">Accept Care Certificate</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container
-            *ngIf="
-              !workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-              else wouldYouAcceptCareCertificatesFromPreviousEmploymentType
-            "
-          >
-            -
-          </ng-container>
-          <ng-template #wouldYouAcceptCareCertificatesFromPreviousEmploymentType>
-            {{ workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment }}
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' accept care certificate'"
-          [link]="['/workplace', workplace.uid, 'accept-previous-care-certificate']"
-          [hasData]="workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="!workplace.showAddWorkplaceDetailsBanner">
-    <div class="govuk-summary-list__row" data-testid="staff-benefits-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Staff benefits</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div>
-    <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
-      <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container
-            *ngIf="!workplace.careWorkersCashLoyaltyForFirstTwoYears; else careWorkersCashLoyaltyForFirstTwoYearsType"
-          >
-            -
-          </ng-container>
-          <ng-template #careWorkersCashLoyaltyForFirstTwoYearsType>
+      <div class="govuk-summary-list__row" data-testid="repeat-training">
+        <dt class="govuk-summary-list__key">Repeat training</dt>
+        <dd class="govuk-summary-list__value">
+          <app-summary-record-value>
             <ng-container
               *ngIf="
-                workplace.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
-                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know' ||
-                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Yes';
-                then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
-                else careWorkersCashLoyaltyForFirstTwoYearsKnown
+                !workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+                else doNewStartersRepeatMandatoryTrainingFromPreviousEmploymentType
               "
             >
+              -
             </ng-container>
-            <ng-template #careWorkersCashLoyaltyForFirstTwoYearsNotKnown>
-              {{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
+            <ng-template #doNewStartersRepeatMandatoryTrainingFromPreviousEmploymentType>
+              {{ workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment }}
             </ng-template>
-            <ng-template #careWorkersCashLoyaltyForFirstTwoYearsKnown>
-              £{{ this.formatMonetaryValue(workplace.careWorkersCashLoyaltyForFirstTwoYears) }}
+          </app-summary-record-value>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' repeat training'"
+            [link]="['/workplace', workplace.uid, 'staff-recruitment-capture-training-requirement']"
+            [hasData]="workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row" data-testid="accept-care-certificate">
+        <dt class="govuk-summary-list__key">Accept Care Certificate</dt>
+        <dd class="govuk-summary-list__value">
+          <app-summary-record-value>
+            <ng-container
+              *ngIf="
+                !workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment;
+                else wouldYouAcceptCareCertificatesFromPreviousEmploymentType
+              "
+            >
+              -
+            </ng-container>
+            <ng-template #wouldYouAcceptCareCertificatesFromPreviousEmploymentType>
+              {{ workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment }}
             </ng-template>
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' loyalty bonus'"
-          [link]="['/workplace', workplace.uid, 'cash-loyalty']"
-          [hasData]="workplace.careWorkersCashLoyaltyForFirstTwoYears"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
+          </app-summary-record-value>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' accept care certificate'"
+            [link]="['/workplace', workplace.uid, 'accept-previous-care-certificate']"
+            [hasData]="workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
+    </dl>
 
-    <div class="govuk-summary-list__row" data-testid="offer-more-than-statutory-sick-pay">
-      <dt class="govuk-summary-list__key">Offer more than Statutory Sick Pay</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container *ngIf="!workplace.sickPay; else sickPayType"> - </ng-container>
-          <ng-template #sickPayType>
-            {{ workplace.sickPay }}
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' statutory sick pay'"
-          [link]="['/workplace', workplace.uid, 'benefits-statutory-sick-pay']"
-          [hasData]="workplace.sickPay"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
+    <h2 class="govuk-heading-m govuk-!-padding-top-1">Staff benefits</h2>
+    <dl
+      class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
+      data-testid="staff-benefits-section"
+    >
+      <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
+        <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
+        <dd class="govuk-summary-list__value">
+          <app-summary-record-value>
+            <ng-container
+              *ngIf="!workplace.careWorkersCashLoyaltyForFirstTwoYears; else careWorkersCashLoyaltyForFirstTwoYearsType"
+            >
+              -
+            </ng-container>
+            <ng-template #careWorkersCashLoyaltyForFirstTwoYearsType>
+              <ng-container
+                *ngIf="
+                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
+                    workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know' ||
+                    workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Yes';
+                  then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
+                  else careWorkersCashLoyaltyForFirstTwoYearsKnown
+                "
+              >
+              </ng-container>
+              <ng-template #careWorkersCashLoyaltyForFirstTwoYearsNotKnown>
+                {{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
+              </ng-template>
+              <ng-template #careWorkersCashLoyaltyForFirstTwoYearsKnown>
+                £{{ this.formatMonetaryValue(workplace.careWorkersCashLoyaltyForFirstTwoYears) }}
+              </ng-template>
+            </ng-template>
+          </app-summary-record-value>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' loyalty bonus'"
+            [link]="['/workplace', workplace.uid, 'cash-loyalty']"
+            [hasData]="workplace.careWorkersCashLoyaltyForFirstTwoYears"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
 
-    <div class="govuk-summary-list__row" data-testid="higher-pension-contributions">
-      <dt class="govuk-summary-list__key">Higher pension contributions</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container *ngIf="!workplace.pensionContribution; else pensionContributionType"> - </ng-container>
-          <ng-template #pensionContributionType>
-            {{ workplace.pensionContribution }}
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' pension'"
-          [link]="['/workplace', workplace.uid, 'pensions']"
-          [hasData]="workplace.pensionContribution"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
+      <div class="govuk-summary-list__row" data-testid="offer-more-than-statutory-sick-pay">
+        <dt class="govuk-summary-list__key">Offer more than Statutory Sick Pay</dt>
+        <dd class="govuk-summary-list__value">
+          <app-summary-record-value>
+            <ng-container *ngIf="!workplace.sickPay; else sickPayType"> - </ng-container>
+            <ng-template #sickPayType>
+              {{ workplace.sickPay }}
+            </ng-template>
+          </app-summary-record-value>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' statutory sick pay'"
+            [link]="['/workplace', workplace.uid, 'benefits-statutory-sick-pay']"
+            [hasData]="workplace.sickPay"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
 
-    <div class="govuk-summary-list__row" data-testid="number-of-days-leave">
-      <dt class="govuk-summary-list__key">Number of days leave</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value>
-          <ng-container *ngIf="!workplace.careWorkersLeaveDaysPerYear; else careWorkersLeaveDaysPerYearType">
-            -
+      <div class="govuk-summary-list__row" data-testid="higher-pension-contributions">
+        <dt class="govuk-summary-list__key">Higher pension contributions</dt>
+        <dd class="govuk-summary-list__value">
+          <app-summary-record-value>
+            <ng-container *ngIf="!workplace.pensionContribution; else pensionContributionType"> - </ng-container>
+            <ng-template #pensionContributionType>
+              {{ workplace.pensionContribution }}
+            </ng-template>
+          </app-summary-record-value>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' pension'"
+            [link]="['/workplace', workplace.uid, 'pensions']"
+            [hasData]="workplace.pensionContribution"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row" data-testid="number-of-days-leave">
+        <dt class="govuk-summary-list__key">Number of days leave</dt>
+        <dd class="govuk-summary-list__value">
+          <app-summary-record-value>
+            <ng-container *ngIf="!workplace.careWorkersLeaveDaysPerYear; else careWorkersLeaveDaysPerYearType">
+              -
+            </ng-container>
+            <ng-template #careWorkersLeaveDaysPerYearType>
+              {{ workplace.careWorkersLeaveDaysPerYear }}
+            </ng-template>
+          </app-summary-record-value>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' holiday leave'"
+            [link]="['/workplace', workplace.uid, 'staff-benefit-holiday-leave']"
+            [hasData]="workplace.careWorkersLeaveDaysPerYear"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-m govuk-!-padding-top-1">Permissions</h2>
+    <dl
+      class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
+      data-testid="permissions-section"
+    >
+      <div class="govuk-summary-list__row" data-testid="data-sharing">
+        <dt class="govuk-summary-list__key">Data sharing</dt>
+        <dd class="govuk-summary-list__value">
+          <ng-container *ngIf="!workplace.shareWith?.cqc && !workplace.shareWith?.localAuthorities; else sharing">
+            <ng-container
+              *ngIf="
+                workplace.shareWith?.cqc === false || workplace.shareWith?.localAuthorities === false;
+                else notProvided
+              "
+            >
+              Not sharing
+            </ng-container>
+            <ng-template #notProvided> - </ng-template>
           </ng-container>
-          <ng-template #careWorkersLeaveDaysPerYearType>
-            {{ workplace.careWorkersLeaveDaysPerYear }}
+          <ng-template #sharing>
+            <p *ngIf="workplace.shareWith?.cqc">Care Quality Commission (CQC)</p>
+            <p *ngIf="workplace.shareWith?.localAuthorities">Local authorities</p>
           </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' holiday leave'"
-          [link]="['/workplace', workplace.uid, 'staff-benefit-holiday-leave']"
-          [hasData]="workplace.careWorkersLeaveDaysPerYear"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' data sharing'"
+            [link]="['/workplace', workplace.uid, 'sharing-data']"
+            [hasData]="workplace.shareWith?.cqc !== null || workplace.shareWith?.localAuthorities !== null"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
+    </dl>
   </ng-container>
-
-  <ng-container *ngIf="!workplace.showAddWorkplaceDetailsBanner">
-    <div class="govuk-summary-list__row" data-testid="permissions-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Permissions</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div>
-    <div class="govuk-summary-list__row" data-testid="data-sharing">
-      <dt class="govuk-summary-list__key">Data sharing</dt>
-      <dd class="govuk-summary-list__value">
-        <ng-container *ngIf="!workplace.shareWith?.cqc && !workplace.shareWith?.localAuthorities; else sharing">
-          <ng-container
-            *ngIf="
-              workplace.shareWith?.cqc === false || workplace.shareWith?.localAuthorities === false;
-              else notProvided
-            "
-          >
-            Not sharing
-          </ng-container>
-          <ng-template #notProvided> - </ng-template>
-        </ng-container>
-        <ng-template #sharing>
-          <p *ngIf="workplace.shareWith?.cqc">Care Quality Commission (CQC)</p>
-          <p *ngIf="workplace.shareWith?.localAuthorities">Local authorities</p>
-        </ng-template>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' data sharing'"
-          [link]="['/workplace', workplace.uid, 'sharing-data']"
-          [hasData]="workplace.shareWith?.cqc !== null || workplace.shareWith?.localAuthorities !== null"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-  </ng-container>
-</dl>
+</ng-container>

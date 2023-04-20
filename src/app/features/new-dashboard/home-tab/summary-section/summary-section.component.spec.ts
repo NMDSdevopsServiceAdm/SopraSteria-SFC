@@ -68,15 +68,23 @@ describe('Summary section', () => {
         const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
         const { getByText, getByTestId } = await setup(true, establishment);
 
-        expect(getByText('Add more details to your workplace')).toBeTruthy();
-        expect(getByTestId('orange-flag-0')).toBeTruthy();
+        expect(getByText('You need to check your CQC details')).toBeTruthy();
+        expect(getByTestId('orange-flag')).toBeTruthy();
       });
-
+    
       it('should show the check cqc details message if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
         const { getByText, getByTestId } = await setup(true);
 
         expect(getByText('You need to check your CQC details')).toBeTruthy();
         expect(getByTestId('orange-flag')).toBeTruthy();
+      });
+
+      it('should show the total staff error if it is not available', async () => {
+        const establishment = { ...Establishment, numberOfStaff: undefined };
+        const { getByText, getByTestId } = await setup(false, establishment);
+
+        expect(getByText(`You've not added your total number of staff`)).toBeTruthy();
+        expect(getByTestId('red-flag')).toBeTruthy();
       });
     });
 

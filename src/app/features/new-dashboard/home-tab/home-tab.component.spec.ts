@@ -500,6 +500,17 @@ describe('NewHomeTabComponent', () => {
         expect(link).toBeTruthy();
         expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
       });
+
+      it('should show the total staff error if it is not available and the cqc details banner and add workplace details banner are false', async () => {
+        const establishment = { ...Establishment, numberOfStaff: undefined };
+        const { getByText, tabsServiceSpy } = await setup(false, establishment);
+
+        const link = getByText(`You've not added your total number of staff`);
+        fireEvent.click(link);
+
+        expect(link).toBeTruthy();
+        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      });
     });
 
     describe('staff records summary section', () => {
