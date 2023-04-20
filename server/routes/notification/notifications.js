@@ -1,7 +1,7 @@
 const notifications = require('../../data/notifications');
 
 class Notifications {
-  static async GetByEstablishment(establishmentUid, sort) {
+  static async GetByEstablishment(establishmentUid, limit, sort, pageIndex) {
     const allUsers = await notifications.getAllUsers(establishmentUid);
 
     const sortOrder = this.getSortOrder(sort);
@@ -9,12 +9,11 @@ class Notifications {
     const params = {
       establishmentUid: establishmentUid,
       userUids: allUsers.map((x) => x.UserUID),
-      created: 'created',
+      limit: Number(limit),
+      offset: (pageIndex + 1) * limit,
       order: sortOrder,
     };
-
-    console.log(sortOrder);
-
+    console.log(params);
     const resp = await notifications.selectNotificationByEstablishment(params);
     return resp;
   }
@@ -30,9 +29,9 @@ class Notifications {
         case 'READ':
           return '"isViewed" DESC';
         default:
-          return '';
+          return 'created DESC';
       }
-    }
+    } else return 'created DESC';
   }
 }
 

@@ -12,7 +12,9 @@ const Notifications = require('./notifications');
 const getEstablishmentNotifications = async (req, res) => {
   const establishmentNotifications = await Notifications.GetByEstablishment(
     req.params.establishmentUid,
+    req.query.limit,
     req.query.sort,
+    req.query.page,
   );
   return res.status(200).send(establishmentNotifications);
 };

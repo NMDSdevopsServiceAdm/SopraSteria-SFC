@@ -16,10 +16,22 @@ export class NotificationsService {
   public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject(null);
   constructor(private http: HttpClient) {}
 
-  public getAllNotifications(establishmentUid, sort = undefined) {
-    const queryString = sort ? `?sort=${sort}` : '';
-    console.log(queryString);
-    return this.http.get<Notification[]>(`/api/notification/establishment/${establishmentUid}${queryString}`)
+  public getAllNotifications(establishmentUid, limit = undefined, sort = undefined, page = undefined) {
+    const queryParams = [];
+    if (limit) queryParams.push(`limit=${limit}`);
+    if (sort) queryParams.push(`sort=${sort}`);
+    if (page) queryParams.push(`page=${page}`);
+
+    console.log(page);
+    console.log(queryParams);
+
+    let queryString = '';
+    for (const param of queryParams) {
+      const punctuation = queryString ? `&` : `?`;
+      queryString = `${queryString}${punctuation}${param}`;
+    }
+
+    return this.http.get<Notification[]>(`/api/notification/establishment/${establishmentUid}${queryString}`);
   }
 
   set notifications(notifications: Notification[]) {

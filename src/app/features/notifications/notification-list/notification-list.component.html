@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
       <span class="govuk-caption-l">{{ workplace?.name }}</span>
-      Notifications ({{ notifications.length }})
+      Notifications ({{ totalCount }})
     </h1>
   </div>
 </div>
@@ -84,9 +84,8 @@
                 <span class="govuk-visually-hidden">Unread: </span>
                 <img src="/assets/images/new-icon.png" alt="" class="notification-list-item__icon" />
               </div>
-              <a
-              [routerLink]="['/notifications', notification.notificationUid]" class="notification-list-item__link">
-              {{ notification.type | notificationType }}</a
+              <a [routerLink]="['/notifications', notification.notificationUid]" class="notification-list-item__link">
+                {{ notification.type | notificationType }}</a
               >
             </span>
           </td>
@@ -95,6 +94,12 @@
       </ng-container>
     </tbody>
   </table>
+  <app-pagination
+    [itemsPerPage]="itemsPerPage"
+    [totalNoOfItems]="totalCount"
+    (currentPageIndexChange)="handlePageUpdate($event)"
+    [currentPageIndex]="selectedPageIndex"
+  ></app-pagination>
 </ng-container>
 <ng-template #noNotifications>
   <div class="govuk-grid-row govuk-!-margin-top-6">

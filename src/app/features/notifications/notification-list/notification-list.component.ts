@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -18,6 +19,9 @@ export class NotificationListComponent implements OnInit {
   public form;
   public allBoxesChecked = false;
   public sortOptions = ['Latest', 'Unread', 'Read'];
+  public selectedPageIndex = 0;
+  public totalCount;
+  public itemsPerPage = 2;
 
   private selectedSort;
   constructor(
@@ -30,19 +34,29 @@ export class NotificationListComponent implements OnInit {
   public ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.totalCount = this.notificationService.notifications.length;
     this.getNotifications();
   }
 
   public getNotifications(): void {
     this.notificationService
-      .getAllNotifications(this.establishmentService.establishmentId, this.selectedSort)
+      .getAllNotifications(
+        this.establishmentService.establishmentId,
+        this.itemsPerPage,
+        this.selectedSort,
+        this.selectedPageIndex,
+      )
       .subscribe((notification) => (this.notifications = notification));
-    console.log(this.notifications);
   }
 
   public onSortChange($event): void {
     this.selectedSort = $event.target.value;
-    console.log(this.selectedSort);
+    this.getNotifications();
+  }
+
+  public handlePageUpdate(pageIndex: number): void {
+    this.selectedPageIndex = pageIndex;
+
     this.getNotifications();
   }
 
