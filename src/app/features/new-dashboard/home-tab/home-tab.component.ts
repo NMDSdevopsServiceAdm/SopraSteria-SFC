@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -38,6 +39,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public canEditEstablishment: boolean;
   public user: UserDetails;
   public workplaceSummaryMessage: string;
+  public workers: Worker[];
 
   constructor(
     private userService: UserService,
@@ -45,9 +47,13 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
     private parentRequestsService: ParentRequestsService,
     private dialogService: DialogService,
     private tabsService: TabsService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
+    const { workers = [] } = this.route.snapshot.data.workers;
+    this.workers = workers;
+
     this.user = this.userService.loggedInUser;
     this.setPermissionLinks();
 
