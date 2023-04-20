@@ -22,6 +22,7 @@ import { isAdminRole } from 'server/utils/adminUtils';
 export class NewHomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() meta: Meta;
+  @Input() workerCount: number;
 
   private subscriptions: Subscription = new Subscription();
   public canViewWorkplaces: boolean;

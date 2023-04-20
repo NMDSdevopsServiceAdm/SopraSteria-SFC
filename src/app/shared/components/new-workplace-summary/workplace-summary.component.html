@@ -3,7 +3,9 @@
     <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-top-7 govuk-!-margin-bottom-0">
       <div
         class="govuk-summary-list__row"
-        [class.govuk-summary-list__row--no-bottom-border]="!workplace.isRegulated && !workplace.numberOfStaff"
+        [class.govuk-summary-list__row--no-bottom-border]="
+          !workplace.isRegulated && (numberOfStaffError || numberOfStaffWarning)
+        "
         data-testid="workplace-name-and-address"
       >
         <dt class="govuk-summary-list__key">
@@ -37,7 +39,7 @@
       <div
         *ngIf="workplace?.isRegulated"
         class="govuk-summary-list__row"
-        [class.govuk-summary-list__row--no-bottom-border]="!workplace.numberOfStaff"
+        [class.govuk-summary-list__row--no-bottom-border]="numberOfStaffError || numberOfStaffWarning"
         data-testid="cqcLocationId"
       >
         <dt class="govuk-summary-list__key">CQC location ID</dt>
@@ -50,16 +52,20 @@
       </div>
     </dl>
 
-    <div [class.govuk-summary-list__error]="!workplace.numberOfStaff" data-testid="numberOfStaff">
+    <div
+      [class.govuk-summary-list__error]="numberOfStaffError"
+      [class.govuk-summary-list__warning]="!numberOfStaffError && numberOfStaffWarning"
+      data-testid="numberOfStaff"
+    >
       <dl
         class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0"
-        [class.govuk-summary-list--top-border]="!workplace.numberOfStaff"
+        [class.govuk-summary-list--top-border]="numberOfStaffError || numberOfStaffWarning"
       >
         <div
           class="govuk-summary-list__row"
           [ngClass]="{
-            'govuk-summary-list__row--no-bottom-border': !workplace.numberOfStaff,
-            'govuk-summary-list__row--no-bottom-padding': !workplace.numberOfStaff
+            'govuk-summary-list__row--no-bottom-border': numberOfStaffError || numberOfStaffWarning,
+            'govuk-summary-list__row--no-bottom-padding': numberOfStaffError || numberOfStaffWarning
           }"
           data-testid="number-of-staff-top-row"
         >
@@ -78,14 +84,27 @@
             ></app-summary-record-change>
           </dd>
         </div>
-        <div
-          *ngIf="!workplace.numberOfStaff"
-          class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
-        >
+        <div *ngIf="numberOfStaffError" class="govuk-summary-list__row govuk-summary-list__row--error-warning-message">
           <dt class="govuk-summary-list__key govuk-error-message govuk__nowrap">
             You need to add your total number of staff
           </dt>
           <dd class="govuk-summary-list__value"></dd>
+          <dd class="govuk-summary-list__actions"></dd>
+        </div>
+        <div
+          *ngIf="!numberOfStaffError && numberOfStaffWarning"
+          class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
+        >
+          <dt class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap">
+            {{
+              workplace.numberOfStaff > workerCount
+                ? "You've more staff than staff records"
+                : "You've more staff records than staff"
+            }}
+          </dt>
+          <dd class="govuk-summary-list__value">
+            <a (click)="navigateToTab($event, 'staff-records')" href="#"> View staff records </a>
+          </dd>
           <dd class="govuk-summary-list__actions"></dd>
         </div>
       </dl>

@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -11,10 +10,9 @@ import { TabsService } from '@core/services/tabs.service';
 })
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
+  @Input() workerCount: number;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
   public redFlag: boolean;
-
-  @Input() workers: Worker[];
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '' },
@@ -30,28 +28,27 @@ export class SummarySectionComponent implements OnInit {
   }
 
   public getWorkplaceSummaryMessage(): void {
+    this.redFlag = false;
     if (this.workplace.showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
-      this.redFlag = false;
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
-      this.redFlag = false;
     } else if (!this.workplace.numberOfStaff) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.redFlag = true;
+    } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
+      this.sections[0].message = 'Staff total does not match staff records added';
     }
   }
 
-  public getStaffSummaryMessage(): void {
-    const dateCheck = new Date(this.workplace.eightWeeksFromFirstLogin);
+  private afterEightWeeksFromFirstLogin(): boolean {
+    return new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
+  }
 
-    if (this.workers?.length <= 0) {
+  public getStaffSummaryMessage(): void {
+    if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
-    } else if (
-      this.workers?.length !== this.workplace.numberOfStaff &&
-      this.workers?.length > 0 &&
-      dateCheck < new Date()
-    ) {
+    } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
     }
   }
