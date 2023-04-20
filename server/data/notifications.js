@@ -114,7 +114,6 @@ const updateNotificationQuery = `
   WHERE "notificationUid" = :nuid
 `;
 
-//TODO: This query is failing somewhere
 exports.selectNotificationByEstablishment = async (params) => {
   const order = params.order ? params.order : 'created ASC';
   return db.query(selectEstablishmentNotifications(order), {
@@ -125,7 +124,7 @@ exports.selectNotificationByEstablishment = async (params) => {
       offset: Number.isInteger(params.offset) && params.offset > 0 ? params.offset : 0,
     },
     type: db.QueryTypes.SELECT,
-  })
+  });
 };
 
 exports.markUserNotificationAsRead = async ({ notificationUid }) =>
