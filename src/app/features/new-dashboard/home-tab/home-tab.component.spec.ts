@@ -466,32 +466,11 @@ describe('NewHomeTabComponent', () => {
         expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
       });
 
-      it('should show the add more details link if the showAddWorkplaceDetailsBanner is true', async () => {
+      it('should show a warning link which should navigate to the workplace tab', async () => {
         const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
         const { getByText, tabsServiceSpy } = await setup(true, establishment);
 
         const link = getByText('Add more details to your workplace');
-        fireEvent.click(link);
-
-        expect(link).toBeTruthy();
-        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
-      });
-
-      it('should show the check cqc details message if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
-        const { getByText, tabsServiceSpy } = await setup(true);
-
-        const link = getByText('You need to check your CQC details');
-        fireEvent.click(link);
-
-        expect(link).toBeTruthy();
-        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
-      });
-
-      it('should show the total staff error if it is not available and the cqc details banner and add workplace details banner are false', async () => {
-        const establishment = { ...Establishment, numberOfStaff: undefined };
-        const { getByText, tabsServiceSpy } = await setup(false, establishment);
-
-        const link = getByText(`You've not added your total number of staff`);
         fireEvent.click(link);
 
         expect(link).toBeTruthy();

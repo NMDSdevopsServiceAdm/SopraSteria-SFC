@@ -11,8 +11,12 @@ import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
 describe('Summary section', () => {
-  const setup = async (checkCqcDetails = false, workplace = Establishment) => {
-    const { fixture, getByText, getByTestId } = await render(SummarySectionComponent, {
+  const setup = async (
+    checkCqcDetails = false,
+    workplace = Establishment,
+    workerCount = Establishment.numberOfStaff,
+  ) => {
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule],
       providers: [
         {
@@ -30,6 +34,7 @@ describe('Summary section', () => {
         navigateToTab: (event, selectedTab) => {
           event.preventDefault();
         },
+        workerCount,
       },
     });
 
@@ -38,7 +43,9 @@ describe('Summary section', () => {
     return {
       component,
       getByText,
+      queryByText,
       getByTestId,
+      queryByTestId,
     };
   };
 
@@ -81,6 +88,26 @@ describe('Summary section', () => {
 
       expect(getByText(`You've not added your total number of staff`)).toBeTruthy();
       expect(getByTestId('red-flag')).toBeTruthy();
+    });
+
+    it('should show the staff total does not match staff records warning when they do not match and it is after eight weeks since first login', async () => {
+      const date = new Date();
+      date.setDate(date.getDate() - 1);
+      const establishment = { ...Establishment, eightWeeksFromFirstLogin: date };
+      const { getByText, getByTestId } = await setup(false, establishment, 102);
+
+      expect(getByText('Staff total does not match staff records added')).toBeTruthy();
+      expect(getByTestId('orange-flag')).toBeTruthy();
+    });
+
+    it('should not show the staff total does not match staff records warning when they do not match if is less than eight weeks since first login', async () => {
+      const date = new Date();
+      date.setDate(date.getDate() + 1);
+      const establishment = { ...Establishment, eightWeeksFromFirstLogin: date };
+      const { queryByText, queryByTestId } = await setup(false, establishment, 102);
+
+      expect(queryByText('Staff total does not match staff records added')).toBeFalsy();
+      expect(queryByTestId('orange-flag')).toBeFalsy();
     });
   });
 
