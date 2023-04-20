@@ -10,7 +10,7 @@ class Notifications {
       establishmentUid: establishmentUid,
       userUids: allUsers.map((x) => x.UserUID),
       limit: Number(limit),
-      offset: (pageIndex + 1) * limit,
+      offset: Number(pageIndex) * limit,
       order: sortOrder,
     };
     console.log(params);

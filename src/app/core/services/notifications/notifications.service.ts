@@ -22,9 +22,6 @@ export class NotificationsService {
     if (sort) queryParams.push(`sort=${sort}`);
     if (page) queryParams.push(`page=${page}`);
 
-    console.log(page);
-    console.log(queryParams);
-
     let queryString = '';
     for (const param of queryParams) {
       const punctuation = queryString ? `&` : `?`;

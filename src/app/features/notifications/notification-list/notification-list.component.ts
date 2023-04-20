@@ -21,7 +21,7 @@ export class NotificationListComponent implements OnInit {
   public sortOptions = ['Latest', 'Unread', 'Read'];
   public selectedPageIndex = 0;
   public totalCount;
-  public itemsPerPage = 2;
+  public itemsPerPage = 20;
 
   private selectedSort;
   constructor(
