@@ -83,7 +83,8 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   public checkNumberOfStaffErrorsAndWarnings(): void {
     this.numberOfStaffError = !this.workplace.numberOfStaff;
-    this.numberOfStaffWarning = this.workplace.numberOfStaff !== this.workerCount;
+    const afterEightWeeksFromFirstLogin = new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
+    this.numberOfStaffWarning = this.workplace.numberOfStaff !== this.workerCount && afterEightWeeksFromFirstLogin;
   }
 
   public checkVacancyAndTurnoverData(): void {

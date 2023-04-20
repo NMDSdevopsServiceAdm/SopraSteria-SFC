@@ -41,7 +41,6 @@ export class SummarySectionComponent implements OnInit {
   }
 
   private afterEightWeeksFromFirstLogin(): boolean {
-    return true;
-    // return new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
+    return new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
   }
 }

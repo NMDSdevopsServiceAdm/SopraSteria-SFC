@@ -13,6 +13,7 @@ const establishmentBuilder = build('Establishment', {
     isParent: false,
     isRegulated: false,
     parentId: null,
+    // numberOfStaff: 5,
     mainService: {
       id: 16,
       name: fake((f) => f.lorem.sentence()),

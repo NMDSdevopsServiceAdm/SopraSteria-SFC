@@ -96,7 +96,11 @@
           class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
         >
           <dt class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap">
-            You've more staff than staff records
+            {{
+              workplace.numberOfStaff > workerCount
+                ? "You've more staff than staff records"
+                : "You've more staff records than staff"
+            }}
           </dt>
           <dd class="govuk-summary-list__value">
             <a (click)="navigateToTab($event, 'staff-records')" href="#"> View staff records </a>
