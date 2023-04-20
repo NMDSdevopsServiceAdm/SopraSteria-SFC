@@ -17,7 +17,26 @@ export class MockNotificationsService extends NotificationsService {
   }
 
   get notifications(): Notification[] {
-    return [];
+    return [
+      {
+        notificationUid: 'test-uid',
+        created: '2020-01-01',
+        type: 'BECOMEAPARENT',
+        isViewed: true,
+        typeContent: {
+          status: 'Rejected',
+        },
+      },
+      {
+        notificationUid: 'test-uid',
+        created: '2023-01-01',
+        type: 'OWNERCHANGE',
+        isViewed: true,
+        typeContent: {
+          status: 'Approved',
+        },
+      },
+    ];
   }
 
   public getNotificationDetails(): Observable<any> {

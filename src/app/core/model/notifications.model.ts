@@ -2,7 +2,7 @@ export interface Notification {
   created: string;
   isViewed: boolean;
   notificationUid: string;
-  type: NotificationType;
+  type: string;
   typeContent: any;
 }
 
