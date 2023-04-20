@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -13,6 +14,8 @@ export class SummarySectionComponent implements OnInit {
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
   public redFlag: boolean;
 
+  @Input() workers: Worker[];
+
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '' },
     { linkText: 'Staff records', fragment: 'staff-records', message: '' },
@@ -23,6 +26,7 @@ export class SummarySectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
+    this.getStaffSummaryMessage();
   }
 
   public getWorkplaceSummaryMessage(): void {
@@ -35,6 +39,20 @@ export class SummarySectionComponent implements OnInit {
     } else if (!this.workplace.numberOfStaff) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.redFlag = true;
+    }
+  }
+
+  public getStaffSummaryMessage(): void {
+    const dateCheck = new Date(this.workplace.eightWeeksFromFirstLogin);
+
+    if (this.workers?.length <= 0) {
+      this.sections[1].message = 'You can start to add your staff records now';
+    } else if (
+      this.workers?.length !== this.workplace.numberOfStaff &&
+      this.workers?.length > 0 &&
+      dateCheck < new Date()
+    ) {
+      this.sections[1].message = 'Staff records added does not match staff total';
     }
   }
 }
