@@ -22,7 +22,6 @@ import { isAdminRole } from 'server/utils/adminUtils';
 export class NewHomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() meta: Meta;
-  @Input() workerCount: number;
 
   private subscriptions: Subscription = new Subscription();
   public canViewWorkplaces: boolean;
@@ -39,7 +38,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public canEditEstablishment: boolean;
   public user: UserDetails;
   public workplaceSummaryMessage: string;
-  public workers: Worker[];
+  public workerCount: number;
 
   constructor(
     private userService: UserService,
@@ -51,8 +50,8 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const { workers = [] } = this.route.snapshot.data.workers;
-    this.workers = workers;
+    const { workerCount } = this.route.snapshot.data.workers;
+    this.workerCount = workerCount;
 
     this.user = this.userService.loggedInUser;
     this.setPermissionLinks();
