@@ -1,11 +1,6 @@
 <ng-container [ngSwitch]="selectedTab">
   <ng-container *ngSwitchCase="'home'">
-    <app-new-home-tab
-      [workplace]="workplace"
-      [meta]="tilesData?.meta"
-      [workerCount]="workerCount"
-      data-testid="home-tab"
-    ></app-new-home-tab>
+    <app-new-home-tab [workplace]="workplace" [meta]="tilesData?.meta" data-testid="home-tab"></app-new-home-tab>
   </ng-container>
 
   <ng-container *ngSwitchCase="'workplace'">
