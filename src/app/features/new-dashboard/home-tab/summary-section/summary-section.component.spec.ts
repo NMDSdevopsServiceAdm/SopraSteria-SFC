@@ -116,6 +116,15 @@ describe('Summary section', () => {
       expect(within(workplaceRow).queryByText('Staff total does not match staff records added')).toBeFalsy();
       expect(within(workplaceRow).queryByTestId('orange-flag')).toBeFalsy();
     });
+
+    it('should show a warning saying that vacancy and turnover data has not been added if they have not been added', async () => {
+      const establishment = { ...Establishment, leavers: null, vacancies: null, starters: null };
+      const { getByTestId } = await setup(false, establishment);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).getByText(`You've not added any vacancy and turnover data`)).toBeTruthy();
+      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+    });
   });
 
   describe('staff record summary section', () => {
