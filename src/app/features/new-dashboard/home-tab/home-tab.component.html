@@ -1,5 +1,6 @@
 <app-new-dashboard-header tab="home"></app-new-dashboard-header>
 <app-summary-section
+  *ngIf="canViewListOfWorkers"
   [workplace]="workplace"
   [workerCount]="workerCount"
   [(navigateToTab)]="navigateToTab"
