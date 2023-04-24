@@ -61,10 +61,10 @@ export class SummarySectionComponent implements OnInit {
   }
 
   public getTrainingAndQualsSummary(): void {
-    console.log(this.trainingCounts);
-
-    if(this.trainingCounts.missingMandatoryTraining) {
-      this.sections[2].message = `${this.trainingCounts.missingMandatoryTraining} staff are missing mandatory training`;
+    if (this.trainingCounts.missingMandatoryTraining) {
+      this.sections[2].message = `${this.trainingCounts.missingMandatoryTraining} staff ${
+        this.trainingCounts.missingMandatoryTraining > 1 ? 'are' : 'is'
+      } missing mandatory training`;
     }
   }
 }
