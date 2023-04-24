@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 
@@ -11,6 +12,7 @@ import { TabsService } from '@core/services/tabs.service';
 })
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
+  @Input() trainingCounts: TrainingCounts;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
   public redFlag: boolean;
 
@@ -27,6 +29,7 @@ export class SummarySectionComponent implements OnInit {
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
     this.getStaffSummaryMessage();
+    this.getTrainingAndQualsSummary();
   }
 
   public getWorkplaceSummaryMessage(): void {
@@ -53,6 +56,14 @@ export class SummarySectionComponent implements OnInit {
       dateCheck < new Date()
     ) {
       this.sections[1].message = 'Staff records added does not match staff total';
+    }
+  }
+
+  public getTrainingAndQualsSummary(): void {
+    console.log(this.trainingCounts);
+
+    if(this.trainingCounts.missingMandatoryTraining) {
+      this.sections[2].message = `${this.trainingCounts.missingMandatoryTraining} staff are missing mandatory training`;
     }
   }
 }
