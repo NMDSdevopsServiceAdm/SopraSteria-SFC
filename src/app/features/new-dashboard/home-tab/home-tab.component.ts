@@ -41,7 +41,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public trainingCounts: TrainingCounts;
   public user: UserDetails;
   public workplaceSummaryMessage: string;
-  public workers: Worker[];
+  public workerCount: number;
 
   constructor(
     private userService: UserService,
@@ -53,8 +53,8 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const { workers = [], trainingCounts } = this.route.snapshot.data.workers;
-    this.workers = workers;
+    const { workerCount, trainingCounts } = this.route.snapshot.data.workers;
+    this.workerCount = workerCount;
     this.trainingCounts = trainingCounts;
 
     this.user = this.userService.loggedInUser;

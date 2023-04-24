@@ -1,17 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { establishmentWithShareWith } from '../../../../../server/test/factories/models';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
@@ -42,6 +44,9 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     const component = fixture.componentInstance;
 
+    const tabsService = TestBed.inject(TabsService);
+    const tabsSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
+
     return {
       component,
       fixture,
@@ -49,6 +54,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       queryByText,
       getByTestId,
       queryByTestId,
+      tabsSpy,
     };
   };
 
@@ -117,12 +123,12 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-workplace-details`);
       });
 
-      it('should render a conditional class to not show the bottom border if the workplace is not regulated and there is no number of staff', async () => {
+      it('should render a conditional class if the workplace is not regulated and there is a number of staff error', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.canEditEstablishment = true;
         component.workplace.isRegulated = false;
-        component.workplace.numberOfStaff = null;
+        component.numberOfStaffError = true;
 
         fixture.detectChanges();
 
@@ -131,12 +137,39 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
       });
 
-      it('should not render a conditional class if the workplace is regulated and there is no number of staff', async () => {
+      it('should render a conditional class if the workplace is not regulated and there is a number of staff warning', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = false;
+        component.numberOfStaffWarning = true;
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('workplace-name-and-address');
+
+        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+      });
+
+      it('should not render a conditional class if the workplace is regulated and there is a number of staff error', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.canEditEstablishment = true;
         component.workplace.isRegulated = true;
-        component.workplace.numberOfStaff = null;
+        component.numberOfStaffError = true;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('workplace-name-and-address');
+
+        expect(workplaceRow.getAttribute('class')).not.toContain('govuk-summary-list__row--no-bottom-border');
+      });
+
+      it('should not render a conditional class if the workplace is regulated and there is a number of staff warning', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = true;
+        component.numberOfStaffWarning = true;
 
         fixture.detectChanges();
 
@@ -173,12 +206,26 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(queryByTestId('cqcLocationId')).toBeFalsy();
       });
 
-      it('should render a conditional class if there is no number of staff', async () => {
+      it('should render a conditional class if there is a number of staff error', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.canEditEstablishment = true;
         component.workplace.isRegulated = true;
-        component.workplace.numberOfStaff = null;
+        component.numberOfStaffError = true;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('cqcLocationId');
+
+        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+      });
+
+      it('should render a conditional class if there is a number of staff warning', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = true;
+        component.numberOfStaffWarning = true;
 
         fixture.detectChanges();
 
@@ -190,11 +237,12 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Number of staff', () => {
       it('should render the number of staff and a Change link without conditional classes', async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture } = await setup(null);
 
         component.canEditEstablishment = true;
         component.workplace.numberOfStaff = 4;
-
+        component.workerCount = 4;
+        component.checkNumberOfStaffErrorsAndWarnings();
         fixture.detectChanges();
 
         const numberOfStaffRow = within(document.body).queryByTestId('numberOfStaff');
@@ -238,6 +286,74 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(numberOfStaffRow).getByText('You need to add your total number of staff')).toBeTruthy();
         expect(numberOfStaffRow.getAttribute('class')).toContain('govuk-summary-list__error');
         expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
+
+      it('should render correct warning messge, with link that navigates and conditional classes if the number of staff is more than the number of staff records and it had been more than 8 weeks since first login', async () => {
+        const { component, fixture, getByTestId, tabsSpy } = await setup();
+
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        component.canEditEstablishment = true;
+        component.workplace.eightWeeksFromFirstLogin = date.toString();
+        component.workplace.numberOfStaff = 10;
+        component.workerCount = 9;
+        component.checkNumberOfStaffErrorsAndWarnings();
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+        const link = within(numberOfStaffRow).getByText('View staff records');
+        fireEvent.click(link);
+
+        expect(within(numberOfStaffRow).getByText(`You've more staff than staff records`)).toBeTruthy();
+        expect(link).toBeTruthy();
+        expect(tabsSpy).toHaveBeenCalledWith('staff-records');
+        expect(numberOfStaffRow.getAttribute('class')).toContain('govuk-summary-list__warning');
+        expect(numberOfStaffRow.getAttribute('class')).not.toContain('govuk-summary-list__error');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
+
+      it('should render correct warning messge, with link that navigates if the number of staff is less than the number of staff records and it had been more than 8 weeks since first login', async () => {
+        const { component, fixture, getByTestId, tabsSpy } = await setup();
+
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = 1;
+        component.workplace.eightWeeksFromFirstLogin = date.toString();
+        component.workerCount = 4;
+        component.checkNumberOfStaffErrorsAndWarnings();
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+        const link = within(numberOfStaffRow).getByText('View staff records');
+        fireEvent.click(link);
+
+        expect(within(numberOfStaffRow).getByText(`You've more staff records than staff`)).toBeTruthy();
+        expect(link).toBeTruthy();
+        expect(tabsSpy).toHaveBeenCalledWith('staff-records');
+      });
+
+      it('should not show the warning or conditional classes if it has been less than 8 weeks since first login', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = 1;
+        component.workplace.eightWeeksFromFirstLogin = date.toString();
+        component.workerCount = 4;
+        component.checkNumberOfStaffErrorsAndWarnings();
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+
+        expect(within(numberOfStaffRow).queryByText(`You've more staff records than staff`)).toBeFalsy();
+        expect(numberOfStaffRow.getAttribute('class')).not.toContain('govuk-summary-list__warning');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).not.toContain(
           'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
         );
       });
