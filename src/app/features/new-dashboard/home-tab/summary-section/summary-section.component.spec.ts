@@ -125,6 +125,33 @@ describe('Summary section', () => {
       expect(within(workplaceRow).getByText(`You've not added any vacancy and turnover data`)).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
+
+    it('should show a warning saying that no vacancy data has been added if it has not been added, but starters data has been added', async () => {
+      const establishment = { ...Establishment, leavers: null, vacancies: null, starters: 'None' };
+      const { getByTestId } = await setup(false, establishment);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+    });
+
+    it('should show a warning saying that no vacancy data has been added if it has not been added, but leavers data has been added', async () => {
+      const establishment = { ...Establishment, leavers: 'None', vacancies: null, starters: null };
+      const { getByTestId } = await setup(false, establishment);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+    });
+
+    it('should show a warning saying that no vacancy data has been added if it has not been added, but both starters and leavers data has been added', async () => {
+      const establishment = { ...Establishment, leavers: 'None', vacancies: null, starters: `Don't know` };
+      const { getByTestId } = await setup(false, establishment);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+    });
   });
 
   describe('staff record summary section', () => {
