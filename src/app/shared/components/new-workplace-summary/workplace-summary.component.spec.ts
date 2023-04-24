@@ -360,6 +360,22 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
 
     describe('Employer type', () => {
+      it('should render a dash and an Add link if there is not a value for employer type', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        component.typeOfEmployer = '';
+
+        fixture.detectChanges();
+
+        const employerTypeRow = within(document.body).queryByTestId('employerType');
+        const link = within(employerTypeRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/type-of-employer`);
+        expect(within(employerTypeRow).queryByText('-')).toBeTruthy();
+      });
+
       it('should render the employer type and a Change link when employer type is the other field in object', async () => {
         const { component, fixture } = await setup();
 
@@ -376,12 +392,12 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(employerTypeRow).queryByText('Adult care')).toBeTruthy();
       });
 
-      it('should render the employer type and a Change link when employer type is the other field in object', async () => {
+      it('should render the employer type and a Change link when employer type is the value field in object', async () => {
         const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
         component.workplace.employerType = { other: null, value: 'Voluntary / Charity' };
-
+        component.typeOfEmployer = 'Voluntary, charity, not for profit';
         fixture.detectChanges();
 
         const employerTypeRow = within(document.body).queryByTestId('employerType');
@@ -389,7 +405,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/type-of-employer`);
-        expect(within(employerTypeRow).queryByText('Voluntary / Charity')).toBeTruthy();
+        expect(within(employerTypeRow).queryByText('Voluntary, charity, not for profit')).toBeTruthy();
       });
     });
   });
