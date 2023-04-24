@@ -88,11 +88,8 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   public checkVacancyAndTurnoverData(): void {
-    this.noVacancyAndTurnoverData = !(
-      !!this.workplace.vacancies?.length ||
-      !!this.workplace.starters?.length ||
-      !!this.workplace.leavers?.length
-    );
+    const { vacancies, starters, leavers } = this.workplace;
+    this.noVacancyAndTurnoverData = !vacancies && !starters && !leavers;
   }
 
   private getPermissions(): void {

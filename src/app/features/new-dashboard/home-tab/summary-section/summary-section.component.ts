@@ -40,7 +40,7 @@ export class SummarySectionComponent implements OnInit {
       this.redFlag = true;
     } else if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[0].message = 'Staff total does not match staff records added';
-    } else if (!(!!vacancies?.length || !!starters?.length || !!leavers?.length)) {
+    } else if (!vacancies && !leavers && !starters) {
       this.sections[0].message = `You've not added any vacancy and turnover data`;
     } else if (!vacancies && (leavers || starters)) {
       this.sections[0].message = `You've not added any staff vacancy data`;
