@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -57,7 +57,7 @@ describe('MultipleTrainingDetailsComponent', () => {
               },
             }),
           },
-          FormBuilder,
+          UntypedFormBuilder,
           ErrorSummaryService,
           {
             provide: TrainingService,

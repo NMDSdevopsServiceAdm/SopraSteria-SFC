@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -24,7 +24,7 @@ export class UserAccountEditDetailsComponent extends AccountDetailsDirective {
 
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected fb: FormBuilder,
+    protected fb: UntypedFormBuilder,
     protected router: Router,
     protected userService: UserService,
   ) {

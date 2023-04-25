@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -16,7 +16,7 @@ export class ParticipationComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   public nextPage: URLStructure;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public workplace: Establishment;
   public data: string;
 
@@ -24,7 +24,7 @@ export class ParticipationComponent implements OnInit, OnDestroy {
     protected registrationSurveyService: RegistrationSurveyService,
     private establishmentService: EstablishmentService,
     private userService: UserService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
   ) {}
 

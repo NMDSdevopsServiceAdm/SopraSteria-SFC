@@ -10,7 +10,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { PASSWORD_PATTERN } from '@core/constants/constants';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
@@ -28,7 +28,7 @@ import { Subscription } from 'rxjs';
 export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted: boolean;
   private subscriptions: Subscription = new Subscription();
   @Input() public userDetails: UserDetails;
@@ -39,7 +39,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterView
   public return: URLStructure = { url: ['/account-management'] };
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private userService: UserService,
     private passwordResetService: PasswordResetService,
     private errorSummaryService: ErrorSummaryService,

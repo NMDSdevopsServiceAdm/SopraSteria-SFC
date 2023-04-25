@@ -6,6 +6,7 @@ import { URLStructure } from '@core/model/url.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -30,12 +31,17 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   private capacities: any;
   public hasCapacity: boolean;
   public capacityMessages = [];
+  public noVacancyAndTurnoverData: boolean;
+  public numberOfStaffError: boolean;
+  public numberOfStaffWarning: boolean;
+  public typeOfEmployer: string;
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
     private permissionsService: PermissionsService,
     private establishmentService: EstablishmentService,
     private cqcStatusChangeService: CqcStatusChangeService,
+    private tabsService: TabsService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -65,12 +71,29 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.workplace.employerType) {
-      this.workplace.employerType.value = WorkplaceUtil.formatTypeOfEmployer(this.workplace.employerType.value);
+      this.typeOfEmployer = WorkplaceUtil.formatTypeOfEmployer(this.workplace.employerType.value);
     }
 
     this.getCapacityMessages();
     this.getPermissions();
     this.getCqcStatus();
+
+    this.checkNumberOfStaffErrorsAndWarnings();
+    this.checkVacancyAndTurnoverData();
+  }
+
+  public checkNumberOfStaffErrorsAndWarnings(): void {
+    this.numberOfStaffError = !this.workplace.numberOfStaff;
+    const afterEightWeeksFromFirstLogin = new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
+    this.numberOfStaffWarning = this.workplace.numberOfStaff !== this.workerCount && afterEightWeeksFromFirstLogin;
+  }
+
+  public checkVacancyAndTurnoverData(): void {
+    this.noVacancyAndTurnoverData = !(
+      !!this.workplace.vacancies?.length ||
+      !!this.workplace.starters?.length ||
+      !!this.workplace.leavers?.length
+    );
   }
 
   private getPermissions(): void {
@@ -151,6 +174,11 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   public formatMonetaryValue(unformattedMoneyString: string): string {
     return unformattedMoneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  public navigateToTab(event: Event, selectedTab: string): void {
+    event.preventDefault();
+    this.tabsService.selectedTab = selectedTab;
   }
 
   ngOnDestroy(): void {

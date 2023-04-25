@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -15,7 +15,7 @@ import { UserService } from '@core/services/user.service';
 })
 export class MigratedUserTermsConditionsComponent implements OnInit {
   public formErrorsMap: ErrorDetails[];
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   protected userDetails: UserDetails;
   public serverErrorsMap: Array<ErrorDefinition>;
@@ -24,9 +24,9 @@ export class MigratedUserTermsConditionsComponent implements OnInit {
   constructor(
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private userService: UserService,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit() {
@@ -89,15 +89,15 @@ export class MigratedUserTermsConditionsComponent implements OnInit {
       .updateUserDetails(
         this.establishmentService.primaryWorkplace.uid,
         this.userService.loggedInUser.uid,
-        this.userService.loggedInUser
+        this.userService.loggedInUser,
       )
       .subscribe(
-        data => {
+        (data) => {
           this.router.navigate(['/dashboard']);
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
+        },
       );
   }
 }

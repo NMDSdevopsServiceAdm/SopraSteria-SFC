@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ShareWithRequest } from '@core/model/data-sharing.model';
 import { BackService } from '@core/services/back.service';
@@ -15,7 +15,7 @@ import { Question } from '../question/question.component';
 export class DataSharingComponent extends Question {
   public section = 'Permissions';
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,

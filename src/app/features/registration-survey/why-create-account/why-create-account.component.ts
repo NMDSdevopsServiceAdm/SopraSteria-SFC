@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
@@ -24,12 +24,12 @@ export class WhyCreateAccountComponent implements OnInit {
     'To help us understand our workforce better',
     'Other',
   ];
-  public form: FormGroup;
+  public form: UntypedFormGroup;
 
   constructor(
     protected backService: BackService,
     protected registrationSurveyService: RegistrationSurveyService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
   ) {}
 
@@ -39,7 +39,7 @@ export class WhyCreateAccountComponent implements OnInit {
   }
 
   get whyCreateAccountArray() {
-    return this.form.get('whyCreateAccount') as FormArray;
+    return this.form.get('whyCreateAccount') as UntypedFormArray;
   }
 
   private setupForm() {

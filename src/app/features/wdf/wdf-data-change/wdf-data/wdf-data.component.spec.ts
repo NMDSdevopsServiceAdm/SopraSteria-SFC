@@ -17,9 +17,11 @@ import { MockReportService } from '@core/test-utils/MockReportService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 import { WdfModule } from '../wdf.module';
 import { WdfDataComponent } from './wdf-data.component';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('WdfDataComponent', () => {
   const setup = async () => {
@@ -35,6 +37,7 @@ describe('WdfDataComponent', () => {
           useFactory: MockPermissionsService.factory(['canViewWorker']),
           deps: [HttpClient, Router, UserService],
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
       ],
     });
     const component = fixture.componentInstance;

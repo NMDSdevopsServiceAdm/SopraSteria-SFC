@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
@@ -25,7 +25,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   public categories: Array<ServiceGroup>;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public submitted = false;
@@ -39,7 +39,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
     protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected workplaceService: WorkplaceService,
   ) {}
@@ -126,7 +126,7 @@ export class SelectMainServiceDirective implements OnInit, OnDestroy, AfterViewI
       if (service.other) {
         this.form.addControl(
           `otherWorkplaceService${service.id}`,
-          new FormControl(null, [Validators.maxLength(this.otherServiceMaxLength)]),
+          new UntypedFormControl(null, [Validators.maxLength(this.otherServiceMaxLength)]),
         );
 
         this.formErrorsMap.push({

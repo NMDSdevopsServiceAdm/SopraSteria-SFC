@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
@@ -13,6 +13,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -20,14 +21,16 @@ import { NewArticleListComponent } from '@features/articles/new-article-list/new
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+
 import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
+import { SummarySectionComponent } from './summary-section/summary-section.component';
 
 describe('NewHomeTabComponent', () => {
-  const setup = async () => {
+  const setup = async (checkCqcDetails = false, establishment = Establishment) => {
     const { fixture, getByText, queryByText, getByTestId } = await render(NewHomeTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -41,15 +44,33 @@ describe('NewHomeTabComponent', () => {
           useFactory: MockPermissionsService.factory(),
           deps: [HttpClient, Router, UserService],
         },
+
         {
           provide: UserService,
           useFactory: MockUserService.factory(1, Roles.Admin),
           deps: [HttpClient],
         },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                workers: { workers: [] },
+              },
+            },
+            queryParams: of({ view: null }),
+            url: of(null),
+          },
+        },
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
+          deps: [HttpClient],
+        },
       ],
-      declarations: [NewDashboardHeaderComponent, NewArticleListComponent],
+      declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
-        workplace: Establishment,
+        workplace: establishment,
         meta: { workplaces: 9, staff: 4 } as Meta,
       },
       schemas: [NO_ERRORS_SCHEMA],
@@ -449,34 +470,48 @@ describe('NewHomeTabComponent', () => {
       expect(summaryBox).toBeTruthy();
     });
 
-    it('should show workplace link and take you to the workplace tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('workplace summary section', () => {
+      it('should take you to the workplace tab when clicking the workplace link', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
 
-      const workplaceLink = getByText('Workplace');
-      fireEvent.click(workplaceLink);
+        const workplaceLink = getByText('Workplace');
+        fireEvent.click(workplaceLink);
 
-      expect(workplaceLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      });
+
+      it('should show a warning link which should navigate to the workplace tab', async () => {
+        const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
+        const { getByText, tabsServiceSpy } = await setup(true, establishment);
+
+        const link = getByText('Add more details to your workplace');
+        fireEvent.click(link);
+
+        expect(link).toBeTruthy();
+        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      });
     });
 
-    it('should show staff records link and take you to the staff records tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('staff records summary section', () => {
+      it('should show staff records link and take you to the staff records tab', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
 
-      const staffRecordsLink = getByText('Staff records');
-      fireEvent.click(staffRecordsLink);
+        const staffRecordsLink = getByText('Staff records');
+        fireEvent.click(staffRecordsLink);
 
-      expect(staffRecordsLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('staff-records');
+        expect(tabsServiceSpy).toHaveBeenCalledWith('staff-records');
+      });
     });
 
-    it('should show training and qualifications link that take you the training and qualifications tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('training and qualifications summary section', () => {
+      it('should show training and qualifications link that take you the training and qualifications tab', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
 
-      const trainingAndQualificationsLink = getByText('Training and qualifications');
-      fireEvent.click(trainingAndQualificationsLink);
+        const trainingAndQualificationsLink = getByText('Training and qualifications');
+        fireEvent.click(trainingAndQualificationsLink);
 
-      expect(trainingAndQualificationsLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+        expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+      });
     });
   });
 });
