@@ -35,16 +35,20 @@ export class SummarySectionComponent implements OnInit {
   }
 
   public getWorkplaceSummaryMessage(): void {
+    const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;
+
     this.redFlag = false;
-    if (this.workplace.showAddWorkplaceDetailsBanner) {
+    if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
-    } else if (!this.workplace.numberOfStaff) {
+    } else if (!numberOfStaff) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.redFlag = true;
-    } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
+    } else if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[0].message = 'Staff total does not match staff records added';
+    } else if (!(!!vacancies?.length || !!starters?.length || !!leavers?.length)) {
+      this.sections[0].message = `You've not added any vacancy and turnover data`;
     }
   }
 

@@ -34,6 +34,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public noVacancyAndTurnoverData: boolean;
   public numberOfStaffError: boolean;
   public numberOfStaffWarning: boolean;
+  public typeOfEmployer: string;
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
@@ -70,7 +71,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.workplace.employerType) {
-      this.workplace.employerType.value = WorkplaceUtil.formatTypeOfEmployer(this.workplace.employerType.value);
+      this.typeOfEmployer = WorkplaceUtil.formatTypeOfEmployer(this.workplace.employerType.value);
     }
 
     this.getCapacityMessages();
@@ -90,7 +91,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public checkVacancyAndTurnoverData(): void {
     this.noVacancyAndTurnoverData = !(
       !!this.workplace.vacancies?.length ||
-      this.workplace.starters?.length ||
+      !!this.workplace.starters?.length ||
       !!this.workplace.leavers?.length
     );
   }
