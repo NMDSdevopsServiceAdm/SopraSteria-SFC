@@ -5,12 +5,14 @@ import { TabsService } from '@core/services/tabs.service';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { SharedModule } from '@shared/shared.module';
+import { Worker } from '@core/model/worker.model';
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
 import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-
+import { workerWithCreatedDate } from '@core/test-utils/MockWorkerService';
+const workers = [workerWithCreatedDate] as Worker[];
 describe('Summary section', () => {
   const setup = async (
     checkCqcDetails = false,
@@ -32,10 +34,12 @@ describe('Summary section', () => {
       ],
       componentProperties: {
         workplace: workplace,
+
         navigateToTab: (event, selectedTab) => {
           event.preventDefault();
         },
         workerCount,
+        workers: workers as Worker[],
       },
     });
 
@@ -182,6 +186,23 @@ describe('Summary section', () => {
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
+    });
+
+    it('should  show "No staff records added in the last 12 months" message when stablishment has more than 10 staff and workplace created date and last worker added date is more than 12 month ', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs('2021-03-31').add(12, 'M'),
+      };
+
+      const { fixture, component, getByTestId } = await setup(false, establishment);
+      const workerCreatedDate = dayjs(component.workers[0].created).add(12, 'M');
+
+      component.now >= establishment.created;
+      component.now >= workerCreatedDate;
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeTruthy();
     });
   });
 

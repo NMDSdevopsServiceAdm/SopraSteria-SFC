@@ -19,7 +19,7 @@ export class SummarySectionComponent implements OnInit {
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
   public redFlag: boolean;
 
-  public now = dayjs(new Date());
+  public now = dayjs();
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '' },
@@ -61,7 +61,7 @@ export class SummarySectionComponent implements OnInit {
       this.sections[1].message = 'Staff records added does not match staff total';
     } else if (
       this.now >= afterWorkplaceCreated &&
-      this.workplace.numberOfStaff >= 2 &&
+      this.workplace.numberOfStaff > 10 &&
       this.now >= this.getWorkerUpdatedDate()
     ) {
       this.sections[1].message = 'No staff records added in the last 12 months';
@@ -70,8 +70,8 @@ export class SummarySectionComponent implements OnInit {
 
   getWorkerUpdatedDate() {
     const workerCreatedDate = this.workers.map((worker: any) => new Date(worker.created).getTime());
-    const getLatestWorkerUpdatedDate = new Date(Math.max(...workerCreatedDate));
-    const afterWorkerCreated = dayjs(getLatestWorkerUpdatedDate).add(12, 'M');
+    const getLatestWorkerCreatedDate = new Date(Math.max(...workerCreatedDate));
+    const afterWorkerCreated = dayjs(getLatestWorkerCreatedDate).add(12, 'M');
 
     return afterWorkerCreated;
   }

@@ -49,6 +49,8 @@ export const workerBuilder = build('Worker', {
     qualificationCount: 0,
     longTermAbsence: null,
     completed: perBuild(() => false),
+    created: perBuild(() => false),
+
     ethnicity: {
       ethnicityId: 1,
       ethnicity: 'white ethnicity 1',
@@ -125,6 +127,12 @@ export const longTermAbsentWorker = workerBuilder({
   overrides: {
     nameOrId: 'John',
     longTermAbsence: 'Illness',
+  },
+});
+
+export const workerWithCreatedDate = workerBuilder({
+  overrides: {
+    created: '2021-03-31',
   },
 });
 

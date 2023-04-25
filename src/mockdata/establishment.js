@@ -10,7 +10,7 @@ module.exports.Establishment = {
   locationRef: '1-12345678',
   isRegulated: true,
   nmdsId: 'J1002317',
-  created: new Date(),
+  created: '2021-03-31',
   updated: new Date(),
   updatedBy: 'thisperson',
   mainService: {
