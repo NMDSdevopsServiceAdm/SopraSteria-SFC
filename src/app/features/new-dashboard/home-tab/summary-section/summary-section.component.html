@@ -24,7 +24,7 @@
               data-testid="orange-flag"
             />
           </ng-template>
-          <a (click)="navigateToTab($event, section.fragment)" href="#"> {{ section.message }}</a>
+          <a (click)="onClick($event, section.fragment, section.route)" href="#"> {{ section.message }}</a>
         </ng-container>
         <ng-template #noMessage>
           <span>Remember to check and update this data often</span>
