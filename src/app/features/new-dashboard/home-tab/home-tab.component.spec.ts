@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
@@ -55,7 +56,7 @@ describe('NewHomeTabComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                workers: { workers: [] },
+                workers: { workers: [], trainingCounts: {} as TrainingCounts },
               },
             },
             queryParams: of({ view: null }),

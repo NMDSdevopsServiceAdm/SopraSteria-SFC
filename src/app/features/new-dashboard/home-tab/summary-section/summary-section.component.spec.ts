@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
@@ -16,6 +17,7 @@ describe('Summary section', () => {
     checkCqcDetails = false,
     workplace = Establishment,
     workerCount = Establishment.numberOfStaff,
+    trainingCounts = {} as TrainingCounts,
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule],
@@ -32,6 +34,7 @@ describe('Summary section', () => {
       ],
       componentProperties: {
         workplace: workplace,
+        trainingCounts: trainingCounts,
         navigateToTab: (event, selectedTab) => {
           event.preventDefault();
         },
@@ -205,6 +208,20 @@ describe('Summary section', () => {
       const { getByTestId } = await setup();
       const tAndQRow = getByTestId('training-and-qualifications-row');
       expect(within(tAndQRow).getByText('Remember to check and update this data often')).toBeTruthy();
+    });
+
+    it('should show missing mandatory training error when mandatory training is missing', async () => {
+      const trainingCounts = { missingMandatoryTraining: 2 };
+      const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+      const tAndQRow = getByTestId('training-and-qualifications-row');
+      expect(within(tAndQRow).getByText('2 staff are missing mandatory training')).toBeTruthy();
+    });
+
+    it('should not show missing mandatory training error when mandatory training is not missing', async () => {
+      const trainingCounts = { missingMandatoryTraining: 0 };
+      const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+      const tAndQRow = getByTestId('training-and-qualifications-row');
+      expect(within(tAndQRow).queryByText('2 staff are missing mandatory training')).toBeFalsy();
     });
   });
 });
