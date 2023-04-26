@@ -8,7 +8,7 @@
       </div>
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body summary-section__summary-text">
         <ng-container *ngIf="section.message; else noMessage">
-          <ng-container *ngIf="redFlag; else orangeFlag">
+          <ng-container *ngIf="section.redFlag; else orangeFlag">
             <img
               src="/assets/images/flag-red.svg"
               alt="action-required-red-flag"

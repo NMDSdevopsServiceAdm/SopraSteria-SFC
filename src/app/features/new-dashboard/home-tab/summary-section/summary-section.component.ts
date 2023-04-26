@@ -18,9 +18,9 @@ export class SummarySectionComponent implements OnInit {
   public redFlag: boolean;
 
   public sections = [
-    { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined },
-    { linkText: 'Staff records', fragment: 'staff-records', message: '', route: undefined },
-    { linkText: 'Training and qualifications', fragment: 'training-and-qualifications', message: '', route: undefined },
+    { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false },
+    { linkText: 'Staff records', fragment: 'staff-records', message: '', route: undefined, redFlag: false  },
+    { linkText: 'Training and qualifications', fragment: 'training-and-qualifications', message: '', route: undefined, redFlag: false },
   ];
 
   constructor(
@@ -47,7 +47,7 @@ export class SummarySectionComponent implements OnInit {
   public getWorkplaceSummaryMessage(): void {
     const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;
 
-    this.redFlag = false;
+    this.sections[0].redFlag = false;
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
     } else if (this.establishmentService.checkCQCDetailsBanner) {
@@ -76,6 +76,7 @@ export class SummarySectionComponent implements OnInit {
 
   public getTrainingAndQualsSummary(): void {
     if (this.trainingCounts.missingMandatoryTraining) {
+      this.sections[2].redFlag = true;
       this.sections[2].message = `${this.trainingCounts.missingMandatoryTraining} staff ${
         this.trainingCounts.missingMandatoryTraining > 1 ? 'are' : 'is'
       } missing mandatory training`;
