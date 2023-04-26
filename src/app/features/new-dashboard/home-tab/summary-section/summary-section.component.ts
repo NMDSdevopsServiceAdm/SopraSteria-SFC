@@ -43,6 +43,7 @@ export class SummarySectionComponent implements OnInit {
   public onClick(event: Event, fragment: string, route: string[]): void {
     event.preventDefault();
     if (route) {
+      this.tabsService.selectedTab = fragment;
       this.router.navigate(route);
     } else {
       this.navigateToTab(event, fragment);
