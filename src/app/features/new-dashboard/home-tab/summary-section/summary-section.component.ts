@@ -23,7 +23,11 @@ export class SummarySectionComponent implements OnInit {
     { linkText: 'Training and qualifications', fragment: 'training-and-qualifications', message: '', route: undefined },
   ];
 
-  constructor(private tabsService: TabsService, private establishmentService: EstablishmentService, private router: Router) {}
+  constructor(
+    private tabsService: TabsService,
+    private establishmentService: EstablishmentService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
@@ -31,11 +35,9 @@ export class SummarySectionComponent implements OnInit {
     this.getTrainingAndQualsSummary();
   }
 
-
   public onClick(event: Event, fragment: string, route: string[]): void {
-    console.log(route);
     event.preventDefault();
-    if(route) {
+    if (route) {
       this.router.navigate(route);
     } else {
       this.navigateToTab(event, fragment);
@@ -77,7 +79,12 @@ export class SummarySectionComponent implements OnInit {
       this.sections[2].message = `${this.trainingCounts.missingMandatoryTraining} staff ${
         this.trainingCounts.missingMandatoryTraining > 1 ? 'are' : 'is'
       } missing mandatory training`;
-      this.sections[2].route = ['/workplace', this.workplace.uid, 'training-and-qualifications', 'missing-mandatory-training'];
+      this.sections[2].route = [
+        '/workplace',
+        this.workplace.uid,
+        'training-and-qualifications',
+        'missing-mandatory-training',
+      ];
     }
   }
 }
