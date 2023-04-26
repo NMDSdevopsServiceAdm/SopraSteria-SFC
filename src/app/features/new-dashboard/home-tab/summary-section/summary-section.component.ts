@@ -15,12 +15,17 @@ export class SummarySectionComponent implements OnInit {
   @Input() workerCount: number;
   @Input() trainingCounts: TrainingCounts;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
-  public redFlag: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false },
-    { linkText: 'Staff records', fragment: 'staff-records', message: '', route: undefined, redFlag: false  },
-    { linkText: 'Training and qualifications', fragment: 'training-and-qualifications', message: '', route: undefined, redFlag: false },
+    { linkText: 'Staff records', fragment: 'staff-records', message: '', route: undefined, redFlag: false },
+    {
+      linkText: 'Training and qualifications',
+      fragment: 'training-and-qualifications',
+      message: '',
+      route: undefined,
+      redFlag: false,
+    },
   ];
 
   constructor(
@@ -54,7 +59,7 @@ export class SummarySectionComponent implements OnInit {
       this.sections[0].message = 'You need to check your CQC details';
     } else if (!numberOfStaff) {
       this.sections[0].message = `You've not added your total number of staff`;
-      this.redFlag = true;
+      this.sections[0].redFlag = true;
     } else if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[0].message = 'Staff total does not match staff records added';
     } else if (!(!!vacancies?.length || !!starters?.length || !!leavers?.length)) {
