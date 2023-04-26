@@ -43,8 +43,8 @@ export class SummarySectionComponent implements OnInit {
   public onClick(event: Event, fragment: string, route: string[]): void {
     event.preventDefault();
     if (route) {
-      this.tabsService.selectedTab = fragment;
       this.router.navigate(route);
+      this.tabsService.selectedTab = fragment;
     } else {
       this.navigateToTab(event, fragment);
     }
@@ -92,6 +92,12 @@ export class SummarySectionComponent implements OnInit {
         'training-and-qualifications',
         'missing-mandatory-training',
       ];
+    } else if (this.trainingCounts.totalExpiredTraining) {
+      this.sections[2].redFlag = true;
+      this.sections[2].message = `${this.trainingCounts.totalExpiredTraining} training record${
+        this.trainingCounts.totalExpiredTraining > 1 ? 's have' : ' has'
+      } expired`;
+      this.sections[2].route = ['/workplace', this.workplace.uid, 'training-and-qualifications', 'expired-training'];
     }
   }
 }

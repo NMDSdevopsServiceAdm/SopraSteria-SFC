@@ -210,18 +210,52 @@ describe('Summary section', () => {
       expect(within(tAndQRow).getByText('Remember to check and update this data often')).toBeTruthy();
     });
 
-    it('should show missing mandatory training error when mandatory training is missing', async () => {
-      const trainingCounts = { missingMandatoryTraining: 2 };
-      const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
-      const tAndQRow = getByTestId('training-and-qualifications-row');
-      expect(within(tAndQRow).getByText('2 staff are missing mandatory training')).toBeTruthy();
+    describe('missing mandatory training message', () => {
+      it('should show when mandatory training is missing for multiple users', async () => {
+        const trainingCounts = { missingMandatoryTraining: 2 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('2 staff are missing mandatory training')).toBeTruthy();
+      });
+
+      it('should show when mandatory training is missing for a single user', async () => {
+        const trainingCounts = { missingMandatoryTraining: 1 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('1 staff is missing mandatory training')).toBeTruthy();
+      });
+
+      it('should not show when mandatory training is not missing', async () => {
+        const trainingCounts = { missingMandatoryTraining: 0 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).queryByText('0 staff are missing mandatory training')).toBeFalsy();
+        expect(within(tAndQRow).queryByText('0 staff is missing mandatory training')).toBeFalsy();
+      });
     });
 
-    it('should not show missing mandatory training error when mandatory training is not missing', async () => {
-      const trainingCounts = { missingMandatoryTraining: 0 };
-      const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
-      const tAndQRow = getByTestId('training-and-qualifications-row');
-      expect(within(tAndQRow).queryByText('2 staff are missing mandatory training')).toBeFalsy();
+    describe('expired training message', () => {
+      it('should show when training is expired for multiple users', async () => {
+        const trainingCounts = { totalExpiredTraining: 2 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('2 training records have expired')).toBeTruthy();
+      });
+
+      it('should show when training is expired for a single user', async () => {
+        const trainingCounts = { totalExpiredTraining: 1 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('1 training record has expired')).toBeTruthy();
+      });
+
+      it('should not show when training is not expired', async () => {
+        const trainingCounts = { totalExpiredTraining: 0 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).queryByText('0 training record has expired')).toBeFalsy();
+        expect(within(tAndQRow).queryByText('0 training records have expired')).toBeFalsy();
+      });
     });
   });
 });
