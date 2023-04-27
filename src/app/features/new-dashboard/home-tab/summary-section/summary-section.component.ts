@@ -98,6 +98,16 @@ export class SummarySectionComponent implements OnInit {
         this.trainingCounts.totalExpiredTraining > 1 ? 's have' : ' has'
       } expired`;
       this.sections[2].route = ['/workplace', this.workplace.uid, 'training-and-qualifications', 'expired-training'];
+    } else if (this.trainingCounts.totalExpiringTraining) {
+      this.sections[2].message = `${this.trainingCounts.totalExpiringTraining} training record${
+        this.trainingCounts.totalExpiringTraining > 1 ? 's expire' : ' expires'
+      } soon`;
+      this.sections[2].route = [
+        '/workplace',
+        this.workplace.uid,
+        'training-and-qualifications',
+        'expires-soon-training',
+      ];
     }
   }
 }
