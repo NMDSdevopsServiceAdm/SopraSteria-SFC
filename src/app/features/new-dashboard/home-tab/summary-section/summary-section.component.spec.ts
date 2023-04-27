@@ -1,23 +1,25 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { SharedModule } from '@shared/shared.module';
-import { Worker } from '@core/model/worker.model';
+
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
 import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import { workerWithCreatedDate } from '@core/test-utils/MockWorkerService';
-const workers = [workerWithCreatedDate] as Worker[];
+
 describe('Summary section', () => {
   const setup = async (
     checkCqcDetails = false,
     workplace = Establishment,
     workerCount = Establishment.numberOfStaff,
+    trainingCounts = {} as TrainingCounts,
+    WorkerCreatedDate = new Date('2021-03-31'),
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule],
@@ -34,12 +36,12 @@ describe('Summary section', () => {
       ],
       componentProperties: {
         workplace: workplace,
-
+        trainingCounts: trainingCounts,
         navigateToTab: (event, selectedTab) => {
           event.preventDefault();
         },
         workerCount,
-        workers: workers as Worker[],
+        workerCreatedDate: WorkerCreatedDate,
       },
     });
 
@@ -205,11 +207,7 @@ describe('Summary section', () => {
         numberOfStaff: 12,
       };
 
-      const { fixture, component, getByTestId } = await setup(false, establishment);
-      const workerCreatedDate = dayjs(component.workers[0].created).add(12, 'M');
-
-      component.now >= establishment.created;
-      component.now >= workerCreatedDate;
+      const { fixture, component, getByTestId } = await setup(false, establishment, 12);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -220,14 +218,39 @@ describe('Summary section', () => {
       const establishment = {
         ...Establishment,
         created: dayjs('2023-03-31').add(12, 'M'),
-        numberOfStaff: 9,
       };
 
-      const { fixture, component, getByTestId } = await setup(false, establishment);
-      const workerCreatedDate = dayjs(component.workers[0].created).add(12, 'M');
+      const { fixture, getByTestId, component } = await setup(false, establishment, 9);
 
-      component.now >= establishment.created;
-      component.now >= workerCreatedDate;
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
+    });
+
+    it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and and workplace created date is less than 12 month ', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs('2021-03-31').add(12, 'M'),
+      };
+
+      const date = new Date();
+      date.setDate(date.getMonth() - 1);
+      const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
+    });
+
+    it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and last worker added date is less than 12 month ', async () => {
+      const date = new Date();
+      const establishment = {
+        ...Establishment,
+        created: date.setDate(date.getMonth() - 1),
+      };
+
+      date.setDate(date.getMonth() - 1);
+      const { fixture, getByTestId } = await setup(false, establishment, 12, {});
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -246,6 +269,54 @@ describe('Summary section', () => {
       const { getByTestId } = await setup();
       const tAndQRow = getByTestId('training-and-qualifications-row');
       expect(within(tAndQRow).getByText('Remember to check and update this data often')).toBeTruthy();
+    });
+
+    describe('missing mandatory training message', () => {
+      it('should show when mandatory training is missing for multiple users', async () => {
+        const trainingCounts = { missingMandatoryTraining: 2 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('2 staff are missing mandatory training')).toBeTruthy();
+      });
+
+      it('should show when mandatory training is missing for a single user', async () => {
+        const trainingCounts = { missingMandatoryTraining: 1 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('1 staff is missing mandatory training')).toBeTruthy();
+      });
+
+      it('should not show when mandatory training is not missing', async () => {
+        const trainingCounts = { missingMandatoryTraining: 0 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).queryByText('0 staff are missing mandatory training')).toBeFalsy();
+        expect(within(tAndQRow).queryByText('0 staff is missing mandatory training')).toBeFalsy();
+      });
+    });
+
+    describe('expired training message', () => {
+      it('should show when training is expired for multiple users', async () => {
+        const trainingCounts = { totalExpiredTraining: 2 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('2 training records have expired')).toBeTruthy();
+      });
+
+      it('should show when training is expired for a single user', async () => {
+        const trainingCounts = { totalExpiredTraining: 1 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('1 training record has expired')).toBeTruthy();
+      });
+
+      it('should not show when training is not expired', async () => {
+        const trainingCounts = { totalExpiredTraining: 0 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).queryByText('0 training record has expired')).toBeFalsy();
+        expect(within(tAndQRow).queryByText('0 training records have expired')).toBeFalsy();
+      });
     });
   });
 });

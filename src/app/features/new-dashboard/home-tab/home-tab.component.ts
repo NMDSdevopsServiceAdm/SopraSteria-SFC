@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
@@ -37,9 +38,10 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public canRunLocalAuthorityReport: boolean;
   public canBulkUpload: boolean;
   public canEditEstablishment: boolean;
+  public trainingCounts: TrainingCounts;
   public user: UserDetails;
   public workplaceSummaryMessage: string;
-  public workers: Worker[];
+  public workerCreatedDate: Date;
   public workerCount: number;
 
   constructor(
@@ -52,9 +54,11 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const { workers = [], workerCount = 0 } = this.route.snapshot.data.workers;
-    this.workers = workers;
+    const { workerCreatedDate, workerCount = 0, trainingCounts } = this.route.snapshot.data.workers;
+    this.workerCreatedDate = workerCreatedDate;
     this.workerCount = workerCount;
+    this.trainingCounts = trainingCounts;
+
     this.user = this.userService.loggedInUser;
     this.setPermissionLinks();
 

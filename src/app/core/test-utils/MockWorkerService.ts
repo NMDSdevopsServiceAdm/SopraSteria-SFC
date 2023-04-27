@@ -130,12 +130,6 @@ export const longTermAbsentWorker = workerBuilder({
   },
 });
 
-export const workerWithCreatedDate = workerBuilder({
-  overrides: {
-    created: '2021-03-31',
-  },
-});
-
 export const AllWorkers = [
   {
     nameOrId: worker.nameOrId,
