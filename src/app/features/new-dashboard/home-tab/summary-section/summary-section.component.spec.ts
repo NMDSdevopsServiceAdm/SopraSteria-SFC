@@ -257,5 +257,29 @@ describe('Summary section', () => {
         expect(within(tAndQRow).queryByText('0 training records have expired')).toBeFalsy();
       });
     });
+
+    describe('training expires soon message', async () => {
+      it('should show when training is expiring for multiple users', async () => {
+        const trainingCounts = { totalExpiringTraining: 2 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('2 training records expire soon')).toBeTruthy();
+      });
+
+      it('should show when training is expiring for a single user', async () => {
+        const trainingCounts = { totalExpiringTraining: 1 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).getByText('1 training record expires soon')).toBeTruthy();
+      });
+
+      it('should not show when training is not expiring', async () => {
+        const trainingCounts = { totalExpiringTraining: 0 };
+        const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+        expect(within(tAndQRow).queryByText('0 training record expires soon')).toBeFalsy();
+        expect(within(tAndQRow).queryByText('0 training records expire soon')).toBeFalsy();
+      });
+    });
   });
 });
