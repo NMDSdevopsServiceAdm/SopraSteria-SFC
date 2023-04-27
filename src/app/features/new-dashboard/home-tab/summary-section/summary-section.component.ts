@@ -40,14 +40,12 @@ export class SummarySectionComponent implements OnInit {
     this.getTrainingAndQualsSummary();
   }
 
-  public onClick(event: Event, fragment: string, route: string[]): void {
+  public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();
     if (route) {
-      this.router.navigate(route);
-      this.tabsService.selectedTab = fragment;
-    } else {
-      this.navigateToTab(event, fragment);
+      await this.router.navigate(route);
     }
+    this.navigateToTab(event, fragment);
   }
 
   public getWorkplaceSummaryMessage(): void {
