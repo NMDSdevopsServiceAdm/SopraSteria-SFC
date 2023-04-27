@@ -14,12 +14,10 @@ import { Worker } from '@core/model/worker.model';
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
-  @Input() workers: Worker[];
+  @Input() workers: [];
 
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
   public redFlag: boolean;
-
-  public now = dayjs();
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '' },
@@ -64,9 +62,9 @@ export class SummarySectionComponent implements OnInit {
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
     } else if (
-      this.now >= afterWorkplaceCreated &&
+      dayjs() >= afterWorkplaceCreated &&
       this.workplace.numberOfStaff > 10 &&
-      this.now >= this.getWorkerUpdatedDate()
+      dayjs() >= this.getWorkerUpdatedDate()
     ) {
       this.sections[1].message = 'No staff records added in the last 12 months';
     }
