@@ -1,9 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
+
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
+import dayjs from 'dayjs';
+import { Worker } from '@core/model/worker.model';
 
 @Component({
   selector: 'app-summary-section',
@@ -13,6 +16,8 @@ import { TabsService } from '@core/services/tabs.service';
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
+  @Input() workerCreatedDate;
+
   @Input() trainingCounts: TrainingCounts;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
 
@@ -71,10 +76,15 @@ export class SummarySectionComponent implements OnInit {
   }
 
   public getStaffSummaryMessage(): void {
+    const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
+    const afterWorkerCreated = dayjs(this.workerCreatedDate).add(12, 'M');
+
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
+    } else if (dayjs() >= afterWorkplaceCreated && this.workplace.numberOfStaff > 10 && dayjs() >= afterWorkerCreated) {
+      this.sections[1].message = 'No staff records added in the last 12 months';
     }
   }
 

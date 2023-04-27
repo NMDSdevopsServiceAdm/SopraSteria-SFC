@@ -6,6 +6,7 @@ import { TabsService } from '@core/services/tabs.service';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { SharedModule } from '@shared/shared.module';
+
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
@@ -18,6 +19,7 @@ describe('Summary section', () => {
     workplace = Establishment,
     workerCount = Establishment.numberOfStaff,
     trainingCounts = {} as TrainingCounts,
+    WorkerCreatedDate = new Date('2021-03-31'),
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule],
@@ -39,6 +41,7 @@ describe('Summary section', () => {
           event.preventDefault();
         },
         workerCount,
+        workerCreatedDate: WorkerCreatedDate,
       },
     });
 
@@ -138,7 +141,8 @@ describe('Summary section', () => {
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
-      const { getByTestId } = await setup(false, Establishment, 100);
+      const establishment = { ...Establishment, numberOfStaff: 10 };
+      const { getByTestId } = await setup(false, establishment);
 
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).getByText('Remember to check and update this data often')).toBeTruthy();
@@ -194,6 +198,63 @@ describe('Summary section', () => {
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
+    });
+
+    it('should  show "No staff records added in the last 12 months" message when stablishment has more than 10 staff and workplace created date and last worker added date is more than 12 month ', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs('2021-03-31').add(12, 'M'),
+        numberOfStaff: 12,
+      };
+
+      const { fixture, component, getByTestId } = await setup(false, establishment, 12);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeTruthy();
+    });
+
+    it('should not  show "No staff records added in the last 12 months" message when stablishment has less thsn 10 staff and workplace created date and last worker added date is less than 12 months', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs('2023-03-31').add(12, 'M'),
+      };
+
+      const { fixture, getByTestId, component } = await setup(false, establishment, 9);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
+    });
+
+    it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and and workplace created date is less than 12 month ', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs('2021-03-31').add(12, 'M'),
+      };
+
+      const date = new Date();
+      date.setDate(date.getMonth() - 1);
+      const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
+    });
+
+    it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and last worker added date is less than 12 month ', async () => {
+      const date = new Date();
+      const establishment = {
+        ...Establishment,
+        created: date.setDate(date.getMonth() - 1),
+      };
+
+      date.setDate(date.getMonth() - 1);
+      const { fixture, getByTestId } = await setup(false, establishment, 12, {});
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
     });
   });
 
