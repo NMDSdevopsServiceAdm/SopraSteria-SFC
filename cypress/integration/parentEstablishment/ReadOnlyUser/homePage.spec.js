@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
-describe('Parent home page as edit user', () => {
+describe('Parent home page as read only user', () => {
   before(() => {
     cy.wait(2000);
   });

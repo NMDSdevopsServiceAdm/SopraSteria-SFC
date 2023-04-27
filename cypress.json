@@ -2,12 +2,12 @@
   "env": {
     "userPassword": "Password00!",
     "adminUser": "admin",
-    "editParentUser": "EditParent",
-    "readOnlyParentUser": "ReadOnlyParent",
+    "editParentUser": "editparent",
+    "readOnlyParentUser": "readonlyparent",
     "editSubUser": "EditSub",
     "readOnlySubUser": "ReadOnlySub",
     "editStandAloneUser": "EditStandAlone",
-    "readOnlyStandAlonUser": "ReadOnlyStandAlone",
+    "readOnlyStandAloneUser": "ReadOnlyStandAlone",
     "apiUrl": "http://localhost:8080/"
   },
   "baseUrl": "http://localhost:8080",
