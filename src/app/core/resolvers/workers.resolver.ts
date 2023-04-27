@@ -66,6 +66,7 @@ export class WorkersResolver implements Resolve<any> {
       .pipe(
         map(([totalResponse, paginatedResponse]) => {
           totalResponse.workers.forEach((worker) => {
+            console.log(worker.created);
             trainingCounts.totalTraining += worker.trainingCount;
             trainingCounts.totalRecords += worker.trainingCount + worker.qualificationCount;
             trainingCounts.totalExpiredTraining += worker.expiredTrainingCount;
@@ -82,10 +83,9 @@ export class WorkersResolver implements Resolve<any> {
 
               tAndQsLastUpdated =
                 (!tAndQsLastUpdated && mostRecent) || mostRecent > tAndQsLastUpdated ? mostRecent : tAndQsLastUpdated;
-
-              const { created } = worker;
-              workerCreatedDate = this.getWorkerUpdatedDate(created);
             }
+            const { created } = worker;
+            workerCreatedDate = this.getWorkerUpdatedDate(created);
           });
           return {
             ...paginatedResponse,
