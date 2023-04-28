@@ -31,6 +31,7 @@ import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
+import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 
@@ -153,6 +154,11 @@ const routes: Routes = [
         path: 'asc-wds-certificate',
         component: AscWdsCertificateComponent,
         data: { title: 'Certificate' },
+      },
+      {
+        path: 'staff-basic-records',
+        component: StaffBasicRecord,
+        data: { title: 'Staff Basic Records' },
       },
       {
         path: 'bulk-upload',
