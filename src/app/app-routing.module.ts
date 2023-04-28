@@ -158,6 +158,9 @@ const routes: Routes = [
       {
         path: 'staff-basic-records',
         component: StaffBasicRecord,
+        resolve: {
+          workers: WorkersResolver,
+        },
         data: { title: 'Staff Basic Records' },
       },
       {
