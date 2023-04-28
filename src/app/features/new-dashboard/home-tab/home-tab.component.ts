@@ -38,6 +38,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public canRunLocalAuthorityReport: boolean;
   public canBulkUpload: boolean;
   public canEditEstablishment: boolean;
+  public canViewListOfWorkers: boolean;
   public trainingCounts: TrainingCounts;
   public user: UserDetails;
   public workplaceSummaryMessage: string;
@@ -94,7 +95,8 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
     // this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
-    // this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
+    this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
+
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
