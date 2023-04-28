@@ -115,11 +115,11 @@
         <dt class="govuk-summary-list__key">Employer type</dt>
         <dd class="govuk-summary-list__value">
           <app-summary-record-value>
-            <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
+            <ng-container *ngIf="!(workplace.employerType?.other || typeOfEmployer); else employertype">
               -
             </ng-container>
             <ng-template #employertype>
-              {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
+              {{ workplace.employerType?.other ? workplace.employerType.other : typeOfEmployer }}
             </ng-template>
           </app-summary-record-value>
         </dd>

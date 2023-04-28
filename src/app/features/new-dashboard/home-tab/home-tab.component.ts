@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
@@ -14,6 +15,7 @@ import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-pa
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { Subscription } from 'rxjs';
 import { isAdminRole } from 'server/utils/adminUtils';
+import { Worker } from '@core/model/worker.model';
 
 @Component({
   selector: 'app-new-home-tab',
@@ -37,8 +39,10 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public canBulkUpload: boolean;
   public canEditEstablishment: boolean;
   public canViewListOfWorkers: boolean;
+  public trainingCounts: TrainingCounts;
   public user: UserDetails;
   public workplaceSummaryMessage: string;
+  public workerCreatedDate: Date;
   public workerCount: number;
 
   constructor(
@@ -51,7 +55,10 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.workerCount = this.route.snapshot.data.workers?.workerCount;
+    const { workerCreatedDate, workerCount = 0, trainingCounts } = this.route.snapshot.data.workers;
+    this.workerCreatedDate = workerCreatedDate;
+    this.workerCount = workerCount;
+    this.trainingCounts = trainingCounts;
 
     this.user = this.userService.loggedInUser;
     this.setPermissionLinks();
