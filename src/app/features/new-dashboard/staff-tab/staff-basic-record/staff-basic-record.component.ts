@@ -8,11 +8,11 @@ import { Worker } from '@core/model/worker.model';
   templateUrl: './staff-basic-record.component.html',
 })
 export class StaffBasicRecord implements OnInit, OnDestroy {
-  public workers: Worker;
+  public workers: Worker[];
   public workplace: Establishment;
 
   public workerCount: number;
-  public workerCompleted: boolean;
+  public workerNotCompleted: Worker[];
 
   constructor(
     private router: Router,
@@ -26,7 +26,13 @@ export class StaffBasicRecord implements OnInit, OnDestroy {
     this.workers = workers;
 
     this.workerCount = workerCount;
-    this.workerCompleted = this.workers.completed;
+
+    this.getWorkersCompleted();
+  }
+
+  getWorkersCompleted() {
+    this.workerNotCompleted = this.workers.filter((worker) => worker.completed === false);
+    return this.workerNotCompleted;
   }
 
   public returnToHome(): void {

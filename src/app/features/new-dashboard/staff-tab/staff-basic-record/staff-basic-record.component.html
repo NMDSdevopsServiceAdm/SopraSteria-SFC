@@ -8,9 +8,9 @@
 
 <div data-testid="staff-records">
   <app-staff-summary
-    *ngIf="workers"
+    *ngIf="workerNotCompleted"
     [workplace]="workplace"
-    [workers]="workers"
+    [workers]="workerNotCompleted"
     [workerCount]="workerCount"
   ></app-staff-summary>
 </div>
