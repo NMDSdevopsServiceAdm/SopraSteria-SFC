@@ -756,7 +756,7 @@ class Training extends EntityValidator {
         id: {
           [Op.in]: workerIds,
         },
-        '$mainJob.MandatoryTraining.workerTrainingCategories.workerTraining.Title$': null,
+        '$mainJob.MandatoryTraining.workerTrainingCategories.workerTraining.UID$': null,
       },
       include: [
         {
