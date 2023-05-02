@@ -12,6 +12,7 @@ enum Path {
   CREATE_ACCOUNT = '/workplace/:workplaceUid/user/create',
   TRAINING_AND_QUALIFICATIONS_RECORD = '/workplace/:workplaceUid/training-and-qualifications-record/:workerUid/training',
   MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
+  STAFF_RECORDS_MANDATORY = '/staff-basic-records',
 }
 
 export const workplaceTabJourney: JourneyRoute = {
@@ -48,6 +49,14 @@ export const staffRecordsTabJourney: JourneyRoute = {
           },
         },
       ],
+    },
+  ],
+};
+export const staffRecordsWithMandatoryDetails: JourneyRoute = {
+  children: [
+    {
+      title: 'Records with only mandatory data added',
+      path: Path.STAFF_RECORDS_MANDATORY,
     },
   ],
 };
