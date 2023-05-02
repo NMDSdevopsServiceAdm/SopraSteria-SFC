@@ -10,7 +10,6 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
   templateUrl: './staff-basic-record.component.html',
 })
 export class StaffBasicRecord implements OnInit, OnDestroy {
-  public workers: Worker[];
   public workplace: Establishment;
 
   public workerCount: number;
@@ -20,17 +19,15 @@ export class StaffBasicRecord implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.workplace = this.route.snapshot.data.primaryWorkplace;
-    const { workers, workerCount = 0 } = this.route.snapshot.data.workers;
-    this.workers = workers;
+    const { workersNotCompleted, workerCount } = this.route.snapshot.data.workers;
+    this.workerCount = workerCount;
 
-    this.getWorkersCompleted();
-
+    this.workerNotCompleted = this.getWorkersNotCompleted(workersNotCompleted);
     this.breadcrumbService.show(JourneyType.STAFF_RECORDS_MANDATORY);
   }
 
-  getWorkersCompleted() {
-    this.workerNotCompleted = this.workers.filter((worker) => worker.completed === false);
-    return this.workerNotCompleted;
+  getWorkersNotCompleted(workersNotCompleted: any) {
+    return workersNotCompleted.map((worker: any) => worker);
   }
 
   public returnToHome(): void {
