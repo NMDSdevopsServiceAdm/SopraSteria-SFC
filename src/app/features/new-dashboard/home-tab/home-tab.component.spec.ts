@@ -446,7 +446,7 @@ describe('NewHomeTabComponent', () => {
       const { getByText } = await setup();
 
       const text = getByText(
-        'There are 9 workplaces providing the same main service as you in your local authority area.',
+        'There are 9 workplaces providing Day care and day services in FAKE TOWN.',
       );
 
       expect(text).toBeTruthy();
