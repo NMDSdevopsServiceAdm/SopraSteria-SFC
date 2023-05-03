@@ -87,6 +87,9 @@ export class SummarySectionComponent implements OnInit {
       this.sections[1].message = 'Staff records added does not match staff total';
     } else if (dayjs() >= afterWorkplaceCreated && this.workplace.numberOfStaff > 10 && dayjs() >= afterWorkerCreated) {
       this.sections[1].message = 'No staff records added in the last 12 months';
+    } else if (dayjs() >= afterWorkplaceCreated && this.workplace.numberOfStaff > 10) {
+      this.sections[1].message = 'Some records only have mandatory data added';
+      this.sections[1].route = ['/staff-basic-records'];
     }
   }
 

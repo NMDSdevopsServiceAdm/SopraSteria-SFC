@@ -1,0 +1,22 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Staff records</span>
+
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Records with only mandatory data added</h1>
+  </div>
+</div>
+
+<div data-testid="staff-records">
+  <app-staff-summary
+    *ngIf="workerNotCompleted"
+    [workplace]="workplace"
+    [workers]="workerNotCompleted"
+    [workerCount]="workerCount"
+  ></app-staff-summary>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <button type="button" class="govuk-button govuk-!-margin-top-4" (click)="returnToHome()">Return to home</button>
+  </div>
+</div>
