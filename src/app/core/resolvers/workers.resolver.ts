@@ -29,6 +29,7 @@ export class WorkersResolver implements Resolve<any> {
     getWorkerCreatedDate.push(created);
     const workerCreatedDate = getWorkerCreatedDate.map((worker: any) => new Date(worker).getTime());
     const WorkerLatestCreatedDate = new Date(Math.max(...workerCreatedDate));
+
     return WorkerLatestCreatedDate;
   }
 
@@ -50,7 +51,6 @@ export class WorkersResolver implements Resolve<any> {
     let tAndQsLastUpdated;
 
     let workerCreatedDate;
-    let workersNotCompleted = [];
 
     const paginationParams = route.data.workerPagination ? { pageIndex: 0, itemsPerPage: 15 } : {};
 
@@ -85,17 +85,12 @@ export class WorkersResolver implements Resolve<any> {
             }
             const { created } = worker;
             workerCreatedDate = this.getWorkerUpdatedDate(created);
-
-            if (!worker.completed) {
-              workersNotCompleted.push(worker);
-            }
           });
           return {
             ...paginatedResponse,
             trainingCounts,
             tAndQsLastUpdated,
             workerCreatedDate,
-            workersNotCompleted,
           };
         }),
         catchError(() => {
