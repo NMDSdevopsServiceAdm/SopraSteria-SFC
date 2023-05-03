@@ -17,10 +17,10 @@
               (click)="navigateToTab($event, 'benchmarks')"
               class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
               href="#"
-              >See how you compare with other workplaces</a
+              >See how you compare against other workplaces</a
             >
             <p class="govuk-!-margin-top-5">
-              There are {{ meta?.workplaces | number }} workplaces providing {{ workplace.mainService.name }} in {{ workplace.town }}.
+              {{ benchmarksMessage }}
             </p></app-card
           >
         </div>
