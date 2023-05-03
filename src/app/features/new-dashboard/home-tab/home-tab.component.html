@@ -20,8 +20,7 @@
               >See how you compare with other workplaces</a
             >
             <p class="govuk-!-margin-top-5">
-              There are {{ meta?.workplaces | number }} workplaces providing the same main service as you in your local
-              authority area.
+              There are {{ meta?.workplaces | number }} workplaces providing the {{ workplace.mainService.name }} in {{ workplace.town }}.
             </p></app-card
           >
         </div>
