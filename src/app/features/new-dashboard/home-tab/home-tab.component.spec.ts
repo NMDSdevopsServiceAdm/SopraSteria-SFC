@@ -446,7 +446,7 @@ describe('NewHomeTabComponent', () => {
       it('should render the number of workplaces to compare with', async () => {
         const { getByText } = await setup();
 
-        const text = getByText('There are 9 workplaces providing adult social care in FAKE TOWN.');
+        const text = getByText('There are 9 workplaces providing adult social care in Fake Town.');
 
         expect(text).toBeTruthy();
       });
