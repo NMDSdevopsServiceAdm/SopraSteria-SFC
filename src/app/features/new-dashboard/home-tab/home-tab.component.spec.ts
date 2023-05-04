@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
@@ -21,7 +22,6 @@ import { NewArticleListComponent } from '@features/articles/new-article-list/new
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-
 import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
@@ -31,7 +31,7 @@ import { SummarySectionComponent } from './summary-section/summary-section.compo
 
 describe('NewHomeTabComponent', () => {
   const setup = async (checkCqcDetails = false, establishment = Establishment) => {
-    const { fixture, getByText, queryByText, getByTestId } = await render(NewHomeTabComponent, {
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewHomeTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         WindowRef,
@@ -55,7 +55,7 @@ describe('NewHomeTabComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                workers: { workers: [] },
+                workers: { workers: [], trainingCounts: {} as TrainingCounts },
               },
             },
             queryParams: of({ view: null }),
@@ -92,6 +92,7 @@ describe('NewHomeTabComponent', () => {
       getByText,
       queryByText,
       getByTestId,
+      queryByTestId,
       alertServiceSpy,
       parentsRequestService,
       tabsServiceSpy,
@@ -431,24 +432,24 @@ describe('NewHomeTabComponent', () => {
   });
 
   describe('cards', () => {
-    it('should show a card with a link that takes you to the benchmarks tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('Benchmarks', () => {
+      it('should show a card with a link that takes you to the benchmarks tab', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
 
-      const benchmarksLink = getByText('See how you compare with other workplaces');
-      fireEvent.click(benchmarksLink);
+        const benchmarksLink = getByText('See how you compare against other workplaces');
+        fireEvent.click(benchmarksLink);
 
-      expect(benchmarksLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
-    });
+        expect(benchmarksLink).toBeTruthy();
+        expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+      });
 
-    it('should render the number of workplaces to compare with', async () => {
-      const { getByText } = await setup();
+      it('should render the number of workplaces to compare with', async () => {
+        const { getByText } = await setup();
 
-      const text = getByText(
-        'There are 9 workplaces providing the same main service as you in your local authority area.',
-      );
+        const text = getByText('There are 9 workplaces providing adult social care in FAKE TOWN.');
 
-      expect(text).toBeTruthy();
+        expect(text).toBeTruthy();
+      });
     });
 
     it('should show a card with a link that takes you to the benefits bundle page', async () => {
@@ -460,19 +461,34 @@ describe('NewHomeTabComponent', () => {
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
     });
   });
-
   describe('summary', () => {
     it('should show summary box', async () => {
-      const { getByTestId } = await setup();
+      const { component, fixture, getByTestId } = await setup();
+
+      component.canViewListOfWorkers = true;
+      fixture.detectChanges();
 
       const summaryBox = getByTestId('summaryBox');
 
       expect(summaryBox).toBeTruthy();
     });
 
+    it('should not show the summary section if the user does not have the correct permissions', async () => {
+      const { component, fixture, queryByTestId } = await setup();
+
+      component.canViewListOfWorkers = false;
+      fixture.detectChanges();
+
+      const summaryBox = queryByTestId('summaryBox');
+      expect(summaryBox).toBeFalsy();
+    });
+
     describe('workplace summary section', () => {
       it('should take you to the workplace tab when clicking the workplace link', async () => {
-        const { getByText, tabsServiceSpy } = await setup();
+        const { component, fixture, getByText, tabsServiceSpy } = await setup();
+
+        component.canViewListOfWorkers = true;
+        fixture.detectChanges();
 
         const workplaceLink = getByText('Workplace');
         fireEvent.click(workplaceLink);
@@ -482,7 +498,10 @@ describe('NewHomeTabComponent', () => {
 
       it('should show a warning link which should navigate to the workplace tab', async () => {
         const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-        const { getByText, tabsServiceSpy } = await setup(true, establishment);
+        const { component, fixture, getByText, tabsServiceSpy } = await setup(true, establishment);
+
+        component.canViewListOfWorkers = true;
+        fixture.detectChanges();
 
         const link = getByText('Add more details to your workplace');
         fireEvent.click(link);
@@ -494,7 +513,10 @@ describe('NewHomeTabComponent', () => {
 
     describe('staff records summary section', () => {
       it('should show staff records link and take you to the staff records tab', async () => {
-        const { getByText, tabsServiceSpy } = await setup();
+        const { component, fixture, getByText, tabsServiceSpy } = await setup();
+
+        component.canViewListOfWorkers = true;
+        fixture.detectChanges();
 
         const staffRecordsLink = getByText('Staff records');
         fireEvent.click(staffRecordsLink);
@@ -505,7 +527,10 @@ describe('NewHomeTabComponent', () => {
 
     describe('training and qualifications summary section', () => {
       it('should show training and qualifications link that take you the training and qualifications tab', async () => {
-        const { getByText, tabsServiceSpy } = await setup();
+        const { component, fixture, getByText, tabsServiceSpy } = await setup();
+
+        component.canViewListOfWorkers = true;
+        fixture.detectChanges();
 
         const trainingAndQualificationsLink = getByText('Training and qualifications');
         fireEvent.click(trainingAndQualificationsLink);
