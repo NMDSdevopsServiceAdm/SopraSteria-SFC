@@ -29,7 +29,7 @@ export class StaffBasicRecord implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.workplace = this.route.snapshot.data.primaryWorkplace;
-    const { workersNotCompleted, workerCount } = this.route.snapshot.data.workers;
+    const { workersNotCompleted } = this.route.snapshot.data.workers;
     this.workerCount = workersNotCompleted?.length;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
