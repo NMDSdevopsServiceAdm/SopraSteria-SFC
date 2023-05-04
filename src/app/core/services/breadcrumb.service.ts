@@ -34,7 +34,6 @@ import {
   brenchmarksTabJourney,
   myWorkplaceJourney,
   staffRecordsTabJourney,
-  staffRecordsWithMandatoryDetails,
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
 } from '@core/breadcrumb/journey.workplaces';
@@ -279,10 +278,7 @@ export class BreadcrumbService {
         routes = brenchmarksTabJourney;
         break;
       }
-      case JourneyType.STAFF_RECORDS_MANDATORY: {
-        routes = staffRecordsWithMandatoryDetails;
-        break;
-      }
+
       default: {
         routes = null;
       }
