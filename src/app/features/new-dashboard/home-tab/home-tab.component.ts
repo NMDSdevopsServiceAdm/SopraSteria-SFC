@@ -25,6 +25,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
   public canViewWorkplaces: boolean;
+  public canViewReports: boolean;
   public canViewChangeDataOwner: boolean;
   public canViewDataPermissionsLink: boolean;
   public canLinkToParent: boolean;
@@ -101,6 +102,10 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
       this.workplace.parentUid != null &&
       this.workplace.dataOwner === 'Workplace' &&
       this.user.role != 'Read';
+
+    this.canViewReports =
+      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
+      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
 
     // if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
     //   this.isOwnershipRequested = true;

@@ -1,6 +1,6 @@
 <div class="govuk-tabs" data-module="tabs"></div>
 
-<ul class="govuk-tabs__list" role="tablist" #tablist>
+<ul class="govuk-tabs__list" role="tablist" #tablist data-cy="tab-list">
   <ng-container *ngFor="let tab of tabs; let i = index">
     <li class="govuk-tabs__list-item" [class.govuk-tabs__list-item--selected]="tab.active">
       <a

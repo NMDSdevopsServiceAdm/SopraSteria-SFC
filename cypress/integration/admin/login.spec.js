@@ -17,18 +17,18 @@ describe('As an admin I want to login', () => {
   });
 
   it('should login to admin section when given admin username and password', () => {
-    onLoginPage.submitFormWithUsernameAndPassword(Cypress.env('adminUser'), Cypress.env('adminPassword'));
+    onLoginPage.submitFormWithUsernameAndPassword(Cypress.env('adminUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="admin-heading"]').should('contain', 'Admin');
   });
 
   it('should show an error summary box and error on username input when username is not provided', () => {
-    onLoginPage.submitFormWithNoUsername(Cypress.env('adminPassword'));
+    onLoginPage.submitFormWithNoUsername(Cypress.env('userPassword'));
     onLoginPage.showsErrorSummary('Enter your username');
     cy.get('[data-cy="username-error"]').should('contain', 'Enter your username');
   });
 
   it('should move focus to username input when no username is provided and the error in the summary box is clicked', () => {
-    onLoginPage.submitFormWithNoUsername(Cypress.env('adminPassword'));
+    onLoginPage.submitFormWithNoUsername(Cypress.env('userPassword'));
     onLoginPage.clickErrorLinkSetsFocus('Enter your username');
     cy.get('[data-cy="username"]').should('be.focused');
   });
@@ -53,7 +53,7 @@ describe('As an admin I want to login', () => {
   });
 
   it('should show an error summary box and errors if and invalid username is provided', () => {
-    onLoginPage.submitFormWithUsernameAndPassword('invalidUsername', Cypress.env('adminPassword'));
+    onLoginPage.submitFormWithUsernameAndPassword('invalidUsername', Cypress.env('userPassword'));
     onLoginPage.showsErrorSummary('Your username or your password is incorrect');
   });
 
