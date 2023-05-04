@@ -16,7 +16,7 @@ import { Worker } from '@core/model/worker.model';
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
-  @Input() workerCreatedDate;
+  @Input() workersCreatedDate;
   @Input() trainingCounts: TrainingCounts;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
   @Input() workersNotCompleted: Worker[];
@@ -44,6 +44,7 @@ export class SummarySectionComponent implements OnInit {
     this.getStaffCreatedDate();
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
+    console.log(this.workersCreatedDate);
   }
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
@@ -129,20 +130,14 @@ export class SummarySectionComponent implements OnInit {
   }
 
   getStaffCreatedDate() {
-    const workerCreationDates = this.getWorkerCreatedDate();
-    const filterDate = workerCreationDates.filter(
-      (workerDate: any) => dayjs() > dayjs(new Date(workerDate)).add(1, 'M'),
+    const filterDate = this.workersNotCompleted.filter(
+      (workerDate: any) => dayjs() > dayjs(new Date(workerDate.created)).add(1, 'M'),
     );
-
     return filterDate?.length > 0;
   }
 
-  getWorkerCreatedDate() {
-    return this.workerCreatedDate.map((worker: any) => new Date(worker.created).getTime());
-  }
-
   getWorkerLatestCreatedDate() {
-    const workerLatestCreatedDate = new Date(Math.max(...this.getWorkerCreatedDate()));
+    const workerLatestCreatedDate = new Date(Math.max(...this.workersCreatedDate));
     const afterWorkerCreated = dayjs(workerLatestCreatedDate).add(12, 'M');
     return afterWorkerCreated;
   }

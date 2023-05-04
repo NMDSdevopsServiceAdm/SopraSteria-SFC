@@ -42,7 +42,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public trainingCounts: TrainingCounts;
   public user: UserDetails;
   public workplaceSummaryMessage: string;
-  public workerCreatedDate: Date;
+  public workersCreatedDate;
   public workerCount: number;
   public workersNotCompleted: Worker[];
 
@@ -57,12 +57,12 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const {
-      workerCreatedDate,
+      workersCreatedDate,
       workerCount = 0,
       trainingCounts,
       workersNotCompleted,
     } = this.route.snapshot.data.workers;
-    this.workerCreatedDate = workerCreatedDate;
+    this.workersCreatedDate = workersCreatedDate;
     this.workerCount = workerCount;
     this.trainingCounts = trainingCounts;
     this.workersNotCompleted = workersNotCompleted;
