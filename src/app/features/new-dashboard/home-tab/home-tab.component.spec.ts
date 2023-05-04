@@ -139,10 +139,19 @@ describe('NewHomeTabComponent', () => {
 
     describe('Does your data meet WDF requirements link', () => {
       it('should render the link with the correct href', async () => {
-        const { getByText } = await setup();
+        const { getByText, component, fixture } = await setup();
+        component.canViewReports = true;
+        fixture.detectChanges();
         const link = getByText('Does your data meet WDF requirements?');
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual('/wdf');
+      });
+
+      it('should not render the link with the correct href when view reports is false', async () => {
+        const { queryByText, component, fixture } = await setup();
+        component.canViewReports = false;
+        fixture.detectChanges();
+        expect(queryByText('Does your data meet WDF requirements?')).toBeFalsy();
       });
     });
 
