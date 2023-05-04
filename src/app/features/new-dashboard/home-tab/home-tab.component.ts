@@ -26,6 +26,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   @Input() meta: Meta;
 
   private subscriptions: Subscription = new Subscription();
+  public benchmarksMessage: string;
   public canViewWorkplaces: boolean;
   public canViewChangeDataOwner: boolean;
   public canViewDataPermissionsLink: boolean;
@@ -79,6 +80,10 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
         this.isLocalAuthority &&
         this.permissionsService.can(this.workplace.uid, 'canRunLocalAuthorityReport');
     }
+
+    const benchmarksCareType = 'adult social care';
+
+    this.benchmarksMessage = `There are ${this.meta?.workplaces ? this.meta.workplaces : 0} workplaces providing ${benchmarksCareType} in ${this.workplace.town}.`
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {
