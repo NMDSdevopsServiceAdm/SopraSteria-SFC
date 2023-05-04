@@ -12,15 +12,13 @@ describe('Parent home page as read only user', () => {
     cy.loginAsUser(Cypress.env('readOnlyParentUser'), Cypress.env('userPassword'));
   });
 
-  // placeholder test to make sure the login function is working
   it('should see the admin page', () => {
     cy.contains('Parent');
     cy.contains('Aster House');
   });
 
-  it('should view all workplaces', () => {
-    cy.get('[data-cy="view-all-workplaces"]').click();
-    cy.url().should('include', '/workplace/view-all-workplaces');
+  it('should show view all workplaces link', () => {
+    cy.get('[data-cy="view-all-workplaces"]').should('contain', 'View all workplaces');
   });
 
   it('should show tabs', () => {

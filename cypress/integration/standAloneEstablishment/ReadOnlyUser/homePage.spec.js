@@ -12,7 +12,6 @@ describe('Standalone home page as read only user', () => {
     cy.loginAsUser(Cypress.env('readOnlyStandAlonUser'), Cypress.env('userPassword'));
   });
 
-  // placeholder test to make sure the login function is working
   it('should see the admin page', () => {
     cy.contains('df');
   });

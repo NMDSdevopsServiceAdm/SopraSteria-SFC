@@ -12,7 +12,6 @@ describe('Sub home page as read only user', () => {
     cy.loginAsUser(Cypress.env('readOnlySubUser'), Cypress.env('userPassword'));
   });
 
-  // placeholder test to make sure the login function is working
   it('should see the admin page', () => {
     cy.contains('Buckden Court');
     cy.contains('Training');

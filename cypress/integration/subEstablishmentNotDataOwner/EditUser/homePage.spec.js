@@ -9,12 +9,12 @@ describe('Sub home page as edit user', () => {
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(Cypress.env('editSubUserNonDataOwner'), Cypress.env('userPassword'));
   });
 
   it('should see the admin page', () => {
-    cy.contains('Buckden Court');
-    cy.contains('Training');
+    cy.contains('Aster House');
+    cy.contains('Workplace test 1');
   });
 
   it('should show all tabs', () => {
@@ -25,15 +25,15 @@ describe('Sub home page as edit user', () => {
     cy.get('[data-cy="main-home-links"]').should('contain', 'Check your WDF data');
   });
 
-  it('should show bulk upload link', () => {
-    cy.get('[data-cy="main-home-links"]').should('contain', 'Bulk upload your data');
+  it('should not show bulk upload link', () => {
+    cy.get('[data-cy="main-home-links"]').should('not.contain', 'Bulk upload your data');
   });
 
   it('should show remove link to parent organisation', () => {
     cy.get('[data-cy="home-other-links"]').should('contain', 'Remove link to my parent organisation');
   });
 
-  it('should show set data permissions', () => {
-    cy.get('[data-cy="home-other-links"]').should('contain', 'Set data permissions');
+  it('should not show set data permissions', () => {
+    cy.get('[data-cy="home-other-links"]').should('not.contain', 'Set data permissions');
   });
 });

@@ -12,7 +12,6 @@ describe('Standalone home page as edit user', () => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
   });
 
-  // placeholder test to make sure the login function is working
   it('should see the admin page', () => {
     cy.contains('df');
   });
