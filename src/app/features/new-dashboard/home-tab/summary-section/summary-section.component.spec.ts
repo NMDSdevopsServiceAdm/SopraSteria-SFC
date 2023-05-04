@@ -287,6 +287,39 @@ describe('Summary section', () => {
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
     });
+
+    it('should show "Some records only have mandatory data added" message when staff records are not completed and  worker added date is less than 1 month ', async () => {
+      const date = new Date();
+
+      const workerCreatedDate = [
+        {
+          ...workerBuilder(),
+          created: '2023-03-31',
+        },
+      ] as Worker[];
+      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeTruthy();
+    });
+
+    it('should not show "Some records only have mandatory data added" message when staff records are completed and  worker added date is less than 1 month', async () => {
+      const date = new Date();
+
+      const workerCreatedDate = [
+        {
+          ...workerBuilder(),
+          completed: true,
+          created: '2023-05-02',
+        },
+      ] as Worker[];
+      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
+    });
   });
 
   describe('training and qualifications summary section', () => {

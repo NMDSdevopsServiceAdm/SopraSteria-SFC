@@ -51,15 +51,11 @@ export class StaffBasicRecord implements OnInit, OnDestroy {
   public lastUpdated(timestamp: string): string {
     const lastUpdated: dayjs.Dayjs = dayjs(timestamp);
     const isToday: boolean = dayjs().isSame(lastUpdated, 'day');
-    return isToday ? 'Today' : lastUpdated.format('D MMMM YYYY');
+    return isToday ? 'Today' : lastUpdated.format('D MMM YYYY');
   }
 
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
-  }
-
-  public returnToHome(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'home' });
   }
 
   ngOnDestroy(): void {}

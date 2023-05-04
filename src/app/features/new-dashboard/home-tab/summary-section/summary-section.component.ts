@@ -44,7 +44,6 @@ export class SummarySectionComponent implements OnInit {
     this.getStaffCreatedDate();
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
-    console.log(this.workersCreatedDate);
   }
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
