@@ -2,7 +2,7 @@
 /// <reference types="cypress" />
 
 // waiting for permission fix to be available on test branch
-//import { onHomePage } from '../../../support/page_objects/onHomePage';
+import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub home page as read only user', () => {
   before(() => {
@@ -19,9 +19,9 @@ describe('Sub home page as read only user', () => {
   });
 
   // waiting for permission fix to be available on test branch
-  // it('should show all tabs', () => {
-  //   onHomePage.allTabs('read');
-  // });
+  it('should show all tabs', () => {
+    onHomePage.allTabs('read');
+  });
 
   it('should show check your WDF data link', () => {
     cy.get('[data-cy="main-home-links"]').should('contain', 'Check your WDF data');
