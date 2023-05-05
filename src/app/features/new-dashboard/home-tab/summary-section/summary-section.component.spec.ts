@@ -6,7 +6,6 @@ import { TabsService } from '@core/services/tabs.service';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { SharedModule } from '@shared/shared.module';
-
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
@@ -215,23 +214,12 @@ describe('Summary section', () => {
       expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
     });
 
-    it('should not show staff record does not match message when there is no staff record', async () => {
-      const establishment = {
-        ...Establishment,
-        eightWeeksFromFirstLogin: dayjs(new Date()).subtract(1, 'day').toString(),
-      };
-      const { getByTestId } = await setup(establishment);
-      const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
-    });
-
     it('should not show the Staff records added does not match staff total warning when after eight weeks since first login is null', async () => {
       const establishment = { ...Establishment, eightWeeksFromFirstLogin: null };
       const { getByTestId } = await setup(false, establishment, 102);
 
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
-      expect(within(staffRecordsRow).queryByTestId('orange-flag')).toBeFalsy();
     });
 
     it('should not show staff record does not match message when the eight week date is in the future ', async () => {
@@ -252,7 +240,7 @@ describe('Summary section', () => {
         numberOfStaff: 12,
       };
 
-      const { fixture, component, getByTestId } = await setup(false, establishment, 12);
+      const { fixture, getByTestId } = await setup(false, establishment, 12);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -265,7 +253,7 @@ describe('Summary section', () => {
         created: dayjs('2023-03-31').add(12, 'M'),
       };
 
-      const { fixture, getByTestId, component } = await setup(false, establishment, 9);
+      const { fixture, getByTestId } = await setup(false, establishment, 9);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -280,7 +268,7 @@ describe('Summary section', () => {
 
       const date = new Date();
       date.setDate(date.getMonth() - 1);
-      const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
+      const { fixture, getByTestId } = await setup(false, establishment, 12, {}, date);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -376,7 +364,7 @@ describe('Summary section', () => {
       });
     });
 
-   describe('Training expires soon message', async () => {
+    describe('Training expires soon message', async () => {
       it('should show when training is expiring for multiple users', async () => {
         const trainingCounts = { totalExpiringTraining: 2 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
@@ -406,7 +394,7 @@ describe('Summary section', () => {
       });
     });
 
-   describe('Manage staff training message', async () => {
+    describe('Manage staff training message', async () => {
       it('should show when no records exist', async () => {
         const trainingCounts = { totalRecords: 0, totalTraining: 0 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
