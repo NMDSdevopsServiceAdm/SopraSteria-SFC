@@ -75,22 +75,32 @@
       }
     },
     {
-      "type": "node",
-      "request": "attach",
-      "name": "localhost",
-      "port": 3000
+      "name": "Debug Angular",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "ng serve",
+      "type": "chrome",
+      "request": "launch",
+      "preLaunchTask": "npm: start",
+      "url": "http://localhost:8080"
     },
     {
       "type": "node",
       "request": "attach",
-      "name": "localhost debug",
-      "port": 9229
+      "name": "Debug Node",
+      "port": 9229,
+      "processId": "${command:PickProcess}"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/server.js"
+      "program": "${workspaceFolder}/server.js",
+      "stopOnEntry": true
     },
     {
       "type": "node",
@@ -123,34 +133,20 @@
       "request": "launch",
       "name": "Mocha All",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--timeout",
-        "999999",
-        "--colors",
-        "${workspaceFolder}/test"
-      ],
+      "args": ["--timeout", "999999", "--colors", "${workspaceFolder}/test"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": [
-        "<node_internals>/**/*.js"
-      ]
+      "skipFiles": ["<node_internals>/**/*.js"]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Mocha Current File",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--timeout",
-        "999999",
-        "--colors",
-        "${file}"
-      ],
+      "args": ["--timeout", "999999", "--colors", "${file}"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": [
-        "<node_internals>/**/*.js"
-      ]
+      "skipFiles": ["<node_internals>/**/*.js"]
     }
   ]
 }
