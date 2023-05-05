@@ -5,18 +5,12 @@ const typeOfEmployerOptions = [
   { value: 'Voluntary / Charity', text: 'Voluntary, charity, not for profit' },
   { value: 'Other', text: 'Other' },
 ];
-
-export enum ReturnType {
-  Text,
-  Value,
-}
-
 export class WorkplaceUtil {
-  public static formatTypeOfEmployer(employerType: string, returnType: ReturnType = ReturnType.Text): string {
+  public static formatTypeOfEmployer(employerType: string): string {
     const typeOfEmployerObj = typeOfEmployerOptions.find(
       (typeOfEmployer) => typeOfEmployer.value.toLowerCase() === employerType.toLowerCase(),
     );
 
-    return returnType === ReturnType.Text ? typeOfEmployerObj?.text : typeOfEmployerObj?.value;
+    return typeOfEmployerObj?.text;
   }
 }

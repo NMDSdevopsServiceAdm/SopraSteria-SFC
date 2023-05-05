@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import { WindowRef } from './window.ref';
@@ -10,7 +10,7 @@ import { WindowRef } from './window.ref';
   providedIn: 'root',
 })
 export class AlertService {
-  public alert$: BehaviorSubject<Alert> = new BehaviorSubject(null);
+  private _alert$: BehaviorSubject<Alert> = new BehaviorSubject(null);
 
   constructor(private router: Router, private windowRef: WindowRef) {
     this.router.events.pipe(filter((event) => event instanceof NavigationStart)).subscribe(() => {
@@ -18,12 +18,16 @@ export class AlertService {
     });
   }
 
+  public get alert$(): Observable<Alert> {
+    return this._alert$.asObservable();
+  }
+
   addAlert(alert: Alert) {
-    this.alert$.next(alert);
+    this._alert$.next(alert);
     this.windowRef.nativeWindow.scrollTo(0, 0);
   }
 
   removeAlert() {
-    this.alert$.next(null);
+    this._alert$.next(null);
   }
 }

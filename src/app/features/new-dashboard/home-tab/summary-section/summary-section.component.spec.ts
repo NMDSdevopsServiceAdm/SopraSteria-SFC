@@ -114,6 +114,15 @@ describe('Summary section', () => {
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
+    it('should not show the staff total does not match staff records warning when after eight weeks since first login is null', async () => {
+      const establishment = { ...Establishment, eightWeeksFromFirstLogin: null };
+      const { getByTestId } = await setup(false, establishment, 102);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).queryByText('Staff total does not match staff records added')).toBeFalsy();
+      expect(within(workplaceRow).queryByTestId('orange-flag')).toBeFalsy();
+    });
+
     it('should not show the staff total does not match staff records warning when they do not match if is less than eight weeks since first login', async () => {
       const establishment = { ...Establishment, eightWeeksFromFirstLogin: dayjs(new Date()).add(1, 'day').toString() };
       const { getByTestId } = await setup(false, establishment, 102);
@@ -214,6 +223,15 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(establishment);
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
+    });
+
+    it('should not show the Staff records added does not match staff total warning when after eight weeks since first login is null', async () => {
+      const establishment = { ...Establishment, eightWeeksFromFirstLogin: null };
+      const { getByTestId } = await setup(false, establishment, 102);
+
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
+      expect(within(staffRecordsRow).queryByTestId('orange-flag')).toBeFalsy();
     });
 
     it('should not show staff record does not match message when the eight week date is in the future ', async () => {
