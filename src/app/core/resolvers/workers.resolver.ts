@@ -24,6 +24,15 @@ export class WorkersResolver implements Resolve<any> {
     }
   }
 
+  getWorkerUpdatedDate(created: any) {
+    const getWorkerCreatedDate = [];
+    getWorkerCreatedDate.push(created);
+    const workerCreatedDate = getWorkerCreatedDate.map((worker: any) => new Date(worker).getTime());
+    const WorkerLatestCreatedDate = new Date(Math.max(...workerCreatedDate));
+
+    return WorkerLatestCreatedDate;
+  }
+
   resolve(route: ActivatedRouteSnapshot): Observable<WorkersResponse | null> {
     const workplaceUid = route.paramMap.get('establishmentuid')
       ? route.paramMap.get('establishmentuid')
@@ -40,6 +49,8 @@ export class WorkersResolver implements Resolve<any> {
       staffMissingMandatoryTraining: 0,
     };
     let tAndQsLastUpdated;
+
+    let workerCreatedDate;
 
     const paginationParams = route.data.workerPagination ? { pageIndex: 0, itemsPerPage: 15 } : {};
 
@@ -72,11 +83,14 @@ export class WorkersResolver implements Resolve<any> {
               tAndQsLastUpdated =
                 (!tAndQsLastUpdated && mostRecent) || mostRecent > tAndQsLastUpdated ? mostRecent : tAndQsLastUpdated;
             }
+            const { created } = worker;
+            workerCreatedDate = this.getWorkerUpdatedDate(created);
           });
           return {
             ...paginatedResponse,
             trainingCounts,
             tAndQsLastUpdated,
+            workerCreatedDate,
           };
         }),
         catchError(() => {

@@ -32,6 +32,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public hasCapacity: boolean;
   public capacityMessages = [];
   public noVacancyAndTurnoverData: boolean;
+  public noVacancyData: boolean;
   public numberOfStaffError: boolean;
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
@@ -89,11 +90,9 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   public checkVacancyAndTurnoverData(): void {
-    this.noVacancyAndTurnoverData = !(
-      !!this.workplace.vacancies?.length ||
-      !!this.workplace.starters?.length ||
-      !!this.workplace.leavers?.length
-    );
+    const { vacancies, starters, leavers } = this.workplace;
+    this.noVacancyAndTurnoverData = !vacancies && !starters && !leavers;
+    this.noVacancyData = !vacancies && (!!leavers || !!starters);
   }
 
   private getPermissions(): void {
