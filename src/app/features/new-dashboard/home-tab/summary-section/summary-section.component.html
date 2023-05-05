@@ -24,7 +24,12 @@
               data-testid="orange-flag"
             />
           </ng-template>
-          <a (click)="onClick($event, section.fragment, section.route)" href="#"> {{ section.message }}</a>
+          <ng-container *ngIf="section.link; else noLink">
+            <a (click)="onClick($event, section.fragment, section.route)" href="#"> {{ section.message }}</a>
+          </ng-container>
+          <ng-template #noLink>
+            <span>{{ section.message }}</span>
+          </ng-template>
         </ng-container>
         <ng-template #noMessage>
           <span>Remember to check and update this data often</span>

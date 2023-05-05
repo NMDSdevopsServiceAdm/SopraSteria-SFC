@@ -91,7 +91,8 @@ const establishmentIDorUIDIsInvalid = (claim) => isEstablishmentIDNaN(claim) || 
 
 const isEstablishmentIdUID = (req) => uuidV4Regex.test(req.params.id);
 
-const isReadOnlyTryingToNotGET = (roleCheck, req, claim) => roleCheck && req.method !== 'GET' && claim.role == 'Read';
+const isReadOnlyTryingToNotGET = (roleCheck, req, claim) =>
+  roleCheck && req.method !== 'GET' && claim.role == 'Read' && req.path !== '/benchmarks/usage';
 
 const subsidaryEstablishmentClaimMismatch = (establishmentMatchesClaim, claim) =>
   !establishmentMatchesClaim && !claim.isParent;
@@ -153,7 +154,8 @@ const handleExceptions = (req, res, claim, establishmentMatchesClaim, roleCheck)
   }
 };
 
-const parentNoWriteAccess = (req) => req.method !== 'GET' && req.path.split('/')[1] !== 'ownershipChange';
+const parentNoWriteAccess = (req) =>
+  req.method !== 'GET' && req.path.split('/')[1] !== 'ownershipChange' && req.path !== '/benchmarks/usage';
 
 const noDataPermissions = (referencedEstablishment) => referencedEstablishment.dataPermissions === null;
 
@@ -383,8 +385,6 @@ const isAdminManager = (req, res, next) => {
     // var dec = getverify(token, Token_Secret);
 
     jwt.verify(token, Token_Secret, function (err, claim) {
-      console.log('****** is Admin Manager ******');
-      console.log(claim);
       if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send('Invalid Token');
       } else {
@@ -472,3 +472,5 @@ exports.isAdminManager = isAdminManager;
 exports.isAuthorisedRegistrationApproval = isAuthorisedRegistrationApproval;
 exports.isAdminOrOnDemandReporting = isAdminOrOnDemandReporting;
 exports.authorisedEstablishmentPermissionCheck = authorisedEstablishmentPermissionCheck;
+exports.isReadOnlyTryingToNotGET = isReadOnlyTryingToNotGET;
+exports.parentNoWriteAccess = parentNoWriteAccess;

@@ -437,24 +437,24 @@ describe('NewHomeTabComponent', () => {
   });
 
   describe('cards', () => {
-    it('should show a card with a link that takes you to the benchmarks tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('Benchmarks', () => {
+      it('should show a card with a link that takes you to the benchmarks tab', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
 
-      const benchmarksLink = getByText('See how you compare with other workplaces');
-      fireEvent.click(benchmarksLink);
+        const benchmarksLink = getByText('See how you compare against other workplaces');
+        fireEvent.click(benchmarksLink);
 
-      expect(benchmarksLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
-    });
+        expect(benchmarksLink).toBeTruthy();
+        expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+      });
 
-    it('should render the number of workplaces to compare with', async () => {
-      const { getByText } = await setup();
+      it('should render the number of workplaces to compare with', async () => {
+        const { getByText } = await setup();
 
-      const text = getByText(
-        'There are 9 workplaces providing the same main service as you in your local authority area.',
-      );
+        const text = getByText('There are 9 workplaces providing adult social care in Fake Town.');
 
-      expect(text).toBeTruthy();
+        expect(text).toBeTruthy();
+      });
     });
 
     it('should show a card with a link that takes you to the benefits bundle page', async () => {
@@ -466,7 +466,6 @@ describe('NewHomeTabComponent', () => {
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
     });
   });
-
   describe('summary', () => {
     it('should show summary box', async () => {
       const { component, fixture, getByTestId } = await setup();

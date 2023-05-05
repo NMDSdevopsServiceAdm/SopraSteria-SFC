@@ -22,14 +22,15 @@ export class SummarySectionComponent implements OnInit {
   @Input() workersNotCompleted: Worker[];
 
   public sections = [
-    { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false },
-    { linkText: 'Staff records', fragment: 'staff-records', message: '', route: undefined, redFlag: false },
+    { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
+    { linkText: 'Staff records', fragment: 'staff-records', message: '', route: undefined, redFlag: false, link: true },
     {
       linkText: 'Training and qualifications',
       fragment: 'training-and-qualifications',
       message: '',
       route: undefined,
       redFlag: false,
+      link: true
     },
   ];
 
@@ -75,7 +76,10 @@ export class SummarySectionComponent implements OnInit {
   }
 
   private afterEightWeeksFromFirstLogin(): boolean {
-    return new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
+    const eightWeeksFromFirstLogin =
+      this.workplace.eightWeeksFromFirstLogin && new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
+
+    return eightWeeksFromFirstLogin;
   }
 
   public getStaffSummaryMessage(): void {
@@ -125,6 +129,9 @@ export class SummarySectionComponent implements OnInit {
         'training-and-qualifications',
         'expires-soon-training',
       ];
+    } else if (this.trainingCounts.totalRecords === 0 && this.trainingCounts.totalTraining == 0) {
+      this.sections[2].link = false;
+      this.sections[2].message = 'Manage your staff training and qualifications';
     }
   }
 
