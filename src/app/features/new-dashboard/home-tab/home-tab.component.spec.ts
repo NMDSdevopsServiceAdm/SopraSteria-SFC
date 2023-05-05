@@ -55,7 +55,12 @@ describe('NewHomeTabComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                workers: { workers: [], trainingCounts: {} as TrainingCounts },
+                workers: {
+                  workersCreatedDate: [],
+                  workerCount: 0,
+                  trainingCounts: {} as TrainingCounts,
+                  workersNotCompleted: [],
+                },
               },
             },
             queryParams: of({ view: null }),
