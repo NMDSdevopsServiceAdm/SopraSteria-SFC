@@ -1,7 +1,10 @@
 <app-new-dashboard-header tab="home"></app-new-dashboard-header>
 <app-summary-section
+  *ngIf="canViewListOfWorkers"
   [workplace]="workplace"
   [workerCount]="workerCount"
+  [workerCreatedDate]="workerCreatedDate"
+  [trainingCounts]="trainingCounts"
   [(navigateToTab)]="navigateToTab"
 ></app-summary-section>
 <div class="govuk-width-container govuk-!-margin-top-4">
@@ -14,11 +17,10 @@
               (click)="navigateToTab($event, 'benchmarks')"
               class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
               href="#"
-              >See how you compare with other workplaces</a
+              >See how you compare against other workplaces</a
             >
             <p class="govuk-!-margin-top-5">
-              There are {{ meta?.workplaces | number }} workplaces providing the same main service as you in your local
-              authority area.
+              {{ benchmarksMessage }}
             </p></app-card
           >
         </div>
@@ -40,7 +42,7 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <app-new-article-list data-testid="article-list"></app-new-article-list>
-      <div class="govuk-!-margin-top-7">
+      <div class="govuk-!-margin-top-7" data-cy="home-other-links">
         <h3 class="govuk-heading-s">Other links</h3>
         <ul class="govuk-list govuk-!-margin-bottom-6">
           <app-link-with-arrow>
@@ -54,7 +56,7 @@
             <a class="govuk-link" [routerLink]="['/bulk-upload']">Bulk upload your data</a>
           </app-link-with-arrow>
 
-          <app-link-with-arrow>
+          <app-link-with-arrow *ngIf="canViewReports">
             <a class="govuk-link" [routerLink]="['/wdf']">Does your data meet WDF requirements?</a>
           </app-link-with-arrow>
 

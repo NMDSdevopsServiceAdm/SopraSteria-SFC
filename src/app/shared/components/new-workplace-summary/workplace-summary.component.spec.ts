@@ -899,6 +899,44 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
       });
+
+      it('should show warning message if there is no vacancy value but there is a starters value', async () => {
+        const { component, fixture, getByText, getByTestId } = await setup();
+
+        component.workplace.vacancies = null;
+        component.workplace.leavers = null;
+        component.workplace.starters = `Don't know`;
+        component.canEditEstablishment = true;
+        component.checkVacancyAndTurnoverData();
+        fixture.detectChanges();
+
+        const vacanciesRow = getByTestId('vacancies');
+
+        expect(getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+        expect(vacanciesRow.getAttribute('class')).toContain('govuk-summary-list__warning');
+        expect(within(vacanciesRow).getByTestId('vacancies-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
+
+      it('should show warning message if there is no vacancy value but there is a leavers value', async () => {
+        const { component, fixture, getByText, getByTestId } = await setup();
+
+        component.workplace.vacancies = null;
+        component.workplace.leavers = 'None';
+        component.workplace.starters = null;
+        component.canEditEstablishment = true;
+        component.checkVacancyAndTurnoverData();
+        fixture.detectChanges();
+
+        const vacanciesRow = getByTestId('vacancies');
+
+        expect(getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+        expect(vacanciesRow.getAttribute('class')).toContain('govuk-summary-list__warning');
+        expect(within(vacanciesRow).getByTestId('vacancies-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
     });
 
     describe('New starters', () => {
