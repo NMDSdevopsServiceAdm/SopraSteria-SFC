@@ -75,7 +75,10 @@ export class SummarySectionComponent implements OnInit {
   }
 
   private afterEightWeeksFromFirstLogin(): boolean {
-    return new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
+    const eightWeeksFromFirstLogin =
+      this.workplace.eightWeeksFromFirstLogin && new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
+
+    return eightWeeksFromFirstLogin;
   }
 
   public getStaffSummaryMessage(): void {

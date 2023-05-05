@@ -15,7 +15,7 @@ const getPermissions = async (req) => {
     return getDataOwnerPermissions(req, estabType, establishmentAndUserInfo);
   }
 
-  return getViewingPermissions(req.dataPermissions, establishmentAndUserInfo);
+  return getViewingPermissions(req.dataPermissions, req.role, establishmentAndUserInfo);
 };
 
 const getEstablishmentType = (establishment) => {
@@ -40,8 +40,9 @@ const getDataOwnerPermissions = (req, estabType, establishmentAndUserInfo) => {
   return nonePermissions(establishmentAndUserInfo);
 };
 
-const getViewingPermissions = (dataPermissions = 'None', establishmentAndUserInfo) => {
-  if (dataPermissions === 'Workplace') return dataPermissionWorkplace(establishmentAndUserInfo);
+const getViewingPermissions = (dataPermissions = 'None', role, establishmentAndUserInfo) => {
+  if (dataPermissions === 'Workplace' || (dataPermissions === 'Workplace and Staff' && role === 'Read'))
+    return dataPermissionWorkplace(establishmentAndUserInfo);
   if (dataPermissions === 'Workplace and Staff') return dataPermissionWorkplaceAndStaff(establishmentAndUserInfo);
 
   return dataPermissionNone(establishmentAndUserInfo);
