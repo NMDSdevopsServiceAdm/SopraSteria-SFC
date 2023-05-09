@@ -13,7 +13,7 @@ class Notifications {
       offset: Number(pageIndex) * limit,
       order: sortOrder,
     };
-    console.log(params);
+
     const resp = await notifications.selectNotificationByEstablishment(params);
     return resp;
   }
