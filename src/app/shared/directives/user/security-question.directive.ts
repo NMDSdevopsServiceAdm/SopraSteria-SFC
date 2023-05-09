@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SecurityDetails } from '@core/model/security-details.model';
@@ -14,7 +14,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
   @ViewChild('formEl') formEl: ElementRef;
   public formErrorsMap: Array<ErrorDetails>;
   public callToActionLabel: string;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public submitted = false;
   public return: URLStructure;
   public formControlsMap: any[] = [
@@ -34,7 +34,7 @@ export abstract class SecurityQuestionDirective implements OnInit, OnDestroy, Af
   constructor(
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
   ) {}
 

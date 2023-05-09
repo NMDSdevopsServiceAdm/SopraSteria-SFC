@@ -10,6 +10,7 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
+import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
@@ -82,6 +83,7 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 
 @NgModule({
   declarations: [
@@ -126,6 +128,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     NewComparisonGroupHeaderComponent,
     CardComponent,
     SummarySectionComponent,
+    StaffBasicRecord,
   ],
   imports: [
     Angulartics2Module.forRoot({
@@ -183,6 +186,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     AllUsersForEstablishmentResolver,
     WorkersResolver,
     TotalStaffRecordsResolver,
+    CqcStatusCheckResolver,
   ],
   bootstrap: [AppComponent],
 })

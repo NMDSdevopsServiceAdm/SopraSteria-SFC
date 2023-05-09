@@ -97,7 +97,11 @@ export class PdfService {
   }
 
   private appendElRef(html: HTMLElement, elRef: ElementRef): void {
-    html.append(elRef.nativeElement.cloneNode(true));
+    const elements = elRef.nativeElement.cloneNode(true);
+    if (elements.nodeName === 'APP-NEW-BENCHMARKS-TAB') {
+      elements.children[1].classList.remove('govuk-width-container');
+    }
+    html.append(elements);
   }
 
   private appendHeader(html: HTMLElement): void {
@@ -162,32 +166,28 @@ export class PdfService {
   private async convertCharts(html: HTMLElement): Promise<void> {
     const charts = Array.from(html.getElementsByClassName('highcharts-container'));
 
-    charts.forEach(
-      async (chart): Promise<void> => {
-        const svgs = Array.from(chart.querySelectorAll('svg'));
+    charts.forEach(async (chart): Promise<void> => {
+      const svgs = Array.from(chart.querySelectorAll('svg'));
 
-        svgs.forEach(
-          async (svg): Promise<void> => {
-            try {
-              const canvas = document.createElement('canvas');
-              const ctx = canvas.getContext('2d');
+      svgs.forEach(async (svg): Promise<void> => {
+        try {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
 
-              let xml = new XMLSerializer().serializeToString(svg);
-              // Removing the name space as IE throws an error
-              xml = xml.replace(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/, '');
+          let xml = new XMLSerializer().serializeToString(svg);
+          // Removing the name space as IE throws an error
+          xml = xml.replace(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/, '');
 
-              const v = await Canvg.from(ctx, xml);
-              await v.render();
+          const v = await Canvg.from(ctx, xml);
+          await v.render();
 
-              svg.parentNode.insertBefore(canvas, svg.nextSibling);
-              svg.remove();
-            } catch (err) {
-              console.log(err);
-            }
-          },
-        );
-      },
-    );
+          svg.parentNode.insertBefore(canvas, svg.nextSibling);
+          svg.remove();
+        } catch (err) {
+          console.log(err);
+        }
+      });
+    });
   }
 
   private async saveHtmlToPdf(filename, doc: jsPDF, html, scale, width): Promise<void> {

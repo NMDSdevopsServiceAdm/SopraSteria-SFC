@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 
@@ -15,7 +15,7 @@ export class TotalStaffFormService {
 
   constructor(public establishmentService: EstablishmentService) {}
 
-  public createForm(formBuilder: FormBuilder, updateOnSubmit = false): FormGroup {
+  public createForm(formBuilder: UntypedFormBuilder, updateOnSubmit = false): UntypedFormGroup {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
 

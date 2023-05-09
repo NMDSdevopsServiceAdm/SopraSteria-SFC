@@ -1,24 +1,13 @@
 <app-new-dashboard-header tab="home"></app-new-dashboard-header>
-<div class="govuk-width-container govuk-!-margin-top-7 summary-box" data-testid="summaryBox">
-  <app-summary-section>
-    <a (click)="navigateToTab($event, 'workplace')" class="govuk-link--no-visited-state" href="#"> Workplace </a>
-  </app-summary-section>
-
-  <hr class="govuk-section-break govuk-section-break--visible summary-section-break" />
-  <app-summary-section>
-    <a (click)="navigateToTab($event, 'staff-records')" class="govuk-link--no-visited-state" href="#">
-      Staff records
-    </a>
-  </app-summary-section>
-
-  <hr class="govuk-section-break govuk-section-break--visible summary-section-break" />
-
-  <app-summary-section>
-    <a (click)="navigateToTab($event, 'training-and-qualifications')" class="govuk-link--no-visited-state" href="#">
-      Training and qualifications</a
-    >
-  </app-summary-section>
-</div>
+<app-summary-section
+  *ngIf="canViewListOfWorkers"
+  [workplace]="workplace"
+  [workerCount]="workerCount"
+  [workersCreatedDate]="workersCreatedDate"
+  [trainingCounts]="trainingCounts"
+  [workersNotCompleted]="workersNotCompleted"
+  [(navigateToTab)]="navigateToTab"
+></app-summary-section>
 <div class="govuk-width-container govuk-!-margin-top-4">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -29,11 +18,10 @@
               (click)="navigateToTab($event, 'benchmarks')"
               class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
               href="#"
-              >See how you compare with other workplaces</a
+              >See how you compare against other workplaces</a
             >
             <p class="govuk-!-margin-top-5">
-              There are {{ meta?.workplaces | number }} workplaces providing the same main service as you in your local
-              authority area.
+              {{ benchmarksMessage }}
             </p></app-card
           >
         </div>

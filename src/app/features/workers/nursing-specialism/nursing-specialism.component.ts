@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -23,7 +23,7 @@ export class NursingSpecialismComponent extends QuestionComponent {
   ];
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected backLinkService: BackLinkService,
@@ -58,7 +58,7 @@ export class NursingSpecialismComponent extends QuestionComponent {
   }
 
   private oneCheckboxRequired(): ValidatorFn {
-    return (formGroup: FormGroup): ValidationErrors | null => {
+    return (formGroup: UntypedFormGroup): ValidationErrors | null => {
       if (formGroup.value.length === 0) {
         return { oneCheckboxRequired: true };
       }

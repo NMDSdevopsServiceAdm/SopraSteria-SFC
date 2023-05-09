@@ -70,7 +70,7 @@ function convertMainServiceToCQC(mainService) {
     { asc: 'Extra care housing services', cqc: ['Supported housing'] },
     { asc: 'Hospice services', cqc: ['Hospice'] },
     {
-      asc: 'Hospital services for people with mental health needs, learning disabilities and/or problems with substance misuse',
+      asc: 'Hospital services for people with mental health needs, learning disabilities, problems with substance misuse',
       cqc: ['Hospitals - Mental health/capacity'],
     },
     { asc: 'Long term conditions services', cqc: ['Nursing homes', 'Homecare agencies'] },

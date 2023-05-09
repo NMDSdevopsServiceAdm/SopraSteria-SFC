@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
@@ -43,7 +43,7 @@ describe('TotalStaffQuestionComponent', () => {
       declarations: [],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
-        FormBuilder,
+        UntypedFormBuilder,
         {
           provide: WindowRef,
           useValue: WindowRef,

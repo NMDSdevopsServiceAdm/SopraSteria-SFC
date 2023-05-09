@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { POSTCODE_PATTERN } from '@core/constants/constants';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -15,7 +15,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class HomePostcodeComponent extends QuestionComponent {
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected backLinkService: BackLinkService,

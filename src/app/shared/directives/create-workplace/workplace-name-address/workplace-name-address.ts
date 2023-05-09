@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public isWorkPlaceUpdate: boolean;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public formControlsMap: any[];
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
@@ -40,7 +40,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
@@ -275,7 +275,7 @@ export class WorkplaceNameAddressDirective implements OnInit, OnDestroy, AfterVi
     ];
   }
 
-  protected validPostcode(control: FormControl): { [s: string]: boolean } {
+  protected validPostcode(control: UntypedFormControl): { [s: string]: boolean } {
     if (!SanitizePostcodeUtil.sanitizePostcode(control.value)) {
       return { invalidPostcode: true };
     }

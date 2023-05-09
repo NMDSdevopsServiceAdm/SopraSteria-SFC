@@ -685,6 +685,8 @@ describe('permissions', () => {
 
   describe('getViewingPermissions()', () => {
     let establishmentInfo;
+    let role;
+
     beforeEach(() => {
       establishmentInfo = {
         hasParent: false,
@@ -693,29 +695,16 @@ describe('permissions', () => {
         mainServiceId: 1,
         dataOwnershipRequested: false,
       };
-    });
-
-    describe('canViewBenchmarks', () => {
-      it('should return only dataPermissionNone() if user has no viewing permissions without canViewBenchmarks', () => {
-        const permissions = getViewingPermissions('None', establishmentInfo);
-        expect(permissions).to.deep.equal(['canRemoveParentAssociation']);
-      });
-
-      it('should return only dataPermissionNone() if user has no viewing permissions with canViewBenchmarks if regulated and has correct main service', () => {
-        establishmentInfo.mainServiceId = 20;
-
-        const permissions = getViewingPermissions('None', establishmentInfo);
-        expect(permissions).to.deep.equal(['canRemoveParentAssociation', 'canViewBenchmarks']);
-      });
+      role = 'Read';
     });
 
     it('should return only dataPermissionNone() if user has no viewing permissions', () => {
-      const permissions = getViewingPermissions('None', establishmentInfo);
+      const permissions = getViewingPermissions('None', role, establishmentInfo);
       expect(permissions).to.deep.equal(['canRemoveParentAssociation']);
     });
 
-    it('should return dataPermissionWorkplace() if user has workplace only viewing permissions', () => {
-      const permissions = getViewingPermissions('Workplace', establishmentInfo);
+    it('should return dataPermissionWorkplace() if user has workplace only viewing permissions and the role is Read', () => {
+      const permissions = getViewingPermissions('Workplace', role, establishmentInfo);
       expect(permissions).to.deep.equal([
         'canRemoveParentAssociation',
         'canChangePermissionsForSubsidiary',
@@ -727,37 +716,36 @@ describe('permissions', () => {
       ]);
     });
 
-    describe('canChangeDataOwner', () => {
-      it('should return only dataPermissionWorkplace() if user has no viewing permissions without canChangeDataOwner', () => {
-        establishmentInfo.dataOwnershipRequested = true;
-
-        const permissions = getViewingPermissions('Workplace', establishmentInfo);
-        expect(permissions).to.deep.equal([
-          'canRemoveParentAssociation',
-          'canChangePermissionsForSubsidiary',
-          'canViewEstablishment',
-          'canViewWdfReport',
-          'canViewUser',
-          'canViewListOfUsers',
-        ]);
-      });
-
-      it('should return only dataPermissionWorkplace() if user has no viewing permissions with canChangeDataOwner if no request has been sent already', () => {
-        const permissions = getViewingPermissions('Workplace', establishmentInfo);
-        expect(permissions).to.deep.equal([
-          'canRemoveParentAssociation',
-          'canChangePermissionsForSubsidiary',
-          'canViewEstablishment',
-          'canViewWdfReport',
-          'canViewUser',
-          'canViewListOfUsers',
-          'canChangeDataOwner',
-        ]);
-      });
+    it('should return dataPermissionWorkplace() if user has workplace only viewing permissions and the role is Edit', () => {
+      role = 'Edit';
+      const permissions = getViewingPermissions('Workplace', role, establishmentInfo);
+      expect(permissions).to.deep.equal([
+        'canRemoveParentAssociation',
+        'canChangePermissionsForSubsidiary',
+        'canViewEstablishment',
+        'canViewWdfReport',
+        'canViewUser',
+        'canViewListOfUsers',
+        'canChangeDataOwner',
+      ]);
     });
 
-    it('should return dataPermissionWorkplaceAndStaff() if user has workplace and staff viewing permissions', () => {
-      const permissions = getViewingPermissions('Workplace and Staff', establishmentInfo);
+    it('should return dataPermissionWorkplace() if user has workplace and staff viewing permissions and the role is Read', () => {
+      const permissions = getViewingPermissions('Workplace', role, establishmentInfo);
+      expect(permissions).to.deep.equal([
+        'canRemoveParentAssociation',
+        'canChangePermissionsForSubsidiary',
+        'canViewEstablishment',
+        'canViewWdfReport',
+        'canViewUser',
+        'canViewListOfUsers',
+        'canChangeDataOwner',
+      ]);
+    });
+
+    it('should return dataPermissionWorkplaceAndStaff() if user has workplace and staff viewing permissions and the role is Edit', () => {
+      role = 'Edit';
+      const permissions = getViewingPermissions('Workplace and Staff', role, establishmentInfo);
       expect(permissions).to.deep.equal([
         'canRemoveParentAssociation',
         'canChangePermissionsForSubsidiary',
@@ -769,6 +757,49 @@ describe('permissions', () => {
         'canViewListOfWorkers',
         'canViewWorker',
       ]);
+    });
+
+    describe('canViewBenchmarks', () => {
+      it('should return only dataPermissionNone() if user has no viewing permissions without canViewBenchmarks', () => {
+        const permissions = getViewingPermissions('None', role, establishmentInfo);
+        expect(permissions).to.deep.equal(['canRemoveParentAssociation']);
+      });
+
+      it('should return only dataPermissionNone() if user has no viewing permissions with canViewBenchmarks if regulated and has correct main service', () => {
+        establishmentInfo.mainServiceId = 20;
+
+        const permissions = getViewingPermissions('None', role, establishmentInfo);
+        expect(permissions).to.deep.equal(['canRemoveParentAssociation', 'canViewBenchmarks']);
+      });
+    });
+
+    describe('canChangeDataOwner', () => {
+      it('should return only dataPermissionWorkplace() if user has no viewing permissions without canChangeDataOwner', () => {
+        establishmentInfo.dataOwnershipRequested = true;
+
+        const permissions = getViewingPermissions('Workplace', role, establishmentInfo);
+        expect(permissions).to.deep.equal([
+          'canRemoveParentAssociation',
+          'canChangePermissionsForSubsidiary',
+          'canViewEstablishment',
+          'canViewWdfReport',
+          'canViewUser',
+          'canViewListOfUsers',
+        ]);
+      });
+
+      it('should return only dataPermissionWorkplace() if user has no viewing permissions with canChangeDataOwner if no request has been sent already', () => {
+        const permissions = getViewingPermissions('Workplace', role, establishmentInfo);
+        expect(permissions).to.deep.equal([
+          'canRemoveParentAssociation',
+          'canChangePermissionsForSubsidiary',
+          'canViewEstablishment',
+          'canViewWdfReport',
+          'canViewUser',
+          'canViewListOfUsers',
+          'canChangeDataOwner',
+        ]);
+      });
     });
   });
 });

@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Note } from '@core/model/registrations.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
@@ -16,7 +16,7 @@ export class AddNoteComponent {
   @Input() public registration;
   @Input() public notes: Note[];
   @Input() public notesError: string;
-  @Input() public notesForm: FormGroup;
+  @Input() public notesForm: UntypedFormGroup;
   @Input() public loggedInUser;
 
   constructor(

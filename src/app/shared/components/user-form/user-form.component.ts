@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { UserPermissionsType } from '@core/model/userDetails.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -9,7 +9,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
   templateUrl: './user-form.component.html',
 })
 export class UserFormComponent {
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() formErrorsMap: ErrorDetails[];
   @Input() submitted = false;
   @Input() formControlsMap: any[];

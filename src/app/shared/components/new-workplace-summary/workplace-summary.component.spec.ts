@@ -1,24 +1,26 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { establishmentWithShareWith } from '../../../../../server/test/factories/models';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
 describe('NewWorkplaceSummaryComponent', () => {
   const setup = async (shareWith = null) => {
-    const { fixture, getByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
@@ -42,12 +44,17 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     const component = fixture.componentInstance;
 
+    const tabsService = TestBed.inject(TabsService);
+    const tabsSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
+
     return {
       component,
       fixture,
       getByText,
+      queryByText,
       getByTestId,
       queryByTestId,
+      tabsSpy,
     };
   };
 
@@ -103,22 +110,78 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should render a Change link', async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.name = 'Care Home';
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const workplaceRow = within(document.body).queryByTestId('workplace-section');
+        const workplaceRow = getByTestId('workplace-name-and-address');
         const link = within(workplaceRow).queryByText('Change');
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-workplace-details`);
       });
+
+      it('should render a conditional class if the workplace is not regulated and there is a number of staff error', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = false;
+        component.numberOfStaffError = true;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('workplace-name-and-address');
+
+        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+      });
+
+      it('should render a conditional class if the workplace is not regulated and there is a number of staff warning', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = false;
+        component.numberOfStaffWarning = true;
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('workplace-name-and-address');
+
+        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+      });
+
+      it('should not render a conditional class if the workplace is regulated and there is a number of staff error', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = true;
+        component.numberOfStaffError = true;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('workplace-name-and-address');
+
+        expect(workplaceRow.getAttribute('class')).not.toContain('govuk-summary-list__row--no-bottom-border');
+      });
+
+      it('should not render a conditional class if the workplace is regulated and there is a number of staff warning', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = true;
+        component.numberOfStaffWarning = true;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('workplace-name-and-address');
+
+        expect(workplaceRow.getAttribute('class')).not.toContain('govuk-summary-list__row--no-bottom-border');
+      });
     });
+
     describe('CQC Location ID', () => {
       it('should render the locationID and a Change link if the workplace is regulated', async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.isRegulated = true;
         component.canEditEstablishment = true;
@@ -126,7 +189,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         fixture.detectChanges();
 
-        const cqcLocationIdRow = within(document.body).queryByTestId('cqcLocationId');
+        const cqcLocationIdRow = getByTestId('cqcLocationId');
         const link = within(cqcLocationIdRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -142,15 +205,44 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(queryByTestId('cqcLocationId')).toBeFalsy();
       });
+
+      it('should render a conditional class if there is a number of staff error', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = true;
+        component.numberOfStaffError = true;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('cqcLocationId');
+
+        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+      });
+
+      it('should render a conditional class if there is a number of staff warning', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.isRegulated = true;
+        component.numberOfStaffWarning = true;
+
+        fixture.detectChanges();
+
+        const workplaceRow = getByTestId('cqcLocationId');
+
+        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+      });
     });
 
     describe('Number of staff', () => {
-      it('should render the number of staff and a Change link', async () => {
-        const { component, fixture } = await setup();
+      it('should render the number of staff and a Change link without conditional classes', async () => {
+        const { component, fixture } = await setup(null);
 
         component.canEditEstablishment = true;
         component.workplace.numberOfStaff = 4;
-
+        component.workerCount = 4;
+        component.checkNumberOfStaffErrorsAndWarnings();
         fixture.detectChanges();
 
         const numberOfStaffRow = within(document.body).queryByTestId('numberOfStaff');
@@ -159,6 +251,10 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/total-staff`);
         expect(within(numberOfStaffRow).queryByText('4')).toBeTruthy();
+        expect(numberOfStaffRow.getAttribute('class')).not.toContain('govuk-summary-list__error');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).not.toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
       });
 
       it('should render a dash and an Add link if there is not a value for number of staff', async () => {
@@ -176,9 +272,110 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/total-staff`);
         expect(within(numberOfStaffRow).queryByText('-')).toBeTruthy();
       });
+
+      it('should render an error message and conditional classes if there is not a value for the number of staff', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = null;
+
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+
+        expect(within(numberOfStaffRow).getByText('You need to add your total number of staff')).toBeTruthy();
+        expect(numberOfStaffRow.getAttribute('class')).toContain('govuk-summary-list__error');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
+
+      it('should render correct warning messge, with link that navigates and conditional classes if the number of staff is more than the number of staff records and it had been more than 8 weeks since first login', async () => {
+        const { component, fixture, getByTestId, tabsSpy } = await setup();
+
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        component.canEditEstablishment = true;
+        component.workplace.eightWeeksFromFirstLogin = date.toString();
+        component.workplace.numberOfStaff = 10;
+        component.workerCount = 9;
+        component.checkNumberOfStaffErrorsAndWarnings();
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+        const link = within(numberOfStaffRow).getByText('View staff records');
+        fireEvent.click(link);
+
+        expect(within(numberOfStaffRow).getByText(`You've more staff than staff records`)).toBeTruthy();
+        expect(link).toBeTruthy();
+        expect(tabsSpy).toHaveBeenCalledWith('staff-records');
+        expect(numberOfStaffRow.getAttribute('class')).toContain('govuk-summary-list__warning');
+        expect(numberOfStaffRow.getAttribute('class')).not.toContain('govuk-summary-list__error');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
+
+      it('should render correct warning messge, with link that navigates if the number of staff is less than the number of staff records and it had been more than 8 weeks since first login', async () => {
+        const { component, fixture, getByTestId, tabsSpy } = await setup();
+
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = 1;
+        component.workplace.eightWeeksFromFirstLogin = date.toString();
+        component.workerCount = 4;
+        component.checkNumberOfStaffErrorsAndWarnings();
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+        const link = within(numberOfStaffRow).getByText('View staff records');
+        fireEvent.click(link);
+
+        expect(within(numberOfStaffRow).getByText(`You've more staff records than staff`)).toBeTruthy();
+        expect(link).toBeTruthy();
+        expect(tabsSpy).toHaveBeenCalledWith('staff-records');
+      });
+
+      it('should not show the warning or conditional classes if it has been less than 8 weeks since first login', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = 1;
+        component.workplace.eightWeeksFromFirstLogin = date.toString();
+        component.workerCount = 4;
+        component.checkNumberOfStaffErrorsAndWarnings();
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+
+        expect(within(numberOfStaffRow).queryByText(`You've more staff records than staff`)).toBeFalsy();
+        expect(numberOfStaffRow.getAttribute('class')).not.toContain('govuk-summary-list__warning');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).not.toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
     });
 
     describe('Employer type', () => {
+      it('should render a dash and an Add link if there is not a value for employer type', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        component.typeOfEmployer = '';
+
+        fixture.detectChanges();
+
+        const employerTypeRow = within(document.body).queryByTestId('employerType');
+        const link = within(employerTypeRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/type-of-employer`);
+        expect(within(employerTypeRow).queryByText('-')).toBeTruthy();
+      });
+
       it('should render the employer type and a Change link when employer type is the other field in object', async () => {
         const { component, fixture } = await setup();
 
@@ -195,12 +392,12 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(employerTypeRow).queryByText('Adult care')).toBeTruthy();
       });
 
-      it('should render the employer type and a Change link when employer type is the other field in object', async () => {
+      it('should render the employer type and a Change link when employer type is the value field in object', async () => {
         const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
         component.workplace.employerType = { other: null, value: 'Voluntary / Charity' };
-
+        component.typeOfEmployer = 'Voluntary, charity, not for profit';
         fixture.detectChanges();
 
         const employerTypeRow = within(document.body).queryByTestId('employerType');
@@ -208,7 +405,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/type-of-employer`);
-        expect(within(employerTypeRow).queryByText('Voluntary / Charity')).toBeTruthy();
+        expect(within(employerTypeRow).queryByText('Voluntary, charity, not for profit')).toBeTruthy();
       });
     });
   });
@@ -550,15 +747,90 @@ describe('NewWorkplaceSummaryComponent', () => {
   });
 
   describe('Vacancies and turnover section', () => {
+    it('should show a warning if there are no values for vacancies, leavers and starters', async () => {
+      const { component, fixture, getByText, getByTestId } = await setup();
+
+      component.workplace.vacancies = null;
+      component.workplace.leavers = null;
+      component.workplace.starters = null;
+      component.canEditEstablishment = true;
+      fixture.detectChanges();
+
+      const section = getByTestId('vacancies-and-turnover-section');
+
+      expect(getByText(`You've not added any vacancy and turnover data`)).toBeTruthy();
+      expect(section.getAttribute('class')).toContain('govuk-summary-list__warning');
+      expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).toContain(
+        'govuk-!-margin-bottom-1',
+      );
+    });
+
+    it('should not show a warning if there is a vacancies value', async () => {
+      const { component, fixture, queryByText, getByTestId } = await setup();
+
+      component.workplace.vacancies = `Don't know`;
+      component.workplace.leavers = null;
+      component.workplace.starters = null;
+      component.canEditEstablishment = true;
+      component.checkVacancyAndTurnoverData();
+      fixture.detectChanges();
+
+      const section = getByTestId('vacancies-and-turnover-section');
+
+      expect(queryByText(`You've not added any vacancy and turnover data`)).toBeFalsy();
+      expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
+      expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).not.toContain(
+        'govuk-!-margin-bottom-1',
+      );
+    });
+
+    it('should not show a warning if there is a leavers value', async () => {
+      const { component, fixture, queryByText, getByTestId } = await setup();
+
+      component.workplace.vacancies = null;
+      component.workplace.leavers = `Don't know`;
+      component.workplace.starters = null;
+      component.canEditEstablishment = true;
+      component.checkVacancyAndTurnoverData();
+      fixture.detectChanges();
+
+      const section = getByTestId('vacancies-and-turnover-section');
+
+      expect(queryByText(`You've not added any vacancy and turnover data`)).toBeFalsy();
+      expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
+      expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).not.toContain(
+        'govuk-!-margin-bottom-1',
+      );
+    });
+
+    it('should not show a warning if there is a starters value', async () => {
+      const { component, fixture, queryByText, getByTestId } = await setup();
+
+      component.workplace.vacancies = null;
+      component.workplace.leavers = null;
+      component.workplace.starters = `Don't know`;
+      component.canEditEstablishment = true;
+      component.checkVacancyAndTurnoverData();
+      fixture.detectChanges();
+
+      const section = getByTestId('vacancies-and-turnover-section');
+
+      expect(queryByText(`You've not added any vacancy and turnover data`)).toBeFalsy();
+      expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
+      expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).not.toContain(
+        'govuk-!-margin-bottom-1',
+      );
+    });
+
     describe('Current staff vacancies', () => {
       it('should show dash and have Add information button on when starters is null', async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.vacancies = null;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const vacanciesRow = within(document.body).queryByTestId('vacancies');
+        const vacanciesRow = getByTestId('vacancies');
         const link = within(vacanciesRow).queryByText('Add');
 
         expect(link).toBeTruthy();
@@ -567,13 +839,13 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show Don't know and a Change link when vacancies is set to Don't know`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.vacancies = `Don't know`;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const vacanciesRow = within(document.body).queryByTestId('vacancies');
+        const vacanciesRow = getByTestId('vacancies');
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -582,13 +854,13 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show None and a Change link when vacancies is set to None`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.vacancies = `None`;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const vacanciesRow = within(document.body).queryByTestId('vacancies');
+        const vacanciesRow = getByTestId('vacancies');
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -597,13 +869,13 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show one job vacancy with number of vacancies and a Change link when one job has vacancies`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.vacancies = [{ jobId: 1, title: 'Administrative', total: 3 }];
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const vacanciesRow = within(document.body).queryByTestId('vacancies');
+        const vacanciesRow = getByTestId('vacancies');
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -612,7 +884,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show multiple job vacancies with the number of vacancies for each job and a Change link when multiple jobs have vacancies`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.vacancies = [
           { jobId: 1, title: 'Administrative', total: 3 },
@@ -621,23 +893,61 @@ describe('NewWorkplaceSummaryComponent', () => {
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const vacanciesRow = within(document.body).queryByTestId('vacancies');
+        const vacanciesRow = getByTestId('vacancies');
 
         expect(within(vacanciesRow).queryByText('Change')).toBeTruthy();
         expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
       });
+
+      it('should show warning message if there is no vacancy value but there is a starters value', async () => {
+        const { component, fixture, getByText, getByTestId } = await setup();
+
+        component.workplace.vacancies = null;
+        component.workplace.leavers = null;
+        component.workplace.starters = `Don't know`;
+        component.canEditEstablishment = true;
+        component.checkVacancyAndTurnoverData();
+        fixture.detectChanges();
+
+        const vacanciesRow = getByTestId('vacancies');
+
+        expect(getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+        expect(vacanciesRow.getAttribute('class')).toContain('govuk-summary-list__warning');
+        expect(within(vacanciesRow).getByTestId('vacancies-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
+
+      it('should show warning message if there is no vacancy value but there is a leavers value', async () => {
+        const { component, fixture, getByText, getByTestId } = await setup();
+
+        component.workplace.vacancies = null;
+        component.workplace.leavers = 'None';
+        component.workplace.starters = null;
+        component.canEditEstablishment = true;
+        component.checkVacancyAndTurnoverData();
+        fixture.detectChanges();
+
+        const vacanciesRow = getByTestId('vacancies');
+
+        expect(getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+        expect(vacanciesRow.getAttribute('class')).toContain('govuk-summary-list__warning');
+        expect(within(vacanciesRow).getByTestId('vacancies-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
     });
 
     describe('New starters', () => {
       it('should show dash and have Add information button on when starters is null', async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.starters = null;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const startersRow = within(document.body).queryByTestId('starters');
+        const startersRow = getByTestId('starters');
         const link = within(startersRow).queryByText('Add');
 
         expect(link).toBeTruthy();
@@ -646,13 +956,13 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show Don't know and a Change link when starters is set to Don't know`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.starters = `Don't know`;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const startersRow = within(document.body).queryByTestId('starters');
+        const startersRow = getByTestId('starters');
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -661,13 +971,13 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show None and a Change link when starters is set to None`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.starters = `None`;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const startersRow = within(document.body).queryByTestId('starters');
+        const startersRow = getByTestId('starters');
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -676,13 +986,13 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show one job with number of starters and a Change link when there is one job with starters`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.starters = [{ jobId: 1, title: 'Administrative', total: 3 }];
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const startersRow = within(document.body).queryByTestId('starters');
+        const startersRow = getByTestId('starters');
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -691,7 +1001,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show multiple jobs with the number of starters for each job and a Change link when multiple jobs have starters`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.starters = [
           { jobId: 1, title: 'Administrative', total: 3 },
@@ -700,7 +1010,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const startersRow = within(document.body).queryByTestId('starters');
+        const startersRow = getByTestId('starters');
 
         expect(within(startersRow).queryByText('Change')).toBeTruthy();
         expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
@@ -710,13 +1020,13 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Staff leavers', () => {
       it('should show dash and have Add information button on when leavers is null', async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.leavers = null;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const leaversRow = within(document.body).queryByTestId('leavers');
+        const leaversRow = getByTestId('leavers');
         const link = within(leaversRow).queryByText('Add');
 
         expect(link).toBeTruthy();
@@ -725,13 +1035,13 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show Don't know and a Change link when leavers is set to Don't know`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.leavers = `Don't know`;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const leaversRow = within(document.body).queryByTestId('leavers');
+        const leaversRow = getByTestId('leavers');
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -740,13 +1050,13 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show None and a Change link when leavers is set to None`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.leavers = `None`;
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const leaversRow = within(document.body).queryByTestId('leavers');
+        const leaversRow = getByTestId('leavers');
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -755,13 +1065,13 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show one job with number of leavers and a Change link when there is one job with leavers`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.leavers = [{ jobId: 1, title: 'Administrative', total: 3 }];
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const leaversRow = within(document.body).queryByTestId('leavers');
+        const leaversRow = getByTestId('leavers');
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
@@ -770,7 +1080,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it(`should show multiple jobs with the number of leavers for each job and a Change link when multiple jobs have leavers`, async () => {
-        const { component, fixture } = await setup();
+        const { component, fixture, getByTestId } = await setup();
 
         component.workplace.leavers = [
           { jobId: 1, title: 'Administrative', total: 3 },
@@ -779,7 +1089,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
-        const leaversRow = within(document.body).queryByTestId('leavers');
+        const leaversRow = getByTestId('leavers');
 
         expect(within(leaversRow).queryByText('Change')).toBeTruthy();
         expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();

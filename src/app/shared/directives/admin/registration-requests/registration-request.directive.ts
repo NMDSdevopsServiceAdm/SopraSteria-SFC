@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Directive, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Note } from '@core/model/registrations.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -11,7 +11,7 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 export class RegistrationRequestDirective implements OnInit {
   public registration;
   public notes: Note[];
-  public notesForm: FormGroup;
+  public notesForm: UntypedFormGroup;
   public notesError: string;
   public loggedInUser;
 
@@ -19,7 +19,7 @@ export class RegistrationRequestDirective implements OnInit {
     public registrationsService: RegistrationsService,
     protected breadcrumbService: BreadcrumbService,
     protected route: ActivatedRoute,
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected switchWorkplaceService: SwitchWorkplaceService,
   ) {}
 

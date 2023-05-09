@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -21,7 +21,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
   public insideYearArrivedUkMiniFlow: boolean;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
     protected backLinkService: BackLinkService,

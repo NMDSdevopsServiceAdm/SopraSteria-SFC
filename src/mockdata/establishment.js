@@ -6,11 +6,12 @@ module.exports.Establishment = {
   ownerChangeRequestUID: '46fab01f-eb35-44ca-a148-6fb73eddb058',
   name: 'FAKE TOWN MANOR',
   address: '123 FAKE STREET, FAKE TOWN, KIRKLEES',
+  town: 'FAKE TOWN',
   postcode: 'FS13 3LF',
   locationRef: '1-12345678',
   isRegulated: true,
   nmdsId: 'J1002317',
-  created: new Date(),
+  created: '2021-03-31',
   updated: new Date(),
   updatedBy: 'thisperson',
   mainService: {
@@ -138,4 +139,5 @@ module.exports.Establishment = {
   dataPermissions: 'Workplace and Staff',
   dataOwnershipRequested: '',
   ownershipChangeRequestId: '',
+  showAddWorkplaceDetailsBanner: false,
 };

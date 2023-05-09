@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
@@ -25,7 +25,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public workplace: Establishment;
   public user: UserDetails;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public roleRadios: RadioFieldData[] = [
@@ -44,7 +44,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
     private dialogService: DialogService,

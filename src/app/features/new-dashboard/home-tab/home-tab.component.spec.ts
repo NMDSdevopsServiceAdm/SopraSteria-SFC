@@ -2,10 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
+import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
@@ -13,6 +14,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -25,10 +27,11 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
+import { SummarySectionComponent } from './summary-section/summary-section.component';
 
 describe('NewHomeTabComponent', () => {
-  const setup = async () => {
-    const { fixture, getByText, queryByText, getByTestId } = await render(NewHomeTabComponent, {
+  const setup = async (checkCqcDetails = false, establishment = Establishment) => {
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewHomeTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         WindowRef,
@@ -41,15 +44,38 @@ describe('NewHomeTabComponent', () => {
           useFactory: MockPermissionsService.factory(),
           deps: [HttpClient, Router, UserService],
         },
+
         {
           provide: UserService,
           useFactory: MockUserService.factory(1, Roles.Admin),
           deps: [HttpClient],
         },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                workers: {
+                  workersCreatedDate: [],
+                  workerCount: 0,
+                  trainingCounts: {} as TrainingCounts,
+                  workersNotCompleted: [],
+                },
+              },
+            },
+            queryParams: of({ view: null }),
+            url: of(null),
+          },
+        },
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
+          deps: [HttpClient],
+        },
       ],
-      declarations: [NewDashboardHeaderComponent, NewArticleListComponent],
+      declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
-        workplace: Establishment,
+        workplace: establishment,
         meta: { workplaces: 9, staff: 4 } as Meta,
       },
       schemas: [NO_ERRORS_SCHEMA],
@@ -71,6 +97,7 @@ describe('NewHomeTabComponent', () => {
       getByText,
       queryByText,
       getByTestId,
+      queryByTestId,
       alertServiceSpy,
       parentsRequestService,
       tabsServiceSpy,
@@ -410,24 +437,24 @@ describe('NewHomeTabComponent', () => {
   });
 
   describe('cards', () => {
-    it('should show a card with a link that takes you to the benchmarks tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('Benchmarks', () => {
+      it('should show a card with a link that takes you to the benchmarks tab', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
 
-      const benchmarksLink = getByText('See how you compare with other workplaces');
-      fireEvent.click(benchmarksLink);
+        const benchmarksLink = getByText('See how you compare against other workplaces');
+        fireEvent.click(benchmarksLink);
 
-      expect(benchmarksLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
-    });
+        expect(benchmarksLink).toBeTruthy();
+        expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+      });
 
-    it('should render the number of workplaces to compare with', async () => {
-      const { getByText } = await setup();
+      it('should render the number of workplaces to compare with', async () => {
+        const { getByText } = await setup();
 
-      const text = getByText(
-        'There are 9 workplaces providing the same main service as you in your local authority area.',
-      );
+        const text = getByText('There are 9 workplaces providing adult social care in Fake Town.');
 
-      expect(text).toBeTruthy();
+        expect(text).toBeTruthy();
+      });
     });
 
     it('should show a card with a link that takes you to the benefits bundle page', async () => {
@@ -439,44 +466,82 @@ describe('NewHomeTabComponent', () => {
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
     });
   });
-
   describe('summary', () => {
     it('should show summary box', async () => {
-      const { getByTestId } = await setup();
+      const { component, fixture, getByTestId } = await setup();
+
+      component.canViewListOfWorkers = true;
+      fixture.detectChanges();
 
       const summaryBox = getByTestId('summaryBox');
 
       expect(summaryBox).toBeTruthy();
     });
 
-    it('should show workplace link and take you to the workplace tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    it('should not show the summary section if the user does not have the correct permissions', async () => {
+      const { component, fixture, queryByTestId } = await setup();
 
-      const workplaceLink = getByText('Workplace');
-      fireEvent.click(workplaceLink);
+      component.canViewListOfWorkers = false;
+      fixture.detectChanges();
 
-      expect(workplaceLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      const summaryBox = queryByTestId('summaryBox');
+      expect(summaryBox).toBeFalsy();
     });
 
-    it('should show staff records link and take you to the staff records tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('workplace summary section', () => {
+      it('should take you to the workplace tab when clicking the workplace link', async () => {
+        const { component, fixture, getByText, tabsServiceSpy } = await setup();
 
-      const staffRecordsLink = getByText('Staff records');
-      fireEvent.click(staffRecordsLink);
+        component.canViewListOfWorkers = true;
+        fixture.detectChanges();
 
-      expect(staffRecordsLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('staff-records');
+        const workplaceLink = getByText('Workplace');
+        fireEvent.click(workplaceLink);
+
+        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      });
+
+      it('should show a warning link which should navigate to the workplace tab', async () => {
+        const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
+        const { component, fixture, getByText, tabsServiceSpy } = await setup(true, establishment);
+
+        component.canViewListOfWorkers = true;
+        fixture.detectChanges();
+
+        const link = getByText('Add more details to your workplace');
+        fireEvent.click(link);
+
+        expect(link).toBeTruthy();
+        expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      });
     });
 
-    it('should show training and qualifications link that take you the training and qualifications tab', async () => {
-      const { getByText, tabsServiceSpy } = await setup();
+    describe('staff records summary section', () => {
+      it('should show staff records link and take you to the staff records tab', async () => {
+        const { component, fixture, getByText, tabsServiceSpy } = await setup();
 
-      const trainingAndQualificationsLink = getByText('Training and qualifications');
-      fireEvent.click(trainingAndQualificationsLink);
+        component.canViewListOfWorkers = true;
+        fixture.detectChanges();
 
-      expect(trainingAndQualificationsLink).toBeTruthy();
-      expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+        const staffRecordsLink = getByText('Staff records');
+        fireEvent.click(staffRecordsLink);
+
+        expect(tabsServiceSpy).toHaveBeenCalledWith('staff-records');
+      });
+    });
+
+    describe('training and qualifications summary section', () => {
+      it('should show training and qualifications link that take you the training and qualifications tab', async () => {
+        const { component, fixture, getByText, tabsServiceSpy } = await setup();
+
+        component.canViewListOfWorkers = true;
+        fixture.detectChanges();
+
+        const trainingAndQualificationsLink = getByText('Training and qualifications');
+        fireEvent.click(trainingAndQualificationsLink);
+
+        expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+      });
     });
   });
 });

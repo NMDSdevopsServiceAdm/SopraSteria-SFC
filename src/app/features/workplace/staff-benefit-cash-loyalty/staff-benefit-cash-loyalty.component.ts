@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormControl, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FLOAT_PATTERN } from '@core/constants/constants';
 import { StaffBenefitEnum } from '@core/model/establishment.model';
@@ -34,7 +34,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   public section: string;
 
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
@@ -90,7 +90,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
 
   public addControl() {
     if (!this.form.controls.cashAmount) {
-      this.form.addControl('cashAmount', new FormControl(null, { updateOn: 'submit' }));
+      this.form.addControl('cashAmount', new UntypedFormControl(null, { updateOn: 'submit' }));
     }
   }
 

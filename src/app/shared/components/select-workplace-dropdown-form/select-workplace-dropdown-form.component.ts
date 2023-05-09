@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { LocationAddress } from '@core/model/location.model';
 import { compact } from 'lodash';
 
@@ -8,7 +8,7 @@ import { compact } from 'lodash';
   templateUrl: './select-workplace-dropdown-form.component.html',
 })
 export class SelectWorkplaceDropdownFormComponent {
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() submitted: boolean;
   @Input() locationAddresses: LocationAddress[];
 

@@ -49,6 +49,8 @@ export const workerBuilder = build('Worker', {
     qualificationCount: 0,
     longTermAbsence: null,
     completed: perBuild(() => false),
+    created: new Date('2020-03-31'),
+
     ethnicity: {
       ethnicityId: 1,
       ethnicity: 'white ethnicity 1',

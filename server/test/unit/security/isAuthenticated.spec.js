@@ -12,6 +12,8 @@ const {
   authorisedEstablishmentPermissionCheck,
   isAdmin,
   isAdminManager,
+  isReadOnlyTryingToNotGET,
+  parentNoWriteAccess,
 } = require('../../../utils/security/isAuthenticated');
 
 describe('isAuthenticated', () => {
@@ -189,7 +191,7 @@ describe('isAuthenticated', () => {
       expect(data).to.equal('Unknown Establishment');
     });
 
-    it('returns a 403 if role check is request, req method is not GET and claim role is read only', async () => {
+    it('returns a 403 if role check is request, req method is not GET, claim role is read only and the req.path is not /benchmarks/usage', async () => {
       const establishmentUid = '004aadf4-8e1a-4450-905b-6039179f52da';
       jwtStub.returns({
         aud: config.get('jwt.aud.login'),
@@ -207,6 +209,7 @@ describe('isAuthenticated', () => {
         params: {
           id: establishmentUid,
         },
+        path: '/something',
       });
       const res = httpMocks.createResponse();
 
@@ -1036,6 +1039,110 @@ describe('isAuthenticated', () => {
       await isAdminManager(req, res, next);
 
       expect(next.calledOnce).to.be.true;
+    });
+  });
+
+  describe('isReadOnlyTryingToNotGET', () => {
+    it('returns true if role check is true, req method is not GET, claim role is read only and the req.path is not /benchmarks/usage', async () => {
+      const claim = { role: 'Read' };
+      const req = {
+        path: '/something',
+        method: 'POST',
+      };
+      const roleCheck = true;
+
+      const result = isReadOnlyTryingToNotGET(roleCheck, req, claim);
+      expect(result).to.be.true;
+    });
+
+    it('returns false if role check is false, req method is not GET, claim role is read only and the req.path is not /benchmarks/usage', async () => {
+      const claim = { role: 'Read' };
+      const req = {
+        path: '/something',
+        method: 'POST',
+      };
+      const roleCheck = false;
+
+      const result = isReadOnlyTryingToNotGET(roleCheck, req, claim);
+      expect(result).to.be.false;
+    });
+
+    it('returns false if role check is true, req method is GET, claim role is read only and the req.path is not /benchmarks/usage', async () => {
+      const claim = { role: 'Read' };
+      const req = {
+        path: '/something',
+        method: 'GET',
+      };
+      const roleCheck = true;
+
+      const result = isReadOnlyTryingToNotGET(roleCheck, req, claim);
+      expect(result).to.be.false;
+    });
+
+    it('returns false if role check is true, req method is not GET, claim role is not read only and the req.path is not /benchmarks/usage', async () => {
+      const claim = { role: 'Edit' };
+      const req = {
+        path: '/something',
+        method: 'POST',
+      };
+      const roleCheck = true;
+
+      const result = isReadOnlyTryingToNotGET(roleCheck, req, claim);
+      expect(result).to.be.false;
+    });
+
+    it('returns false if role check is true, req method is not GET, claim role is read only and the req.path is /benchmarks/usage', async () => {
+      const claim = { role: 'Read' };
+      const req = {
+        path: '/benchmarks/usage',
+        method: 'POST',
+      };
+      const roleCheck = true;
+
+      const result = isReadOnlyTryingToNotGET(roleCheck, req, claim);
+      expect(result).to.be.false;
+    });
+  });
+
+  describe('parentNoWriteAccess', () => {
+    it('returns true if req method is not GET and if req.path is not /benchmarks/usage or /ownershipChange', async () => {
+      const req = {
+        path: '/something',
+        method: 'POST',
+      };
+
+      const result = parentNoWriteAccess(req);
+      expect(result).to.be.true;
+    });
+
+    it('returns false if req method is GET and if req.path is not /benchmarks/usage or /ownershipChange', async () => {
+      const req = {
+        path: '/something',
+        method: 'GET',
+      };
+
+      const result = parentNoWriteAccess(req);
+      expect(result).to.be.false;
+    });
+
+    it('returns false if req method is not GET and if req.path is not /benchmarks/usage but is /ownershipChange', async () => {
+      const req = {
+        path: '/ownershipChange',
+        method: 'POST',
+      };
+
+      const result = parentNoWriteAccess(req);
+      expect(result).to.be.false;
+    });
+
+    it('returns false if req method is not GET and if req.path is not /ownershipChange but is /benchmarks/usage', async () => {
+      const req = {
+        path: '/benchmarks/usage',
+        method: 'POST',
+      };
+
+      const result = parentNoWriteAccess(req);
+      expect(result).to.be.false;
     });
   });
 });

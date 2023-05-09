@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 })
 export class AddEditQualificationComponent implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public qualificationTypes: QualificationType[] = [];
   public qualifications: any;
   public qualificationId: string;
@@ -35,7 +35,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   constructor(
     private trainingService: TrainingService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
@@ -110,7 +110,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.form.get('type').valueChanges.subscribe((value) => {
       this.submitted = false;
       Object.keys(QualificationType).forEach((key) => {
-        const group = this.form.get(key) as FormGroup;
+        const group = this.form.get(key) as UntypedFormGroup;
         const { qualification, year, notes } = group.controls;
 
         qualification.clearValidators();
@@ -194,7 +194,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     });
   }
 
-  private createQualificationGroup(): FormGroup {
+  private createQualificationGroup(): UntypedFormGroup {
     return this.formBuilder.group(
       {
         qualification: null,
@@ -224,7 +224,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
     const { type } = this.form.value;
     const typeKey = Object.keys(this.qualificationTypes).find((key) => this.qualificationTypes[key] === type);
-    const group = this.form.get(typeKey) as FormGroup;
+    const group = this.form.get(typeKey) as UntypedFormGroup;
     const { qualification, year, notes } = group.value;
 
     const record: QualificationRequest = {
