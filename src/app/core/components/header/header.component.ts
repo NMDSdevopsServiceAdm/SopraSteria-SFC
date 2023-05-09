@@ -6,7 +6,7 @@ import { IdleService } from '@core/services/idle.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { UserService } from '@core/services/user.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { Subscription } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -36,6 +36,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.getUser();
     this.setupUserSubscription();
+
     this.onAdminScreen();
     this.workplaceId && this.getUsers();
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
@@ -87,18 +88,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private setUpNotificationSubscription(): void {
-    if (this.workplaceId) {
-      this.subscriptions.add(
-        this.notificationsService.getAllNotifications(this.workplaceId).subscribe(
-          (notifications) => {
-            this.notificationsService.notifications$.next(notifications);
-          },
-          (error) => {
-            console.error(error.error);
-          },
-        ),
-      );
-    }
+    // get latest notification after every 60 seconds
+    this.subscriptions.add(
+      interval(60000).subscribe(() => {
+        if (this.workplaceId) {
+          this.notificationsService.getAllNotifications(this.workplaceId).subscribe(
+            (notifications) => {
+              this.notificationsService.notifications$.next(notifications);
+            },
+            (error) => {
+              console.error(error.error);
+            },
+          );
+        }
+      }),
+    );
   }
 
   get numberOfNewNotifications(): number {
