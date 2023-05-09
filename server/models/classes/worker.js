@@ -707,7 +707,7 @@ class Worker extends EntityValidator {
           // now append the extendable properties
 
           const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
-         
+
           // note - if the worker was created online, but then updated via bulk upload, the source become bulk and vice-versa.
           const updateDocument = {
             ...modifedUpdateDocument,
@@ -728,7 +728,7 @@ class Worker extends EntityValidator {
 
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
-            returning: true,
+            returning: ['*'],
             individualHooks: true,
             where: {
               uid: this.uid,
@@ -1082,7 +1082,7 @@ class Worker extends EntityValidator {
 
       // now save the document
       const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
-        returning: true,
+        returning: ['*'],
         individualHooks: true,
         where: {
           uid: this.uid,
@@ -1779,7 +1779,7 @@ class Worker extends EntityValidator {
         LocalIdentifierChangedAt: updatedTimestamp,
       },
       {
-        returning: true,
+        returning: ['*'],
         individualHooks: true,
         where: {
           uid: thisGivenWorker.uid,
