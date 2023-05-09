@@ -74,12 +74,14 @@
         "runtime": "nodejs12.x"
       }
     },
+    // configuration for front end debugging
     {
       "name": "Debug Angular",
       "request": "launch",
       "type": "chrome",
       "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "skipFiles": ["node_modules/**/*.js"]
     },
     {
       "name": "ng serve",
@@ -88,11 +90,12 @@
       "preLaunchTask": "npm: start",
       "url": "http://localhost:8080"
     },
+
+    // configuration for backend debugging
     {
       "type": "node",
       "request": "attach",
       "name": "Debug Node",
-      "port": 9229,
       "processId": "${command:PickProcess}"
     },
     {
@@ -100,6 +103,7 @@
       "request": "launch",
       "name": "Launch Program",
       "program": "${workspaceFolder}/server.js",
+      "skipFiles": ["node_modules/**/*.js"],
       "stopOnEntry": true
     },
     {
