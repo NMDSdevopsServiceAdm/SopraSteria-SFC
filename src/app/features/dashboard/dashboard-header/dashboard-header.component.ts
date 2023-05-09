@@ -9,7 +9,7 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
-import { interval, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -125,18 +125,16 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
   }
 
   private setUpNotificationSubscription(): void {
-    // get latest notification after every 30 seconds
+    // Remove when new designs are for all establishments
     this.subscriptions.add(
-      interval(30000).subscribe(() => {
-        this.notificationsService.getAllNotifications(this.workplaceUid).subscribe(
-          (notifications) => {
-            this.notificationsService.notifications$.next(notifications);
-          },
-          (error) => {
-            console.error(error.error);
-          },
-        );
-      }),
+      this.notificationsService.getAllNotifications(this.workplaceUid).subscribe(
+        (notifications) => {
+          this.notificationsService.notifications$.next(notifications);
+        },
+        (error) => {
+          console.error(error.error);
+        },
+      ),
     );
   }
 
