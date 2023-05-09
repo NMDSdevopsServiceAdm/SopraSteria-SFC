@@ -1,64 +1,29 @@
-import { Overlay } from '@angular/cdk/overlay';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment } from '@core/model/establishment.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { NotificationsService } from '@core/services/notifications/notifications.service';
-import { Subscription } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
+import { WindowRef } from '@core/services/window.ref';
+import { NotificationBecomeAParentComponent } from '@features/notifications/notification-become-a-parent/notification-become-a-parent.component';
+import { NotificationTypePipe } from '@shared/pipes/notification-type.pipe';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
-@Component({
-  selector: 'app-notification-become-a-parent',
-  templateUrl: './notification-become-a-parent.component.html',
-  providers: [Overlay],
-})
-export class NotificationBecomeAParentComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription = new Subscription();
+import createSpy = jasmine.createSpy;
+describe('NotificationBecomeAParentComponent', () => {
+  async function setup(approved = true) {
+    const component = await render(NotificationBecomeAParentComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      declarations: [NotificationTypePipe],
+    });
 
-  public workplace: Establishment;
-  public notification;
-  public notificationUid: string;
-  public status: string;
-
-  constructor(
-    private route: ActivatedRoute,
-    private breadcrumbService: BreadcrumbService,
-    private establishmentService: EstablishmentService,
-    private notificationsService: NotificationsService,
-  ) {}
-
-  ngOnInit() {
-    this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
-    this.workplace = this.establishmentService.primaryWorkplace;
-    this.notificationUid = this.route.snapshot.params.notificationuid;
-    this.subscriptions.add(
-      this.notificationsService.getNotificationDetails(this.notificationUid).subscribe((details) => {
-        this.notification = details;
-      }),
-    );
-    this.setNotificationViewed(this.notificationUid);
+    return {
+      component,
+    };
   }
 
-  private setNotificationViewed(notificationUid) {
-    this.subscriptions.add(
-      this.notificationsService.setNoticationViewed(notificationUid).subscribe(
-        (resp) => {
-          if (resp) {
-            this.notificationsService.notifications.forEach((notification, i) => {
-              if (notification.notificationUid === resp.notificationUid) {
-                this.notificationsService.notifications[i] = resp;
-              }
-            });
-            this.notificationsService.notifications$.next(this.notificationsService.notifications);
-          }
-        },
-        (error) => console.log('Could not update notification.'),
-      ),
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-}
+  it('should render', async () => {
+    const { component } = await setup();
+    expect(component).toBeTruthy();
+  });
+});

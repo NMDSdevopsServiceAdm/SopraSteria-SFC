@@ -23,26 +23,31 @@ export class SwitchWorkplaceService {
   ) {}
 
   public navigateToWorkplace(id, username, nmdsId): void {
-    if (!username && nmdsId) {
-      this.getAllNotificationWorkplace(nmdsId).subscribe((data) => {
-        if (data) {
-          this.notificationData = data;
-        }
-      });
-    }
     this.getNewEstablishmentId(id, username).subscribe(
       (data) => {
         this.authService.token = data.headers.get('authorization');
         this.permissionsService.hasWorkplacePermissions(data.body.establishment.uid).subscribe(() => {
           this.onSwapSuccess(data);
         });
+
+        const params = {
+          establishmentUid: data.body.establishment.uid,
+        }
+
+        if (!username && nmdsId) {
+          this.notificationsService.getAllNotifications(data.body.establishment.uid).subscribe((data) => {
+            if (data) {
+              this.notificationData = data;
+            }
+          });
+        }
       },
       (error) => this.onError(error),
     );
   }
 
-  public getAllNotificationWorkplace(nmdsId) {
-    return this.http.get<any>(`/api/user/swap/establishment/notification/${nmdsId}`);
+  public getAllNotificationWorkplace(nmdsId, params) {
+    return this.http.get<any>(`/api/user/swap/establishment/notification/${nmdsId}`, params);
   }
 
   public getNewEstablishmentId(id, username) {
@@ -63,7 +68,7 @@ export class SwitchWorkplaceService {
         .pipe(take(1))
         .subscribe(
           (workplace) => {
-            this.notificationsService.getAllNotifications().subscribe((notify) => {
+            this.notificationsService.getAllNotifications(data.body.establishmentUid).subscribe((notify) => {
               this.notificationsService.notifications$.next(this.notificationData ? this.notificationData : notify);
               this.establishmentService.setState(workplace);
               this.establishmentService.setPrimaryWorkplace(workplace);
