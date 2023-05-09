@@ -6,8 +6,7 @@ import {
   NotificationRequest,
   NotificationTypes,
 } from '@core/model/notifications.model';
-import { BehaviorSubject, Observable, zip } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +15,7 @@ export class NotificationsService {
   public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject(null);
   constructor(private http: HttpClient) {}
 
-  public getAllNotifications(establishmentUid, limit = undefined, sort = undefined, page = undefined) {
+  public getAllNotifications(establishmentUid, limit?, sort?, page?) {
     const queryParams = [];
     if (limit) queryParams.push(`limit=${limit}`);
     if (sort) queryParams.push(`sort=${sort}`);

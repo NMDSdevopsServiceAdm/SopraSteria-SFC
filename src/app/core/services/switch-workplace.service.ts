@@ -29,18 +29,6 @@ export class SwitchWorkplaceService {
         this.permissionsService.hasWorkplacePermissions(data.body.establishment.uid).subscribe(() => {
           this.onSwapSuccess(data);
         });
-
-        const params = {
-          establishmentUid: data.body.establishment.uid,
-        }
-
-        if (!username && nmdsId) {
-          this.notificationsService.getAllNotifications(data.body.establishment.uid).subscribe((data) => {
-            if (data) {
-              this.notificationData = data;
-            }
-          });
-        }
       },
       (error) => this.onError(error),
     );
@@ -68,7 +56,7 @@ export class SwitchWorkplaceService {
         .pipe(take(1))
         .subscribe(
           (workplace) => {
-            this.notificationsService.getAllNotifications(data.body.establishmentUid).subscribe((notify) => {
+            this.notificationsService.getAllNotifications(workplaceUid).subscribe((notify) => {
               this.notificationsService.notifications$.next(this.notificationData ? this.notificationData : notify);
               this.establishmentService.setState(workplace);
               this.establishmentService.setPrimaryWorkplace(workplace);

@@ -6,7 +6,7 @@ import { IdleService } from '@core/services/idle.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { UserService } from '@core/services/user.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { interval, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -87,9 +87,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private setUpNotificationSubscription(): void {
-    // get latest notification after every 30 seconds
-    this.subscriptions.add(
-      interval(30000).subscribe(() => {
+    if (this.workplaceId) {
+      this.subscriptions.add(
         this.notificationsService.getAllNotifications(this.workplaceId).subscribe(
           (notifications) => {
             this.notificationsService.notifications$.next(notifications);
@@ -97,9 +96,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
           (error) => {
             console.error(error.error);
           },
-        );
-      }),
-    );
+        ),
+      );
+    }
   }
 
   get numberOfNewNotifications(): number {
