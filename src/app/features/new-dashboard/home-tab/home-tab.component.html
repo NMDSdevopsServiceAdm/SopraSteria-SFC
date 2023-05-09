@@ -43,7 +43,7 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <app-new-article-list data-testid="article-list"></app-new-article-list>
-      <div class="govuk-!-margin-top-7">
+      <div class="govuk-!-margin-top-7" data-cy="home-other-links">
         <h3 class="govuk-heading-s">Other links</h3>
         <ul class="govuk-list govuk-!-margin-bottom-6">
           <app-link-with-arrow>
@@ -57,7 +57,7 @@
             <a class="govuk-link" [routerLink]="['/bulk-upload']">Bulk upload your data</a>
           </app-link-with-arrow>
 
-          <app-link-with-arrow>
+          <app-link-with-arrow *ngIf="canViewReports">
             <a class="govuk-link" [routerLink]="['/wdf']">Does your data meet WDF requirements?</a>
           </app-link-with-arrow>
 

@@ -43,7 +43,7 @@
       ></app-staff-mismatch-banner>
     </ng-container>
 
-    <div *ngIf="workplace">
+    <div *ngIf="workplace" data-cy="main-home-links">
       <div>
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
           <a [routerLink]="['/benefits-bundle']">
@@ -70,7 +70,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="workplace" class="govuk-grid-column-one-third">
+  <div *ngIf="workplace" class="govuk-grid-column-one-third" data-cy="home-other-links">
     <app-article-list></app-article-list>
     <h3 class="govuk-heading-s govuk-!-margin-top-1">Other links</h3>
     <ul class="govuk-list govuk-!-margin-bottom-6">
@@ -84,7 +84,7 @@
         <a [routerLink]="['/about-ascwds']">About ASC-WDS</a>
       </li>
       <li *ngIf="canViewWorkplaces" class="govuk-!-margin-bottom-3">
-        <a [routerLink]="['/workplace', 'view-all-workplaces']">View all workplaces</a>
+        <a [routerLink]="['/workplace', 'view-all-workplaces']" data-cy="view-all-workplaces">View all workplaces</a>
       </li>
       <li *ngIf="canViewChangeDataOwner" class="govuk-!-margin-bottom-3">
         <ng-container *ngIf="isOwnershipRequested; else changeDataOwner">
@@ -123,7 +123,7 @@
         <a [routerLink]="['/first-login-wizard']">Help to get you started</a>
       </li>
     </ul>
-    <div *ngIf="canRunLocalAuthorityReport && workplace">
+    <div *ngIf="canRunLocalAuthorityReport && workplace" data-cy="download-report">
       <h3 class="govuk-heading-s govuk-!-margin-top-1">Download reports</h3>
       <ul *ngIf="workplace" class="govuk-list">
         <li>

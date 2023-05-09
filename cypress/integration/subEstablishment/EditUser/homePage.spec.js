@@ -1,23 +1,20 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
-describe('Parent home page as edit user', () => {
+describe('Sub home page as edit user', () => {
   before(() => {
     cy.wait(2000);
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
   });
 
   it('should see the admin page', () => {
-    cy.contains('Parent');
-    cy.contains('Aster House');
-  });
-
-  it('should show view all workplaces link', () => {
-    cy.get('[data-cy="view-all-workplaces"]').should('contain', 'View all workplaces');
+    cy.contains('Buckden Court');
+    cy.contains('Training');
   });
 
   it('should show all tabs', () => {
@@ -32,7 +29,11 @@ describe('Parent home page as edit user', () => {
     cy.get('[data-cy="main-home-links"]').should('contain', 'Bulk upload your data');
   });
 
-  it('should show download reports', () => {
-    cy.get('[data-cy="download-report"]').should('exist');
+  it('should show remove link to parent organisation', () => {
+    cy.get('[data-cy="home-other-links"]').should('contain', 'Remove link to my parent organisation');
+  });
+
+  it('should show set data permissions', () => {
+    cy.get('[data-cy="home-other-links"]').should('contain', 'Set data permissions');
   });
 });
