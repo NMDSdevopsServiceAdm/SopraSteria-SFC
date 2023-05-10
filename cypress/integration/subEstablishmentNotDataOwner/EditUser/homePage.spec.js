@@ -16,7 +16,7 @@ describe('Sub home page as edit user where parent owns the data', () => {
     cy.contains('Workplace test 1');
   });
 
-  it('should show all tabs', () => {
+  it('should show all tabs when sub has view workplace and staff records permissions', () => {
     onHomePage.allTabs();
   });
 
