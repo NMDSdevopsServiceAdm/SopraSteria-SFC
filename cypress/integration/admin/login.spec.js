@@ -21,7 +21,7 @@ describe('As an admin I want to login', () => {
     cy.get('[data-cy="admin-heading"]').should('contain', 'Admin');
   });
 
-  it('sshould show an error summary box with an error message on password input when username is not provided and focus on the input when summary box link is clicked', () => {
+  it('should show an error summary box with an error message on password input when username is not provided and focus on the input when summary box link is clicked', () => {
     onLoginPage.submitFormWithNoUsername(Cypress.env('userPassword'));
     onLoginPage.showsErrorSummary('Enter your username');
     cy.get('[data-cy="username-error"]').should('contain', 'Enter your username');
