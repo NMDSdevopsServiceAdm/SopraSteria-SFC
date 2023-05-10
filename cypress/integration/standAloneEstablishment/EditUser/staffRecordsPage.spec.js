@@ -16,5 +16,6 @@ describe('Standalone staff records page as edit user', () => {
     cy.get('[data-cy="dashboard-header"]').should('contain', 'df');
     cy.get('[data-cy="dashboard-header"]').find('[data-testid="lastUpdatedDate"]').should('exist');
     cy.get('[data-cy="dashboard-header"]').should('contain', 'Add a staff record');
+    cy.get('[data-testid="staff-records"]').should('exist');
   });
 });

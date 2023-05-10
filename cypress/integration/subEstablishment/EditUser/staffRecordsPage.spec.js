@@ -13,8 +13,8 @@ describe('Sub staff records page as edit user', () => {
   });
 
   it('should show the staff records page', () => {
-    cy.get('[data-cy="dashboard-header"]').should('contain', 'df');
-    cy.get('[data-cy="dashboard-header"]').find('[data-testid="lastUpdatedDate"]').should('exist');
-    cy.get('[data-cy="dashboard-header"]').should('contain', 'Add a staff record');
+    cy.get('[data-cy="add-staff-record-button"]').should('contain', 'Add a staff record');
+    cy.get('[data-cy="total-staff-panel"]').should('exist');
+    cy.get('[data-cy="staff-summary"]').should('exist');
   });
 });
