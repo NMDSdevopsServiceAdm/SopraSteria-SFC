@@ -44,3 +44,10 @@ Database connection parameters can be overridden using environment variables:
 4. All Angular Directives must be wrapped in square brackets `[]`.
 5. Dialogs `h1` element should contain the id `id="dialogHeading"`.
 6. Download links must contain a valid `href` containing the filename.
+
+
+# Debugging 
+
+Choose `Debug Angular` from Run and Debug dropdown for debugging frontend .
+Choose `Debug Node` from Run and Debug dropdown for debugging backend .
+
