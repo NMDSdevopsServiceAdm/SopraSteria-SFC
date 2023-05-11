@@ -9,7 +9,7 @@ describe('Standalone home page as read only user', () => {
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('readOnlyStandAlonUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(Cypress.env('readOnlyStandAloneUser'), Cypress.env('userPassword'));
   });
 
   it('should see the admin page', () => {
