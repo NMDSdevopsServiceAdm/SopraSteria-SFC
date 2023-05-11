@@ -21,26 +21,18 @@ describe('As an admin I want to login', () => {
     cy.get('[data-cy="admin-heading"]').should('contain', 'Admin');
   });
 
-  it('should show an error summary box and error on username input when username is not provided', () => {
+  it('should show an error summary box with an error message on password input when username is not provided and focus on the input when summary box link is clicked', () => {
     onLoginPage.submitFormWithNoUsername(Cypress.env('userPassword'));
     onLoginPage.showsErrorSummary('Enter your username');
     cy.get('[data-cy="username-error"]').should('contain', 'Enter your username');
-  });
-
-  it('should move focus to username input when no username is provided and the error in the summary box is clicked', () => {
-    onLoginPage.submitFormWithNoUsername(Cypress.env('userPassword'));
     onLoginPage.clickErrorLinkSetsFocus('Enter your username');
     cy.get('[data-cy="username"]').should('be.focused');
   });
 
-  it('should show an error summary box and error on password input when password is not provided', () => {
+  it('should show an error summary box with an error message on password input when password is not provided and focus on the input when summary box link is clicked', () => {
     onLoginPage.submitFormWithNoPassword(Cypress.env('adminUser'));
     onLoginPage.showsErrorSummary('Enter your password');
     cy.get('[data-cy="password-error"]').should('contain', 'Enter your password');
-  });
-
-  it('should move focus to password input when no password is provided and the error in the summary box is clicked', () => {
-    onLoginPage.submitFormWithNoPassword(Cypress.env('adminUser'));
     onLoginPage.clickErrorLinkSetsFocus('Enter your password');
     cy.get('[data-cy="password"]').should('be.focused');
   });

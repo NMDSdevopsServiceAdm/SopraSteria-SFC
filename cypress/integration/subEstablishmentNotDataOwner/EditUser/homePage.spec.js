@@ -1,9 +1,8 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
-describe('Sub home page as edit user', () => {
+describe('Sub home page as edit user where parent owns the data', () => {
   before(() => {
     cy.wait(2000);
   });
@@ -17,7 +16,7 @@ describe('Sub home page as edit user', () => {
     cy.contains('Workplace test 1');
   });
 
-  it('should show all tabs', () => {
+  it('should show all tabs when sub has view workplace and staff records permissions', () => {
     onHomePage.allTabs();
   });
 

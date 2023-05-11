@@ -14,6 +14,10 @@ export class HomePage {
     cy.get('[data-cy="tab-list"]').contains('Workplace');
     cy.get('[data-cy="tab-list"]').contains('Benchmarks');
   }
+
+  clickTab(tab) {
+    cy.get('[data-cy="tab-list"]').contains(tab).click();
+  }
 }
 
 export const onHomePage = new HomePage();
