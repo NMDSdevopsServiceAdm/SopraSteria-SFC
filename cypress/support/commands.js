@@ -4,17 +4,21 @@ Cypress.Commands.add('openLoginPage', () => {
 });
 
 Cypress.Commands.add('loginAsAdmin', () => {
+  cy.intercept('POST', '/api/login').as('login');
   cy.visit('/');
   cy.get('[data-cy="username"]').type(Cypress.env('adminUser'));
   cy.get('[data-cy="password"]').type(Cypress.env('userPassword'));
   cy.get('[data-testid="signinButton"]').click();
+  cy.wait('@login');
 });
 
 Cypress.Commands.add('loginAsUser', (username, password) => {
+  cy.intercept('POST', '/api/login').as('login');
   cy.visit('/');
   cy.get('[data-cy="username"]').type(username);
   cy.get('[data-cy="password"]').type(password);
   cy.get('[data-testid="signinButton"]').click();
+  cy.wait('@login');
 });
 
 // Cypress.Commands.add('loginAsUser', (username, password) => {

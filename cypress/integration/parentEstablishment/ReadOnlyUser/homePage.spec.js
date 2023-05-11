@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Parent home page as read only user', () => {
@@ -12,7 +11,7 @@ describe('Parent home page as read only user', () => {
     cy.loginAsUser(Cypress.env('readOnlyParentUser'), Cypress.env('userPassword'));
   });
 
-  it('should see the admin page', () => {
+  it('should see the parent establishment home page', () => {
     cy.contains('Parent');
     cy.contains('Aster House');
   });

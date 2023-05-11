@@ -11,7 +11,7 @@ describe('Parent home page as edit user', () => {
     cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
   });
 
-  it('should see the admin page', () => {
+  it('should see the parent establishment home page', () => {
     cy.contains('Parent');
     cy.contains('Aster House');
   });

@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub home page as read only user', () => {
@@ -12,7 +11,7 @@ describe('Sub home page as read only user', () => {
     cy.loginAsUser(Cypress.env('readOnlySubUser'), Cypress.env('userPassword'));
   });
 
-  it('should see the admin page', () => {
+  it('should see the sub establishment home page', () => {
     cy.contains('Buckden Court');
     cy.contains('Training');
   });

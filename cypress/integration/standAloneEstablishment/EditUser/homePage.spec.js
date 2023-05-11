@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Standalone home page as edit user', () => {
@@ -12,7 +11,7 @@ describe('Standalone home page as edit user', () => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
   });
 
-  it('should see the admin page', () => {
+  it('should see the standalone establishment home page', () => {
     cy.contains('df');
   });
 
