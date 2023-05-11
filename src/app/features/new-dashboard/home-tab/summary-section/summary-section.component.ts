@@ -30,7 +30,7 @@ export class SummarySectionComponent implements OnInit {
       message: '',
       route: undefined,
       redFlag: false,
-      link: true
+      link: true,
     },
   ];
 
@@ -104,8 +104,8 @@ export class SummarySectionComponent implements OnInit {
   public getTrainingAndQualsSummary(): void {
     if (this.trainingCounts.missingMandatoryTraining) {
       this.sections[2].redFlag = true;
-      this.sections[2].message = `${this.trainingCounts.missingMandatoryTraining} staff ${
-        this.trainingCounts.missingMandatoryTraining > 1 ? 'are' : 'is'
+      this.sections[2].message = `${this.trainingCounts.staffMissingMandatoryTraining} staff ${
+        this.trainingCounts.staffMissingMandatoryTraining > 1 ? 'are' : 'is'
       } missing mandatory training`;
       this.sections[2].route = [
         '/workplace',
