@@ -8,7 +8,7 @@ describe('Standalone home page as edit user', () => {
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(Cypress.env('readOnlyStandAlonUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
     cy.reload();
   });
@@ -20,9 +20,5 @@ describe('Standalone home page as edit user', () => {
 
   it('should show all sections', () => {
     onWorkplacePage.allSectionsAreVisible();
-  });
-
-  it('All sections have a change link', () => {
-    onWorkplacePage.allSectionsAreChangeable();
   });
 });
