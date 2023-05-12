@@ -12,7 +12,7 @@
       [workplaceID]="workplace.uid"
       (downloadPDF)="downloadAsPDF()"
     ></app-new-comparison-group-header>
-    <div class="govuk-grid-row">
+    <div class="govuk-grid-row" data-cy="benchmarks-tiles">
       <app-benchmark-tile
         [canViewFullContent]="canViewFullBenchmarks"
         [content]="payContent"

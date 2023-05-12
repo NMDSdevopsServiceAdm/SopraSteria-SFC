@@ -10,6 +10,10 @@
     "readOnlySubUserNonDataOwner": "readonlysubnondataowner",
     "editStandAloneUser": "editstandalone",
     "readOnlyStandAloneUser": "readonlystandalone",
+    "editParentMainServiceOne": "editparentmainserviceone",
+    "editParentMainServiceTwo": "editparentmainservicetwo",
+    "editParentMainServiceSix": "editparentmainservicesix",
+    "editParentMainServiceEight": "editparent",
     "apiUrl": "http://localhost:8080/"
   },
   "baseUrl": "http://localhost:8080",
