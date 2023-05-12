@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 
 import { onBenchmarksPage } from '../../../../support/page_objects/onBenchmarksPage';
+import { onHomePage } from '../../../../support/page_objects/onHomePage';
 
 describe('Parent benchmark page, main service 1, as edit user', () => {
   before(() => {
@@ -10,7 +11,7 @@ describe('Parent benchmark page, main service 1, as edit user', () => {
 
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editParentMainServiceOne'), Cypress.env('userPassword'));
-    cy.get('[data-cy="tab-list"]').contains('Benchmarks').click();
+    onHomePage.clickTab('Benchmarks');
   });
 
   it('should go to the benchmarks page', () => {
