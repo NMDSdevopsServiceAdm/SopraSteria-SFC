@@ -102,7 +102,7 @@ export class SummarySectionComponent implements OnInit {
   }
 
   public getTrainingAndQualsSummary(): void {
-    if (this.trainingCounts.missingMandatoryTraining) {
+    if (this.trainingCounts.staffMissingMandatoryTraining) {
       this.sections[2].redFlag = true;
       this.sections[2].message = `${this.trainingCounts.staffMissingMandatoryTraining} staff ${
         this.trainingCounts.staffMissingMandatoryTraining > 1 ? 'are' : 'is'
