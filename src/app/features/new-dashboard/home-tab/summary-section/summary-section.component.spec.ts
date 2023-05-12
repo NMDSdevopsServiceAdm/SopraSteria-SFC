@@ -306,7 +306,7 @@ describe('Summary section', () => {
 
     describe('Missing mandatory training message', () => {
       it('should show when mandatory training is missing for multiple users', async () => {
-        const trainingCounts = { missingMandatoryTraining: 2 };
+        const trainingCounts = { staffMissingMandatoryTraining: 2 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
@@ -315,7 +315,7 @@ describe('Summary section', () => {
       });
 
       it('should show when mandatory training is missing for a single user', async () => {
-        const trainingCounts = { missingMandatoryTraining: 1 };
+        const trainingCounts = { staffMissingMandatoryTraining: 1 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
@@ -324,7 +324,7 @@ describe('Summary section', () => {
       });
 
       it('should not show when mandatory training is not missing', async () => {
-        const trainingCounts = { missingMandatoryTraining: 0 };
+        const trainingCounts = { staffMissingMandatoryTraining: 0 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
