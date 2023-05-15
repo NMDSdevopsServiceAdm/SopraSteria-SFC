@@ -606,6 +606,8 @@ describe('benchmarks', () => {
     it('should return the correct meta Data', async () => {
       sinon.stub(models.dataImports, 'benchmarksLastUpdated').returns(new Date(2020, 0, 1));
 
+      const establishmentId = 1;
+
       const benchmarkComparisonGroup = {
         CssrID: 0,
         MainServiceFK: 0,
@@ -621,21 +623,23 @@ describe('benchmarks', () => {
         workplaces: 5,
         staff: 1000,
         lastUpdated: new Date(2020, 0, 1),
+        localAuthority: null,
       };
-      const json = await benchmarks.getMetaData(benchmarkComparisonGroup);
+      const json = await benchmarks.getMetaData(benchmarkComparisonGroup, establishmentId);
 
       expect(json).to.deep.equal(expectedJson);
     });
     it('should return the correct meta data when there is no comparison group data', async () => {
       sinon.stub(models.dataImports, 'benchmarksLastUpdated').returns(null);
       const benchmarkComparisonGroup = null;
-
+      const establishmentId = 1;
       const expectedJson = {
         workplaces: 0,
         staff: 0,
         lastUpdated: null,
+        localAuthority: null,
       };
-      const json = await benchmarks.getMetaData(benchmarkComparisonGroup);
+      const json = await benchmarks.getMetaData(benchmarkComparisonGroup, establishmentId);
 
       expect(json).to.deep.equal(expectedJson);
     });
