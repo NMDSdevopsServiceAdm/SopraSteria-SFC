@@ -45,7 +45,7 @@ const addTypeContent = async (notification) => {
       if (subQuery.length === 1) {
         if (subQuery[0].createdByUserUID) {
           const requestorName = await notifications.getRequesterName(notification.createdByUserUID);
-          if (requestorName) {
+          if (requestorName && requestorName.length > 0) {
             subQuery.forEach(function (element) {
               element.requestorName = requestorName[0].NameValue;
             });

@@ -30,6 +30,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
   public ownerShipRequestedFrom: string;
   public ownerShipRequestedTo: string;
   public isSubWorkplace: boolean;
+  private ownerShipRequestedToUid: string;
 
   eventsSubject: Subject<string> = new Subject<string>();
 
@@ -47,21 +48,35 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
     this.eventsSubscription = this.events.subscribe((action) => this.performAction(action));
     this.workplace = this.establishmentService.primaryWorkplace;
 
-    this.ownerShipRequestedFrom =
-      this.notification.typeContent.requestedOwnerType === 'Workplace'
-        ? this.notification.typeContent.parentEstablishmentName
-        : this.notification.typeContent.subEstablishmentName;
-    this.ownerShipRequestedTo =
-      this.notification.typeContent.requestedOwnerType === 'Workplace'
-        ? this.notification.typeContent.subEstablishmentName
-        : this.notification.typeContent.parentEstablishmentName;
-
+    this.setOwnershipRequestVariables();
+    console.log(this.ownerShipRequestedFrom);
+    console.log(this.ownerShipRequestedTo);
+    console.log(this.ownerShipRequestedToUid);
     this.notificationUid = this.route.snapshot.params.notificationuid;
-
     if (this.notification.typeContent.approvalStatus === 'APPROVED') {
       this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
     } else {
       this.isWorkPlaceIsRequester = this.workplace.name === this.ownerShipRequestedFrom;
+    }
+  }
+
+  private setOwnershipRequestVariables(): void {
+    const {
+      requestedOwnerType,
+      subEstablishmentName,
+      subEstablishmentUid,
+      parentEstablishmentName,
+      parenteEstablishmentUid,
+    } = this.notification.typeContent;
+
+    if (requestedOwnerType === 'Workplace') {
+      this.ownerShipRequestedFrom = parentEstablishmentName;
+      this.ownerShipRequestedTo = subEstablishmentName;
+      this.ownerShipRequestedToUid = subEstablishmentUid;
+    } else {
+      this.ownerShipRequestedFrom = subEstablishmentName;
+      this.ownerShipRequestedTo = parentEstablishmentName;
+      this.ownerShipRequestedToUid = parenteEstablishmentUid;
     }
   }
 
@@ -86,7 +101,9 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
         rejectionReason: null,
         type: OWNERSHIP_APPROVED,
         existingNotificationUid: this.notificationUid,
+        requestorUid: this.ownerShipRequestedToUid,
       };
+
       this.subscriptions.add(
         this.notificationsService
           .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
@@ -140,11 +157,13 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
   }
 
   private rejectPermissionRequest(requestRejected) {
+    console.log('REJECT PERMISSION REQUEST');
     const requestParameter = {
       approvalStatus: 'DENIED',
       rejectionReason: requestRejected.rejectionReason,
       type: OWNERSHIP_REJECTED,
       existingNotificationUid: this.notification.notificationUid,
+      requestorUid: this.ownerShipRequestedToUid,
     };
     this.subscriptions.add(
       this.notificationsService
