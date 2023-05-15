@@ -1,0 +1,39 @@
+<app-new-dashboard-header
+  [tab]="'benchmarks'"
+  [updatedDate]="tilesData?.meta.lastUpdated"
+  data-html2canvas-ignore
+></app-new-dashboard-header>
+
+<div class="govuk-width-container govuk-!-margin-top-7">
+  <app-benchmarks-select-view-panel
+    [viewBenchmarksByCategory]="viewBenchmarksByCategory"
+    (handleViewToggle)="handleViewBenchmarksByCategory($event)"
+  >
+  </app-benchmarks-select-view-panel>
+  <div class="govuk-!-margin-top-7">
+    <ng-container *ngIf="viewBenchmarksByCategory">
+      <h2 class="govuk-heading-l">Recruitment and retention</h2>
+    </ng-container>
+  </div>
+  <ng-container *ngIf="!viewBenchmarksByCategory">
+    <h2 class="govuk-heading-l">Pay</h2>
+  </ng-container>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <a
+        class="asc-font-19"
+        data-html2canvas-ignore
+        [routerLink]="['/workplace', workplace.uid, 'benchmarks', 'about-the-data']"
+        (click)="setReturn()"
+        >About the data</a
+      >
+      <div *ngIf="tilesData?.meta.lastUpdated" data-testid="benchmarksLastUpdatedDate">
+        <p class="govuk-body">
+          The comparison group data was refreshed on {{ tilesData?.meta.lastUpdated | date: 'd MMMM y' }}
+        </p>
+      </div>
+    </div>
+    <div class="govuk-grid-column-two-thirds"></div>
+  </div>
+</div>
