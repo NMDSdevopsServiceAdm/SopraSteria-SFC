@@ -1,0 +1,34 @@
+<div class="govuk-!-margin-top-5 govuk-!-margin-bottom-4">
+  <ul class="govuk-tabs__list asc-tabs__list" role="tablist">
+    <li
+      class="govuk-tabs__list-item asc-tabs__list-item"
+      data-testid="payListItem"
+      [class.asc-tabs__list-item--active]="!viewBenchmarksByCategory"
+    >
+      <a
+        id="tab_pay"
+        class="govuk-tabs__tab asc-tabs__link"
+        [class.asc-tabs__link--active]="!viewBenchmarksByCategory"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event)"
+        >Pay</a
+      >
+    </li>
+    <li
+      class="govuk-tabs__list-item asc-tabs__list-item"
+      data-testid="recruitmentListItem"
+      [class.asc-tabs__list-item--active]="viewBenchmarksByCategory"
+    >
+      <a
+        id="tab_recruitment"
+        class="govuk-tabs__tab asc-tabs__link"
+        [class.asc-tabs__link--active]="viewBenchmarksByCategory"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event)"
+        >Recruitment and retention</a
+      >
+    </li>
+  </ul>
+</div>
