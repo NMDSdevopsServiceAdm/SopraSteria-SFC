@@ -64,6 +64,7 @@ describe('BenchmarksTabComponent', () => {
         workplaces: 10,
         staff: 100,
         updated: null,
+        localAuthority: 'Test LA',
       },
     };
     component.tilesData = tileData;
