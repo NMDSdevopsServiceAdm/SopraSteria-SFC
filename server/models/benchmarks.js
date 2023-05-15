@@ -140,7 +140,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Benchmarks.getBenchmarkData = async function (establishmentId) {
-    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
+    const cssr = await sequelize.models.cssr.getCSSR(establishmentId).id;
     const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
 
     const reportingId = mainService.reportingID;

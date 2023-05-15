@@ -29,15 +29,18 @@ const getTiles = async (establishmentId, tiles) => {
     reply.qualifications = await qualifications(establishmentId, benchmarkComparisonGroup);
   if (tiles.includes('turnover')) reply.turnover = await turnover(establishmentId, benchmarkComparisonGroup);
 
-  reply.meta = await getMetaData(benchmarkComparisonGroup);
+  reply.meta = await getMetaData(benchmarkComparisonGroup, establishmentId);
   return reply;
 };
 
-const getMetaData = async (benchmarkComparisonGroup) => {
+const getMetaData = async (benchmarkComparisonGroup, establishmentId) => {
+  const cssr = await models.cssr.getCSSR(establishmentId);
+
   return {
     workplaces: benchmarkComparisonGroup ? benchmarkComparisonGroup.workplaces : 0,
     staff: benchmarkComparisonGroup ? benchmarkComparisonGroup.staff : 0,
     lastUpdated: await models.dataImports.benchmarksLastUpdated(),
+    localAuthority: cssr ? cssr.localAuthority : null,
   };
 };
 
