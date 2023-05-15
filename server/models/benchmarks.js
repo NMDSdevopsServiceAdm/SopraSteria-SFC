@@ -139,18 +139,17 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Benchmarks.getBenchmarkData = async function (establishmentId) {
-    const cssr = await sequelize.models.cssr.getCSSR(establishmentId).id;
+  Benchmarks.getBenchmarkData = async function (establishmentId, cssrId) {
     const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
 
     const reportingId = mainService.reportingID;
     const specificMainServiceReportingIds = [1, 2, 8];
     const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
 
-    if (!cssr) return {};
+    if (!cssrId) return {};
     return await this.findOne({
       where: {
-        CssrID: cssr,
+        CssrID: cssrId,
       },
       include: [
         {

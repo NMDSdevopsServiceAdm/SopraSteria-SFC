@@ -19,7 +19,8 @@ const comparisonGroupsJson = {
 };
 
 const getTiles = async (establishmentId, tiles) => {
-  let benchmarkComparisonGroup = await models.benchmarks.getBenchmarkData(establishmentId);
+  const cssr = await models.cssr.getCSSR(establishmentId);
+  let benchmarkComparisonGroup = await models.benchmarks.getBenchmarkData(establishmentId, cssr.id);
   let reply = {
     meta: {},
   };
@@ -29,13 +30,11 @@ const getTiles = async (establishmentId, tiles) => {
     reply.qualifications = await qualifications(establishmentId, benchmarkComparisonGroup);
   if (tiles.includes('turnover')) reply.turnover = await turnover(establishmentId, benchmarkComparisonGroup);
 
-  reply.meta = await getMetaData(benchmarkComparisonGroup, establishmentId);
+  reply.meta = await getMetaData(benchmarkComparisonGroup, cssr);
   return reply;
 };
 
-const getMetaData = async (benchmarkComparisonGroup, establishmentId) => {
-  const cssr = await models.cssr.getCSSR(establishmentId);
-
+const getMetaData = async (benchmarkComparisonGroup, cssr) => {
   return {
     workplaces: benchmarkComparisonGroup ? benchmarkComparisonGroup.workplaces : 0,
     staff: benchmarkComparisonGroup ? benchmarkComparisonGroup.staff : 0,
