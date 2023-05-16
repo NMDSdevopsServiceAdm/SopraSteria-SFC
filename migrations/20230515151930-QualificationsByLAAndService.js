@@ -21,14 +21,6 @@ module.exports = {
               key: 'reportingID',
             },
           },
-          DayssickAdjustedFixedAmount: {
-            type: Sequelize.DataTypes.DECIMAL(11, 10),
-            allowNull: false,
-          },
-          DayssickAdjustedMultiplication: {
-            type: Sequelize.DataTypes.DECIMAL(11, 10),
-            allowNull: false,
-          },
           ...column,
           BaseEstablishments: {
             type: Sequelize.DataTypes.INTEGER,
@@ -62,14 +54,14 @@ module.exports = {
       return Promise.all([
         createTable(
           queryInterface,
-          'QualificationsByLAAndService',
+          'BenchmarksQualificationsByLAAndService',
           null,
 
           t,
         ),
         createTable(
           queryInterface,
-          'QualificationsByLAAndServiceGoodOutstanding',
+          'BenchmarksQualificationsByLAAndServiceGoodOutstanding',
 
           {
             CQCGoodOutstandingRating: {
@@ -87,14 +79,20 @@ module.exports = {
   down: (queryInterface) => {
     return queryInterface.sequelize.transaction((transaction) => {
       return Promise.all([
-        queryInterface.dropTable({
-          tableName: 'QualificationsByLAAndService',
-          schema: 'cqc',
-        }),
-        queryInterface.dropTable({
-          tableName: 'QualificationsByLAAndServiceGoodOutstanding',
-          schema: 'cqc',
-        }),
+        queryInterface.dropTable(
+          {
+            tableName: 'BenchmarksQualificationsByLAAndService',
+            schema: 'cqc',
+          },
+          { transaction },
+        ),
+        queryInterface.dropTable(
+          {
+            tableName: 'BenchmarksQualificationsByLAAndServiceGoodOutstanding',
+            schema: 'cqc',
+          },
+          { transaction },
+        ),
       ]);
     });
   },

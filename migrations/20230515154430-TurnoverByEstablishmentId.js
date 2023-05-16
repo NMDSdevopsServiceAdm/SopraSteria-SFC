@@ -65,14 +65,14 @@ module.exports = {
       return Promise.all([
         createTable(
           queryInterface,
-          'TurnoverByEstablishmentId',
+          'BenchmarksTurnoverByEstId',
           null,
 
           t,
         ),
         createTable(
           queryInterface,
-          'TurnoverByEstablishmentIdGoodOutstanding',
+          'BenchmarksTurnoverByEstIdGoodOutstanding',
 
           {
             CQCGoodOutstandingRating: {
@@ -90,14 +90,20 @@ module.exports = {
   down: (queryInterface) => {
     return queryInterface.sequelize.transaction((transaction) => {
       return Promise.all([
-        queryInterface.dropTable({
-          tableName: 'TurnoverByEstablishmentId',
-          schema: 'cqc',
-        }),
-        queryInterface.dropTable({
-          tableName: 'TurnoverByEstablishmentIdGoodOutstanding',
-          schema: 'cqc',
-        }),
+        queryInterface.dropTable(
+          {
+            tableName: 'BenchmarksTurnoverByEstId',
+            schema: 'cqc',
+          },
+          { transaction },
+        ),
+        queryInterface.dropTable(
+          {
+            tableName: 'BenchmarksTurnoverByEstIdGoodOutstanding',
+            schema: 'cqc',
+          },
+          { transaction },
+        ),
       ]);
     });
   },

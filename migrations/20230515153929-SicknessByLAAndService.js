@@ -22,14 +22,6 @@ module.exports = {
             },
           },
           ...column,
-          DayssickAdjustedFixedAmount: {
-            type: Sequelize.DataTypes.DECIMAL(11, 10),
-            allowNull: false,
-          },
-          DayssickAdjustedMultiplication: {
-            type: Sequelize.DataTypes.DECIMAL(11, 10),
-            allowNull: false,
-          },
           BaseEstablishments: {
             type: Sequelize.DataTypes.INTEGER,
             allowNull: false,
@@ -38,7 +30,7 @@ module.exports = {
             type: Sequelize.DataTypes.INTEGER,
             allowNull: false,
           },
-          SicknessMean: {
+          AverageNoOfSickDays: {
             type: Sequelize.DataTypes.INTEGER,
             allowNull: false,
           },
@@ -54,14 +46,14 @@ module.exports = {
       return Promise.all([
         createTable(
           queryInterface,
-          'SicknessByLAAndService',
+          'BenchmarksSicknessByLAAndService',
           null,
 
           t,
         ),
         createTable(
           queryInterface,
-          'SicknessByLAAndServiceGoodOutstanding',
+          'BenchmarksSicknessByLAAndServiceGoodOutstanding',
 
           {
             CQCGoodOutstandingRating: {
@@ -79,14 +71,20 @@ module.exports = {
   down: (queryInterface) => {
     return queryInterface.sequelize.transaction((transaction) => {
       return Promise.all([
-        queryInterface.dropTable({
-          tableName: 'SicknessByLAAndService',
-          schema: 'cqc',
-        }),
-        queryInterface.dropTable({
-          tableName: 'SicknessByLAAndServiceGoodOutstanding',
-          schema: 'cqc',
-        }),
+        queryInterface.dropTable(
+          {
+            tableName: 'BenchmarksSicknessByLAAndService',
+            schema: 'cqc',
+          },
+          { transaction },
+        ),
+        queryInterface.dropTable(
+          {
+            tableName: 'BenchmarksSicknessByLAAndServiceGoodOutstanding',
+            schema: 'cqc',
+          },
+          { transaction },
+        ),
       ]);
     });
   },
