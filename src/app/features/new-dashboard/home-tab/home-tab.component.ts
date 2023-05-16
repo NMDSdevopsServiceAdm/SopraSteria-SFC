@@ -28,6 +28,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public benchmarksMessage: string;
   public canViewWorkplaces: boolean;
+  public canViewReports: boolean;
   public canViewChangeDataOwner: boolean;
   public canViewDataPermissionsLink: boolean;
   public canLinkToParent: boolean;
@@ -43,8 +44,9 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public trainingCounts: TrainingCounts;
   public user: UserDetails;
   public workplaceSummaryMessage: string;
-  public workerCreatedDate: Date;
+  public workersCreatedDate;
   public workerCount: number;
+  public workersNotCompleted: Worker[];
 
   constructor(
     private userService: UserService,
@@ -56,10 +58,16 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const { workerCreatedDate, workerCount = 0, trainingCounts } = this.route.snapshot.data.workers;
-    this.workerCreatedDate = workerCreatedDate;
+    const {
+      workersCreatedDate,
+      workerCount = 0,
+      trainingCounts,
+      workersNotCompleted,
+    } = this.route.snapshot.data.workers;
+    this.workersCreatedDate = workersCreatedDate;
     this.workerCount = workerCount;
     this.trainingCounts = trainingCounts;
+    this.workersNotCompleted = workersNotCompleted;
 
     this.user = this.userService.loggedInUser;
     this.setPermissionLinks();
@@ -130,6 +138,10 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
       this.workplace.parentUid != null &&
       this.workplace.dataOwner === 'Workplace' &&
       this.user.role != 'Read';
+
+    this.canViewReports =
+      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
+      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
 
     // if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
     //   this.isOwnershipRequested = true;
