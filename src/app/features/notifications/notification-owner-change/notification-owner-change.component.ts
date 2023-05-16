@@ -49,9 +49,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
 
     this.setOwnershipRequestVariables();
-    console.log(this.ownerShipRequestedFrom);
-    console.log(this.ownerShipRequestedTo);
-    console.log(this.ownerShipRequestedToUid);
+
     this.notificationUid = this.route.snapshot.params.notificationuid;
     if (this.notification.typeContent.approvalStatus === 'APPROVED') {
       this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
@@ -121,7 +119,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
                         this.alertService.addAlert({
                           type: 'success',
                           message: `Your decision to transfer ownership of data has been sent to
-                      ${this.notification.typeContent.requestorName} `,
+                      ${this.ownerShipRequestedTo} `,
                         });
                       }
                     });
@@ -157,7 +155,6 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
   }
 
   private rejectPermissionRequest(requestRejected) {
-    console.log('REJECT PERMISSION REQUEST');
     const requestParameter = {
       approvalStatus: 'DENIED',
       rejectionReason: requestRejected.rejectionReason,
@@ -178,7 +175,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
               this.alertService.addAlert({
                 type: 'success',
                 message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.requestorName} `,
+                  ${this.ownerShipRequestedTo} `,
               });
             }
           },
