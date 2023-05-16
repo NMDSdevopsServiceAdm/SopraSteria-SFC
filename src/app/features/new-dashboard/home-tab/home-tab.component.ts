@@ -81,25 +81,19 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
         this.permissionsService.can(this.workplace.uid, 'canRunLocalAuthorityReport');
     }
 
-    const benchmarksCareType = 'adult social care';
-
-    const townName = this.formatTownName(this.workplace.town);
-    this.benchmarksMessage = `There are ${
-      this.meta?.workplaces ? this.meta.workplaces : 0
-    } workplaces providing ${benchmarksCareType} in${townName}.`;
+    this.setBenchmarksMessage();
+    this.subscriptions.add();
   }
 
-  private formatTownName(townName: string): string {
-    const townArr = townName.toLowerCase().split(' ');
-    let output = '';
-    for (const word of townArr) {
-      let outputWord = word;
-      if (word != 'and') {
-        outputWord = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      }
-      output = `${output} ${outputWord}`;
-    }
-    return output;
+  private setBenchmarksMessage(): void {
+    const benchmarksCareType = 'adult social care';
+    this.benchmarksMessage = `There are ${
+      this.meta?.workplaces ? this.meta.workplaces : 0
+    } workplaces providing ${benchmarksCareType} in ${this.meta?.localAuthority}.`;
+  }
+
+  ngOnChanges(changes) {
+    this.setBenchmarksMessage();
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {

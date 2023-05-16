@@ -85,7 +85,7 @@ module.exports = function (sequelize, DataTypes) {
       include: [
         {
           model: sequelize.models.cssr,
-          attributes: ['id'],
+          attributes: ['id', 'localAuthority'],
           as: 'theAuthority',
         },
       ],
@@ -93,8 +93,8 @@ module.exports = function (sequelize, DataTypes) {
         postcode: postcode.postcode,
       },
     });
-    if (cssr && cssr.theAuthority && cssr.theAuthority.id) {
-      cssr = cssr.theAuthority.id;
+    if (cssr && cssr.theAuthority) {
+      cssr = cssr.theAuthority;
     } else {
       cssr = await CSSR.getIdFromDistrict(postcode.postcode);
       if (!cssr) {
