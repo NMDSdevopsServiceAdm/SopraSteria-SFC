@@ -70,9 +70,31 @@
         <div class="govuk-!-margin-top-7">
           <ng-container *ngIf="viewBenchmarksPosition"> Position </ng-container>
         </div>
-        <ng-container *ngIf="!viewBenchmarksPosition"> rank </ng-container>
+        <ng-container *ngIf="!viewBenchmarksPosition">
+          <app-data-area-ranking
+            [rankingTitle]="'Care worker pay'"
+            [workplaceRankNumber]="18"
+            [workplacesNumber]="72"
+          ></app-data-area-ranking>
+          <app-data-area-ranking
+            [rankingTitle]="'Senior care worker pay'"
+            [workplaceRankNumber]="51"
+            [workplacesNumber]="72"
+          ></app-data-area-ranking>
+          <app-data-area-ranking
+            [rankingTitle]="'Registered nurse salary'"
+            [workplaceRankNumber]="36"
+            [workplacesNumber]="72"
+          ></app-data-area-ranking>
+          <app-data-area-ranking
+            [rankingTitle]="'Registered manager salary'"
+            [workplaceRankNumber]="41"
+            [workplacesNumber]="72"
+          ></app-data-area-ranking>
+        </ng-container>
       </div>
     </div>
+
     <app-benchmarks-about-the-data
       #aboutData
       class="govuk-visually-hidden"

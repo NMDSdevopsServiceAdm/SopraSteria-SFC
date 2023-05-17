@@ -80,6 +80,7 @@ import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { DataAreaTableComponent } from '@shared/components/data-area-table/data-area-table.component';
+import { DataAreaRankingComponent } from '@shared/components/data-area-ranking/data-area-ranking.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -139,6 +140,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     BenchmarksSelectComparisonGroupsComponent,
     DownloadPdfComponent,
     DataAreaTableComponent,
+    DataAreaRankingComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
