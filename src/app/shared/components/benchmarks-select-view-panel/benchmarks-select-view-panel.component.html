@@ -3,31 +3,31 @@
     <li
       class="govuk-tabs__list-item asc-tabs__list-item"
       data-testid="payListItem"
-      [class.asc-tabs__list-item--active]="!viewBenchmarksByCategory"
+      [class.asc-tabs__list-item--active]="!toggleBoolean"
     >
       <a
-        id="tab_pay"
+        id="tab_false"
         class="govuk-tabs__tab asc-tabs__link"
-        [class.asc-tabs__link--active]="!viewBenchmarksByCategory"
+        [class.asc-tabs__link--active]="!toggleBoolean"
         href="#"
         role="tab"
         (click)="this.handleViewChange($event)"
-        >Pay</a
+        >{{ falseSelectionName }}</a
       >
     </li>
     <li
       class="govuk-tabs__list-item asc-tabs__list-item"
       data-testid="recruitmentListItem"
-      [class.asc-tabs__list-item--active]="viewBenchmarksByCategory"
+      [class.asc-tabs__list-item--active]="toggleBoolean"
     >
       <a
-        id="tab_recruitment"
+        id="tab_false"
         class="govuk-tabs__tab asc-tabs__link"
-        [class.asc-tabs__link--active]="viewBenchmarksByCategory"
+        [class.asc-tabs__link--active]="toggleBoolean"
         href="#"
         role="tab"
         (click)="this.handleViewChange($event)"
-        >Recruitment and retention</a
+        >{{ trueSelecttionName }}</a
       >
     </li>
   </ul>

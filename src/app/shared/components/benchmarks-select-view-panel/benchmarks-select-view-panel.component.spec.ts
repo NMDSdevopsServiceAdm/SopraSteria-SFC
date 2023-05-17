@@ -10,7 +10,7 @@ describe('BenchmarksSelectViewPanelComponent', () => {
       declarations: [],
       providers: [],
       componentProperties: {
-        viewBenchmarksByCategory: false,
+        toggleBoolean: false,
         handleViewToggle: {
           emit: spy(),
         } as any,

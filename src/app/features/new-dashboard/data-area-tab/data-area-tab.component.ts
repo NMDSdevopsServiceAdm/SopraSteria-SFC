@@ -25,6 +25,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public sicknessContent = MetricsContent.Sickness;
   public viewBenchmarksByCategory = false;
   public viewBenchmarksComparisonGroups = false;
+  public viewBenchmarksPosition = false;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -64,6 +65,10 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   public handleViewComparisonGroups(visible: boolean): void {
     this.viewBenchmarksComparisonGroups = visible;
+  }
+
+  public handleViewBenchmarkPosition(visible: boolean): void {
+    this.viewBenchmarksPosition = visible;
   }
 
   ngOnDestroy(): void {
