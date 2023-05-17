@@ -12,15 +12,15 @@
   </app-benchmarks-select-view-panel>
   <div class="govuk-!-margin-top-7">
     <ng-container *ngIf="viewBenchmarksByCategory">
-      <h2 class="govuk-heading-l">Recruitment and retention</h2>
+      <h2 class="govuk-heading-m">Recruitment and retention</h2>
     </ng-container>
   </div>
   <ng-container *ngIf="!viewBenchmarksByCategory">
-    <h2 class="govuk-heading-l">Pay</h2>
+    <h2 class="govuk-heading-m">Pay</h2>
   </ng-container>
 
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-one-third govuk-!-margin-top-2">
       <a
         class="asc-font-19"
         data-html2canvas-ignore
@@ -28,12 +28,71 @@
         (click)="setReturn()"
         >About the data</a
       >
-      <div *ngIf="tilesData?.meta.lastUpdated" data-testid="benchmarksLastUpdatedDate">
+      <div *ngIf="tilesData?.meta.lastUpdated" data-testid="benchmarksLastUpdatedDate" class="govuk-!-margin-top-5">
         <p class="govuk-body">
-          The comparison group data was refreshed on {{ tilesData?.meta.lastUpdated | date: 'd MMMM y' }}
+          The comparison group data was refreshed on {{ tilesData?.meta.lastUpdated | date: 'd MMMM y' }}.
         </p>
       </div>
+
+      <app-benchmarks-select-comparison-group
+        [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+        (handleViewToggle)="handleViewComparisonGroups($event)"
+        [mainServiceName]="workplace.mainService.name"
+        [localAuthorityLocation]=""
+      >
+      </app-benchmarks-select-comparison-group>
     </div>
-    <div class="govuk-grid-column-two-thirds"></div>
+    <div class="govuk-grid-column-two-thirds">
+      <h3 class="govuk-heading-m">{{ workplace.mainService.name }} providers in Leeds</h3>
+      <p class="govuk-body">
+        Your selected comparison group is a maximun of
+        <span class="govuk-body govuk-!-font-weight-bold">(Staff number)</span>
+        staff from
+        <span class="govuk-body govuk-!-font-weight-bold">(workplaces number)</span>
+        workplaces using ASC-WDS and providing
+        <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name }}</span>
+        in (local authority)
+      </p>
+      <app-downlaod-pdf [linkUrl]="'/benchmarks.pdf'" (downloadPDF)="downloadAsPDF()"> </app-downlaod-pdf>
+      <table class="govuk-table govuk-!-margin-top-2">
+        <caption class="govuk-table__caption govuk-table__caption--m">
+          Average pay and salaries
+        </caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header"></th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">Your workplace</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">Comparison group</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Care worker pay</th>
+            <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+            <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Senior care worker pay</th>
+            <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+            <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Registered nurse salary</th>
+            <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+            <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Registered manager salary</th>
+            <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+            <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
+  <app-benchmarks-about-the-data
+    #aboutData
+    class="govuk-visually-hidden"
+    [workplace]="workplace"
+  ></app-benchmarks-about-the-data>
 </div>

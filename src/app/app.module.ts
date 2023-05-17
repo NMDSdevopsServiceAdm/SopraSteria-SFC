@@ -71,8 +71,10 @@ import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
+import { BenchmarksSelectComparisonGroupsComponent } from '@shared/components/benchmarks-select-comparison-group/benchmarks-select-comparison-group.component';
 import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
+import { DownloadPdfComponent } from '@shared/components/download-pdf/download-pdf.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
@@ -133,6 +135,8 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     StaffBasicRecord,
     DataAreaTabComponent,
     BenchmarksSelectViewPanelComponent,
+    BenchmarksSelectComparisonGroupsComponent,
+    DownloadPdfComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
