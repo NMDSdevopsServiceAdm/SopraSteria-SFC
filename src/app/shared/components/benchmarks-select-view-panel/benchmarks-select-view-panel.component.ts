@@ -6,11 +6,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./benchmarks-select-view-panel.component.scss'],
 })
 export class BenchmarksSelectViewPanelComponent {
-  @Input() viewBenchmarksByCategory: boolean;
+  @Input() toggleBoolean: boolean;
+  @Input() falseSelectionName: String;
+  @Input() trueSelecttionName: String;
   @Output() handleViewToggle: EventEmitter<boolean> = new EventEmitter();
 
   public handleViewChange(event: Event): void {
     event.preventDefault();
-    this.handleViewToggle.emit(!this.viewBenchmarksByCategory);
+    this.handleViewToggle.emit(!this.toggleBoolean);
   }
 }

@@ -6,7 +6,9 @@
 
 <div class="govuk-width-container govuk-!-margin-top-7">
   <app-benchmarks-select-view-panel
-    [viewBenchmarksByCategory]="viewBenchmarksByCategory"
+    [toggleBoolean]="viewBenchmarksByCategory"
+    [falseSelectionName]="'Pay'"
+    [trueSelecttionName]="'Recruitment and retention'"
     (handleViewToggle)="handleViewBenchmarksByCategory($event)"
   >
   </app-benchmarks-select-view-panel>
@@ -54,12 +56,27 @@
         in (local authority)
       </p>
       <app-downlaod-pdf [linkUrl]="'/benchmarks.pdf'" (downloadPDF)="downloadAsPDF()"> </app-downlaod-pdf>
+
       <app-data-area-table></app-data-area-table>
+
+      <div class="govuk-width-container govuk-!-margin-top-7">
+        <app-benchmarks-select-view-panel
+          [toggleBoolean]="viewBenchmarksPosition"
+          [falseSelectionName]="'Where you rank'"
+          [trueSelecttionName]="'Where you\'re positioned'"
+          (handleViewToggle)="handleViewBenchmarkPosition($event)"
+        >
+        </app-benchmarks-select-view-panel>
+        <div class="govuk-!-margin-top-7">
+          <ng-container *ngIf="viewBenchmarksPosition"> Position </ng-container>
+        </div>
+        <ng-container *ngIf="!viewBenchmarksPosition"> rank </ng-container>
+      </div>
     </div>
+    <app-benchmarks-about-the-data
+      #aboutData
+      class="govuk-visually-hidden"
+      [workplace]="workplace"
+    ></app-benchmarks-about-the-data>
   </div>
-  <app-benchmarks-about-the-data
-    #aboutData
-    class="govuk-visually-hidden"
-    [workplace]="workplace"
-  ></app-benchmarks-about-the-data>
 </div>
