@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const config = require('../config/config');
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 
 const s3 = new AWS.S3({
   region: String(config.get('locks.region')),
@@ -64,7 +65,7 @@ const fileLockS3 = {
 
     if (!exists) {
       if (await lockAquired(establishmentId, lockName)) {
-        req.buRequestId = String(uuid()).toLowerCase();
+        req.buRequestId = String(uuidv4()).toLowerCase();
         res.status(200).send({
           message: `Lock for establishment ${establishmentId} acquired.`,
           requestId: req.buRequestId,

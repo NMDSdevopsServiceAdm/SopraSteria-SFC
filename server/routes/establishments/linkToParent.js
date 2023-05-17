@@ -2,7 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const Establishment = require('../../models/classes/establishment');
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 const linkSubToParent = require('../../data/linkToParent');
 const notifications = require('../../data/notifications');
 const { hasPermission } = require('../../utils/security/hasPermission');
@@ -36,7 +37,7 @@ const linkToParent = async (req, res) => {
       let parentEstablishmentId = await thisEstablishment.fetchParentDetails(params.parentWorkplaceUId);
       if (parentEstablishmentId) {
         params.parentEstablishmentId = parentEstablishmentId.id;
-        params.linkToParentUID = uuid.v4();
+        params.linkToParentUID = uuidv4();
         if (!uuidRegex.test(params.linkToParentUID.toUpperCase())) {
           console.error('Invalid link to parent request UUID');
           return res.status(400).send();
@@ -52,7 +53,7 @@ const linkToParent = async (req, res) => {
         if (saveLinkToParentRequested) {
           let lastLinkToParentRequest = await linkSubToParent.getLinkToParentRequest(params);
           if (lastLinkToParentRequest) {
-            params.notificationUid = uuid.v4();
+            params.notificationUid = uuidv4();
             if (!uuidRegex.test(params.notificationUid.toUpperCase())) {
               console.error('Invalid notification UUID');
               return res.status(400).send();
@@ -243,7 +244,7 @@ const delink = async (req, res) => {
           let parentEstablishmentId = await thisEstablishment.fetchParentDetails(params.parentWorkplaceUId);
           if (parentEstablishmentId) {
             params.parentEstablishmentId = parentEstablishmentId.id;
-            params.deLinkToParentUID = uuid.v4();
+            params.deLinkToParentUID = uuidv4();
             if (!uuidRegex.test(params.deLinkToParentUID.toUpperCase())) {
               console.error('Invalid de link to parent request UUID');
               return res.status(400).send();
