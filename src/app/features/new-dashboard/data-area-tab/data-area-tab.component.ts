@@ -24,6 +24,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public qualificationsContent = MetricsContent.Qualifications;
   public sicknessContent = MetricsContent.Sickness;
   public viewBenchmarksByCategory = false;
+  public viewBenchmarksComparisonGroups = false;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -37,6 +38,8 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
+    console.log(this.workplace);
+    console.log(this.tilesData);
   }
 
   public async downloadAsPDF() {
@@ -57,6 +60,10 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   public handleViewBenchmarksByCategory(visible: boolean): void {
     this.viewBenchmarksByCategory = visible;
+  }
+
+  public handleViewComparisonGroups(visible: boolean): void {
+    this.viewBenchmarksComparisonGroups = visible;
   }
 
   ngOnDestroy(): void {
