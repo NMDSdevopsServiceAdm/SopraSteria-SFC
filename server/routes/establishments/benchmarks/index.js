@@ -39,7 +39,7 @@ const getMetaData = async (benchmarkComparisonGroup, cssr) => {
     workplaces: benchmarkComparisonGroup ? benchmarkComparisonGroup.workplaces : 0,
     staff: benchmarkComparisonGroup ? benchmarkComparisonGroup.staff : 0,
     lastUpdated: await models.dataImports.benchmarksLastUpdated(),
-    localAuthority: cssr ? cssr.localAuthority : null,
+    localAuthority: cssr ? cssr.name : null,
   };
 };
 

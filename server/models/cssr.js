@@ -85,7 +85,7 @@ module.exports = function (sequelize, DataTypes) {
       include: [
         {
           model: sequelize.models.cssr,
-          attributes: ['id', 'localAuthority'],
+          attributes: ['id', 'name'],
           as: 'theAuthority',
         },
       ],

@@ -608,7 +608,7 @@ describe('benchmarks', () => {
 
       const cssr = {
         id: 1,
-        localAuthority: 'Test LA',
+        name: 'Test LA',
       };
 
       const benchmarkComparisonGroup = {
@@ -637,7 +637,7 @@ describe('benchmarks', () => {
       const benchmarkComparisonGroup = null;
       const cssr = {
         id: 1,
-        localAuthority: 'Test LA',
+        name: 'Test LA',
       };
       const expectedJson = {
         workplaces: 0,
