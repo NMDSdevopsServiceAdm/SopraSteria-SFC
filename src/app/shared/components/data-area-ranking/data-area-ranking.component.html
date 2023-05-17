@@ -4,5 +4,7 @@
     Your workplace ranks <span class="govuk-!-font-weight-bold">{{ workplaceRankNumber }}</span> in a comparision group
     of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
   </div>
-  <div class="ranking-bar"></div>
+  <div class="ranking-bar">
+    <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
+  </div>
 </div>
