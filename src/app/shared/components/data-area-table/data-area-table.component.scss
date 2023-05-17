@@ -1,0 +1,24 @@
+.commparision-row-header,
+.comparision-group-cell,
+.workplace-cell {
+  border-bottom: 0;
+}
+
+.comparision-group-cell {
+  background-color: #6f72af;
+  color: #ffffff;
+  opacity: 1;
+}
+
+.workplace-cell {
+  background-color: #28a197;
+  border-right: 5px #ffffff solid;
+  color: #ffffff;
+  opacity: 1;
+}
+
+td {
+  text-align: center;
+  padding-right: 0;
+  padding-left: 0;
+}
