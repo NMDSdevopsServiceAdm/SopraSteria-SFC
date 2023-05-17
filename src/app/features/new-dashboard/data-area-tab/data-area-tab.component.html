@@ -68,7 +68,28 @@
         >
         </app-benchmarks-select-view-panel>
         <div class="govuk-!-margin-top-7">
-          <ng-container *ngIf="viewBenchmarksPosition"> Position </ng-container>
+          <ng-container *ngIf="viewBenchmarksPosition">
+            <app-data-area-barchart
+              [positionedTitle]="'Care worker pay'"
+              [payMoreThanWorkplacesNumber]="54"
+              [workplacesNumber]="72"
+            ></app-data-area-barchart>
+            <app-data-area-barchart
+              [positionedTitle]="'Senior care worker pay'"
+              [payMoreThanWorkplacesNumber]="21"
+              [workplacesNumber]="72"
+            ></app-data-area-barchart>
+            <app-data-area-barchart
+              [positionedTitle]="'Registered nurse salary'"
+              [payMoreThanWorkplacesNumber]="36"
+              [workplacesNumber]="72"
+            ></app-data-area-barchart>
+            <app-data-area-barchart
+              [positionedTitle]="'Registered manager salary'"
+              [payMoreThanWorkplacesNumber]="31"
+              [workplacesNumber]="72"
+            ></app-data-area-barchart>
+          </ng-container>
         </div>
         <ng-container *ngIf="!viewBenchmarksPosition">
           <app-data-area-ranking
