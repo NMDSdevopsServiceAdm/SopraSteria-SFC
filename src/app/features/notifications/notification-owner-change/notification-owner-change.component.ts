@@ -8,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
 const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
@@ -30,8 +30,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
   public ownerShipRequestedFrom: string;
   public ownerShipRequestedTo: string;
   public isSubWorkplace: boolean;
-
-  eventsSubject: Subject<string> = new Subject<string>();
+  private ownerShipRequestedToUid: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,21 +46,33 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
     this.eventsSubscription = this.events.subscribe((action) => this.performAction(action));
     this.workplace = this.establishmentService.primaryWorkplace;
 
-    this.ownerShipRequestedFrom =
-      this.notification.typeContent.requestedOwnerType === 'Workplace'
-        ? this.notification.typeContent.parentEstablishmentName
-        : this.notification.typeContent.subEstablishmentName;
-    this.ownerShipRequestedTo =
-      this.notification.typeContent.requestedOwnerType === 'Workplace'
-        ? this.notification.typeContent.subEstablishmentName
-        : this.notification.typeContent.parentEstablishmentName;
+    this.setOwnershipRequestVariables();
 
     this.notificationUid = this.route.snapshot.params.notificationuid;
-
     if (this.notification.typeContent.approvalStatus === 'APPROVED') {
       this.isWorkPlaceIsRequester = this.workplace.name !== this.ownerShipRequestedFrom;
     } else {
       this.isWorkPlaceIsRequester = this.workplace.name === this.ownerShipRequestedFrom;
+    }
+  }
+
+  private setOwnershipRequestVariables(): void {
+    const {
+      requestedOwnerType,
+      subEstablishmentName,
+      subEstablishmentUid,
+      parentEstablishmentName,
+      parentEstablishmentUid,
+    } = this.notification.typeContent;
+
+    if (requestedOwnerType === 'Workplace') {
+      this.ownerShipRequestedFrom = parentEstablishmentName;
+      this.ownerShipRequestedTo = subEstablishmentName;
+      this.ownerShipRequestedToUid = subEstablishmentUid;
+    } else {
+      this.ownerShipRequestedFrom = subEstablishmentName;
+      this.ownerShipRequestedTo = parentEstablishmentName;
+      this.ownerShipRequestedToUid = parentEstablishmentUid;
     }
   }
 
@@ -86,7 +97,9 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
         rejectionReason: null,
         type: OWNERSHIP_APPROVED,
         existingNotificationUid: this.notificationUid,
+        requestorUid: this.ownerShipRequestedToUid,
       };
+
       this.subscriptions.add(
         this.notificationsService
           .approveOwnership(this.notification.typeContent.ownerChangeRequestUID, requestParameter)
@@ -104,7 +117,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
                         this.alertService.addAlert({
                           type: 'success',
                           message: `Your decision to transfer ownership of data has been sent to
-                      ${this.notification.typeContent.requestorName} `,
+                      ${this.ownerShipRequestedTo} `,
                         });
                       }
                     });
@@ -145,6 +158,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
       rejectionReason: requestRejected.rejectionReason,
       type: OWNERSHIP_REJECTED,
       existingNotificationUid: this.notification.notificationUid,
+      requestorUid: this.ownerShipRequestedToUid,
     };
     this.subscriptions.add(
       this.notificationsService
@@ -159,7 +173,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
               this.alertService.addAlert({
                 type: 'success',
                 message: `Your decision to transfer ownership of data has been sent to
-                  ${this.notification.typeContent.requestorName} `,
+                  ${this.ownerShipRequestedTo} `,
               });
             }
           },

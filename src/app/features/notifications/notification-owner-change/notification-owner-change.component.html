@@ -13,23 +13,16 @@
       <div *ngSwitchCase="'DENIED'">
         <ng-container *ngIf="isWorkPlaceIsRequester; else nonWorkPlaceRequester">
           <p>You rejected the request to transfer ownership of data to {{ ownerShipRequestedTo }}</p>
-          <h2 class="govuk-heading-s">Reason</h2>
-          <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
-            <p>{{ notification.typeContent.rejectionReason }}</p>
-          </ng-container>
-          <ng-template #noReason>
-            <p>No reason provided.</p>
-          </ng-template>
         </ng-container>
         <ng-template #nonWorkPlaceRequester>
           <p>{{ ownerShipRequestedFrom }} has rejected your request to become the data owner.</p>
-          <h2 class="govuk-heading-s">Reason</h2>
-          <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
-            <p>{{ notification.typeContent.rejectionReason }}</p>
-          </ng-container>
-          <ng-template #noReason>
-            <p>No reason provided.</p>
-          </ng-template>
+        </ng-template>
+        <h2 class="govuk-heading-s">Reason</h2>
+        <ng-container *ngIf="notification.typeContent.rejectionReason; else noReason">
+          <p data-testid="rejection-reason">{{ notification.typeContent.rejectionReason }}</p>
+        </ng-container>
+        <ng-template #noReason>
+          <p data-testid="no-rejection-reason">No reason provided.</p>
         </ng-template>
       </div>
       <div *ngSwitchCase="'APPROVED'">
@@ -46,7 +39,11 @@
       <div *ngSwitchDefault></div>
     </div>
 
-    <table class="govuk-table govuk-table__with-action" *ngIf="notification.typeContent.approvalStatus !== 'DENIED'">
+    <table
+      class="govuk-table govuk-table__with-action"
+      *ngIf="notification.typeContent.approvalStatus !== 'DENIED'"
+      data-testid="table"
+    >
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">Workplace</th>
@@ -55,7 +52,7 @@
       </thead>
       <tbody class="govuk-tab">
         <ng-container *ngIf="notification.typeContent.approvalStatus !== 'APPROVED'; else approved">
-          <tr class="govuk-table__row govuk-error-table__row--no-border">
+          <tr class="govuk-table__row govuk-error-table__row--no-border" data-testid="not-approved">
             <td class="govuk-table__cell">
               {{ ownerShipRequestedFrom }}
             </td>
@@ -79,7 +76,7 @@
           </tr>
         </ng-container>
         <ng-template #approved>
-          <tr class="govuk-table__row govuk-error-table__row--no-border">
+          <tr class="govuk-table__row govuk-error-table__row--no-border" data-testid="approved">
             <td class="govuk-table__cell">
               {{ ownerShipRequestedTo }}
             </td>
