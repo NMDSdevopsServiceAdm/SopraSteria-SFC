@@ -62,7 +62,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
       subEstablishmentName,
       subEstablishmentUid,
       parentEstablishmentName,
-      parenteEstablishmentUid,
+      parentEstablishmentUid,
     } = this.notification.typeContent;
 
     if (requestedOwnerType === 'Workplace') {
@@ -72,7 +72,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
     } else {
       this.ownerShipRequestedFrom = subEstablishmentName;
       this.ownerShipRequestedTo = parentEstablishmentName;
-      this.ownerShipRequestedToUid = parenteEstablishmentUid;
+      this.ownerShipRequestedToUid = parentEstablishmentUid;
     }
   }
 
