@@ -74,14 +74,15 @@ import { ResetPasswordComponent } from '@features/reset-password/reset-password.
 import { BenchmarksSelectComparisonGroupsComponent } from '@shared/components/benchmarks-select-comparison-group/benchmarks-select-comparison-group.component';
 import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
+import { DataAreaBarchartComponent } from '@shared/components/data-area-barchart/data-area-barchart.component';
+import { DataAreaRankingComponent } from '@shared/components/data-area-ranking/data-area-ranking.component';
+import { DataAreaTableComponent } from '@shared/components/data-area-table/data-area-table.component';
+import { DataAreaUsefulLinkComponent } from '@shared/components/data-area-useful-link/data-area-useful-link.component';
 import { DownloadPdfComponent } from '@shared/components/download-pdf/download-pdf.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { HighchartsChartModule } from 'highcharts-angular';
-import { DataAreaTableComponent } from '@shared/components/data-area-table/data-area-table.component';
-import { DataAreaRankingComponent } from '@shared/components/data-area-ranking/data-area-ranking.component';
-import { DataAreaBarchartComponent } from '@shared/components/data-area-barchart/data-area-barchart.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -143,6 +144,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     DataAreaTableComponent,
     DataAreaRankingComponent,
     DataAreaBarchartComponent,
+    DataAreaUsefulLinkComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
