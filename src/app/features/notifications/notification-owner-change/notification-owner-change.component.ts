@@ -8,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { RejectRequestDialogComponent } from '@shared/components/reject-request-dialog/reject-request-dialog.component';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
 const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
@@ -31,8 +31,6 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
   public ownerShipRequestedTo: string;
   public isSubWorkplace: boolean;
   private ownerShipRequestedToUid: string;
-
-  eventsSubject: Subject<string> = new Subject<string>();
 
   constructor(
     private route: ActivatedRoute,
