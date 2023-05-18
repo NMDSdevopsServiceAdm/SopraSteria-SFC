@@ -13,6 +13,7 @@ export class BenchmarksSelectComparisonGroupsComponent {
 
   public handleViewChange(event: Event): void {
     event.preventDefault();
+    console.log(!this.viewBenchmarksComparisonGroups);
     this.handleViewToggle.emit(!this.viewBenchmarksComparisonGroups);
   }
 }

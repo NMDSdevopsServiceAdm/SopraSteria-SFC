@@ -12,6 +12,7 @@ import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-t
 @Component({
   selector: 'app-data-area-tab',
   templateUrl: './data-area-tab.component.html',
+  styleUrls: ['./data-area-tab.component.scss'],
 })
 export class DataAreaTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -39,8 +40,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
-    console.log(this.workplace);
-    console.log(this.tilesData);
   }
 
   public async downloadAsPDF() {
