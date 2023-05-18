@@ -8,7 +8,9 @@
           id="comparison-groups"
           name="comparison-groups"
           type="radio"
-          value="england"
+          value="mainService"
+          [checked]="!viewBenchmarksComparisonGroups"
+          (change)="handleViewChange($event)"
         />
         <label class="govuk-label govuk-radios__label" for="comparison-groups">
           {{ mainServiceName }} providers in {{ localAuthorityLocation }}
@@ -20,7 +22,9 @@
           id="comparison-groups-good-and-outstanding"
           name="comparison-groups"
           type="radio"
-          value="scotland"
+          value="GoodAndOutstanding"
+          [checked]="viewBenchmarksComparisonGroups"
+          (change)="handleViewChange($event)"
         />
         <label class="govuk-label govuk-radios__label" for="comparison-groups-good-and-outstanding">
           Good and outstading CQC providers in {{ localAuthorityLocation }}

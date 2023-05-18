@@ -76,7 +76,6 @@ import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmark
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { DataAreaBarchartComponent } from '@shared/components/data-area-barchart/data-area-barchart.component';
 import { DataAreaRankingComponent } from '@shared/components/data-area-ranking/data-area-ranking.component';
-import { DataAreaTableComponent } from '@shared/components/data-area-table/data-area-table.component';
 import { DataAreaUsefulLinkComponent } from '@shared/components/data-area-useful-link/data-area-useful-link.component';
 import { DownloadPdfComponent } from '@shared/components/download-pdf/download-pdf.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -141,7 +140,6 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     BenchmarksSelectViewPanelComponent,
     BenchmarksSelectComparisonGroupsComponent,
     DownloadPdfComponent,
-    DataAreaTableComponent,
     DataAreaRankingComponent,
     DataAreaBarchartComponent,
     DataAreaUsefulLinkComponent,
