@@ -1,9 +1,9 @@
 <div class="govuk-!-margin-top-4 govuk-!-padding-3 ranking-container">
-  <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-2">{{ rankingTitle }}</div>
-  <div class="govuk-!-font-size-19 govuk-!-margin-2">
+  <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-2">{{ rankingTitle }}</div>
+  <p class="govuk-body govuk-!-margin-top-2">
     Your workplace ranks <span class="govuk-!-font-weight-bold">{{ workplaceRankNumber }}</span> in a comparision group
     of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
-  </div>
+  </p>
   <div class="ranking-bar">
     <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
   </div>

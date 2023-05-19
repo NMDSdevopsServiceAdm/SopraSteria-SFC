@@ -22,3 +22,36 @@ td {
   padding-right: 0;
   padding-left: 0;
 }
+
+.commparision-table-header {
+  width: 30.3%;
+}
+
+tr :first-child {
+  th,
+  td {
+    padding-top: 30px;
+  }
+}
+
+tr :not(.first-row, .last-row) th,
+td {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.first-row {
+  th,
+  td {
+    padding-top: 24px;
+    padding-bottom: 12px;
+  }
+}
+
+.last-row {
+  th,
+  td {
+    padding-top: 12px;
+    padding-bottom: 24px;
+  }
+}
