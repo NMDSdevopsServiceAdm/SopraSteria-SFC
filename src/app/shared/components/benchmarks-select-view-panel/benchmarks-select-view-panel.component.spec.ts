@@ -1,4 +1,4 @@
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { spy } from 'sinon';
 
 import { BenchmarksSelectViewPanelComponent } from './benchmarks-select-view-panel.component';
@@ -34,17 +34,52 @@ describe('BenchmarksSelectViewPanelComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the pay link active when viewBenchmarksByCategory is false', async () => {
+  it('should show the false selection link as active when viewBenchmarksByCategory is false', async () => {
     const { getByText, getByTestId } = await setup();
 
-    const payListItem = getByTestId('payListItem');
-    const payLink = getByText('Pay');
-    const recruitmentListItem = getByTestId('recruitmentListItem');
-    const recruitmentLink = getByText('Recruitment and retention');
+    const falseItem = getByTestId('falseItem');
+    const trueItem = getByTestId('trueItem');
+    const falseLink = getByTestId('falseLink');
+    const trueLink = getByTestId('trueLink');
 
-    expect(payListItem.getAttribute('class')).toContain('asc-tabs__list-item--active');
-    expect(payLink.getAttribute('class')).toContain('asc-tabs__link--active');
-    expect(recruitmentListItem.getAttribute('class')).not.toContain('asc-tabs__list-item--active');
-    expect(recruitmentLink.getAttribute('class')).not.toContain('asc-tabs__link--active');
+    expect(falseItem.getAttribute('class')).toContain('asc-tabs__list-item--active');
+    expect(falseLink.getAttribute('class')).toContain('asc-tabs__link--active');
+    expect(trueItem.getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+    expect(trueLink.getAttribute('class')).not.toContain('asc-tabs__link--active');
+  });
+
+  it('should show the true selection link as active when viewBenchmarksByCategory is true', async () => {
+    const { component, getByTestId } = await setup();
+
+    component.toggleBoolean = true;
+
+    const falseItem = getByTestId('falseItem');
+    const trueItem = getByTestId('trueItem');
+    const falseLink = getByTestId('falseLink');
+    const trueLink = getByTestId('trueLink');
+
+    expect(trueItem.getAttribute('class')).toContain('asc-tabs__list-item--active');
+    expect(trueLink.getAttribute('class')).toContain('asc-tabs__link--active');
+    expect(falseItem.getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+    expect(falseLink.getAttribute('class')).not.toContain('asc-tabs__link--active');
+  });
+
+  it('should emit handleViewToggle with true when the true link is clicked', async () => {
+    const { getByTestId, toggleViewSpy } = await setup();
+
+    const trueLink = getByTestId('trueLink');
+    fireEvent.click(trueLink);
+
+    expect(toggleViewSpy).toHaveBeenCalledWith(true);
+  });
+
+  it('should emit handleViewToggle with false when the false link is clicked', async () => {
+    const { component, getByTestId, toggleViewSpy } = await setup();
+
+    component.toggleBoolean = true;
+    const falseLink = getByTestId('falseLink');
+    fireEvent.click(falseLink);
+
+    expect(toggleViewSpy).toHaveBeenCalledWith(false);
   });
 });
