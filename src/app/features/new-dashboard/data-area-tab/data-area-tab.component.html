@@ -21,8 +21,8 @@
     <h2 class="govuk-heading-m">Pay</h2>
   </ng-container>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third govuk-!-margin-top-2">
+  <div class="govuk-grid-row govuk-!-margin-top-2">
+    <div class="govuk-grid-column-one-third">
       <a
         class="asc-font-19"
         data-html2canvas-ignore
@@ -48,25 +48,25 @@
       <ng-container *ngIf="!viewBenchmarksComparisonGroups">
         <h3 class="govuk-heading-m">{{ workplace.mainService.name }} providers in (local authority)</h3>
         <p class="govuk-body">
-          Your selected comparison group is a maximun of
+          Your selected comparison group is a maximum
           <span class="govuk-body govuk-!-font-weight-bold">(Staff number)</span>
           staff from
           <span class="govuk-body govuk-!-font-weight-bold">(workplaces number)</span>
           workplaces using ASC-WDS and providing
           <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name }}</span>
-          in (local authority)
+          in (local authority).
         </p>
       </ng-container>
       <ng-container *ngIf="viewBenchmarksComparisonGroups">
         <h3 class="govuk-heading-m">Good and outstanding CQC providers in (local authority)</h3>
         <p class="govuk-body">
-          Your selected comparison group is a maximun of
+          Your selected comparison group is a maximum
           <span class="govuk-body govuk-!-font-weight-bold">(Staff number)</span>
           staff from
           <span class="govuk-body govuk-!-font-weight-bold">(workplaces number)</span>
           workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
           <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name }}</span>
-          in (local authority)
+          in (local authority).
         </p>
       </ng-container>
       <ng-container *ngIf="!viewBenchmarksByCategory">
@@ -76,23 +76,23 @@
           (downloadPDF)="downloadAsPDF()"
         ></app-download-pdf>
 
-        <table class="govuk-table govuk-!-margin-top-2">
+        <table class="govuk-table govuk-!-margin-top-7">
           <caption class="govuk-table__caption govuk-table__caption--m">
             Average pay and salaries
           </caption>
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th scope="col" class="govuk-table__header"></th>
-              <th scope="col" class="govuk-table__header govuk-!-width-one-third govuk-!-text-align-centre">
+              <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
                 Your workplace
               </th>
-              <th scope="col" class="govuk-table__header govuk-!-width-one-third govuk-!-text-align-centre">
+              <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
                 Comparison group
               </th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            <tr class="govuk-table__row">
+            <tr class="govuk-table__row first-row">
               <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
                 Care worker pay
               </th>
@@ -113,7 +113,7 @@
               <td class="govuk-table__cell workplace-cell">£34,130 (annually)</td>
               <td class="govuk-table__cell comparision-group-cell">£34,100 (annually)</td>
             </tr>
-            <tr class="govuk-table__row">
+            <tr class="govuk-table__row last-row">
               <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">Registered manager salary</th>
               <td class="govuk-table__cell workplace-cell">£35,637 (annually)</td>
               <td class="govuk-table__cell comparision-group-cell">£36,185 (annually)</td>
