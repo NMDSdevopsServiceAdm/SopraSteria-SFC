@@ -44,6 +44,9 @@ const getMetaData = async (benchmarkComparisonGroup, cssr) => {
 };
 
 const pay = async (establishmentId, benchmarkComparisonGroup) => {
+  console.log('**** pay *****');
+  console.log(establishmentId);
+  console.log(benchmarkComparisonGroup);
   return await buildTile(establishmentId, benchmarkComparisonGroup, 'pay', getPay);
 };
 
