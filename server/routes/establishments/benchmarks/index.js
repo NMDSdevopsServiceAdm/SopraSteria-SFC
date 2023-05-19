@@ -19,6 +19,7 @@ const comparisonGroupsJson = {
 };
 
 const getTiles = async (establishmentId, tiles) => {
+  console.log('***** get tiles ******');
   let benchmarkComparisonGroup = await models.benchmarks.getBenchmarkData(establishmentId);
   let reply = {
     meta: {},
@@ -42,6 +43,9 @@ const getMetaData = async (benchmarkComparisonGroup) => {
 };
 
 const pay = async (establishmentId, benchmarkComparisonGroup) => {
+  console.log('**** pay *****');
+  console.log(establishmentId);
+  console.log(benchmarkComparisonGroup);
   return await buildTile(establishmentId, benchmarkComparisonGroup, 'pay', getPay);
 };
 
