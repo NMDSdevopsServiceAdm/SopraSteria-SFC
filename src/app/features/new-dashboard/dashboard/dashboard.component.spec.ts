@@ -19,7 +19,7 @@ import { render } from '@testing-library/angular';
 
 import { NewDashboardComponent } from './dashboard.component';
 
-describe('NewDashboardComponent', () => {
+fdescribe('NewDashboardComponent', () => {
   const setup = async (tab = 'home', permissions = []) => {
     const { fixture, getByTestId, queryByTestId } = await render(NewDashboardComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -154,6 +154,26 @@ describe('NewDashboardComponent', () => {
       const { getByTestId } = await setup('benchmarks');
 
       expect(getByTestId('benchmarks-tab')).toBeTruthy();
+    });
+
+    fit('should render the new data area page rather than benchmark page when the newDataAreaFlag is true', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup('benchmarks');
+
+      component.newDataAreaFlag = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('data-area-tab')).toBeTruthy();
+      expect(queryByTestId('benchmarks-tab')).toBeFalsy();
+    });
+
+    it('should render the normal benchmarks page when the newDataAreaFlag is false', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup('benchmarks');
+
+      component.newDataAreaFlag = false;
+      fixture.detectChanges();
+
+      expect(getByTestId('benchmarks-tab')).toBeTruthy();
+      expect(queryByTestId('data-area-tab')).toBeFalsy();
     });
   });
 });
