@@ -1721,6 +1721,7 @@ module.exports = function (sequelize, DataTypes) {
     }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
 
     return this.findAndCountAll({
+      logging: console.log,
       attributes: ['id', 'NameValue'],
       where: {
         [Op.or]: [

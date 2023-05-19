@@ -13,7 +13,7 @@ export class NotificationsListResolver implements Resolve<any> {
     const id = this.establishmentService.establishmentId;
     if (id) {
       return this.notificationsService.getAllNotifications(id).pipe(
-        tap((notifications) => (this.notificationsService.notifications = notifications)),
+        tap((notifications) => (this.notificationsService.notifications = notifications.notifications)),
         catchError(() => {
           return of([]);
         }),

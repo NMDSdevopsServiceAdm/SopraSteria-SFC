@@ -110,7 +110,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
                 });
                 //get all notification and update with latest
                 this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-                  this.notificationsService.notifications$.next(notify);
+                  this.notificationsService.notifications$.next(notify.notifications);
                 });
               }
             },
@@ -163,7 +163,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
           if (request) {
             //get all notification and update with latest status
             this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-              this.notificationsService.notifications$.next(notify);
+              this.notificationsService.notifications$.next(notify.notifications);
             });
             this.router.navigate(['/dashboard']);
             this.alertService.addAlert({
