@@ -2,40 +2,21 @@
 const express = require('express');
 const router = express.Router();
 
-const Authorization = require('../utils/security/isAuthenticated');
-const models = require('../models');
-const linkSubToParent = require('../data/linkToParent');
-const ownershipChangeRequests = require('../data/ownership');
-const notifications = require('../data/notifications');
-
-/**
- * Method will fetch the notification details.
- * @param notification
- */
-const getNotificationTypes = async (req, res) => {
-  const notificationTypes = await notifications.getNotificationTypes();
-  return res.status(200).send(notificationTypes);
-};
-
-const createNotificationType = async (req, res) => {
-  try {
-    if (req.params === null) {
-      return res.status(400).send({ message: 'No new type was provided' });
-    }
-
-    await notifications.createNotificationType(req.body);
-
-    const newType = notifications.selectNotificationTypeByTypeName(req.body.type);
-    return res.status(200).send(newType);
-  } catch (e) {
-    return res.status(500).send({
-      message: e.message,
-    });
-  }
-};
+const Authorization = require('../../utils/security/isAuthenticated');
+const models = require('../../models');
+const linkSubToParent = require('../../data/linkToParent');
+const ownershipChangeRequests = require('../../data/ownership');
+const notifications = require('../../data/notifications');
+const Notifications = require('./notifications');
 
 const getEstablishmentNotifications = async (req, res) => {
-  const establishmentNotifications = await notifications.selectNotificationByEstablishment(req.params.establishmentUid);
+  const establishmentNotifications = await Notifications.GetByEstablishment(
+    req.params.establishmentUid,
+    req.query.limit,
+    req.query.sort,
+    req.query.page,
+  );
+
   return res.status(200).send(establishmentNotifications);
 };
 
@@ -44,7 +25,7 @@ const getEstablishmentNotifications = async (req, res) => {
  * @param notification
  */
 const getNotificationDetails = async (notification) => {
-  const notificationDetails = await linkSubToParent.getLinkToParentDetails(notification);
+  const notificationDetails = await linkSubToParent.getNotificationDetails(notification);
   const subEstablishmentName = await linkSubToParent.getSubEstablishmentName(notification);
   if (subEstablishmentName) {
     notificationDetails[0].subEstablishmentName = subEstablishmentName[0].subEstablishmentName;
@@ -62,11 +43,10 @@ const addTypeContent = async (notification) => {
       const subQuery = await ownershipChangeRequests.getOwnershipNotificationDetails({
         ownerChangeRequestUid: notification.notificationContentUid,
       });
-      console.log(subQuery);
       if (subQuery.length === 1) {
         if (subQuery[0].createdByUserUID) {
           const requestorName = await notifications.getRequesterName(notification.createdByUserUID);
-          if (requestorName) {
+          if (requestorName && requestorName.length > 0) {
             subQuery.forEach(function (element) {
               element.requestorName = requestorName[0].NameValue;
             });
@@ -115,7 +95,7 @@ const addTypeContent = async (notification) => {
       if (deLinkNotificationDetails) {
         let deLinkParentDetails = await notifications.getDeLinkParentDetails(notification.notificationContentUid);
         if (deLinkParentDetails) {
-          let deLinkParentName = await notifications.getDeLinkParentName(deLinkParentDetails[0].EstablishmentID);
+          let deLinkParentName = await notifications.getDeLinkParentName(deLinkParentDetails[0].establishmentUid);
           if (deLinkParentName) {
             notification.typeContent.parentEstablishmentName = deLinkParentName[0].NameValue;
             notification.typeContent.requestorName = deLinkNotificationDetails[0].NameValue;
@@ -151,11 +131,10 @@ const getNotification = async (req, res) => {
         notificationData.notification,
       );
       if (notificationReciever.length === 1) {
-        notificationData.notification.forEach((element) => {
-          element.recieverName = notificationReciever[0].NameValue;
-        });
+        notificationData.notification.recieverName = notificationReciever[0].NameValue;
       }
     }
+
     // return the item
     return res.status(200).send(notificationData.notification);
   } catch (e) {
@@ -251,11 +230,28 @@ const sendUserNotification = async (req, res) => {
   }
 };
 
-router.route('/type').get(getNotificationTypes);
-router.route('/type').post(createNotificationType);
+const deleteNotifications = async (req, res) => {
+  try {
+    if (req.body === null) {
+      return res.status(400).send({ message: 'Not enough data provided' });
+    }
+
+    req.body.notificationsForDeletion.forEach(async (notificationForDeletion) => {
+      await notifications.deleteNotifications(notificationForDeletion);
+    });
+
+    return res.status(200).send({ message: 'OK' });
+  } catch (e) {
+    return res.status(500).send({
+      message: e.message,
+    });
+  }
+};
+
 router.route('/user/:userUid').post(sendUserNotification);
 router.route('/establishment/:establishmentUid').get(getEstablishmentNotifications);
 router.route('/establishment/:establishmentUid').post(sendEstablishmentNotification);
+router.route('/deleteNotifications').post(deleteNotifications);
 router.route('/:notificationUid').patch(Authorization.isAuthorised, setNotificationRead);
 router.route('/:notificationUid').get(getNotification);
 router.use('/', Authorization.isAuthorised);

@@ -16,10 +16,10 @@ import { Worker } from '@core/model/worker.model';
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
-  @Input() workerCreatedDate;
-
+  @Input() workersCreatedDate;
   @Input() trainingCounts: TrainingCounts;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
+  @Input() workersNotCompleted: Worker[];
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -30,7 +30,7 @@ export class SummarySectionComponent implements OnInit {
       message: '',
       route: undefined,
       redFlag: false,
-      link: true
+      link: true,
     },
   ];
 
@@ -42,6 +42,7 @@ export class SummarySectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
+    this.getStaffCreatedDate();
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
   }
@@ -83,22 +84,28 @@ export class SummarySectionComponent implements OnInit {
 
   public getStaffSummaryMessage(): void {
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
-    const afterWorkerCreated = dayjs(this.workerCreatedDate).add(12, 'M');
 
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
-    } else if (dayjs() >= afterWorkplaceCreated && this.workplace.numberOfStaff > 10 && dayjs() >= afterWorkerCreated) {
+    } else if (
+      dayjs() >= afterWorkplaceCreated &&
+      this.workplace.numberOfStaff > 10 &&
+      dayjs() >= this.getWorkerLatestCreatedDate()
+    ) {
       this.sections[1].message = 'No staff records added in the last 12 months';
+    } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
+      this.sections[1].message = 'Some records only have mandatory data added';
+      this.sections[1].route = ['/staff-basic-records'];
     }
   }
 
   public getTrainingAndQualsSummary(): void {
-    if (this.trainingCounts.missingMandatoryTraining) {
+    if (this.trainingCounts.staffMissingMandatoryTraining) {
       this.sections[2].redFlag = true;
-      this.sections[2].message = `${this.trainingCounts.missingMandatoryTraining} staff ${
-        this.trainingCounts.missingMandatoryTraining > 1 ? 'are' : 'is'
+      this.sections[2].message = `${this.trainingCounts.staffMissingMandatoryTraining} staff ${
+        this.trainingCounts.staffMissingMandatoryTraining > 1 ? 'are' : 'is'
       } missing mandatory training`;
       this.sections[2].route = [
         '/workplace',
@@ -126,5 +133,18 @@ export class SummarySectionComponent implements OnInit {
       this.sections[2].link = false;
       this.sections[2].message = 'Manage your staff training and qualifications';
     }
+  }
+
+  getStaffCreatedDate() {
+    const filterDate = this.workersNotCompleted.filter(
+      (workerDate: any) => dayjs() > dayjs(new Date(workerDate.created)).add(1, 'M'),
+    );
+    return filterDate?.length > 0;
+  }
+
+  getWorkerLatestCreatedDate() {
+    const workerLatestCreatedDate = new Date(Math.max(...this.workersCreatedDate));
+    const afterWorkerCreated = dayjs(workerLatestCreatedDate).add(12, 'M');
+    return afterWorkerCreated;
   }
 }

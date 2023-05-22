@@ -8,7 +8,7 @@ enum Path {
 export const notificationsJourney: JourneyRoute = {
   children: [
     {
-      title: 'All notifications',
+      title: 'Notifications',
       path: Path.ALL_NOTIFICATIONS,
       children: [
         {

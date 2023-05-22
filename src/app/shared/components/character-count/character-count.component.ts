@@ -14,6 +14,7 @@ export class CharacterCountComponent implements OnInit, OnDestroy {
   @Input() words = false;
 
   ngOnInit() {
+    this.remaining = this.max;
     this.subscriptions.add(
       this.control.valueChanges.subscribe((value: string) => {
         if (value) {
@@ -22,8 +23,6 @@ export class CharacterCountComponent implements OnInit, OnDestroy {
           } else {
             this.remaining = this.max - value.length;
           }
-        } else {
-          this.remaining = this.max;
         }
       }),
     );

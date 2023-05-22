@@ -11,6 +11,8 @@ import dayjs from 'dayjs';
 
 import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { Worker } from '@core/model/worker.model';
 
 describe('Summary section', () => {
   const setup = async (
@@ -18,7 +20,8 @@ describe('Summary section', () => {
     workplace = Establishment,
     workerCount = Establishment.numberOfStaff,
     trainingCounts = {} as TrainingCounts,
-    WorkerCreatedDate = new Date('2021-03-31'),
+    workerCreatedDate = [dayjs()],
+    workersNotCompleted = [workerBuilder()] as Worker[],
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule],
@@ -40,7 +43,8 @@ describe('Summary section', () => {
           event.preventDefault();
         },
         workerCount,
-        workerCreatedDate: WorkerCreatedDate,
+        workersCreatedDate: workerCreatedDate,
+        workersNotCompleted: workersNotCompleted as Worker[],
       },
     });
 
@@ -176,8 +180,7 @@ describe('Summary section', () => {
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
-      const establishment = { ...Establishment, numberOfStaff: 10 };
-      const { getByTestId } = await setup(false, establishment);
+      const { getByTestId } = await setup();
 
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).getByText('Remember to check and update this data often')).toBeTruthy();
@@ -240,7 +243,9 @@ describe('Summary section', () => {
         numberOfStaff: 12,
       };
 
-      const { fixture, getByTestId } = await setup(false, establishment, 12);
+      const date = [dayjs('2021-03-31').add(12, 'M')];
+
+      const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -263,12 +268,11 @@ describe('Summary section', () => {
     it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and and workplace created date is less than 12 month ', async () => {
       const establishment = {
         ...Establishment,
-        created: dayjs('2021-03-31').add(12, 'M'),
+        created: dayjs('2021-03-31').subtract(12, 'M'),
       };
 
-      const date = new Date();
-      date.setDate(date.getMonth() - 1);
-      const { fixture, getByTestId } = await setup(false, establishment, 12, {}, date);
+      const date = [dayjs().add(12, 'M')];
+      const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -289,6 +293,39 @@ describe('Summary section', () => {
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
     });
+
+    it('should show "Some records only have mandatory data added" message when staff records are not completed and  worker added date is less than 1 month ', async () => {
+      const date = new Date();
+
+      const workerCreatedDate = [
+        {
+          ...workerBuilder(),
+          created: '2023-03-31',
+        },
+      ] as Worker[];
+      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeTruthy();
+    });
+
+    it('should not show "Some records only have mandatory data added" message when staff records are completed and  worker added date is less than 1 month', async () => {
+      const date = new Date();
+
+      const workerCreatedDate = [
+        {
+          ...workerBuilder(),
+          completed: true,
+          created: '2023-05-02',
+        },
+      ] as Worker[];
+      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
+    });
   });
 
   describe('Training and Qualifications summary section', () => {
@@ -306,7 +343,7 @@ describe('Summary section', () => {
 
     describe('Missing mandatory training message', () => {
       it('should show when mandatory training is missing for multiple users', async () => {
-        const trainingCounts = { missingMandatoryTraining: 2 };
+        const trainingCounts = { staffMissingMandatoryTraining: 2 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
@@ -315,7 +352,7 @@ describe('Summary section', () => {
       });
 
       it('should show when mandatory training is missing for a single user', async () => {
-        const trainingCounts = { missingMandatoryTraining: 1 };
+        const trainingCounts = { staffMissingMandatoryTraining: 1 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
@@ -324,7 +361,7 @@ describe('Summary section', () => {
       });
 
       it('should not show when mandatory training is not missing', async () => {
-        const trainingCounts = { missingMandatoryTraining: 0 };
+        const trainingCounts = { staffMissingMandatoryTraining: 0 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
