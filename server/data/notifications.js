@@ -127,8 +127,6 @@ const updateNotificationQuery = `
 exports.selectNotificationByEstablishment = async (params) => {
   const order = params.order ? params.order : 'created ASC';
 
-  console.log(params);
-
   const notifications = await db.query(selectEstablishmentNotifications(order), {
     replacements: {
       establishmentUid: params.establishmentUid,
@@ -137,9 +135,7 @@ exports.selectNotificationByEstablishment = async (params) => {
       offset: Number.isInteger(params.offset) && params.offset > 0 ? params.offset : 0,
     },
     type: db.QueryTypes.SELECT,
-  })
-
-  console.log(notifications);
+  });
 
   const count = await db.query(getEstablishmentNotificationCount, {
     replacements: {
@@ -147,13 +143,13 @@ exports.selectNotificationByEstablishment = async (params) => {
       userUids: params.userUids,
     },
     type: db.QueryTypes.SELECT,
-  })
+  });
 
   return {
     notifications: notifications,
     count: count[0].count,
   };
-}
+};
 
 exports.markUserNotificationAsRead = async ({ notificationUid }) =>
   db.query(markUserNotificationReadQuery, {
