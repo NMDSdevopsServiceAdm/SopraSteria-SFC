@@ -53,7 +53,7 @@
           staff from
           <span class="govuk-body govuk-!-font-weight-bold">(workplaces number)</span>
           workplaces using ASC-WDS and providing
-          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name }}</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
           in (local authority).
         </p>
       </ng-container>
@@ -65,7 +65,7 @@
           staff from
           <span class="govuk-body govuk-!-font-weight-bold">(workplaces number)</span>
           workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
-          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name }}</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
           in (local authority).
         </p>
       </ng-container>
@@ -223,7 +223,7 @@
           <ng-container *ngIf="viewBenchmarksByCategory">
             <ng-container *ngIf="!viewBenchmarksPosition">
               <app-data-area-ranking
-                [rankingTitle]="'Vacancy Rate'"
+                [rankingTitle]="'Vacancy rate'"
                 [workplaceRankNumber]="18"
                 [workplacesNumber]="72"
               ></app-data-area-ranking>
@@ -240,7 +240,7 @@
             </ng-container>
             <ng-container *ngIf="viewBenchmarksPosition">
               <app-data-area-barchart
-                [positionedTitle]="'Vacancy Rate'"
+                [positionedTitle]="'Vacancy rate'"
                 [payMoreThanWorkplacesNumber]="54"
                 [workplacesNumber]="72"
               ></app-data-area-barchart>
