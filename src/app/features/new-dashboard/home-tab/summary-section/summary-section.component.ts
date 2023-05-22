@@ -16,7 +16,7 @@ import { Worker } from '@core/model/worker.model';
 export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
-  @Input() workerCreatedDate;
+  @Input() workersCreatedDate;
 
   @Input() trainingCounts: TrainingCounts;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
@@ -83,13 +83,16 @@ export class SummarySectionComponent implements OnInit {
 
   public getStaffSummaryMessage(): void {
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
-    const afterWorkerCreated = dayjs(this.workerCreatedDate).add(12, 'M');
 
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
-    } else if (dayjs() >= afterWorkplaceCreated && this.workplace.numberOfStaff > 10 && dayjs() >= afterWorkerCreated) {
+    } else if (
+      dayjs() >= afterWorkplaceCreated &&
+      this.workplace.numberOfStaff > 10 &&
+      dayjs() >= this.getWorkerLatestCreatedDate()
+    ) {
       this.sections[1].message = 'No staff records added in the last 12 months';
     }
   }
@@ -126,5 +129,11 @@ export class SummarySectionComponent implements OnInit {
       this.sections[2].link = false;
       this.sections[2].message = 'Manage your staff training and qualifications';
     }
+  }
+
+  getWorkerLatestCreatedDate() {
+    const workerLatestCreatedDate = new Date(Math.max(...this.workersCreatedDate));
+    const afterWorkerCreated = dayjs(workerLatestCreatedDate).add(12, 'M');
+    return afterWorkerCreated;
   }
 }
