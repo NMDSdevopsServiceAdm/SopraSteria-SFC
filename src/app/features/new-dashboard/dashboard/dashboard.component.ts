@@ -9,6 +9,7 @@ import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -27,6 +28,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public staffLastUpdatedDate: string;
   public tAndQsLastUpdated: string;
   public tilesData: BenchmarksResponse;
+  public newDataAreaFlag: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,9 +38,11 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private cd: ChangeDetectorRef,
     private benchmarksService: BenchmarksService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
+    this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.authService.isOnAdminScreen = false;
     this.benchmarkDataSubscription();
