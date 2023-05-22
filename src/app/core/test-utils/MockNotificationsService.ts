@@ -50,7 +50,8 @@ export class MockNotificationsService extends NotificationsService {
   }
 
   public getAllNotifications(): Observable<any> {
-    return of([
+    return of({
+      notifications: [
       {
         created: '2020-01-01',
         type: 'BECOMEAPARENT',
@@ -65,7 +66,8 @@ export class MockNotificationsService extends NotificationsService {
           status: 'Approved',
         },
       },
-    ]);
+    ],
+    count: 2});
   }
 
   public deleteNotifications(notificationsForDeletion: Array<any>): Observable<any> {

@@ -16,6 +16,7 @@ const getEstablishmentNotifications = async (req, res) => {
     req.query.sort,
     req.query.page,
   );
+
   return res.status(200).send(establishmentNotifications);
 };
 

@@ -6,6 +6,11 @@ export interface Notification {
   typeContent: any;
 }
 
+export interface NotificationListResponse {
+  notifications: Notification[];
+  count: number;
+}
+
 export interface NotificationRequest {
   ownerRequestChangeUid: string;
   userUid?: string;

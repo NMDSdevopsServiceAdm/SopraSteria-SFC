@@ -94,7 +94,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         if (this.workplaceId) {
           this.notificationsService.getAllNotifications(this.workplaceId).subscribe(
             (notifications) => {
-              this.notificationsService.notifications$.next(notifications);
+              this.notificationsService.notifications$.next(notifications.notifications);
             },
             (error) => {
               console.error(error.error);

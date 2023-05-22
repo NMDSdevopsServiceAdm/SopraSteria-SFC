@@ -124,7 +124,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
                   }
                 });
                 this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-                  this.notificationsService.notifications$.next(notify);
+                  this.notificationsService.notifications$.next(notify.notifications);
                 });
               }
             },
@@ -167,7 +167,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
           (request) => {
             if (request) {
               this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-                this.notificationsService.notifications$.next(notify);
+                this.notificationsService.notifications$.next(notify.notifications);
               });
               this.router.navigate(['/dashboard']);
               this.alertService.addAlert({
