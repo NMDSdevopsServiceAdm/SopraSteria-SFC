@@ -8,7 +8,6 @@ import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
-
 import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
@@ -18,7 +17,7 @@ describe('Summary section', () => {
     workplace = Establishment,
     workerCount = Establishment.numberOfStaff,
     trainingCounts = {} as TrainingCounts,
-    WorkerCreatedDate = new Date('2021-03-31'),
+    workerCreatedDate = [dayjs()],
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule],
@@ -40,7 +39,7 @@ describe('Summary section', () => {
           event.preventDefault();
         },
         workerCount,
-        workerCreatedDate: WorkerCreatedDate,
+        workersCreatedDate: workerCreatedDate,
       },
     });
 
@@ -176,8 +175,7 @@ describe('Summary section', () => {
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
-      const establishment = { ...Establishment, numberOfStaff: 10 };
-      const { getByTestId } = await setup(false, establishment);
+      const { getByTestId } = await setup();
 
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).getByText('Remember to check and update this data often')).toBeTruthy();
@@ -240,7 +238,9 @@ describe('Summary section', () => {
         numberOfStaff: 12,
       };
 
-      const { fixture, getByTestId } = await setup(false, establishment, 12);
+      const date = [dayjs('2021-03-31').add(12, 'M')];
+
+      const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -263,12 +263,11 @@ describe('Summary section', () => {
     it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and and workplace created date is less than 12 month ', async () => {
       const establishment = {
         ...Establishment,
-        created: dayjs('2021-03-31').add(12, 'M'),
+        created: dayjs('2021-03-31').subtract(12, 'M'),
       };
 
-      const date = new Date();
-      date.setDate(date.getMonth() - 1);
-      const { fixture, getByTestId } = await setup(false, establishment, 12, {}, date);
+      const date = [dayjs().add(12, 'M')];
+      const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
