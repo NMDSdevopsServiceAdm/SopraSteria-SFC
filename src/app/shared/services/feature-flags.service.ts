@@ -9,11 +9,11 @@ export class FeatureFlagsService {
 
   constructor() {}
 
-  start(): void {
+  async start(): Promise<void> {
     if (environment.environmentName === 'other') {
       this.configCatClient = mockConfigCatClient;
     } else {
-      this.configCatClient = configcat.createClientWithManualPoll(environment.configCatKey, {});
+      this.configCatClient = await configcat.createClientWithManualPoll(environment.configCatKey, {});
     }
   }
 
