@@ -7,7 +7,7 @@
           data-testid="column-one"
         >
           <ng-container *ngIf="tab === 'home'; else otherTab">
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+            <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
               {{ workplace?.name }}
             </h1>
 
