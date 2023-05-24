@@ -1,6 +1,6 @@
 'use strict';
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const Establishment = require('../../models/classes/establishment');
 const uuid = require('uuid');
 const linkSubToParent = require('../../data/linkToParent');
@@ -253,7 +253,10 @@ const delink = async (req, res) => {
               notificationContentUid: params.deLinkToParentUID,
               establishmentUid: params.parentWorkplaceUId,
               userUid: params.userUid,
+              requestorEstId: req.params.id,
             };
+            console.log('****** DELINK TO PARENT ******');
+            console.log(notificationParams);
             await notifications.insertNewEstablishmentNotification(notificationParams);
             let lastDeLinkToParentRequest = await linkSubToParent.getLastDeLinkToParentRequest(params);
             if (lastDeLinkToParentRequest) {

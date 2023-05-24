@@ -91,7 +91,7 @@ const addTypeContent = async (notification) => {
       break;
     }
     case 'DELINKTOPARENT': {
-      let deLinkNotificationDetails = await notifications.getRequesterName(notification.createdByUserUID);
+      const deLinkNotificationDetails = await notifications.getRequestorEstablishment(notification.requestorEstUID);
       if (deLinkNotificationDetails) {
         let deLinkParentDetails = await notifications.getDeLinkParentDetails(notification.notificationContentUid);
         if (deLinkParentDetails) {
@@ -122,7 +122,6 @@ const addTypeContent = async (notification) => {
 const getNotification = async (req, res) => {
   try {
     const notificationData = await getOneNotification(req.params.notificationUid);
-
     await addTypeContent(notificationData.notification);
 
     // this will fetch notification receiver name
@@ -138,6 +137,8 @@ const getNotification = async (req, res) => {
     // return the item
     return res.status(200).send(notificationData.notification);
   } catch (e) {
+    console.log('**** ERROR ****');
+    console.log(e.message);
     return res.status(500).send({
       message: e.message,
     });
