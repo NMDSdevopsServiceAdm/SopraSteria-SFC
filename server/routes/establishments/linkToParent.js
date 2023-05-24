@@ -197,10 +197,10 @@ const actionLinkToParent = async (req, res) => {
               let notificationParams = {
                 type: params.type,
                 notificationContentUid: params.linkToParentUid,
-                recipientUserUid: params.requestingUserUid,
-                senderUid: params.userUid,
+                establishmentUid: req.body.subEstablishmentUid,
+                userUid: params.userUid,
               };
-              await notifications.insertNewUserNotification(notificationParams);
+              await notifications.insertNewEstablishmentNotification(notificationParams);
               const notificationDetailsParams = {
                 notificationContentUid: params.linkToParentUid,
               };
