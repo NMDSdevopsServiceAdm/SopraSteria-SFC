@@ -1,13 +1,30 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
+import { AuthService } from '@core/services/auth.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
+import { WindowToken } from '@core/services/window';
+import { WindowRef } from '@core/services/window.ref';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { HttpClient } from '@angular/common/http';
+import { MockUserService } from '@core/test-utils/MockUserService';
+import { Roles } from '@core/model/roles.enum';
+const MockWindow = {
+  dataLayer: {
+    push: () => {
+      return;
+    },
+  },
+};
 
 describe('NewDashboardHeaderComponent', () => {
   const setup = async (
@@ -16,7 +33,10 @@ describe('NewDashboardHeaderComponent', () => {
     canAddWorker = true,
     canEditWorker = false,
     hasWorkers = true,
+    isAdmin = true,
+    subsidiaries = 0,
   ) => {
+    const role = isAdmin ? Roles.Admin : Roles.Edit;
     const updatedDate = updateDate ? '01/02/2023' : null;
     const { fixture, getByTestId, queryByTestId, getByText, queryByText } = await render(NewDashboardHeaderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -25,6 +45,26 @@ describe('NewDashboardHeaderComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        {
+          provide: WindowRef,
+          useClass: WindowRef,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory([], isAdmin),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(subsidiaries, role),
+          deps: [HttpClient],
+        },
+        {
+          provide: AuthService,
+          useFactory: MockAuthService.factory(true, isAdmin),
+          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
+        },
+        { provide: WindowToken, useValue: MockWindow },
       ],
       componentProperties: {
         tab,
@@ -259,4 +299,67 @@ describe('NewDashboardHeaderComponent', () => {
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
     });
   });
+  // describe('Archive Workplace', () => {
+  //   it('should display a Delete Workplace link if user is an admin', async () => {
+  //     const { component } = await setup(true);
+
+  //     component.getByText('Delete Workplace');
+  //   });
+
+  //   it('should not display a Delete Workplace link if the workplace has subsidiaries', async () => {
+  //     const { component } = await setup(true, 1);
+
+  //     expect(component.queryByText('Delete Workplace')).toBeNull();
+  //   });
+
+  //   it('should not display a Delete Workplace link if user not an admin', async () => {
+  //     const { component } = await setup(false);
+
+  //     expect(component.queryByText('Delete Workplace')).toBeNull();
+  //   });
+
+  //   it('should display a modal when the user clicks on Delete Workplace', async () => {
+  //     const { component } = await setup(true);
+
+  //     const deleteWorkplace = component.getByText('Delete Workplace');
+  //     deleteWorkplace.click();
+
+  //     const dialog = await within(document.body).findByRole('dialog');
+
+  //     const cancel = within(dialog).getByText('Cancel');
+  //     cancel.click();
+  //   });
+
+  //   it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
+  //     const { component, establishmentService } = await setup(true);
+
+  //     const spy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+
+  //     const deleteWorkplace = component.getByText('Delete Workplace');
+  //     deleteWorkplace.click();
+
+  //     const dialog = await within(document.body).findByRole('dialog');
+  //     const confirm = within(dialog).getByText('Delete workplace');
+  //     confirm.click();
+
+  //     expect(spy).toHaveBeenCalled();
+  //   });
+
+  //   it('should redirect the user after deleting a workplace', async () => {
+  //     const { component, establishmentService, router } = await setup(true);
+
+  //     spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+  //     const spy = spyOn(router, 'navigate');
+  //     spy.and.returnValue(Promise.resolve(true));
+
+  //     const deleteWorkplace = component.getByText('Delete Workplace');
+  //     deleteWorkplace.click();
+
+  //     const dialog = await within(document.body).findByRole('dialog');
+  //     const confirm = within(dialog).getByText('Delete workplace');
+  //     confirm.click();
+
+  //     expect(spy).toHaveBeenCalled();
+  //   });
+  // });
 });
