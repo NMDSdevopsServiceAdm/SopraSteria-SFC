@@ -138,8 +138,6 @@ const getNotification = async (req, res) => {
     // return the item
     return res.status(200).send(notificationData.notification);
   } catch (e) {
-    console.log('**** ERROR ****');
-    console.log(e.message);
     return res.status(500).send({
       message: e.message,
     });

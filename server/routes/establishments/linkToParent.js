@@ -255,8 +255,6 @@ const delink = async (req, res) => {
               userUid: params.userUid,
               requestorEstId: req.params.id,
             };
-            console.log('****** DELINK TO PARENT ******');
-            console.log(notificationParams);
             await notifications.insertNewEstablishmentNotification(notificationParams);
             let lastDeLinkToParentRequest = await linkSubToParent.getLastDeLinkToParentRequest(params);
             if (lastDeLinkToParentRequest) {
