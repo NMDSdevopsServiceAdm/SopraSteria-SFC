@@ -9,15 +9,20 @@ const {
   getTurnover,
   getComparisonGroupRankings,
 } = require('../benchmarksService');
+const { log } = require('winston');
 
 const getPayRanking = async function (establishmentId) {
-  return await getComparisonGroupAndCalculateRanking(
-    establishmentId,
-    models.benchmarksPay,
-    getPay,
-    (r) => r.pay,
-    calculateRankDesc,
-  );
+  try {
+    return await getComparisonGroupAndCalculateRanking(
+      establishmentId,
+      models.benchmarksPay,
+      getPay,
+      (r) => r.pay,
+      calculateRankDesc,
+    );
+  } catch (error) {
+    return res.status(500).json(error);
+  }
 };
 
 const getQualificationsRanking = async function (establishmentId) {
@@ -58,6 +63,7 @@ const getComparisonGroupAndCalculateRanking = async function (
   calculateRankingCallback,
 ) {
   const comparisonGroupRankings = await getComparisonGroupRankings(establishmentId, benchmarksModel);
+  console.log({ comparisonGroupRankings });
   if (comparisonGroupRankings.length === 0) {
     return {
       hasValue: false,
@@ -85,11 +91,15 @@ const getComparisonGroupAndCalculateRanking = async function (
 };
 
 const getResponse = async function (req, res, getRankingCallback) {
-  const establishmentId = req.establishmentId;
+  try {
+    const establishmentId = req.establishmentId;
 
-  const responseData = await getRankingCallback(establishmentId);
-
-  res.status(200).json(responseData);
+    const responseData = await getRankingCallback(establishmentId);
+    console.log({ responseData });
+    res.status(200).json(responseData);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
 };
 
 const getPayResponse = async (req, res) => {
@@ -127,6 +137,7 @@ const getRankingsResponse = async (req, res) => {
 };
 
 router.route('/').get(getRankingsResponse);
+
 router.route('/pay').get(getPayResponse);
 router.route('/qualifications').get(getQualificationsResponse);
 router.route('/sickness').get(getSicknessResponse);
