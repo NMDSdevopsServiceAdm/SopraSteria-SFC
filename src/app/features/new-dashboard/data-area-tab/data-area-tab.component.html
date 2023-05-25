@@ -106,7 +106,7 @@
               <td class="govuk-table__cell workplace-cell">£11.05 (hourly)</td>
               <td class="govuk-table__cell comparision-group-cell">£11.50 (hourly)</td>
             </tr>
-            <tr class="govuk-table__row">
+            <tr class="govuk-table__row" *ngIf="showRegisteredNurseSalary" data-testid="register-nurse-comparision">
               <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
                 Registered nurse salary
               </th>

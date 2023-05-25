@@ -19,7 +19,7 @@ import { DataAreaTabComponent } from './data-area-tab.component';
 describe('DataAreaTabComponent', () => {
   const setup = async () => {
     const establishment = establishmentBuilder() as Establishment;
-    const { fixture } = await render(DataAreaTabComponent, {
+    const { fixture, getByTestId, queryByTestId } = await render(DataAreaTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
@@ -46,11 +46,32 @@ describe('DataAreaTabComponent', () => {
 
     return {
       component,
+      fixture,
+      getByTestId,
+      queryByTestId,
     };
   };
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show registered nurse salary in comparision group table', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.showRegisteredNurseSalary = true;
+    fixture.detectChanges();
+
+    expect(getByTestId('register-nurse-comparision')).toBeTruthy();
+  });
+
+  it('should not show registered nurse salary in comparision group table', async () => {
+    const { component, fixture, queryByTestId } = await setup();
+
+    component.showRegisteredNurseSalary = false;
+    fixture.detectChanges();
+
+    expect(queryByTestId('register-nurse-comparision')).toBeFalsy();
   });
 });

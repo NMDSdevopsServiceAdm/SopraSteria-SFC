@@ -27,6 +27,8 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public viewBenchmarksByCategory = false;
   public viewBenchmarksComparisonGroups = false;
   public viewBenchmarksPosition = false;
+  public mainServiceOneId = 24;
+  public showRegisteredNurseSalary: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -40,6 +42,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
+    this.showRegisteredNurseSalary = this.workplace.mainService.id === this.mainServiceOneId ? true : false;
   }
 
   public async downloadAsPDF() {
