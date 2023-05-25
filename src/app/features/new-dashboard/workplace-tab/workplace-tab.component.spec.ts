@@ -19,13 +19,29 @@ import { render } from '@testing-library/angular';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { NewWorkplaceTabComponent } from './workplace-tab.component';
+import { MockUserService } from '@core/test-utils/MockUserService';
+import { WindowRef } from '@core/services/window.ref';
+import { AuthService } from '@core/services/auth.service';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { WindowToken } from '@core/services/window';
+import { Roles } from '@core/model/roles.enum';
 
+const MockWindow = {
+  dataLayer: {
+    push: () => {
+      return;
+    },
+  },
+};
 describe('NewWorkplaceTabComponent', () => {
   const setup = async (
     permissions = ['canEditEstablishment'],
     checkCqcDetails = false,
     establishment = Establishment,
+    isAdmin = true,
+    subsidiaries = 0,
   ) => {
+    const role = isAdmin ? Roles.Admin : Roles.Edit;
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -47,6 +63,23 @@ describe('NewWorkplaceTabComponent', () => {
           useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
           deps: [HttpClient],
         },
+
+        {
+          provide: WindowRef,
+          useClass: WindowRef,
+        },
+
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(subsidiaries, role),
+          deps: [HttpClient],
+        },
+        {
+          provide: AuthService,
+          useFactory: MockAuthService.factory(true, isAdmin),
+          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
+        },
+        { provide: WindowToken, useValue: MockWindow },
       ],
       componentProperties: {
         workplace: establishment,

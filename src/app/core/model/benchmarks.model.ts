@@ -11,6 +11,7 @@ export interface Meta {
   workplaces: number;
   staff: number;
   lastUpdated?: Date;
+  localAuthority: string;
 }
 export interface Tile {
   workplaceValue: BenchmarkValue;

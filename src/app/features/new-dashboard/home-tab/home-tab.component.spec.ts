@@ -76,7 +76,7 @@ describe('NewHomeTabComponent', () => {
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
         workplace: establishment,
-        meta: { workplaces: 9, staff: 4 } as Meta,
+        meta: { workplaces: 9, staff: 4, localAuthority: 'Test LA' } as Meta,
       },
       schemas: [NO_ERRORS_SCHEMA],
     });
@@ -460,7 +460,7 @@ describe('NewHomeTabComponent', () => {
       it('should render the number of workplaces to compare with', async () => {
         const { getByText } = await setup();
 
-        const text = getByText('There are 9 workplaces providing adult social care in Fake Town.');
+        const text = getByText('There are 9 workplaces providing adult social care in Test LA.');
 
         expect(text).toBeTruthy();
       });

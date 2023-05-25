@@ -103,7 +103,7 @@ const getComparisonGroupRankings = async function (establishmentId, benchmarksMo
   return await benchmarksModel.findAll({
     attributes: { exclude: ['CssrID', 'MainServiceFK'] },
     where: {
-      CssrID: cssr,
+      CssrID: cssr.id,
       EstablishmentFK: {
         [Op.not]: [establishmentId],
       },
