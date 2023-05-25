@@ -4,7 +4,7 @@ const changeColumns = async (queryInterface, Sequelize, table, allowNull, transa
   await Promise.all([
     queryInterface.changeColumn(
       table,
-      'AverageAnnualFTE',
+      'LocalAuthorityArea',
       {
         type: Sequelize.DataTypes.INTEGER,
         allowNull,
@@ -13,9 +13,9 @@ const changeColumns = async (queryInterface, Sequelize, table, allowNull, transa
     ),
     queryInterface.changeColumn(
       table,
-      'AverageHourlyRate',
+      'TurnoverRate',
       {
-        type: Sequelize.DataTypes.INTEGER,
+        type: Sequelize.DataTypes.DECIMAL(5, 2),
         allowNull,
       },
       { transaction },
@@ -30,14 +30,14 @@ module.exports = {
         changeColumns(
           queryInterface,
           Sequelize,
-          { tableName: 'BenchmarksPayByEstId', schema: 'cqc' },
+          { tableName: 'BenchmarksTurnoverByEstId', schema: 'cqc' },
           true,
           transaction,
         ),
         changeColumns(
           queryInterface,
           Sequelize,
-          { tableName: 'BenchmarksPayByEstIdGoodOutstanding', schema: 'cqc' },
+          { tableName: 'BenchmarksTurnoverByEstIdGoodOutstanding', schema: 'cqc' },
           true,
           transaction,
         ),
@@ -51,14 +51,14 @@ module.exports = {
         changeColumns(
           queryInterface,
           Sequelize,
-          { tableName: 'BenchmarksPayByEstId', schema: 'cqc' },
+          { tableName: 'BenchmarksTurnoverByEstId', schema: 'cqc' },
           false,
           transaction,
         ),
         changeColumns(
           queryInterface,
           Sequelize,
-          { tableName: 'BenchmarksPayByEstIdGoodOutstanding', schema: 'cqc' },
+          { tableName: 'BenchmarksTurnoverByEstIdGoodOutstanding', schema: 'cqc' },
           false,
           transaction,
         ),
