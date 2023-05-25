@@ -4,6 +4,7 @@ import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -15,7 +16,6 @@ import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-pa
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { Subscription } from 'rxjs';
 import { isAdminRole } from 'server/utils/adminUtils';
-import { Worker } from '@core/model/worker.model';
 
 @Component({
   selector: 'app-new-home-tab',
@@ -28,6 +28,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public benchmarksMessage: string;
   public canViewWorkplaces: boolean;
+  public canViewReports: boolean;
   public canViewChangeDataOwner: boolean;
   public canViewDataPermissionsLink: boolean;
   public canLinkToParent: boolean;
@@ -45,6 +46,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public workplaceSummaryMessage: string;
   public workersCreatedDate;
   public workerCount: number;
+  public workersNotCompleted: Worker[];
 
   constructor(
     private userService: UserService,
@@ -56,10 +58,16 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const { workersCreatedDate, workerCount = 0, trainingCounts } = this.route.snapshot.data.workers;
+    const {
+      workersCreatedDate,
+      workerCount = 0,
+      trainingCounts,
+      workersNotCompleted,
+    } = this.route.snapshot.data.workers;
     this.workersCreatedDate = workersCreatedDate;
     this.workerCount = workerCount;
     this.trainingCounts = trainingCounts;
+    this.workersNotCompleted = workersNotCompleted;
 
     this.user = this.userService.loggedInUser;
     this.setPermissionLinks();
@@ -124,6 +132,10 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
       this.workplace.parentUid != null &&
       this.workplace.dataOwner === 'Workplace' &&
       this.user.role != 'Read';
+
+    this.canViewReports =
+      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
+      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
 
     // if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
     //   this.isOwnershipRequested = true;

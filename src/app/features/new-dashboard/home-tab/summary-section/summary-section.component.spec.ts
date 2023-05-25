@@ -1,13 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
+
 import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
@@ -18,6 +21,7 @@ describe('Summary section', () => {
     workerCount = Establishment.numberOfStaff,
     trainingCounts = {} as TrainingCounts,
     workerCreatedDate = [dayjs()],
+    workersNotCompleted = [workerBuilder()] as Worker[],
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule],
@@ -40,6 +44,7 @@ describe('Summary section', () => {
         },
         workerCount,
         workersCreatedDate: workerCreatedDate,
+        workersNotCompleted: workersNotCompleted as Worker[],
       },
     });
 
@@ -287,6 +292,39 @@ describe('Summary section', () => {
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
+    });
+
+    it('should show "Some records only have mandatory data added" message when staff records are not completed and  worker added date is less than 1 month ', async () => {
+      const date = new Date();
+
+      const workerCreatedDate = [
+        {
+          ...workerBuilder(),
+          created: '2023-03-31',
+        },
+      ] as Worker[];
+      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeTruthy();
+    });
+
+    it('should not show "Some records only have mandatory data added" message when staff records are completed and  worker added date is less than 1 month', async () => {
+      const date = new Date();
+
+      const workerCreatedDate = [
+        {
+          ...workerBuilder(),
+          completed: true,
+          created: '2023-05-02',
+        },
+      ] as Worker[];
+      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
     });
   });
 

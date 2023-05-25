@@ -1,0 +1,59 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Staff records</span>
+
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Records with only mandatory data added</h1>
+  </div>
+</div>
+
+<div data-testid="staff-records">
+  <table *ngIf="workerCount" class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Name or ID number</th>
+        <th class="govuk-table__header" scope="col">Job role</th>
+        <th class="govuk-table__header" scope="col">Last update</th>
+        <th *ngIf="!wdfView" class="govuk-table__header" scope="col">
+          <span class="govuk-visually-hidden">Status</span>
+        </th>
+        <th *ngIf="wdfView" class="govuk-table__header" scope="col">WDF requirements</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row" *ngFor="let worker of workerNotCompleted">
+        <td class="govuk-table__cell govuk-!-font-weight-regular">
+          <ng-container *ngIf="canViewWorker; else nameOrId">
+            <a href="#" (click)="getWorkerRecordPath($event, worker)">
+              {{ worker.nameOrId }}
+            </a>
+          </ng-container>
+          <ng-template #nameOrId>
+            {{ worker.nameOrId }}
+          </ng-template>
+        </td>
+        <td class="govuk-table__cell">{{ worker.mainJob.jobRoleName }}</td>
+        <td class="govuk-table__cell">
+          <span class="govuk-visually-hidden">last updated</span>
+          <span class="govuk__nowrap">{{ lastUpdated(worker.updated) }}</span>
+        </td>
+        <td *ngIf="!wdfView" class="govuk-table__cell">
+          <a
+            *ngIf="canEditWorker"
+            class="govuk-util__float-right"
+            [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid, 'date-of-birth']"
+            [state]="{ navigatedFrom: 'staff-records' }"
+            >Add more details <span class="govuk-visually-hidden"> for {{ worker.nameOrId }}</span></a
+          >
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <a type="button" class="govuk-button govuk-!-margin-top-4" [routerLink]="['/dashboard']" [fragment]="'home'">
+      Return to home
+    </a>
+  </div>
+</div>

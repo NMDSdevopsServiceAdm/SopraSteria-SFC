@@ -34,6 +34,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.getUser();
     this.setupUserSubscription();
+
     this.onAdminScreen();
     this.workplaceId && this.getUsers();
     this.standAloneAccount && this.setUpNotificationSubscription();
@@ -84,17 +85,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private setUpNotificationSubscription(): void {
-    // get latest notification after every 30 seconds
+    // get latest notification after every 60 seconds
     this.subscriptions.add(
-      interval(30000).subscribe(() => {
-        this.notificationsService.getAllNotifications().subscribe(
-          (notifications) => {
-            this.notificationsService.notifications$.next(notifications);
-          },
-          (error) => {
-            console.error(error.error);
-          },
-        );
+      interval(60000).subscribe(() => {
+        if (this.workplaceId) {
+          this.notificationsService.getAllNotifications(this.workplaceId).subscribe(
+            (notifications) => {
+              this.notificationsService.notifications$.next(notifications.notifications);
+            },
+            (error) => {
+              console.error(error.error);
+            },
+          );
+        }
       }),
     );
   }

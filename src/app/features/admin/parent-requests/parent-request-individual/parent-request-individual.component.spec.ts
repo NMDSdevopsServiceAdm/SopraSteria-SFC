@@ -563,6 +563,7 @@ describe('ParentRequestIndividualComponent', () => {
       expect(parentRequestsService.parentApproval).toHaveBeenCalledWith({
         parentRequestId: component.registration.requestId,
         establishmentId: component.registration.establishment.establishmentId,
+        establishmentUid: component.registration.establishment.establishmentUid,
         userId: component.registration.userId,
         rejectionReason: 'Approved',
         approve: true,
@@ -691,6 +692,7 @@ describe('ParentRequestIndividualComponent', () => {
       expect(parentRequestsService.parentApproval).toHaveBeenCalledWith({
         parentRequestId: component.registration.requestId,
         establishmentId: component.registration.establishment.establishmentId,
+        establishmentUid: component.registration.establishment.establishmentUid,
         userId: component.registration.userId,
         rejectionReason: 'Rejected',
         approve: false,

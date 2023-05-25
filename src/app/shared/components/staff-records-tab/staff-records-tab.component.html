@@ -8,6 +8,7 @@
       draggable="false"
       class="govuk-button"
       [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'create-staff-record']"
+      data-cy="add-staff-record-button"
     >
       Add a staff record
     </a>
@@ -31,6 +32,7 @@
     [totalStaff]="this.workplace.numberOfStaff"
     [totalWorkers]="workerCount"
     [returnToDash]="true"
+    data-cy="total-staff-panel"
   ></app-total-staff-panel>
 
   <app-staff-summary
@@ -38,6 +40,7 @@
     [workplace]="workplace"
     [workers]="workers"
     [workerCount]="workerCount"
+    data-cy="staff-summary"
   ></app-staff-summary>
 </ng-container>
 

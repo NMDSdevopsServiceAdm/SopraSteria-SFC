@@ -53,6 +53,7 @@ export class ParentRequestIndividualComponent implements OnInit, OnDestroy {
         const data = {
           parentRequestId: this.registration.requestId,
           establishmentId: this.registration.establishment.establishmentId,
+          establishmentUid: this.registration.establishment.establishmentUid,
           userId: this.registration.userId,
           rejectionReason: isApproval ? 'Approved' : 'Rejected',
           approve: isApproval,

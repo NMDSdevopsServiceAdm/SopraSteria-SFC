@@ -2,6 +2,7 @@
   [tab]="'staff-records'"
   [canAddWorker]="canAddWorker"
   [updatedDate]="staffLastUpdated"
+  data-cy="dashboard-header"
 ></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
   <ng-container *ngIf="workers?.length > 0; else noStaffRecords">

@@ -1,12 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import dayjs from 'dayjs';
-import { Worker } from '@core/model/worker.model';
 
 @Component({
   selector: 'app-summary-section',
@@ -17,9 +16,9 @@ export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
   @Input() workersCreatedDate;
-
   @Input() trainingCounts: TrainingCounts;
   @Input() navigateToTab: (event: Event, selectedTab: string) => void;
+  @Input() workersNotCompleted: Worker[];
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -42,6 +41,7 @@ export class SummarySectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
+    this.getStaffCreatedDate();
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
   }
@@ -94,6 +94,9 @@ export class SummarySectionComponent implements OnInit {
       dayjs() >= this.getWorkerLatestCreatedDate()
     ) {
       this.sections[1].message = 'No staff records added in the last 12 months';
+    } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
+      this.sections[1].message = 'Some records only have mandatory data added';
+      this.sections[1].route = ['/staff-basic-records'];
     }
   }
 
@@ -129,6 +132,13 @@ export class SummarySectionComponent implements OnInit {
       this.sections[2].link = false;
       this.sections[2].message = 'Manage your staff training and qualifications';
     }
+  }
+
+  getStaffCreatedDate() {
+    const filterDate = this.workersNotCompleted.filter(
+      (workerDate: any) => dayjs() > dayjs(new Date(workerDate.created)).add(1, 'M'),
+    );
+    return filterDate?.length > 0;
   }
 
   getWorkerLatestCreatedDate() {

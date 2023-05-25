@@ -17,7 +17,26 @@ export class MockNotificationsService extends NotificationsService {
   }
 
   get notifications(): Notification[] {
-    return [];
+    return [
+      {
+        notificationUid: 'test-uid',
+        created: '2020-01-01',
+        type: 'BECOMEAPARENT',
+        isViewed: true,
+        typeContent: {
+          status: 'Rejected',
+        },
+      },
+      {
+        notificationUid: 'test-uid',
+        created: '2023-01-01',
+        type: 'OWNERCHANGE',
+        isViewed: true,
+        typeContent: {
+          status: 'Approved',
+        },
+      },
+    ];
   }
 
   public getNotificationDetails(): Observable<any> {
@@ -25,8 +44,33 @@ export class MockNotificationsService extends NotificationsService {
       created: '2020-01-01',
       type: 'BECOMEAPARENT',
       typeContent: {
-        status: this.approved ? 'Approved' : 'Rejected'
-      }
+        status: this.approved ? 'Approved' : 'Rejected',
+      },
     });
+  }
+
+  public getAllNotifications(): Observable<any> {
+    return of({
+      notifications: [
+      {
+        created: '2020-01-01',
+        type: 'BECOMEAPARENT',
+        typeContent: {
+          status: 'Rejected',
+        },
+      },
+      {
+        created: '2023-01-01',
+        type: 'OWNERCHANGE',
+        typeContent: {
+          status: 'Approved',
+        },
+      },
+    ],
+    count: 2});
+  }
+
+  public deleteNotifications(notificationsForDeletion: Array<any>): Observable<any> {
+    return of({});
   }
 }

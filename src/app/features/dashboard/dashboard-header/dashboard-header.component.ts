@@ -127,10 +127,10 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
   private setUpNotificationSubscription(): void {
     // get latest notification after every 30 seconds
     this.subscriptions.add(
-      interval(30000).subscribe(() => {
-        this.notificationsService.getAllNotifications().subscribe(
+      interval(60000).subscribe(() => {
+        this.notificationsService.getAllNotifications(this.workplaceUid).subscribe(
           (notifications) => {
-            this.notificationsService.notifications$.next(notifications);
+            this.notificationsService.notifications$.next(notifications.notifications);
           },
           (error) => {
             console.error(error.error);
