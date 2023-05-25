@@ -9,20 +9,15 @@ const {
   getTurnover,
   getComparisonGroupRankings,
 } = require('../benchmarksService');
-const { log } = require('winston');
 
 const getPayRanking = async function (establishmentId) {
-  try {
-    return await getComparisonGroupAndCalculateRanking(
-      establishmentId,
-      models.benchmarksPay,
-      getPay,
-      (r) => r.pay,
-      calculateRankDesc,
-    );
-  } catch (error) {
-    return res.status(500).json(error);
-  }
+  return await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    models.benchmarksPay,
+    getPay,
+    (r) => r.pay,
+    calculateRankDesc,
+  );
 };
 
 const getQualificationsRanking = async function (establishmentId) {
@@ -63,7 +58,7 @@ const getComparisonGroupAndCalculateRanking = async function (
   calculateRankingCallback,
 ) {
   const comparisonGroupRankings = await getComparisonGroupRankings(establishmentId, benchmarksModel);
-  console.log({ comparisonGroupRankings });
+
   if (comparisonGroupRankings.length === 0) {
     return {
       hasValue: false,
