@@ -32,6 +32,7 @@ const getNotificationDetails = async (notification) => {
     notificationDetails[0].subEstablishmentId = subEstablishmentName[0].subestablishmentid;
     notificationDetails[0].parentEstablishmentId = subEstablishmentName[0].parentestablishmentid;
     notificationDetails[0].rejectionReason = subEstablishmentName[0].rejectionreason;
+    notificationDetails[0].subEstablishmentUid = subEstablishmentName[0].subestablishmentuid;
   }
   return notificationDetails;
 };
@@ -91,7 +92,7 @@ const addTypeContent = async (notification) => {
       break;
     }
     case 'DELINKTOPARENT': {
-      let deLinkNotificationDetails = await notifications.getRequesterName(notification.createdByUserUID);
+      const deLinkNotificationDetails = await notifications.getRequestorEstablishment(notification.requestorEstUID);
       if (deLinkNotificationDetails) {
         let deLinkParentDetails = await notifications.getDeLinkParentDetails(notification.notificationContentUid);
         if (deLinkParentDetails) {
@@ -122,7 +123,6 @@ const addTypeContent = async (notification) => {
 const getNotification = async (req, res) => {
   try {
     const notificationData = await getOneNotification(req.params.notificationUid);
-
     await addTypeContent(notificationData.notification);
 
     // this will fetch notification receiver name

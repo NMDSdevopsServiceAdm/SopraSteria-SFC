@@ -68,7 +68,8 @@ const selectOneEstablishmentNotification = `
     "notificationContentUid",
     "created",
     "isViewed",
-    "createdByUserUID"
+    "createdByUserUID",
+    "requestorEstUID"
   FROM cqc."NotificationsEstablishment"
   WHERE "notificationUid" = :notificationUid
   LIMIT :limit
@@ -114,8 +115,8 @@ VALUES (:type, :typeUid, :recipientUserUid, :isViewed, :createdByUserUID);
 const insertEstablishmentNotificationQuery = `
 INSERT INTO
 cqc."NotificationsEstablishment"
-("notificationContentUid", "type", "establishmentUid", "isViewed", "createdByUserUID")
-VALUES (:notificationContentUid, :type, :establishmentUid, :isViewed, :createdByUserUID);
+("notificationContentUid", "type", "establishmentUid", "isViewed", "createdByUserUID", "requestorEstUID")
+VALUES (:notificationContentUid, :type, :establishmentUid, :isViewed, :createdByUserUID, :requestorEstUID);
 `;
 
 const updateNotificationQuery = `
@@ -189,6 +190,7 @@ exports.insertNewEstablishmentNotification = async (params) => {
       isViewed: false,
       createdByUserUID: params.userUid,
       type: params.type,
+      requestorEstUID: params.requestorEstId || null,
     },
     type: db.QueryTypes.INSERT,
   });
@@ -215,6 +217,17 @@ exports.getRequesterName = async (userUID) =>
   db.query(getRequesterNameQuery, {
     replacements: {
       recipientUserUid: userUID,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const getRequestorEstablishmentQuery = `
+    SELECT "NameValue" from cqc."Establishment" WHERE "EstablishmentUID" = :establishmentUid`;
+
+exports.getRequestorEstablishment = async (estUID) =>
+  db.query(getRequestorEstablishmentQuery, {
+    replacements: {
+      establishmentUid: estUID,
     },
     type: db.QueryTypes.SELECT,
   });
