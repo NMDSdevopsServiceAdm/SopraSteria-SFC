@@ -46,7 +46,7 @@ module.exports = {
         ),
         changeMainServiceColumn(
           { tableName: 'BenchmarksQualificationsByEstIdGoodOutstanding', schema: 'cqc' },
-          'BenchmarksQualificationsByEstIdGoodOutstand_MainServiceFK_fkey',
+          'BenchmarksQualificationsByEstIdGoodOutstandi_MainServiceFK_fkey',
           transaction,
         ),
         changeMainServiceColumn(
