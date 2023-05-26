@@ -1,12 +1,11 @@
 module.exports = function (sequelize, DataTypes) {
-  const BenchmarksTurnoverByEstId = sequelize.define(
-    'benchmarksTurnoverByEstId',
+  const BenchmarksSicknessByLAAndService = sequelize.define(
+    'BenchmarksSicknessByLAAndService',
     {
-      EstablishmentFK: {
+      LocalAuthorityArea: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      LocalAuthorityArea: DataTypes.INTEGER,
       MainServiceFK: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -15,26 +14,21 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      Employees: {
+      BaseWorkers: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      Leavers: {
+      AverageNoOfSickDays: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      WorkerCount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      TurnoverRate: DataTypes.DECIMAL(5, 2),
     },
     {
-      tableName: '"BenchmarksTurnoverByEstId"',
+      tableName: '"BenchmarksSicknessByLAAndService"',
       schema: 'cqc',
       timestamps: false,
     },
   );
 
-  return BenchmarksTurnoverByEstId;
+  return BenchmarksSicknessByLAAndService;
 };

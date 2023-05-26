@@ -1,17 +1,12 @@
 module.exports = function (sequelize, DataTypes) {
-  const BenchmarksTurnoverByEstIdGoodOutstanding = sequelize.define(
-    'benchmarksTurnoverByEstIdGoodOutstanding',
+  const BenchmarksVacanciesByLAAndServiceGoodOutstanding = sequelize.define(
+    'BenchmarksVacanciesByLAAndServiceGoodOutstanding',
     {
-      EstablishmentFK: {
+      LocalAuthorityArea: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      LocalAuthorityArea: DataTypes.INTEGER,
       MainServiceFK: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      BaseEstablishments: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -19,7 +14,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      Leavers: {
+      Vacancies: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      BaseEstablishments: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -27,18 +26,21 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      TurnoverRate: DataTypes.DECIMAL(5, 2),
+      VacancyRate: {
+        type: DataTypes.DECIMAL(5, 2),
+        allowNull: false,
+      },
       CQCGoodOutstandingRating: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
     {
-      tableName: '"BenchmarksTurnoverByEstIdGoodOutstanding"',
+      tableName: '"BenchmarksVacanciesByLAAndServiceGoodOutstanding"',
       schema: 'cqc',
       timestamps: false,
     },
   );
 
-  return BenchmarksTurnoverByEstIdGoodOutstanding;
+  return BenchmarksVacanciesByLAAndServiceGoodOutstanding;
 };

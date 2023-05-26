@@ -27,14 +27,8 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      AverageHourlyRate: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      AverageAnnualFTE: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
+      AverageHourlyRate: DataTypes.INTEGER,
+      AverageAnnualFTE: DataTypes.INTEGER,
     },
     {
       tableName: '"BenchmarksPayByEstId"',
