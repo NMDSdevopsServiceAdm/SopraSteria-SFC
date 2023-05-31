@@ -28,6 +28,15 @@ import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
 import { SummarySectionComponent } from './summary-section/summary-section.component';
+import { WindowToken } from '@core/services/window';
+
+const MockWindow = {
+  dataLayer: {
+    push: () => {
+      return;
+    },
+  },
+};
 
 describe('NewHomeTabComponent', () => {
   const setup = async (checkCqcDetails = false, establishment = Establishment) => {
@@ -72,6 +81,7 @@ describe('NewHomeTabComponent', () => {
           useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
           deps: [HttpClient],
         },
+        { provide: WindowToken, useValue: MockWindow },
       ],
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
