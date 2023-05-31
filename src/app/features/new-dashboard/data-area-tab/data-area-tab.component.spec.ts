@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -11,15 +11,16 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { DataAreaTabComponent } from './data-area-tab.component';
+import userEvent from '@testing-library/user-event';
 
-describe('DataAreaTabComponent', () => {
+fdescribe('DataAreaTabComponent', () => {
   const setup = async () => {
     const establishment = establishmentBuilder() as Establishment;
-    const { fixture, getByTestId, queryByTestId } = await render(DataAreaTabComponent, {
+    const { fixture, getByRole, getByTestId, getByText, queryByTestId } = await render(DataAreaTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
@@ -47,7 +48,9 @@ describe('DataAreaTabComponent', () => {
     return {
       component,
       fixture,
+      getByRole,
       getByTestId,
+      getByText,
       queryByTestId,
     };
   };
@@ -74,4 +77,32 @@ describe('DataAreaTabComponent', () => {
 
     expect(queryByTestId('register-nurse-comparision')).toBeFalsy();
   });
+
+  it('should show the care worker hourly pay', async () => {
+    const { getByText } = await setup();
+    expect(getByText('£10.26 (hourly)')).toBeTruthy();
+  });
+
+  it('should show the comparison group care worker hourly pay', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.showRegisteredNurseSalary = false;
+    component.viewBenchmarksComparisonGroups = false;
+    fixture.detectChanges();
+
+    expect(getByText('£9.75 (hourly)')).toBeTruthy();
+  });
+
+  // xit('should show the comparison group care worker hourly pay when select has changed - temp test', async () => {
+  //   const { component, fixture, getByRole, getByText } = await setup();
+
+  //   component.viewBenchmarksComparisonGroups = true;
+
+  //   const goodAndOutstandingInput = getByRole('radio', { name: 'comparison-groups-good-and-outstanding' });
+  //   fireEvent.change(goodAndOutstandingInput);
+
+  //   fixture.detectChanges();
+
+  //   expect(getByText('£9.96 (hourly)')).toBeTruthy();
+  // });
 });

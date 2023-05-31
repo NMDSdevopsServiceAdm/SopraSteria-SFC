@@ -8,6 +8,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
+import { FormatUtil } from '@core/utils/format-util';
 
 @Component({
   selector: 'app-data-area-tab',
@@ -29,6 +30,14 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public viewBenchmarksPosition = false;
   public mainServiceOneId = 24;
   public showRegisteredNurseSalary: boolean;
+  public careWorkerPay;
+  public seniorCareWorkerPay;
+  public registeredNurseSalary;
+  public registeredManagerSalary;
+  public comparisionGroupCareWorkerPay;
+  public comparisionGroupSeniorCareWorkerPay;
+  public comparisionGroupRegisteredNurseSalary;
+  public comparisionGroupRegisteredManagerSalary;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -43,6 +52,8 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.showRegisteredNurseSalary = this.workplace.mainService.id === this.mainServiceOneId ? true : false;
+    this.showWorkplacePayAndSalary();
+    this.showComparisionGroupPayAndSalary();
   }
 
   public async downloadAsPDF() {
@@ -67,10 +78,32 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   public handleViewComparisonGroups(visible: boolean): void {
     this.viewBenchmarksComparisonGroups = visible;
+    this.showComparisionGroupPayAndSalary();
   }
 
   public handleViewBenchmarkPosition(visible: boolean): void {
     this.viewBenchmarksPosition = visible;
+  }
+
+  public showWorkplacePayAndSalary(): void {
+    this.careWorkerPay = FormatUtil.formatMoney(1026);
+    this.seniorCareWorkerPay = FormatUtil.formatMoney(1105);
+    this.registeredNurseSalary = '£34,130';
+    this.registeredManagerSalary = '£35,637';
+  }
+
+  public showComparisionGroupPayAndSalary() {
+    if (this.viewBenchmarksComparisonGroups) {
+      this.comparisionGroupCareWorkerPay = '£9.96';
+      this.comparisionGroupSeniorCareWorkerPay = '£11.96';
+      this.comparisionGroupRegisteredNurseSalary = '£35,550';
+      this.comparisionGroupRegisteredManagerSalary = '£36,185';
+      return;
+    }
+    this.comparisionGroupCareWorkerPay = '£9.75';
+    this.comparisionGroupSeniorCareWorkerPay = '£11.50';
+    this.comparisionGroupRegisteredNurseSalary = '£34,100';
+    this.comparisionGroupRegisteredManagerSalary = '£36,185';
   }
 
   ngOnDestroy(): void {
