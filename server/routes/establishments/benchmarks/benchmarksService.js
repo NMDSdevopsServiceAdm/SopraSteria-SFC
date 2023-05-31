@@ -3,13 +3,17 @@ const { Op } = require('sequelize');
 
 const getPay = async function (params) {
   const averageHourlyPay = await models.worker.averageHourlyPay(params);
-  if (averageHourlyPay.amount === null) {
+
+  if (!averageHourlyPay.amount) {
     return {
       stateMessage: 'no-pay-data',
     };
   }
 
-  return { value: parseFloat((parseFloat(averageHourlyPay.amount) * 100).toFixed(0)) };
+  const amount =
+    params.annualOrHourly === 'Hourly' ? parseFloat(averageHourlyPay.amount) * 100 : averageHourlyPay.amount;
+
+  return { value: parseFloat(amount.toFixed(0)) };
 };
 
 const getQualifications = async function ({ establishmentId }) {

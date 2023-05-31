@@ -1,7 +1,7 @@
-const models = require('../../../../../models');
+const models = require('../../../../../../models');
 const sinon = require('sinon');
 const expect = require('chai').expect;
-const rankings = require('../../../../../routes/establishments/benchmarks/rankings');
+const rankings = require('../../../../../../routes/establishments/benchmarks/rankings');
 
 describe('rankings', () => {
   beforeEach(() => {

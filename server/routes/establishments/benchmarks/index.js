@@ -187,7 +187,9 @@ const getComparisonGroups = async (establishmentId, mainService, benchmarksModel
 };
 
 const getBenchmarksData = async (establishmentId, mainService) => {
-  const reply = {};
+  const reply = {
+    meta: {},
+  };
 
   reply.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID);
   reply.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID);
@@ -195,10 +197,24 @@ const getBenchmarksData = async (establishmentId, mainService) => {
   reply.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID);
   reply.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService);
   reply.turnoverRate = await turnoverBenchmarks(establishmentId, mainService);
-  console.log(reply);
-  // const vacancyRate = await vacancy
-  // const turnoverRate = await turnover({ establishmentId }, benchmarkComparisonGroup);
-  return { reply };
+
+  reply.meta = await getMeta(establishmentId, mainService);
+
+  return reply;
+};
+
+const getMeta = async (establishmentId, mainService) => {
+  const benchmarksComparisonGroup = await models.benchmarksEstablishmentsAndWorkers.getComparisonData(
+    establishmentId,
+    mainService,
+  );
+
+  return {
+    workplaces: benchmarksComparisonGroup ? benchmarksComparisonGroup.workplaces : 0,
+    staff: benchmarksComparisonGroup ? benchmarksComparisonGroup.staff : 0,
+    lastUpdated: await models.dataImports.benchmarksLastUpdated(),
+    localAuthority: benchmarksComparisonGroup ? benchmarksComparisonGroup.localAuthority : null,
+  };
 };
 
 const viewBenchmarks = async (req, res) => {
@@ -214,6 +230,7 @@ const viewBenchmarks = async (req, res) => {
       tiles = req.query.tiles ? req.query.tiles.split(',') : [];
       reply = await getTiles(establishmentId, tiles);
     }
+    console.log(reply);
     return res.status(200).json(reply);
   } catch (err) {
     console.error(err);
