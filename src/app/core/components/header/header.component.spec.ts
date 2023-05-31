@@ -12,10 +12,8 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
 import { EditUser, MockUserService } from '@core/test-utils/MockUserService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
@@ -41,10 +39,6 @@ describe('HeaderComponent', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
         },
         {
           provide: NotificationsService,
@@ -181,30 +175,6 @@ describe('HeaderComponent', () => {
   });
 
   describe('notifications link', () => {
-    it('should show the notifications link when logged in, in a stand alone account and the feature flag is on', async () => {
-      const { component, fixture, getByText } = await setup(false, 0, true);
-
-      component.newHomeDesignFlag = true;
-      fixture.detectChanges();
-
-      expect(getByText('Notifications')).toBeTruthy();
-    });
-
-    it('should not show the notifications link when logged in, the feature flag is not on but not in a stand alone account ', async () => {
-      const { component, fixture, queryByText } = await setup(false, 0, true, false);
-
-      component.newHomeDesignFlag = true;
-      fixture.detectChanges();
-
-      expect(queryByText('Notifications')).toBeFalsy();
-    });
-
-    it('should not show the notifications link when logged in, in a stand alone account but the feature flag is not on', async () => {
-      const { queryByText } = await setup(false, 0, true);
-
-      expect(queryByText('Notifications')).toBeFalsy();
-    });
-
     it('should not show the notifications link when logged in, in a stand alone account but not on admin screen', async () => {
       const { component, fixture, queryByText } = await setup(false, 0, true);
 

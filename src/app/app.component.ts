@@ -51,10 +51,10 @@ export class AppComponent implements OnInit {
     });
 
     this.angulartics2GoogleTagManager.startTracking();
-    this.featureFlagsService.start();
   }
 
   async ngOnInit(): Promise<void> {
+    await this.featureFlagsService.start();
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
       this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
@@ -85,6 +85,7 @@ export class AppComponent implements OnInit {
       }
     });
 
+    await this.featureFlagsService.configCatClient.forceRefreshAsync();
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
   }

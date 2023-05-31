@@ -34,7 +34,6 @@ export class NotificationListComponent implements OnInit {
   public ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.NOTIFICATIONS);
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.totalCount = this.notificationService.notifications.length;
     this.getNotifications();
   }
 
@@ -46,7 +45,10 @@ export class NotificationListComponent implements OnInit {
         this.selectedSort,
         this.selectedPageIndex,
       )
-      .subscribe((notification) => (this.notifications = notification));
+      .subscribe((notification) => {
+        this.notifications = notification.notifications;
+        this.totalCount = notification.count
+      });
   }
 
   public onSortChange($event): void {

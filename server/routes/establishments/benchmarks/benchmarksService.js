@@ -123,7 +123,7 @@ const getComparisonGroupRankings = async function (establishmentId, benchmarksMo
   return await benchmarksModel.findAll({
     attributes: { exclude: ['CssrID', 'MainServiceFK'] },
     where: {
-      CssrID: cssr,
+      CssrID: cssr.id,
       EstablishmentFK: {
         [Op.not]: [establishmentId],
       },
@@ -152,14 +152,14 @@ const getComparisonGroupRankings = async function (establishmentId, benchmarksMo
 
 const getComparisonData = async function (benchmarksModel, establishmentId, mainService, attributes, mainJob) {
   const cssr = await models.cssr.getCSSR(establishmentId);
-  if (!cssr) return [];
+  if (!cssr) return {};
 
   const where = mainJob ? { MainJobRole: mainJob } : {};
 
   return await benchmarksModel.findOne({
     attributes: ['LocalAuthorityArea', 'MainServiceFK', 'BaseEstablishments', ...attributes],
     where: {
-      LocalAuthorityArea: cssr,
+      LocalAuthorityArea: cssr.id,
       MainServiceFK: mainService,
       ...where,
     },

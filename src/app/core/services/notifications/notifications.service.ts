@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import {
   Notification,
   NotificationData,
+  NotificationListResponse,
   NotificationRequest,
   NotificationTypes,
 } from '@core/model/notifications.model';
@@ -17,6 +18,7 @@ export class NotificationsService {
 
   public getAllNotifications(establishmentUid, limit?, sort?, page?) {
     const queryParams = [];
+
     if (limit) queryParams.push(`limit=${limit}`);
     if (sort) queryParams.push(`sort=${sort}`);
     if (page) queryParams.push(`page=${page}`);
@@ -27,7 +29,7 @@ export class NotificationsService {
       queryString = `${queryString}${punctuation}${param}`;
     }
 
-    return this.http.get<Notification[]>(`/api/notification/establishment/${establishmentUid}${queryString}`);
+    return this.http.get<NotificationListResponse>(`/api/notification/establishment/${establishmentUid}${queryString}`);
   }
 
   set notifications(notifications: Notification[]) {

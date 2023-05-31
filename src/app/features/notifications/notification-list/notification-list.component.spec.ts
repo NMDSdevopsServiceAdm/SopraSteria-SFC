@@ -85,6 +85,7 @@ describe('NotificationListComponent', () => {
     it('should not render a table when there are no notifcations', async () => {
       const { component, getByText, fixture } = await setup();
       component.notifications = [];
+      component.totalCount = 0;
       fixture.detectChanges();
 
       expect(component.notifications.length).toBe(0);

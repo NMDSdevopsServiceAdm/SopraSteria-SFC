@@ -4,6 +4,7 @@ import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -15,7 +16,6 @@ import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-pa
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { Subscription } from 'rxjs';
 import { isAdminRole } from 'server/utils/adminUtils';
-import { Worker } from '@core/model/worker.model';
 
 @Component({
   selector: 'app-new-home-tab',
@@ -89,25 +89,19 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
         this.permissionsService.can(this.workplace.uid, 'canRunLocalAuthorityReport');
     }
 
-    const benchmarksCareType = 'adult social care';
-
-    const townName = this.formatTownName(this.workplace.town);
-    this.benchmarksMessage = `There are ${
-      this.meta?.workplaces ? this.meta.workplaces : 0
-    } workplaces providing ${benchmarksCareType} in${townName}.`;
+    this.setBenchmarksMessage();
+    this.subscriptions.add();
   }
 
-  private formatTownName(townName: string): string {
-    const townArr = townName.toLowerCase().split(' ');
-    let output = '';
-    for (const word of townArr) {
-      let outputWord = word;
-      if (word != 'and') {
-        outputWord = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      }
-      output = `${output} ${outputWord}`;
-    }
-    return output;
+  private setBenchmarksMessage(): void {
+    const benchmarksCareType = 'adult social care';
+    this.benchmarksMessage = `There are ${
+      this.meta?.workplaces ? this.meta.workplaces : 0
+    } workplaces providing ${benchmarksCareType} in ${this.meta?.localAuthority}.`;
+  }
+
+  ngOnChanges(changes) {
+    this.setBenchmarksMessage();
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {

@@ -26,5 +26,12 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
+  BenchmarksEstablishmentsAndWorkers.getComparisonData = async function (establishmentId) {
+    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
+
+    if (!cssr) return {};
+    return await this.findOne({});
+  };
+
   return BenchmarksEstablishmentsAndWorkers;
 };

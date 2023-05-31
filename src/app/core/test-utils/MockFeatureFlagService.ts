@@ -33,5 +33,5 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public start(): void {}
+  public async start(): Promise<void> {}
 }
