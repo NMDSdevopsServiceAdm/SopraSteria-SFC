@@ -5,6 +5,10 @@ export interface BenchmarksResponse {
   sickness?: Tile;
   qualifications?: Tile;
   turnover?: Tile;
+  careWorkerPay?: Tile;
+  seniorCareWorkerPay?: Tile;
+  registeredNursePay?: Tile;
+  registeredManagerPay?: Tile;
   meta: Meta;
 }
 export interface Meta {
@@ -17,7 +21,7 @@ export interface Tile {
   workplaceValue: BenchmarkValue;
   comparisonGroup: BenchmarkValue;
   goodCqc: BenchmarkValue;
-  lowTurnover: BenchmarkValue;
+  lowTurnover?: BenchmarkValue;
   workplaces?: number;
   staff?: number;
 }
