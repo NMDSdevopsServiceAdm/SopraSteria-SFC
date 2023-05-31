@@ -1,8 +1,8 @@
 const models = require('../../../models');
 const { Op } = require('sequelize');
 
-const getPay = async function (establishmentId) {
-  const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
+const getPay = async function (params) {
+  const averageHourlyPay = await models.worker.averageHourlyPay(params);
   if (averageHourlyPay.amount === null) {
     return {
       stateMessage: 'no-pay-data',
@@ -12,7 +12,7 @@ const getPay = async function (establishmentId) {
   return { value: parseFloat((parseFloat(averageHourlyPay.amount) * 100).toFixed(0)) };
 };
 
-const getQualifications = async function (establishmentId) {
+const getQualifications = async function ({ establishmentId }) {
   const qualifications = await models.worker.countSocialCareQualificationsAndNoQualifications(
     establishmentId,
     models.services.careProvidingStaff,
@@ -30,7 +30,7 @@ const getQualifications = async function (establishmentId) {
   };
 };
 
-const getSickness = async function (establishmentId) {
+const getSickness = async function ({ establishmentId }) {
   const whereClause = { DaysSickValue: 'Yes', archived: false };
   const establishmentWorkers = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
   if (!establishmentWorkers) {
@@ -45,7 +45,7 @@ const getSickness = async function (establishmentId) {
   };
 };
 
-const getTurnover = async function (establishmentId) {
+const getTurnover = async function ({ establishmentId }) {
   const establishment = await models.establishment.turnoverData(establishmentId);
 
   const staffNumberIncorrectOrLeaversUnknown = await checkStaffNumberAndLeavers(establishmentId, establishment);
@@ -77,6 +77,26 @@ const getTurnover = async function (establishmentId) {
 
   return {
     value: percentOfPermTemp,
+  };
+};
+
+const getVacancies = async function ({ establishmentId }) {
+  const establishment = await models.establishment.vacanciesData(establishmentId);
+  if (!establishment) {
+    return {
+      stateMessage: 'no-vacancies-data',
+    };
+  }
+
+  if (establishment.VacanciesValue === 'None') {
+    return {
+      value: 0,
+    };
+  }
+
+  const vacancies = await models.establishmentJobs.vacanciesForEstablishment(establishmentId);
+  return {
+    value: vacancies,
   };
 };
 
@@ -130,8 +150,26 @@ const getComparisonGroupRankings = async function (establishmentId, benchmarksMo
   });
 };
 
+const getComparisonData = async function (benchmarksModel, establishmentId, mainService, attributes, mainJob) {
+  const cssr = await models.cssr.getCSSR(establishmentId);
+  if (!cssr) return [];
+
+  const where = mainJob ? { MainJobRole: mainJob } : {};
+
+  return await benchmarksModel.findOne({
+    attributes: ['LocalAuthorityArea', 'MainServiceFK', 'BaseEstablishments', ...attributes],
+    where: {
+      LocalAuthorityArea: cssr,
+      MainServiceFK: mainService,
+      ...where,
+    },
+  });
+};
+
 module.exports.getPay = getPay;
 module.exports.getQualifications = getQualifications;
 module.exports.getSickness = getSickness;
 module.exports.getTurnover = getTurnover;
+module.exports.getVacancies = getVacancies;
 module.exports.getComparisonGroupRankings = getComparisonGroupRankings;
+module.exports.getComparisonData = getComparisonData;

@@ -898,6 +898,12 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.vacanciesData = function (establishmentId) {
+    return this.findByPk(establishmentId, {
+      attributes: ['id', 'VacanciesValue'],
+    });
+  };
+
   Establishment.findWithWorkersAndTraining = function (establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id'],
