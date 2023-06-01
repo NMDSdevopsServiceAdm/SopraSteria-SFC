@@ -7,7 +7,8 @@
  * Also includes representation as JSON, in one or more presentations.
  */
 
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 
 // database models
 const models = require('../index');
@@ -111,7 +112,7 @@ class Worker extends EntityValidator {
   _initialise() {
     if (this._uid === null) {
       this._isNew = true;
-      this._uid = uuid.v4();
+      this._uid = uuidv4();
 
       if (!this._isEstablishmentIdValid) {
         throw new WorkerExceptions.WorkerSaveException(
