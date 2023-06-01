@@ -250,8 +250,6 @@ jobs:
           command: $(npm bin)/lhci autorun
   feature_flag:
     description: Checks for redundant feature flags
-      - configcat/scan:
-          config-id: ${CONFIG_CAT_SDK_KEY}
     # docker:
     #   - image: circleci/python:2.7
     # steps:
