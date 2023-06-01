@@ -33,6 +33,8 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
   public notificationRequestedTo: string;
   public requestorName: string;
   public postCode: string;
+  public notificationRequestedFromUid: string;
+
   constructor(
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -51,6 +53,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     this.notificationUid = this.route.snapshot.params.notificationuid;
     this.notificationRequestedTo = this.notification.typeContent.parentEstablishmentName;
     this.notificationRequestedFrom = this.notification.typeContent.subEstablishmentName;
+    this.notificationRequestedFromUid = this.notification.typeContent.subEstablishmentUid;
     this.requestorName = this.notification.typeContent.requestorName;
     this.postCode = this.notification.typeContent.postCode;
     this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
@@ -84,6 +87,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
         approvalStatus: 'APPROVED',
         subEstablishmentId: this.notification.typeContent.subEstablishmentId || null,
         parentEstablishmentId: this.notification.typeContent.parentEstablishmentId || null,
+        subEstablishmentUid: this.notification.typeContent.subEstablishmentUid || null,
       };
       this.subscriptions.add(
         this.notificationsService
@@ -110,7 +114,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
                 });
                 //get all notification and update with latest
                 this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-                  this.notificationsService.notifications$.next(notify);
+                  this.notificationsService.notifications$.next(notify.notifications);
                 });
               }
             },
@@ -155,6 +159,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
       approvalStatus: 'DENIED',
       subEstablishmentId: this.notification.typeContent.subEstablishmentId || null,
       parentEstablishmentId: this.notification.typeContent.parentEstablishmentId || null,
+      subEstablishmentUid: this.notification.typeContent.subEstablishmentUid || null,
     };
     this.subscriptions.add(
       this.notificationsService
@@ -163,7 +168,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
           if (request) {
             //get all notification and update with latest status
             this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-              this.notificationsService.notifications$.next(notify);
+              this.notificationsService.notifications$.next(notify.notifications);
             });
             this.router.navigate(['/dashboard']);
             this.alertService.addAlert({

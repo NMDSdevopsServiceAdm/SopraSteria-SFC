@@ -57,7 +57,9 @@ export class SwitchWorkplaceService {
         .subscribe(
           (workplace) => {
             this.notificationsService.getAllNotifications(workplaceUid).subscribe((notify) => {
-              this.notificationsService.notifications$.next(this.notificationData ? this.notificationData : notify);
+              this.notificationsService.notifications$.next(
+                this.notificationData ? this.notificationData : notify.notifications,
+              );
               this.establishmentService.setState(workplace);
               this.establishmentService.setPrimaryWorkplace(workplace);
               this.establishmentService.establishmentId = workplace.uid;

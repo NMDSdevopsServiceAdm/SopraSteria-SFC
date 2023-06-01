@@ -31,7 +31,7 @@ class OwnershipChange {
     const establishmentUpdated = await this.updateEstablishment(updateEstablishmentParams);
 
     if (establishmentUpdated) {
-      const requestorUid = await this.getRequestorEstablishmentUid(requestId);
+      const requestorUid = req.body.requestorUid;
       const notificationParams = {
         existingNotificationUid: req.body.existingNotificationUid,
         ownerRequestChangeUid: requestId,
@@ -219,7 +219,7 @@ class OwnershipChange {
   static async getRequestorEstablishmentUid(ownershipChangeUid) {
     const response = await ownership.getRequestorEstablishment(ownershipChangeUid);
     if (response) {
-      return response[0].establishmentUid;
+      return response.length > 0 && response[0].establishmentUid;
     }
     throw new HttpError({ statusCode: 400 });
   }

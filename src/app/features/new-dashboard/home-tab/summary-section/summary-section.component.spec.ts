@@ -1,18 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
 import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
-import { Worker } from '@core/model/worker.model';
 
 describe('Summary section', () => {
   const setup = async (
@@ -343,7 +343,7 @@ describe('Summary section', () => {
 
     describe('Missing mandatory training message', () => {
       it('should show when mandatory training is missing for multiple users', async () => {
-        const trainingCounts = { missingMandatoryTraining: 2 };
+        const trainingCounts = { staffMissingMandatoryTraining: 2 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
@@ -352,7 +352,7 @@ describe('Summary section', () => {
       });
 
       it('should show when mandatory training is missing for a single user', async () => {
-        const trainingCounts = { missingMandatoryTraining: 1 };
+        const trainingCounts = { staffMissingMandatoryTraining: 1 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
@@ -361,7 +361,7 @@ describe('Summary section', () => {
       });
 
       it('should not show when mandatory training is not missing', async () => {
-        const trainingCounts = { missingMandatoryTraining: 0 };
+        const trainingCounts = { staffMissingMandatoryTraining: 0 };
         const { getByTestId } = await setup(false, Establishment, 2, trainingCounts);
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();

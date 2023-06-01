@@ -28,6 +28,16 @@ SELECT "notificationUid", type, "establishmentUid", created, "isViewed", "create
   OFFSET :offset;
   `;
 
+const getEstablishmentNotificationCount = `
+SELECT COUNT ("notificationUid") FROM (SELECT "notificationUid"
+	FROM cqc."Notifications"
+    WHERE "recipientUserUid" IN (:userUids)
+UNION
+SELECT "notificationUid"
+    FROM cqc."NotificationsEstablishment"
+    WHERE "establishmentUid" = :establishmentUid) as notificationCount;
+    `;
+
 exports.getListByUser = async ({ userUid, limit, offset }) =>
   db.query(getListQuery, {
     replacements: {
@@ -58,7 +68,8 @@ const selectOneEstablishmentNotification = `
     "notificationContentUid",
     "created",
     "isViewed",
-    "createdByUserUID"
+    "createdByUserUID",
+    "requestorEstUID"
   FROM cqc."NotificationsEstablishment"
   WHERE "notificationUid" = :notificationUid
   LIMIT :limit
@@ -104,8 +115,8 @@ VALUES (:type, :typeUid, :recipientUserUid, :isViewed, :createdByUserUID);
 const insertEstablishmentNotificationQuery = `
 INSERT INTO
 cqc."NotificationsEstablishment"
-("notificationContentUid", "type", "establishmentUid", "isViewed", "createdByUserUID")
-VALUES (:notificationContentUid, :type, :establishmentUid, :isViewed, :createdByUserUID);
+("notificationContentUid", "type", "establishmentUid", "isViewed", "createdByUserUID", "requestorEstUID")
+VALUES (:notificationContentUid, :type, :establishmentUid, :isViewed, :createdByUserUID, :requestorEstUID);
 `;
 
 const updateNotificationQuery = `
@@ -116,7 +127,8 @@ const updateNotificationQuery = `
 
 exports.selectNotificationByEstablishment = async (params) => {
   const order = params.order ? params.order : 'created ASC';
-  return db.query(selectEstablishmentNotifications(order), {
+
+  const notifications = await db.query(selectEstablishmentNotifications(order), {
     replacements: {
       establishmentUid: params.establishmentUid,
       userUids: params.userUids,
@@ -125,6 +137,19 @@ exports.selectNotificationByEstablishment = async (params) => {
     },
     type: db.QueryTypes.SELECT,
   });
+
+  const count = await db.query(getEstablishmentNotificationCount, {
+    replacements: {
+      establishmentUid: params.establishmentUid,
+      userUids: params.userUids,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+  return {
+    notifications: notifications,
+    count: count[0].count,
+  };
 };
 
 exports.markUserNotificationAsRead = async ({ notificationUid }) =>
@@ -165,6 +190,7 @@ exports.insertNewEstablishmentNotification = async (params) => {
       isViewed: false,
       createdByUserUID: params.userUid,
       type: params.type,
+      requestorEstUID: params.requestorEstId || null,
     },
     type: db.QueryTypes.INSERT,
   });
@@ -191,6 +217,17 @@ exports.getRequesterName = async (userUID) =>
   db.query(getRequesterNameQuery, {
     replacements: {
       recipientUserUid: userUID,
+    },
+    type: db.QueryTypes.SELECT,
+  });
+
+const getRequestorEstablishmentQuery = `
+    SELECT "NameValue" from cqc."Establishment" WHERE "EstablishmentUID" = :establishmentUid`;
+
+exports.getRequestorEstablishment = async (estUID) =>
+  db.query(getRequestorEstablishmentQuery, {
+    replacements: {
+      establishmentUid: estUID,
     },
     type: db.QueryTypes.SELECT,
   });

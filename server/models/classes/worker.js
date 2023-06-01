@@ -729,7 +729,7 @@ class Worker extends EntityValidator {
 
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
-            returning: true,
+            returning: ['*'],
             individualHooks: true,
             where: {
               uid: this.uid,
@@ -1083,7 +1083,7 @@ class Worker extends EntityValidator {
 
       // now save the document
       const [updatedRecordCount, updatedRows] = await models.worker.update(updateDocument, {
-        returning: true,
+        returning: ['*'],
         individualHooks: true,
         where: {
           uid: this.uid,
@@ -1780,7 +1780,7 @@ class Worker extends EntityValidator {
         LocalIdentifierChangedAt: updatedTimestamp,
       },
       {
-        returning: true,
+        returning: ['*'],
         individualHooks: true,
         where: {
           uid: thisGivenWorker.uid,

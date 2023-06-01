@@ -1,12 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import dayjs from 'dayjs';
-import { Worker } from '@core/model/worker.model';
 
 @Component({
   selector: 'app-summary-section',
@@ -30,7 +29,7 @@ export class SummarySectionComponent implements OnInit {
       message: '',
       route: undefined,
       redFlag: false,
-      link: true
+      link: true,
     },
   ];
 
@@ -102,10 +101,10 @@ export class SummarySectionComponent implements OnInit {
   }
 
   public getTrainingAndQualsSummary(): void {
-    if (this.trainingCounts.missingMandatoryTraining) {
+    if (this.trainingCounts.staffMissingMandatoryTraining) {
       this.sections[2].redFlag = true;
-      this.sections[2].message = `${this.trainingCounts.missingMandatoryTraining} staff ${
-        this.trainingCounts.missingMandatoryTraining > 1 ? 'are' : 'is'
+      this.sections[2].message = `${this.trainingCounts.staffMissingMandatoryTraining} staff ${
+        this.trainingCounts.staffMissingMandatoryTraining > 1 ? 'are' : 'is'
       } missing mandatory training`;
       this.sections[2].route = [
         '/workplace',

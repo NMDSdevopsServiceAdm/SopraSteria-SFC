@@ -1,6 +1,6 @@
 'use strict';
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const Establishment = require('../../models/classes/establishment');
 const { v4: uuidv4 } = require('uuid');
 uuidv4();
@@ -198,10 +198,10 @@ const actionLinkToParent = async (req, res) => {
               let notificationParams = {
                 type: params.type,
                 notificationContentUid: params.linkToParentUid,
-                recipientUserUid: params.requestingUserUid,
-                senderUid: params.userUid,
+                establishmentUid: req.body.subEstablishmentUid,
+                userUid: params.userUid,
               };
-              await notifications.insertNewUserNotification(notificationParams);
+              await notifications.insertNewEstablishmentNotification(notificationParams);
               const notificationDetailsParams = {
                 notificationContentUid: params.linkToParentUid,
               };
@@ -254,6 +254,7 @@ const delink = async (req, res) => {
               notificationContentUid: params.deLinkToParentUID,
               establishmentUid: params.parentWorkplaceUId,
               userUid: params.userUid,
+              requestorEstId: req.params.id,
             };
             await notifications.insertNewEstablishmentNotification(notificationParams);
             let lastDeLinkToParentRequest = await linkSubToParent.getLastDeLinkToParentRequest(params);

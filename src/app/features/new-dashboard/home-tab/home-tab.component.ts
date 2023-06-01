@@ -1,22 +1,31 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
+import { WindowToken } from '@core/services/window';
 import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { Subscription } from 'rxjs';
 import { isAdminRole } from 'server/utils/adminUtils';
-import { Worker } from '@core/model/worker.model';
 
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dataLayer: any;
+  }
+}
+
+window.dataLayer = window.dataLayer || {};
 @Component({
   selector: 'app-new-home-tab',
   templateUrl: './home-tab.component.html',
@@ -47,6 +56,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public workersCreatedDate;
   public workerCount: number;
   public workersNotCompleted: Worker[];
+  public addWorkplaceDetailsBanner: boolean;
 
   constructor(
     private userService: UserService,
@@ -55,6 +65,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private tabsService: TabsService,
     private route: ActivatedRoute,
+    @Inject(WindowToken) private window: Window,
   ) {}
 
   ngOnInit(): void {
@@ -70,6 +81,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
     this.workersNotCompleted = workersNotCompleted;
 
     this.user = this.userService.loggedInUser;
+    this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();
 
     if (this.workplace) {
@@ -89,25 +101,33 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
         this.permissionsService.can(this.workplace.uid, 'canRunLocalAuthorityReport');
     }
 
-    const benchmarksCareType = 'adult social care';
+    this.window.dataLayer.push({
+      isAdmin: isAdminRole(this.user.role),
+    });
 
-    const townName = this.formatTownName(this.workplace.town);
-    this.benchmarksMessage = `There are ${
-      this.meta?.workplaces ? this.meta.workplaces : 0
-    } workplaces providing ${benchmarksCareType} in${townName}.`;
+    if (this.addWorkplaceDetailsBanner) {
+      this.window.dataLayer.push({
+        firstTimeLogin: true,
+        workplaceID: this?.workplace?.nmdsId ? this.workplace.nmdsId : null,
+      });
+      this.window.dataLayer.push({
+        event: 'firstLogin',
+      });
+    }
+
+    this.setBenchmarksMessage();
+    this.subscriptions.add();
   }
 
-  private formatTownName(townName: string): string {
-    const townArr = townName.toLowerCase().split(' ');
-    let output = '';
-    for (const word of townArr) {
-      let outputWord = word;
-      if (word != 'and') {
-        outputWord = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      }
-      output = `${output} ${outputWord}`;
-    }
-    return output;
+  private setBenchmarksMessage(): void {
+    const benchmarksCareType = 'adult social care';
+    this.benchmarksMessage = `There are ${
+      this.meta?.workplaces ? this.meta.workplaces : 0
+    } workplaces providing ${benchmarksCareType} in ${this.meta?.localAuthority}.`;
+  }
+
+  ngOnChanges(changes) {
+    this.setBenchmarksMessage();
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {

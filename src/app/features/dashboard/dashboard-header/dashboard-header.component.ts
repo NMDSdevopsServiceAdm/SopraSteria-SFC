@@ -130,7 +130,7 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
       interval(60000).subscribe(() => {
         this.notificationsService.getAllNotifications(this.workplaceUid).subscribe(
           (notifications) => {
-            this.notificationsService.notifications$.next(notifications);
+            this.notificationsService.notifications$.next(notifications.notifications);
           },
           (error) => {
             console.error(error.error);
