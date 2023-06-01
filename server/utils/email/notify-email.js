@@ -1,5 +1,6 @@
 const config = require('../../config/config');
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 
 const GovNotifyClient = require('notifications-node-client').NotifyClient;
 
@@ -23,7 +24,7 @@ exports.sendPasswordReset = async (emailAddress, name, resetUuid) => {
         name,
         resetUuid,
       },
-      reference: config.get('env') + '-password-reset-' + uuid.v4(),
+      reference: config.get('env') + '-password-reset-' + uuidv4(),
       emailReplyToId: REPLY_TO_ID,
     });
 
@@ -51,7 +52,7 @@ exports.sendAddUser = async (emailAddress, name, addUserUuid) => {
         name,
         addUserUuid,
       },
-      reference: config.get('env') + '-add-user-' + uuid.v4(),
+      reference: config.get('env') + '-add-user-' + uuidv4(),
       emailReplyToId: REPLY_TO_ID,
     });
 

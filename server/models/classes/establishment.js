@@ -1094,7 +1094,7 @@ class Establishment extends EntityValidator {
 
           // now save the document
           const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
-            returning: true,
+            returning: ['*'],
             individualHooks: true,
             where: {
               uid: this.uid,
@@ -1674,7 +1674,7 @@ class Establishment extends EntityValidator {
       };
 
       const [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument, {
-        returning: true,
+        returning: ['*'],
         individualHooks: true,
         where: {
           uid: this.uid,
@@ -2499,7 +2499,7 @@ class Establishment extends EntityValidator {
         LocalIdentifierChangedAt: updatedTimestamp,
       },
       {
-        returning: true,
+        returning: ['*'],
         individualHooks: true,
         where: {
           uid: thisGivenEstablishment.uid,

@@ -85,9 +85,9 @@ export class WorkersResolver implements Resolve<any> {
           });
           return {
             ...paginatedResponse,
+            workersCreatedDate,
             trainingCounts,
             tAndQsLastUpdated,
-            workersCreatedDate,
             workersNotCompleted,
           };
         }),

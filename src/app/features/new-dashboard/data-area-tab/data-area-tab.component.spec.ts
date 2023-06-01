@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -11,11 +11,10 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { DataAreaTabComponent } from './data-area-tab.component';
-import userEvent from '@testing-library/user-event';
 
 fdescribe('DataAreaTabComponent', () => {
   const setup = async () => {
@@ -92,17 +91,4 @@ fdescribe('DataAreaTabComponent', () => {
 
     expect(getByText('£9.75 (hourly)')).toBeTruthy();
   });
-
-  // xit('should show the comparison group care worker hourly pay when select has changed - temp test', async () => {
-  //   const { component, fixture, getByRole, getByText } = await setup();
-
-  //   component.viewBenchmarksComparisonGroups = true;
-
-  //   const goodAndOutstandingInput = getByRole('radio', { name: 'comparison-groups-good-and-outstanding' });
-  //   fireEvent.change(goodAndOutstandingInput);
-
-  //   fixture.detectChanges();
-
-  //   expect(getByText('£9.96 (hourly)')).toBeTruthy();
-  // });
 });

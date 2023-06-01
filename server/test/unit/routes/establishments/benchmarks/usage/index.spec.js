@@ -1,7 +1,7 @@
-const models = require('../../../../../models');
+const models = require('../../../../../../models');
 const sinon = require('sinon');
 const expect = require('chai').expect;
-const benchmarksUsage = require('../../../../../routes/establishments/benchmarks/usage');
+const benchmarksUsage = require('../../../../../../routes/establishments/benchmarks/usage');
 const httpMocks = require('node-mocks-http');
 
 describe('usage', () => {

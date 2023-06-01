@@ -6,7 +6,9 @@
  *
  * Also includes representation as JSON, in one or more presentations.
  */
-const uuid = require('uuid');
+// const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 
 // database models
 const models = require('../index');
@@ -209,7 +211,7 @@ class User {
   _initialise() {
     if (this._uid === null) {
       this._isNew = true;
-      this._uid = uuid.v4();
+      this._uid = uuidv4();
 
       if (!this._isEstablishmentIdValid && !isAdminRole(this.userRole))
         throw new UserExceptions.UserSaveException(
@@ -317,7 +319,7 @@ class User {
     const emailProperty = this._properties.get('Email').property;
 
     // generate a new tracking UUID
-    this._trackingUUID = uuid.v4();
+    this._trackingUUID = uuidv4();
 
     // now before creating a new tracking record, need to close down
     //  any open tracking records for this user
@@ -442,7 +444,7 @@ class User {
                 where: {
                   uuid: this._trackingUUID,
                 },
-                returning: true,
+                returning: ['*'],
                 plain: false,
               },
             );
@@ -544,7 +546,7 @@ class User {
                 where: {
                   uuid: this._trackingUUID,
                 },
-                returning: true,
+                returning: ['*'],
                 plain: false,
               },
             );
@@ -589,7 +591,7 @@ class User {
                   isPrimary: true,
                 },
                 transaction: thisTransaction,
-                returning: true,
+                returning: ['*'],
                 raw: true,
                 attributes: ['id', 'updated'],
               },
@@ -609,7 +611,7 @@ class User {
 
           // now save the document
           let [updatedRecordCount, updatedRows] = await models.user.update(updateDocument, {
-            returning: true,
+            returning: ['*'],
             where: {
               uid: this.uid,
             },
@@ -816,7 +818,7 @@ class User {
   async delete(deletedBy, externalTransaction = null) {
     try {
       const updatedTimestamp = new Date();
-      const randomNewUsername = uuid.v4();
+      const randomNewUsername = uuidv4();
       const oldUsername = this._username;
 
       await models.sequelize.transaction(async (t) => {
@@ -836,7 +838,7 @@ class User {
         };
 
         let [updatedRecordCount] = await models.user.update(updateDocument, {
-          returning: true,
+          returning: ['*'],
           where: {
             uid: this.uid,
           },

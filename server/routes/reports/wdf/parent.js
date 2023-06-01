@@ -8,7 +8,8 @@ const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
 const config = require('../../../../server/config/config');
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 const AWS = require('aws-sdk');
 const cheerio = require('cheerio');
 
@@ -1321,7 +1322,7 @@ const acquireLock = async function (logic, newState, req, res) {
   // update the current state
   await updateLockState(establishmentId, newState);
 
-  req.buRequestId = String(uuid()).toLowerCase();
+  req.buRequestId = String(uuidv4()).toLowerCase();
 
   res.status(200).send({
     message: `Lock for establishment ${establishmentId} acquired.`,

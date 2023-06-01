@@ -1,6 +1,7 @@
 const ownership = require('../../data/ownership');
 const Establishment = require('../../models/classes/establishment');
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 const notifications = require('../../data/notifications');
 const models = require('../../models');
 const { isAdminRole } = require('../../utils/adminUtils');
@@ -166,7 +167,7 @@ class OwnershipChange {
   }
 
   static async createRequestAndNotify(params) {
-    const ownerRequestChangeUid = uuid.v4();
+    const ownerRequestChangeUid = uuidv4();
 
     const requestParams = {
       ownerRequestChangeUid: ownerRequestChangeUid,

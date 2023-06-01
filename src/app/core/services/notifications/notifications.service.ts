@@ -18,7 +18,6 @@ export class NotificationsService {
 
   public getAllNotifications(establishmentUid, limit?, sort?, page?) {
     const queryParams = [];
-    console.log(limit);
 
     if (limit) queryParams.push(`limit=${limit}`);
     if (sort) queryParams.push(`sort=${sort}`);

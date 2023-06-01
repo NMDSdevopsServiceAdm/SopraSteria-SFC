@@ -5,7 +5,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { UserService } from '@core/services/user.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
@@ -30,7 +29,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private establishmentService: EstablishmentService,
     private notificationsService: NotificationsService,
-    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -39,8 +37,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.onAdminScreen();
     this.workplaceId && this.getUsers();
-    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
-    this.newHomeDesignFlag && this.setUpNotificationSubscription();
+    this.standAloneAccount && this.setUpNotificationSubscription();
   }
 
   ngOnDestroy(): void {
