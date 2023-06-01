@@ -38,8 +38,8 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     return {
-      workplaces: comparisonGroup.BaseEstablishments,
-      staff: comparisonGroup.WorkerCount,
+      workplaces: comparisonGroup ? comparisonGroup.BaseEstablishments : 0,
+      staff: comparisonGroup ? comparisonGroup.WorkerCount : 0,
       localAuthority: cssr.name,
     };
   };
