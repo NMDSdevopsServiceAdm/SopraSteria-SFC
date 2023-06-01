@@ -249,8 +249,25 @@ jobs:
       - run:
           command: $(npm bin)/lhci autorun
   feature_flag:
-      - scan-repository:
-          config-id: ${CONFIG_CAT_SDK_KEY}
+    description: Checks for redundant feature flags
+    docker:
+        - image: circleci/python:2.7
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          command: sudo apt-get install silversearcher-ag
+      - run:
+          command: sudo pip install configcat-flag-reference-validator==2.0.1
+      - run:
+          command: |
+            if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
+              echo "Please, set the feature flag environment variables. Will stop now."
+              exit 1
+            fi
+            configcat-validator.py "${CONFIG_CAT_SDK_KEY}" . -s="cdn.configcat.com" -v=true -f=false
+
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
