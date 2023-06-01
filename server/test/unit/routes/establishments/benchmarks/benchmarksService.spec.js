@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 const benchmarksService = require('../../../../../routes/establishments/benchmarks/benchmarksService');
 
-describe.only('/benchmarks/benchmarksService', () => {
+describe('/benchmarks/benchmarksService', () => {
   afterEach(() => {
     sinon.restore();
   });

@@ -4,14 +4,7 @@ const models = require('../../../models');
 const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
 const usage = require('./usage');
-const {
-  getPay,
-  getQualifications,
-  getSickness,
-  getTurnover,
-  getVacancies,
-  getComparisonData,
-} = require('./benchmarksService');
+const benchmarksService = require('./benchmarksService');
 
 const CARE_WORKER_ID = 10;
 const SENIOR_CARE_WORKER_ID = 25;
@@ -36,50 +29,50 @@ const comparisonGroupsJson = {
   goodCqc: clonedeep(comparisonJson),
 };
 
-const getTiles = async (establishmentId, tiles) => {
-  const cssr = await models.cssr.getCSSR(establishmentId);
+// const getTiles = async (establishmentId, tiles) => {
+//   const cssr = await models.cssr.getCSSR(establishmentId);
 
-  let benchmarkComparisonGroup = await models.benchmarks.getBenchmarkData(establishmentId, cssr.id);
-  let reply = {
-    meta: {},
-  };
-  if (tiles.includes('pay')) reply.pay = await pay({ establishmentId }, benchmarkComparisonGroup);
-  if (tiles.includes('sickness')) reply.sickness = await sickness({ establishmentId }, benchmarkComparisonGroup);
-  if (tiles.includes('qualifications'))
-    reply.qualifications = await qualifications({ establishmentId }, benchmarkComparisonGroup);
-  if (tiles.includes('turnover')) reply.turnover = await turnover({ establishmentId }, benchmarkComparisonGroup);
+//   let benchmarkComparisonGroup = await models.benchmarks.getBenchmarkData(establishmentId, cssr.id);
+//   let reply = {
+//     meta: {},
+//   };
+//   if (tiles.includes('pay')) reply.pay = await pay({ establishmentId }, benchmarkComparisonGroup);
+//   if (tiles.includes('sickness')) reply.sickness = await sickness({ establishmentId }, benchmarkComparisonGroup);
+//   if (tiles.includes('qualifications'))
+//     reply.qualifications = await qualifications({ establishmentId }, benchmarkComparisonGroup);
+//   if (tiles.includes('turnover')) reply.turnover = await turnover({ establishmentId }, benchmarkComparisonGroup);
 
-  reply.meta = await getMetaData(benchmarkComparisonGroup, cssr);
-  return reply;
-};
+//   reply.meta = await getMetaData(benchmarkComparisonGroup, cssr);
+//   return reply;
+// };
 
-const getMetaData = async (benchmarkComparisonGroup, cssr) => {
-  return {
-    workplaces: benchmarkComparisonGroup ? benchmarkComparisonGroup.workplaces : 0,
-    staff: benchmarkComparisonGroup ? benchmarkComparisonGroup.staff : 0,
-    lastUpdated: await models.dataImports.benchmarksLastUpdated(),
-    localAuthority: cssr ? cssr.name : null,
-  };
-};
+// const getMetaData = async (benchmarkComparisonGroup, cssr) => {
+//   return {
+//     workplaces: benchmarkComparisonGroup ? benchmarkComparisonGroup.workplaces : 0,
+//     staff: benchmarkComparisonGroup ? benchmarkComparisonGroup.staff : 0,
+//     lastUpdated: await models.dataImports.benchmarksLastUpdated(),
+//     localAuthority: cssr ? cssr.name : null,
+//   };
+// };
 
 const pay = async (params, benchmarkComparisonGroup) => {
-  return await buildTile(params, benchmarkComparisonGroup, 'pay', getPay);
+  return await buildTile(params, benchmarkComparisonGroup, 'pay', benchmarksService.getPay);
 };
 
 const qualifications = async (params, benchmarkComparisonGroup) => {
-  return await buildTile(params, benchmarkComparisonGroup, 'qualifications', getQualifications);
+  return await buildTile(params, benchmarkComparisonGroup, 'qualifications', benchmarksService.getQualifications);
 };
 
 const sickness = async (params, benchmarkComparisonGroup) => {
-  return await buildTile(params, benchmarkComparisonGroup, 'sickness', getSickness);
+  return await buildTile(params, benchmarkComparisonGroup, 'sickness', benchmarksService.getSickness);
 };
 
 const turnover = async (params, benchmarkComparisonGroup) => {
-  return await buildTile(params, benchmarkComparisonGroup, 'turnover', getTurnover);
+  return await buildTile(params, benchmarkComparisonGroup, 'turnover', benchmarksService.getTurnover);
 };
 
 const vacancies = async (params, benchmarkComparisonGroup) => {
-  return await buildTile(params, benchmarkComparisonGroup, 'vacancies', getVacancies);
+  return await buildTile(params, benchmarkComparisonGroup, 'vacancies', benchmarksService.getVacancies);
 };
 
 const buildTile = async (params, benchmarkComparisonGroup, key, getMetricCallback) => {
@@ -160,22 +153,23 @@ const vacanciesBenchmarks = async (establishmentId, mainService) => {
   );
 
   const comparisonGroups = {
-    turnover: comparisonGroup && comparisonGroup.VacancyRate,
-    turnoverGoodCqc: comparisonGoodCqcGroup && comparisonGoodCqcGroup.VacancyRate,
+    vacancies: comparisonGroup && comparisonGroup.VacancyRate,
+    vacanciesGoodCqc: comparisonGoodCqcGroup && comparisonGoodCqcGroup.VacancyRate,
   };
 
   return await vacancies({ establishmentId }, comparisonGroups);
 };
 
 const getComparisonGroups = async (establishmentId, mainService, benchmarksModel, attributes, workerId) => {
-  const comparisonGroup = await getComparisonData(
+  const comparisonGroup = await benchmarksService.getComparisonData(
     models[benchmarksModel],
     establishmentId,
     mainService,
     attributes,
     workerId && workerMap.get(workerId),
   );
-  const comparisonGoodCqcGroup = await getComparisonData(
+
+  const comparisonGoodCqcGroup = await benchmarksService.getComparisonData(
     models[`${benchmarksModel}GoodOutstanding`],
     establishmentId,
     mainService,
@@ -198,12 +192,12 @@ const getBenchmarksData = async (establishmentId, mainService) => {
   reply.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService);
   reply.turnoverRate = await turnoverBenchmarks(establishmentId, mainService);
 
-  reply.meta = await getMeta(establishmentId, mainService);
+  reply.meta = await getMetaData(establishmentId, mainService);
 
   return reply;
 };
 
-const getMeta = async (establishmentId, mainService) => {
+const getMetaData = async (establishmentId, mainService) => {
   const benchmarksComparisonGroup = await models.benchmarksEstablishmentsAndWorkers.getComparisonData(
     establishmentId,
     mainService,
@@ -228,9 +222,8 @@ const viewBenchmarks = async (req, res) => {
       reply = await getBenchmarksData(establishmentId, mainService);
     } else {
       tiles = req.query.tiles ? req.query.tiles.split(',') : [];
-      reply = await getTiles(establishmentId, tiles);
+      // reply = await getTiles(establishmentId, tiles);
     }
-    console.log(reply);
     return res.status(200).json(reply);
   } catch (err) {
     console.error(err);
@@ -250,3 +243,8 @@ module.exports.sickness = sickness;
 module.exports.turnover = turnover;
 module.exports.buildComparisonGroupMetrics = buildComparisonGroupMetrics;
 module.exports.getMetaData = getMetaData;
+module.exports.getBenchmarkData = getBenchmarksData;
+module.exports.payBenchmarks = payBenchmarks;
+module.exports.turnoverBenchmarks = turnoverBenchmarks;
+module.exports.vacanciesBenchmarks = vacanciesBenchmarks;
+module.exports.viewBenchmarks = viewBenchmarks;

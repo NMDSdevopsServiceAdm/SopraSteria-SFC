@@ -170,10 +170,12 @@ const getComparisonData = async function (benchmarksModel, establishmentId, main
   });
 };
 
-module.exports.getPay = getPay;
-module.exports.getQualifications = getQualifications;
-module.exports.getSickness = getSickness;
-module.exports.getTurnover = getTurnover;
-module.exports.getVacancies = getVacancies;
-module.exports.getComparisonGroupRankings = getComparisonGroupRankings;
-module.exports.getComparisonData = getComparisonData;
+module.exports = {
+  getPay,
+  getQualifications,
+  getSickness,
+  getTurnover,
+  getVacancies,
+  getComparisonGroupRankings,
+  getComparisonData,
+};
