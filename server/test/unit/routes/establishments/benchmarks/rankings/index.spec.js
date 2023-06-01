@@ -66,7 +66,6 @@ describe('rankings', () => {
       ]);
 
       const result = await rankings.pay(establishmentId);
-
       expect(result.currentRank).to.equal(2);
     });
   });

@@ -65,6 +65,7 @@ const getComparisonGroupAndCalculateRanking = async function (
       stateMessage: 'no-comparison-data',
     };
   }
+
   const maxRank = comparisonGroupRankings.length + 1;
   const metric = await getMetricCallback(establishmentId);
   if (metric.stateMessage) {
@@ -90,7 +91,6 @@ const getResponse = async function (req, res, getRankingCallback) {
     const establishmentId = req.establishmentId;
 
     const responseData = await getRankingCallback(establishmentId);
-    console.log({ responseData });
     res.status(200).json(responseData);
   } catch (error) {
     return res.status(500).json(error);

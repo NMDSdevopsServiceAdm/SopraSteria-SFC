@@ -11,10 +11,10 @@ const getPay = async function (params) {
   }
 
   const amount =
-    params.annualOrHourly === 'Hourly'
-      ? parseFloat(averageHourlyPay.amount) * 100
-      : parseFloat(averageHourlyPay.amount);
-  console.log(amount);
+    params.annualOrHourly === 'Annually'
+      ? parseFloat(averageHourlyPay.amount)
+      : parseFloat(averageHourlyPay.amount) * 100;
+
   return { value: parseFloat(amount.toFixed(0)) };
 };
 

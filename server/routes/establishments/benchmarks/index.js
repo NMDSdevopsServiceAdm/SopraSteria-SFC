@@ -213,23 +213,21 @@ const getComparisonGroups = async (establishmentId, mainService, benchmarksModel
 };
 
 const getBenchmarksData = async (establishmentId, mainService) => {
-  const reply = {
+  const data = {
     meta: {},
   };
 
-  reply.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID);
-  reply.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID);
-  reply.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID);
-  reply.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID);
-  reply.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService);
-  reply.turnoverRate = await turnoverBenchmarks(establishmentId, mainService);
-  reply.qualifications = await qualificationsBenchmarks(establishmentId, mainService);
-  reply.sickness = await sicknessBenchmarks(establishmentId, mainService);
+  data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID);
+  data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID);
+  data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID);
+  data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID);
+  data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService);
+  data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService);
+  data.qualifications = await qualificationsBenchmarks(establishmentId, mainService);
+  data.sickness = await sicknessBenchmarks(establishmentId, mainService);
 
-  reply.meta = await getMetaData(establishmentId, mainService);
-  console.log('****** GET BENCHMARKS DATA ******');
-  console.log(reply);
-  return reply;
+  data.meta = await getMetaData(establishmentId, mainService);
+  return data;
 };
 
 const getMetaData = async (establishmentId, mainService) => {
@@ -251,15 +249,9 @@ const viewBenchmarks = async (req, res) => {
     const establishmentId = req.establishmentId;
     const { MainServiceFKValue: mainService } = await models.establishment.findbyId(establishmentId);
 
-    let tiles;
-    let reply;
-    if ([1, 2, 8].includes(mainService)) {
-      reply = await getBenchmarksData(establishmentId, mainService);
-    } else {
-      tiles = req.query.tiles ? req.query.tiles.split(',') : [];
-      // reply = await getTiles(establishmentId, tiles);
-    }
-    return res.status(200).json(reply);
+    const benchmarksData = await getBenchmarksData(establishmentId, mainService);
+
+    return res.status(200).json(benchmarksData);
   } catch (err) {
     console.error(err);
     return res.status(500).send();
