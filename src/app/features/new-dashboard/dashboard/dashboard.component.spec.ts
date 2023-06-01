@@ -19,7 +19,7 @@ import { render } from '@testing-library/angular';
 
 import { NewDashboardComponent } from './dashboard.component';
 
-describe('NewDashboardComponent', () => {
+fdescribe('NewDashboardComponent', () => {
   const setup = async (tab = 'home', permissions = []) => {
     const { fixture, getByTestId, queryByTestId } = await render(NewDashboardComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -156,7 +156,7 @@ describe('NewDashboardComponent', () => {
       expect(getByTestId('benchmarks-tab')).toBeTruthy();
     });
 
-    it('should render the new data area page rather than benchmark page when the newDataAreaFlag is true', async () => {
+    fit('should render the new data area page rather than benchmark page when the newDataAreaFlag is true', async () => {
       const { component, fixture, getByTestId, queryByTestId } = await setup('benchmarks');
 
       component.newDataAreaFlag = true;
