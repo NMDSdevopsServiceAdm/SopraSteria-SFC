@@ -30,6 +30,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public downloadPayBenchmarksText = 'Download pay benchmarks';
   public downloadRecruitmentBenchmarksText = 'Download recruitment and retention benchmarks';
 
+
   constructor(
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,

@@ -45,12 +45,12 @@ describe('BenchmarksAboutTheDataComponent', () => {
   });
 
   it('should create', () => {
-    component.meta = { workplaces: 1, staff: 1 };
+    component.meta = { workplaces: 1, staff: 1, localAuthority: 'Test LA' };
 
     expect(component).toBeTruthy();
   });
   it('should have the right text with only one workplace', async () => {
-    component.meta = { workplaces: 1, staff: 1 };
+    component.meta = { workplaces: 1, staff: 1, localAuthority: 'Test LA' };
     fixture.detectChanges();
     const componenttext = await within(document.body).findByTestId('meta-data');
     expect(componenttext.innerHTML).toContain(
@@ -58,7 +58,7 @@ describe('BenchmarksAboutTheDataComponent', () => {
     );
   });
   it('should have the right text with correct comma placement', async () => {
-    component.meta = { workplaces: 1000, staff: 1000 };
+    component.meta = { workplaces: 1000, staff: 1000, localAuthority: 'Test LA' };
     fixture.detectChanges();
     const componenttext = await within(document.body).findByTestId('meta-data');
     expect(componenttext.innerHTML).toContain(

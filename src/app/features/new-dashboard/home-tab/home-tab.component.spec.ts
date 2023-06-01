@@ -28,6 +28,15 @@ import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
 import { SummarySectionComponent } from './summary-section/summary-section.component';
+import { WindowToken } from '@core/services/window';
+
+const MockWindow = {
+  dataLayer: {
+    push: () => {
+      return;
+    },
+  },
+};
 
 describe('NewHomeTabComponent', () => {
   const setup = async (checkCqcDetails = false, establishment = Establishment) => {
@@ -72,11 +81,12 @@ describe('NewHomeTabComponent', () => {
           useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
           deps: [HttpClient],
         },
+        { provide: WindowToken, useValue: MockWindow },
       ],
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
         workplace: establishment,
-        meta: { workplaces: 9, staff: 4 } as Meta,
+        meta: { workplaces: 9, staff: 4, localAuthority: 'Test LA' } as Meta,
       },
       schemas: [NO_ERRORS_SCHEMA],
     });
@@ -460,7 +470,7 @@ describe('NewHomeTabComponent', () => {
       it('should render the number of workplaces to compare with', async () => {
         const { getByText } = await setup();
 
-        const text = getByText('There are 9 workplaces providing adult social care in Fake Town.');
+        const text = getByText('There are 9 workplaces providing adult social care in Test LA.');
 
         expect(text).toBeTruthy();
       });

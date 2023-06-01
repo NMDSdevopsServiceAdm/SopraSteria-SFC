@@ -7,9 +7,21 @@
           data-testid="column-one"
         >
           <ng-container *ngIf="tab === 'home'; else otherTab">
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+            <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
               {{ workplace?.name }}
             </h1>
+
+            <div *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'">
+              <button
+                class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0"
+                (click)="onDeleteWorkplace($event)"
+              >
+                <img src="/assets/images/bin.svg" alt="" />
+                <span class="govuk-!-margin-left-1">
+                  Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
+                </span>
+              </button>
+            </div>
           </ng-container>
           <ng-template #otherTab>
             <h1 class="govuk-heading-l govuk-!-margin-bottom-0">

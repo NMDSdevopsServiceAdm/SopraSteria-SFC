@@ -21,6 +21,7 @@
     [totalExpiredTraining]="totalExpiredTraining"
     [totalExpiringTraining]="totalExpiringTraining"
     [totalStaffMissingMandatoryTraining]="staffMissingMandatoryTraining"
+    data-cy="total-training-panel"
   ></app-training-info-panel>
 
   <app-training-select-view-panel
@@ -37,6 +38,7 @@
     [totalRecords]="totalRecords"
     [sortByValue]="staffSortByValue"
     (changeStaffSortBy)="updateSortByValue($event)"
+    data-cy="training-summary"
   ></app-training-and-qualifications-summary>
 
   <app-training-and-qualifications-categories
