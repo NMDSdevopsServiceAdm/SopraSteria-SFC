@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
   public dashboardView = false;
   public standAloneAccount = false;
   public newHomeDesignFlag: boolean;
+  public newDataAreaFlag: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -88,6 +89,9 @@ export class AppComponent implements OnInit {
     await this.featureFlagsService.configCatClient.forceRefreshAsync();
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
+
+    this.newDataAreaFlag = await this.featureFlagsService.configCatClient.getValueAsync('newBenchmarksDataArea', false);
+    this.featureFlagsService.newBenchmarksDataArea = this.newDataAreaFlag;
   }
 
   public skip(event: Event) {
