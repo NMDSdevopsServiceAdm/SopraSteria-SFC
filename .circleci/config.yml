@@ -152,7 +152,7 @@ orbs:
   node: circleci/node@5.0.0
   slack: circleci/slack@4.4.4
   codecov: codecov/codecov@1.0.2
-  configcat: configcat/scan-repository@1.5.0
+  scan-repository: configcat/scan-repository@1.5.0
 
 
 jobs:
@@ -248,7 +248,9 @@ jobs:
             - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
           command: $(npm bin)/lhci autorun
-
+  feature_flag:
+      - scan-repository:
+          config-id: ${CONFIG_CAT_SDK_KEY}
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
@@ -494,8 +496,11 @@ workflows:
           requires:
             - install
       - feature_flag:
-          - configcat/scan:
-              config-id: ${CONFIG_CAT_SDK_KEY}
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
       - blue_green:
           name: blue_green_benchmarks
           appname: sfcbenchmarks
