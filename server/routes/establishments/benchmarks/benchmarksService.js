@@ -52,29 +52,13 @@ const getSickness = async function ({ establishmentId }) {
 };
 
 const getTurnover = async function ({ establishmentId }) {
-  const establishment = await models.establishment.turnoverData(establishmentId);
+  const response = await vacanciesAndLeavers(establishmentId, 'LeaversValue');
 
-  const staffNumberIncorrectOrLeaversUnknown = await checkStaffNumberAndLeavers(establishmentId, establishment);
-  if (staffNumberIncorrectOrLeaversUnknown) {
-    return staffNumberIncorrectOrLeaversUnknown;
-  }
+  if (response.stateMessage) return { stateMessage: response.stateMessage };
+  if (response.value) return { value: 0 };
 
-  const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
-  if (permTemptCount === 0) {
-    return {
-      stateMessage: 'no-perm-or-temp',
-    };
-  }
+  const percentOfPermTemp = response.noOfProperty / response.permTempCount;
 
-  if (establishment.LeaversValue === 'None') {
-    return {
-      value: 0,
-    };
-  }
-
-  const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
-
-  const percentOfPermTemp = leavers / permTemptCount;
   if (percentOfPermTemp > 9.95) {
     return {
       stateMessage: 'incorrect-turnover',
@@ -87,36 +71,60 @@ const getTurnover = async function ({ establishmentId }) {
 };
 
 const getVacancies = async function ({ establishmentId }) {
-  const establishment = await models.establishment.vacanciesData(establishmentId);
-  if (!establishment) {
-    return {
-      stateMessage: 'no-vacancies-data',
-    };
-  }
+  const response = await vacanciesAndLeavers(establishmentId, 'VacanciesValue');
 
-  if (establishment.VacanciesValue === 'None') {
-    return {
-      value: 0,
-    };
-  }
+  if (response.stateMessage) return { stateMessage: response.stateMessage };
+  if (response.value) return { value: 0 };
 
-  const vacancies = await models.establishmentJobs.vacanciesForEstablishment(establishmentId);
+  const percentOfPermTemp = response.noOfProperty / (response.permTempCount + response.noOfProperty);
+
   return {
-    value: vacancies,
+    value: percentOfPermTemp,
   };
 };
 
-const checkStaffNumberAndLeavers = async function (establishmentId, establishment) {
+const vacanciesAndLeavers = async (establishmentId, leaversOrVacancies) => {
+  const establishment = await models.establishment.turnoverAndVacanciesData(establishmentId);
+
+  const staffNumberIncorrectOrVacanciesUnknown = await checkStaffNumbers(
+    establishmentId,
+    establishment,
+    leaversOrVacancies,
+  );
+
+  if (staffNumberIncorrectOrVacanciesUnknown) return staffNumberIncorrectOrVacanciesUnknown;
+
+  const permTempCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
+
+  if (permTempCount === 0) {
+    return { stateMessage: 'no-perm-or-temp' };
+  }
+
+  if (establishment[leaversOrVacancies] === 'None') {
+    return {
+      value: 'None',
+    };
+  }
+
+  const attribute = leaversOrVacancies === 'LeaversValue' ? 'Leavers' : 'Vacancies';
+
+  const noOfProperty = await models.establishmentJobs.leaversOrVacanciesForEstablishment(establishmentId, attribute);
+
+  return { noOfProperty, permTempCount };
+};
+
+const checkStaffNumbers = async function (establishmentId, establishment, leaversOrVacancies) {
   const workerCount = await models.worker.countForEstablishment(establishmentId);
+
   if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
     return {
       stateMessage: 'mismatch-workers',
     };
   }
 
-  if (establishment.LeaversValue === "Don't know" || !establishment.LeaversValue) {
+  if (establishment[leaversOrVacancies] === "Don't know" || !establishment[leaversOrVacancies]) {
     return {
-      stateMessage: 'no-leavers',
+      stateMessage: leaversOrVacancies === 'LeaversValue' ? 'no-leavers' : 'no-vacancies',
     };
   }
 

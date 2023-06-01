@@ -49,20 +49,11 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  EstablishmentJobs.leaversForEstablishment = async function (establishmentID) {
+  EstablishmentJobs.leaversOrVacanciesForEstablishment = async function (establishmentID, attribute = 'Leavers') {
     return this.sum('total', {
       where: {
         establishmentId: establishmentID,
-        type: 'Leavers',
-      },
-    });
-  };
-
-  EstablishmentJobs.vacanciesForEstablishment = async function (establishmentID) {
-    return this.sum('total', {
-      where: {
-        establishmentId: establishmentID,
-        type: 'Vacancies',
+        type: attribute,
       },
     });
   };

@@ -207,7 +207,7 @@ describe('rankings', () => {
     });
 
     it('should be response with stateMessage mismatch-workers when workplace has no staff records', async () => {
-      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 0 });
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 0 });
       sinon.stub(models.worker, 'countForEstablishment').returns(0);
       sinon.stub(models.benchmarksTurnover, 'findAll').returns([
         { CssrID: 123, MainServiceFK: 1, turnover: 0.4, EstablishmentFK: 456 },
@@ -220,7 +220,7 @@ describe('rankings', () => {
     });
 
     it('should be response with stateMessage mismatch-workers when staff count does not match workplace', async () => {
-      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2 });
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 2 });
       sinon.stub(models.worker, 'countForEstablishment').returns(0);
       sinon.stub(models.benchmarksTurnover, 'findAll').returns([
         { CssrID: 123, MainServiceFK: 1, turnover: 0.4, EstablishmentFK: 456 },
@@ -233,7 +233,9 @@ describe('rankings', () => {
     });
 
     it('should be response with stateMessage no-leavers when workplace has no leavers', async () => {
-      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2, LeaversValue: "Don't know" });
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 2, LeaversValue: "Don't know" });
       sinon.stub(models.worker, 'countForEstablishment').returns(2);
       sinon.stub(models.benchmarksTurnover, 'findAll').returns([
         { CssrID: 123, MainServiceFK: 1, turnover: 0.4, EstablishmentFK: 456 },
@@ -246,7 +248,7 @@ describe('rankings', () => {
     });
 
     it('should be response with stateMessage no-perm-or-temp when workplace has no leavers', async () => {
-      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
       sinon.stub(models.worker, 'countForEstablishment').returns(2);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(0);
       sinon.stub(models.benchmarksTurnover, 'findAll').returns([
@@ -260,10 +262,10 @@ describe('rankings', () => {
     });
 
     it('should be response with stateMessage incorrect-turnover when turnover is too high', async () => {
-      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
       sinon.stub(models.worker, 'countForEstablishment').returns(2);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(1);
-      sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(10);
+      sinon.stub(models.establishmentJobs, 'leaversOrVacanciesForEstablishment').returns(10);
       sinon.stub(models.benchmarksTurnover, 'findAll').returns([
         { CssrID: 123, MainServiceFK: 1, turnover: 0.4, EstablishmentFK: 456 },
         { CssrID: 123, MainServiceFK: 1, turnover: 0.6, EstablishmentFK: 789 },
@@ -275,10 +277,10 @@ describe('rankings', () => {
     });
 
     it('should be response with hasValue true when turnover and comparison group are available', async () => {
-      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
       sinon.stub(models.worker, 'countForEstablishment').returns(2);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(1);
-      sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(1);
+      sinon.stub(models.establishmentJobs, 'leaversOrVacanciesForEstablishment').returns(1);
       sinon.stub(models.benchmarksTurnover, 'findAll').returns([
         { CssrID: 123, MainServiceFK: 1, turnover: 0.4, EstablishmentFK: 456 },
         { CssrID: 123, MainServiceFK: 1, turnover: 0.6, EstablishmentFK: 789 },
@@ -290,10 +292,10 @@ describe('rankings', () => {
     });
 
     it('should be response with maxRank equal to number of comparison group rankings + current establishment', async () => {
-      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
       sinon.stub(models.worker, 'countForEstablishment').returns(2);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(1);
-      sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(1);
+      sinon.stub(models.establishmentJobs, 'leaversOrVacanciesForEstablishment').returns(1);
       sinon.stub(models.benchmarksTurnover, 'findAll').returns([
         { CssrID: 123, MainServiceFK: 1, turnover: 0.4, EstablishmentFK: 456 },
         { CssrID: 123, MainServiceFK: 1, turnover: 0.6, EstablishmentFK: 789 },
@@ -305,10 +307,10 @@ describe('rankings', () => {
     });
 
     it('should be response with currentRank against comparison group rankings', async () => {
-      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 2, LeaversValue: 1 });
       sinon.stub(models.worker, 'countForEstablishment').returns(2);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(2);
-      sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(1);
+      sinon.stub(models.establishmentJobs, 'leaversOrVacanciesForEstablishment').returns(1);
       sinon.stub(models.benchmarksTurnover, 'findAll').returns([
         { CssrID: 123, MainServiceFK: 1, turnover: 0.4, EstablishmentFK: 456 },
         { CssrID: 123, MainServiceFK: 1, turnover: 0.6, EstablishmentFK: 789 },
@@ -320,10 +322,12 @@ describe('rankings', () => {
     });
 
     it('should be response with currentRank 1 when leavers value is 0', async () => {
-      sinon.stub(models.establishment, 'turnoverData').returns({ NumberOfStaffValue: 2, LeaversValue: 'None' });
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 2, LeaversValue: 'None' });
       sinon.stub(models.worker, 'countForEstablishment').returns(2);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(2);
-      sinon.stub(models.establishmentJobs, 'leaversForEstablishment').returns(1);
+      sinon.stub(models.establishmentJobs, 'leaversOrVacanciesForEstablishment').returns(1);
       sinon.stub(models.benchmarksTurnover, 'findAll').returns([
         { CssrID: 123, MainServiceFK: 1, turnover: 0.4, EstablishmentFK: 456 },
         { CssrID: 123, MainServiceFK: 1, turnover: 0.6, EstablishmentFK: 789 },
