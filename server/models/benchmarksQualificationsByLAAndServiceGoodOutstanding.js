@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
   const BenchmarksQualificationsByLAAndServiceGoodOutstanding = sequelize.define(
-    'BenchmarksQualificationsByLAAndServiceGoodOutstanding',
+    'benchmarksQualificationsByLAAndServiceGoodOutstanding',
     {
       LocalAuthorityArea: {
         type: DataTypes.INTEGER,

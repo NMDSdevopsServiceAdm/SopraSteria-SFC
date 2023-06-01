@@ -160,6 +160,38 @@ const vacanciesBenchmarks = async (establishmentId, mainService) => {
   return await vacancies({ establishmentId }, comparisonGroups);
 };
 
+const qualificationsBenchmarks = async (establishmentId, mainService) => {
+  const { comparisonGroup, comparisonGoodCqcGroup } = await getComparisonGroups(
+    establishmentId,
+    mainService,
+    'benchmarksQualificationsByLAAndService',
+    ['Qualifications'],
+  );
+
+  const comparisonGroups = {
+    qualifications: comparisonGroup && comparisonGroup.Qualifications,
+    qualificationsGoodCqc: comparisonGoodCqcGroup && comparisonGoodCqcGroup.Qualifications,
+  };
+
+  return await qualifications({ establishmentId }, comparisonGroups);
+};
+
+const sicknessBenchmarks = async (establishmentId, mainService) => {
+  const { comparisonGroup, comparisonGoodCqcGroup } = await getComparisonGroups(
+    establishmentId,
+    mainService,
+    'benchmarksSicknessByLAAndService',
+    ['AverageNoOfSickDays'],
+  );
+
+  const comparisonGroups = {
+    sickness: comparisonGroup && comparisonGroup.AverageNoOfSickDays,
+    sicknessGoodCqc: comparisonGoodCqcGroup && comparisonGoodCqcGroup.AverageNoOfSickDays,
+  };
+
+  return await sickness({ establishmentId }, comparisonGroups);
+};
+
 const getComparisonGroups = async (establishmentId, mainService, benchmarksModel, attributes, workerId) => {
   const comparisonGroup = await benchmarksService.getComparisonData(
     models[benchmarksModel],
@@ -191,9 +223,12 @@ const getBenchmarksData = async (establishmentId, mainService) => {
   reply.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID);
   reply.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService);
   reply.turnoverRate = await turnoverBenchmarks(establishmentId, mainService);
+  reply.qualifications = await qualificationsBenchmarks(establishmentId, mainService);
+  reply.sickness = await sicknessBenchmarks(establishmentId, mainService);
 
   reply.meta = await getMetaData(establishmentId, mainService);
-
+  console.log('****** GET BENCHMARKS DATA ******');
+  console.log(reply);
   return reply;
 };
 
@@ -247,4 +282,6 @@ module.exports.getBenchmarkData = getBenchmarksData;
 module.exports.payBenchmarks = payBenchmarks;
 module.exports.turnoverBenchmarks = turnoverBenchmarks;
 module.exports.vacanciesBenchmarks = vacanciesBenchmarks;
+module.exports.qualificationsBenchmarks = qualificationsBenchmarks;
+module.exports.sicknessBenchmarks = sicknessBenchmarks;
 module.exports.viewBenchmarks = viewBenchmarks;

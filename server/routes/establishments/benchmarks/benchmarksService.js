@@ -11,8 +11,10 @@ const getPay = async function (params) {
   }
 
   const amount =
-    params.annualOrHourly === 'Hourly' ? parseFloat(averageHourlyPay.amount) * 100 : averageHourlyPay.amount;
-
+    params.annualOrHourly === 'Hourly'
+      ? parseFloat(averageHourlyPay.amount) * 100
+      : parseFloat(averageHourlyPay.amount);
+  console.log(amount);
   return { value: parseFloat(amount.toFixed(0)) };
 };
 
@@ -159,7 +161,6 @@ const getComparisonData = async function (benchmarksModel, establishmentId, main
   if (!cssr) return {};
 
   const where = mainJob ? { MainJobRole: mainJob } : {};
-
   return await benchmarksModel.findOne({
     attributes: ['LocalAuthorityArea', 'MainServiceFK', 'BaseEstablishments', ...attributes],
     where: {

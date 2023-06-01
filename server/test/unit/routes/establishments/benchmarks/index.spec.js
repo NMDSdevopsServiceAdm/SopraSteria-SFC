@@ -6,6 +6,8 @@ const {
   vacanciesBenchmarks,
   getMetaData,
   viewBenchmarks,
+  qualificationsBenchmarks,
+  sicknessBenchmarks,
 } = require('../../../../../routes/establishments/benchmarks');
 const benchmarksService = require('../../../../../routes/establishments/benchmarks/benchmarksService');
 const expect = require('chai').expect;
@@ -42,6 +44,16 @@ describe('/benchmarks', () => {
   const vacanciesComparisonResponse = {
     ...genericComparisonResponse,
     VacancyRate: null,
+  };
+
+  const qualificationsComparisonResponse = {
+    ...genericComparisonResponse,
+    Qualifications: null,
+  };
+
+  const sicknessComparisonResponse = {
+    ...genericComparisonResponse,
+    AverageNoOfSickDays: null,
   };
 
   describe('payBenchmarks', () => {
@@ -279,9 +291,9 @@ describe('/benchmarks', () => {
         .returns(vacanciesComparisonResponse);
 
       sinon.stub(benchmarksService, 'getVacancies').returns({ stateMessage: 'no-vacancies-data' });
-      const turnover = await vacanciesBenchmarks(establishmentId, mainService);
+      const vacancies = await vacanciesBenchmarks(establishmentId, mainService);
 
-      expect(turnover).to.deep.equal({
+      expect(vacancies).to.deep.equal({
         workplaceValue: { hasValue: false, value: 0, stateMessage: 'no-vacancies-data' },
         comparisonGroup: { hasValue: false, value: 0, stateMessage: 'no-data' },
         goodCqc: { hasValue: false, value: 0, stateMessage: 'no-data' },
@@ -296,9 +308,9 @@ describe('/benchmarks', () => {
         .onSecondCall()
         .returns(vacanciesComparisonResponse);
       sinon.stub(benchmarksService, 'getVacancies').returns({ value: 0.13 });
-      const pay = await vacanciesBenchmarks(establishmentId, mainService);
+      const vacancies = await vacanciesBenchmarks(establishmentId, mainService);
 
-      expect(pay).to.deep.equal({
+      expect(vacancies).to.deep.equal({
         workplaceValue: { hasValue: true, value: 0.13 },
         comparisonGroup: { hasValue: false, value: 0, stateMessage: 'no-data' },
         goodCqc: { hasValue: false, value: 0, stateMessage: 'no-data' },
@@ -315,9 +327,9 @@ describe('/benchmarks', () => {
 
       sinon.stub(benchmarksService, 'getVacancies').returns({ value: 0.13 });
 
-      const turnover = await vacanciesBenchmarks(establishmentId, mainService);
+      const vacancies = await vacanciesBenchmarks(establishmentId, mainService);
 
-      expect(turnover).to.deep.equal({
+      expect(vacancies).to.deep.equal({
         workplaceValue: { hasValue: true, value: 0.13 },
         comparisonGroup: { hasValue: true, value: 0.11 },
         goodCqc: { hasValue: false, value: 0, stateMessage: 'no-data' },
@@ -334,16 +346,16 @@ describe('/benchmarks', () => {
 
       sinon.stub(benchmarksService, 'getVacancies').returns({ value: 0.13 });
 
-      const turnover = await vacanciesBenchmarks(establishmentId, mainService);
+      const vacancies = await vacanciesBenchmarks(establishmentId, mainService);
 
-      expect(turnover).to.deep.equal({
+      expect(vacancies).to.deep.equal({
         workplaceValue: { hasValue: true, value: 0.13 },
         comparisonGroup: { hasValue: true, value: 0.11 },
         goodCqc: { hasValue: true, value: 0.1 },
       });
     });
 
-    it('should return response with workplace turnover data, comparison data and goodCQC comparison if the workplace has no vacancies and there is comparison data and good cqc data is present', async () => {
+    it('should return response with workplace vacancies data, comparison data and goodCQC comparison if the workplace has no vacancies and there is comparison data and good cqc data is present', async () => {
       sinon
         .stub(benchmarksService, 'getComparisonData')
         .onFirstCall()
@@ -353,12 +365,200 @@ describe('/benchmarks', () => {
 
       sinon.stub(benchmarksService, 'getVacancies').returns({ value: 0 });
 
-      const turnover = await vacanciesBenchmarks(establishmentId, mainService);
+      const vacancies = await vacanciesBenchmarks(establishmentId, mainService);
 
-      expect(turnover).to.deep.equal({
+      expect(vacancies).to.deep.equal({
         workplaceValue: { hasValue: true, value: 0 },
         comparisonGroup: { hasValue: true, value: 0.11 },
         goodCqc: { hasValue: true, value: 0.1 },
+      });
+    });
+  });
+
+  describe('qualificationsBenchmarks', () => {
+    it('should return response saying no-qualifications-data and no data if the workplace has no vacancies data and comparison data is not present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns(qualificationsComparisonResponse)
+        .onSecondCall()
+        .returns(qualificationsComparisonResponse);
+
+      sinon.stub(benchmarksService, 'getQualifications').returns({ stateMessage: 'no-qualifications-data' });
+      const qualifications = await qualificationsBenchmarks(establishmentId, mainService);
+
+      expect(qualifications).to.deep.equal({
+        workplaceValue: { hasValue: false, value: 0, stateMessage: 'no-qualifications-data' },
+        comparisonGroup: { hasValue: false, value: 0, stateMessage: 'no-data' },
+        goodCqc: { hasValue: false, value: 0, stateMessage: 'no-data' },
+      });
+    });
+
+    it('should return response with workplace qualifications data and message saying no data if the workplace has data and comparison data is not present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns(qualificationsComparisonResponse)
+        .onSecondCall()
+        .returns(qualificationsComparisonResponse);
+      sinon.stub(benchmarksService, 'getQualifications').returns({ value: 0.5 });
+      const qualifications = await qualificationsBenchmarks(establishmentId, mainService);
+
+      expect(qualifications).to.deep.equal({
+        workplaceValue: { hasValue: true, value: 0.5 },
+        comparisonGroup: { hasValue: false, value: 0, stateMessage: 'no-data' },
+        goodCqc: { hasValue: false, value: 0, stateMessage: 'no-data' },
+      });
+    });
+
+    it('should return response with workplace qualifications data, comparison data and message saying no data for goodCQC comparison if the workplace has data and there is comparison data but no good cqc data is present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns({ ...qualificationsComparisonResponse, Qualifications: 0.47 })
+        .onSecondCall()
+        .returns(qualificationsComparisonResponse);
+
+      sinon.stub(benchmarksService, 'getQualifications').returns({ value: 0.5 });
+
+      const qualifications = await qualificationsBenchmarks(establishmentId, mainService);
+
+      expect(qualifications).to.deep.equal({
+        workplaceValue: { hasValue: true, value: 0.5 },
+        comparisonGroup: { hasValue: true, value: 0.47 },
+        goodCqc: { hasValue: false, value: 0, stateMessage: 'no-data' },
+      });
+    });
+
+    it('should return response with workplace qualifications data, comparison data and goodCQC comparison if the workplace has data and there is comparison data and good cqc data is present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns({ ...qualificationsComparisonResponse, Qualifications: 0.47 })
+        .onSecondCall()
+        .returns({ ...qualificationsComparisonResponse, Qualifications: 0.53 });
+
+      sinon.stub(benchmarksService, 'getQualifications').returns({ value: 0.5 });
+
+      const qualifications = await qualificationsBenchmarks(establishmentId, mainService);
+
+      expect(qualifications).to.deep.equal({
+        workplaceValue: { hasValue: true, value: 0.5 },
+        comparisonGroup: { hasValue: true, value: 0.47 },
+        goodCqc: { hasValue: true, value: 0.53 },
+      });
+    });
+
+    it('should return response with workplace qualifications data, comparison data and goodCQC comparison if the workplace has no qualifications and there is comparison data and good cqc data is present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns({ ...qualificationsComparisonResponse, Qualifications: 0.47 })
+        .onSecondCall()
+        .returns({ ...qualificationsComparisonResponse, Qualifications: 0.53 });
+
+      sinon.stub(benchmarksService, 'getQualifications').returns({ value: 0 });
+
+      const qualifications = await qualificationsBenchmarks(establishmentId, mainService);
+
+      expect(qualifications).to.deep.equal({
+        workplaceValue: { hasValue: true, value: 0 },
+        comparisonGroup: { hasValue: true, value: 0.47 },
+        goodCqc: { hasValue: true, value: 0.53 },
+      });
+    });
+  });
+
+  describe('sicknessBenchmarks', () => {
+    it('should return response saying no-sickness-data and no data if the workplace has no vacancies data and comparison data is not present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns(sicknessComparisonResponse)
+        .onSecondCall()
+        .returns(sicknessComparisonResponse);
+
+      sinon.stub(benchmarksService, 'getSickness').returns({ stateMessage: 'no-sickness-data' });
+      const sickness = await sicknessBenchmarks(establishmentId, mainService);
+
+      expect(sickness).to.deep.equal({
+        workplaceValue: { hasValue: false, value: 0, stateMessage: 'no-sickness-data' },
+        comparisonGroup: { hasValue: false, value: 0, stateMessage: 'no-data' },
+        goodCqc: { hasValue: false, value: 0, stateMessage: 'no-data' },
+      });
+    });
+
+    it('should return response with workplace sickness data and message saying no data if the workplace has data and comparison data is not present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns(sicknessComparisonResponse)
+        .onSecondCall()
+        .returns(sicknessComparisonResponse);
+      sinon.stub(benchmarksService, 'getSickness').returns({ value: 7 });
+      const sickness = await sicknessBenchmarks(establishmentId, mainService);
+
+      expect(sickness).to.deep.equal({
+        workplaceValue: { hasValue: true, value: 7 },
+        comparisonGroup: { hasValue: false, value: 0, stateMessage: 'no-data' },
+        goodCqc: { hasValue: false, value: 0, stateMessage: 'no-data' },
+      });
+    });
+
+    it('should return response with workplace sickness data, comparison data and message saying no data for goodCQC comparison if the workplace has data and there is comparison data but no good cqc data is present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns({ ...sicknessComparisonResponse, AverageNoOfSickDays: 9 })
+        .onSecondCall()
+        .returns(sicknessComparisonResponse);
+
+      sinon.stub(benchmarksService, 'getSickness').returns({ value: 7 });
+
+      const sickness = await sicknessBenchmarks(establishmentId, mainService);
+
+      expect(sickness).to.deep.equal({
+        workplaceValue: { hasValue: true, value: 7 },
+        comparisonGroup: { hasValue: true, value: 9 },
+        goodCqc: { hasValue: false, value: 0, stateMessage: 'no-data' },
+      });
+    });
+
+    it('should return response with workplace sickness data, comparison data and goodCQC comparison if the workplace has data and there is comparison data and good cqc data is present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns({ ...sicknessComparisonResponse, AverageNoOfSickDays: 9 })
+        .onSecondCall()
+        .returns({ ...sicknessComparisonResponse, AverageNoOfSickDays: 8 });
+
+      sinon.stub(benchmarksService, 'getSickness').returns({ value: 7 });
+
+      const sickness = await sicknessBenchmarks(establishmentId, mainService);
+
+      expect(sickness).to.deep.equal({
+        workplaceValue: { hasValue: true, value: 7 },
+        comparisonGroup: { hasValue: true, value: 9 },
+        goodCqc: { hasValue: true, value: 8 },
+      });
+    });
+
+    it('should return response with workplace sickness data, comparison data and goodCQC comparison if the workplace has no sickness and there is comparison data and good cqc data is present', async () => {
+      sinon
+        .stub(benchmarksService, 'getComparisonData')
+        .onFirstCall()
+        .returns({ ...sicknessComparisonResponse, AverageNoOfSickDays: 9 })
+        .onSecondCall()
+        .returns({ ...sicknessComparisonResponse, AverageNoOfSickDays: 8 });
+
+      sinon.stub(benchmarksService, 'getSickness').returns({ value: 0 });
+
+      const sickness = await sicknessBenchmarks(establishmentId, mainService);
+
+      expect(sickness).to.deep.equal({
+        workplaceValue: { hasValue: true, value: 0 },
+        comparisonGroup: { hasValue: true, value: 9 },
+        goodCqc: { hasValue: true, value: 8 },
       });
     });
   });
@@ -437,7 +637,15 @@ describe('/benchmarks', () => {
         .onCall(10)
         .returns({ ...turnoverComparisonResponse, TurnoverRate: 0.25 })
         .onCall(11)
-        .returns({ ...turnoverComparisonResponse, TurnoverRate: 0.23 });
+        .returns({ ...turnoverComparisonResponse, TurnoverRate: 0.23 })
+        .onCall(12)
+        .returns({ ...qualificationsComparisonResponse, Qualifications: 0.47 })
+        .onCall(13)
+        .returns({ ...qualificationsComparisonResponse, Qualifications: 0.53 })
+        .onCall(14)
+        .returns({ ...sicknessComparisonResponse, AverageNoOfSickDays: 9 })
+        .onCall(15)
+        .returns({ ...sicknessComparisonResponse, AverageNoOfSickDays: 8 });
     });
 
     it('should return 200 and the data when successfully getting the benchmarks data', async () => {
@@ -454,6 +662,8 @@ describe('/benchmarks', () => {
 
       sinon.stub(benchmarksService, 'getTurnover').returns({ value: 0.27 });
       sinon.stub(benchmarksService, 'getVacancies').returns({ value: 0.13 });
+      sinon.stub(benchmarksService, 'getQualifications').returns({ value: 0.5 });
+      sinon.stub(benchmarksService, 'getSickness').returns({ value: 7 });
       sinon
         .stub(models.benchmarksEstablishmentsAndWorkers, 'getComparisonData')
         .returns({ workplaces: 10, staff: 103, localAuthority: 'Leeds' });
@@ -495,6 +705,16 @@ describe('/benchmarks', () => {
           workplaceValue: { value: 0.27, hasValue: true },
           comparisonGroup: { value: 0.25, hasValue: true },
           goodCqc: { value: 0.23, hasValue: true },
+        },
+        qualifications: {
+          workplaceValue: { value: 0.5, hasValue: true },
+          comparisonGroup: { value: 0.47, hasValue: true },
+          goodCqc: { value: 0.53, hasValue: true },
+        },
+        sickness: {
+          workplaceValue: { value: 7, hasValue: true },
+          comparisonGroup: { value: 9, hasValue: true },
+          goodCqc: { value: 8, hasValue: true },
         },
       };
       await viewBenchmarks(req, res);
