@@ -29,32 +29,6 @@ const comparisonGroupsJson = {
   goodCqc: clonedeep(comparisonJson),
 };
 
-// const getTiles = async (establishmentId, tiles) => {
-//   const cssr = await models.cssr.getCSSR(establishmentId);
-
-//   let benchmarkComparisonGroup = await models.benchmarks.getBenchmarkData(establishmentId, cssr.id);
-//   let reply = {
-//     meta: {},
-//   };
-//   if (tiles.includes('pay')) reply.pay = await pay({ establishmentId }, benchmarkComparisonGroup);
-//   if (tiles.includes('sickness')) reply.sickness = await sickness({ establishmentId }, benchmarkComparisonGroup);
-//   if (tiles.includes('qualifications'))
-//     reply.qualifications = await qualifications({ establishmentId }, benchmarkComparisonGroup);
-//   if (tiles.includes('turnover')) reply.turnover = await turnover({ establishmentId }, benchmarkComparisonGroup);
-
-//   reply.meta = await getMetaData(benchmarkComparisonGroup, cssr);
-//   return reply;
-// };
-
-// const getMetaData = async (benchmarkComparisonGroup, cssr) => {
-//   return {
-//     workplaces: benchmarkComparisonGroup ? benchmarkComparisonGroup.workplaces : 0,
-//     staff: benchmarkComparisonGroup ? benchmarkComparisonGroup.staff : 0,
-//     lastUpdated: await models.dataImports.benchmarksLastUpdated(),
-//     localAuthority: cssr ? cssr.name : null,
-//   };
-// };
-
 const pay = async (params, benchmarkComparisonGroup) => {
   return await buildTile(params, benchmarkComparisonGroup, 'pay', benchmarksService.getPay);
 };
