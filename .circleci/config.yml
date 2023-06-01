@@ -250,7 +250,7 @@ jobs:
           command: $(npm bin)/lhci autorun
   feature_flag:
       - scan-repository:
-          config-id: ${CONFIG_CAT_SDK_KEY}
+          config-id: $CONFIG_CAT_SDK_KEY
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
