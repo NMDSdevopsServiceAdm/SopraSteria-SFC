@@ -258,10 +258,12 @@ jobs:
           at: .
       - run:
           command: |
-            if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
-              echo "Please, set the feature flag environment variables. Will stop now."
-              exit 1
-            fi
+                  - configcat/scan:
+                      config-id: ${CONFIG_CAT_SDK_KEY}
+            # if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
+            #   echo "Please, set the feature flag environment variables. Will stop now."
+            #   exit 1
+            # fi
 
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
