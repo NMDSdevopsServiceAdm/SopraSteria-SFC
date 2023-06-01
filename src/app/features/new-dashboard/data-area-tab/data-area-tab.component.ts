@@ -28,6 +28,8 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public viewBenchmarksByCategory = false;
   public viewBenchmarksComparisonGroups = false;
   public viewBenchmarksPosition = false;
+  public downloadPayBenchmarksText = 'Download pay benchmarks';
+  public downloadRecruitmentBenchmarksText = 'Download recruitment and retention benchmarks';
   public mainServiceOneId = 24;
   public showRegisteredNurseSalary: boolean;
   public careWorkerPay;
@@ -51,6 +53,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
+    this.setDownloadBenchmarksText();
     this.showRegisteredNurseSalary = this.workplace.mainService.id === this.mainServiceOneId ? true : false;
     this.showWorkplacePayAndSalary();
     this.showComparisionGroupPayAndSalary();
@@ -63,6 +66,15 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
       this.workplace,
       'Benchmarks.pdf',
     );
+  }
+
+  public setDownloadBenchmarksText(): void {
+    const pagesPay = '2';
+    const fileSizePay = '430KB';
+    const pagesRecruitment = '2';
+    const fileSizeRecruitment = '385KB';
+    this.downloadPayBenchmarksText = `${this.downloadPayBenchmarksText} (PDF, ${fileSizePay}, ${pagesPay} pages)`;
+    this.downloadRecruitmentBenchmarksText = `${this.downloadRecruitmentBenchmarksText} (PDF, ${fileSizeRecruitment}, ${pagesRecruitment} pages)`;
   }
 
   public setReturn(): void {

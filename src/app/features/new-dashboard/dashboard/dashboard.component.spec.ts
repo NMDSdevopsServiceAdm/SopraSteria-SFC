@@ -19,7 +19,7 @@ import { render } from '@testing-library/angular';
 
 import { NewDashboardComponent } from './dashboard.component';
 
-fdescribe('NewDashboardComponent', () => {
+describe('NewDashboardComponent', () => {
   const setup = async (tab = 'home', permissions = []) => {
     const { fixture, getByTestId, queryByTestId } = await render(NewDashboardComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
