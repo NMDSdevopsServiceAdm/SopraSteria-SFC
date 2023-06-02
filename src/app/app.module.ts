@@ -10,6 +10,7 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
@@ -201,6 +202,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     WorkersResolver,
     TotalStaffRecordsResolver,
     CqcStatusCheckResolver,
+    BenchmarksResolver,
   ],
   bootstrap: [AppComponent],
 })
