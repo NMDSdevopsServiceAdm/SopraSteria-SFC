@@ -9,6 +9,7 @@ import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
 import { FormatUtil } from '@core/utils/format-util';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-data-area-tab',
@@ -16,10 +17,13 @@ import { FormatUtil } from '@core/utils/format-util';
   styleUrls: ['./data-area-tab.component.scss'],
 })
 export class DataAreaTabComponent implements OnInit, OnDestroy {
+  protected subscriptions: Subscription = new Subscription();
+
   @Input() workplace: Establishment;
-  @Input() tilesData: BenchmarksResponse;
+  //@Input() tilesData: BenchmarksResponse;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
 
+  public tilesData: BenchmarksResponse;
   public canViewFullBenchmarks: boolean;
   public payContent = MetricsContent.Pay;
   public turnoverContent = MetricsContent.Turnover;
@@ -30,8 +34,8 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public viewBenchmarksPosition = false;
   public downloadPayBenchmarksText = 'Download pay benchmarks';
   public downloadRecruitmentBenchmarksText = 'Download recruitment and retention benchmarks';
-  public mainServiceOneId = 24;
   public showRegisteredNurseSalary: boolean;
+  public formatMoney = FormatUtil.formatMoney;
   public careWorkerPay;
   public seniorCareWorkerPay;
   public registeredNurseSalary;
@@ -53,10 +57,26 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
+
+    this.subscriptions.add(
+      this.benchmarksService
+        .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications', 'careWorkerPay'])
+        .subscribe((data) => {
+          if (data) {
+            this.tilesData = data;
+            console.log(this.tilesData);
+
+            this.showWorkplacePayAndSalary();
+            this.showComparisionGroupPayAndSalary();
+          }
+        }),
+    );
+
     this.setDownloadBenchmarksText();
-    this.showRegisteredNurseSalary = this.workplace.mainService.id === this.mainServiceOneId ? true : false;
-    this.showWorkplacePayAndSalary();
-    this.showComparisionGroupPayAndSalary();
+    this.showRegisteredNurseSalary = this.workplace.mainService.id === 24 ? true : false;
+    //this.showRegisteredNurseSalary = [24].includes(this.workplace.mainService.id);
+    //this.showWorkplacePayAndSalary();
+    //this.showComparisionGroupPayAndSalary();
   }
 
   public async downloadAsPDF() {
@@ -98,21 +118,28 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   }
 
   public showWorkplacePayAndSalary(): void {
-    this.careWorkerPay = FormatUtil.formatMoney(1026);
-    this.seniorCareWorkerPay = FormatUtil.formatMoney(1105);
-    this.registeredNurseSalary = '£34,130';
-    this.registeredManagerSalary = '£35,637';
+    this.careWorkerPay = `${this.formatMoney(this.tilesData?.careWorkerPay.workplaceValue.value)} (hourly)`;
+    this.seniorCareWorkerPay = `${this.formatMoney(this.tilesData?.seniorCareWorkerPay.workplaceValue.value)} (hourly)`;
+    this.registeredNurseSalary = `${this.formatMoney(
+      this.tilesData?.registeredNursePay.workplaceValue.value,
+    )} (annually)`;
+    this.registeredManagerSalary = `${this.formatMoney(
+      this.tilesData?.registeredManagerPay.workplaceValue.value,
+    )} (annually)`;
   }
 
-  public showComparisionGroupPayAndSalary() {
+  public showComparisionGroupPayAndSalary(): void {
     if (this.viewBenchmarksComparisonGroups) {
       this.comparisionGroupCareWorkerPay = '£9.96';
       this.comparisionGroupSeniorCareWorkerPay = '£11.96';
       this.comparisionGroupRegisteredNurseSalary = '£35,550';
       this.comparisionGroupRegisteredManagerSalary = '£36,185';
+      console.log(this.comparisionGroupCareWorkerPay);
       return;
     }
-    this.comparisionGroupCareWorkerPay = '£9.75';
+    this.comparisionGroupCareWorkerPay = `${this.formatMoney(
+      this.tilesData?.careWorkerPay.comparisonGroup.value,
+    )} (hourly)`;
     this.comparisionGroupSeniorCareWorkerPay = '£11.50';
     this.comparisionGroupRegisteredNurseSalary = '£34,100';
     this.comparisionGroupRegisteredManagerSalary = '£36,185';
@@ -120,5 +147,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();
+    this.subscriptions.unsubscribe();
   }
 }
