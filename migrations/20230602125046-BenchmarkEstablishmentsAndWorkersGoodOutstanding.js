@@ -12,13 +12,6 @@ module.exports = {
         MainServiceFK: {
           type: Sequelize.DataTypes.INTEGER,
           allowNull: false,
-          references: {
-            model: {
-              tableName: 'services',
-              schema: 'cqc',
-            },
-            key: 'reportingID',
-          },
         },
         CQCGoodOutstandingRating: {
           type: Sequelize.DataTypes.INTEGER,
