@@ -256,9 +256,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - run:
-          command: |
-            - configcat/scan:
+      - configcat/scan:
       - run:
           command: |
             if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
