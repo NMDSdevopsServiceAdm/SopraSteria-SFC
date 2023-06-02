@@ -36,7 +36,7 @@
   </ng-container>
 
   <ng-container *ngSwitchCase="'benchmarks'">
-    <ng-container *ngIf="newDataAreaFlag; else benchmarksTab">
+    <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
       <app-data-area-tab
         [workplace]="workplace"
         [tilesData]="tilesData"

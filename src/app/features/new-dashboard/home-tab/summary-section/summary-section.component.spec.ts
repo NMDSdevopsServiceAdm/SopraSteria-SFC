@@ -239,11 +239,11 @@ describe('Summary section', () => {
     it('should  show "No staff records added in the last 12 months" message when stablishment has more than 10 staff and workplace created date and last worker added date is more than 12 month ', async () => {
       const establishment = {
         ...Establishment,
-        created: dayjs('2021-03-31').add(12, 'M'),
+        created: dayjs().subtract(1, 'year'),
         numberOfStaff: 12,
       };
 
-      const date = [dayjs('2021-03-31').add(12, 'M')];
+      const date = [dayjs().subtract(1, 'year')];
 
       const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
 
@@ -255,7 +255,7 @@ describe('Summary section', () => {
     it('should not  show "No staff records added in the last 12 months" message when stablishment has less thsn 10 staff and workplace created date and last worker added date is less than 12 months', async () => {
       const establishment = {
         ...Establishment,
-        created: dayjs('2023-03-31').add(12, 'M'),
+        created: dayjs().subtract(11, 'month'),
       };
 
       const { fixture, getByTestId } = await setup(false, establishment, 9);
@@ -268,10 +268,10 @@ describe('Summary section', () => {
     it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and and workplace created date is less than 12 month ', async () => {
       const establishment = {
         ...Establishment,
-        created: dayjs('2021-03-31').subtract(12, 'M'),
+        created: dayjs().subtract(11, 'month'),
       };
 
-      const date = [dayjs().add(12, 'M')];
+      const date = [dayjs().subtract(11, 'month')];
       const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
 
       fixture.detectChanges();
@@ -280,13 +280,11 @@ describe('Summary section', () => {
     });
 
     it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and last worker added date is less than 12 month ', async () => {
-      const date = new Date();
       const establishment = {
         ...Establishment,
-        created: date.setDate(date.getMonth() - 1),
+        created: dayjs().subtract(11, 'month'),
       };
 
-      date.setDate(date.getMonth() - 1);
       const { fixture, getByTestId } = await setup(false, establishment, 12, {});
 
       fixture.detectChanges();
@@ -294,13 +292,14 @@ describe('Summary section', () => {
       expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
     });
 
-    it('should show "Some records only have mandatory data added" message when staff records are not completed and  worker added date is less than 1 month ', async () => {
+    it('should show "Some records only have mandatory data added" message when staff records are not completed and worker added date is more than 1 month ago', async () => {
       const date = new Date();
 
       const workerCreatedDate = [
         {
           ...workerBuilder(),
-          created: '2023-03-31',
+          completed: false,
+          created: dayjs().subtract(2, 'month').toISOString(),
         },
       ] as Worker[];
       const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
@@ -310,14 +309,31 @@ describe('Summary section', () => {
       expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeTruthy();
     });
 
-    it('should not show "Some records only have mandatory data added" message when staff records are completed and  worker added date is less than 1 month', async () => {
+    it('should not show "Some records only have mandatory data added" message when staff records are not completed and worker added date is less than 1 month ago', async () => {
+      const date = new Date();
+
+      const workerCreatedDate = [
+        {
+          ...workerBuilder(),
+          completed: false,
+          created: dayjs().subtract(1, 'week').toISOString(),
+        },
+      ] as Worker[];
+      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+
+      fixture.detectChanges();
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
+    });
+
+    it('should not show "Some records only have mandatory data added" message when staff records are completed and worker added date is less than 1 month ago', async () => {
       const date = new Date();
 
       const workerCreatedDate = [
         {
           ...workerBuilder(),
           completed: true,
-          created: '2023-05-02',
+          created: dayjs().subtract(1, 'week').toISOString(),
         },
       ] as Worker[];
       const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
