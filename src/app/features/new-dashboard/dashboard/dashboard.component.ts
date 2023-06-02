@@ -47,7 +47,6 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
 
-    console.log(this.workplace.mainService.reportingID);
     this.authService.isOnAdminScreen = false;
     this.benchmarkDataSubscription();
     this.subscriptions.add(
