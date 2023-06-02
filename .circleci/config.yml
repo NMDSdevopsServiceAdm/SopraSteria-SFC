@@ -249,7 +249,6 @@ jobs:
       - run:
           command: $(npm bin)/lhci autorun
   feature_flag:
-    description: Checks for feature flags
     docker:
       - image: configcat/cli:1.6.2
     steps:
