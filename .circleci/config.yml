@@ -259,7 +259,7 @@ jobs:
       - run:
           command: |
                   - configcat/scan:
-                      config-id: "<<CONFIG_CAT_SDK_KEY>>""
+                      config-id: "<<CONFIG_CAT_SDK_KEY>>"
             # if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
             #   echo "Please, set the feature flag environment variables. Will stop now."
             #   exit 1
