@@ -25,7 +25,7 @@ describe('FormatUtil', () => {
     });
   });
 
-  fdescribe('formatMoney', () => {
+  describe('formatMoney', () => {
     it('should show decimals for number with less than 4 digits', async () => {
       const formatMoney = FormatUtil.formatMoney(899);
 
@@ -36,6 +36,7 @@ describe('FormatUtil', () => {
 
       expect(formatMoney).toEqual('£30,000');
     });
+
     it('should show decimals for number with less than 4 digits', async () => {
       const formatMoney = FormatUtil.formatMoney(0);
 

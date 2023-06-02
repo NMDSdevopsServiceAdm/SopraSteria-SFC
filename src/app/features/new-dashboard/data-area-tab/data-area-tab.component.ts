@@ -64,7 +64,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
         .subscribe((data) => {
           if (data) {
             this.tilesData = data;
-            console.log(this.tilesData);
 
             this.showWorkplacePayAndSalary();
             this.showComparisionGroupPayAndSalary();
@@ -73,10 +72,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     );
 
     this.setDownloadBenchmarksText();
-    this.showRegisteredNurseSalary = this.workplace.mainService.id === 24 ? true : false;
-    //this.showRegisteredNurseSalary = [24].includes(this.workplace.mainService.id);
-    //this.showWorkplacePayAndSalary();
-    //this.showComparisionGroupPayAndSalary();
+    this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1 ? true : false;
   }
 
   public async downloadAsPDF() {
@@ -130,19 +126,31 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   public showComparisionGroupPayAndSalary(): void {
     if (this.viewBenchmarksComparisonGroups) {
-      this.comparisionGroupCareWorkerPay = '£9.96';
-      this.comparisionGroupSeniorCareWorkerPay = '£11.96';
-      this.comparisionGroupRegisteredNurseSalary = '£35,550';
-      this.comparisionGroupRegisteredManagerSalary = '£36,185';
-      console.log(this.comparisionGroupCareWorkerPay);
+      this.comparisionGroupCareWorkerPay = `${this.formatMoney(this.tilesData?.careWorkerPay.goodCqc.value)} (hourly)`;
+      this.comparisionGroupSeniorCareWorkerPay = `${this.formatMoney(
+        this.tilesData?.seniorCareWorkerPay.goodCqc.value,
+      )} (hourly)`;
+      this.comparisionGroupRegisteredNurseSalary = `${this.formatMoney(
+        this.tilesData?.registeredNursePay.goodCqc.value,
+      )} (annually)`;
+      this.comparisionGroupRegisteredManagerSalary = `${this.formatMoney(
+        this.tilesData?.registeredManagerPay.goodCqc.value,
+      )} (annually)`;
+
       return;
     }
     this.comparisionGroupCareWorkerPay = `${this.formatMoney(
       this.tilesData?.careWorkerPay.comparisonGroup.value,
     )} (hourly)`;
-    this.comparisionGroupSeniorCareWorkerPay = '£11.50';
-    this.comparisionGroupRegisteredNurseSalary = '£34,100';
-    this.comparisionGroupRegisteredManagerSalary = '£36,185';
+    this.comparisionGroupSeniorCareWorkerPay = `${this.formatMoney(
+      this.tilesData?.seniorCareWorkerPay.comparisonGroup.value,
+    )} (hourly)`;
+    this.comparisionGroupRegisteredNurseSalary = `${this.formatMoney(
+      this.tilesData?.registeredNursePay.comparisonGroup.value,
+    )} (annually)`;
+    this.comparisionGroupRegisteredManagerSalary = `${this.formatMoney(
+      this.tilesData?.registeredManagerPay.comparisonGroup.value,
+    )} (annually)`;
   }
 
   ngOnDestroy(): void {
