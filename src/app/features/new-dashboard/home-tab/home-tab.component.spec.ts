@@ -39,7 +39,7 @@ const MockWindow = {
 };
 
 describe('NewHomeTabComponent', () => {
-  const setup = async (checkCqcDetails = false, establishment = Establishment) => {
+  const setup = async (checkCqcDetails = false, establishment = Establishment, comparisonDataAvailable = true) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewHomeTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -86,7 +86,7 @@ describe('NewHomeTabComponent', () => {
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
         workplace: establishment,
-        meta: { workplaces: 9, staff: 4, localAuthority: 'Test LA' } as Meta,
+        meta: comparisonDataAvailable ? { workplaces: 9, staff: 4, localAuthority: 'Test LA' } : { workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta,
       },
       schemas: [NO_ERRORS_SCHEMA],
     });
@@ -457,22 +457,73 @@ describe('NewHomeTabComponent', () => {
 
   describe('cards', () => {
     describe('Benchmarks', () => {
-      it('should show a card with a link that takes you to the benchmarks tab', async () => {
-        const { getByText, tabsServiceSpy } = await setup();
+      describe('Where main service is one of the big 3', async () => {
+        const testCases = [1, 2, 8];
+        for(const serviceType of testCases) {
+          const establishment = {
+            ...Establishment,
+            mainService: {
+              ...Establishment.mainService,
+              id: serviceType,
+            },
+            isRegulated: true,
+          };
 
-        const benchmarksLink = getByText('See how you compare against other workplaces');
-        fireEvent.click(benchmarksLink);
+          it('with comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
+            const { getByText, tabsServiceSpy } = await setup(false, establishment);
 
-        expect(benchmarksLink).toBeTruthy();
-        expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+            const benchmarksLink = getByText('See how your pay, recruitment and retention compares against other workplaces');
+            const benchmarksCardText = getByText('There are 9 workplaces providing Day care and day services in Test LA.')
+            fireEvent.click(benchmarksLink);
+
+            expect(benchmarksLink).toBeTruthy();
+            expect(benchmarksCardText).toBeTruthy();
+            expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+          });
+
+          it('without comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
+            const { getByText, tabsServiceSpy } = await setup(false, establishment, false);
+
+            const benchmarksLink = getByText('See how you compare against other workplaces');
+            const benchmarksCardText = getByText(`Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`);
+            fireEvent.click(benchmarksLink);
+
+            expect(benchmarksLink).toBeTruthy();
+            expect(benchmarksCardText).toBeTruthy();
+            expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+          });
+        }
       });
 
-      it('should render the number of workplaces to compare with', async () => {
-        const { getByText } = await setup();
+      describe('Where establishment is not regulated', async () => {
+        const establishment = {
+          ...Establishment,
+          isRegulated: false,
+        }
 
-        const text = getByText('There are 9 workplaces providing adult social care in Test LA.');
+        it('should show a card with a link that takes you to the benchmarks tab', async () => {
+          const { getByText, tabsServiceSpy } = await setup(false, establishment);
 
-        expect(text).toBeTruthy();
+          const benchmarksLink = getByText('See how you compare against other workplaces');
+          const benchmarksCardText = getByText('There are 9 workplaces providing adult social care in Test LA.')
+          fireEvent.click(benchmarksLink);
+
+          expect(benchmarksLink).toBeTruthy();
+          expect(benchmarksCardText).toBeTruthy();
+          expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+        });
+
+        it('without comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
+          const { getByText, tabsServiceSpy } = await setup(false, establishment, false);
+
+          const benchmarksLink = getByText('See how you compare against other workplaces');
+          const benchmarksCardText = getByText(`Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`);
+          fireEvent.click(benchmarksLink);
+
+          expect(benchmarksLink).toBeTruthy();
+          expect(benchmarksCardText).toBeTruthy();
+          expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+        });
       });
     });
 
@@ -485,6 +536,7 @@ describe('NewHomeTabComponent', () => {
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
     });
   });
+
   describe('summary', () => {
     it('should show summary box', async () => {
       const { component, fixture, getByTestId } = await setup();
