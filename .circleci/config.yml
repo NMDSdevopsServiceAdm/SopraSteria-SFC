@@ -250,8 +250,7 @@ jobs:
           command: $(npm bin)/lhci autorun
   feature_flag:
     description: Checks for redundant feature flags
-      - configcat/scan:
-          config-id: $CONFIG_CAT_SDK_KEY
+      - configcat/scan:  $CONFIG_CAT_SDK_KEY
     steps:
       - checkout
       - attach_workspace:
