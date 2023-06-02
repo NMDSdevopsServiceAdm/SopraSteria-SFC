@@ -252,6 +252,10 @@ jobs:
     description: Checks for redundant feature flags
     docker:
       - image: configcat/cli:1.6.2
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
       or workspace_path for assets to deploy.
