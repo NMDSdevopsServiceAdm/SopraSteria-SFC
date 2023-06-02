@@ -262,7 +262,7 @@ jobs:
                       config-id:
                       if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
                        echo "Please, set the feature flag environment variables. Will stop now."
-                      exit 1
+                       exit 1
                       fi
 
   blue_green:
