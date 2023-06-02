@@ -254,9 +254,9 @@ jobs:
       - image: configcat/cli:1.6.2
     steps:
       - checkout
+      - configcat/scan:
       - attach_workspace:
           at: .
-      - configcat/scan:
       - run:
           command: |
             if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
