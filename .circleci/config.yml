@@ -254,8 +254,6 @@ jobs:
       - image: configcat/cli:1.6.2
     steps:
       - checkout
-      - attach_workspace:
-          at: .
       - configcat/scan:
           config-id: PASTE-YOUR-CONFIG-ID-HERE
   blue_green:
