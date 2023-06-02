@@ -7,6 +7,7 @@ export interface MainService {
   isCQC: boolean;
   other?: boolean;
   otherName?: string;
+  reportingID?: number;
 }
 
 export interface EmployerType {
