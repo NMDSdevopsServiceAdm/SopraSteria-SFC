@@ -83,7 +83,6 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
         .subscribe((data) => {
           if (data) {
             this.tilesData = data;
-            console.log(this.tilesData);
           }
         }),
     );
