@@ -250,11 +250,12 @@ jobs:
           command: $(npm bin)/lhci autorun
   feature_flag:
     description: Checks for redundant feature flags
+      - configcat/scan:
+          config-id: $CONFIG_CAT_SDK_KEY
     steps:
       - checkout
       - attach_workspace:
           at: .
-      - run: configcat/scan
 
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
