@@ -72,7 +72,7 @@
       <ng-container *ngIf="!viewBenchmarksByCategory">
         <app-download-pdf
           [linkUrl]="'/benchmarks.pdf'"
-          [linkTitle]="'Download pay benchmarks'"
+          [linkTitle]="downloadPayBenchmarksText"
           (downloadPDF)="downloadAsPDF()"
         ></app-download-pdf>
 
@@ -133,7 +133,7 @@
       <ng-container *ngIf="viewBenchmarksByCategory">
         <app-download-pdf
           [linkUrl]="'/benchmarks.pdf'"
-          [linkTitle]="'Download recruitment and retention benchmarks '"
+          [linkTitle]="downloadRecruitmentBenchmarksText"
           (downloadPDF)="downloadAsPDF()"
         ></app-download-pdf>
         <table class="govuk-table govuk-!-margin-top-2">
