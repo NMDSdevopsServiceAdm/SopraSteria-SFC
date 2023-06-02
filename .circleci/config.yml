@@ -250,8 +250,6 @@ jobs:
           command: $(npm bin)/lhci autorun
   feature_flag:
     description: Checks for redundant feature flags
-    docker:
-      - image: configcat/cli:1.6.2
     steps:
       - checkout
       - attach_workspace:
