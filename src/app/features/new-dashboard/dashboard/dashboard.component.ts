@@ -29,6 +29,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public tAndQsLastUpdated: string;
   public tilesData: BenchmarksResponse;
   public newDataAreaFlag: boolean;
+  public canSeeNewDataArea: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +45,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.id);
     this.authService.isOnAdminScreen = false;
     this.benchmarkDataSubscription();
     this.subscriptions.add(
@@ -81,6 +83,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
         .subscribe((data) => {
           if (data) {
             this.tilesData = data;
+            console.log(this.tilesData);
           }
         }),
     );
