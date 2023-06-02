@@ -479,248 +479,247 @@ jobs:
           folder: <<parameters.folder>>
 workflows:
   build-test-deploy:
-    main:
-      jobs:
-        - install:
-            filters:
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-        - test_frontend:
-            filters:
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-            requires:
-              - install
-        - test_backend:
-            filters:
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-            requires:
-              - install
-        - performance:
-            filters:
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-            requires:
-              - install
-        - feature_flag:
-            filters:
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-            requires:
-              - install
-        - blue_green:
-            name: blue_green_benchmarks
-            appname: sfcbenchmarks
-            env_prefix: SFC_BENCHMARKS
-            requires:
-              - prod_deploy
-            filters:
-              branches:
-                ignore: /.*/
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-            endpoint: https://api.cloud.service.gov.uk
-            org: dhsc-skills-for-care-nmds-sc-2
-            space: sandbox
-            manifest: manifest.benchmarks.yml
-            package: '.'
-            dark_subdomain: sfcbenchmarks-dark
-            dark_domain: cloudapps.digital
-            live_subdomain: sfcbenchmarks
-            live_domain: cloudapps.digital
-            workspace_path: .
-        - blue_green:
-            name: blue_green_staging
-            appname: sfcstaging
-            env_prefix: SFC_STAGING
-            requires:
-              - test_frontend
-              - test_backend
-              - performance
-            filters:
-              branches:
-                only:
-                  - test
-            endpoint: https://api.cloud.service.gov.uk
-            org: dhsc-skills-for-care-nmds-sc-2
-            space: sandbox
-            manifest: manifest.test.yml
-            package: '.'
-            dark_subdomain: sfcstaging-dark
-            dark_domain: cloudapps.digital
-            live_subdomain: sfcstaging
-            live_domain: cloudapps.digital
-            workspace_path: .
-            context: slack-secrets
-        - blue_green:
-            name: preprod_deploy
-            appname: sfcpreprod
-            env_prefix: SFC_PREPROD
-            requires:
-              - test_frontend
-              - test_backend
-              - performance
-            filters:
-              # ignore any commit on any branch by default
-              branches:
-                only:
-                  - live
-            endpoint: https://api.cloud.service.gov.uk
-            org: dhsc-skills-for-care-nmds-sc-2
-            space: production
-            manifest: manifest.preprod.yml
-            package: '.'
-            dark_subdomain: sfcpreprod-dark
-            dark_domain: cloudapps.digital
-            live_subdomain: sfcpreprod
-            live_domain: cloudapps.digital
-            workspace_path: .
-            context: slack-secrets
-        - attach_autoscale_policy:
-            appname: sfcpreprod
-            requires:
-              - preprod_deploy
-            filters:
-              # ignore any commit on any branch by default
-              branches:
-                only:
-                  - live
-              # only act on version tags
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-            endpoint: https://api.cloud.service.gov.uk
-            org: dhsc-skills-for-care-nmds-sc-2
-            space: production
-            workspace_path: .
-        - hold_prod:
-            type: approval
-            requires:
-              - test_frontend
-              - test_backend
-              - performance
-            filters:
-              # ignore any commit on any branch by default
-              branches:
-                ignore: /.*/
-              # only act on version tags
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-        - blue_green:
-            name: prod_deploy
-            appname: sfcprod
-            env_prefix: SFC_PROD
-            requires:
-              - hold_prod
-            filters:
-              # ignore any commit on any branch by default
-              branches:
-                ignore: /.*/
-              # only act on version tags
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-            endpoint: https://api.cloud.service.gov.uk
-            org: dhsc-skills-for-care-nmds-sc-2
-            space: production
-            manifest: manifest.prod.yml
-            package: '.'
-            dark_subdomain: sfcprod-dark
-            dark_domain: cloudapps.digital
-            live_subdomain: asc-wds
-            live_domain: skillsforcare.org.uk
-            workspace_path: .
-        # - attach_autoscale_policy:
-        #     appname: sfcprod
-        #     requires:
-        #       - prod_deploy
-        #     filters:
-        #       # ignore any commit on any branch by default
-        #       branches:
-        #         ignore: /.*/
-        #       # only act on version tags
-        #       tags:
-        #         only: /^v[0-9]+(\.[0-9]+)*$/
-        #     endpoint: https://api.cloud.service.gov.uk
-        #     org: dhsc-skills-for-care-nmds-sc-2
-        #     space: production
-        #     workspace_path: .
-        - serverless_deployment:
-            appname: sfcbenchmarks
-            folder: bulkUpload
-            context: serverless-deployment
-            requires:
-              - blue_green_benchmarks
-            filters:
-              branches:
-                only:
-                  - feat/benchmarks
-        - serverless_deployment:
-            appname: sfcstaging
-            folder: bulkUpload
-            context: serverless-deployment
-            requires:
-              - blue_green_staging
-            filters:
-              branches:
-                only:
-                  - test
-        - serverless_deployment:
-            appname: sfcpreprod
-            folder: bulkUpload
-            context: serverless-deployment
-            requires:
-              - preprod_deploy
-            filters:
-              branches:
-                only:
-                  - live
-        - serverless_deployment:
-            appname: sfcprod
-            folder: bulkUpload
-            context: serverless-deployment
-            requires:
-              - prod_deploy
-            filters:
-              # ignore any commit on any branch by default
-              branches:
-                ignore: /.*/
-              # only act on version tags
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-        - sentry_release:
-            requires:
-              - blue_green_benchmarks
-            filters:
-              branches:
-                ignore: /.*/
-              tags:
-                only:
-                  - /^v[0-9]+(\.[0-9]+)*$/
-            env: development
-        - sentry_release:
-            requires:
-              - blue_green_staging
-            filters:
-              branches:
-                only:
-                  - test
-            env: test
-        - sentry_release:
-            requires:
-              - preprod_deploy
-            filters:
-              branches:
-                only:
-                  - live
-            env: preproduction
-        - sentry_release:
-            requires:
-              - prod_deploy
-            filters:
-              # ignore any commit on any branch by default
-              branches:
-                ignore: /.*/
-              # only act on version tags
-              tags:
-                only: /^v[0-9]+(\.[0-9]+)*$/
-            env: production
+    jobs:
+      - install:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - test_frontend:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
+      - test_backend:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
+      - performance:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
+      - feature_flag:
+          filters:
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          requires:
+            - install
+      - blue_green:
+          name: blue_green_benchmarks
+          appname: sfcbenchmarks
+          env_prefix: SFC_BENCHMARKS
+          requires:
+            - prod_deploy
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: sandbox
+          manifest: manifest.benchmarks.yml
+          package: '.'
+          dark_subdomain: sfcbenchmarks-dark
+          dark_domain: cloudapps.digital
+          live_subdomain: sfcbenchmarks
+          live_domain: cloudapps.digital
+          workspace_path: .
+      - blue_green:
+          name: blue_green_staging
+          appname: sfcstaging
+          env_prefix: SFC_STAGING
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            branches:
+              only:
+                - test
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: sandbox
+          manifest: manifest.test.yml
+          package: '.'
+          dark_subdomain: sfcstaging-dark
+          dark_domain: cloudapps.digital
+          live_subdomain: sfcstaging
+          live_domain: cloudapps.digital
+          workspace_path: .
+          context: slack-secrets
+      - blue_green:
+          name: preprod_deploy
+          appname: sfcpreprod
+          env_prefix: SFC_PREPROD
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              only:
+                - live
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: production
+          manifest: manifest.preprod.yml
+          package: '.'
+          dark_subdomain: sfcpreprod-dark
+          dark_domain: cloudapps.digital
+          live_subdomain: sfcpreprod
+          live_domain: cloudapps.digital
+          workspace_path: .
+          context: slack-secrets
+      - attach_autoscale_policy:
+          appname: sfcpreprod
+          requires:
+            - preprod_deploy
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              only:
+                - live
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: production
+          workspace_path: .
+      - hold_prod:
+          type: approval
+          requires:
+            - test_frontend
+            - test_backend
+            - performance
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - blue_green:
+          name: prod_deploy
+          appname: sfcprod
+          env_prefix: SFC_PROD
+          requires:
+            - hold_prod
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          endpoint: https://api.cloud.service.gov.uk
+          org: dhsc-skills-for-care-nmds-sc-2
+          space: production
+          manifest: manifest.prod.yml
+          package: '.'
+          dark_subdomain: sfcprod-dark
+          dark_domain: cloudapps.digital
+          live_subdomain: asc-wds
+          live_domain: skillsforcare.org.uk
+          workspace_path: .
+      # - attach_autoscale_policy:
+      #     appname: sfcprod
+      #     requires:
+      #       - prod_deploy
+      #     filters:
+      #       # ignore any commit on any branch by default
+      #       branches:
+      #         ignore: /.*/
+      #       # only act on version tags
+      #       tags:
+      #         only: /^v[0-9]+(\.[0-9]+)*$/
+      #     endpoint: https://api.cloud.service.gov.uk
+      #     org: dhsc-skills-for-care-nmds-sc-2
+      #     space: production
+      #     workspace_path: .
+      - serverless_deployment:
+          appname: sfcbenchmarks
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - blue_green_benchmarks
+          filters:
+            branches:
+              only:
+                - feat/benchmarks
+      - serverless_deployment:
+          appname: sfcstaging
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - blue_green_staging
+          filters:
+            branches:
+              only:
+                - test
+      - serverless_deployment:
+          appname: sfcpreprod
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - preprod_deploy
+          filters:
+            branches:
+              only:
+                - live
+      - serverless_deployment:
+          appname: sfcprod
+          folder: bulkUpload
+          context: serverless-deployment
+          requires:
+            - prod_deploy
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+      - sentry_release:
+          requires:
+            - blue_green_benchmarks
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only:
+                - /^v[0-9]+(\.[0-9]+)*$/
+          env: development
+      - sentry_release:
+          requires:
+            - blue_green_staging
+          filters:
+            branches:
+              only:
+                - test
+          env: test
+      - sentry_release:
+          requires:
+            - preprod_deploy
+          filters:
+            branches:
+              only:
+                - live
+          env: preproduction
+      - sentry_release:
+          requires:
+            - prod_deploy
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*$/
+          env: production
