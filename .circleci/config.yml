@@ -249,7 +249,7 @@ jobs:
       - run:
           command: $(npm bin)/lhci autorun
   feature_flag:
-    description: |
+    description:  |
         Checks for redundant feature flags
       - configcat/scan:
            config-id:
