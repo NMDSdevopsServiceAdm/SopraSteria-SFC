@@ -42,7 +42,7 @@ module.exports = {
             allowNull: false,
           },
           InRoleFor12MonthsPercentage: {
-            type: Sequelize.DataTypes.DECIMAL(3, 2),
+            type: Sequelize.DataTypes.DECIMAL(11, 10),
             allowNull: false,
           },
           ...column,
