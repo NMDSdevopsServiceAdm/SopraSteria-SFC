@@ -3,6 +3,11 @@ export class FormatUtil {
     return Math.round(data * 100) + '%';
   }
   public static formatMoney(data) {
+    if (data.toString().length > 4) {
+      return '£' + Number(data.toFixed(0)).toLocaleString();
+    } else if (data === 0 || !data) {
+      '£' + (Number(data) / 100).toFixed(2);
+    }
     return '£' + (Number(data) / 100).toFixed(2);
   }
 

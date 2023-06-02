@@ -24,4 +24,22 @@ describe('FormatUtil', () => {
       expect(formatSingleDigit).toEqual('09');
     });
   });
+
+  fdescribe('formatMoney', () => {
+    it('should show decimals for number with less than 4 digits', async () => {
+      const formatMoney = FormatUtil.formatMoney(899);
+
+      expect(formatMoney).toEqual('£8.99');
+    });
+    it('should show comma for number with more than 4 digits', async () => {
+      const formatMoney = FormatUtil.formatMoney(30000);
+
+      expect(formatMoney).toEqual('£30,000');
+    });
+    it('should show decimals for number with less than 4 digits', async () => {
+      const formatMoney = FormatUtil.formatMoney(0);
+
+      expect(formatMoney).toEqual('£0.00');
+    });
+  });
 });
