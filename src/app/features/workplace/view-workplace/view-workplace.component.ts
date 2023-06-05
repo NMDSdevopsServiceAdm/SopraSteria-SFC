@@ -14,6 +14,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -37,6 +38,8 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
   private showBanner = false;
+  public newDataAreaFlag: boolean;
+  public canSeeNewDataArea: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -49,6 +52,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private workerService: WorkerService,
     private route: ActivatedRoute,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
@@ -62,6 +66,10 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
+    this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
+    this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+    console.log(this.newDataAreaFlag);
+    console.log(this.canSeeNewDataArea);
 
     if (this.workplace && this.workplace.locationId) {
       this.subscriptions.add(

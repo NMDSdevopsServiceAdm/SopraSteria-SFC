@@ -57,9 +57,24 @@
           [trainingCounts]="trainingCounts"
         ></app-training-and-qualifications-tab>
       </app-tab>
+
       <app-tab [title]="'Benchmarks'">
-        <app-benchmarks-tab class="asc-benchmarks-tab" [workplace]="workplace"></app-benchmarks-tab>
+        <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
+          <app-data-area-tab
+            class="asc-benchmarks-tab"
+            [workplace]="workplace"
+            data-testid="data-area-tab"
+          ></app-data-area-tab>
+        </ng-container>
+        <ng-template #benchmarksTab>
+          <app-benchmarks-tab
+            class="asc-benchmarks-tab"
+            [workplace]="workplace"
+            data-testid="benchmarks-tab"
+          ></app-benchmarks-tab>
+        </ng-template>
       </app-tab>
+
       <app-tab *ngIf="canViewListOfUsers" [title]="'Workplace users'" [alert]="false">
         <app-user-accounts-summary [workplace]="workplace" [showSecondUserBanner]="false"></app-user-accounts-summary>
       </app-tab>

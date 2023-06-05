@@ -40,11 +40,7 @@
 
       <app-tab *ngIf="workplace" [title]="'Benchmarks'">
         <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
-          <app-data-area-tab
-            [workplace]="workplace"
-            [tilesData]="tilesData"
-            data-testid="data-area-tab"
-          ></app-data-area-tab>
+          <app-data-area-tab [workplace]="workplace" data-testid="data-area-tab"></app-data-area-tab>
         </ng-container>
         <ng-template #benchmarksTab>
           <app-benchmarks-tab
