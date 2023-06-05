@@ -38,6 +38,21 @@ SELECT "notificationUid"
     WHERE "establishmentUid" = :establishmentUid) as notificationCount;
     `;
 
+const selectEstablishmentNotificationsNoUsers = (order) => `
+  SELECT "notificationUid", type, "establishmentUid", created, "isViewed", "createdByUserUID"
+      FROM cqc."NotificationsEstablishment"
+      WHERE "establishmentUid" = :establishmentUid
+    ORDER BY ${order}
+    LIMIT :limit
+    OFFSET :offset;
+  `;
+
+const getEstablishmentNotificationNoUsersCount = `
+SELECT COUNT("notificationUid")
+  FROM cqc."NotificationsEstablishment"
+  WHERE "establishmentUid" = :establishmentUid;
+`;
+
 exports.getListByUser = async ({ userUid, limit, offset }) =>
   db.query(getListQuery, {
     replacements: {
@@ -128,23 +143,44 @@ const updateNotificationQuery = `
 exports.selectNotificationByEstablishment = async (params) => {
   const order = params.order ? params.order : 'created ASC';
 
-  const notifications = await db.query(selectEstablishmentNotifications(order), {
-    replacements: {
-      establishmentUid: params.establishmentUid,
-      userUids: params.userUids,
-      limit: Number.isInteger(params.limit) && params.limit > 0 ? params.limit : null,
-      offset: Number.isInteger(params.offset) && params.offset > 0 ? params.offset : 0,
-    },
-    type: db.QueryTypes.SELECT,
-  });
+  let count;
+  let notifications;
 
-  const count = await db.query(getEstablishmentNotificationCount, {
-    replacements: {
-      establishmentUid: params.establishmentUid,
-      userUids: params.userUids,
-    },
-    type: db.QueryTypes.SELECT,
-  });
+  if (params.userUids.length > 0) {
+    notifications = await db.query(selectEstablishmentNotifications(order), {
+      replacements: {
+        establishmentUid: params.establishmentUid,
+        userUids: params.userUids,
+        limit: Number.isInteger(params.limit) && params.limit > 0 ? params.limit : null,
+        offset: Number.isInteger(params.offset) && params.offset > 0 ? params.offset : 0,
+      },
+      type: db.QueryTypes.SELECT,
+    });
+
+    count = await db.query(getEstablishmentNotificationCount, {
+      replacements: {
+        establishmentUid: params.establishmentUid,
+        userUids: params.userUids,
+      },
+      type: db.QueryTypes.SELECT,
+    });
+  } else {
+    notifications = await db.query(selectEstablishmentNotificationsNoUsers(order), {
+      replacements: {
+        establishmentUid: params.establishmentUid,
+        limit: Number.isInteger(params.limit) && params.limit > 0 ? params.limit : null,
+        offset: Number.isInteger(params.offset) && params.offset > 0 ? params.offset : 0,
+      },
+      type: db.QueryTypes.SELECT,
+    });
+
+    count = await db.query(getEstablishmentNotificationNoUsersCount, {
+      replacements: {
+        establishmentUid: params.establishmentUid,
+      },
+      type: db.QueryTypes.SELECT,
+    });
+  }
 
   return {
     notifications: notifications,
