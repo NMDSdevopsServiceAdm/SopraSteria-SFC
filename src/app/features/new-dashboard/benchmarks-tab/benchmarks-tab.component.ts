@@ -35,7 +35,6 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.tilesData = this.benchmarksService.benchmarksData;
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
-    console.log(this.tilesData);
   }
 
   public async downloadAsPDF() {
