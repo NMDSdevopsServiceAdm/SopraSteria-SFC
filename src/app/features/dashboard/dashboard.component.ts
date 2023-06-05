@@ -37,6 +37,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private showBanner = false;
   public wdfNewDesignFlag: boolean;
   public tAndQsLastUpdated: string;
+  public newDataAreaFlag: boolean;
+  public canSeeNewDataArea: boolean;
 
   constructor(
     private authService: AuthService,
@@ -58,6 +60,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
     this.establishmentService.setInStaffRecruitmentFlow(false);
+    this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
+    this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
 
     if (this.workplace) {
       this.getPermissions();

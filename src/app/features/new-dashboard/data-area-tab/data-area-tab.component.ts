@@ -17,6 +17,7 @@ import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-t
 export class DataAreaTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() tilesData: BenchmarksResponse;
+  @Input() newDashboard: Boolean;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
 
   public canViewFullBenchmarks: boolean;
@@ -29,7 +30,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public viewBenchmarksPosition = false;
   public downloadPayBenchmarksText = 'Download pay benchmarks';
   public downloadRecruitmentBenchmarksText = 'Download recruitment and retention benchmarks';
-
 
   constructor(
     private permissionsService: PermissionsService,
