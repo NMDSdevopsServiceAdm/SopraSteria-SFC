@@ -15,8 +15,8 @@
   <div class="govuk-grid-column-one-half-from-desktop">
     <h2 class="govuk-heading-m">
       {{ metricContent['Pay'].title
-      }}<span *ngIf="tilesData.pay.workplaceValue.hasValue"
-        >: {{ tilesData.pay.workplaceValue.value | formatMoney }}</span
+      }}<span *ngIf="tilesData.careWorkerPay.workplaceValue.hasValue"
+        >: {{ tilesData.careWorkerPay.workplaceValue.value | formatMoney }}</span
       >
     </h2>
   </div>
@@ -27,7 +27,11 @@
   </div>
 </div>
 <p>{{ metricContent['Pay'].description }}</p>
-<app-gauge *ngIf="rankings.pay" [maxRank]="rankings.pay.maxRank" [currentRank]="rankings.pay.currentRank">
+<app-gauge
+  *ngIf="rankings.careWorkerPay"
+  [maxRank]="rankings.careWorkerPay.maxRank"
+  [currentRank]="rankings.careWorkerPay.currentRank"
+>
   <ng-container your-rank>
     <app-ranking-content *ngIf="payContent" [content]="payContent"></app-ranking-content>
   </ng-container>
@@ -39,8 +43,8 @@
   <div class="govuk-grid-column-one-half-from-desktop">
     <h2 class="govuk-heading-m">
       {{ metricContent['Turnover'].title
-      }}<span *ngIf="tilesData.turnover.workplaceValue.hasValue"
-        >: {{ tilesData.turnover.workplaceValue.value | formatPercent }}</span
+      }}<span *ngIf="tilesData.turnoverRate.workplaceValue.hasValue"
+        >: {{ tilesData.turnoverRate.workplaceValue.value | formatPercent }}</span
       >
     </h2>
   </div>
@@ -52,9 +56,9 @@
 </div>
 <p>{{ metricContent['Turnover'].description }}</p>
 <app-gauge
-  *ngIf="rankings.turnover"
-  [maxRank]="rankings.turnover.maxRank"
-  [currentRank]="rankings.turnover.currentRank"
+  *ngIf="rankings.turnoverRate"
+  [maxRank]="rankings.turnoverRate.maxRank"
+  [currentRank]="rankings.turnoverRate.currentRank"
 >
   <ng-container your-rank>
     <app-ranking-content *ngIf="turnoverContent" [content]="turnoverContent"></app-ranking-content>

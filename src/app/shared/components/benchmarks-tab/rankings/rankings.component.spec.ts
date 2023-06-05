@@ -144,7 +144,7 @@ describe('BenchmarksRankingsComponent', () => {
   it('should show tile info for pay in the title', async () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
-    fixture.componentInstance.tilesData.pay = payTileData;
+    fixture.componentInstance.tilesData.careWorkerPay = payTileData;
     fixture.detectChanges();
 
     const content = getByText(`: ${FormatUtil.formatMoney(payTileData.workplaceValue.value)}`);
@@ -154,7 +154,7 @@ describe('BenchmarksRankingsComponent', () => {
   it('should show tile info for turnover in the title', async () => {
     const { fixture, getByText } = await getBenchmarksRankingsComponent();
 
-    fixture.componentInstance.tilesData.turnover = turnoverTileData;
+    fixture.componentInstance.tilesData.turnoverRate = turnoverTileData;
     fixture.detectChanges();
 
     const content = getByText(`: ${FormatUtil.formatPercent(turnoverTileData.workplaceValue.value)}`);
@@ -201,8 +201,8 @@ describe('BenchmarksRankingsComponent', () => {
 
       const rank = parseInt(content.split('Lowest')[0]);
 
-      maxRanks.push(fixture.componentInstance.rankings.pay.maxRank);
-      maxRanks.push(fixture.componentInstance.rankings.turnover.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.careWorkerPay.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.turnoverRate.maxRank);
       maxRanks.push(fixture.componentInstance.rankings.sickness.maxRank);
       maxRanks.push(fixture.componentInstance.rankings.qualifications.maxRank);
 
@@ -220,8 +220,8 @@ describe('BenchmarksRankingsComponent', () => {
 
       const rank = parseInt(content);
 
-      currentRanks.push(fixture.componentInstance.rankings.pay.currentRank);
-      currentRanks.push(fixture.componentInstance.rankings.turnover.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.careWorkerPay.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.turnoverRate.currentRank);
       currentRanks.push(fixture.componentInstance.rankings.sickness.currentRank);
       currentRanks.push(fixture.componentInstance.rankings.qualifications.currentRank);
 

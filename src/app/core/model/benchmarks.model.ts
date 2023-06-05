@@ -1,10 +1,10 @@
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 export interface BenchmarksResponse {
-  pay?: Tile;
   sickness?: Tile;
   qualifications?: Tile;
-  turnover?: Tile;
+  turnoverRate?: Tile;
+  vacancyRate?: Tile;
   careWorkerPay?: Tile;
   seniorCareWorkerPay?: Tile;
   registeredNursePay?: Tile;
@@ -39,10 +39,10 @@ export interface RankingsResponse {
 }
 
 export interface AllRankingsResponse {
-  pay: RankingsResponse;
+  careWorkerPay: RankingsResponse;
   qualifications: RankingsResponse;
   sickness: RankingsResponse;
-  turnover: RankingsResponse;
+  turnoverRate: RankingsResponse;
 }
 
 export enum Metric {
