@@ -152,6 +152,7 @@ orbs:
   node: circleci/node@5.0.0
   slack: circleci/slack@4.4.4
   codecov: codecov/codecov@1.0.2
+  configcat: configcat/scan-repository@1.5.0
 
 
 jobs:
@@ -247,20 +248,12 @@ jobs:
             - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
           command: $(npm bin)/lhci autorun
-  feature_flag:
-    description: Checks for redundant feature flags
-    docker:
-      - image: configcat/cli:1.6.2
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          command: |
-            if [[ -z "${CONFIG_CAT_SDK_KEY}" ]]; then
-              echo "Please, set the feature flag environment variables. Will stop now."
-              exit 1
-            fi
+  # feature_flag:
+  #   description: Checks for redundant feature flags
+  #   docker:
+  #     - image: configcat/cli:1.6.2
+  #   parameters:
+  #     config-id: $CONFIG_CAT_SDK_KEY
 
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
@@ -506,7 +499,8 @@ workflows:
               only: /^v[0-9]+(\.[0-9]+)*$/
           requires:
             - install
-      - feature_flag:
+      - configcat/scan:
+          config-id: <CONFIG_CAT_SDK_KEY>
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
