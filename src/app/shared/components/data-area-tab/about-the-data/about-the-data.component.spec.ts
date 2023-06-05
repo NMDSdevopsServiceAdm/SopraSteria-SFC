@@ -8,15 +8,15 @@ import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
 import { within } from '@testing-library/angular';
 
 import { Establishment as MockEstablishment } from '../../../../../mockdata/establishment';
 import { DataAreaTabModule } from '../data-area-tab.module';
+import { DataAreaAboutTheDataComponent } from './about-the-data.component';
 
 describe('BenchmarksAboutTheDataComponent', () => {
-  let component: BenchmarksAboutTheDataComponent;
-  let fixture: ComponentFixture<BenchmarksAboutTheDataComponent>;
+  let component: DataAreaAboutTheDataComponent;
+  let fixture: ComponentFixture<DataAreaAboutTheDataComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,7 +38,7 @@ describe('BenchmarksAboutTheDataComponent', () => {
         { provide: PermissionsService, useClass: MockPermissionsService },
       ],
     }).compileComponents();
-    fixture = TestBed.createComponent(BenchmarksAboutTheDataComponent);
+    fixture = TestBed.createComponent(DataAreaAboutTheDataComponent);
     component = fixture.componentInstance;
     component.workplace = MockEstablishment as Establishment;
     fixture.detectChanges();
