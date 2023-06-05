@@ -1,10 +1,14 @@
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 export interface BenchmarksResponse {
-  pay?: Tile;
   sickness?: Tile;
   qualifications?: Tile;
-  turnover?: Tile;
+  turnoverRate?: Tile;
+  vacancyRate?: Tile;
+  careWorkerPay?: Tile;
+  seniorCareWorkerPay?: Tile;
+  registeredNursePay?: Tile;
+  registeredManagerPay?: Tile;
   meta: Meta;
 }
 export interface Meta {
@@ -17,7 +21,7 @@ export interface Tile {
   workplaceValue: BenchmarkValue;
   comparisonGroup: BenchmarkValue;
   goodCqc: BenchmarkValue;
-  lowTurnover: BenchmarkValue;
+  lowTurnover?: BenchmarkValue;
   workplaces?: number;
   staff?: number;
 }
@@ -35,10 +39,10 @@ export interface RankingsResponse {
 }
 
 export interface AllRankingsResponse {
-  pay: RankingsResponse;
+  careWorkerPay: RankingsResponse;
   qualifications: RankingsResponse;
   sickness: RankingsResponse;
-  turnover: RankingsResponse;
+  turnoverRate: RankingsResponse;
 }
 
 export enum Metric {

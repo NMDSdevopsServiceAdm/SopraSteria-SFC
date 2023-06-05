@@ -892,9 +892,9 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.turnoverData = function (establishmentId) {
+  Establishment.turnoverAndVacanciesData = function (establishmentId) {
     return this.findByPk(establishmentId, {
-      attributes: ['id', 'NumberOfStaffValue', 'LeaversValue'],
+      attributes: ['id', 'NumberOfStaffValue', 'LeaversValue', 'VacanciesValue'],
     });
   };
 

@@ -50,10 +50,10 @@ describe('HowDidYouHearAboutComponent', () => {
   it('should check the Other checkbox', async () => {
     const component = await setup();
 
-    const checkbox = component.fixture.nativeElement.querySelector(`input[name="howDidYouHearAbout-6"]`);
+    const checkbox = component.fixture.nativeElement.querySelector(`input[name="howDidYouHearAbout-8"]`);
     fireEvent.click(checkbox);
 
-    expect(checkbox.checked).toBeTruthy;
+    expect(checkbox.checked).toBeTruthy();
     expect(checkbox.value).toEqual('Other');
   });
 
