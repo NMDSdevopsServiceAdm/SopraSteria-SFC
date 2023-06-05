@@ -68,8 +68,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
-    console.log(this.newDataAreaFlag);
-    console.log(this.canSeeNewDataArea);
 
     if (this.workplace && this.workplace.locationId) {
       this.subscriptions.add(
