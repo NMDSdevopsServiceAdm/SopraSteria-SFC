@@ -500,7 +500,7 @@ workflows:
           requires:
             - install
       - configcat/scan:
-          config-id: 'Ag_ZCDm6FkSAA5-xhxheOA/KeZCUBHikUSw7OXsthDzLQ'
+          config-id: '08d90f02-bfc2-4cef-85ab-f1ed6f14b08c'
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
