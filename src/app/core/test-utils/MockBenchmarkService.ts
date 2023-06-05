@@ -8,7 +8,7 @@ const { build, fake } = require('@jackfranklin/test-data-bot');
 
 const benchmarksResponseBuilder = build('BenchmarksResponse', {
   fields: {
-    pay: {
+    careWorkerPay: {
       workplaceValue: {
         value: 0,
         hasValue: false,
@@ -38,7 +38,7 @@ const benchmarksResponseBuilder = build('BenchmarksResponse', {
         hasValue: false,
       },
     },
-    turnover: {
+    turnoverRate: {
       workplaceValue: {
         value: 0,
         hasValue: false,
@@ -56,13 +56,13 @@ const benchmarksResponseBuilder = build('BenchmarksResponse', {
 });
 const allRankingsResponseBuilder = build('AllRankingsResponse', {
   fields: {
-    pay: {
+    careWorkerPay: {
       currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
       maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
       hasValue: true,
       stateMessage: '',
     },
-    turnover: {
+    turnoverRate: {
       currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
       maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
       hasValue: true,

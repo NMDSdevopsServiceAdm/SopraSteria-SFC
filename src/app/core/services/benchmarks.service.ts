@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class BenchmarksService {
   private returnToURL: URLStructure;
-
+  private _benchmarksData$: BenchmarksResponse = null;
   constructor(private http: HttpClient) {}
 
   public get returnTo(): URLStructure {
@@ -18,6 +18,14 @@ export class BenchmarksService {
 
   public setReturnTo(returnTo: URLStructure): void {
     this.returnToURL = returnTo;
+  }
+
+  public get benchmarksData(): BenchmarksResponse {
+    return this._benchmarksData$;
+  }
+
+  public set benchmarksData(benchmarksData) {
+    this._benchmarksData$ = benchmarksData;
   }
 
   postBenchmarkTabUsage(establishmentId: number) {

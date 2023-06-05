@@ -5,10 +5,10 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -27,6 +27,8 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public staffLastUpdatedDate: string;
   public tAndQsLastUpdated: string;
   public tilesData: BenchmarksResponse;
+  public newDataAreaFlag: boolean;
+  public canSeeNewDataArea: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,13 +37,15 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private authService: AuthService,
     private cd: ChangeDetectorRef,
-    private benchmarksService: BenchmarksService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
+    this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.workplace = this.establishmentService.primaryWorkplace;
+    this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+
     this.authService.isOnAdminScreen = false;
-    this.benchmarkDataSubscription();
     this.subscriptions.add(
       this.tabsService.selectedTab$.subscribe((selectedTab) => {
         this.selectedTab = selectedTab;
@@ -68,18 +72,6 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     this.trainingCounts = trainingCounts;
     this.tAndQsLastUpdated = tAndQsLastUpdated;
     workers.length > 0 && this.getStaffLastUpdatedDate();
-  }
-
-  private benchmarkDataSubscription(): void {
-    this.subscriptions.add(
-      this.benchmarksService
-        .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
-        .subscribe((data) => {
-          if (data) {
-            this.tilesData = data;
-          }
-        }),
-    );
   }
 
   private getStaffLastUpdatedDate(): void {
