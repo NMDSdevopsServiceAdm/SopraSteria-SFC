@@ -248,12 +248,6 @@ jobs:
             - node-deps-v2-{{ checksum "package-lock.json" }}
       - run:
           command: $(npm bin)/lhci autorun
-  # feature_flag:
-  #   description: Checks for redundant feature flags
-  #   docker:
-  #     - image: configcat/cli:1.6.2
-  #   parameters:
-  #     config-id: $CONFIG_CAT_SDK_KEY
 
   blue_green:
     description: Execute a blue/green deploy  in a single job. Expects either build_steps
