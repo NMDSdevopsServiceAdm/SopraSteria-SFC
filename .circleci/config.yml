@@ -500,7 +500,7 @@ workflows:
           requires:
             - install
       - configcat/scan:
-          config-id: CONFIG_CAT_SDK_KEY
+          config-id: 'Ag_ZCDm6FkSAA5-xhxheOA/KeZCUBHikUSw7OXsthDzLQ'
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
