@@ -500,7 +500,7 @@ workflows:
           requires:
             - install
       - configcat/scan:
-          config-id: CONFIGCAT_ID
+          config-id: $CONFIGCAT_ID
           filters:
             tags:
               only: /^v[0-9]+(\.[0-9]+)*$/
