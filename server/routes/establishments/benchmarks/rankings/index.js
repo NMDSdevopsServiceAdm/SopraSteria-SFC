@@ -67,7 +67,7 @@ const getComparisonGroupAndCalculateRanking = async function (
   }
 
   const maxRank = comparisonGroupRankings.length + 1;
-  const metric = await getMetricCallback(establishmentId);
+  const metric = await getMetricCallback({ establishmentId });
   if (metric.stateMessage) {
     return {
       maxRank,
