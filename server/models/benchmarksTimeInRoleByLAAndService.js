@@ -32,7 +32,7 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      tableName: '"BenchmarksTimeInRoleByLAAndServicde"',
+      tableName: '"BenchmarksTimeInRoleByLAAndService"',
       schema: 'cqc',
       timestamps: false,
     },

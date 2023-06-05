@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
@@ -1221,6 +1222,18 @@ module.exports = function (sequelize, DataTypes) {
         establishmentFk: establishmentId,
       },
       raw: true,
+    });
+  };
+
+  Worker.yearOrMoreInRoleCount = async function (establishmentId) {
+    const yearAgo = dayjs(new Date()).subtract(1, 'year');
+    return this.count({
+      where: {
+        establishmentFk: establishmentId,
+        MainJobStartDateValue: {
+          [Op.lt]: yearAgo,
+        },
+      },
     });
   };
 
