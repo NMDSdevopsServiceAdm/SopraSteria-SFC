@@ -689,8 +689,8 @@ describe('/benchmarks', () => {
     });
 
     it('should return meta data with the last updated but without the staff, workplaces and local authority present if no comparison group', async () => {
-      sinon.stub(models.benchmarksEstablishmentsAndWorkers, 'getComparisonData').returns({});
-      sinon.stub(models.benchmarksEstablishmentsAndWorkersGoodOutstanding, 'getComparisonData').returns({});
+      sinon.stub(models.benchmarksEstablishmentsAndWorkers, 'getComparisonData').returns(null);
+      sinon.stub(models.benchmarksEstablishmentsAndWorkersGoodOutstanding, 'getComparisonData').returns(null);
       const date = new Date();
       sinon.stub(models.dataImports, 'benchmarksLastUpdated').returns(date);
 
@@ -720,7 +720,6 @@ describe('/benchmarks', () => {
       req = httpMocks.createRequest(request);
       res = httpMocks.createResponse();
 
-      sinon.stub(models.establishment, 'findbyId').returns({ MainServiceFKValue: 8 });
       sinon
         .stub(benchmarksService, 'getComparisonData')
         .onFirstCall()
@@ -762,6 +761,7 @@ describe('/benchmarks', () => {
     });
 
     it('should return 200 and the data when successfully getting the benchmarks data', async () => {
+      sinon.stub(models.establishment, 'findbyId').returns({ MainServiceFKValue: 8 });
       sinon
         .stub(benchmarksService, 'getPay')
         .onFirstCall()
@@ -849,6 +849,8 @@ describe('/benchmarks', () => {
     });
 
     it('should return 500 when an error is thrown', async () => {
+      sinon.stub(models.establishment, 'findbyId').returns({ MainServiceFKValue: 8 });
+
       sinon.stub(benchmarksService, 'getPay').throws();
       await viewBenchmarks(req, res);
 
