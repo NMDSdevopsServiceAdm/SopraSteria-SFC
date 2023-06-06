@@ -42,7 +42,7 @@
         [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
         (handleViewToggle)="handleViewComparisonGroups($event)"
         [mainServiceName]="workplace.mainService.name"
-        [localAuthorityLocation]=""
+        [localAuthorityLocation]="tilesData.meta.localAuthority"
       >
       </app-benchmarks-select-comparison-group>
     </div>
