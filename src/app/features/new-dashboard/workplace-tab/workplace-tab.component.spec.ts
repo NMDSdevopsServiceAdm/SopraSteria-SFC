@@ -4,27 +4,27 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
+import { Roles } from '@core/model/roles.enum';
+import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { WindowToken } from '@core/services/window';
+import { WindowRef } from '@core/services/window.ref';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
+import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewWorkplaceTabComponent } from './workplace-tab.component';
-import { MockUserService } from '@core/test-utils/MockUserService';
-import { WindowRef } from '@core/services/window.ref';
-import { AuthService } from '@core/services/auth.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { WindowToken } from '@core/services/window';
-import { Roles } from '@core/model/roles.enum';
 
 const MockWindow = {
   dataLayer: {

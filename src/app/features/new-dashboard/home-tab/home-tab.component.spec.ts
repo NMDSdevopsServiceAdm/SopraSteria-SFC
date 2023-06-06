@@ -13,6 +13,7 @@ import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
+import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -25,10 +26,9 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
+import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
 import { SummarySectionComponent } from './summary-section/summary-section.component';
-import { WindowToken } from '@core/services/window';
 
 const MockWindow = {
   dataLayer: {

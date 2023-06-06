@@ -14,6 +14,7 @@ import { MissingMandatoryTrainingComponent } from '@features/training-and-qualif
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/check-cqc-details.component';
+import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
@@ -41,6 +42,8 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
 import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
 import { NewTabsComponent } from './components/new-tabs/new-tabs.component';
+import { WDFTabComponent } from './components/new-wdf-tabs/new-wdf-tab.component';
+import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-summary/wdf-workplace-summary.component';
 import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/workplace-summary.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
@@ -107,8 +110,6 @@ import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { WDFTabComponent } from './components/new-wdf-tabs/new-wdf-tab.component';
-import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-summary/wdf-workplace-summary.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -219,6 +220,7 @@ import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-sum
     LinkWithArrowComponent,
     WDFTabComponent,
     WDFWorkplaceSummaryComponent,
+    NewDashboardHeaderComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -325,6 +327,7 @@ import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-sum
     LinkWithArrowComponent,
     WDFTabComponent,
     WDFWorkplaceSummaryComponent,
+    NewDashboardHeaderComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
