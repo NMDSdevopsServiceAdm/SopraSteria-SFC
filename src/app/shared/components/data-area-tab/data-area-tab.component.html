@@ -1,9 +1,9 @@
 <ng-container *ngIf="newDashboard">
-  <app-data-area-header
+  <app-new-dashboard-header
     [tab]="'benchmarks'"
     [updatedDate]="tilesData?.meta.lastUpdated"
     data-html2canvas-ignore
-  ></app-data-area-header>
+  ></app-new-dashboard-header>
 </ng-container>
 
 <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">

@@ -9,7 +9,6 @@ import { BenchmarksSelectComparisonGroupsComponent } from '../benchmarks-select-
 import { BenchmarksSelectViewPanelComponent } from '../benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.component';
 import { DataAreaBarchartComponent } from './data-area-barchart/data-area-barchart.component';
-import { DataAreaHeaderComponent } from './data-area-header/data-area-header.component';
 import { DataAreaRankingComponent } from './data-area-ranking/data-area-ranking.component';
 import { DataAreaRoutingModule } from './data-area-routing.module';
 import { DataAreaTabComponent } from './data-area-tab.component';
@@ -27,7 +26,6 @@ import { DownloadPdfComponent } from './download-pdf/download-pdf.component';
     BenchmarksSelectComparisonGroupsComponent,
     DataAreaUsefulLinkComponent,
     DownloadPdfComponent,
-    DataAreaHeaderComponent,
   ],
   exports: [
     DataAreaAboutTheDataComponent,
@@ -38,7 +36,6 @@ import { DownloadPdfComponent } from './download-pdf/download-pdf.component';
     BenchmarksSelectComparisonGroupsComponent,
     DataAreaUsefulLinkComponent,
     DownloadPdfComponent,
-    DataAreaHeaderComponent,
   ],
   providers: [],
 })
