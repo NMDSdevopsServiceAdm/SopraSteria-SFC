@@ -113,6 +113,33 @@ const vacanciesAndLeavers = async (establishmentId, leaversOrVacancies) => {
   return { noOfProperty, permTempCount };
 };
 
+const getTimeInRole = async function ({ establishmentId }) {
+  const noOfWorkersYearInRole = await models.worker.yearOrMoreInRoleCount(establishmentId);
+  const permTempCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
+
+  if (!permTempCount) {
+    return {
+      stateMessage: 'no-perm-or-temp',
+    };
+  }
+
+  if (!noOfWorkersYearInRole) {
+    return {
+      value: 0,
+    };
+  }
+
+  const percentOfWorkersInJobRoleForYear = noOfWorkersYearInRole / permTempCount;
+
+  if (percentOfWorkersInJobRoleForYear > 1) {
+    return {
+      stateMessage: 'incorrect-time-in-role',
+    };
+  }
+
+  return { value: percentOfWorkersInJobRoleForYear };
+};
+
 const checkStaffNumbers = async function (establishmentId, establishment, leaversOrVacancies) {
   const workerCount = await models.worker.countForEstablishment(establishmentId);
 
@@ -185,6 +212,7 @@ module.exports = {
   getSickness,
   getTurnover,
   getVacancies,
+  getTimeInRole,
   getComparisonGroupRankings,
   getComparisonData,
 };

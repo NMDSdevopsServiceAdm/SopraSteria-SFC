@@ -49,6 +49,10 @@ const vacancies = async (params, benchmarkComparisonGroup) => {
   return await buildTile(params, benchmarkComparisonGroup, 'vacancies', benchmarksService.getVacancies);
 };
 
+const timeInRole = async (params, benchmarkComparisonGroup) => {
+  return await buildTile(params, benchmarkComparisonGroup, 'timeInRole', benchmarksService.getTimeInRole);
+};
+
 const buildTile = async (params, benchmarkComparisonGroup, key, getMetricCallback) => {
   const { value, stateMessage } = await getMetricCallback(params);
   const hasValue = !stateMessage || stateMessage.length === 0;
@@ -166,6 +170,22 @@ const sicknessBenchmarks = async (establishmentId, mainService) => {
   return await sickness({ establishmentId }, comparisonGroups);
 };
 
+const timeInRoleBenchmarks = async (establishmentId, mainService) => {
+  const { comparisonGroup, comparisonGoodCqcGroup } = await getComparisonGroups(
+    establishmentId,
+    mainService,
+    'benchmarksTimeInRoleByLAAndService',
+    ['InRoleFor12MonthsPercentage'],
+  );
+
+  const comparisonGroups = {
+    timeInRole: comparisonGroup && comparisonGroup.InRoleFor12MonthsPercentage,
+    timeInRoleGoodCqc: comparisonGoodCqcGroup && comparisonGoodCqcGroup.InRoleFor12MonthsPercentage,
+  };
+
+  return await timeInRole({ establishmentId }, comparisonGroups);
+};
+
 const getComparisonGroups = async (establishmentId, mainService, benchmarksModel, attributes, workerId) => {
   const comparisonGroup = await benchmarksService.getComparisonData(
     models[benchmarksModel],
@@ -199,6 +219,7 @@ const getBenchmarksData = async (establishmentId, mainService) => {
   data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService);
   data.qualifications = await qualificationsBenchmarks(establishmentId, mainService);
   data.sickness = await sicknessBenchmarks(establishmentId, mainService);
+  data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService);
 
   data.meta = await getMetaData(establishmentId, mainService);
   return data;
@@ -210,11 +231,20 @@ const getMetaData = async (establishmentId, mainService) => {
     mainService,
   );
 
+  const benchmarksComparisonGroupGoodOutstanding =
+    await models.benchmarksEstablishmentsAndWorkersGoodOutstanding.getComparisonData(establishmentId, mainService);
+
   return {
-    workplaces: benchmarksComparisonGroup ? benchmarksComparisonGroup.workplaces : 0,
-    staff: benchmarksComparisonGroup ? benchmarksComparisonGroup.staff : 0,
+    workplaces: benchmarksComparisonGroup.workplaces ? benchmarksComparisonGroup.workplaces : 0,
+    staff: benchmarksComparisonGroup.staff ? benchmarksComparisonGroup.staff : 0,
+    workplacesGoodCqc: benchmarksComparisonGroupGoodOutstanding.BaseEstablishments
+      ? benchmarksComparisonGroupGoodOutstanding.BaseEstablishments
+      : 0,
+    staffGoodCqc: benchmarksComparisonGroupGoodOutstanding.WorkerCount
+      ? benchmarksComparisonGroupGoodOutstanding.WorkerCount
+      : 0,
     lastUpdated: await models.dataImports.benchmarksLastUpdated(),
-    localAuthority: benchmarksComparisonGroup ? benchmarksComparisonGroup.localAuthority : null,
+    localAuthority: benchmarksComparisonGroup.localAuthority ? benchmarksComparisonGroup.localAuthority : null,
   };
 };
 
@@ -250,4 +280,5 @@ module.exports.turnoverBenchmarks = turnoverBenchmarks;
 module.exports.vacanciesBenchmarks = vacanciesBenchmarks;
 module.exports.qualificationsBenchmarks = qualificationsBenchmarks;
 module.exports.sicknessBenchmarks = sicknessBenchmarks;
+module.exports.timeInRoleBenchmarks = timeInRoleBenchmarks;
 module.exports.viewBenchmarks = viewBenchmarks;
