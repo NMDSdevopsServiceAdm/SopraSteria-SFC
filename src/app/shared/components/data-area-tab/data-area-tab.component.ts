@@ -17,7 +17,7 @@ import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.c
 })
 export class DataAreaTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
-  @Input() newDashboard: Boolean;
+  @Input() newDashboard: boolean;
   @ViewChild('aboutData') private aboutData: DataAreaAboutTheDataComponent;
 
   public canViewFullBenchmarks: boolean;
@@ -43,7 +43,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.tilesData = this.benchmarksService.benchmarksData;
-    console.log(this.tilesData);
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
