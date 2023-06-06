@@ -17,7 +17,7 @@ import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.c
 })
 export class DataAreaTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
-  @Input() newDashboard: Boolean;
+  @Input() newDashboard: boolean;
   @ViewChild('aboutData') private aboutData: DataAreaAboutTheDataComponent;
 
   public canViewFullBenchmarks: boolean;
