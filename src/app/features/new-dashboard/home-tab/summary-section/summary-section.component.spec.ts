@@ -311,13 +311,11 @@ describe('Summary section', () => {
     });
 
     it('should not show "Some records only have mandatory data added" message when staff records are completed and  worker added date is less than 1 month', async () => {
-      const date = new Date();
-
       const workerCreatedDate = [
         {
           ...workerBuilder(),
           completed: true,
-          created: '2023-05-02',
+          created: dayjs().subtract(1, 'week').toISOString(),
         },
       ] as Worker[];
       const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
