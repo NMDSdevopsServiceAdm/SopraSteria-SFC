@@ -48,27 +48,29 @@
     </div>
     <div class="govuk-grid-column-two-thirds">
       <ng-container *ngIf="!viewBenchmarksComparisonGroups">
-        <h3 class="govuk-heading-m">{{ workplace.mainService.name }} providers in (local authority)</h3>
+        <h3 class="govuk-heading-m">
+          {{ workplace.mainService.name }} providers in {{ tilesData.meta.localAuthority }}
+        </h3>
         <p class="govuk-body">
           Your selected comparison group is a maximum
-          <span class="govuk-body govuk-!-font-weight-bold">(Staff number)</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData.meta.staff }}</span>
           staff from
-          <span class="govuk-body govuk-!-font-weight-bold">(workplaces number)</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData.meta.workplaces }}</span>
           workplaces using ASC-WDS and providing
           <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-          in (local authority).
+          in {{ tilesData.meta.localAuthority }}.
         </p>
       </ng-container>
       <ng-container *ngIf="viewBenchmarksComparisonGroups">
-        <h3 class="govuk-heading-m">Good and outstanding CQC providers in (local authority)</h3>
+        <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData.meta.localAuthority }}</h3>
         <p class="govuk-body">
           Your selected comparison group is a maximum
-          <span class="govuk-body govuk-!-font-weight-bold">(Staff number)</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData.meta.staffGoodCqc }}</span>
           staff from
-          <span class="govuk-body govuk-!-font-weight-bold">(workplaces number)</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData.meta.workplacesGoodCqc }}</span>
           workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
           <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-          in (local authority).
+          in {{ tilesData.meta.localAuthority }}.
         </p>
       </ng-container>
       <ng-container *ngIf="!viewBenchmarksByCategory">
