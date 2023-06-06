@@ -235,24 +235,23 @@ const getMetaData = async (establishmentId, mainService) => {
     await models.benchmarksEstablishmentsAndWorkersGoodOutstanding.getComparisonData(establishmentId, mainService);
 
   return {
-    workplaces: benchmarksComparisonGroup.workplaces ? benchmarksComparisonGroup.workplaces : 0,
-    staff: benchmarksComparisonGroup.staff ? benchmarksComparisonGroup.staff : 0,
-    workplacesGoodCqc: benchmarksComparisonGroupGoodOutstanding.BaseEstablishments
+    workplaces: benchmarksComparisonGroup ? benchmarksComparisonGroup.workplaces : 0,
+    staff: benchmarksComparisonGroup ? benchmarksComparisonGroup.staff : 0,
+    workplacesGoodCqc: benchmarksComparisonGroupGoodOutstanding
       ? benchmarksComparisonGroupGoodOutstanding.BaseEstablishments
       : 0,
-    staffGoodCqc: benchmarksComparisonGroupGoodOutstanding.WorkerCount
-      ? benchmarksComparisonGroupGoodOutstanding.WorkerCount
-      : 0,
+    staffGoodCqc: benchmarksComparisonGroupGoodOutstanding ? benchmarksComparisonGroupGoodOutstanding.WorkerCount : 0,
     lastUpdated: await models.dataImports.benchmarksLastUpdated(),
-    localAuthority: benchmarksComparisonGroup.localAuthority ? benchmarksComparisonGroup.localAuthority : null,
+    localAuthority: benchmarksComparisonGroup ? benchmarksComparisonGroup.localAuthority : null,
   };
 };
 
 const viewBenchmarks = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
-    const { MainServiceFKValue: mainService } = await models.establishment.findbyId(establishmentId);
+    const { MainServiceFKValue } = await models.establishment.findbyId(establishmentId);
 
+    const mainService = [1, 2, 8].includes(MainServiceFKValue) ? MainServiceFKValue : 0;
     const benchmarksData = await getBenchmarksData(establishmentId, mainService);
 
     return res.status(200).json(benchmarksData);
@@ -274,7 +273,7 @@ module.exports.sickness = sickness;
 module.exports.turnover = turnover;
 module.exports.buildComparisonGroupMetrics = buildComparisonGroupMetrics;
 module.exports.getMetaData = getMetaData;
-module.exports.getBenchmarkData = getBenchmarksData;
+module.exports.getBenchmarksData = getBenchmarksData;
 module.exports.payBenchmarks = payBenchmarks;
 module.exports.turnoverBenchmarks = turnoverBenchmarks;
 module.exports.vacanciesBenchmarks = vacanciesBenchmarks;
