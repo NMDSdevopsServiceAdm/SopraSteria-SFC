@@ -127,17 +127,17 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
       this.benchmarksHeader = 'See how you compare against other workplaces';
       this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
     } else {
-      if (!this.workplace.isRegulated) {
-        this.benchmarksHeader = 'See how you compare against other workplaces';
-        this.benchmarksMessage = `There are ${
-          this.meta?.workplaces ? this.meta.workplaces : 0
-        } workplaces providing adult social care in ${this.meta?.localAuthority}.`;
-      } else if ([1, 2, 8].filter((x) => x === this.workplace.mainService.reportingID).length > 0) {
+      if ([1, 2, 8].filter((x) => x === this.workplace.mainService.reportingID).length > 0) {
         const benchmarksCareType = this.workplace.mainService.name;
         this.benchmarksHeader = 'See how your pay, recruitment and retention compares against other workplaces';
         this.benchmarksMessage = `There are ${
           this.meta?.workplaces ? this.meta.workplaces : 0
         } workplaces providing ${benchmarksCareType} in ${this.meta?.localAuthority}.`;
+      } else if (!this.workplace.isRegulated) {
+        this.benchmarksHeader = 'See how you compare against other workplaces';
+        this.benchmarksMessage = `There are ${
+          this.meta?.workplaces ? this.meta.workplaces : 0
+        } workplaces providing adult social care in ${this.meta?.localAuthority}.`;
       }
     }
   }
