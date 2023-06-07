@@ -53,9 +53,9 @@
         </h3>
         <p class="govuk-body">
           Your selected comparison group is a maximum
-          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staff }}</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staff | number }}</span>
           staff from
-          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplaces }}</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplaces | number }}</span>
           workplaces using ASC-WDS and providing
           <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
           in {{ tilesData?.meta.localAuthority }}.
@@ -65,9 +65,9 @@
         <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}</h3>
         <p class="govuk-body">
           Your selected comparison group is a maximum
-          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc }}</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
           staff from
-          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc }}</span>
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
           workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
           <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
           in {{ tilesData?.meta.localAuthority }}.
