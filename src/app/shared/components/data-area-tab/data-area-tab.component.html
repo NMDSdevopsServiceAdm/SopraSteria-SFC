@@ -8,20 +8,22 @@
 
 <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
   <app-benchmarks-select-view-panel
+    data-testid="selectCategoryLinks"
     [toggleBoolean]="viewBenchmarksByCategory"
     [falseSelectionName]="'Pay'"
     [trueSelecttionName]="'Recruitment and retention'"
     (handleViewToggle)="handleViewBenchmarksByCategory($event)"
   >
   </app-benchmarks-select-view-panel>
-  <div class="govuk-!-margin-top-7">
-    <ng-container *ngIf="viewBenchmarksByCategory">
+
+  <div class="govuk-!-margin-top-7" data-testid="benchmarksCategoryHeading">
+    <ng-container *ngIf="viewBenchmarksByCategory; else payCategory">
       <h2 class="govuk-heading-m">Recruitment and retention</h2>
     </ng-container>
+    <ng-template #payCategory>
+      <h2 class="govuk-heading-m">Pay</h2>
+    </ng-template>
   </div>
-  <ng-container *ngIf="!viewBenchmarksByCategory">
-    <h2 class="govuk-heading-m">Pay</h2>
-  </ng-container>
 
   <div class="govuk-grid-row govuk-!-margin-top-2">
     <div class="govuk-grid-column-one-third">
@@ -78,7 +80,7 @@
           (downloadPDF)="downloadAsPDF()"
         ></app-download-pdf>
 
-        <table class="govuk-table govuk-!-margin-top-7">
+        <table class="govuk-table govuk-!-margin-top-7" data-testid="payTable">
           <caption class="govuk-table__caption govuk-table__caption--m">
             Average pay and salaries
           </caption>
@@ -125,12 +127,13 @@
       </ng-container>
 
       <ng-container *ngIf="viewBenchmarksByCategory">
+        <app-recruitment-and-retention-table></app-recruitment-and-retention-table>
         <app-download-pdf
           [linkUrl]="'/benchmarks.pdf'"
           [linkTitle]="downloadRecruitmentBenchmarksText"
           (downloadPDF)="downloadAsPDF()"
         ></app-download-pdf>
-        <table class="govuk-table govuk-!-margin-top-2">
+        <table class="govuk-table govuk-!-margin-top-2" data-testid="recruitmentAndRetentionTable">
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th scope="col" class="govuk-table__header"></th>
@@ -143,7 +146,7 @@
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            <tr class="govuk-table__row first-row">
+            <tr class="govuk-table__row first-row" data-testid="vacancyRow">
               <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
                 Vacancy rate
               </th>
@@ -159,7 +162,7 @@
                 </ng-template>
               </td>
             </tr>
-            <tr class="govuk-table__row">
+            <tr class="govuk-table__row" data-testid="turnoverRow">
               <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
                 Turnover rate
               </th>
@@ -175,7 +178,7 @@
                 </ng-template>
               </td>
             </tr>
-            <tr class="govuk-table__row last-row">
+            <tr class="govuk-table__row last-row" data-testid="timeInRoleRow">
               <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">
                 Percentage of staff still in their main job role after 12 months
               </th>

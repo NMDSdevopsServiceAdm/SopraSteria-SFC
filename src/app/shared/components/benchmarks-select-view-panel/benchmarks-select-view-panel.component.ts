@@ -7,8 +7,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class BenchmarksSelectViewPanelComponent {
   @Input() toggleBoolean: boolean;
-  @Input() falseSelectionName: String;
-  @Input() trueSelecttionName: String;
+  @Input() falseSelectionName: string;
+  @Input() trueSelecttionName: string;
   @Output() handleViewToggle: EventEmitter<boolean> = new EventEmitter();
 
   public handleViewChange(event: Event): void {
