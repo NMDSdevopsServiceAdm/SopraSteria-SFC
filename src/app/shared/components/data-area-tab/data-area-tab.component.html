@@ -20,10 +20,10 @@
     </ng-container>
   </div>
   <ng-container *ngIf="!viewBenchmarksByCategory">
-    <h2 class="govuk-heading-m">Pay</h2>
+    <app-data-area-pay [workplace]="workplace" data-testid="data-area-tab"></app-data-area-pay>
   </ng-container>
 
-  <div class="govuk-grid-row govuk-!-margin-top-2">
+  <div class="govuk-grid-row govuk-!-margin-top-2" *ngIf="viewBenchmarksByCategory">
     <div class="govuk-grid-column-one-third">
       <a
         class="asc-font-19"
@@ -72,58 +72,6 @@
           <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
           in {{ tilesData?.meta.localAuthority }}.
         </p>
-      </ng-container>
-      <ng-container *ngIf="!viewBenchmarksByCategory">
-        <app-download-pdf
-          [linkUrl]="'/benchmarks.pdf'"
-          [linkTitle]="downloadPayBenchmarksText"
-          (downloadPDF)="downloadAsPDF()"
-        ></app-download-pdf>
-
-        <table class="govuk-table govuk-!-margin-top-7">
-          <caption class="govuk-table__caption govuk-table__caption--m">
-            Average pay and salaries
-          </caption>
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header"></th>
-              <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
-                Your workplace
-              </th>
-              <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
-                Comparison group
-              </th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-            <tr class="govuk-table__row first-row">
-              <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-                Care worker pay
-              </th>
-              <td class="govuk-table__cell workplace-cell">£10.26 (hourly)</td>
-              <td class="govuk-table__cell comparision-group-cell">£9.75 (hourly)</td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-                Senior care worker pay
-              </th>
-              <td class="govuk-table__cell workplace-cell">£11.05 (hourly)</td>
-              <td class="govuk-table__cell comparision-group-cell">£11.50 (hourly)</td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-                Registered nurse salary
-              </th>
-              <td class="govuk-table__cell workplace-cell">£34,130 (annually)</td>
-              <td class="govuk-table__cell comparision-group-cell">£34,100 (annually)</td>
-            </tr>
-            <tr class="govuk-table__row last-row">
-              <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">Registered manager salary</th>
-              <td class="govuk-table__cell workplace-cell">£35,637 (annually)</td>
-              <td class="govuk-table__cell comparision-group-cell">£36,185 (annually)</td>
-            </tr>
-          </tbody>
-        </table>
       </ng-container>
 
       <ng-container *ngIf="viewBenchmarksByCategory">
@@ -178,52 +126,6 @@
         >
         </app-benchmarks-select-view-panel>
         <div class="govuk-!-margin-top-7">
-          <ng-container *ngIf="!viewBenchmarksByCategory">
-            <ng-container *ngIf="!viewBenchmarksPosition">
-              <app-data-area-ranking
-                [rankingTitle]="'Care worker pay'"
-                [workplaceRankNumber]="18"
-                [workplacesNumber]="72"
-              ></app-data-area-ranking>
-              <app-data-area-ranking
-                [rankingTitle]="'Senior care worker pay'"
-                [workplaceRankNumber]="51"
-                [workplacesNumber]="72"
-              ></app-data-area-ranking>
-              <app-data-area-ranking
-                [rankingTitle]="'Registered nurse salary'"
-                [workplaceRankNumber]="36"
-                [workplacesNumber]="72"
-              ></app-data-area-ranking>
-              <app-data-area-ranking
-                [rankingTitle]="'Registered manager salary'"
-                [workplaceRankNumber]="41"
-                [workplacesNumber]="72"
-              ></app-data-area-ranking>
-            </ng-container>
-            <ng-container *ngIf="viewBenchmarksPosition">
-              <app-data-area-barchart
-                [positionedTitle]="'Care worker pay'"
-                [payMoreThanWorkplacesNumber]="54"
-                [workplacesNumber]="72"
-              ></app-data-area-barchart>
-              <app-data-area-barchart
-                [positionedTitle]="'Senior care worker pay'"
-                [payMoreThanWorkplacesNumber]="21"
-                [workplacesNumber]="72"
-              ></app-data-area-barchart>
-              <app-data-area-barchart
-                [positionedTitle]="'Registered nurse salary'"
-                [payMoreThanWorkplacesNumber]="36"
-                [workplacesNumber]="72"
-              ></app-data-area-barchart>
-              <app-data-area-barchart
-                [positionedTitle]="'Registered manager salary'"
-                [payMoreThanWorkplacesNumber]="31"
-                [workplacesNumber]="72"
-              ></app-data-area-barchart>
-            </ng-container>
-          </ng-container>
           <ng-container *ngIf="viewBenchmarksByCategory">
             <ng-container *ngIf="!viewBenchmarksPosition">
               <app-data-area-ranking
