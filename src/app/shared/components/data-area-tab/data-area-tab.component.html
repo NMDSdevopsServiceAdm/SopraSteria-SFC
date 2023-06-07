@@ -126,41 +126,39 @@
         >
         </app-benchmarks-select-view-panel>
         <div class="govuk-!-margin-top-7">
-          <ng-container *ngIf="viewBenchmarksByCategory">
-            <ng-container *ngIf="!viewBenchmarksPosition">
-              <app-data-area-ranking
-                [rankingTitle]="'Vacancy rate'"
-                [workplaceRankNumber]="18"
-                [workplacesNumber]="72"
-              ></app-data-area-ranking>
-              <app-data-area-ranking
-                [rankingTitle]="'Turnover rate'"
-                [workplaceRankNumber]="51"
-                [workplacesNumber]="72"
-              ></app-data-area-ranking>
-              <app-data-area-ranking
-                [rankingTitle]="'Percentage of staff still in their main job role after 12 months'"
-                [workplaceRankNumber]="36"
-                [workplacesNumber]="72"
-              ></app-data-area-ranking>
-            </ng-container>
-            <ng-container *ngIf="viewBenchmarksPosition">
-              <app-data-area-barchart
-                [positionedTitle]="'Vacancy rate'"
-                [payMoreThanWorkplacesNumber]="54"
-                [workplacesNumber]="72"
-              ></app-data-area-barchart>
-              <app-data-area-barchart
-                [positionedTitle]="'Turnover rate'"
-                [payMoreThanWorkplacesNumber]="21"
-                [workplacesNumber]="72"
-              ></app-data-area-barchart>
-              <app-data-area-barchart
-                [positionedTitle]="'Percentage of staff still in their main job role after 12 months'"
-                [payMoreThanWorkplacesNumber]="36"
-                [workplacesNumber]="72"
-              ></app-data-area-barchart>
-            </ng-container>
+          <ng-container *ngIf="!viewBenchmarksPosition">
+            <app-data-area-ranking
+              [rankingTitle]="'Vacancy rate'"
+              [workplaceRankNumber]="18"
+              [workplacesNumber]="72"
+            ></app-data-area-ranking>
+            <app-data-area-ranking
+              [rankingTitle]="'Turnover rate'"
+              [workplaceRankNumber]="51"
+              [workplacesNumber]="72"
+            ></app-data-area-ranking>
+            <app-data-area-ranking
+              [rankingTitle]="'Percentage of staff still in their main job role after 12 months'"
+              [workplaceRankNumber]="36"
+              [workplacesNumber]="72"
+            ></app-data-area-ranking>
+          </ng-container>
+          <ng-container *ngIf="viewBenchmarksPosition">
+            <app-data-area-barchart
+              [positionedTitle]="'Vacancy rate'"
+              [payMoreThanWorkplacesNumber]="54"
+              [workplacesNumber]="72"
+            ></app-data-area-barchart>
+            <app-data-area-barchart
+              [positionedTitle]="'Turnover rate'"
+              [payMoreThanWorkplacesNumber]="21"
+              [workplacesNumber]="72"
+            ></app-data-area-barchart>
+            <app-data-area-barchart
+              [positionedTitle]="'Percentage of staff still in their main job role after 12 months'"
+              [payMoreThanWorkplacesNumber]="36"
+              [workplacesNumber]="72"
+            ></app-data-area-barchart>
           </ng-container>
         </div>
       </div>

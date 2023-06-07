@@ -1,10 +1,8 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 
@@ -15,7 +13,7 @@ import { DataAreaAboutTheDataComponent } from '../about-the-data/about-the-data.
   templateUrl: './data-area-pay.component.html',
   styleUrls: ['../data-area-tab.component.scss'],
 })
-export class DataAreaPayComponent implements OnInit, OnDestroy {
+export class DataAreaPayComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() newDashboard: boolean;
   @ViewChild('aboutData') private aboutData: DataAreaAboutTheDataComponent;
@@ -33,7 +31,6 @@ export class DataAreaPayComponent implements OnInit, OnDestroy {
 
   constructor(
     private permissionsService: PermissionsService,
-    private breadcrumbService: BreadcrumbService,
     private pdfService: PdfService,
     private elRef: ElementRef,
     protected benchmarksService: BenchmarksService,
@@ -43,7 +40,6 @@ export class DataAreaPayComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.tilesData = this.benchmarksService.benchmarksData;
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
     console.log(this.tilesData);
   }
@@ -82,9 +78,5 @@ export class DataAreaPayComponent implements OnInit, OnDestroy {
 
   public handleViewBenchmarkPosition(visible: boolean): void {
     this.viewBenchmarksPosition = visible;
-  }
-
-  ngOnDestroy(): void {
-    this.breadcrumbService.removeRoutes();
   }
 }
