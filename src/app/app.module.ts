@@ -10,6 +10,7 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
@@ -56,10 +57,8 @@ import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-tab/benchmarks-tab.component';
 import { NewComparisonGroupHeaderComponent } from '@features/new-dashboard/benchmarks-tab/comparison-group-header/comparison-group-header.component';
-import { NewDashboardHeaderComponent } from '@features/new-dashboard/dashboard-header/dashboard-header.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
-import { DataAreaTabComponent } from '@features/new-dashboard/data-area-tab/data-area-tab.component';
 import { CardComponent } from '@features/new-dashboard/home-tab/card/card.component';
 import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
 import { SummarySectionComponent } from '@features/new-dashboard/home-tab/summary-section/summary-section.component';
@@ -71,13 +70,8 @@ import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
-import { BenchmarksSelectComparisonGroupsComponent } from '@shared/components/benchmarks-select-comparison-group/benchmarks-select-comparison-group.component';
-import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
-import { DataAreaBarchartComponent } from '@shared/components/data-area-barchart/data-area-barchart.component';
-import { DataAreaRankingComponent } from '@shared/components/data-area-ranking/data-area-ranking.component';
-import { DataAreaUsefulLinkComponent } from '@shared/components/data-area-useful-link/data-area-useful-link.component';
-import { DownloadPdfComponent } from '@shared/components/download-pdf/download-pdf.component';
+import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
@@ -130,19 +124,11 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     NewStaffTabComponent,
     NewTrainingTabComponent,
     NewBenchmarksTabComponent,
-    NewDashboardHeaderComponent,
     NewTrainingLinkPanelComponent,
     NewComparisonGroupHeaderComponent,
     CardComponent,
     SummarySectionComponent,
     StaffBasicRecord,
-    DataAreaTabComponent,
-    BenchmarksSelectViewPanelComponent,
-    BenchmarksSelectComparisonGroupsComponent,
-    DownloadPdfComponent,
-    DataAreaRankingComponent,
-    DataAreaBarchartComponent,
-    DataAreaUsefulLinkComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
@@ -159,6 +145,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     SharedModule,
     RouterModule,
     BenchmarksModule,
+    DataAreaTabModule,
   ],
   providers: [
     AuthGuard,
@@ -201,6 +188,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     WorkersResolver,
     TotalStaffRecordsResolver,
     CqcStatusCheckResolver,
+    BenchmarksResolver,
   ],
   bootstrap: [AppComponent],
 })

@@ -7,7 +7,8 @@ import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
+
+import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.component';
 
 @Component({
   selector: 'app-data-area-tab',
@@ -16,8 +17,8 @@ import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-t
 })
 export class DataAreaTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
-  @Input() tilesData: BenchmarksResponse;
-  @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
+  @Input() newDashboard: boolean;
+  @ViewChild('aboutData') private aboutData: DataAreaAboutTheDataComponent;
 
   public canViewFullBenchmarks: boolean;
   public payContent = MetricsContent.Pay;
@@ -29,7 +30,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public viewBenchmarksPosition = false;
   public downloadPayBenchmarksText = 'Download pay benchmarks';
   public downloadRecruitmentBenchmarksText = 'Download recruitment and retention benchmarks';
-
+  public tilesData: BenchmarksResponse;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -41,6 +42,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.tilesData = this.benchmarksService.benchmarksData;
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();

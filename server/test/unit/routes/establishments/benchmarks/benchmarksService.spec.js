@@ -255,4 +255,46 @@ describe('/benchmarks/benchmarksService', () => {
       expect(result.stateMessage).to.equal('no-perm-or-temp');
     });
   });
+
+  describe('getTimeInRole', () => {
+    it('should return the percentage of workers that have been in their jobs for 12 months or more', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns(3);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(6);
+
+      const params = { establishmentId };
+      const result = await benchmarksService.getTimeInRole(params);
+
+      expect(result.value).to.equal(0.5);
+    });
+
+    it('should return a value of 0 if there are no workers that have been more than 12 months in their jobs', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns(0);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(6);
+
+      const params = { establishmentId };
+      const result = await benchmarksService.getTimeInRole(params);
+
+      expect(result.value).to.equal(0);
+    });
+
+    it('should return a stateMessage with no-perm-or-temp if the workplace has no staff', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns(0);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(0);
+
+      const params = { establishmentId };
+      const result = await benchmarksService.getTimeInRole(params);
+
+      expect(result.stateMessage).to.equal('no-perm-or-temp');
+    });
+
+    it('should return a stateMessage with incorrect-time-in-role if there are more workers that have been in their job for 12 months than workers in the workplace', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns(5);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
+
+      const params = { establishmentId };
+      const result = await benchmarksService.getTimeInRole(params);
+
+      expect(result.stateMessage).to.equal('incorrect-time-in-role');
+    });
+  });
 });

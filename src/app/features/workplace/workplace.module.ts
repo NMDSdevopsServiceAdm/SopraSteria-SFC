@@ -15,6 +15,7 @@ import { StartComponent } from '@features/workplace/start/start.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
+import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { SharedModule } from '@shared/shared.module';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
@@ -60,7 +61,15 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule, BenchmarksModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    SharedModule,
+    OverlayModule,
+    WorkplaceRoutingModule,
+    BenchmarksModule,
+    DataAreaTabModule,
+  ],
   declarations: [
     CheckAnswersComponent,
     ConfirmLeaversComponent,

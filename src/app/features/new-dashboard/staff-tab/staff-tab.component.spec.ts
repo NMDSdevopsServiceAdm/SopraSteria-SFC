@@ -1,33 +1,34 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { Roles } from '@core/model/roles.enum';
 import { Worker } from '@core/model/worker.model';
+import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
+import { WindowToken } from '@core/services/window';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockUserService } from '@core/test-utils/MockUserService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
-import { NewDashboardHeaderComponent } from '../dashboard-header/dashboard-header.component';
+import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewStaffTabComponent } from './staff-tab.component';
-import { WindowRef } from '@core/services/window.ref';
-import { HttpClient } from '@angular/common/http';
-import { UserService } from '@core/services/user.service';
-import { MockUserService } from '@core/test-utils/MockUserService';
-import { AuthService } from '@core/services/auth.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { WindowToken } from '@core/services/window';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { Roles } from '@core/model/roles.enum';
+
 const MockWindow = {
   dataLayer: {
     push: () => {
