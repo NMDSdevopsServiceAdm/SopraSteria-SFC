@@ -15,11 +15,14 @@ import { render } from '@testing-library/angular';
 
 import { establishmentBuilder } from '../../../../../../server/test/factories/models';
 import { DataAreaPayComponent } from './data-area-pay.component';
+import { BenchmarksService } from '@core/services/benchmarks.service';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 
 describe('DataAreaTabComponent', () => {
   const setup = async () => {
     const establishment = establishmentBuilder() as Establishment;
-    const { fixture } = await render(DataAreaPayComponent, {
+
+    const { fixture, getByText, queryByText, getByTestId } = await render(DataAreaPayComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
@@ -34,6 +37,10 @@ describe('DataAreaTabComponent', () => {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
+        {
+          provide: BenchmarksService,
+          useClass: MockBenchmarksService,
+        },
       ],
       declarations: [],
       schemas: [NO_ERRORS_SCHEMA],
@@ -46,11 +53,64 @@ describe('DataAreaTabComponent', () => {
 
     return {
       component,
+      getByText,
+      queryByText,
+      getByTestId,
+      fixture,
     };
   };
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('Benchmark Pay', () => {
+    it('should render About the data with correct href', async () => {
+      const { component, getByText } = await setup();
+
+      const dataArea = getByText('About the data');
+      const workplaceId = component.workplace.uid;
+      expect(dataArea).toBeTruthy();
+      expect(dataArea.getAttribute('href')).toEqual(`/workplace/${workplaceId}/benchmarks/about-the-data`);
+    });
+
+    it('should render lastupdated date', async () => {
+      const { component, getByTestId } = await setup();
+      component.tilesData?.meta.lastUpdated;
+
+      expect(getByTestId('benchmarksLastUpdatedDate')).toBeTruthy();
+    });
+
+    it('should render benchmarks pay providers', async () => {
+      const { component, getByTestId } = await setup();
+      component.viewBenchmarksComparisonGroups;
+
+      expect(getByTestId('benchmarksPayHeader')).toBeTruthy();
+    });
+
+    it('should render benchmarks pay comparison group ', async () => {
+      const { component, getByTestId } = await setup();
+      component.viewBenchmarksComparisonGroups;
+
+      expect(getByTestId('benchmarksComparisonGroup')).toBeTruthy();
+    });
+
+    it('should render benchmarks Good and outstanding pay header', async () => {
+      const { component, getByTestId, fixture } = await setup();
+
+      component.viewBenchmarksComparisonGroups = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('benchmarkGoodAndOutstandingHeader')).toBeTruthy();
+    });
+
+    it('should render benchmarks Good and outstanding pay comparison group', async () => {
+      const { fixture, component, getByTestId } = await setup();
+      component.viewBenchmarksComparisonGroups = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('benchmarkGoodAndOutstandingComparison')).toBeTruthy();
+    });
   });
 });

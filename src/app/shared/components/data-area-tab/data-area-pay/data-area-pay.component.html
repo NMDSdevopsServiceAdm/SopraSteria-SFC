@@ -25,10 +25,10 @@
   </div>
   <div class="govuk-grid-column-two-thirds">
     <ng-container *ngIf="!viewBenchmarksComparisonGroups">
-      <h3 class="govuk-heading-m">
+      <h3 class="govuk-heading-m" data-testid="benchmarksPayHeader">
         {{ workplace.mainService.name }} providers in {{ tilesData?.meta.localAuthority }}
       </h3>
-      <p class="govuk-body">
+      <p class="govuk-body" data-testid="benchmarksComparisonGroup">
         Your selected comparison group is a maximum
         <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staff | number }}</span>
         staff from
@@ -39,8 +39,10 @@
       </p>
     </ng-container>
     <ng-container *ngIf="viewBenchmarksComparisonGroups">
-      <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}</h3>
-      <p class="govuk-body">
+      <h3 class="govuk-heading-m" data-testid="benchmarkGoodAndOutstandingHeader">
+        Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}
+      </h3>
+      <p class="govuk-body" data-testid="benchmarkGoodAndOutstandingComparison">
         Your selected comparison group is a maximum
         <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
         staff from

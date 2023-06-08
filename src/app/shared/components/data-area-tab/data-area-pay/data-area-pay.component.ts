@@ -23,7 +23,6 @@ export class DataAreaPayComponent implements OnInit {
   public turnoverContent = MetricsContent.Turnover;
   public qualificationsContent = MetricsContent.Qualifications;
   public sicknessContent = MetricsContent.Sickness;
-  public viewBenchmarksByCategory = false;
   public viewBenchmarksComparisonGroups = false;
   public viewBenchmarksPosition = false;
   public downloadPayBenchmarksText = 'Download pay benchmarks';
@@ -41,7 +40,6 @@ export class DataAreaPayComponent implements OnInit {
     this.tilesData = this.benchmarksService.benchmarksData;
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.setDownloadBenchmarksText();
-    console.log(this.tilesData);
   }
 
   public async downloadAsPDF() {
@@ -66,10 +64,6 @@ export class DataAreaPayComponent implements OnInit {
       url: [this.router.url.split('#')[0]],
       fragment: 'benchmarks',
     });
-  }
-
-  public handleViewBenchmarksByCategory(visible: boolean): void {
-    this.viewBenchmarksByCategory = visible;
   }
 
   public handleViewComparisonGroups(visible: boolean): void {
