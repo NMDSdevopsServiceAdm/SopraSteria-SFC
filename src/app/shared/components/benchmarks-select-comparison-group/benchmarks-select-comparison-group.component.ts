@@ -9,6 +9,7 @@ export class BenchmarksSelectComparisonGroupsComponent {
   @Input() viewBenchmarksComparisonGroups: boolean;
   @Input() mainServiceName: string;
   @Input() localAuthorityLocation: string;
+  @Input() comparisonData: boolean;
   @Output() handleViewToggle: EventEmitter<boolean> = new EventEmitter();
 
   public handleViewChange(event: Event): void {

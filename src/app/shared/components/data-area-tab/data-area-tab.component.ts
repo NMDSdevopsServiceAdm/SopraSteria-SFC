@@ -10,6 +10,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 
 import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.component';
 
+const PAY_FIELDS = ['careWorkerPay', 'seniorCareWorkerPay', 'registeredNursePay', 'registeredManagerPay'];
+const RECRUITMENT_AND_RETENTION_FIELDS = ['vacancyRate', 'turnoverRate', 'timeInRole'];
+
 @Component({
   selector: 'app-data-area-tab',
   templateUrl: './data-area-tab.component.html',
@@ -31,6 +34,8 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public downloadPayBenchmarksText = 'Download pay benchmarks';
   public downloadRecruitmentBenchmarksText = 'Download recruitment and retention benchmarks';
   public tilesData: BenchmarksResponse;
+  public payComparisonData: boolean;
+  public rAndRComparisonData: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -43,9 +48,20 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.tilesData = this.benchmarksService.benchmarksData;
+    console.log(this.tilesData);
+    this.payComparisonData = this.comparisonDataCheck(PAY_FIELDS);
+    this.rAndRComparisonData = this.comparisonDataCheck(RECRUITMENT_AND_RETENTION_FIELDS);
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
+  }
+
+  private comparisonDataCheck(fields: string[]): boolean {
+    const result = fields.forEach((field) => {
+      this.tilesData[field];
+      console.log(this.tilesData[field]);
+    });
+    return false;
   }
 
   public async downloadAsPDF() {

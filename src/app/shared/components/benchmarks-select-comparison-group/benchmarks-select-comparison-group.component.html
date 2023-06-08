@@ -1,37 +1,44 @@
 <div class="govuk-form-group">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-!-font-weight-bold">Comparison groups</legend>
-    <div class="govuk-radios govuk-!-margin-top-4" data-module="govuk-radios">
-      <div class="govuk-radios__item">
-        <input
-          data-testid="main-service-input"
-          class="govuk-radios__input"
-          id="comparison-groups"
-          name="comparison-groups"
-          type="radio"
-          value="mainService"
-          [checked]="!viewBenchmarksComparisonGroups"
-          (change)="handleViewChange($event)"
-        />
-        <label class="govuk-label govuk-radios__label" for="comparison-groups">
-          {{ mainServiceName }} providers in {{ localAuthorityLocation }}
-        </label>
+    <ng-container *ngIf="comparisonData; else noComparisonData">
+      <div class="govuk-radios govuk-!-margin-top-4" data-module="govuk-radios" data-testid="radioButtons">
+        <div class="govuk-radios__item">
+          <input
+            data-testid="main-service-input"
+            class="govuk-radios__input"
+            id="comparison-groups"
+            name="comparison-groups"
+            type="radio"
+            value="mainService"
+            [checked]="!viewBenchmarksComparisonGroups"
+            (change)="handleViewChange($event)"
+          />
+          <label class="govuk-label govuk-radios__label" for="comparison-groups">
+            {{ mainServiceName }} providers in {{ localAuthorityLocation }}
+          </label>
+        </div>
+        <div class="govuk-radios__item">
+          <input
+            data-testid="good-and-outstanding-input"
+            class="govuk-radios__input"
+            id="comparison-groups-good-and-outstanding"
+            name="comparison-groups"
+            type="radio"
+            value="GoodAndOutstanding"
+            [checked]="viewBenchmarksComparisonGroups"
+            (change)="handleViewChange($event)"
+          />
+          <label class="govuk-label govuk-radios__label" for="comparison-groups-good-and-outstanding">
+            Good and outstading CQC providers in {{ localAuthorityLocation }}
+          </label>
+        </div>
       </div>
-      <div class="govuk-radios__item">
-        <input
-          data-testid="good-and-outstanding-input"
-          class="govuk-radios__input"
-          id="comparison-groups-good-and-outstanding"
-          name="comparison-groups"
-          type="radio"
-          value="GoodAndOutstanding"
-          [checked]="viewBenchmarksComparisonGroups"
-          (change)="handleViewChange($event)"
-        />
-        <label class="govuk-label govuk-radios__label" for="comparison-groups-good-and-outstanding">
-          Good and outstading CQC providers in {{ localAuthorityLocation }}
-        </label>
+    </ng-container>
+    <ng-template #noComparisonData>
+      <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-7" data-testid="noComparisonData">
+        <p>We do not have enough comparison group data to compare your workplace against.</p>
       </div>
-    </div>
+    </ng-template>
   </fieldset>
 </div>

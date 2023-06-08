@@ -3,9 +3,9 @@ import { spy } from 'sinon';
 
 import { BenchmarksSelectComparisonGroupsComponent } from './benchmarks-select-comparison-group.component';
 
-describe('BenchmarksSelectComparisonGroupsComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getByTestId } = await render(BenchmarksSelectComparisonGroupsComponent, {
+fdescribe('BenchmarksSelectComparisonGroupsComponent', () => {
+  async function setup(comparisonData = true) {
+    const { fixture, getByTestId, queryByTestId } = await render(BenchmarksSelectComparisonGroupsComponent, {
       imports: [],
       declarations: [],
       providers: [],
@@ -13,6 +13,7 @@ describe('BenchmarksSelectComparisonGroupsComponent', () => {
         mainServiceName: 'main service',
         localAuthorityLocation: 'Leeds',
         viewBenchmarksComparisonGroups: false,
+        comparisonData,
         handleViewToggle: {
           emit: spy(),
         } as any,
@@ -25,8 +26,8 @@ describe('BenchmarksSelectComparisonGroupsComponent', () => {
     return {
       component,
       fixture,
-      getByText,
       getByTestId,
+      queryByTestId,
       toggleViewSpy,
     };
   }
@@ -36,8 +37,22 @@ describe('BenchmarksSelectComparisonGroupsComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should show the radio buttons if there is comparison group data', async () => {
+    const { getByTestId, queryByTestId } = await setup();
+
+    expect(getByTestId('radioButtons')).toBeTruthy();
+    expect(queryByTestId('noComparisonData')).toBeFalsy();
+  });
+
+  it('should render a message saying there is no comparison data instead of radio buttons', async () => {
+    const { getByTestId, queryByTestId } = await setup(false);
+
+    expect(getByTestId('noComparisonData')).toBeTruthy();
+    expect(queryByTestId('radioButtons')).toBeFalsy();
+  });
+
   it('should show the main service input as checked when viewBenchmarksComparisonGroups is false', async () => {
-    const { getByText, getByTestId } = await setup();
+    const { getByTestId } = await setup();
 
     const mainServiceInput = getByTestId('main-service-input');
     const goodAndOutstandingInput = getByTestId('good-and-outstanding-input');
@@ -47,7 +62,7 @@ describe('BenchmarksSelectComparisonGroupsComponent', () => {
   });
 
   it('should show the good and outstand input as checked when viewByTrainingCategory is true', async () => {
-    const { component, getByText, getByTestId } = await setup();
+    const { component, getByTestId } = await setup();
 
     component.viewBenchmarksComparisonGroups = true;
     const mainServiceInput = getByTestId('main-service-input');
