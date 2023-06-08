@@ -1,6 +1,13 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Data } from '@angular/router';
-import { BenchmarksResponse, Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
+import {
+  BenchmarksResponse,
+  Metric,
+  NoData,
+  PayRankingsResponse,
+  RankingsResponse,
+  Tile,
+} from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -97,8 +104,8 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     }
   };
 
-  handleRankingsResponse = (rankings: RankingsResponse): void => {
-    this.rankings = rankings;
+  handleRankingsResponse = (rankings: PayRankingsResponse): void => {
+    this.rankings = rankings.careWorkerPay.groupRankings;
     this.rankingContent = { ...this.rankings, noData: this.noData };
   };
   public async downloadAsPDF($event: Event): Promise<jsPDF> {

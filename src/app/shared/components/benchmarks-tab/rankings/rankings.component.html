@@ -28,7 +28,7 @@
 </div>
 <p>{{ metricContent['Pay'].description }}</p>
 <app-gauge
-  *ngIf="rankings.careWorkerPay"
+  *ngIf="rankings.pay.careWorkerPay"
   [maxRank]="rankings.careWorkerPay.maxRank"
   [currentRank]="rankings.careWorkerPay.currentRank"
 >

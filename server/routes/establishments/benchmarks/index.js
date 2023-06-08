@@ -202,7 +202,6 @@ const getComparisonGroups = async (establishmentId, mainService, benchmarksModel
     attributes,
     workerId && workerMap.get(workerId),
   );
-
   return { comparisonGroup, comparisonGoodCqcGroup };
 };
 

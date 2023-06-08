@@ -107,7 +107,11 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.benchmarksService.getAllRankingData(this.establishmentUid).subscribe((data: AllRankingsResponse) => {
         this.rankings = data;
-        this.payContent = { ...this.rankings.careWorkerPay, smallText: true, noData: MetricsContent.Pay.noData };
+        this.payContent = {
+          ...this.rankings.pay.careWorkerPay.groupRankings,
+          smallText: true,
+          noData: MetricsContent.Pay.noData,
+        };
         this.turnoverContent = {
           ...this.rankings.turnoverRate,
           smallText: true,
