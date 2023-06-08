@@ -249,10 +249,10 @@ const getMetaData = async (establishmentId, mainService) => {
 const viewBenchmarks = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
-    const { MainServiceFKValue } = await models.establishment.findbyId(establishmentId);
+    const { mainService } = await models.establishment.findbyId(establishmentId);
 
-    const mainService = [1, 2, 8].includes(MainServiceFKValue) ? MainServiceFKValue : 0;
-    const benchmarksData = await getBenchmarksData(establishmentId, mainService);
+    const mainServiceID = [1, 2, 8].includes(mainService.reportingID) ? mainService.reportingID : 0;
+    const benchmarksData = await getBenchmarksData(establishmentId, mainServiceID);
 
     return res.status(200).json(benchmarksData);
   } catch (err) {
