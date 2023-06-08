@@ -127,6 +127,31 @@ const getTurnoverRanking = async function (establishmentId, mainService) {
   return { groupRankings, goodCqcRankings };
 };
 
+const getVacancyRanking = async function (establishmentId, mainService) {
+  const currentmetricValue = await getTurnover({ establishmentId });
+
+  const groupRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksVacanciesByEstId',
+    ['VacancyRate'],
+    currentmetricValue,
+    (r) => parseFloat(r.VacancyRate),
+    calculateRankAsc,
+  );
+
+  const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksVacanciesByEstIdGoodOutstanding',
+    ['VacancyRate'],
+    currentmetricValue,
+    (r) => parseFloat(r.VacancyRate),
+    calculateRankAsc,
+  );
+  return { groupRankings, goodCqcRankings };
+};
+
 const getComparisonGroupAndCalculateRanking = async function (
   establishmentId,
   mainService,
@@ -212,6 +237,10 @@ const getTurnoverResponse = async (req, res) => {
   await getResponse(req, res, getTurnoverRanking);
 };
 
+const getVacancyResponse = async (req, res) => {
+  await getResponse(req, res, getVacancyRanking);
+};
+
 const getRankingsResponse = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
@@ -240,6 +269,7 @@ router.route('/pay').get(getPayResponse);
 router.route('/qualifications').get(getQualificationsResponse);
 router.route('/sickness').get(getSicknessResponse);
 router.route('/turnover').get(getTurnoverResponse);
+router.route('/vacancy').get(getVacancyResponse);
 
 module.exports = router;
 module.exports.pay = getPayRanking;
