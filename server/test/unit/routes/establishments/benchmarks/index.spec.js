@@ -761,7 +761,7 @@ describe('/benchmarks', () => {
     });
 
     it('should return 200 and the data when successfully getting the benchmarks data', async () => {
-      sinon.stub(models.establishment, 'findbyId').returns({ MainServiceFKValue: 8 });
+      sinon.stub(models.establishment, 'findbyId').returns({ mainService: { reportingID: 8 } });
       sinon
         .stub(benchmarksService, 'getPay')
         .onFirstCall()

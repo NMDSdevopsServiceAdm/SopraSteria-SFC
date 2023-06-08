@@ -14,6 +14,7 @@ import { DataAreaRoutingModule } from './data-area-routing.module';
 import { DataAreaTabComponent } from './data-area-tab.component';
 import { DataAreaUsefulLinkComponent } from './data-area-useful-link/data-area-useful-link.component';
 import { DownloadPdfComponent } from './download-pdf/download-pdf.component';
+import { DataAreaPayComponent } from './data-area-pay/data-area-pay.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, OverlayModule, HighchartsChartModule, SharedModule, DataAreaRoutingModule],
@@ -26,6 +27,7 @@ import { DownloadPdfComponent } from './download-pdf/download-pdf.component';
     BenchmarksSelectComparisonGroupsComponent,
     DataAreaUsefulLinkComponent,
     DownloadPdfComponent,
+    DataAreaPayComponent,
   ],
   exports: [
     DataAreaAboutTheDataComponent,
@@ -36,6 +38,7 @@ import { DownloadPdfComponent } from './download-pdf/download-pdf.component';
     BenchmarksSelectComparisonGroupsComponent,
     DataAreaUsefulLinkComponent,
     DownloadPdfComponent,
+    DataAreaPayComponent,
   ],
   providers: [],
 })
