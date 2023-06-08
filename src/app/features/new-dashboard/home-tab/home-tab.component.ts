@@ -123,6 +123,8 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   private setBenchmarksCard(): void {
     const comparisonDataAvailable = this.meta?.staff && this.meta?.workplaces;
 
+    const localAuthority = this.meta?.localAuthority.replace('&', 'and');
+
     if (!comparisonDataAvailable) {
       this.benchmarksHeader = 'See how you compare against other workplaces';
       this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
@@ -132,12 +134,12 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
         this.benchmarksHeader = 'See how your pay, recruitment and retention compares against other workplaces';
         this.benchmarksMessage = `There are ${
           this.meta?.workplaces ? this.meta.workplaces : 0
-        } workplaces providing ${benchmarksCareType} in ${this.meta?.localAuthority}.`;
+        } workplaces providing ${benchmarksCareType.toLowerCase()} in ${localAuthority}.`;
       } else if (!this.workplace.isRegulated) {
         this.benchmarksHeader = 'See how you compare against other workplaces';
         this.benchmarksMessage = `There are ${
           this.meta?.workplaces ? this.meta.workplaces : 0
-        } workplaces providing adult social care in ${this.meta?.localAuthority}.`;
+        } workplaces providing adult social care in ${localAuthority}.`;
       }
     }
   }

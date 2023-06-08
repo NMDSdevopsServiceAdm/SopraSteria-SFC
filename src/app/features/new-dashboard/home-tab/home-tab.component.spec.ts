@@ -478,7 +478,7 @@ describe('NewHomeTabComponent', () => {
               'See how your pay, recruitment and retention compares against other workplaces',
             );
             const benchmarksCardText = getByText(
-              'There are 9 workplaces providing Day care and day services in Test LA.',
+              'There are 9 workplaces providing day care and day services in Test LA.',
             );
             fireEvent.click(benchmarksLink);
 
