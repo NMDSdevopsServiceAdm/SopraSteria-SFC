@@ -113,13 +113,17 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
           noData: MetricsContent.Pay.noData,
         };
         this.turnoverContent = {
-          ...this.rankings.turnoverRate,
+          ...this.rankings.turnoverRate.groupRankings,
           smallText: true,
           noData: MetricsContent.Turnover.noData,
         };
-        this.sicknessContent = { ...this.rankings.sickness, smallText: true, noData: MetricsContent.Sickness.noData };
+        this.sicknessContent = {
+          ...this.rankings.sickness.groupRankings,
+          smallText: true,
+          noData: MetricsContent.Sickness.noData,
+        };
         this.qualificationsContent = {
-          ...this.rankings.qualifications,
+          ...this.rankings.qualifications.groupRankings,
           smallText: true,
           noData: MetricsContent.Qualifications.noData,
         };

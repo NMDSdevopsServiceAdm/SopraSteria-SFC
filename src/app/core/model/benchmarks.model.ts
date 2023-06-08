@@ -52,9 +52,9 @@ export interface PayRankingsResponse {
 
 export interface AllRankingsResponse {
   pay: PayRankingsResponse;
-  qualifications: RankingsResponse;
-  sickness: RankingsResponse;
-  turnoverRate: RankingsResponse;
+  qualifications: CompareGroupsRankingsResponse;
+  sickness: CompareGroupsRankingsResponse;
+  turnoverRate: CompareGroupsRankingsResponse;
 }
 
 export enum Metric {

@@ -2,6 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { ActivatedRoute, Data } from '@angular/router';
 import {
   BenchmarksResponse,
+  CompareGroupsRankingsResponse,
   Metric,
   NoData,
   PayRankingsResponse,
@@ -79,11 +80,19 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
         .subscribe(this.handleBenchmarksResponse),
     );
 
-    this.subscriptions.add(
-      dataObservable$
-        .pipe(mergeMap(() => this.benchmarksService.getRankingData(this.establishmentUid, Metric[this.type])))
-        .subscribe(this.handleRankingsResponse),
-    );
+    if (Metric[this.type] == 'pay') {
+      this.subscriptions.add(
+        dataObservable$
+          .pipe(mergeMap(() => this.benchmarksService.getPayRankingData(this.establishmentUid)))
+          .subscribe(this.handlePayRankingsResponse),
+      );
+    } else {
+      this.subscriptions.add(
+        dataObservable$
+          .pipe(mergeMap(() => this.benchmarksService.getRankingData(this.establishmentUid, Metric[this.type])))
+          .subscribe(this.handleRankingsResponse),
+      );
+    }
   }
 
   setRouteData = (data: Data): void => {
@@ -104,10 +113,15 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     }
   };
 
-  handleRankingsResponse = (rankings: PayRankingsResponse): void => {
-    this.rankings = rankings.careWorkerPay.groupRankings;
+  handleRankingsResponse = (rankings: CompareGroupsRankingsResponse): void => {
+    this.rankings = rankings.groupRankings;
     this.rankingContent = { ...this.rankings, noData: this.noData };
   };
+  handlePayRankingsResponse = (payRankings: PayRankingsResponse): void => {
+    this.rankings = payRankings.careWorkerPay.groupRankings;
+    this.rankingContent = { ...this.rankings, noData: this.noData };
+  };
+
   public async downloadAsPDF($event: Event): Promise<jsPDF> {
     $event.preventDefault();
 
