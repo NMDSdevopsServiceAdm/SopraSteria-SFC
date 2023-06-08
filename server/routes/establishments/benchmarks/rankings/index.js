@@ -8,6 +8,8 @@ const {
   getSickness,
   getTurnover,
   getComparisonGroupRankings,
+  getVacancies,
+  getTimeInRole,
 } = require('../benchmarksService');
 
 const CARE_WORKER_ID = 10;
@@ -128,7 +130,7 @@ const getTurnoverRanking = async function (establishmentId, mainService) {
 };
 
 const getVacancyRanking = async function (establishmentId, mainService) {
-  const currentmetricValue = await getTurnover({ establishmentId });
+  const currentmetricValue = await getVacancies({ establishmentId });
 
   const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
@@ -147,6 +149,31 @@ const getVacancyRanking = async function (establishmentId, mainService) {
     ['VacancyRate'],
     currentmetricValue,
     (r) => parseFloat(r.VacancyRate),
+    calculateRankAsc,
+  );
+  return { groupRankings, goodCqcRankings };
+};
+
+const getTimeInRoleRankings = async function (establishmentId, mainService) {
+  const currentmetricValue = await getTimeInRole({ establishmentId });
+
+  const groupRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksTimeInRoleByEstId',
+    ['InRoleFor12MonthsPercentage'],
+    currentmetricValue,
+    (r) => parseFloat(r.InRoleFor12MonthsPercentage),
+    calculateRankAsc,
+  );
+
+  const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksTimeInRoleByEstIdGoodOutstanding',
+    ['InRoleFor12MonthsPercentage'],
+    currentmetricValue,
+    (r) => parseFloat(r.InRoleFor12MonthsPercentage),
     calculateRankAsc,
   );
   return { groupRankings, goodCqcRankings };
@@ -171,13 +198,13 @@ const getComparisonGroupAndCalculateRanking = async function (
   );
 
   const mappedComparisonGroupRankings = comparisonGroupRankings.map(mapComparisonGroupCallback).filter((a) => a);
-
   if (mappedComparisonGroupRankings.length === 0) {
     return {
       hasValue: false,
       stateMessage: 'no-comparison-data',
     };
   }
+
   const maxRank = mappedComparisonGroupRankings.length + 1;
   if (metric.stateMessage) {
     return {
@@ -188,10 +215,15 @@ const getComparisonGroupAndCalculateRanking = async function (
   }
 
   const currentRank = await calculateRankingCallback(metric.value, mappedComparisonGroupRankings);
+  const valuesData = mappedComparisonGroupRankings.map((rank) => {
+    return { value: rank, currentEst: false };
+  });
+  valuesData.splice(currentRank - 1, 0, { value: metric.value, currentEst: true });
   return {
     maxRank,
     currentRank,
     hasValue: true,
+    allValues: valuesData,
   };
 };
 
@@ -241,6 +273,10 @@ const getVacancyResponse = async (req, res) => {
   await getResponse(req, res, getVacancyRanking);
 };
 
+const getTimeInRoleResponse = async (req, res) => {
+  await getResponse(req, res, getTimeInRoleRankings);
+};
+
 const getRankingsResponse = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
@@ -256,6 +292,8 @@ const getRankingsResponse = async (req, res) => {
     data.turnover = await getTurnoverRanking(establishmentId, mainService);
     data.sickness = await getSicknessRanking(establishmentId, mainService);
     data.qualifications = await getQualificationsRanking(establishmentId, mainService);
+    data.vacancy = await getVacancyRanking(establishmentId, mainService);
+    data.timeInRole = await getTimeInRoleRankings(establishmentId, mainService);
 
     res.status(200).json(data);
   } catch (error) {
@@ -270,6 +308,7 @@ router.route('/qualifications').get(getQualificationsResponse);
 router.route('/sickness').get(getSicknessResponse);
 router.route('/turnover').get(getTurnoverResponse);
 router.route('/vacancy').get(getVacancyResponse);
+router.route('/time_in_role').get(getTimeInRoleResponse);
 
 module.exports = router;
 module.exports.pay = getPayRanking;
