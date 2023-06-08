@@ -78,24 +78,53 @@ const getQualificationsRanking = async function (establishmentId, mainService) {
   return { groupRankings, goodCqcRankings };
 };
 
-const getSicknessRanking = async function (establishmentId) {
-  return await getComparisonGroupAndCalculateRanking(
+const getSicknessRanking = async function (establishmentId, mainService) {
+  const currentmetricValue = await getSickness({ establishmentId });
+
+  const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
-    models.benchmarksSickness,
-    getSickness,
-    (r) => parseInt(r.sickness),
+    mainService,
+    'benchmarksSicknessByEstId',
+    ['AverageNoOfSickDays'],
+    currentmetricValue,
+    (r) => parseInt(r.AverageNoOfSickDays),
     calculateRankAsc,
   );
+  const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksSicknessByEstIdGoodOutstanding',
+    ['AverageNoOfSickDays'],
+    currentmetricValue,
+    (r) => parseInt(r.AverageNoOfSickDays),
+    calculateRankAsc,
+  );
+  return { groupRankings, goodCqcRankings };
 };
 
-const getTurnoverRanking = async function (establishmentId) {
-  return await getComparisonGroupAndCalculateRanking(
+const getTurnoverRanking = async function (establishmentId, mainService) {
+  const currentmetricValue = await getTurnover({ establishmentId });
+
+  const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
-    models.benchmarksTurnover,
-    getTurnover,
-    (r) => parseFloat(r.turnover),
+    mainService,
+    'benchmarksTurnoverByEstId',
+    ['TurnoverRate'],
+    currentmetricValue,
+    (r) => parseFloat(r.TurnoverRate),
     calculateRankAsc,
   );
+
+  const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksTurnoverByEstIdGoodOutstanding',
+    ['TurnoverRate'],
+    currentmetricValue,
+    (r) => parseFloat(r.TurnoverRate),
+    calculateRankAsc,
+  );
+  return { groupRankings, goodCqcRankings };
 };
 
 const getComparisonGroupAndCalculateRanking = async function (
@@ -115,6 +144,7 @@ const getComparisonGroupAndCalculateRanking = async function (
     attributes,
     workerId && workerMap.get(workerId),
   );
+
   const mappedComparisonGroupRankings = comparisonGroupRankings.map(mapComparisonGroupCallback).filter((a) => a);
 
   if (mappedComparisonGroupRankings.length === 0) {
@@ -188,14 +218,15 @@ const getRankingsResponse = async (req, res) => {
     const { MainServiceFKValue } = await models.establishment.findbyId(establishmentId);
     const mainService = [1, 2, 8].includes(MainServiceFKValue) ? MainServiceFKValue : 0;
 
-    const data = {};
-    data.careWorkerPay = await getPayRanking(establishmentId, mainService, CARE_WORKER_ID);
-    data.seniorCareWorkerPay = await getPayRanking(establishmentId, mainService, SENIOR_CARE_WORKER_ID);
-    data.registeredNursePay = await getPayRanking(establishmentId, mainService, REGISTERED_NURSE_ID);
-    data.registeredManagerPay = await getPayRanking(establishmentId, mainService, REGISTERED_MANAGER_ID);
-    data.turnover = await getTurnoverRanking(establishmentId);
-    data.sickness = await getSicknessRanking(establishmentId);
-    data.qualifications = await getQualificationsRanking(establishmentId);
+    const data = { pay: {} };
+
+    data.pay.careWorkerPay = await getPayRanking(establishmentId, mainService, CARE_WORKER_ID);
+    data.pay.seniorCareWorkerPay = await getPayRanking(establishmentId, mainService, SENIOR_CARE_WORKER_ID);
+    data.pay.registeredNursePay = await getPayRanking(establishmentId, mainService, REGISTERED_NURSE_ID);
+    data.pay.registeredManagerPay = await getPayRanking(establishmentId, mainService, REGISTERED_MANAGER_ID);
+    data.turnover = await getTurnoverRanking(establishmentId, mainService);
+    data.sickness = await getSicknessRanking(establishmentId, mainService);
+    data.qualifications = await getQualificationsRanking(establishmentId, mainService);
 
     res.status(200).json(data);
   } catch (error) {
