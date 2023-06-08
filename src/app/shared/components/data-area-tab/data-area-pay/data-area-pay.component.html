@@ -1,194 +1,136 @@
-<h2 class="govuk-heading-m">Pay</h2>
+<div class="govuk-grid-column-two-thirds">
+  <ng-container *ngIf="!viewBenchmarksComparisonGroups">
+    <h3 class="govuk-heading-m" data-testid="benchmarksPayHeader">
+      {{ workplace.mainService.name }} providers in {{ tilesData?.meta.localAuthority }}
+    </h3>
+    <p class="govuk-body" data-testid="benchmarksComparisonGroup">
+      Your selected comparison group is a maximum
+      <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staff | number }}</span>
+      staff from
+      <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplaces | number }}</span>
+      workplaces using ASC-WDS and providing
+      <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
+      in {{ tilesData?.meta.localAuthority }}.
+    </p>
+  </ng-container>
+  <ng-container *ngIf="viewBenchmarksComparisonGroups">
+    <h3 class="govuk-heading-m" data-testid="benchmarkGoodAndOutstandingHeader">
+      Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}
+    </h3>
+    <p class="govuk-body" data-testid="benchmarkGoodAndOutstandingComparison">
+      Your selected comparison group is a maximum
+      <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
+      staff from
+      <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
+      workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
+      <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
+      in {{ tilesData?.meta.localAuthority }}.
+    </p>
+  </ng-container>
+  <app-download-pdf
+    [linkUrl]="'/benchmarks.pdf'"
+    [linkTitle]="downloadPayBenchmarksText"
+    (downloadPDF)="downloadAsPDF()"
+  ></app-download-pdf>
 
-<div class="govuk-grid-row govuk-!-margin-top-2">
-  <div class="govuk-grid-column-one-third">
-    <a
-      class="asc-font-19"
-      data-html2canvas-ignore
-      [routerLink]="['/workplace', workplace.uid, 'benchmarks', 'about-the-data']"
-      (click)="setReturn()"
-      >About the data</a
+  <table class="govuk-table govuk-!-margin-top-7">
+    <caption class="govuk-table__caption govuk-table__caption--m">
+      Average pay and salaries
+    </caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header"></th>
+        <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
+          Your workplace
+        </th>
+        <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
+          Comparison group
+        </th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row first-row">
+        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+          Care worker pay
+        </th>
+        <td class="govuk-table__cell workplace-cell">£10.26 (hourly)</td>
+        <td class="govuk-table__cell comparision-group-cell">£9.75 (hourly)</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+          Senior care worker pay
+        </th>
+        <td class="govuk-table__cell workplace-cell">£11.05 (hourly)</td>
+        <td class="govuk-table__cell comparision-group-cell">£11.50 (hourly)</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+          Registered nurse salary
+        </th>
+        <td class="govuk-table__cell workplace-cell">£34,130 (annually)</td>
+        <td class="govuk-table__cell comparision-group-cell">£34,100 (annually)</td>
+      </tr>
+      <tr class="govuk-table__row last-row">
+        <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">Registered manager salary</th>
+        <td class="govuk-table__cell workplace-cell">£35,637 (annually)</td>
+        <td class="govuk-table__cell comparision-group-cell">£36,185 (annually)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="govuk-width-container govuk-!-margin-top-7">
+    <app-benchmarks-select-view-panel
+      [toggleBoolean]="viewBenchmarksPosition"
+      [falseSelectionName]="'Where you rank'"
+      [trueSelecttionName]="'Where you\'re positioned'"
+      (handleViewToggle)="handleViewBenchmarkPosition($event)"
     >
-    <div *ngIf="tilesData?.meta.lastUpdated" data-testid="benchmarksLastUpdatedDate" class="govuk-!-margin-top-5">
-      <p class="govuk-body">
-        The comparison group data was refreshed on {{ tilesData?.meta.lastUpdated | date: 'd MMMM y' }}.
-      </p>
-    </div>
-
-    <app-benchmarks-select-comparison-group
-      [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
-      (handleViewToggle)="handleViewComparisonGroups($event)"
-      [mainServiceName]="workplace.mainService.name"
-      [localAuthorityLocation]="tilesData?.meta.localAuthority"
-    >
-    </app-benchmarks-select-comparison-group>
-  </div>
-  <div class="govuk-grid-column-two-thirds">
-    <ng-container *ngIf="!viewBenchmarksComparisonGroups">
-      <h3 class="govuk-heading-m" data-testid="benchmarksPayHeader">
-        {{ workplace.mainService.name }} providers in {{ tilesData?.meta.localAuthority }}
-      </h3>
-      <p class="govuk-body" data-testid="benchmarksComparisonGroup">
-        Your selected comparison group is a maximum
-        <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staff | number }}</span>
-        staff from
-        <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplaces | number }}</span>
-        workplaces using ASC-WDS and providing
-        <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-        in {{ tilesData?.meta.localAuthority }}.
-      </p>
-    </ng-container>
-    <ng-container *ngIf="viewBenchmarksComparisonGroups">
-      <h3 class="govuk-heading-m" data-testid="benchmarkGoodAndOutstandingHeader">
-        Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}
-      </h3>
-      <p class="govuk-body" data-testid="benchmarkGoodAndOutstandingComparison">
-        Your selected comparison group is a maximum
-        <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
-        staff from
-        <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
-        workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
-        <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-        in {{ tilesData?.meta.localAuthority }}.
-      </p>
-    </ng-container>
-    <app-download-pdf
-      [linkUrl]="'/benchmarks.pdf'"
-      [linkTitle]="downloadPayBenchmarksText"
-      (downloadPDF)="downloadAsPDF()"
-    ></app-download-pdf>
-
-    <table class="govuk-table govuk-!-margin-top-7">
-      <caption class="govuk-table__caption govuk-table__caption--m">
-        Average pay and salaries
-      </caption>
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header"></th>
-          <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
-            Your workplace
-          </th>
-          <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
-            Comparison group
-          </th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row first-row">
-          <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-            Care worker pay
-          </th>
-          <td class="govuk-table__cell workplace-cell">£10.26 (hourly)</td>
-          <td class="govuk-table__cell comparision-group-cell">£9.75 (hourly)</td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-            Senior care worker pay
-          </th>
-          <td class="govuk-table__cell workplace-cell">£11.05 (hourly)</td>
-          <td class="govuk-table__cell comparision-group-cell">£11.50 (hourly)</td>
-        </tr>
-        <tr class="govuk-table__row">
-          <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-            Registered nurse salary
-          </th>
-          <td class="govuk-table__cell workplace-cell">£34,130 (annually)</td>
-          <td class="govuk-table__cell comparision-group-cell">£34,100 (annually)</td>
-        </tr>
-        <tr class="govuk-table__row last-row">
-          <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">Registered manager salary</th>
-          <td class="govuk-table__cell workplace-cell">£35,637 (annually)</td>
-          <td class="govuk-table__cell comparision-group-cell">£36,185 (annually)</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="govuk-width-container govuk-!-margin-top-7">
-      <app-benchmarks-select-view-panel
-        [toggleBoolean]="viewBenchmarksPosition"
-        [falseSelectionName]="'Where you rank'"
-        [trueSelecttionName]="'Where you\'re positioned'"
-        (handleViewToggle)="handleViewBenchmarkPosition($event)"
-      >
-      </app-benchmarks-select-view-panel>
-      <div class="govuk-!-margin-top-7">
-        <ng-container *ngIf="!viewBenchmarksPosition">
-          <app-data-area-ranking
-            [rankingTitle]="'Care worker pay'"
-            [workplaceRankNumber]="18"
-            [workplacesNumber]="72"
-          ></app-data-area-ranking>
-          <app-data-area-ranking
-            [rankingTitle]="'Senior care worker pay'"
-            [workplaceRankNumber]="51"
-            [workplacesNumber]="72"
-          ></app-data-area-ranking>
-          <app-data-area-ranking
-            [rankingTitle]="'Registered nurse salary'"
-            [workplaceRankNumber]="36"
-            [workplacesNumber]="72"
-          ></app-data-area-ranking>
-          <app-data-area-ranking
-            [rankingTitle]="'Registered manager salary'"
-            [workplaceRankNumber]="41"
-            [workplacesNumber]="72"
-          ></app-data-area-ranking>
-        </ng-container>
-        <ng-container *ngIf="viewBenchmarksPosition">
-          <app-data-area-barchart
-            [positionedTitle]="'Care worker pay'"
-            [payMoreThanWorkplacesNumber]="54"
-            [workplacesNumber]="72"
-          ></app-data-area-barchart>
-          <app-data-area-barchart
-            [positionedTitle]="'Senior care worker pay'"
-            [payMoreThanWorkplacesNumber]="21"
-            [workplacesNumber]="72"
-          ></app-data-area-barchart>
-          <app-data-area-barchart
-            [positionedTitle]="'Registered nurse salary'"
-            [payMoreThanWorkplacesNumber]="36"
-            [workplacesNumber]="72"
-          ></app-data-area-barchart>
-          <app-data-area-barchart
-            [positionedTitle]="'Registered manager salary'"
-            [payMoreThanWorkplacesNumber]="31"
-            [workplacesNumber]="72"
-          ></app-data-area-barchart>
-        </ng-container>
-      </div>
-    </div>
-
+    </app-benchmarks-select-view-panel>
     <div class="govuk-!-margin-top-7">
-      <h2 class="govuk-heading-m">Useful links</h2>
-      <app-data-area-useful-link
-        [linkTitle]="'International recruitment'"
-        [linkUrl]="'/#'"
-        [linkDescription]="
-          'International recruitment can help you develop a skilled and diverse workforce, but it can also be daunting for employers. We\'ve collected together the resources that\'ll support you every step of the way.'
-        "
-      ></app-data-area-useful-link>
-
-      <app-data-area-useful-link
-        [linkTitle]="'Social media for recruiting care workers'"
-        [linkUrl]="'/#'"
-        [linkDescription]="
-          'Social media is a great way to attract new people and generate interest in your organisation. This guide offers tips and advice to help you make the most of well-known platforms and attract people of different ages.'
-        "
-      ></app-data-area-useful-link>
-
-      <app-data-area-useful-link
-        [linkTitle]="'Maximise retention'"
-        [linkUrl]="'/#'"
-        [linkDescription]="
-          'This webinar shares sector expertise around maximising the retention of your staff. Discover top tips and innovative solutions for staff retention and practical ideas from other managers.'
-        "
-      ></app-data-area-useful-link>
+      <ng-container *ngIf="!viewBenchmarksPosition">
+        <app-data-area-ranking
+          [rankingTitle]="'Care worker pay'"
+          [workplaceRankNumber]="18"
+          [workplacesNumber]="72"
+        ></app-data-area-ranking>
+        <app-data-area-ranking
+          [rankingTitle]="'Senior care worker pay'"
+          [workplaceRankNumber]="51"
+          [workplacesNumber]="72"
+        ></app-data-area-ranking>
+        <app-data-area-ranking
+          [rankingTitle]="'Registered nurse salary'"
+          [workplaceRankNumber]="36"
+          [workplacesNumber]="72"
+        ></app-data-area-ranking>
+        <app-data-area-ranking
+          [rankingTitle]="'Registered manager salary'"
+          [workplaceRankNumber]="41"
+          [workplacesNumber]="72"
+        ></app-data-area-ranking>
+      </ng-container>
+      <ng-container *ngIf="viewBenchmarksPosition">
+        <app-data-area-barchart
+          [positionedTitle]="'Care worker pay'"
+          [payMoreThanWorkplacesNumber]="54"
+          [workplacesNumber]="72"
+        ></app-data-area-barchart>
+        <app-data-area-barchart
+          [positionedTitle]="'Senior care worker pay'"
+          [payMoreThanWorkplacesNumber]="21"
+          [workplacesNumber]="72"
+        ></app-data-area-barchart>
+        <app-data-area-barchart
+          [positionedTitle]="'Registered nurse salary'"
+          [payMoreThanWorkplacesNumber]="36"
+          [workplacesNumber]="72"
+        ></app-data-area-barchart>
+        <app-data-area-barchart
+          [positionedTitle]="'Registered manager salary'"
+          [payMoreThanWorkplacesNumber]="31"
+          [workplacesNumber]="72"
+        ></app-data-area-barchart>
+      </ng-container>
     </div>
   </div>
-  <app-data-area-about-the-data
-    #aboutData
-    class="govuk-visually-hidden"
-    [workplace]="workplace"
-  ></app-data-area-about-the-data>
 </div>
