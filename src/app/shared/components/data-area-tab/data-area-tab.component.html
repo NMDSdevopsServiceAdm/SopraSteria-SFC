@@ -82,118 +82,16 @@
         (downloadPDF)="downloadAsPDF()"
       ></app-download-pdf>
 
-      <ng-container *ngIf="!viewBenchmarksByCategory">
-        <app-data-area-pay [tilesData]="tileData" data-testid="data-area-tab"></app-data-area-pay>
+      <ng-container *ngIf="viewBenchmarksByCategory; else showPay">
+        <app-data-area-recruitment-and-retention
+          [data]="tilesData"
+          [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+          data-testid="recruitmentAndRetentionArea"
+        ></app-data-area-recruitment-and-retention>
       </ng-container>
-      <ng-container *ngIf="viewBenchmarksByCategory">
-        <table class="govuk-table govuk-!-margin-top-2" data-testid="recruitmentAndRetentionTable">
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header"></th>
-              <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
-                Your workplace
-              </th>
-              <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
-                Comparison group
-              </th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-            <tr class="govuk-table__row first-row" data-testid="vacancyRow">
-              <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-                Vacancy rate
-              </th>
-              <td class="govuk-table__cell workplace-cell">
-                {{ tilesData?.vacancyRate.workplaceValue.value * 100 | number: '1.0-0' }}%
-              </td>
-              <td class="govuk-table__cell comparision-group-cell">
-                <ng-container *ngIf="viewBenchmarksComparisonGroups; else vacancyTotalComparison">
-                  {{ tilesData?.vacancyRate.goodCqc.value * 100 | number: '1.0-0' }}%
-                </ng-container>
-                <ng-template #vacancyTotalComparison>
-                  {{ tilesData?.vacancyRate.comparisonGroup.value * 100 | number: '1.0-0' }}%
-                </ng-template>
-              </td>
-            </tr>
-            <tr class="govuk-table__row" data-testid="turnoverRow">
-              <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-                Turnover rate
-              </th>
-              <td class="govuk-table__cell workplace-cell">
-                {{ tilesData?.turnoverRate.workplaceValue.value * 100 | number: '1.0-0' }}%
-              </td>
-              <td class="govuk-table__cell comparision-group-cell">
-                <ng-container *ngIf="viewBenchmarksComparisonGroups; else turnoverTotalComparison">
-                  {{ tilesData?.turnoverRate.goodCqc.value * 100 | number: '1.0-0' }}%
-                </ng-container>
-                <ng-template #turnoverTotalComparison>
-                  {{ tilesData?.turnoverRate.comparisonGroup.value * 100 | number: '1.0-0' }}%
-                </ng-template>
-              </td>
-            </tr>
-            <tr class="govuk-table__row last-row" data-testid="timeInRoleRow">
-              <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">
-                Percentage of staff still in their main job role after 12 months
-              </th>
-              <td class="govuk-table__cell workplace-cell">
-                {{ tilesData?.timeInRole.workplaceValue.value * 100 | number: '1.0-0' }}%
-              </td>
-              <td class="govuk-table__cell comparision-group-cell">
-                <ng-container *ngIf="viewBenchmarksComparisonGroups; else timeInRoleTotalComparison">
-                  {{ tilesData?.timeInRole.goodCqc.value * 100 | number: '1.0-0' }}%
-                </ng-container>
-                <ng-template #timeInRoleTotalComparison>
-                  {{ tilesData?.timeInRole.comparisonGroup.value * 100 | number: '1.0-0' }}%
-                </ng-template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </ng-container>
-      <div class="govuk-width-container govuk-!-margin-top-7">
-        <app-benchmarks-select-view-panel
-          [falseSelectionName]="'Where you rank'"
-          [trueSelectionName]="'Where you\'re positioned'"
-          (handleViewToggle)="handleViewBenchmarkPosition($event)"
-        >
-        </app-benchmarks-select-view-panel>
-        <div class="govuk-!-margin-top-7">
-          <ng-container *ngIf="!viewBenchmarksPosition">
-            <app-data-area-ranking
-              [rankingTitle]="'Vacancy rate'"
-              [workplaceRankNumber]="18"
-              [workplacesNumber]="72"
-            ></app-data-area-ranking>
-            <app-data-area-ranking
-              [rankingTitle]="'Turnover rate'"
-              [workplaceRankNumber]="51"
-              [workplacesNumber]="72"
-            ></app-data-area-ranking>
-            <app-data-area-ranking
-              [rankingTitle]="'Percentage of staff still in their main job role after 12 months'"
-              [workplaceRankNumber]="36"
-              [workplacesNumber]="72"
-            ></app-data-area-ranking>
-          </ng-container>
-          <ng-container *ngIf="viewBenchmarksPosition">
-            <app-data-area-barchart
-              [positionedTitle]="'Vacancy rate'"
-              [payMoreThanWorkplacesNumber]="54"
-              [workplacesNumber]="72"
-            ></app-data-area-barchart>
-            <app-data-area-barchart
-              [positionedTitle]="'Turnover rate'"
-              [payMoreThanWorkplacesNumber]="21"
-              [workplacesNumber]="72"
-            ></app-data-area-barchart>
-            <app-data-area-barchart
-              [positionedTitle]="'Percentage of staff still in their main job role after 12 months'"
-              [payMoreThanWorkplacesNumber]="36"
-              [workplacesNumber]="72"
-            ></app-data-area-barchart>
-          </ng-container>
-        </div>
-      </div>
+      <ng-template #showPay>
+        <app-data-area-pay [data]="tilesData" data-testid="payArea"></app-data-area-pay>
+      </ng-template>
 
       <div class="govuk-!-margin-top-7">
         <h2 class="govuk-heading-m">Useful links</h2>

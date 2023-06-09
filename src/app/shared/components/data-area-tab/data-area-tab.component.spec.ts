@@ -68,7 +68,7 @@ describe('DataAreaTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the pay table and the correct heading when viewBenchmarksByCategory is false', async () => {
+  it('should render the pay area and the correct heading when viewBenchmarksByCategory is false', async () => {
     const { component, fixture, getByTestId, queryByTestId } = await setup();
 
     component.viewBenchmarksByCategory = false;
@@ -76,64 +76,26 @@ describe('DataAreaTabComponent', () => {
 
     const categoryHeading = getByTestId('benchmarksCategoryHeading');
 
-    expect(getByTestId('payTable')).toBeTruthy();
+    expect(getByTestId('payArea')).toBeTruthy();
     expect(within(categoryHeading).getByText('Pay')).toBeTruthy();
-    expect(queryByTestId('recruitmentAndRetentionTable')).toBeFalsy();
+    expect(queryByTestId('recruitmentAndRetentionArea')).toBeFalsy();
     expect(within(categoryHeading).queryByText('Recruitment and retention')).toBeFalsy();
   });
 
-  describe('recruitment and retention', () => {
-    it('should render the recruitment and retention table and the correct heading when viewBenchmarksByCategory is true', async () => {
-      const { getByTestId, queryByTestId } = await setup();
+  it('should render the recruitment and retention area and the correct heading when viewBenchmarksByCategory is true', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-      const selectCategoryLinks = getByTestId('selectCategoryLinks');
+    component.viewBenchmarksByCategory = true;
+    fixture.detectChanges();
 
-      fireEvent.click(within(selectCategoryLinks).getByText('Recruitment and retention'));
-      const categoryHeading = getByTestId('benchmarksCategoryHeading');
+    const selectCategoryLinks = getByTestId('selectCategoryLinks');
 
-      expect(getByTestId('recruitmentAndRetentionTable')).toBeTruthy();
-      expect(within(categoryHeading).getByText('Recruitment and retention')).toBeTruthy();
-      expect(queryByTestId('payTable')).toBeFalsy();
-      expect(within(categoryHeading).queryByText('Pay')).toBeFalsy();
-    });
+    fireEvent.click(within(selectCategoryLinks).getByText('Recruitment and retention'));
+    const categoryHeading = getByTestId('benchmarksCategoryHeading');
 
-    it('should render the table with the retention and recruitment values for the workplace and comparison data', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.viewBenchmarksByCategory = true;
-      fixture.detectChanges();
-
-      const table = getByTestId('recruitmentAndRetentionTable');
-      const vacancyRow = within(table).getByTestId('vacancyRow');
-      const turnoverRow = within(table).getByTestId('turnoverRow');
-      const timeInRoleRow = within(table).getByTestId('timeInRoleRow');
-
-      expect(within(vacancyRow).getByText('7%')).toBeTruthy();
-      expect(within(vacancyRow).getByText('6%')).toBeTruthy();
-      expect(within(turnoverRow).getByText('28%')).toBeTruthy();
-      expect(within(turnoverRow).getByText('27%')).toBeTruthy();
-      expect(within(timeInRoleRow).getByText('88%')).toBeTruthy();
-      expect(within(timeInRoleRow).getByText('89%')).toBeTruthy();
-    });
-
-    it('should render the table with the retention and recruitment values for the workplace and goodCqc comparison data', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.viewBenchmarksByCategory = true;
-      component.viewBenchmarksComparisonGroups = true;
-      fixture.detectChanges();
-
-      const table = getByTestId('recruitmentAndRetentionTable');
-      const vacancyRow = within(table).getByTestId('vacancyRow');
-      const turnoverRow = within(table).getByTestId('turnoverRow');
-      const timeInRoleRow = within(table).getByTestId('timeInRoleRow');
-
-      expect(within(vacancyRow).getByText('7%')).toBeTruthy();
-      expect(within(vacancyRow).getByText('5%')).toBeTruthy();
-      expect(within(turnoverRow).getByText('28%')).toBeTruthy();
-      expect(within(turnoverRow).getByText('29%')).toBeTruthy();
-      expect(within(timeInRoleRow).getByText('88%')).toBeTruthy();
-      expect(within(timeInRoleRow).getByText('90%')).toBeTruthy();
-    });
+    expect(getByTestId('recruitmentAndRetentionArea')).toBeTruthy();
+    expect(within(categoryHeading).getByText('Recruitment and retention')).toBeTruthy();
+    expect(queryByTestId('payArea')).toBeFalsy();
+    expect(within(categoryHeading).queryByText('Pay')).toBeFalsy();
   });
 });

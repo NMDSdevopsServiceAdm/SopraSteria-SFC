@@ -45,9 +45,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
-    // console.log(this.tilesData);
-    console.log(this.canViewFullBenchmarks);
-    console.log(this.viewBenchmarksByCategory);
   }
 
   public async downloadAsPDF() {
