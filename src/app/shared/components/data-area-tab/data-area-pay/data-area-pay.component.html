@@ -1,38 +1,4 @@
-<div class="govuk-grid-column-two-thirds">
-  <ng-container *ngIf="!viewBenchmarksComparisonGroups">
-    <h3 class="govuk-heading-m" data-testid="benchmarksPayHeader">
-      {{ workplace.mainService.name }} providers in {{ tilesData?.meta.localAuthority }}
-    </h3>
-    <p class="govuk-body" data-testid="benchmarksComparisonGroup">
-      Your selected comparison group is a maximum
-      <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staff | number }}</span>
-      staff from
-      <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplaces | number }}</span>
-      workplaces using ASC-WDS and providing
-      <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-      in {{ tilesData?.meta.localAuthority }}.
-    </p>
-  </ng-container>
-  <ng-container *ngIf="viewBenchmarksComparisonGroups">
-    <h3 class="govuk-heading-m" data-testid="benchmarkGoodAndOutstandingHeader">
-      Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}
-    </h3>
-    <p class="govuk-body" data-testid="benchmarkGoodAndOutstandingComparison">
-      Your selected comparison group is a maximum
-      <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
-      staff from
-      <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
-      workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
-      <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-      in {{ tilesData?.meta.localAuthority }}.
-    </p>
-  </ng-container>
-  <app-download-pdf
-    [linkUrl]="'/benchmarks.pdf'"
-    [linkTitle]="downloadPayBenchmarksText"
-    (downloadPDF)="downloadAsPDF()"
-  ></app-download-pdf>
-
+<div>
   <table class="govuk-table govuk-!-margin-top-7">
     <caption class="govuk-table__caption govuk-table__caption--m">
       Average pay and salaries
@@ -86,30 +52,9 @@
       (handleViewToggle)="handleViewBenchmarkPosition($event)"
     >
     </app-benchmarks-select-view-panel>
-    <div class="govuk-!-margin-top-7">
-      <ng-container *ngIf="!viewBenchmarksPosition">
-        <app-data-area-ranking
-          [rankingTitle]="'Care worker pay'"
-          [workplaceRankNumber]="18"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="'Senior care worker pay'"
-          [workplaceRankNumber]="51"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="'Registered nurse salary'"
-          [workplaceRankNumber]="36"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="'Registered manager salary'"
-          [workplaceRankNumber]="41"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-      </ng-container>
-      <ng-container *ngIf="viewBenchmarksPosition">
+
+    <ng-container *ngIf="viewBenchmarksPosition; else showRankings">
+      <div class="govuk-!-margin-top-7" data-testid="barcharts">
         <app-data-area-barchart
           [positionedTitle]="'Care worker pay'"
           [payMoreThanWorkplacesNumber]="54"
@@ -130,7 +75,31 @@
           [payMoreThanWorkplacesNumber]="31"
           [workplacesNumber]="72"
         ></app-data-area-barchart>
-      </ng-container>
-    </div>
+      </div>
+    </ng-container>
+    <ng-template #showRankings>
+      <div class="govuk-!-margin-top-7" data-testid="rankings">
+        <app-data-area-ranking
+          [rankingTitle]="'Care worker pay'"
+          [workplaceRankNumber]="18"
+          [workplacesNumber]="72"
+        ></app-data-area-ranking>
+        <app-data-area-ranking
+          [rankingTitle]="'Senior care worker pay'"
+          [workplaceRankNumber]="51"
+          [workplacesNumber]="72"
+        ></app-data-area-ranking>
+        <app-data-area-ranking
+          [rankingTitle]="'Registered nurse salary'"
+          [workplaceRankNumber]="36"
+          [workplacesNumber]="72"
+        ></app-data-area-ranking>
+        <app-data-area-ranking
+          [rankingTitle]="'Registered manager salary'"
+          [workplaceRankNumber]="41"
+          [workplacesNumber]="72"
+        ></app-data-area-ranking>
+      </div>
+    </ng-template>
   </div>
 </div>

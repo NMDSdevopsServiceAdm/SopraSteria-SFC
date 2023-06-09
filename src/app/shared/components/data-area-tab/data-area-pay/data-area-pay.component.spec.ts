@@ -3,60 +3,32 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Establishment } from '@core/model/establishment.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import {
+  BenchmarksSelectViewPanelComponent,
+} from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
-import { establishmentBuilder } from '../../../../../../server/test/factories/models';
 import { DataAreaPayComponent } from './data-area-pay.component';
-import { BenchmarksService } from '@core/services/benchmarks.service';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 
-describe('DataAreaTabComponent', () => {
+fdescribe('DataAreaTabComponent', () => {
   const setup = async () => {
-    const establishment = establishmentBuilder() as Establishment;
-
-    const { fixture, getByText, queryByText, getByTestId } = await render(DataAreaPayComponent, {
+    const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaPayComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
-        },
-        {
-          provide: PermissionsService,
-          useClass: MockPermissionsService,
-        },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
-        },
-        {
-          provide: BenchmarksService,
-          useClass: MockBenchmarksService,
-        },
-      ],
-      declarations: [],
+      providers: [],
+      declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
-      componentProperties: {
-        workplace: establishment,
-      },
+      componentProperties: {},
     });
 
     const component = fixture.componentInstance;
 
     return {
       component,
-      getByText,
-      queryByText,
-      getByTestId,
       fixture,
+      getByText,
+      getByTestId,
+      queryByTestId,
     };
   };
 
@@ -65,52 +37,42 @@ describe('DataAreaTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Benchmark Pay', () => {
-    it('should render About the data with correct href', async () => {
-      const { component, getByText } = await setup();
+  it('should show the rankings area when viewBenchmarksPosition is false', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-      const dataArea = getByText('About the data');
-      const workplaceId = component.workplace.uid;
-      expect(dataArea).toBeTruthy();
-      expect(dataArea.getAttribute('href')).toEqual(`/workplace/${workplaceId}/benchmarks/about-the-data`);
-    });
+    component.viewBenchmarksPosition = false;
+    fixture.detectChanges();
 
-    it('should render lastupdated date', async () => {
-      const { component, getByTestId } = await setup();
-      component.tilesData?.meta.lastUpdated;
+    expect(getByTestId('rankings')).toBeTruthy();
+    expect(queryByTestId('barcharts')).toBeFalsy();
+  });
 
-      expect(getByTestId('benchmarksLastUpdatedDate')).toBeTruthy();
-    });
+  it('should show the ranking area when viewBenchmarksPosition is true', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-    it('should render benchmarks pay providers', async () => {
-      const { component, getByTestId } = await setup();
-      component.viewBenchmarksComparisonGroups;
+    component.viewBenchmarksPosition = true;
+    fixture.detectChanges();
 
-      expect(getByTestId('benchmarksPayHeader')).toBeTruthy();
-    });
+    expect(getByTestId('barcharts')).toBeTruthy();
+    expect(queryByTestId('rankings')).toBeFalsy();
+  });
 
-    it('should render benchmarks pay comparison group ', async () => {
-      const { component, getByTestId } = await setup();
-      component.viewBenchmarksComparisonGroups;
+  it('should toggle between rankings and benchmarks when the rank and positioned links are clicked', async () => {
+    const { component, fixture, getByText, getByTestId } = await setup();
 
-      expect(getByTestId('benchmarksComparisonGroup')).toBeTruthy();
-    });
+    component.viewBenchmarksPosition = true;
+    fixture.detectChanges();
 
-    it('should render benchmarks Good and outstanding pay header', async () => {
-      const { component, getByTestId, fixture } = await setup();
+    fireEvent.click(getByText('Where you rank'));
+    fixture.detectChanges();
 
-      component.viewBenchmarksComparisonGroups = true;
-      fixture.detectChanges();
+    expect(component.viewBenchmarksPosition).toEqual(false);
+    expect(getByTestId('rankings')).toBeTruthy();
 
-      expect(getByTestId('benchmarkGoodAndOutstandingHeader')).toBeTruthy();
-    });
+    fireEvent.click(getByText(`Where you're positioned`));
+    fixture.detectChanges();
 
-    it('should render benchmarks Good and outstanding pay comparison group', async () => {
-      const { fixture, component, getByTestId } = await setup();
-      component.viewBenchmarksComparisonGroups = true;
-      fixture.detectChanges();
-
-      expect(getByTestId('benchmarkGoodAndOutstandingComparison')).toBeTruthy();
-    });
+    expect(component.viewBenchmarksPosition).toEqual(true);
+    expect(getByTestId('barcharts')).toBeTruthy();
   });
 });

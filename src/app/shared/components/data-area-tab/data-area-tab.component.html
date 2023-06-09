@@ -24,11 +24,8 @@
       <h2 class="govuk-heading-m">Pay</h2>
     </ng-template>
   </div>
-  <ng-container *ngIf="!viewBenchmarksByCategory">
-    <app-data-area-pay [workplace]="workplace" data-testid="data-area-tab"></app-data-area-pay>
-  </ng-container>
 
-  <div class="govuk-grid-row govuk-!-margin-top-2" *ngIf="viewBenchmarksByCategory">
+  <div class="govuk-grid-row govuk-!-margin-top-2">
     <div class="govuk-grid-column-one-third">
       <a
         class="asc-font-19"
@@ -51,8 +48,21 @@
       >
       </app-benchmarks-select-comparison-group>
     </div>
+
     <div class="govuk-grid-column-two-thirds">
-      <ng-container *ngIf="!viewBenchmarksComparisonGroups">
+      <ng-container *ngIf="viewBenchmarksComparisonGroups; else nonGoodCqcComparisonGroup">
+        <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}</h3>
+        <p class="govuk-body">
+          Your selected comparison group is a maximum
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
+          staff from
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
+          workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
+          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
+          in {{ tilesData?.meta.localAuthority }}.
+        </p>
+      </ng-container>
+      <ng-template #nonGoodCqcComparisonGroup>
         <h3 class="govuk-heading-m">
           {{ workplace.mainService.name }} providers in {{ tilesData?.meta.localAuthority }}
         </h3>
@@ -65,27 +75,18 @@
           <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
           in {{ tilesData?.meta.localAuthority }}.
         </p>
-      </ng-container>
-      <ng-container *ngIf="viewBenchmarksComparisonGroups">
-        <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}</h3>
-        <p class="govuk-body">
-          Your selected comparison group is a maximum
-          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
-          staff from
-          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
-          workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
-          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-          in {{ tilesData?.meta.localAuthority }}.
-        </p>
-      </ng-container>
+      </ng-template>
 
+      <app-download-pdf
+        [linkUrl]="'/benchmarks.pdf'"
+        [linkTitle]="downloadRecruitmentBenchmarksText"
+        (downloadPDF)="downloadAsPDF()"
+      ></app-download-pdf>
+
+      <ng-container *ngIf="!viewBenchmarksByCategory">
+        <app-data-area-pay [tilesData]="tileData" data-testid="data-area-tab"></app-data-area-pay>
+      </ng-container>
       <ng-container *ngIf="viewBenchmarksByCategory">
-        <app-recruitment-and-retention-table></app-recruitment-and-retention-table>
-        <app-download-pdf
-          [linkUrl]="'/benchmarks.pdf'"
-          [linkTitle]="downloadRecruitmentBenchmarksText"
-          (downloadPDF)="downloadAsPDF()"
-        ></app-download-pdf>
         <table class="govuk-table govuk-!-margin-top-2" data-testid="recruitmentAndRetentionTable">
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">

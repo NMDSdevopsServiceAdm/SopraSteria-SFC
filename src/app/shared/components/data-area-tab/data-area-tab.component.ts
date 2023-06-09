@@ -28,7 +28,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public viewBenchmarksByCategory = false;
   public viewBenchmarksComparisonGroups = false;
   public viewBenchmarksPosition = false;
-  public downloadRecruitmentBenchmarksText = 'Download recruitment and retention benchmarks';
+  public downloadRecruitmentBenchmarksText: string;
   public tilesData: BenchmarksResponse;
 
   constructor(
@@ -45,7 +45,9 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
-    console.log(this.tilesData);
+    // console.log(this.tilesData);
+    console.log(this.canViewFullBenchmarks);
+    console.log(this.viewBenchmarksByCategory);
   }
 
   public async downloadAsPDF() {
@@ -58,11 +60,10 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   }
 
   public setDownloadBenchmarksText(): void {
-    const pagesPay = '2';
-    const fileSizePay = '430KB';
-    const pagesRecruitment = '2';
-    const fileSizeRecruitment = '385KB';
-    this.downloadRecruitmentBenchmarksText = `${this.downloadRecruitmentBenchmarksText} (PDF, ${fileSizeRecruitment}, ${pagesRecruitment} pages)`;
+    const fileSize = this.viewBenchmarksByCategory ? '385KB' : '430KB';
+    const section = this.viewBenchmarksByCategory ? 'recruitment and retention' : 'pay';
+
+    this.downloadRecruitmentBenchmarksText = `Download ${section} benchmarks (PDF, ${fileSize}, 2 pages)`;
   }
 
   public setReturn(): void {
@@ -74,6 +75,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   public handleViewBenchmarksByCategory(visible: boolean): void {
     this.viewBenchmarksByCategory = visible;
+    this.setDownloadBenchmarksText();
   }
 
   public handleViewComparisonGroups(visible: boolean): void {

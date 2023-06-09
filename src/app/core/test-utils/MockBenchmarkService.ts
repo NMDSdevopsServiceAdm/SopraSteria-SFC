@@ -10,49 +10,22 @@ const { build, fake } = require('@jackfranklin/test-data-bot');
 const benchmarksResponseBuilder = build('BenchmarksResponse', {
   fields: {
     careWorkerPay: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-      },
-      comparisonGroup: {
-        value: 0,
-        hasValue: false,
-      },
+      workplaceValue: { value: 0, hasValue: false },
+      comparisonGroup: { value: 0, hasValue: false },
     },
     sickness: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-      },
-      comparisonGroup: {
-        value: 0,
-        hasValue: false,
-      },
+      workplaceValue: { value: 0, hasValue: false },
+      comparisonGroup: { value: 0, hasValue: false },
     },
     qualifications: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-      },
-      comparisonGroup: {
-        value: 0,
-        hasValue: false,
-      },
+      workplaceValue: { value: 0, hasValue: false },
+      comparisonGroup: { value: 0, hasValue: false },
     },
     turnoverRate: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-      },
-      comparisonGroup: {
-        value: 0,
-        hasValue: false,
-      },
+      workplaceValue: { value: 0, hasValue: false },
+      comparisonGroup: { value: 0, hasValue: false },
     },
-    meta: {
-      staff: 10000,
-      workplace: 5,
-    },
+    meta: { staff: 10000, workplace: 5 },
   },
 });
 const allRankingsResponseBuilder = build('AllRankingsResponse', {
@@ -101,140 +74,49 @@ const newDataAreaResponse = build('BenchmarksResponse', {
       localAuthority: 'Hertfordshire',
     },
     careWorkerPay: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-        stateMessage: 'no-pay-data',
-      },
-      comparisonGroup: {
-        value: 1086,
-        hasValue: true,
-      },
-      goodCqc: {
-        value: 1080,
-        hasValue: true,
-      },
+      workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-pay-data' },
+      comparisonGroup: { value: 1086, hasValue: true },
+      goodCqc: { value: 1080, hasValue: true },
     },
     seniorCareWorkerPay: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-        stateMessage: 'no-pay-data',
-      },
-      comparisonGroup: {
-        value: 1150,
-        hasValue: true,
-      },
-      goodCqc: {
-        value: 1139,
-        hasValue: true,
-      },
+      workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-pay-data' },
+      comparisonGroup: { value: 1150, hasValue: true },
+      goodCqc: { value: 1139, hasValue: true },
     },
     registeredNursePay: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-        stateMessage: 'no-pay-data',
-      },
-      comparisonGroup: {
-        value: 38300,
-        hasValue: true,
-      },
-      goodCqc: {
-        value: 38900,
-        hasValue: true,
-      },
+      workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-pay-data' },
     },
-    registeredManagerPay: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-        stateMessage: 'no-pay-data',
-      },
-      comparisonGroup: {
-        value: 36600,
-        hasValue: true,
-      },
-      goodCqc: {
-        value: 36400,
-        hasValue: true,
-      },
-    },
-    vacancyRate: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-        stateMessage: 'mismatch-workers',
-      },
-      comparisonGroup: {
-        value: 0.08,
-        hasValue: true,
-      },
-      goodCqc: {
-        value: 0.07,
-        hasValue: true,
-      },
-    },
-    turnoverRate: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-        stateMessage: 'mismatch-workers',
-      },
-      comparisonGroup: {
-        value: 0.32,
-        hasValue: true,
-      },
-      goodCqc: {
-        value: 0.31,
-        hasValue: true,
-      },
-    },
-    qualifications: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-        stateMessage: 'no-qualifications-data',
-      },
-      comparisonGroup: {
-        value: 0.456386802,
-        hasValue: true,
-      },
-      goodCqc: {
-        value: 0.474539069,
-        hasValue: true,
-      },
-    },
-    sickness: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-        stateMessage: 'no-sickness-data',
-      },
-      comparisonGroup: {
-        value: 8,
-        hasValue: true,
-      },
-      goodCqc: {
-        value: 8,
-        hasValue: true,
-      },
-    },
-    timeInRole: {
-      workplaceValue: {
-        value: 0,
-        hasValue: false,
-        stateMessage: 'no-perm-or-temp',
-      },
-      comparisonGroup: {
-        value: 0.9004484305,
-        hasValue: true,
-      },
-      goodCqc: {
-        value: 0.9001441489,
-        hasValue: true,
-      },
-    },
+    goodCqc: { value: 38900, hasValue: true },
+  },
+  registeredManagerPay: {
+    workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-pay-data' },
+    comparisonGroup: { value: 36600, hasValue: true },
+    goodCqc: { value: 36400, hasValue: true },
+  },
+  vacancyRate: {
+    workplaceValue: { value: 0, hasValue: false, stateMessage: 'mismatch-workers' },
+    comparisonGroup: { value: 0.08, hasValue: true },
+    goodCqc: { value: 0.07, hasValue: true },
+  },
+  turnoverRate: {
+    workplaceValue: { value: 0, hasValue: false, stateMessage: 'mismatch-workers' },
+    comparisonGroup: { value: 0.32, hasValue: true },
+    goodCqc: { value: 0.31, hasValue: true },
+  },
+  qualifications: {
+    workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-qualifications-data' },
+    comparisonGroup: { value: 0.456386802, hasValue: true },
+    goodCqc: { value: 0.474539069, hasValue: true },
+  },
+  sickness: {
+    workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-sickness-data' },
+    comparisonGroup: { value: 8, hasValue: true },
+    goodCqc: { value: 8, hasValue: true },
+  },
+  timeInRole: {
+    workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-perm-or-temp' },
+    comparisonGroup: { value: 0.9004484305, hasValue: true },
+    goodCqc: { value: 0.9001441489, hasValue: true },
   },
 });
 
@@ -249,9 +131,9 @@ export class MockBenchmarksService extends BenchmarksService {
     return returnTo;
   }
 
-  public get benchmarksData(): BenchmarksResponse {
-    return benchmarksData;
-  }
+  // public get benchmarksData(): BenchmarksResponse {
+  //   return benchmarksData;
+  // }
 
   public getTileData(establishmentUid, requiredTiles): Observable<BenchmarksResponse> {
     return of(benchmarksData);
