@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { DataAreaPayComponent } from './data-area-pay.component';
 
-fdescribe('DataAreaTabComponent', () => {
+describe('DataAreaTabComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaPayComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],

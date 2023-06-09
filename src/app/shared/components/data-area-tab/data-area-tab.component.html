@@ -9,9 +9,8 @@
 <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
   <app-benchmarks-select-view-panel
     data-testid="selectCategoryLinks"
-    [toggleBoolean]="viewBenchmarksByCategory"
     [falseSelectionName]="'Pay'"
-    [trueSelecttionName]="'Recruitment and retention'"
+    [trueSelectionName]="'Recruitment and retention'"
     (handleViewToggle)="handleViewBenchmarksByCategory($event)"
   >
   </app-benchmarks-select-view-panel>
@@ -153,9 +152,8 @@
       </ng-container>
       <div class="govuk-width-container govuk-!-margin-top-7">
         <app-benchmarks-select-view-panel
-          [toggleBoolean]="viewBenchmarksPosition"
           [falseSelectionName]="'Where you rank'"
-          [trueSelecttionName]="'Where you\'re positioned'"
+          [trueSelectionName]="'Where you\'re positioned'"
           (handleViewToggle)="handleViewBenchmarkPosition($event)"
         >
         </app-benchmarks-select-view-panel>

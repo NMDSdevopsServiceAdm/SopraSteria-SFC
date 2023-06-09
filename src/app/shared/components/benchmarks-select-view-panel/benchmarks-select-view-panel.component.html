@@ -12,7 +12,7 @@
         [class.asc-tabs__link--active]="!toggleBoolean"
         href="#"
         role="tab"
-        (click)="this.handleViewChange($event)"
+        (click)="this.handleViewChange($event, false)"
         >{{ falseSelectionName }}</a
       >
     </li>
@@ -28,8 +28,8 @@
         [class.asc-tabs__link--active]="toggleBoolean"
         href="#"
         role="tab"
-        (click)="this.handleViewChange($event)"
-        >{{ trueSelecttionName }}</a
+        (click)="this.handleViewChange($event, true)"
+        >{{ trueSelectionName }}</a
       >
     </li>
   </ul>
