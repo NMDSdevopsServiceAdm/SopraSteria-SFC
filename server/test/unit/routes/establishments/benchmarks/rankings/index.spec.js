@@ -99,7 +99,9 @@ describe('rankings', () => {
 
   describe('qualifications', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
-      sinon.stub(models.worker, 'countSocialCareQualificationsAndNoQualifications').returns(null);
+      sinon
+        .stub(models.worker, 'countSocialCareQualificationsAndNoQualifications')
+        .returns({ quals: 0, noQuals: 0, lvl2Quals: 0 });
       sinon.stub(models.benchmarksQualificationsByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksQualificationsByEstIdGoodOutstanding, 'findAll').returns([]);
 
