@@ -9,11 +9,14 @@ export interface BenchmarksResponse {
   seniorCareWorkerPay?: Tile;
   registeredNursePay?: Tile;
   registeredManagerPay?: Tile;
+  timeInRole?: Tile;
   meta: Meta;
 }
 export interface Meta {
   workplaces: number;
   staff: number;
+  workplacesGoodCqc?: number;
+  staffGoodCqc?: number;
   lastUpdated?: Date;
   localAuthority: string;
 }

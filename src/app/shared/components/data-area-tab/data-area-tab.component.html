@@ -8,22 +8,23 @@
 
 <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
   <app-benchmarks-select-view-panel
-    [toggleBoolean]="viewBenchmarksByCategory"
+    data-testid="selectCategoryLinks"
     [falseSelectionName]="'Pay'"
-    [trueSelecttionName]="'Recruitment and retention'"
+    [trueSelectionName]="'Recruitment and retention'"
     (handleViewToggle)="handleViewBenchmarksByCategory($event)"
   >
   </app-benchmarks-select-view-panel>
-  <div class="govuk-!-margin-top-7">
-    <ng-container *ngIf="viewBenchmarksByCategory">
+
+  <div class="govuk-!-margin-top-7" data-testid="benchmarksCategoryHeading">
+    <ng-container *ngIf="viewBenchmarksByCategory; else payCategory">
       <h2 class="govuk-heading-m">Recruitment and retention</h2>
     </ng-container>
+    <ng-template #payCategory>
+      <h2 class="govuk-heading-m">Pay</h2>
+    </ng-template>
   </div>
-  <ng-container *ngIf="!viewBenchmarksByCategory">
-    <app-data-area-pay [workplace]="workplace" data-testid="data-area-tab"></app-data-area-pay>
-  </ng-container>
 
-  <div class="govuk-grid-row govuk-!-margin-top-2" *ngIf="viewBenchmarksByCategory">
+  <div class="govuk-grid-row govuk-!-margin-top-2">
     <div class="govuk-grid-column-one-third">
       <a
         class="asc-font-19"
@@ -46,8 +47,21 @@
       >
       </app-benchmarks-select-comparison-group>
     </div>
+
     <div class="govuk-grid-column-two-thirds">
-      <ng-container *ngIf="!viewBenchmarksComparisonGroups">
+      <ng-container *ngIf="viewBenchmarksComparisonGroups; else nonGoodCqcComparisonGroup">
+        <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}</h3>
+        <p class="govuk-body">
+          Your selected comparison group is a maximum
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
+          staff from
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
+          workplaces using ASC-WDS, rated as good or outstanding CQC providers and providing
+          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
+          in {{ tilesData?.meta.localAuthority }}.
+        </p>
+      </ng-container>
+      <ng-template #nonGoodCqcComparisonGroup>
         <h3 class="govuk-heading-m">
           {{ workplace.mainService.name }} providers in {{ tilesData?.meta.localAuthority }}
         </h3>
@@ -60,108 +74,24 @@
           <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
           in {{ tilesData?.meta.localAuthority }}.
         </p>
-      </ng-container>
-      <ng-container *ngIf="viewBenchmarksComparisonGroups">
-        <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}</h3>
-        <p class="govuk-body">
-          Your selected comparison group is a maximum
-          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
-          staff from
-          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
-          workplaces using ASC-WDS, rated as good or outstanding CQC providers and and providing
-          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-          in {{ tilesData?.meta.localAuthority }}.
-        </p>
-      </ng-container>
+      </ng-template>
 
-      <ng-container *ngIf="viewBenchmarksByCategory">
-        <app-download-pdf
-          [linkUrl]="'/benchmarks.pdf'"
-          [linkTitle]="downloadRecruitmentBenchmarksText"
-          (downloadPDF)="downloadAsPDF()"
-        ></app-download-pdf>
-        <table class="govuk-table govuk-!-margin-top-2">
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header"></th>
-              <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
-                Your workplace
-              </th>
-              <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
-                Comparison group
-              </th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-            <tr class="govuk-table__row first-row">
-              <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-                Vacancy rate
-              </th>
-              <td class="govuk-table__cell workplace-cell">12%</td>
-              <td class="govuk-table__cell comparision-group-cell">16%</td>
-            </tr>
-            <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-                Turnover rate
-              </th>
-              <td class="govuk-table__cell workplace-cell">38%</td>
-              <td class="govuk-table__cell comparision-group-cell">28%</td>
-            </tr>
-            <tr class="govuk-table__row last-row">
-              <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">
-                Percentage of staff still in their main job role after 12 months
-              </th>
-              <td class="govuk-table__cell workplace-cell">90%</td>
-              <td class="govuk-table__cell comparision-group-cell">78%</td>
-            </tr>
-          </tbody>
-        </table>
+      <app-download-pdf
+        [linkUrl]="'/benchmarks.pdf'"
+        [viewBenchmarksByCategory]="viewBenchmarksByCategory"
+        (downloadPDF)="downloadAsPDF()"
+      ></app-download-pdf>
+
+      <ng-container *ngIf="viewBenchmarksByCategory; else showPay">
+        <app-data-area-recruitment-and-retention
+          [data]="tilesData"
+          [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+          data-testid="recruitmentAndRetentionArea"
+        ></app-data-area-recruitment-and-retention>
       </ng-container>
-      <div class="govuk-width-container govuk-!-margin-top-7">
-        <app-benchmarks-select-view-panel
-          [toggleBoolean]="viewBenchmarksPosition"
-          [falseSelectionName]="'Where you rank'"
-          [trueSelecttionName]="'Where you\'re positioned'"
-          (handleViewToggle)="handleViewBenchmarkPosition($event)"
-        >
-        </app-benchmarks-select-view-panel>
-        <div class="govuk-!-margin-top-7">
-          <ng-container *ngIf="!viewBenchmarksPosition">
-            <app-data-area-ranking
-              [rankingTitle]="'Vacancy rate'"
-              [workplaceRankNumber]="18"
-              [workplacesNumber]="72"
-            ></app-data-area-ranking>
-            <app-data-area-ranking
-              [rankingTitle]="'Turnover rate'"
-              [workplaceRankNumber]="51"
-              [workplacesNumber]="72"
-            ></app-data-area-ranking>
-            <app-data-area-ranking
-              [rankingTitle]="'Percentage of staff still in their main job role after 12 months'"
-              [workplaceRankNumber]="36"
-              [workplacesNumber]="72"
-            ></app-data-area-ranking>
-          </ng-container>
-          <ng-container *ngIf="viewBenchmarksPosition">
-            <app-data-area-barchart
-              [positionedTitle]="'Vacancy rate'"
-              [payMoreThanWorkplacesNumber]="54"
-              [workplacesNumber]="72"
-            ></app-data-area-barchart>
-            <app-data-area-barchart
-              [positionedTitle]="'Turnover rate'"
-              [payMoreThanWorkplacesNumber]="21"
-              [workplacesNumber]="72"
-            ></app-data-area-barchart>
-            <app-data-area-barchart
-              [positionedTitle]="'Percentage of staff still in their main job role after 12 months'"
-              [payMoreThanWorkplacesNumber]="36"
-              [workplacesNumber]="72"
-            ></app-data-area-barchart>
-          </ng-container>
-        </div>
-      </div>
+      <ng-template #showPay>
+        <app-data-area-pay [data]="tilesData" data-testid="payArea"></app-data-area-pay>
+      </ng-template>
 
       <div class="govuk-!-margin-top-7">
         <h2 class="govuk-heading-m">Useful links</h2>

@@ -5,12 +5,11 @@ import { BenchmarksSelectViewPanelComponent } from './benchmarks-select-view-pan
 
 describe('BenchmarksSelectViewPanelComponent', () => {
   async function setup() {
-    const { fixture, getByText, getByTestId } = await render(BenchmarksSelectViewPanelComponent, {
+    const { fixture, getByTestId } = await render(BenchmarksSelectViewPanelComponent, {
       imports: [],
       declarations: [],
       providers: [],
       componentProperties: {
-        toggleBoolean: false,
         handleViewToggle: {
           emit: spy(),
         } as any,
@@ -23,7 +22,6 @@ describe('BenchmarksSelectViewPanelComponent', () => {
     return {
       component,
       fixture,
-      getByText,
       getByTestId,
       toggleViewSpy,
     };
@@ -35,7 +33,7 @@ describe('BenchmarksSelectViewPanelComponent', () => {
   });
 
   it('should show the false selection link as active when viewBenchmarksByCategory is false', async () => {
-    const { getByText, getByTestId } = await setup();
+    const { getByTestId } = await setup();
 
     const falseItem = getByTestId('falseItem');
     const trueItem = getByTestId('trueItem');
@@ -49,9 +47,10 @@ describe('BenchmarksSelectViewPanelComponent', () => {
   });
 
   it('should show the true selection link as active when viewBenchmarksByCategory is true', async () => {
-    const { component, getByTestId } = await setup();
+    const { component, fixture, getByTestId } = await setup();
 
     component.toggleBoolean = true;
+    fixture.detectChanges();
 
     const falseItem = getByTestId('falseItem');
     const trueItem = getByTestId('trueItem');
