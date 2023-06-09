@@ -99,6 +99,7 @@ describe('rankings', () => {
 
   describe('qualifications', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon.stub(models.worker, 'countSocialCareQualificationsAndNoQualifications').returns(null);
       sinon.stub(models.benchmarksQualificationsByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksQualificationsByEstIdGoodOutstanding, 'findAll').returns([]);
 
@@ -188,6 +189,7 @@ describe('rankings', () => {
 
   describe('sickness', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon.stub(models.establishment, 'workers').returns(null);
       sinon.stub(models.benchmarksSicknessByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksSicknessByEstIdGoodOutstanding, 'findAll').returns([]);
 
@@ -275,6 +277,8 @@ describe('rankings', () => {
 
   describe('turnover', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 0 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(0);
       sinon.stub(models.benchmarksTurnoverByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksTurnoverByEstIdGoodOutstanding, 'findAll').returns([]);
 
@@ -466,8 +470,10 @@ describe('rankings', () => {
     });
   });
 
-  describe('vacncy', () => {
+  describe('vacancy', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 0 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(0);
       sinon.stub(models.benchmarksVacanciesByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksVacanciesByEstIdGoodOutstanding, 'findAll').returns([]);
 
