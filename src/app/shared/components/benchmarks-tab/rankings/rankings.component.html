@@ -27,11 +27,7 @@
   </div>
 </div>
 <p>{{ metricContent['Pay'].description }}</p>
-<app-gauge
-  *ngIf="rankings.careWorkerPay"
-  [maxRank]="rankings.careWorkerPay.maxRank"
-  [currentRank]="rankings.careWorkerPay.currentRank"
->
+<app-gauge *ngIf="rankings.pay.careWorkerPay" [maxRank]="payContent.maxRank" [currentRank]="payContent.currentRank">
   <ng-container your-rank>
     <app-ranking-content *ngIf="payContent" [content]="payContent"></app-ranking-content>
   </ng-container>
@@ -57,8 +53,8 @@
 <p>{{ metricContent['Turnover'].description }}</p>
 <app-gauge
   *ngIf="rankings.turnoverRate"
-  [maxRank]="rankings.turnoverRate.maxRank"
-  [currentRank]="rankings.turnoverRate.currentRank"
+  [maxRank]="turnoverContent.maxRank"
+  [currentRank]="turnoverContent.currentRank"
 >
   <ng-container your-rank>
     <app-ranking-content *ngIf="turnoverContent" [content]="turnoverContent"></app-ranking-content>
@@ -83,11 +79,7 @@
   </div>
 </div>
 <p>{{ metricContent['Sickness'].description }}</p>
-<app-gauge
-  *ngIf="rankings.sickness"
-  [maxRank]="rankings.sickness.maxRank"
-  [currentRank]="rankings.sickness.currentRank"
->
+<app-gauge *ngIf="rankings.sickness" [maxRank]="sicknessContent.maxRank" [currentRank]="sicknessContent.currentRank">
   <ng-container your-rank>
     <app-ranking-content *ngIf="sicknessContent" [content]="sicknessContent"></app-ranking-content>
   </ng-container>
@@ -113,8 +105,8 @@
 <p>{{ metricContent['Qualifications'].description }}</p>
 <app-gauge
   *ngIf="rankings.qualifications"
-  [maxRank]="rankings.qualifications.maxRank"
-  [currentRank]="rankings.qualifications.currentRank"
+  [maxRank]="qualificationsContent.maxRank"
+  [currentRank]="qualificationsContent.currentRank"
 >
   <ng-container your-rank>
     <app-ranking-content *ngIf="qualificationsContent" [content]="qualificationsContent"></app-ranking-content>

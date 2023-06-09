@@ -72,12 +72,10 @@ const getTurnover = async function ({ establishmentId }) {
 
 const getVacancies = async function ({ establishmentId }) {
   const response = await vacanciesAndLeavers(establishmentId, 'VacanciesValue');
-
   if (response.stateMessage) return { stateMessage: response.stateMessage };
   if (response.value) return { value: 0 };
 
   const percentOfPermTemp = response.noOfProperty / (response.permTempCount + response.noOfProperty);
-
   return {
     value: percentOfPermTemp,
   };
@@ -85,7 +83,6 @@ const getVacancies = async function ({ establishmentId }) {
 
 const vacanciesAndLeavers = async (establishmentId, leaversOrVacancies) => {
   const establishment = await models.establishment.turnoverAndVacanciesData(establishmentId);
-
   const staffNumberIncorrectOrVacanciesUnknown = await checkStaffNumbers(
     establishmentId,
     establishment,
@@ -158,36 +155,26 @@ const checkStaffNumbers = async function (establishmentId, establishment, leaver
   return false;
 };
 
-const getComparisonGroupRankings = async function (establishmentId, benchmarksModel) {
+const getComparisonGroupRankings = async function ({
+  benchmarksModel,
+  establishmentId,
+  mainService,
+  attributes,
+  mainJob,
+}) {
   const cssr = await models.cssr.getCSSR(establishmentId);
   if (!cssr) return [];
+  const where = mainJob ? { MainJobRole: mainJob } : {};
   return await benchmarksModel.findAll({
-    attributes: { exclude: ['CssrID', 'MainServiceFK'] },
+    attributes: ['LocalAuthorityArea', 'MainServiceFK', ...attributes],
     where: {
-      CssrID: cssr.id,
+      LocalAuthorityArea: cssr.id,
+      MainServiceFK: mainService,
       EstablishmentFK: {
         [Op.not]: [establishmentId],
       },
+      ...where,
     },
-    include: [
-      {
-        attributes: ['id', 'reportingID'],
-        model: models.services,
-        as: 'BenchmarkToService',
-        include: [
-          {
-            attributes: ['id'],
-            model: models.establishment,
-            where: {
-              id: establishmentId,
-            },
-            as: 'establishmentsMainService',
-            required: true,
-          },
-        ],
-        required: true,
-      },
-    ],
   });
 };
 

@@ -31,14 +31,22 @@ const noPayTileData = {
 };
 
 const payRankingData = {
-  currentRank: 2,
-  maxRank: 3,
-  hasValue: true,
+  careWorkerPay: {
+    groupRankings: {
+      currentRank: 2,
+      maxRank: 3,
+      hasValue: true,
+    },
+  },
 };
 
 const noPayRankingData = {
-  hasValue: false,
-  stateMessage: 'no-data',
+  careWorkerPay: {
+    groupRankings: {
+      hasValue: false,
+      stateMessage: 'no-data',
+    },
+  },
 };
 
 const getBenchmarksMetricComponent = async () => {
@@ -136,7 +144,7 @@ describe('BenchmarksMetricComponent', () => {
 
       const rank = parseInt(content.split('Lowest')[0]);
 
-      expect(payRankingData.maxRank === rank).toBeTruthy();
+      expect(payRankingData.careWorkerPay.groupRankings.maxRank === rank).toBeTruthy();
 
       expect(content).toContain('Lowest ranking');
     });
@@ -149,7 +157,7 @@ describe('BenchmarksMetricComponent', () => {
 
       const rank = parseInt(content);
 
-      expect(payRankingData.currentRank === rank).toBeTruthy();
+      expect(payRankingData.careWorkerPay.groupRankings.currentRank === rank).toBeTruthy();
     });
 
     expect(lowestRank.length).toEqual(1);

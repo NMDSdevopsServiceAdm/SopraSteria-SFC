@@ -1,6 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AllRankingsResponse, BenchmarksResponse, RankingsResponse } from '@core/model/benchmarks.model';
+import {
+  AllRankingsResponse,
+  BenchmarksResponse,
+  CompareGroupsRankingsResponse,
+  PayRankingsResponse,
+} from '@core/model/benchmarks.model';
 import { URLStructure } from '@core/model/url.model';
 import { Observable } from 'rxjs';
 
@@ -41,8 +46,14 @@ export class BenchmarksService {
     return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/${param}`);
   }
 
-  getRankingData(establishmentId: string, metric: string): Observable<RankingsResponse> {
-    return this.http.get<RankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings/${metric}`);
+  getRankingData(establishmentId: string, metric: string): Observable<CompareGroupsRankingsResponse> {
+    return this.http.get<CompareGroupsRankingsResponse>(
+      `/api/establishment/${establishmentId}/benchmarks/rankings/${metric}`,
+    );
+  }
+
+  getPayRankingData(establishmentId: string): Observable<PayRankingsResponse> {
+    return this.http.get<PayRankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings/pay`);
   }
 
   getAllRankingData(establishmentId: string): Observable<AllRankingsResponse> {

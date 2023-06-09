@@ -41,11 +41,23 @@ export interface RankingsResponse {
   stateMessage: string;
 }
 
+export interface CompareGroupsRankingsResponse {
+  groupRankings: RankingsResponse;
+  goodCqcRankings: RankingsResponse;
+}
+
+export interface PayRankingsResponse {
+  careWorkerPay: CompareGroupsRankingsResponse;
+  seniorCareWorkerPay: CompareGroupsRankingsResponse;
+  registeredNursePay: CompareGroupsRankingsResponse;
+  registeredManagerPay: CompareGroupsRankingsResponse;
+}
+
 export interface AllRankingsResponse {
-  careWorkerPay: RankingsResponse;
-  qualifications: RankingsResponse;
-  sickness: RankingsResponse;
-  turnoverRate: RankingsResponse;
+  pay: PayRankingsResponse;
+  qualifications: CompareGroupsRankingsResponse;
+  sickness: CompareGroupsRankingsResponse;
+  turnoverRate: CompareGroupsRankingsResponse;
 }
 
 export enum Metric {

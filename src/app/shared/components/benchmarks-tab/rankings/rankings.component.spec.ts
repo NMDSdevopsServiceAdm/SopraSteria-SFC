@@ -182,13 +182,12 @@ describe('BenchmarksRankingsComponent', () => {
 
       const rank = parseInt(content.split('Lowest')[0]);
 
-      maxRanks.push(fixture.componentInstance.rankings.careWorkerPay.maxRank);
-      maxRanks.push(fixture.componentInstance.rankings.turnoverRate.maxRank);
-      maxRanks.push(fixture.componentInstance.rankings.sickness.maxRank);
-      maxRanks.push(fixture.componentInstance.rankings.qualifications.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.pay.careWorkerPay.groupRankings.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.turnoverRate.groupRankings.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.sickness.groupRankings.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.qualifications.groupRankings.maxRank);
 
       expect(maxRanks.includes(rank)).toBeTruthy();
-
       expect(content).toContain('Lowest ranking');
     });
 
@@ -201,10 +200,10 @@ describe('BenchmarksRankingsComponent', () => {
 
       const rank = parseInt(content);
 
-      currentRanks.push(fixture.componentInstance.rankings.careWorkerPay.currentRank);
-      currentRanks.push(fixture.componentInstance.rankings.turnoverRate.currentRank);
-      currentRanks.push(fixture.componentInstance.rankings.sickness.currentRank);
-      currentRanks.push(fixture.componentInstance.rankings.qualifications.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.pay.careWorkerPay.groupRankings.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.turnoverRate.groupRankings.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.sickness.groupRankings.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.qualifications.groupRankings.currentRank);
 
       expect(currentRanks.includes(rank)).toBeTruthy();
     });
