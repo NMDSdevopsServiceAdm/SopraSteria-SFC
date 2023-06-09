@@ -36,6 +36,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
   public benchmarksMessage: string;
+  public benchmarksHeader: string;
   public canViewWorkplaces: boolean;
   public canViewReports: boolean;
   public canViewChangeDataOwner: boolean;
@@ -115,19 +116,36 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.setBenchmarksMessage();
+    this.setBenchmarksCard();
     this.subscriptions.add();
   }
 
-  private setBenchmarksMessage(): void {
-    const benchmarksCareType = 'adult social care';
-    this.benchmarksMessage = `There are ${
-      this.meta?.workplaces ? this.meta.workplaces : 0
-    } workplaces providing ${benchmarksCareType} in ${this.meta?.localAuthority}.`;
+  private setBenchmarksCard(): void {
+    const comparisonDataAvailable = this.meta?.staff && this.meta?.workplaces;
+
+    const localAuthority = this.meta?.localAuthority.replace('&', 'and');
+
+    if (!comparisonDataAvailable) {
+      this.benchmarksHeader = 'See how you compare against other workplaces';
+      this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
+    } else {
+      if ([1, 2, 8].filter((x) => x === this.workplace.mainService.reportingID).length > 0) {
+        const benchmarksCareType = this.workplace.mainService.name;
+        this.benchmarksHeader = 'See how your pay, recruitment and retention compares against other workplaces';
+        this.benchmarksMessage = `There are ${
+          this.meta?.workplaces ? this.meta.workplaces : 0
+        } workplaces providing ${benchmarksCareType.toLowerCase()} in ${localAuthority}.`;
+      } else if (!this.workplace.isRegulated) {
+        this.benchmarksHeader = 'See how you compare against other workplaces';
+        this.benchmarksMessage = `There are ${
+          this.meta?.workplaces ? this.meta.workplaces : 0
+        } workplaces providing adult social care in ${localAuthority}.`;
+      }
+    }
   }
 
   ngOnChanges(changes) {
-    this.setBenchmarksMessage();
+    this.setBenchmarksCard();
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {
