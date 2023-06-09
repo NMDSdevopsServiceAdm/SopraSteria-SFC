@@ -625,4 +625,100 @@ describe('rankings', () => {
       expect(result.goodCqcRankings.currentRank).to.equal(1);
     });
   });
+
+  describe('time in role', () => {
+    it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
+      sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([]);
+      sinon.stub(models.benchmarksTimeInRoleByEstIdGoodOutstanding, 'findAll').returns([]);
+
+      const result = await rankings.timeInRole(establishmentId, 8, 10);
+
+      expect(result.groupRankings.stateMessage).to.equal('no-comparison-data');
+      expect(result.goodCqcRankings.stateMessage).to.equal('no-comparison-data');
+    });
+
+    it('should be response with stateMessage no-perm-or-temp when workplace has no perm or temp data', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 0 });
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(null);
+      sinon
+        .stub(models.benchmarksTimeInRoleByEstId, 'findAll')
+        .returns([
+          { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1400, EstablishmentFK: 456 },
+        ]);
+
+      sinon
+        .stub(models.benchmarksTimeInRoleByEstIdGoodOutstanding, 'findAll')
+        .returns([
+          { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1550, EstablishmentFK: 456 },
+        ]);
+
+      const result = await rankings.timeInRole(establishmentId, 8, 10);
+
+      expect(result.groupRankings.stateMessage).to.equal('no-perm-or-temp');
+      expect(result.goodCqcRankings.stateMessage).to.equal('no-perm-or-temp');
+    });
+
+    it('should be response with hasValue true when pay and comparison group are available', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
+      sinon
+        .stub(models.benchmarksTimeInRoleByEstId, 'findAll')
+        .returns([
+          { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1400, EstablishmentFK: 456 },
+        ]);
+
+      sinon
+        .stub(models.benchmarksTimeInRoleByEstIdGoodOutstanding, 'findAll')
+        .returns([
+          { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1550, EstablishmentFK: 456 },
+        ]);
+
+      const result = await rankings.timeInRole(establishmentId, 8, 10);
+
+      expect(result.groupRankings.hasValue).to.equal(true);
+      expect(result.goodCqcRankings.hasValue).to.equal(true);
+    });
+
+    it('should be response with maxRank equal to number of comparison group rankings + current establishment', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
+      sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1400, EstablishmentFK: 456 },
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1600, EstablishmentFK: 456 },
+      ]);
+
+      sinon.stub(models.benchmarksTimeInRoleByEstIdGoodOutstanding, 'findAll').returns([
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1550, EstablishmentFK: 456 },
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1400, EstablishmentFK: 400 },
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1700, EstablishmentFK: 550 },
+      ]);
+
+      const result = await rankings.timeInRole(establishmentId, 8, 10);
+
+      expect(result.groupRankings.maxRank).to.equal(3);
+      expect(result.goodCqcRankings.maxRank).to.equal(4);
+    });
+
+    it('should be response with currentRank against comparison group rankings', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
+      sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1.0, EstablishmentFK: 456 },
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1.0, EstablishmentFK: 456 },
+      ]);
+
+      sinon.stub(models.benchmarksTimeInRoleByEstIdGoodOutstanding, 'findAll').returns([
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1.0, EstablishmentFK: 456 },
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1.0, EstablishmentFK: 400 },
+        { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1.0, EstablishmentFK: 550 },
+      ]);
+
+      const result = await rankings.timeInRole(establishmentId, 8, 10);
+
+      expect(result.groupRankings.currentRank).to.equal(1);
+      expect(result.goodCqcRankings.currentRank).to.equal(1);
+    });
+  });
 });
