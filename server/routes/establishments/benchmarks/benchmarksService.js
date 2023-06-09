@@ -155,7 +155,13 @@ const checkStaffNumbers = async function (establishmentId, establishment, leaver
   return false;
 };
 
-const getComparisonGroupRankings = async function (benchmarksModel, establishmentId, mainService, attributes, mainJob) {
+const getComparisonGroupRankings = async function ({
+  benchmarksModel,
+  establishmentId,
+  mainService,
+  attributes,
+  mainJob,
+}) {
   const cssr = await models.cssr.getCSSR(establishmentId);
   if (!cssr) return [];
   const where = mainJob ? { MainJobRole: mainJob } : {};

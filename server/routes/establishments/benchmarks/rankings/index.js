@@ -189,13 +189,13 @@ const getComparisonGroupAndCalculateRanking = async function (
   calculateRankingCallback,
   workerId,
 ) {
-  const comparisonGroupRankings = await getComparisonGroupRankings(
-    models[benchmarksModel],
+  const comparisonGroupRankings = await getComparisonGroupRankings({
+    benchmarksModel: models[benchmarksModel],
     establishmentId,
     mainService,
     attributes,
-    workerId && workerMap.get(workerId),
-  );
+    mainJob: workerId && workerMap.get(workerId),
+  });
 
   const mappedComparisonGroupRankings = comparisonGroupRankings.map(mapComparisonGroupCallback).filter((a) => a);
   if (mappedComparisonGroupRankings.length === 0) {
