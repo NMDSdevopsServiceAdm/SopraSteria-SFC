@@ -6,28 +6,6 @@ import { Observable, of } from 'rxjs';
 
 const { build, fake } = require('@jackfranklin/test-data-bot');
 
-const benchmarksResponseBuilder = build('BenchmarksResponse', {
-  fields: {
-    careWorkerPay: {
-      workplaceValue: { value: 0, hasValue: false },
-      comparisonGroup: { value: 0, hasValue: false },
-    },
-    sickness: {
-      workplaceValue: { value: 0, hasValue: false },
-      comparisonGroup: { value: 0, hasValue: false },
-    },
-    qualifications: {
-      workplaceValue: { value: 0, hasValue: false },
-      comparisonGroup: { value: 0, hasValue: false },
-    },
-    turnoverRate: {
-      workplaceValue: { value: 0, hasValue: false },
-      comparisonGroup: { value: 0, hasValue: false },
-    },
-    meta: { staff: 10000, workplace: 5 },
-  },
-});
-
 const allRankingsResponseBuilder = build('AllRankingsResponse', {
   fields: {
     careWorkerPay: {
@@ -120,19 +98,13 @@ export const benchmarksData = {
 };
 
 const returnTo = returnToBuilder();
-// const benchmarksData = newDataAreaResponse();
 const allRankingsData = allRankingsResponseBuilder();
-const benchmarkResponse = allRankingsResponseBuilder();
 
 @Injectable()
 export class MockBenchmarksService extends BenchmarksService {
   public get returnTo(): URLStructure {
     return returnTo;
   }
-
-  // public get benchmarksData(): BenchmarksResponse {
-  //   return benchmarksData;
-  // }
 
   public getTileData(establishmentUid, requiredTiles): Observable<BenchmarksResponse> {
     return of(benchmarksData);
