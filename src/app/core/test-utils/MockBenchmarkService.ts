@@ -57,29 +57,39 @@ const benchmarksResponseBuilder = build('BenchmarksResponse', {
 });
 const allRankingsResponseBuilder = build('AllRankingsResponse', {
   fields: {
-    careWorkerPay: {
-      currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
-      maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
-      hasValue: true,
-      stateMessage: '',
+    pay: {
+      careWorkerPay: {
+        groupRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+        },
+      },
     },
     turnoverRate: {
-      currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
-      maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
-      hasValue: true,
-      stateMessage: '',
+      groupRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+      },
     },
     sickness: {
-      currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
-      maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
-      hasValue: true,
-      stateMessage: '',
+      groupRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+      },
     },
     qualifications: {
-      currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
-      maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
-      hasValue: true,
-      stateMessage: '',
+      groupRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+      },
     },
   },
 });
