@@ -315,3 +315,5 @@ module.exports.pay = getPayRanking;
 module.exports.qualifications = getQualificationsRanking;
 module.exports.sickness = getSicknessRanking;
 module.exports.turnover = getTurnoverRanking;
+module.exports.vacancy = getVacancyRanking;
+module.exports.timeInRole = getTimeInRoleRankings;

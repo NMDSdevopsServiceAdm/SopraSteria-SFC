@@ -72,12 +72,10 @@ const getTurnover = async function ({ establishmentId }) {
 
 const getVacancies = async function ({ establishmentId }) {
   const response = await vacanciesAndLeavers(establishmentId, 'VacanciesValue');
-
   if (response.stateMessage) return { stateMessage: response.stateMessage };
   if (response.value) return { value: 0 };
 
   const percentOfPermTemp = response.noOfProperty / (response.permTempCount + response.noOfProperty);
-
   return {
     value: percentOfPermTemp,
   };
@@ -85,7 +83,6 @@ const getVacancies = async function ({ establishmentId }) {
 
 const vacanciesAndLeavers = async (establishmentId, leaversOrVacancies) => {
   const establishment = await models.establishment.turnoverAndVacanciesData(establishmentId);
-
   const staffNumberIncorrectOrVacanciesUnknown = await checkStaffNumbers(
     establishmentId,
     establishment,

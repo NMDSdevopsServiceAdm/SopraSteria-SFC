@@ -465,4 +465,164 @@ describe('rankings', () => {
       expect(result.goodCqcRankings.currentRank).to.equal(1);
     });
   });
+
+  describe('vacncy', () => {
+    it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon.stub(models.benchmarksVacanciesByEstId, 'findAll').returns([]);
+      sinon.stub(models.benchmarksVacanciesByEstIdGoodOutstanding, 'findAll').returns([]);
+
+      const result = await rankings.vacancy(establishmentId, 8, 10);
+
+      expect(result.groupRankings.stateMessage).to.equal('no-comparison-data');
+      expect(result.goodCqcRankings.stateMessage).to.equal('no-comparison-data');
+    });
+
+    it('should be response with stateMessage mismatch-workers when workplace has no staff records', async () => {
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 0 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(0);
+      sinon.stub(models.benchmarksVacanciesByEstId, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+      sinon.stub(models.benchmarksVacanciesByEstIdGoodOutstanding, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.vacancy(establishmentId, 8, 10);
+      expect(result.groupRankings.stateMessage).to.equal('mismatch-workers');
+      expect(result.goodCqcRankings.stateMessage).to.equal('mismatch-workers');
+    });
+
+    it('should be response with stateMessage mismatch-workers when staff count does not match workplace', async () => {
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 2 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(0);
+      sinon.stub(models.benchmarksVacanciesByEstId, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+      sinon.stub(models.benchmarksVacanciesByEstIdGoodOutstanding, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.vacancy(establishmentId, 8, 10);
+
+      expect(result.groupRankings.stateMessage).to.equal('mismatch-workers');
+      expect(result.goodCqcRankings.stateMessage).to.equal('mismatch-workers');
+    });
+
+    it('should be response with stateMessage no-vacancies when workplace has no vacancies', async () => {
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 2 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(2);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(0);
+      sinon.stub(models.benchmarksVacanciesByEstId, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+      sinon.stub(models.benchmarksVacanciesByEstIdGoodOutstanding, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.vacancy(establishmentId, 8, 10);
+
+      expect(result.groupRankings.stateMessage).to.equal('no-vacancies');
+      expect(result.goodCqcRankings.stateMessage).to.equal('no-vacancies');
+    });
+
+    it('should be response with hasValue true when vacancies and comparison group are available', async () => {
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 2, VacanciesValue: 1 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(2);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(1);
+      sinon.stub(models.establishmentJobs, 'leaversOrVacanciesForEstablishment').returns(1);
+      sinon.stub(models.benchmarksVacanciesByEstId, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+      sinon.stub(models.benchmarksVacanciesByEstIdGoodOutstanding, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.vacancy(establishmentId, 8, 10);
+
+      expect(result.groupRankings.hasValue).to.equal(true);
+      expect(result.goodCqcRankings.hasValue).to.equal(true);
+    });
+
+    it('should be response with maxRank equal to number of comparison group rankings + current establishment', async () => {
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 10, VacanciesValue: 1 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(2);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(1);
+      sinon.stub(models.establishmentJobs, 'leaversOrVacanciesForEstablishment').returns(1);
+      sinon.stub(models.benchmarksVacanciesByEstId, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+      sinon.stub(models.benchmarksVacanciesByEstIdGoodOutstanding, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.vacancy(establishmentId, 8, 10);
+
+      expect(result.groupRankings.maxRank).to.equal(3);
+      expect(result.goodCqcRankings.maxRank).to.equal(5);
+    });
+
+    it('should be response with currentRank against comparison group rankings', async () => {
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 3, LeaversValue: 'With Jobs', VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(3);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
+      sinon.stub(models.establishmentJobs, 'leaversOrVacanciesForEstablishment').returns(3);
+      sinon.stub(models.benchmarksVacanciesByEstId, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+      sinon.stub(models.benchmarksVacanciesByEstIdGoodOutstanding, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.7, EstablishmentFK: 789 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.8, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.vacancy(establishmentId, 8, 10);
+
+      expect(result.groupRankings.currentRank).to.equal(2);
+      expect(result.goodCqcRankings.currentRank).to.equal(2);
+    });
+
+    it('should be response with currentRank 1 when vacancies value is 0', async () => {
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 2, VacanciesValue: 'None' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(2);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(2);
+      sinon.stub(models.establishmentJobs, 'leaversOrVacanciesForEstablishment').returns(1);
+      sinon.stub(models.benchmarksVacanciesByEstId, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+      ]);
+      sinon.stub(models.benchmarksVacanciesByEstIdGoodOutstanding, 'findAll').returns([
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.4, EstablishmentFK: 456 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.6, EstablishmentFK: 789 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.7, EstablishmentFK: 789 },
+        { CssrID: 123, MainServiceFK: 1, VacancyRate: 0.8, EstablishmentFK: 789 },
+      ]);
+
+      const result = await rankings.vacancy(establishmentId, 8, 10);
+
+      expect(result.groupRankings.currentRank).to.equal(1);
+      expect(result.goodCqcRankings.currentRank).to.equal(1);
+    });
+  });
 });
