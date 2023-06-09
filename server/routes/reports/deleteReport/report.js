@@ -1,6 +1,6 @@
 const models = require('../../../../server/models');
 const excelJS = require('exceljs');
-const moment = require('moment');
+const dayjs = require('dayjs');
 const express = require('express');
 const router = express.Router();
 
@@ -20,7 +20,7 @@ const headers = [
   'CQC Registered',
   'Parent Name',
   'Due to be deleted date',
-  'Data Owner'
+  'Data Owner',
 ];
 const lastColumn = String.fromCharCode('B'.charCodeAt(0) + headers.length);
 const monthsWithoutUpdate = 20;
@@ -35,7 +35,7 @@ const createBlueHeader = (WS1) => {
   };
 
   WS1.mergeCells('B4:' + lastColumn + '4');
-  WS1.getCell('B4').value = 'Date Run: ' + moment().format('DD/MM/YYYY');
+  WS1.getCell('B4').value = 'Date Run: ' + dayjs().format('DD/MM/YYYY');
   WS1.getCell('B4').font = headerFont;
   WS1.getCell('B4').fill = excelUtils.blueBackground;
   WS1.getCell('B4').border = excelUtils.fullBorder;
@@ -109,7 +109,7 @@ const fillData = (reportData, laData, WS1) => {
         establishment.EmployerTypeValue,
         excelUtils.formatBool(establishment.isRegulated),
         parentName,
-        new Date(moment(establishment.LastUpdated.lastUpdated).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
+        new Date(dayjs(establishment.LastUpdated.lastUpdated).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
         establishment.LastUpdated.dataOwner,
       ],
       rowStyle,
@@ -130,7 +130,8 @@ const fillData = (reportData, laData, WS1) => {
 };
 
 const generateDeleteReport = async (req, res) => {
-  const lastUpdatedDate =  moment().subtract(monthsWithoutUpdate, 'months').toDate();
+  await models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
+  const lastUpdatedDate = dayjs().subtract(monthsWithoutUpdate, 'months').toDate();
   const reportData = await models.establishment.generateDeleteReportData(lastUpdatedDate);
   const laData = await addCSSRData(reportData);
 
@@ -149,7 +150,7 @@ const generateDeleteReport = async (req, res) => {
   WS1.getColumn(1).width = 0.7;
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename=' + moment().format('DD-MM-YYYY') + '-deleteReport.xlsx');
+  res.setHeader('Content-Disposition', 'attachment; filename=' + dayjs().format('DD-MM-YYYY') + '-deleteReport.xlsx');
 
   await workbook.xlsx.write(res);
   return res.status(200).end();
