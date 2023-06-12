@@ -32,12 +32,18 @@ export class DataAreaPayComponent implements OnChanges {
     this.viewBenchmarksPosition = visible;
   }
   public showWorkplacePayAndSalary(): void {
-    this.careWorkerPay = `${this.formatMoney(this.data?.careWorkerPay.workplaceValue.value)} (hourly)`;
-    this.seniorCareWorkerPay = `${this.formatMoney(this.data?.seniorCareWorkerPay.workplaceValue.value)} (hourly)`;
-    this.registeredNurseSalary = `${this.formatMoney(this.data?.registeredNursePay.workplaceValue.value)} (annually)`;
-    this.registeredManagerSalary = `${this.formatMoney(
-      this.data?.registeredManagerPay.workplaceValue.value,
-    )} (annually)`;
+    this.careWorkerPay = this.data.careWorkerPay.workplaceValue.hasValue
+      ? `${this.formatMoney(this.data?.careWorkerPay.workplaceValue.value)} (hourly)`
+      : 'No data added';
+    this.seniorCareWorkerPay = this.data.seniorCareWorkerPay.workplaceValue.hasValue
+      ? `${this.formatMoney(this.data?.seniorCareWorkerPay.workplaceValue.value)} (hourly)`
+      : 'No data added';
+    this.registeredNurseSalary = this.data.registeredNursePay.workplaceValue.hasValue
+      ? `${this.formatMoney(this.data?.registeredNursePay.workplaceValue.value)} (annually)`
+      : 'No data added';
+    this.registeredManagerSalary = this.data.registeredManagerPay.workplaceValue.hasValue
+      ? `${this.formatMoney(this.data?.registeredManagerPay.workplaceValue.value)} (annually)`
+      : 'No data added';
   }
 
   public showComparisionGroupPayAndSalary(): void {
