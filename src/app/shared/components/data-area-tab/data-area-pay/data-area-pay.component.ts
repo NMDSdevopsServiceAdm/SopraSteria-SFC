@@ -8,6 +8,7 @@ import { BenchmarksResponse } from '@core/model/benchmarks.model';
 })
 export class DataAreaPayComponent {
   @Input() data: BenchmarksResponse;
+  @Input() viewBenchmarksComparisonGroups: boolean;
   public viewBenchmarksPosition = false;
 
   public handleViewBenchmarkPosition(visible: boolean): void {

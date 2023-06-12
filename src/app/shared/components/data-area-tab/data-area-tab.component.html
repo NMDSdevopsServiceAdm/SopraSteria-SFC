@@ -90,7 +90,11 @@
         ></app-data-area-recruitment-and-retention>
       </ng-container>
       <ng-template #showPay>
-        <app-data-area-pay [data]="tilesData" data-testid="payArea"></app-data-area-pay>
+        <app-data-area-pay
+          [data]="tilesData"
+          data-testid="payArea"
+          [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+        ></app-data-area-pay>
       </ng-template>
 
       <div class="govuk-!-margin-top-7">
