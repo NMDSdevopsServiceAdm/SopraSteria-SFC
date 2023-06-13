@@ -14,7 +14,6 @@ export class DataAreaTableRowComponent implements OnInit {
   public comparisonCell;
 
   ngOnInit(): void {
-    console.log(this.data);
     if (this.data.workplaceValue?.hasValue) {
       this.workplaceCell = this.data.workplaceValue.value;
     }
