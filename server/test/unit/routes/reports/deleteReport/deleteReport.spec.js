@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const moment = require('moment');
 const httpMocks = require('node-mocks-http');
 
 const deleteReport = require('../../../../../routes/reports/deleteReport/report');
