@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BenchmarksResponse, BenchmarkValue, Tile } from '@core/model/benchmarks.model';
-import { benchmarksData } from '@core/test-utils/MockBenchmarkService';
+import { Tile } from '@core/model/benchmarks.model';
 
 @Component({
   selector: 'tr[app-data-area-table-row]',
@@ -16,9 +15,9 @@ export class DataAreaTableRowComponent implements OnInit {
 
   ngOnInit(): void {
     console.log(this.data);
-    if(this.data.workplaceValue?.hasValue) {
-        this.workplaceCell = this.data.workplaceValue.value;
-      }
-      this.workplaceCell = 'No data added';
+    if (this.data.workplaceValue?.hasValue) {
+      this.workplaceCell = this.data.workplaceValue.value;
+    }
+    this.workplaceCell = 'No data added';
   }
 }
