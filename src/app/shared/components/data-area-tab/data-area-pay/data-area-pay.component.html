@@ -31,52 +31,22 @@
     </app-benchmarks-select-view-panel>
 
     <ng-container *ngIf="viewBenchmarksPosition; else showRankings">
-      <div class="govuk-!-margin-top-7" data-testid="barcharts">
+      <ng-container *ngFor="let position of positionData | keyvalue" class="govuk-!-margin-top-7" data-testid="barcharts">
         <app-data-area-barchart
-          [positionedTitle]="'Care worker pay'"
-          [payMoreThanWorkplacesNumber]="54"
-          [workplacesNumber]="72"
+          [positionedTitle]="position.value.title"
+          [payMoreThanWorkplacesNumber]="position.value.payMoreThanWorkplacesNumber"
+          [workplacesNumber]="position.value.totalWorkplaces"
         ></app-data-area-barchart>
-        <app-data-area-barchart
-          [positionedTitle]="'Senior care worker pay'"
-          [payMoreThanWorkplacesNumber]="21"
-          [workplacesNumber]="72"
-        ></app-data-area-barchart>
-        <app-data-area-barchart
-          [positionedTitle]="'Registered nurse salary'"
-          [payMoreThanWorkplacesNumber]="36"
-          [workplacesNumber]="72"
-        ></app-data-area-barchart>
-        <app-data-area-barchart
-          [positionedTitle]="'Registered manager salary'"
-          [payMoreThanWorkplacesNumber]="31"
-          [workplacesNumber]="72"
-        ></app-data-area-barchart>
-      </div>
+      </ng-container>
     </ng-container>
     <ng-template #showRankings>
-      <div class="govuk-!-margin-top-7" data-testid="rankings">
+      <ng-container *ngFor="let ranking of rankingData | keyvalue" class="govuk-!-margin-top-7" data-testid="rankings">
         <app-data-area-ranking
-          [rankingTitle]="'Care worker pay'"
-          [workplaceRankNumber]="18"
-          [workplacesNumber]="72"
+          [rankingTitle]="ranking.value.title"
+          [workplaceRankNumber]="ranking.value.workplacesRankNumber"
+          [workplacesNumber]="ranking.value.totalWorkplaces"
         ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="'Senior care worker pay'"
-          [workplaceRankNumber]="51"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="'Registered nurse salary'"
-          [workplaceRankNumber]="36"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="'Registered manager salary'"
-          [workplaceRankNumber]="41"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-      </div>
+      </ng-container>
     </ng-template>
   </div>
 </div>
