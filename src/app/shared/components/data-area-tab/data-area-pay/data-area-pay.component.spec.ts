@@ -3,22 +3,93 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import {
-  BenchmarksSelectViewPanelComponent,
-} from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
+import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { DataAreaPayComponent } from './data-area-pay.component';
 
-describe('DataAreaTabComponent', () => {
+describe('DataAreaPayComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaPayComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [],
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
-      componentProperties: {},
+      componentProperties: {
+        data: {
+          meta: {
+            workplaces: 0,
+            staff: 0,
+            localAuthority: 'Oxfordshire',
+          },
+          careWorkerPay: {
+            workplaceValue: {
+              value: 889,
+              hasValue: true,
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+            goodCqc: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+          },
+          seniorCareWorkerPay: {
+            workplaceValue: {
+              value: 979,
+              hasValue: true,
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+            goodCqc: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+          },
+          registeredNursePay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-pay-data',
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+            goodCqc: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+          },
+          registeredManagerPay: {
+            workplaceValue: {
+              value: 30000,
+              hasValue: true,
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+            goodCqc: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+          },
+        },
+      },
     });
 
     const component = fixture.componentInstance;
