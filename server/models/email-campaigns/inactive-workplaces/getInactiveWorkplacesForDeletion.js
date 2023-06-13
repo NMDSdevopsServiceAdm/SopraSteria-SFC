@@ -28,7 +28,7 @@ const getInactiveWorkplacesForDeletion = async () => {
   	cqc."EstablishmentLastActivity" e
 
   WHERE
-  	e."LastLogin" <= :twentyFourLastMonths
+  	(e."LastLogin" <= :twentyFourLastMonths OR e."LastLogin" is null)
 	  AND e."LastUpdated" <= :twentyFourLastMonths
     AND NOT EXISTS
     (
