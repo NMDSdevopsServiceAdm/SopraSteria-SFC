@@ -19,25 +19,31 @@
         app-data-area-table-row
         class="govuk-table__row first-row"
         header="Care worker pay"
-        [data]="data.careWorkerPay"
+        [workplaceCell]="careWorkerPay"
+        [comparisonCell]="comparisionGroupCareWorkerPay"
       ></tr>
       <tr
         app-data-area-table-row
         class="govuk-table__row"
         header="Senior care worker pay"
-        [data]="data.seniorCareWorkerPay"
+        [workplaceCell]="seniorCareWorkerPay"
+        [comparisonCell]="comparisionGroupSeniorCareWorkerPay"
       ></tr>
       <tr
+        *ngIf="showRegisteredNurseSalary"
+        data-testid="register-nurse-comparision"
         app-data-area-table-row
         class="govuk-table__row"
         header="Registered nurse salary"
-        [data]="data.registeredNursePay"
+        [workplaceCell]="registeredNurseSalary"
+        [comparisonCell]="comparisionGroupRegisteredNurseSalary"
       ></tr>
       <tr
         app-data-area-table-row
         class="govuk-table__row"
         header="Registered manager salary"
-        [data]="data.registeredManagerPay"
+        [workplaceCell]="registeredManagerSalary"
+        [comparisonCell]="comparisionGroupRegisteredManagerSalary"
       ></tr>
     </tbody>
   </table>
