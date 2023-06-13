@@ -1,5 +1,6 @@
 'use strict';
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 const { attemptToAcquireLock, updateLockState, lockStatus, releaseLockQuery } = require('../../../data/bulkUploadLock');
 const { buStates } = require('./states');
 
@@ -70,7 +71,7 @@ const acquireLock = async function (logic, newState, complete, req, res) {
   // update the current state
   await updateLockState(establishmentId, newState);
 
-  req.buRequestId = String(uuid()).toLowerCase();
+  req.buRequestId = String(uuidv4()).toLowerCase();
 
   res.status(200).send({
     message: `Lock for establishment ${establishmentId} acquired.`,

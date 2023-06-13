@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 const isLocal = require('../utils/security/isLocalTest').isLocal;
 const { registerAccount } = require('./registration/registerAccount');
 const models = require('../models');
@@ -260,7 +261,7 @@ router.post('/requestPasswordReset', async (req, res) => {
         );
       }
 
-      const requestUuid = uuid.v4();
+      const requestUuid = uuidv4();
       const now = new Date();
       const expiresIn = new Date(now.getTime() + expiresTTLms);
 

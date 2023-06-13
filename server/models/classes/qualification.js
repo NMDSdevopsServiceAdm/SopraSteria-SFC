@@ -8,7 +8,9 @@
  *
  * TO NOTE - Qualification is a simplified representation of User, Worker and Establishment; it does not have any managed properties or auditing.
  */
-const uuid = require('uuid');
+// const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 
 // database models
 const models = require('../index');
@@ -173,7 +175,7 @@ class Qualification extends EntityValidator {
   _initialise() {
     if (this._uid === null) {
       this._isNew = true;
-      this._uid = uuid.v4();
+      this._uid = uuidv4();
 
       if (!this._isWorkerUidValid) throw new Error('Qualification initialisation error');
 
@@ -462,7 +464,7 @@ class Qualification extends EntityValidator {
 
           // now save the document
           let [updatedRecordCount, updatedRows] = await models.workerQualifications.update(updateDocument, {
-            returning: true,
+            returning: ['*'],
             where: {
               uid: this.uid,
             },

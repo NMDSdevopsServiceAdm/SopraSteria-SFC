@@ -1,0 +1,22 @@
+<a
+  class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-flex-start"
+  role="button"
+  draggable="false"
+  href="{{ linkUrl }}"
+  data-testid="download-link"
+  data-html2canvas-ignore
+  (click)="downloadAsPDF($event)"
+>
+  <img alt="" src="/assets/images/icon-download.svg" />
+  <ng-container *ngIf="viewBenchmarksByCategory; else benchmarksPayDownload">
+    <span class="govuk-!-margin-left-1" data-testid="rAndRDownloadLink"
+      >Download recruitment and retention benchmarks <br />
+      (PDF, 385KB, 2 pages)</span
+    >
+  </ng-container>
+  <ng-template #benchmarksPayDownload>
+    <span class="govuk-!-margin-left-1" data-testid="payDownloadLink">
+      Download pay benchmarks (PDF, 430KB, 2 pages)
+    </span>
+  </ng-template>
+</a>

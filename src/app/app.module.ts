@@ -10,6 +10,7 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
@@ -56,12 +57,12 @@ import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-tab/benchmarks-tab.component';
 import { NewComparisonGroupHeaderComponent } from '@features/new-dashboard/benchmarks-tab/comparison-group-header/comparison-group-header.component';
-import { NewDashboardHeaderComponent } from '@features/new-dashboard/dashboard-header/dashboard-header.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
 import { CardComponent } from '@features/new-dashboard/home-tab/card/card.component';
 import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
 import { SummarySectionComponent } from '@features/new-dashboard/home-tab/summary-section/summary-section.component';
+import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { NewStaffTabComponent } from '@features/new-dashboard/staff-tab/staff-tab.component';
 import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
 import { NewTrainingTabComponent } from '@features/new-dashboard/training-tab/training-tab.component';
@@ -70,6 +71,7 @@ import { ResetPasswordConfirmationComponent } from '@features/reset-password/con
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
+import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
@@ -83,7 +85,6 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 
 @NgModule({
   declarations: [
@@ -123,7 +124,6 @@ import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-
     NewStaffTabComponent,
     NewTrainingTabComponent,
     NewBenchmarksTabComponent,
-    NewDashboardHeaderComponent,
     NewTrainingLinkPanelComponent,
     NewComparisonGroupHeaderComponent,
     CardComponent,
@@ -145,6 +145,7 @@ import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-
     SharedModule,
     RouterModule,
     BenchmarksModule,
+    DataAreaTabModule,
   ],
   providers: [
     AuthGuard,
@@ -187,6 +188,7 @@ import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-
     WorkersResolver,
     TotalStaffRecordsResolver,
     CqcStatusCheckResolver,
+    BenchmarksResolver,
   ],
   bootstrap: [AppComponent],
 })

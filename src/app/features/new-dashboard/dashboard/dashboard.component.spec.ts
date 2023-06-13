@@ -155,5 +155,38 @@ describe('NewDashboardComponent', () => {
 
       expect(getByTestId('benchmarks-tab')).toBeTruthy();
     });
+
+    it('should render the new data area page rather than benchmark page when the newDataAreaFlag is true', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup('benchmarks');
+
+      component.canSeeNewDataArea = true;
+      component.newDataAreaFlag = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('data-area-tab')).toBeTruthy();
+      expect(queryByTestId('benchmarks-tab')).toBeFalsy();
+    });
+
+    it('should render the normal benchmarks page when the newDataAreaFlag is false', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup('benchmarks');
+
+      component.canSeeNewDataArea = true;
+      component.newDataAreaFlag = false;
+      fixture.detectChanges();
+
+      expect(getByTestId('benchmarks-tab')).toBeTruthy();
+      expect(queryByTestId('data-area-tab')).toBeFalsy();
+    });
+
+    it('should render the normal benchmarks page when the establishment is non regulated', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup('benchmarks');
+
+      component.canSeeNewDataArea = false;
+      component.newDataAreaFlag = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('benchmarks-tab')).toBeTruthy();
+      expect(queryByTestId('data-area-tab')).toBeFalsy();
+    });
   });
 });

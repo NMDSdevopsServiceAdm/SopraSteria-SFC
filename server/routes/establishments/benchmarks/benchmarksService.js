@@ -1,18 +1,24 @@
 const models = require('../../../models');
 const { Op } = require('sequelize');
 
-const getPay = async function (establishmentId) {
-  const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
-  if (averageHourlyPay.amount === null) {
+const getPay = async function (params) {
+  const averageHourlyPay = await models.worker.averageHourlyPay(params);
+
+  if (!averageHourlyPay.amount) {
     return {
       stateMessage: 'no-pay-data',
     };
   }
 
-  return { value: parseFloat((parseFloat(averageHourlyPay.amount) * 100).toFixed(0)) };
+  const amount =
+    params.annualOrHourly === 'Annually'
+      ? parseFloat(averageHourlyPay.amount)
+      : parseFloat(averageHourlyPay.amount) * 100;
+
+  return { value: parseFloat(amount.toFixed(0)) };
 };
 
-const getQualifications = async function (establishmentId) {
+const getQualifications = async function ({ establishmentId }) {
   const qualifications = await models.worker.countSocialCareQualificationsAndNoQualifications(
     establishmentId,
     models.services.careProvidingStaff,
@@ -30,7 +36,7 @@ const getQualifications = async function (establishmentId) {
   };
 };
 
-const getSickness = async function (establishmentId) {
+const getSickness = async function ({ establishmentId }) {
   const whereClause = { DaysSickValue: 'Yes', archived: false };
   const establishmentWorkers = await models.establishment.workers(establishmentId, whereClause, ['DaysSickDays']);
   if (!establishmentWorkers) {
@@ -45,30 +51,14 @@ const getSickness = async function (establishmentId) {
   };
 };
 
-const getTurnover = async function (establishmentId) {
-  const establishment = await models.establishment.turnoverData(establishmentId);
+const getTurnover = async function ({ establishmentId }) {
+  const response = await vacanciesAndLeavers(establishmentId, 'LeaversValue');
 
-  const staffNumberIncorrectOrLeaversUnknown = await checkStaffNumberAndLeavers(establishmentId, establishment);
-  if (staffNumberIncorrectOrLeaversUnknown) {
-    return staffNumberIncorrectOrLeaversUnknown;
-  }
+  if (response.stateMessage) return { stateMessage: response.stateMessage };
+  if (response.value) return { value: 0 };
 
-  const permTemptCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
-  if (permTemptCount === 0) {
-    return {
-      stateMessage: 'no-perm-or-temp',
-    };
-  }
+  const percentOfPermTemp = response.noOfProperty / response.permTempCount;
 
-  if (establishment.LeaversValue === 'None') {
-    return {
-      value: 0,
-    };
-  }
-
-  const leavers = await models.establishmentJobs.leaversForEstablishment(establishmentId);
-
-  const percentOfPermTemp = leavers / permTemptCount;
   if (percentOfPermTemp > 9.95) {
     return {
       stateMessage: 'incorrect-turnover',
@@ -80,58 +70,136 @@ const getTurnover = async function (establishmentId) {
   };
 };
 
-const checkStaffNumberAndLeavers = async function (establishmentId, establishment) {
+const getVacancies = async function ({ establishmentId }) {
+  const response = await vacanciesAndLeavers(establishmentId, 'VacanciesValue');
+  if (response.stateMessage) return { stateMessage: response.stateMessage };
+  if (response.value) return { value: 0 };
+
+  const percentOfPermTemp = response.noOfProperty / (response.permTempCount + response.noOfProperty);
+  return {
+    value: percentOfPermTemp,
+  };
+};
+
+const vacanciesAndLeavers = async (establishmentId, leaversOrVacancies) => {
+  const establishment = await models.establishment.turnoverAndVacanciesData(establishmentId);
+  const staffNumberIncorrectOrVacanciesUnknown = await checkStaffNumbers(
+    establishmentId,
+    establishment,
+    leaversOrVacancies,
+  );
+
+  if (staffNumberIncorrectOrVacanciesUnknown) return staffNumberIncorrectOrVacanciesUnknown;
+
+  const permTempCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
+
+  if (permTempCount === 0) {
+    return { stateMessage: 'no-perm-or-temp' };
+  }
+
+  if (establishment[leaversOrVacancies] === 'None') {
+    return {
+      value: 'None',
+    };
+  }
+
+  const attribute = leaversOrVacancies === 'LeaversValue' ? 'Leavers' : 'Vacancies';
+
+  const noOfProperty = await models.establishmentJobs.leaversOrVacanciesForEstablishment(establishmentId, attribute);
+
+  return { noOfProperty, permTempCount };
+};
+
+const getTimeInRole = async function ({ establishmentId }) {
+  const noOfWorkersYearInRole = await models.worker.yearOrMoreInRoleCount(establishmentId);
+  const permTempCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
+
+  if (!permTempCount) {
+    return {
+      stateMessage: 'no-perm-or-temp',
+    };
+  }
+
+  if (!noOfWorkersYearInRole) {
+    return {
+      value: 0,
+    };
+  }
+
+  const percentOfWorkersInJobRoleForYear = noOfWorkersYearInRole / permTempCount;
+
+  if (percentOfWorkersInJobRoleForYear > 1) {
+    return {
+      stateMessage: 'incorrect-time-in-role',
+    };
+  }
+
+  return { value: percentOfWorkersInJobRoleForYear };
+};
+
+const checkStaffNumbers = async function (establishmentId, establishment, leaversOrVacancies) {
   const workerCount = await models.worker.countForEstablishment(establishmentId);
+
   if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
     return {
       stateMessage: 'mismatch-workers',
     };
   }
 
-  if (establishment.LeaversValue === "Don't know" || !establishment.LeaversValue) {
+  if (establishment[leaversOrVacancies] === "Don't know" || !establishment[leaversOrVacancies]) {
     return {
-      stateMessage: 'no-leavers',
+      stateMessage: leaversOrVacancies === 'LeaversValue' ? 'no-leavers' : 'no-vacancies',
     };
   }
 
   return false;
 };
 
-const getComparisonGroupRankings = async function (establishmentId, benchmarksModel) {
+const getComparisonGroupRankings = async function ({
+  benchmarksModel,
+  establishmentId,
+  mainService,
+  attributes,
+  mainJob,
+}) {
   const cssr = await models.cssr.getCSSR(establishmentId);
   if (!cssr) return [];
+  const where = mainJob ? { MainJobRole: mainJob } : {};
   return await benchmarksModel.findAll({
-    attributes: { exclude: ['CssrID', 'MainServiceFK'] },
+    attributes: ['LocalAuthorityArea', 'MainServiceFK', ...attributes],
     where: {
-      CssrID: cssr.id,
+      LocalAuthorityArea: cssr.id,
+      MainServiceFK: mainService,
       EstablishmentFK: {
         [Op.not]: [establishmentId],
       },
+      ...where,
     },
-    include: [
-      {
-        attributes: ['id', 'reportingID'],
-        model: models.services,
-        as: 'BenchmarkToService',
-        include: [
-          {
-            attributes: ['id'],
-            model: models.establishment,
-            where: {
-              id: establishmentId,
-            },
-            as: 'establishmentsMainService',
-            required: true,
-          },
-        ],
-        required: true,
-      },
-    ],
   });
 };
 
-module.exports.getPay = getPay;
-module.exports.getQualifications = getQualifications;
-module.exports.getSickness = getSickness;
-module.exports.getTurnover = getTurnover;
-module.exports.getComparisonGroupRankings = getComparisonGroupRankings;
+const getComparisonData = async function (benchmarksModel, establishmentId, mainService, attributes, mainJob) {
+  const cssr = await models.cssr.getCSSR(establishmentId);
+  if (!cssr) return {};
+
+  const where = mainJob ? { MainJobRole: mainJob } : {};
+  return await benchmarksModel.findOne({
+    attributes: ['LocalAuthorityArea', 'MainServiceFK', 'BaseEstablishments', ...attributes],
+    where: {
+      LocalAuthorityArea: cssr.id,
+      MainServiceFK: mainService,
+      ...where,
+    },
+  });
+};
+
+module.exports = {
+  getPay,
+  getQualifications,
+  getSickness,
+  getTurnover,
+  getVacancies,
+  getTimeInRole,
+  getComparisonGroupRankings,
+  getComparisonData,
+};

@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 
-const servicesPropertyClass = require('../../../../../../models/classes/establishment/properties/servicesProperty')
-  .ServicesProperty;
+const servicesPropertyClass =
+  require('../../../../../../models/classes/establishment/properties/servicesProperty').ServicesProperty;
 
 describe('servicesProperty Property', () => {
   const allMyServices = [
@@ -274,6 +274,7 @@ describe('servicesProperty Property', () => {
           other: undefined,
           category: undefined,
           isCQC: undefined,
+          reportingID: undefined,
         },
         otherServices: {
           value: 'Yes',
@@ -285,6 +286,7 @@ describe('servicesProperty Property', () => {
                   id: 2,
                   name: 'Community support and outreach',
                   other: undefined,
+                  reportingID: undefined,
                 },
               ],
             },
@@ -293,7 +295,15 @@ describe('servicesProperty Property', () => {
         allOtherServices: [
           {
             category: 'Adult community care',
-            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }],
+            services: [
+              {
+                id: 2,
+                isMyService: undefined,
+                name: 'Community support and outreach',
+                other: undefined,
+                reportingID: undefined,
+              },
+            ],
           },
         ],
       });
@@ -321,6 +331,7 @@ describe('servicesProperty Property', () => {
           other: undefined,
           category: undefined,
           isCQC: undefined,
+          reportingID: undefined,
         },
         otherServices: {
           value: 'No',
@@ -329,7 +340,15 @@ describe('servicesProperty Property', () => {
         allOtherServices: [
           {
             category: 'Adult community care',
-            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }],
+            services: [
+              {
+                id: 2,
+                isMyService: undefined,
+                name: 'Community support and outreach',
+                other: undefined,
+                reportingID: undefined,
+              },
+            ],
           },
         ],
       });
@@ -357,6 +376,7 @@ describe('servicesProperty Property', () => {
           other: undefined,
           category: undefined,
           isCQC: undefined,
+          reportingID: undefined,
         },
         otherServices: {
           value: null,
@@ -365,7 +385,15 @@ describe('servicesProperty Property', () => {
         allOtherServices: [
           {
             category: 'Adult community care',
-            services: [{ id: 2, isMyService: undefined, name: 'Community support and outreach', other: undefined }],
+            services: [
+              {
+                id: 2,
+                isMyService: undefined,
+                name: 'Community support and outreach',
+                other: undefined,
+                reportingID: undefined,
+              },
+            ],
           },
         ],
       });

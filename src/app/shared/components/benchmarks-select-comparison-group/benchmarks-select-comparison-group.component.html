@@ -1,0 +1,37 @@
+<div class="govuk-form-group">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-!-font-weight-bold">Comparison groups</legend>
+    <div class="govuk-radios govuk-!-margin-top-4" data-module="govuk-radios">
+      <div class="govuk-radios__item">
+        <input
+          data-testid="main-service-input"
+          class="govuk-radios__input"
+          id="comparison-groups"
+          name="comparison-groups"
+          type="radio"
+          value="mainService"
+          [checked]="!viewBenchmarksComparisonGroups"
+          (change)="handleViewChange($event)"
+        />
+        <label class="govuk-label govuk-radios__label" for="comparison-groups">
+          {{ mainServiceName }} providers in {{ localAuthorityLocation }}
+        </label>
+      </div>
+      <div class="govuk-radios__item">
+        <input
+          data-testid="good-and-outstanding-input"
+          class="govuk-radios__input"
+          id="comparison-groups-good-and-outstanding"
+          name="comparison-groups"
+          type="radio"
+          value="GoodAndOutstanding"
+          [checked]="viewBenchmarksComparisonGroups"
+          (change)="handleViewChange($event)"
+        />
+        <label class="govuk-label govuk-radios__label" for="comparison-groups-good-and-outstanding">
+          Good and outstading CQC providers in {{ localAuthorityLocation }}
+        </label>
+      </div>
+    </div>
+  </fieldset>
+</div>

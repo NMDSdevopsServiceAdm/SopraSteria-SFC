@@ -1,0 +1,129 @@
+<ng-container *ngIf="newDashboard">
+  <app-new-dashboard-header
+    [tab]="'benchmarks'"
+    [updatedDate]="tilesData?.meta.lastUpdated"
+    data-html2canvas-ignore
+  ></app-new-dashboard-header>
+</ng-container>
+
+<div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
+  <app-benchmarks-select-view-panel
+    data-testid="selectCategoryLinks"
+    [falseSelectionName]="'Pay'"
+    [trueSelectionName]="'Recruitment and retention'"
+    (handleViewToggle)="handleViewBenchmarksByCategory($event)"
+  >
+  </app-benchmarks-select-view-panel>
+
+  <div class="govuk-!-margin-top-7" data-testid="benchmarksCategoryHeading">
+    <ng-container *ngIf="viewBenchmarksByCategory; else payCategory">
+      <h2 class="govuk-heading-m">Recruitment and retention</h2>
+    </ng-container>
+    <ng-template #payCategory>
+      <h2 class="govuk-heading-m">Pay</h2>
+    </ng-template>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-top-2">
+    <div class="govuk-grid-column-one-third">
+      <a
+        class="asc-font-19"
+        data-html2canvas-ignore
+        [routerLink]="['/workplace', workplace.uid, 'benchmarks', 'about-the-data']"
+        (click)="setReturn()"
+        >About the data</a
+      >
+      <div *ngIf="tilesData?.meta.lastUpdated" data-testid="benchmarksLastUpdatedDate" class="govuk-!-margin-top-5">
+        <p class="govuk-body">
+          The comparison group data was refreshed on {{ tilesData?.meta.lastUpdated | date: 'd MMMM y' }}.
+        </p>
+      </div>
+
+      <app-benchmarks-select-comparison-group
+        [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+        (handleViewToggle)="handleViewComparisonGroups($event)"
+        [mainServiceName]="workplace.mainService.name"
+        [localAuthorityLocation]="tilesData?.meta.localAuthority"
+      >
+      </app-benchmarks-select-comparison-group>
+    </div>
+
+    <div class="govuk-grid-column-two-thirds">
+      <ng-container *ngIf="viewBenchmarksComparisonGroups; else nonGoodCqcComparisonGroup">
+        <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}</h3>
+        <p class="govuk-body">
+          Your selected comparison group is a maximum
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
+          staff from
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
+          workplaces using ASC-WDS, rated as good or outstanding CQC providers and providing
+          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
+          in {{ tilesData?.meta.localAuthority }}.
+        </p>
+      </ng-container>
+      <ng-template #nonGoodCqcComparisonGroup>
+        <h3 class="govuk-heading-m">
+          {{ workplace.mainService.name }} providers in {{ tilesData?.meta.localAuthority }}
+        </h3>
+        <p class="govuk-body">
+          Your selected comparison group is a maximum
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staff | number }}</span>
+          staff from
+          <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplaces | number }}</span>
+          workplaces using ASC-WDS and providing
+          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
+          in {{ tilesData?.meta.localAuthority }}.
+        </p>
+      </ng-template>
+
+      <app-download-pdf
+        [linkUrl]="'/benchmarks.pdf'"
+        [viewBenchmarksByCategory]="viewBenchmarksByCategory"
+        (downloadPDF)="downloadAsPDF()"
+      ></app-download-pdf>
+
+      <ng-container *ngIf="viewBenchmarksByCategory; else showPay">
+        <app-data-area-recruitment-and-retention
+          [data]="tilesData"
+          [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+          data-testid="recruitmentAndRetentionArea"
+        ></app-data-area-recruitment-and-retention>
+      </ng-container>
+      <ng-template #showPay>
+        <app-data-area-pay [data]="tilesData" data-testid="payArea"></app-data-area-pay>
+      </ng-template>
+
+      <div class="govuk-!-margin-top-7">
+        <h2 class="govuk-heading-m">Useful links</h2>
+        <app-data-area-useful-link
+          [linkTitle]="'International recruitment'"
+          [linkUrl]="'/#'"
+          [linkDescription]="
+            'International recruitment can help you develop a skilled and diverse workforce, but it can also be daunting for employers. We\'ve collected together the resources that\'ll support you every step of the way.'
+          "
+        ></app-data-area-useful-link>
+
+        <app-data-area-useful-link
+          [linkTitle]="'Social media for recruiting care workers'"
+          [linkUrl]="'/#'"
+          [linkDescription]="
+            'Social media is a great way to attract new people and generate interest in your organisation. This guide offers tips and advice to help you make the most of well-known platforms and attract people of different ages.'
+          "
+        ></app-data-area-useful-link>
+
+        <app-data-area-useful-link
+          [linkTitle]="'Maximise retention'"
+          [linkUrl]="'/#'"
+          [linkDescription]="
+            'This webinar shares sector expertise around maximising the retention of your staff. Discover top tips and innovative solutions for staff retention and practical ideas from other managers.'
+          "
+        ></app-data-area-useful-link>
+      </div>
+    </div>
+    <app-data-area-about-the-data
+      #aboutData
+      class="govuk-visually-hidden"
+      [workplace]="workplace"
+    ></app-data-area-about-the-data>
+  </div>
+</div>
