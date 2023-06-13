@@ -1097,7 +1097,10 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+
   Establishment.generateDeleteReportData = async function (lastUpdatedDate) {
+    await sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
+
     const date = new Date(lastUpdatedDate).toISOString();
     const whereCondition = sequelize.literal(`NOT EXISTS
       (

@@ -130,7 +130,6 @@ const fillData = (reportData, laData, WS1) => {
 };
 
 const generateDeleteReport = async (req, res) => {
-  await models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
   const lastUpdatedDate = dayjs().subtract(monthsWithoutUpdate, 'months').toDate();
   const reportData = await models.establishment.generateDeleteReportData(lastUpdatedDate);
   const laData = await addCSSRData(reportData);
