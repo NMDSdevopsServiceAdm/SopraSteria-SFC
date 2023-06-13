@@ -12,7 +12,8 @@ const { Op } = require('sequelize');
 
 const generateJWT = require('../utils/security/generateJWT');
 const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
-const uuid = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+uuidv4();
 
 const config = require('..//config/config');
 const formatSuccessulLoginResponse = require('../utils/login/response');
@@ -371,7 +372,7 @@ router.post('/', async (req, res) => {
               // send reset password email
               const expiresTTLms = 60 * 24 * 1000; // 24 hours
 
-              const requestUuid = uuid.v4();
+              const requestUuid = uuidv4();
               const now = new Date();
               const expiresIn = new Date(now.getTime() + expiresTTLms);
 

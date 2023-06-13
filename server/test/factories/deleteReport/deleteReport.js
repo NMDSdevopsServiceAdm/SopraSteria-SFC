@@ -18,7 +18,7 @@ const rawDataBuilder = build('rawData', {
     EmployerTypeOther: null,
     workers: [],
     mainService: { name: 'Day care and day services' },
-    LastUpdated: { dataOwner: 'Workplace', lastUpdated: '2019-10-18T11:29:58.477Z' },
+    LastActivity: { dataOwner: 'Workplace', lastUpdated: '2019-10-18T11:29:58.477Z' },
   },
 });
 module.exports.rawDataBuilder = rawDataBuilder;

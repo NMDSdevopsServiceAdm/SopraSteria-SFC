@@ -19,6 +19,8 @@ export class HowDidYouHearAboutComponent implements OnInit {
     'From the Care Quality Commission',
     'From our local authority',
     'From our trade association',
+    'From social media',
+    'From a newsletter or article',
     'Other',
   ];
 

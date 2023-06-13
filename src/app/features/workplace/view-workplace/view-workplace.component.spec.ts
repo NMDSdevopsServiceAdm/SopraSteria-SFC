@@ -247,4 +247,63 @@ describe('view-workplace', () => {
       expect(benchmarkUsageSpy).not.toHaveBeenCalled();
     });
   });
+
+  describe('Benchmarks tab', () => {
+    it('should show the benchmarks tab when it is the selected tab, there is a workplace and there is canViewBenchmarks permissions', async () => {
+      const { getByTestId, component, fixture } = await setup(true);
+      component.canViewBenchmarks = true;
+      fixture.detectChanges();
+
+      const benchmarksTab = getByTestId('tab_benchmarks');
+
+      fireEvent.click(benchmarksTab);
+
+      expect(getByTestId('benchmarks-tab')).toBeTruthy();
+    });
+
+    it('should render the new data area page rather than benchmark page when the newDataAreaFlag is true and establishment is regulated', async () => {
+      const { getByTestId, component, fixture, queryByTestId } = await setup(true);
+      component.canViewBenchmarks = true;
+      component.canSeeNewDataArea = true;
+      component.newDataAreaFlag = true;
+      fixture.detectChanges();
+
+      const benchmarksTab = getByTestId('tab_benchmarks');
+
+      fireEvent.click(benchmarksTab);
+
+      expect(getByTestId('data-area-tab')).toBeTruthy();
+      expect(queryByTestId('benchmarks-tab')).toBeFalsy();
+    });
+
+    it('should render the normal benchmarks page when the newDataAreaFlag is false even if establishment is regulated ', async () => {
+      const { getByTestId, component, fixture, queryByTestId } = await setup(true);
+      component.canViewBenchmarks = true;
+      component.canSeeNewDataArea = true;
+      component.newDataAreaFlag = false;
+      fixture.detectChanges();
+
+      const benchmarksTab = getByTestId('tab_benchmarks');
+
+      fireEvent.click(benchmarksTab);
+
+      expect(getByTestId('benchmarks-tab')).toBeTruthy();
+      expect(queryByTestId('data-area-tab')).toBeFalsy();
+    });
+
+    it('should render the normal benchmarks page when thethe newDataAreaFlag is true, but the establishment is non regulated', async () => {
+      const { getByTestId, component, fixture, queryByTestId } = await setup(true);
+      component.canViewBenchmarks = true;
+      component.canSeeNewDataArea = false;
+      component.newDataAreaFlag = true;
+      fixture.detectChanges();
+
+      const benchmarksTab = getByTestId('tab_benchmarks');
+
+      fireEvent.click(benchmarksTab);
+
+      expect(getByTestId('benchmarks-tab')).toBeTruthy();
+      expect(queryByTestId('data-area-tab')).toBeFalsy();
+    });
+  });
 });

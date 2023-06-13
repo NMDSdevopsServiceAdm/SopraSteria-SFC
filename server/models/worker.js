@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
@@ -1204,19 +1205,35 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.averageHourlyPay = async function (establishmentId) {
+  Worker.averageHourlyPay = async function (params) {
+    const establishmentId = params.establishmentId;
+    const mainJobFk = params.mainJob || 10;
+    const annualOrHourly = params.annualOrHourly || 'Hourly';
+
     return this.findOne({
       attributes: [[sequelize.fn('avg', sequelize.col('AnnualHourlyPayRate')), 'amount']],
       where: {
-        MainJobFkValue: 10,
+        MainJobFkValue: mainJobFk,
         archived: false,
-        AnnualHourlyPayValue: 'Hourly',
+        AnnualHourlyPayValue: annualOrHourly,
         AnnualHourlyPayRate: {
           [Op.not]: null,
         },
         establishmentFk: establishmentId,
       },
       raw: true,
+    });
+  };
+
+  Worker.yearOrMoreInRoleCount = async function (establishmentId) {
+    const yearAgo = dayjs(new Date()).subtract(1, 'year');
+    return this.count({
+      where: {
+        establishmentFk: establishmentId,
+        MainJobStartDateValue: {
+          [Op.lt]: yearAgo,
+        },
+      },
     });
   };
 
