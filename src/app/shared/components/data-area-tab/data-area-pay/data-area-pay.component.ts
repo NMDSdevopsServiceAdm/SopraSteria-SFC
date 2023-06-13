@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { BenchmarksResponse, BenchmarkValue } from '@core/model/benchmarks.model';
 import { FormatUtil } from '@core/utils/format-util';
 
 @Component({
@@ -20,8 +20,6 @@ export class DataAreaPayComponent implements OnChanges {
   public comparisionGroupSeniorCareWorkerPay: string;
   public comparisionGroupRegisteredNurseSalary: string;
   public comparisionGroupRegisteredManagerSalary: string;
-  public formatMoney = FormatUtil.formatMoney;
-  public formatSalary = FormatUtil.formatSalary;
 
   ngOnChanges(): void {
     this.showWorkplacePayAndSalary();
@@ -33,47 +31,49 @@ export class DataAreaPayComponent implements OnChanges {
   }
 
   public showWorkplacePayAndSalary(): void {
-    this.careWorkerPay = this.data.careWorkerPay.workplaceValue.hasValue
-      ? `${this.formatMoney(this.data?.careWorkerPay.workplaceValue.value)} (hourly)`
-      : 'No data added';
-    this.seniorCareWorkerPay = this.data.seniorCareWorkerPay.workplaceValue.hasValue
-      ? `${this.formatMoney(this.data?.seniorCareWorkerPay.workplaceValue.value)} (hourly)`
-      : 'No data added';
-    this.registeredNurseSalary = this.data.registeredNursePay.workplaceValue.hasValue
-      ? `${this.formatSalary(this.data?.registeredNursePay.workplaceValue.value)} (annually)`
-      : 'No data added';
-    this.registeredManagerSalary = this.data.registeredManagerPay.workplaceValue.hasValue
-      ? `${this.formatSalary(this.data?.registeredManagerPay.workplaceValue.value)} (annually)`
-      : 'No data added';
+    this.careWorkerPay = this.formatWorkplacePay(this.data.careWorkerPay.workplaceValue);
+    this.seniorCareWorkerPay = this.formatWorkplacePay(this.data.seniorCareWorkerPay.workplaceValue);
+    this.registeredNurseSalary = this.formatWorkplaceSalary(this.data.registeredNursePay.workplaceValue);
+    this.registeredManagerSalary = this.formatWorkplaceSalary(this.data.registeredManagerPay.workplaceValue);
   }
 
   public showComparisionGroupPayAndSalary(): void {
     if (this.viewBenchmarksComparisonGroups) {
-      this.comparisionGroupCareWorkerPay = this.data?.careWorkerPay.goodCqc.hasValue
-        ? `${this.formatMoney(this.data?.careWorkerPay.goodCqc.value)} (hourly)`
-        : 'Not enough data';
-      this.comparisionGroupSeniorCareWorkerPay = this.data?.seniorCareWorkerPay.goodCqc.hasValue
-        ? `${this.formatMoney(this.data?.seniorCareWorkerPay.goodCqc.value)} (hourly)`
-        : 'Not enough data';
-      this.comparisionGroupRegisteredNurseSalary = this.data?.registeredNursePay.goodCqc.hasValue
-        ? `${this.formatSalary(this.data?.registeredNursePay.goodCqc.value)} (annually)`
-        : 'Not enough data';
-      this.comparisionGroupRegisteredManagerSalary = this.data?.registeredManagerPay.goodCqc.hasValue
-        ? `${this.formatSalary(this.data?.registeredManagerPay.goodCqc.value)} (annually)`
-        : 'Not enough data';
+      this.comparisionGroupCareWorkerPay = this.formatComparisionGroupPay(this.data?.careWorkerPay.goodCqc);
+      this.comparisionGroupSeniorCareWorkerPay = this.formatComparisionGroupPay(this.data?.seniorCareWorkerPay.goodCqc);
+      this.comparisionGroupRegisteredNurseSalary = this.formatComparisionGroupSalary(
+        this.data?.registeredNursePay.goodCqc,
+      );
+      this.comparisionGroupRegisteredManagerSalary = this.formatComparisionGroupSalary(
+        this.data?.registeredManagerPay.goodCqc,
+      );
     } else {
-      this.comparisionGroupCareWorkerPay = this.data?.careWorkerPay.comparisonGroup.hasValue
-        ? `${this.formatMoney(this.data?.careWorkerPay.comparisonGroup.value)} (hourly)`
-        : 'Not enough data';
-      this.comparisionGroupSeniorCareWorkerPay = this.data?.seniorCareWorkerPay.comparisonGroup.hasValue
-        ? `${this.formatMoney(this.data?.seniorCareWorkerPay.comparisonGroup.value)} (hourly)`
-        : 'Not enough data';
-      this.comparisionGroupRegisteredNurseSalary = this.data?.registeredNursePay.comparisonGroup.hasValue
-        ? `${this.formatSalary(this.data?.registeredNursePay.comparisonGroup.value)} (annually)`
-        : 'Not enough data';
-      this.comparisionGroupRegisteredManagerSalary = this.data?.registeredManagerPay.comparisonGroup.hasValue
-        ? `${this.formatSalary(this.data?.registeredManagerPay.comparisonGroup.value)} (annually)`
-        : 'Not enough data';
+      this.comparisionGroupCareWorkerPay = this.formatComparisionGroupPay(this.data?.careWorkerPay.comparisonGroup);
+      this.comparisionGroupSeniorCareWorkerPay = this.formatComparisionGroupPay(
+        this.data?.seniorCareWorkerPay.comparisonGroup,
+      );
+      this.comparisionGroupRegisteredNurseSalary = this.formatComparisionGroupSalary(
+        this.data?.registeredNursePay.comparisonGroup,
+      );
+      this.comparisionGroupRegisteredManagerSalary = this.formatComparisionGroupSalary(
+        this.data?.registeredManagerPay.comparisonGroup,
+      );
     }
+  }
+
+  private formatComparisionGroupSalary(data: BenchmarkValue): string {
+    return data.hasValue ? `${FormatUtil.formatSalary(data.value)} (annually)` : 'Not enough data';
+  }
+
+  private formatComparisionGroupPay(data: BenchmarkValue): string {
+    return data.hasValue ? `${FormatUtil.formatMoney(data.value)} (hourly)` : 'Not enough data';
+  }
+
+  private formatWorkplaceSalary(data: BenchmarkValue): string {
+    return data.hasValue ? `${FormatUtil.formatSalary(data.value)} (annually)` : 'No data added';
+  }
+
+  private formatWorkplacePay(data: BenchmarkValue): string {
+    return data.hasValue ? `${FormatUtil.formatMoney(data.value)} (hourly)` : 'No data added';
   }
 }
