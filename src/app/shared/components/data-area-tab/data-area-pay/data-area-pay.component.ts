@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BenchmarksResponse, BenchmarkValue } from '@core/model/benchmarks.model';
-import { benchmarksData } from '@core/test-utils/MockBenchmarkService';
+import { BenchmarksResponse } from '@core/model/benchmarks.model';
 
 @Component({
   selector: 'app-data-area-pay',
