@@ -13,12 +13,12 @@ describe('ServiceNamePipe', () => {
 
   it('formats care home services with nursing correctly', () => {
     const pipe = new ServiceNamePipe();
-    expect(pipe.transform('Care Home Services With Nursing')).toEqual('Care home with nursing');
+    expect(pipe.transform('Care Home Services With Nursing')).toEqual('Care homes with nursing');
   });
 
   it('formats care home services without nursing correctly', () => {
     const pipe = new ServiceNamePipe();
-    expect(pipe.transform('Care Home Services without Nursing')).toEqual('Care home without nursing');
+    expect(pipe.transform('Care Home Services without Nursing')).toEqual('Care homes without nursing');
   });
 
   it('does not format any other service and just returns it', () => {

@@ -9,9 +9,9 @@ export class ServiceNamePipe implements PipeTransform {
       case 'domiciliary care services':
         return 'Domiciliary care';
       case 'care home services with nursing':
-        return 'Care home with nursing';
+        return 'Care homes with nursing';
       case 'care home services without nursing':
-        return 'Care home without nursing';
+        return 'Care homes without nursing';
     }
     return value;
   }

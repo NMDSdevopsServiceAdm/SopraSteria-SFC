@@ -39,7 +39,12 @@ const MockWindow = {
 };
 
 describe('NewHomeTabComponent', () => {
-  const setup = async (checkCqcDetails = false, establishment = Establishment, comparisonDataAvailable = true) => {
+  const setup = async (
+    checkCqcDetails = false,
+    establishment = Establishment,
+    comparisonDataAvailable = true,
+    noOfWorkplaces = 9,
+  ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewHomeTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -87,7 +92,7 @@ describe('NewHomeTabComponent', () => {
       componentProperties: {
         workplace: establishment,
         meta: comparisonDataAvailable
-          ? { workplaces: 9, staff: 4, localAuthority: 'Test LA' }
+          ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
           : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
       },
       schemas: [NO_ERRORS_SCHEMA],
@@ -460,6 +465,38 @@ describe('NewHomeTabComponent', () => {
   describe('cards', () => {
     describe('Benchmarks', () => {
       describe('Where main service is one of the big 3', async () => {
+        const establishment = {
+          ...Establishment,
+          mainService: {
+            ...Establishment.mainService,
+            reportingID: 8,
+          },
+          isRegulated: true,
+        };
+
+        it('should show the benchmarks card text non pluralised if there is only one workplace in the comparison data', async () => {
+          const { getByText } = await setup(false, establishment, true, 1);
+
+          const benchmarksCardText = getByText('There is 1 workplace providing day care and day services in Test LA.');
+
+          expect(benchmarksCardText).toBeTruthy();
+        });
+
+        it('without comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
+          const { getByText, tabsServiceSpy } = await setup(false, establishment, false);
+
+          const benchmarksLink = getByText('See how you compare against other workplaces');
+          const benchmarksCardText = getByText(
+            `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`,
+          );
+          fireEvent.click(benchmarksLink);
+
+          expect(true).toBeTruthy();
+          expect(benchmarksLink).toBeTruthy();
+          expect(benchmarksCardText).toBeTruthy();
+          expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+        });
+
         const testCases = [1, 2, 8];
         for (const serviceType of testCases) {
           const establishment = {
@@ -486,27 +523,16 @@ describe('NewHomeTabComponent', () => {
             expect(benchmarksCardText).toBeTruthy();
             expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
           });
-
-          it('without comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
-            const { getByText, tabsServiceSpy } = await setup(false, establishment, false);
-
-            const benchmarksLink = getByText('See how you compare against other workplaces');
-            const benchmarksCardText = getByText(
-              `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`,
-            );
-            fireEvent.click(benchmarksLink);
-
-            expect(benchmarksLink).toBeTruthy();
-            expect(benchmarksCardText).toBeTruthy();
-            expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
-          });
         }
       });
 
-      describe('Where establishment is not regulated', async () => {
+      describe('Where establishment is not big 3', async () => {
         const establishment = {
           ...Establishment,
-          isRegulated: false,
+          mainService: {
+            ...Establishment.mainService,
+            reportingID: 5,
+          },
         };
 
         it('should show a card with a link that takes you to the benchmarks tab', async () => {
@@ -519,6 +545,14 @@ describe('NewHomeTabComponent', () => {
           expect(benchmarksLink).toBeTruthy();
           expect(benchmarksCardText).toBeTruthy();
           expect(tabsServiceSpy).toHaveBeenCalledWith('benchmarks');
+        });
+
+        it('should show the benchmarks card text non pluralised if there is only one workplace in the comparison data', async () => {
+          const { getByText } = await setup(false, establishment, true, 1);
+
+          const benchmarksCardText = getByText('There is 1 workplace providing adult social care in Test LA.');
+
+          expect(benchmarksCardText).toBeTruthy();
         });
 
         it('without comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {

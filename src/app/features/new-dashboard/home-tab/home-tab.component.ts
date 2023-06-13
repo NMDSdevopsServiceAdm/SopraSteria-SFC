@@ -11,9 +11,13 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
-import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import {
+  BecomeAParentCancelDialogComponent,
+} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import {
+  LinkToParentCancelDialogComponent,
+} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { Subscription } from 'rxjs';
@@ -38,7 +42,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
   public benchmarksMessage: string;
-  public benchmarksHeader: string;
   public canViewWorkplaces: boolean;
   public canViewReports: boolean;
   public canViewChangeDataOwner: boolean;
@@ -60,6 +63,8 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   public workerCount: number;
   public workersNotCompleted: Worker[];
   public addWorkplaceDetailsBanner: boolean;
+  public bigThreeServices: boolean;
+  public hasBenchmarkComparisonData: boolean;
 
   constructor(
     private userService: UserService,
@@ -119,35 +124,28 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
       });
     }
 
+    this.bigThreeServices = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+    this.hasBenchmarkComparisonData = !!this.meta?.staff && !!this.meta?.workplaces;
     this.setBenchmarksCard();
     this.subscriptions.add();
   }
 
   private setBenchmarksCard(): void {
-    const comparisonDataAvailable = this.meta?.staff && this.meta?.workplaces;
-
-    const localAuthority = this.meta?.localAuthority.replace('&', 'and');
-
-    if (!comparisonDataAvailable) {
-      this.benchmarksHeader = 'See how you compare against other workplaces';
-      this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
+    if (this.hasBenchmarkComparisonData) {
+      const serviceName = this.serviceNamePipe.transform(this.workplace.mainService.name);
+      const localAuthority = this.meta?.localAuthority.replace('&', 'and');
+      const noOfWorkplacesText =
+        this.meta.workplaces === 1
+          ? `There is ${this.meta.workplaces} workplace`
+          : `There are ${this.meta.workplaces} workplaces`;
+      const serviceText = this.bigThreeServices ? `${serviceName.toLowerCase()}` : 'adult social care';
+      this.benchmarksMessage = `${noOfWorkplacesText} providing ${serviceText} in ${localAuthority}.`;
     } else {
-      if ([1, 2, 8].includes(this.workplace.mainService.reportingID)) {
-        const benchmarksCareType = this.serviceNamePipe.transform(this.workplace.mainService.name);
-        this.benchmarksHeader = 'See how your pay, recruitment and retention compares against other workplaces';
-        this.benchmarksMessage = `There are ${
-          this.meta?.workplaces ? this.meta.workplaces : 0
-        } workplaces providing ${benchmarksCareType.toLowerCase()} in ${localAuthority}.`;
-      } else if (!this.workplace.isRegulated) {
-        this.benchmarksHeader = 'See how you compare against other workplaces';
-        this.benchmarksMessage = `There are ${
-          this.meta?.workplaces ? this.meta.workplaces : 0
-        } workplaces providing adult social care in ${localAuthority}.`;
-      }
+      this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
     }
   }
 
-  ngOnChanges(changes) {
+  ngOnChanges() {
     this.setBenchmarksCard();
   }
 
