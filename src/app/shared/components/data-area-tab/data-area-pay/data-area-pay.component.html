@@ -15,38 +15,30 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <tr class="govuk-table__row first-row">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-          Care worker pay
-        </th>
-        <td class="govuk-table__cell workplace-cell">{{ careWorkerPay }}</td>
-        <td class="govuk-table__cell comparision-group-cell">{{ comparisionGroupCareWorkerPay }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-          Senior care worker pay
-        </th>
-        <td class="govuk-table__cell workplace-cell">{{ seniorCareWorkerPay }}</td>
-        <td class="govuk-table__cell comparision-group-cell">
-          {{ comparisionGroupSeniorCareWorkerPay }}
-        </td>
-      </tr>
-      <tr class="govuk-table__row" *ngIf="showRegisteredNurseSalary" data-testid="register-nurse-comparision">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-          Registered nurse salary
-        </th>
-        <td class="govuk-table__cell workplace-cell">{{ registeredNurseSalary }}</td>
-        <td class="govuk-table__cell comparision-group-cell">
-          {{ comparisionGroupRegisteredNurseSalary }}
-        </td>
-      </tr>
-      <tr class="govuk-table__row last-row">
-        <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">Registered manager salary</th>
-        <td class="govuk-table__cell workplace-cell">{{ registeredManagerSalary }}</td>
-        <td class="govuk-table__cell comparision-group-cell">
-          {{ comparisionGroupRegisteredManagerSalary }}
-        </td>
-      </tr>
+      <tr
+        app-data-area-table-row
+        class="govuk-table__row first-row"
+        header="Care worker pay"
+        [data]="data.careWorkerPay"
+      ></tr>
+      <tr
+        app-data-area-table-row
+        class="govuk-table__row"
+        header="Senior care worker pay"
+        [data]="data.seniorCareWorkerPay"
+      ></tr>
+      <tr
+        app-data-area-table-row
+        class="govuk-table__row"
+        header="Registered nurse salary"
+        [data]="data.registeredNursePay"
+      ></tr>
+      <tr
+        app-data-area-table-row
+        class="govuk-table__row"
+        header="Registered manager salary"
+        [data]="data.registeredManagerPay"
+      ></tr>
     </tbody>
   </table>
 
