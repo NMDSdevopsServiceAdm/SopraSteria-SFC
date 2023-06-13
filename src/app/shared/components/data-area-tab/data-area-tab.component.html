@@ -50,20 +50,25 @@
 
     <div class="govuk-grid-column-two-thirds">
       <ng-container *ngIf="viewBenchmarksComparisonGroups; else nonGoodCqcComparisonGroup">
-        <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}</h3>
+        <h3 class="govuk-heading-m">
+          Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority | formatAmpersand }}
+        </h3>
         <p class="govuk-body">
           Your selected comparison group is a maximum
           <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
           staff from
           <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
           workplaces using ASC-WDS, rated as good or outstanding CQC providers and providing
-          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-          in {{ tilesData?.meta.localAuthority }}.
+          <span class="govuk-body govuk-!-font-weight-bold">{{
+            workplace.mainService.name | serviceName | lowercase
+          }}</span>
+          in {{ tilesData?.meta.localAuthority | formatAmpersand }}.
         </p>
       </ng-container>
       <ng-template #nonGoodCqcComparisonGroup>
         <h3 class="govuk-heading-m">
-          {{ workplace.mainService.name }} providers in {{ tilesData?.meta.localAuthority }}
+          {{ workplace.mainService.name | serviceName }} providers in
+          {{ tilesData?.meta.localAuthority | formatAmpersand }}
         </h3>
         <p class="govuk-body">
           Your selected comparison group is a maximum
@@ -71,8 +76,10 @@
           staff from
           <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplaces | number }}</span>
           workplaces using ASC-WDS and providing
-          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-          in {{ tilesData?.meta.localAuthority }}.
+          <span class="govuk-body govuk-!-font-weight-bold">{{
+            workplace.mainService.name | serviceName | lowercase
+          }}</span>
+          in {{ tilesData?.meta.localAuthority | formatAmpersand }}.
         </p>
       </ng-template>
 
