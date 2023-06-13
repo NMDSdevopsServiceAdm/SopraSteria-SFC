@@ -15,32 +15,10 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <tr class="govuk-table__row first-row">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-          Care worker pay
-        </th>
-        <td class="govuk-table__cell workplace-cell">£10.26 (hourly)</td>
-        <td class="govuk-table__cell comparision-group-cell">£9.75 (hourly)</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-          Senior care worker pay
-        </th>
-        <td class="govuk-table__cell workplace-cell">£11.05 (hourly)</td>
-        <td class="govuk-table__cell comparision-group-cell">£11.50 (hourly)</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-          Registered nurse salary
-        </th>
-        <td class="govuk-table__cell workplace-cell">£34,130 (annually)</td>
-        <td class="govuk-table__cell comparision-group-cell">£34,100 (annually)</td>
-      </tr>
-      <tr class="govuk-table__row last-row">
-        <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">Registered manager salary</th>
-        <td class="govuk-table__cell workplace-cell">£35,637 (annually)</td>
-        <td class="govuk-table__cell comparision-group-cell">£36,185 (annually)</td>
-      </tr>
+      <tr app-data-area-table-row class="govuk-table__row first-row" header="Care worker pay" [data]="data.careWorkerPay"></tr>
+      <tr app-data-area-table-row class="govuk-table__row" header="Senior care worker pay" [data]="data.seniorCareWorkerPay"></tr>
+      <tr app-data-area-table-row class="govuk-table__row" header="Registered nurse salary" [data]="data.registeredNursePay"></tr>
+      <tr app-data-area-table-row class="govuk-table__row" header="Registered manager salary" [data]="data.registeredManagerPay"></tr>
     </tbody>
   </table>
 
