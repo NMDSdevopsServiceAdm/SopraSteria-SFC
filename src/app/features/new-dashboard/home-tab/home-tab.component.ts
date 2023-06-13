@@ -15,6 +15,7 @@ import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
+import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { Subscription } from 'rxjs';
 import { isAdminRole } from 'server/utils/adminUtils';
 
@@ -29,6 +30,7 @@ window.dataLayer = window.dataLayer || {};
 @Component({
   selector: 'app-new-home-tab',
   templateUrl: './home-tab.component.html',
+  providers: [ServiceNamePipe],
 })
 export class NewHomeTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -67,6 +69,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
     private tabsService: TabsService,
     private route: ActivatedRoute,
     @Inject(WindowToken) private window: Window,
+    private serviceNamePipe: ServiceNamePipe,
   ) {}
 
   ngOnInit(): void {
@@ -129,8 +132,8 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
       this.benchmarksHeader = 'See how you compare against other workplaces';
       this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
     } else {
-      if ([1, 2, 8].filter((x) => x === this.workplace.mainService.reportingID).length > 0) {
-        const benchmarksCareType = this.workplace.mainService.name;
+      if ([1, 2, 8].includes(this.workplace.mainService.reportingID)) {
+        const benchmarksCareType = this.serviceNamePipe.transform(this.workplace.mainService.name);
         this.benchmarksHeader = 'See how your pay, recruitment and retention compares against other workplaces';
         this.benchmarksMessage = `There are ${
           this.meta?.workplaces ? this.meta.workplaces : 0
