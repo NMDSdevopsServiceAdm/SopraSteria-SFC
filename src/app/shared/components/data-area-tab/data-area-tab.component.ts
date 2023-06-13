@@ -30,6 +30,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public viewBenchmarksPosition = false;
   public downloadRecruitmentBenchmarksText: string;
   public tilesData: BenchmarksResponse;
+  public showRegisteredNurseSalary: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -45,6 +46,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
+    this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;
   }
 
   public async downloadAsPDF() {
