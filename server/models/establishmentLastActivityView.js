@@ -29,6 +29,26 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"DataOwner"',
       },
+      address1: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'Address1',
+      },
+      town: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'Town',
+      },
+      county: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'County',
+      },
+      postcode: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'PostCode',
+      },
       primaryUserName: {
         type: DataTypes.TEXT,
         allowNull: true,
@@ -42,7 +62,7 @@ module.exports = function (sequelize, DataTypes) {
       lastUpdated: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'LastUdpated',
+        field: 'LastUpdated',
       },
       lastLogin: {
         type: DataTypes.DATE,

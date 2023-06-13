@@ -109,8 +109,8 @@ const fillData = (reportData, laData, WS1) => {
         establishment.EmployerTypeValue,
         excelUtils.formatBool(establishment.isRegulated),
         parentName,
-        new Date(dayjs(establishment.LastUpdated.lastUpdated).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
-        establishment.LastUpdated.dataOwner,
+        new Date(dayjs(establishment.LastActivity.lastUpdated).add(monthsToBeDelete, 'months').format('MM-DD-YYYY')),
+        establishment.LastActivity.dataOwner,
       ],
       rowStyle,
     );
@@ -131,10 +131,12 @@ const fillData = (reportData, laData, WS1) => {
 
 const generateDeleteReport = async (req, res) => {
   await models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."LastUpdatedEstablishments"');
-  const lastUpdatedDate = dayjs().subtract(monthsWithoutUpdate, 'months').toDate();
+  // const lastUpdatedDate = dayjs().subtract(monthsWithoutUpdate, 'months').toDate();
+  const lastUpdatedDate = dayjs('2021-09-30').toDate();
   const reportData = await models.establishment.generateDeleteReportData(lastUpdatedDate);
+  console.log('**** here *****');
   const laData = await addCSSRData(reportData);
-
+  console.log('**** there *****');
   let workbook = new excelJS.Workbook();
 
   workbook.creator = 'Skills-For-Care';
