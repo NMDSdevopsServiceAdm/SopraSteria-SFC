@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
+import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -30,6 +30,8 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public viewBenchmarksPosition = false;
   public downloadRecruitmentBenchmarksText: string;
   public tilesData: BenchmarksResponse;
+  public showRegisteredNurseSalary: boolean;
+  public rankingsData: AllRankingsResponse;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -42,9 +44,11 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.tilesData = this.benchmarksService.benchmarksData;
+    this.rankingsData = this.benchmarksService.rankingsData;
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
+    this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;
   }
 
   public async downloadAsPDF() {

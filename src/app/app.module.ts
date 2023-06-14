@@ -18,6 +18,7 @@ import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
@@ -189,6 +190,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     TotalStaffRecordsResolver,
     CqcStatusCheckResolver,
     BenchmarksResolver,
+    RankingsResolver,
   ],
   bootstrap: [AppComponent],
 })

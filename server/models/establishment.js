@@ -823,6 +823,11 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'id',
       targetKey: 'id',
     });
+    Establishment.belongsTo(models.establishmentLastActivityView, {
+      as: 'LastActivity',
+      foreignKey: 'id',
+      targetKey: 'id',
+    });
 
     Establishment.hasMany(models.user, {
       foreignKey: 'establishmentId',
@@ -1092,7 +1097,25 @@ module.exports = function (sequelize, DataTypes) {
       ],
     });
   };
+
   Establishment.generateDeleteReportData = async function (lastUpdatedDate) {
+    await sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
+
+    const date = new Date(lastUpdatedDate).toISOString();
+    const whereCondition = sequelize.literal(`NOT EXISTS
+      (
+        SELECT s."EstablishmentID" AS EstablishmentID
+          FROM cqc."EstablishmentLastActivity" s
+          WHERE  s."IsParent" = true AND EXISTS
+          (
+            SELECT c."EstablishmentID"
+              FROM cqc."EstablishmentLastActivity" c
+              WHERE s."EstablishmentID" = c."ParentID"
+              AND c."LastLogin" > '${date}'
+              AND c."LastUpdated" > '${date}'
+              AND c."IsParent"= false
+            ) AND s."EstablishmentID"  =  establishment."EstablishmentID")`);
+
     return await this.findAll({
       attributes: [
         'uid',
@@ -1107,22 +1130,28 @@ module.exports = function (sequelize, DataTypes) {
         'county',
         'postcode',
         'locationId',
-        'updated',
         'EmployerTypeValue',
         'EmployerTypeOther',
       ],
       order: [['NameValue', 'ASC']],
       include: [
         {
-          model: sequelize.models.lastUpdatedEstablishmentsView,
-          as: 'LastUpdated',
-          attributes: ['id', 'dataOwner', 'lastUpdated'],
+          model: sequelize.models.establishmentLastActivityView,
+          as: 'LastActivity',
+          attributes: ['id', 'dataOwner', 'lastUpdated', 'lastLogin'],
           where: {
             lastUpdated: {
               [Op.lte]: lastUpdatedDate,
             },
+            lastLogin: {
+              [Op.or]: {
+                [Op.lte]: lastUpdatedDate,
+                [Op.is]: null,
+              },
+            },
+            whereCondition,
           },
-          order: [['updated', 'DESC']],
+          order: [['lastUpdated', 'DESC']],
         },
         {
           model: sequelize.models.services,

@@ -15,10 +15,38 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
+          allValues: [],
+        },
+      },
+      seniorCareWorkerPay: {
+        groupRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [],
+        },
+      },
+      registeredNursePay: {
+        groupRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [],
+        },
+      },
+      registeredManagerPay: {
+        groupRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [],
         },
       },
     },
-    turnoverRate: {
+    turnover: {
       groupRankings: {
         currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
@@ -35,6 +63,22 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
       },
     },
     qualifications: {
+      groupRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+      },
+    },
+    vacancy: {
+      groupRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+      },
+    },
+    timeInRole: {
       groupRankings: {
         currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),

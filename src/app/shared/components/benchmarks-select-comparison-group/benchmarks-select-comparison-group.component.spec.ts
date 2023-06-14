@@ -1,3 +1,4 @@
+import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { spy } from 'sinon';
 
@@ -5,8 +6,8 @@ import { BenchmarksSelectComparisonGroupsComponent } from './benchmarks-select-c
 
 describe('BenchmarksSelectComparisonGroupsComponent', () => {
   async function setup() {
-    const { fixture, getByText, getByTestId } = await render(BenchmarksSelectComparisonGroupsComponent, {
-      imports: [],
+    const { fixture, getByTestId } = await render(BenchmarksSelectComparisonGroupsComponent, {
+      imports: [SharedModule],
       declarations: [],
       providers: [],
       componentProperties: {
@@ -25,7 +26,6 @@ describe('BenchmarksSelectComparisonGroupsComponent', () => {
     return {
       component,
       fixture,
-      getByText,
       getByTestId,
       toggleViewSpy,
     };
@@ -37,7 +37,7 @@ describe('BenchmarksSelectComparisonGroupsComponent', () => {
   });
 
   it('should show the main service input as checked when viewBenchmarksComparisonGroups is false', async () => {
-    const { getByText, getByTestId } = await setup();
+    const { getByTestId } = await setup();
 
     const mainServiceInput = getByTestId('main-service-input');
     const goodAndOutstandingInput = getByTestId('good-and-outstanding-input');
@@ -47,7 +47,7 @@ describe('BenchmarksSelectComparisonGroupsComponent', () => {
   });
 
   it('should show the good and outstand input as checked when viewByTrainingCategory is true', async () => {
-    const { component, getByText, getByTestId } = await setup();
+    const { component, getByTestId } = await setup();
 
     component.viewBenchmarksComparisonGroups = true;
     const mainServiceInput = getByTestId('main-service-input');

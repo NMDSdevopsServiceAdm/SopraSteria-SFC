@@ -15,10 +15,36 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body comparison-table-body">
-      <tr app-data-area-table-row class="govuk-table__row first-row" header="Care worker pay" [data]="data.careWorkerPay"></tr>
-      <tr app-data-area-table-row class="govuk-table__row" header="Senior care worker pay" [data]="data.seniorCareWorkerPay"></tr>
-      <tr app-data-area-table-row class="govuk-table__row" header="Registered nurse salary" [data]="data.registeredNursePay"></tr>
-      <tr app-data-area-table-row class="govuk-table__row last-row" header="Registered manager salary" [data]="data.registeredManagerPay"></tr>
+      <tr
+        app-data-area-table-row
+        class="govuk-table__row first-row"
+        header="Care worker pay"
+        [workplaceCell]="careWorkerPay"
+        [comparisonCell]="comparisionGroupCareWorkerPay"
+      ></tr>
+      <tr
+        app-data-area-table-row
+        class="govuk-table__row"
+        header="Senior care worker pay"
+        [workplaceCell]="seniorCareWorkerPay"
+        [comparisonCell]="comparisionGroupSeniorCareWorkerPay"
+      ></tr>
+      <tr
+        *ngIf="showRegisteredNurseSalary"
+        data-testid="register-nurse-comparision"
+        app-data-area-table-row
+        class="govuk-table__row"
+        header="Registered nurse salary"
+        [workplaceCell]="registeredNurseSalary"
+        [comparisonCell]="comparisionGroupRegisteredNurseSalary"
+      ></tr>
+      <tr
+        app-data-area-table-row
+        class="govuk-table__row"
+        header="Registered manager salary"
+        [workplaceCell]="registeredManagerSalary"
+        [comparisonCell]="comparisionGroupRegisteredManagerSalary"
+      ></tr>
     </tbody>
   </table>
 
@@ -42,6 +68,7 @@
     <ng-template #showRankings>
       <ng-container *ngFor="let ranking of rankingData | keyvalue" class="govuk-!-margin-top-7" data-testid="rankings">
         <app-data-area-ranking
+          *ngIf="ranking.value !== undefined"
           [rankingTitle]="ranking.value.title"
           [workplaceRankNumber]="ranking.value.workplacesRankNumber"
           [workplacesNumber]="ranking.value.totalWorkplaces"

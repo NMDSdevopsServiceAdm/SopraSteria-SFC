@@ -24,4 +24,31 @@ describe('FormatUtil', () => {
       expect(formatSingleDigit).toEqual('09');
     });
   });
+
+  describe('formatMoney', () => {
+    it('should show decimals for number with less than 4 digits', async () => {
+      const formatMoney = FormatUtil.formatMoney(899);
+
+      expect(formatMoney).toEqual('£8.99');
+    });
+
+    it('should format longer decimal pay data correctly', () => {
+      const paydata = FormatUtil.formatMoney(512.345);
+      expect(paydata).toBe('£5.12');
+    });
+
+    it('should show decimals for number with less than 4 digits', async () => {
+      const formatMoney = FormatUtil.formatMoney(0);
+
+      expect(formatMoney).toEqual('£0.00');
+    });
+  });
+
+  describe('formatSalary', () => {
+    it('should show comma for number with more than 4 digits', async () => {
+      const formatMoney = FormatUtil.formatSalary(36500);
+
+      expect(formatMoney).toEqual('£36,500');
+    });
+  });
 });

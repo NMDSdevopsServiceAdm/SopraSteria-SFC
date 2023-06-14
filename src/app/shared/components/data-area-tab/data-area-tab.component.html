@@ -24,7 +24,7 @@
     </ng-template>
   </div>
 
-  <div class="govuk-grid-row govuk-!-margin-top-2">
+  <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
       <a
         class="asc-font-19"
@@ -50,20 +50,25 @@
 
     <div class="govuk-grid-column-two-thirds">
       <ng-container *ngIf="viewBenchmarksComparisonGroups; else nonGoodCqcComparisonGroup">
-        <h3 class="govuk-heading-m">Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority }}</h3>
+        <h3 class="govuk-heading-m">
+          Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority | formatAmpersand }}
+        </h3>
         <p class="govuk-body">
           Your selected comparison group is a maximum
           <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
           staff from
           <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
           workplaces using ASC-WDS, rated as good or outstanding CQC providers and providing
-          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-          in {{ tilesData?.meta.localAuthority }}.
+          <span class="govuk-body govuk-!-font-weight-bold">{{
+            workplace.mainService.name | serviceName | lowercase
+          }}</span>
+          in {{ tilesData?.meta.localAuthority | formatAmpersand }}.
         </p>
       </ng-container>
       <ng-template #nonGoodCqcComparisonGroup>
         <h3 class="govuk-heading-m">
-          {{ workplace.mainService.name }} providers in {{ tilesData?.meta.localAuthority }}
+          {{ workplace.mainService.name | serviceName }} providers in
+          {{ tilesData?.meta.localAuthority | formatAmpersand }}
         </h3>
         <p class="govuk-body">
           Your selected comparison group is a maximum
@@ -71,16 +76,20 @@
           staff from
           <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplaces | number }}</span>
           workplaces using ASC-WDS and providing
-          <span class="govuk-body govuk-!-font-weight-bold">{{ workplace.mainService.name.toLowerCase() }}</span>
-          in {{ tilesData?.meta.localAuthority }}.
+          <span class="govuk-body govuk-!-font-weight-bold">{{
+            workplace.mainService.name | serviceName | lowercase
+          }}</span>
+          in {{ tilesData?.meta.localAuthority | formatAmpersand }}.
         </p>
       </ng-template>
 
-      <app-download-pdf
-        [linkUrl]="'/benchmarks.pdf'"
-        [viewBenchmarksByCategory]="viewBenchmarksByCategory"
-        (downloadPDF)="downloadAsPDF()"
-      ></app-download-pdf>
+      <div class="govuk-!-margin-top-5">
+        <app-download-pdf
+          [linkUrl]="'/benchmarks.pdf'"
+          [viewBenchmarksByCategory]="viewBenchmarksByCategory"
+          (downloadPDF)="downloadAsPDF()"
+        ></app-download-pdf>
+      </div>
 
       <ng-container *ngIf="viewBenchmarksByCategory; else showPay">
         <app-data-area-recruitment-and-retention
@@ -90,7 +99,13 @@
         ></app-data-area-recruitment-and-retention>
       </ng-container>
       <ng-template #showPay>
-        <app-data-area-pay [data]="tilesData" data-testid="payArea"></app-data-area-pay>
+        <app-data-area-pay
+          [data]="tilesData"
+          [rankingsData]="rankingsData"
+          data-testid="payArea"
+          [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+          [showRegisteredNurseSalary]="showRegisteredNurseSalary"
+        ></app-data-area-pay>
       </ng-template>
 
       <div class="govuk-!-margin-top-7">

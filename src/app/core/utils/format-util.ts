@@ -6,6 +6,10 @@ export class FormatUtil {
     return '£' + (Number(data) / 100).toFixed(2);
   }
 
+  public static formatSalary(data) {
+    return '£' + Number(data).toLocaleString('en');
+  }
+
   public static formatSingleDigit(value: number): string {
     return String(value < 10 ? `0${value}` : value);
   }
