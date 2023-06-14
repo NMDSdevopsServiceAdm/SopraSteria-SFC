@@ -74,15 +74,15 @@ export class DataAreaPayComponent implements OnChanges {
 
   public setRankings(isGoodAndOutstanding: boolean): void {
     if (isGoodAndOutstanding) {
-      this.careWorkerRankings = this.rankingsData.pay.careWorkerPay.goodCqcRankings;
-      this.seniorCareWorkerRankings = this.rankingsData.pay.seniorCareWorkerPay.goodCqcRankings;
-      this.registeredNurseRankings = this.rankingsData.pay.registeredNursePay.goodCqcRankings;
-      this.registeredManagerRankings = this.rankingsData.pay.registeredManagerPay.goodCqcRankings;
+      this.careWorkerRankings = this.rankingsData?.pay.careWorkerPay.goodCqcRankings;
+      this.seniorCareWorkerRankings = this.rankingsData?.pay.seniorCareWorkerPay.goodCqcRankings;
+      this.registeredNurseRankings = this.rankingsData?.pay.registeredNursePay.goodCqcRankings;
+      this.registeredManagerRankings = this.rankingsData?.pay.registeredManagerPay.goodCqcRankings;
     } else {
-      this.careWorkerRankings = this.rankingsData.pay.careWorkerPay.groupRankings;
-      this.seniorCareWorkerRankings = this.rankingsData.pay.seniorCareWorkerPay.groupRankings;
-      this.registeredNurseRankings = this.rankingsData.pay.registeredNursePay.groupRankings;
-      this.registeredManagerRankings = this.rankingsData.pay.registeredManagerPay.groupRankings;
+      this.careWorkerRankings = this.rankingsData?.pay.careWorkerPay.groupRankings;
+      this.seniorCareWorkerRankings = this.rankingsData?.pay.seniorCareWorkerPay.groupRankings;
+      this.registeredNurseRankings = this.rankingsData?.pay.registeredNursePay.groupRankings;
+      this.registeredManagerRankings = this.rankingsData?.pay.registeredManagerPay.groupRankings;
     }
   }
 
