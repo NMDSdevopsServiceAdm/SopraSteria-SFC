@@ -18,6 +18,136 @@ describe('DataAreaPayComponent', () => {
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
+        rankingsData: {
+          pay: {
+            careWorkerPay: {
+              groupRankings: {
+                maxRank: 14,
+                currentRank: 7,
+                hasValue: true,
+                allValues: [],
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+            seniorCareWorkerPay: {
+              groupRankings: {
+                maxRank: 3,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+            registeredNursePay: {
+              groupRankings: {
+                maxRank: 9,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+              goodCqcRankings: {
+                maxRank: 3,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+            },
+            registeredManagerPay: {
+              groupRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+          },
+          turnover: {
+            groupRankings: {
+              maxRank: 54,
+              currentRank: 32,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 2,
+              hasValue: true,
+              allValues: [
+                {
+                  value: -1,
+                  currentEst: false,
+                },
+                {
+                  value: 0.3333333333333333,
+                  currentEst: true,
+                },
+                {
+                  value: 5,
+                  currentEst: false,
+                },
+              ],
+            },
+          },
+          sickness: {
+            groupRankings: {
+              maxRank: 42,
+              currentRank: 11,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 3,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+          qualifications: {
+            groupRankings: {
+              maxRank: 41,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              hasValue: false,
+              stateMessage: 'no-comparison-data',
+            },
+          },
+          vacancy: {
+            groupRankings: {
+              maxRank: 88,
+              currentRank: 21,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+          timeInRole: {
+            groupRankings: {
+              maxRank: 47,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+        },
         data: {
           meta: {
             workplaces: 0,
