@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import { NoData } from '@core/model/benchmarks.model';
 
 export interface RankingContent {
-  stateMessage: string;
-  currentRank: number;
+  stateMessage?: string;
+  currentRank?: number;
   hasValue: boolean;
   noData: NoData;
   smallText?: boolean;
