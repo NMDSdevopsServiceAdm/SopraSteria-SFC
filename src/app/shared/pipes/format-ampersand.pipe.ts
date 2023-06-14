@@ -5,6 +5,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class FormatAmpersandPipe implements PipeTransform {
   transform(value: string) {
-    return value.replace('&', 'and');
+    return value.replace(/&/g, 'and');
   }
 }

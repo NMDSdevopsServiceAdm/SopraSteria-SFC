@@ -11,13 +11,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
-import {
-  BecomeAParentCancelDialogComponent,
-} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import {
-  LinkToParentCancelDialogComponent,
-} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { Subscription } from 'rxjs';
@@ -133,7 +129,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   private setBenchmarksCard(): void {
     if (this.hasBenchmarkComparisonData) {
       const serviceName = this.serviceNamePipe.transform(this.workplace.mainService.name);
-      const localAuthority = this.meta?.localAuthority.replace('&', 'and');
+      const localAuthority = this.meta?.localAuthority.replace(/&/g, 'and');
       const noOfWorkplacesText =
         this.meta.workplaces === 1
           ? `There is ${this.meta.workplaces} workplace`
