@@ -121,7 +121,6 @@ describe('BenchmarksMetricComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    console.log(MetricsContent.Pay.noData['no-pay-data']);
     const noYourWorkplaceDataMessage = getByText(MetricsContent.Pay.noData['no-pay-data']);
     const noComparisonGroupsDataMessage = getByText('We do not have enough data to show these comparisons yet.');
 
