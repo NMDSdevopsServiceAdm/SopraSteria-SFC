@@ -38,6 +38,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
   public benchmarksMessage: string;
+  public benchmarksHeader: string;
   public canViewWorkplaces: boolean;
   public canViewReports: boolean;
   public canViewChangeDataOwner: boolean;
