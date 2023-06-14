@@ -14,7 +14,7 @@
           (change)="handleViewChange($event)"
         />
         <label class="govuk-label govuk-radios__label" for="comparison-groups">
-          {{ mainServiceName }} providers in {{ localAuthorityLocation }}
+          {{ mainServiceName | serviceName }} providers in {{ localAuthorityLocation | formatAmpersand }}
         </label>
       </div>
       <div class="govuk-radios__item">
@@ -29,7 +29,7 @@
           (change)="handleViewChange($event)"
         />
         <label class="govuk-label govuk-radios__label" for="comparison-groups-good-and-outstanding">
-          Good and outstading CQC providers in {{ localAuthorityLocation }}
+          Good and outstading CQC providers in {{ localAuthorityLocation | formatAmpersand }}
         </label>
       </div>
     </div>
