@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { BenchmarksResponse, Tile } from '@core/model/benchmarks.model';
 
 @Component({
   selector: 'app-data-area-pay',
@@ -21,26 +21,34 @@ export class DataAreaPayComponent implements OnInit {
     this.viewBenchmarksPosition = visible;
   }
 
+  public getRankNumber(tileData: Tile): number {
+    return undefined;
+  }
+
+  public getPositionNumber(tileData: Tile): number {
+    return undefined;
+  }
+
   public initialisePositions(): void {
     this.positionData = {
       careWorkerPay: {
         title: 'Care worker pay',
-        payMoreThanWorkplacesNumber: undefined,
+        payMoreThanWorkplacesNumber: this.getPositionNumber(this.data.careWorkerPay),
         totalWorkplaces: 72,
       },
       seniorCareWorkerPay: {
         title: 'Senior care worker pay',
-        payMoreThanWorkplacesNumber: undefined,
+        payMoreThanWorkplacesNumber: this.getPositionNumber(this.data.seniorCareWorkerPay),
         totalWorkplaces: 72
       },
       registeredNursePay: {
         title: 'Registered nurse salary',
-        payMoreThanWorkplacesNumber: undefined,
+        payMoreThanWorkplacesNumber: this.getPositionNumber(this.data.registeredNursePay),
         totalWorkplaces: 72
       },
       registeredManagerPay: {
         title: 'Registered manager salary',
-        payMoreThanWorkplacesNumber: undefined,
+        payMoreThanWorkplacesNumber: this.getPositionNumber(this.data.registeredManagerPay),
         totalWorkplaces: 72
       },
     }
@@ -50,22 +58,22 @@ export class DataAreaPayComponent implements OnInit {
     this.rankingData = {
       careWorkerPay: {
         title: 'Care worker pay',
-        workplacesRankNumber: undefined,
+        workplacesRankNumber: this.getRankNumber(this.data.careWorkerPay),
         totalWorkplaces: 72,
       },
       seniorCareWorkerPay: {
         title: 'Senior care worker pay',
-        workplacesRankNumber: undefined,
+        workplacesRankNumber: this.getRankNumber(this.data.seniorCareWorkerPay),
         totalWorkplaces: 72
       },
       registeredNursePay: {
         title: 'Registered nurse salary',
-        workplacesRankNumber: undefined,
+        workplacesRankNumber: this.getRankNumber(this.data.registeredNursePay),
         totalWorkplaces: 72
       },
       registeredManagerPay: {
         title: 'Registered manager salary',
-        workplacesRankNumber: undefined,
+        workplacesRankNumber: this.getRankNumber(this.data.registeredManagerPay),
         totalWorkplaces: 72
       },
     };
