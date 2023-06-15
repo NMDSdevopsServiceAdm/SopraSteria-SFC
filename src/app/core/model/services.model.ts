@@ -5,6 +5,7 @@ export interface Service {
   name: string;
   other?: boolean;
   otherName?: string;
+  reportingID?: number;
 }
 
 export interface ServiceGroup {
