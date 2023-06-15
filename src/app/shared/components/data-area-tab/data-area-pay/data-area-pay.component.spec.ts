@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByTestId, render } from '@testing-library/angular';
 
 import { DataAreaPayComponent } from './data-area-pay.component';
 
@@ -24,7 +24,7 @@ describe('DataAreaPayComponent', () => {
               groupRankings: {
                 maxRank: 14,
                 currentRank: 7,
-                hasValue: true,
+                hasValue: false,
                 allValues: [],
               },
               goodCqcRankings: {
@@ -381,72 +381,72 @@ describe('DataAreaPayComponent', () => {
       );
     });
 
+    const payDataWithoutWorkplaceData = {
+      meta: {
+        workplaces: 0,
+        staff: 0,
+        localAuthority: 'Oxfordshire',
+      },
+      careWorkerPay: {
+        workplaceValue: {
+          value: 0,
+          hasValue: false,
+        },
+        comparisonGroup: {
+          value: 900,
+          hasValue: true,
+        },
+        goodCqc: {
+          value: 1000,
+          hasValue: true,
+        },
+      },
+      seniorCareWorkerPay: {
+        workplaceValue: {
+          value: 0,
+          hasValue: false,
+        },
+        comparisonGroup: {
+          value: 780,
+          hasValue: true,
+        },
+        goodCqc: {
+          value: 800,
+          hasValue: true,
+        },
+      },
+      registeredNursePay: {
+        workplaceValue: {
+          value: 0,
+          hasValue: false,
+        },
+        comparisonGroup: {
+          value: 27500,
+          hasValue: true,
+        },
+        goodCqc: {
+          value: 30000,
+          hasValue: true,
+        },
+      },
+      registeredManagerPay: {
+        workplaceValue: {
+          value: 0,
+          hasValue: false,
+        },
+        comparisonGroup: {
+          value: 29000,
+          hasValue: true,
+        },
+        goodCqc: {
+          value: 30000,
+          hasValue: true,
+        },
+      },
+    };
+
     it('should set "no data added" when there is no workplace pay data', async () => {
       const { component, fixture, queryByTestId } = await setup();
-
-      const payDataWithoutWorkplaceData = {
-        meta: {
-          workplaces: 0,
-          staff: 0,
-          localAuthority: 'Oxfordshire',
-        },
-        careWorkerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-          },
-          comparisonGroup: {
-            value: 900,
-            hasValue: true,
-          },
-          goodCqc: {
-            value: 1000,
-            hasValue: true,
-          },
-        },
-        seniorCareWorkerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-          },
-          comparisonGroup: {
-            value: 780,
-            hasValue: true,
-          },
-          goodCqc: {
-            value: 800,
-            hasValue: true,
-          },
-        },
-        registeredNursePay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-          },
-          comparisonGroup: {
-            value: 27500,
-            hasValue: true,
-          },
-          goodCqc: {
-            value: 30000,
-            hasValue: true,
-          },
-        },
-        registeredManagerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-          },
-          comparisonGroup: {
-            value: 29000,
-            hasValue: true,
-          },
-          goodCqc: {
-            value: 30000,
-            hasValue: true,
-          },
-        },
-      };
 
       component.data = payDataWithoutWorkplaceData;
       component.ngOnChanges();
@@ -455,6 +455,160 @@ describe('DataAreaPayComponent', () => {
       expect(component.seniorCareWorkerPay).toEqual('No data added');
       expect(component.registeredNurseSalary).toEqual('No data added');
       expect(component.registeredManagerSalary).toEqual('No data added');
+    });
+
+    it('should set rank number on rankings object to undefined if no data provided', async () => {
+      const { component } = await setup();
+
+      const rankings = {
+        pay: {
+          careWorkerPay: {
+            groupRankings: {
+              maxRank: 3,
+              hasValue: false,
+              stateMessage: 'no-pay-data',
+            },
+            goodCqcRankings: {
+              hasValue: false,
+              stateMessage: 'no-comparison-data',
+            },
+          },
+          seniorCareWorkerPay: {
+            groupRankings: {
+              maxRank: 3,
+              hasValue: false,
+              stateMessage: 'no-pay-data',
+            },
+            goodCqcRankings: {
+              hasValue: false,
+              stateMessage: 'no-comparison-data',
+            },
+          },
+          registeredNursePay: {
+            groupRankings: {
+              maxRank: 9,
+              hasValue: false,
+              stateMessage: 'no-pay-data',
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              hasValue: false,
+              stateMessage: 'no-pay-data',
+            },
+          },
+          registeredManagerPay: {
+            groupRankings: {
+              hasValue: false,
+              stateMessage: 'no-comparison-data',
+            },
+            goodCqcRankings: {
+              hasValue: false,
+              stateMessage: 'no-comparison-data',
+            },
+          },
+        },
+        turnover: {
+          groupRankings: {
+            maxRank: 54,
+            currentRank: 32,
+            hasValue: true,
+            allValues: [],
+          },
+          goodCqcRankings: {
+            maxRank: 3,
+            currentRank: 2,
+            hasValue: true,
+            allValues: [
+              {
+                value: -1,
+                currentEst: false,
+              },
+              {
+                value: 0.3333333333333333,
+                currentEst: true,
+              },
+              {
+                value: 5,
+                currentEst: false,
+              },
+            ],
+          },
+        },
+        sickness: {
+          groupRankings: {
+            maxRank: 42,
+            currentRank: 11,
+            hasValue: true,
+            allValues: [],
+          },
+          goodCqcRankings: {
+            maxRank: 3,
+            currentRank: 3,
+            hasValue: true,
+            allValues: [],
+          },
+        },
+        qualifications: {
+          groupRankings: {
+            maxRank: 41,
+            currentRank: 1,
+            hasValue: true,
+            allValues: [],
+          },
+          goodCqcRankings: {
+            hasValue: false,
+            stateMessage: 'no-comparison-data',
+          },
+        },
+        vacancy: {
+          groupRankings: {
+            maxRank: 88,
+            currentRank: 21,
+            hasValue: true,
+            allValues: [],
+          },
+          goodCqcRankings: {
+            maxRank: 3,
+            currentRank: 1,
+            hasValue: true,
+            allValues: [],
+          },
+        },
+        timeInRole: {
+          groupRankings: {
+            maxRank: 47,
+            currentRank: 1,
+            hasValue: true,
+            allValues: [],
+          },
+          goodCqcRankings: {
+            maxRank: 3,
+            currentRank: 1,
+            hasValue: true,
+            allValues: [],
+          },
+        },
+      }
+      component.showRegisteredNurseSalary = true;
+      component.rankingsData = rankings;
+      component.ngOnChanges();
+
+      expect(component.rankings.careWorkerPay.workplacesRankNumber).toBeUndefined();
+      expect(component.rankings.seniorCareWorkerPay.workplacesRankNumber).toBeUndefined();
+      expect(component.rankings.registeredNursePay.workplacesRankNumber).toBeUndefined();
+      expect(component.rankings.registeredManagerPay.workplacesRankNumber).toBeUndefined();
+    });
+
+    it('should set registered nurse rankings to undefined when showRegisteredNurseSalary is false', async () => {
+      const { component } = await setup();
+
+      component.showRegisteredNurseSalary = false;
+      component.ngOnChanges();
+
+      expect(component.rankings.careWorkerPay).toBeTruthy();
+      expect(component.rankings.seniorCareWorkerPay).toBeTruthy();
+      expect(component.rankings.registeredNursePay).toBeUndefined();
+      expect(component.rankings.registeredManagerPay).toBeTruthy();
     });
   });
 

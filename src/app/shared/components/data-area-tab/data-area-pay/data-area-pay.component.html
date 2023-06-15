@@ -57,23 +57,27 @@
     </app-benchmarks-select-view-panel>
 
     <ng-container *ngIf="viewBenchmarksPosition; else showRankings">
-      <ng-container *ngFor="let position of positionData | keyvalue" class="govuk-!-margin-top-7" data-testid="barcharts">
-        <app-data-area-barchart
-          [positionedTitle]="position.value.title"
-          [payMoreThanWorkplacesNumber]="position.value.payMoreThanWorkplacesNumber"
-          [workplacesNumber]="position.value.totalWorkplaces"
-        ></app-data-area-barchart>
-      </ng-container>
+      <div class="govuk-!-margin-top-7" data-testid="barcharts">
+        <ng-container *ngFor="let position of positionData | keyvalue">
+          <app-data-area-barchart
+            [positionedTitle]="position.value.title"
+            [payMoreThanWorkplacesNumber]="position.value.payMoreThanWorkplacesNumber"
+            [workplacesNumber]="position.value.totalWorkplaces"
+          ></app-data-area-barchart>
+        </ng-container>
+      </div>
     </ng-container>
     <ng-template #showRankings>
-      <ng-container *ngFor="let ranking of rankingData | keyvalue" class="govuk-!-margin-top-7" data-testid="rankings">
-        <app-data-area-ranking
-          *ngIf="ranking.value !== undefined"
-          [rankingTitle]="ranking.value.title"
-          [workplaceRankNumber]="ranking.value.workplacesRankNumber"
-          [workplacesNumber]="ranking.value.totalWorkplaces"
-        ></app-data-area-ranking>
-      </ng-container>
+      <div class="govuk-!-margin-top-7" data-testid="rankings">
+        <ng-container *ngFor="let ranking of rankings | keyvalue">
+          <app-data-area-ranking
+            *ngIf="ranking.value !== undefined"
+            [rankingTitle]="ranking.value.title"
+            [workplaceRankNumber]="ranking.value.workplacesRankNumber"
+            [workplacesNumber]="ranking.value.totalWorkplaces"
+          ></app-data-area-ranking>
+        </ng-container>
+    </div>
     </ng-template>
   </div>
 </div>
