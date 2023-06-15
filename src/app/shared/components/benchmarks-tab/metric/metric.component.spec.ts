@@ -82,7 +82,7 @@ const setup = (payTile, payRanking) => {
 
   const req = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/?tiles=${metric}`);
   req.flush({
-    pay: payTile,
+    careWorkerPay: payTile,
   });
 
   const req2 = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/rankings/${metric}`);
