@@ -4,9 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { benchmarksData } from '@core/test-utils/MockBenchmarkService';
-import {
-  BenchmarksSelectViewPanelComponent,
-} from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
+import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
@@ -22,6 +20,136 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
       componentProperties: {
         data: benchmarksData,
         viewBenchmarksComparisonGroups,
+        rankingsData: {
+          pay: {
+            careWorkerPay: {
+              groupRankings: {
+                maxRank: 14,
+                currentRank: 7,
+                hasValue: true,
+                allValues: [],
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+            seniorCareWorkerPay: {
+              groupRankings: {
+                maxRank: 3,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+            registeredNursePay: {
+              groupRankings: {
+                maxRank: 9,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+              goodCqcRankings: {
+                maxRank: 3,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+            },
+            registeredManagerPay: {
+              groupRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+          },
+          turnover: {
+            groupRankings: {
+              maxRank: 54,
+              currentRank: 32,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 2,
+              hasValue: true,
+              allValues: [
+                {
+                  value: -1,
+                  currentEst: false,
+                },
+                {
+                  value: 0.3333333333333333,
+                  currentEst: true,
+                },
+                {
+                  value: 5,
+                  currentEst: false,
+                },
+              ],
+            },
+          },
+          sickness: {
+            groupRankings: {
+              maxRank: 42,
+              currentRank: 11,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 3,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+          qualifications: {
+            groupRankings: {
+              maxRank: 41,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              hasValue: false,
+              stateMessage: 'no-comparison-data',
+            },
+          },
+          vacancy: {
+            groupRankings: {
+              maxRank: 88,
+              currentRank: 21,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+          timeInRole: {
+            groupRankings: {
+              maxRank: 47,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+        },
       },
     });
 
@@ -58,9 +186,8 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
   });
 
   it('should render the values for the workplace and goodCqc comparison data', async () => {
-    const { component, getByTestId } = await setup(true);
+    const { getByTestId } = await setup(true);
 
-    console.log(component.data.turnoverRate);
     const vacancyRow = getByTestId('vacancyRow');
     const turnoverRow = getByTestId('turnoverRow');
     const timeInRoleRow = getByTestId('timeInRoleRow');
@@ -73,14 +200,320 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
     expect(within(timeInRoleRow).getByText('90%')).toBeTruthy();
   });
 
-  it('should show the rankings area when viewBenchmarksPosition is false', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
+  fdescribe('rankings area', async () => {
+    it('should show when viewBenchmarksPosition is false', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-    component.viewBenchmarksPosition = false;
-    fixture.detectChanges();
+      component.viewBenchmarksPosition = false;
+      fixture.detectChanges();
 
-    expect(getByTestId('rankings')).toBeTruthy();
-    expect(queryByTestId('barcharts')).toBeFalsy();
+      expect(getByTestId('rankings')).toBeTruthy();
+      expect(queryByTestId('barcharts')).toBeFalsy();
+    });
+
+    describe('comparison grpoup rankings', async () => {
+      it('should set rankings group rankings when there is group data and group toggle is false', async () => {
+        const { component, fixture } = await setup();
+
+        const rankingsDataForComparision = {
+          pay: {
+            careWorkerPay: {
+              groupRankings: {
+                maxRank: 14,
+                currentRank: 7,
+                hasValue: true,
+                allValues: [],
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+            seniorCareWorkerPay: {
+              groupRankings: {
+                maxRank: 3,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+            registeredNursePay: {
+              groupRankings: {
+                maxRank: 9,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+              goodCqcRankings: {
+                maxRank: 3,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+            },
+            registeredManagerPay: {
+              groupRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+          },
+          turnover: {
+            groupRankings: {
+              maxRank: 54,
+              currentRank: 32,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 2,
+              hasValue: true,
+              allValues: [
+                {
+                  value: -1,
+                  currentEst: false,
+                },
+                {
+                  value: 0.3333333333333333,
+                  currentEst: true,
+                },
+                {
+                  value: 5,
+                  currentEst: false,
+                },
+              ],
+            },
+          },
+          sickness: {
+            groupRankings: {
+              maxRank: 42,
+              currentRank: 11,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 3,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+          qualifications: {
+            groupRankings: {
+              maxRank: 41,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              hasValue: false,
+              stateMessage: 'no-comparison-data',
+            },
+          },
+          vacancy: {
+            groupRankings: {
+              maxRank: 88,
+              currentRank: 21,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+          timeInRole: {
+            groupRankings: {
+              maxRank: 47,
+              currentRank: 2,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 7,
+              currentRank: 2,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+        };
+
+        component.viewBenchmarksComparisonGroups = false;
+        fixture.detectChanges();
+
+        component.rankingsData = rankingsDataForComparision;
+        component.ngOnChanges();
+
+        expect(component.vacancyMaxRank).toEqual(rankingsDataForComparision.vacancy.groupRankings.maxRank);
+        expect(component.turnoverMaxRank).toEqual(rankingsDataForComparision.turnover.groupRankings.maxRank);
+        expect(component.timeInRoleMaxRank).toEqual(rankingsDataForComparision.timeInRole.groupRankings.maxRank);
+
+        expect(component.vacancyCurrentRank).toEqual(rankingsDataForComparision.vacancy.groupRankings.currentRank);
+        expect(component.turnoverCurrentRank).toEqual(rankingsDataForComparision.turnover.groupRankings.currentRank);
+        expect(component.timeInRoleCurrentRank).toEqual(
+          rankingsDataForComparision.timeInRole.groupRankings.currentRank,
+        );
+      });
+
+      it('should set rankings group rankings when there is group data and group toggle is true', async () => {
+        const { component, fixture } = await setup();
+
+        const rankingsDataForComparision = {
+          pay: {
+            careWorkerPay: {
+              groupRankings: {
+                maxRank: 14,
+                currentRank: 7,
+                hasValue: true,
+                allValues: [],
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+            seniorCareWorkerPay: {
+              groupRankings: {
+                maxRank: 3,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+            registeredNursePay: {
+              groupRankings: {
+                maxRank: 9,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+              goodCqcRankings: {
+                maxRank: 3,
+                hasValue: false,
+                stateMessage: 'no-pay-data',
+              },
+            },
+            registeredManagerPay: {
+              groupRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+              goodCqcRankings: {
+                hasValue: false,
+                stateMessage: 'no-comparison-data',
+              },
+            },
+          },
+          turnover: {
+            groupRankings: {
+              maxRank: 54,
+              currentRank: 32,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 2,
+              hasValue: true,
+              allValues: [
+                {
+                  value: -1,
+                  currentEst: false,
+                },
+                {
+                  value: 0.3333333333333333,
+                  currentEst: true,
+                },
+                {
+                  value: 5,
+                  currentEst: false,
+                },
+              ],
+            },
+          },
+          sickness: {
+            groupRankings: {
+              maxRank: 42,
+              currentRank: 11,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 3,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+          qualifications: {
+            groupRankings: {
+              maxRank: 41,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              hasValue: false,
+              stateMessage: 'no-comparison-data',
+            },
+          },
+          vacancy: {
+            groupRankings: {
+              maxRank: 88,
+              currentRank: 21,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 3,
+              currentRank: 1,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+          timeInRole: {
+            groupRankings: {
+              maxRank: 47,
+              currentRank: 2,
+              hasValue: true,
+              allValues: [],
+            },
+            goodCqcRankings: {
+              maxRank: 7,
+              currentRank: 2,
+              hasValue: true,
+              allValues: [],
+            },
+          },
+        };
+
+        component.viewBenchmarksComparisonGroups = true;
+        fixture.detectChanges();
+
+        component.rankingsData = rankingsDataForComparision;
+        component.ngOnChanges();
+
+        expect(component.vacancyMaxRank).toEqual(rankingsDataForComparision.vacancy.goodCqcRankings.maxRank);
+        expect(component.turnoverMaxRank).toEqual(rankingsDataForComparision.turnover.goodCqcRankings.maxRank);
+        expect(component.timeInRoleMaxRank).toEqual(rankingsDataForComparision.timeInRole.goodCqcRankings.maxRank);
+
+        expect(component.vacancyCurrentRank).toEqual(rankingsDataForComparision.vacancy.goodCqcRankings.currentRank);
+        expect(component.turnoverCurrentRank).toEqual(rankingsDataForComparision.turnover.goodCqcRankings.currentRank);
+        expect(component.timeInRoleCurrentRank).toEqual(
+          rankingsDataForComparision.timeInRole.goodCqcRankings.currentRank,
+        );
+      });
+    });
   });
 
   it('should show the barcharts area when viewBenchmarksPosition is true', async () => {

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import * as Highcharts from 'highcharts';
 
 import { GaugeOptionsBuilder } from './data-area-ranking-options-builder';
@@ -8,7 +8,7 @@ import { GaugeOptionsBuilder } from './data-area-ranking-options-builder';
   templateUrl: './data-area-ranking.component.html',
   styleUrls: ['./data-area-ranking.component.scss'],
 })
-export class DataAreaRankingComponent implements OnInit {
+export class DataAreaRankingComponent implements OnChanges {
   Highcharts: typeof Highcharts = Highcharts;
   @Input() rankingTitle: string;
   @Input() workplaceRankNumber: number;
@@ -18,7 +18,7 @@ export class DataAreaRankingComponent implements OnInit {
 
   constructor(private builder: GaugeOptionsBuilder) {}
 
-  ngOnInit() {
+  ngOnChanges(): void {
     this.options = this.builder.buildChartOptions(this.workplacesNumber, this.workplaceRankNumber);
   }
 }

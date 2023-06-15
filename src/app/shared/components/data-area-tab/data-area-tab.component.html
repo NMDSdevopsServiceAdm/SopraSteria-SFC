@@ -94,6 +94,7 @@
       <ng-container *ngIf="viewBenchmarksByCategory; else showPay">
         <app-data-area-recruitment-and-retention
           [data]="tilesData"
+          [rankingsData]="rankingsData"
           [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
           data-testid="recruitmentAndRetentionArea"
         ></app-data-area-recruitment-and-retention>
