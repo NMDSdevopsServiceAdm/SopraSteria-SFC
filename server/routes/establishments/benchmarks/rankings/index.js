@@ -208,6 +208,9 @@ const getComparisonGroupAndCalculateRanking = async function (
   const maxRank = mappedComparisonGroupRankings.length + 1;
   if (metric.stateMessage) {
     return {
+      allValues: mappedComparisonGroupRankings
+        .sort((a, b) => b - a)
+        .map((rank) => ({ value: rank, currentEst: false })),
       maxRank,
       hasValue: false,
       ...metric,
