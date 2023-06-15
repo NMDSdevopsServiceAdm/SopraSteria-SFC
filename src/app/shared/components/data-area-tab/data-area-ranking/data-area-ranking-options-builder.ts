@@ -102,7 +102,7 @@ export class GaugeOptionsBuilder {
       maxRank = 10000000;
     }
     const topMargin = currentRank ? 55 : 0;
-    const padding = 1;
+    const padding = maxRank / 85;
 
     return this.build(maxRank, currentRank, padding, topMargin);
   }
