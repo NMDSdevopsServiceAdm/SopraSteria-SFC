@@ -4,9 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormatUtil } from '@core/utils/format-util';
-import {
-  BenchmarksSelectViewPanelComponent,
-} from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
+import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, getByTestId, render } from '@testing-library/angular';
 
@@ -788,268 +786,270 @@ describe('DataAreaPayComponent', () => {
       expect(component.rankings.registeredManagerPay.workplacesRankNumber).toBeUndefined();
     });
 
-  describe('comparison group data', async () => {
-    it('should be set when there is group data and the group select toggle is not set', async () => {
-      const { component, fixture, queryByTestId } = await setup();
-      const payDataForWorkplaceWithComparisonGroups = {
-        meta: {
-          workplaces: 0,
-          staff: 0,
-          localAuthority: 'Oxfordshire',
-        },
-        careWorkerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
+    describe('comparison group data', async () => {
+      it('should be set when there is group data and the group select toggle is not set', async () => {
+        const { component, fixture, queryByTestId } = await setup();
+        const payDataForWorkplaceWithComparisonGroups = {
+          meta: {
+            workplaces: 0,
+            staff: 0,
+            localAuthority: 'Oxfordshire',
           },
-          comparisonGroup: {
-            value: 900,
-            hasValue: true,
+          careWorkerPay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 900,
+              hasValue: true,
+            },
+            goodCqc: {
+              value: 1000,
+              hasValue: true,
+            },
           },
-          goodCqc: {
-            value: 1000,
-            hasValue: true,
+          seniorCareWorkerPay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 780,
+              hasValue: true,
+            },
+            goodCqc: {
+              value: 800,
+              hasValue: true,
+            },
           },
-        },
-        seniorCareWorkerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
+          registeredNursePay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 27500,
+              hasValue: true,
+            },
+            goodCqc: {
+              value: 30000,
+              hasValue: true,
+            },
           },
-          comparisonGroup: {
-            value: 780,
-            hasValue: true,
+          registeredManagerPay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 29000,
+              hasValue: true,
+            },
+            goodCqc: {
+              value: 30000,
+              hasValue: true,
+            },
           },
-          goodCqc: {
-            value: 800,
-            hasValue: true,
-          },
-        },
-        registeredNursePay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-          },
-          comparisonGroup: {
-            value: 27500,
-            hasValue: true,
-          },
-          goodCqc: {
-            value: 30000,
-            hasValue: true,
-          },
-        },
-        registeredManagerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-          },
-          comparisonGroup: {
-            value: 29000,
-            hasValue: true,
-          },
-          goodCqc: {
-            value: 30000,
-            hasValue: true,
-          },
-        },
-      };
-      component.viewBenchmarksComparisonGroups = false;
-      component.data = payDataForWorkplaceWithComparisonGroups;
-      component.ngOnChanges();
+        };
+        component.viewBenchmarksComparisonGroups = false;
+        component.data = payDataForWorkplaceWithComparisonGroups;
+        component.ngOnChanges();
 
-      expect(component.comparisionGroupCareWorkerPay).toEqual(
-        FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.careWorkerPay.comparisonGroup.value) +
-          ' (hourly)',
-      );
-      expect(component.comparisionGroupSeniorCareWorkerPay).toEqual(
-        FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.seniorCareWorkerPay.comparisonGroup.value) +
-          ' (hourly)',
-      );
-      expect(component.comparisionGroupRegisteredNurseSalary).toEqual(
-        FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredNursePay.comparisonGroup.value) +
-          ' (annually)',
-      );
-      expect(component.comparisionGroupRegisteredManagerSalary).toEqual(
-        FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredManagerPay.comparisonGroup.value) +
-          ' (annually)',
-      );
-    });
+        expect(component.comparisionGroupCareWorkerPay).toEqual(
+          FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.careWorkerPay.comparisonGroup.value) +
+            ' (hourly)',
+        );
+        expect(component.comparisionGroupSeniorCareWorkerPay).toEqual(
+          FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.seniorCareWorkerPay.comparisonGroup.value) +
+            ' (hourly)',
+        );
+        expect(component.comparisionGroupRegisteredNurseSalary).toEqual(
+          FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredNursePay.comparisonGroup.value) +
+            ' (annually)',
+        );
+        expect(component.comparisionGroupRegisteredManagerSalary).toEqual(
+          FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredManagerPay.comparisonGroup.value) +
+            ' (annually)',
+        );
+      });
 
-    it('should be set with good and outstanding when there is group data and the group select toggle is set', async () => {
-      const { component, fixture, queryByTestId } = await setup();
-      const payDataForWorkplaceWithComparisonGroups = {
-        meta: {
-          workplaces: 0,
-          staff: 0,
-          localAuthority: 'Oxfordshire',
-        },
-        careWorkerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
+      it('should be set with good and outstanding when there is group data and the group select toggle is set', async () => {
+        const { component, fixture, queryByTestId } = await setup();
+        const payDataForWorkplaceWithComparisonGroups = {
+          meta: {
+            workplaces: 0,
+            staff: 0,
+            localAuthority: 'Oxfordshire',
           },
-          comparisonGroup: {
-            value: 900,
-            hasValue: true,
+          careWorkerPay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 900,
+              hasValue: true,
+            },
+            goodCqc: {
+              value: 1000,
+              hasValue: true,
+            },
           },
-          goodCqc: {
-            value: 1000,
-            hasValue: true,
+          seniorCareWorkerPay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 780,
+              hasValue: true,
+            },
+            goodCqc: {
+              value: 800,
+              hasValue: true,
+            },
           },
-        },
-        seniorCareWorkerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
+          registeredNursePay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 27500,
+              hasValue: true,
+            },
+            goodCqc: {
+              value: 30000,
+              hasValue: true,
+            },
           },
-          comparisonGroup: {
-            value: 780,
-            hasValue: true,
+          registeredManagerPay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 29000,
+              hasValue: true,
+            },
+            goodCqc: {
+              value: 30000,
+              hasValue: true,
+            },
           },
-          goodCqc: {
-            value: 800,
-            hasValue: true,
-          },
-        },
-        registeredNursePay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-          },
-          comparisonGroup: {
-            value: 27500,
-            hasValue: true,
-          },
-          goodCqc: {
-            value: 30000,
-            hasValue: true,
-          },
-        },
-        registeredManagerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-          },
-          comparisonGroup: {
-            value: 29000,
-            hasValue: true,
-          },
-          goodCqc: {
-            value: 30000,
-            hasValue: true,
-          },
-        },
-      };
-      component.viewBenchmarksComparisonGroups = true;
-      component.data = payDataForWorkplaceWithComparisonGroups;
-      component.ngOnChanges();
+        };
+        component.viewBenchmarksComparisonGroups = true;
+        component.data = payDataForWorkplaceWithComparisonGroups;
+        component.ngOnChanges();
 
-      expect(component.comparisionGroupCareWorkerPay).toEqual(
-        FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.careWorkerPay.goodCqc.value) + ' (hourly)',
-      );
-      expect(component.comparisionGroupSeniorCareWorkerPay).toEqual(
-        FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.seniorCareWorkerPay.goodCqc.value) + ' (hourly)',
-      );
-      expect(component.comparisionGroupRegisteredNurseSalary).toEqual(
-        FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredNursePay.goodCqc.value) +
-          ' (annually)',
-      );
-      expect(component.comparisionGroupRegisteredManagerSalary).toEqual(
-        FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredManagerPay.goodCqc.value) +
-          ' (annually)',
-      );
-    });
+        expect(component.comparisionGroupCareWorkerPay).toEqual(
+          FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.careWorkerPay.goodCqc.value) + ' (hourly)',
+        );
+        expect(component.comparisionGroupSeniorCareWorkerPay).toEqual(
+          FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.seniorCareWorkerPay.goodCqc.value) +
+            ' (hourly)',
+        );
+        expect(component.comparisionGroupRegisteredNurseSalary).toEqual(
+          FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredNursePay.goodCqc.value) +
+            ' (annually)',
+        );
+        expect(component.comparisionGroupRegisteredManagerSalary).toEqual(
+          FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredManagerPay.goodCqc.value) +
+            ' (annually)',
+        );
+      });
 
-    it('should be set to "Not enough data" when comparison group data is not available', async () => {
-      const { component, fixture, queryByTestId } = await setup();
-      const payDataWithoutComparisonData = {
-        meta: {
-          workplaces: 0,
-          staff: 0,
-          localAuthority: 'Oxfordshire',
-        },
-        careWorkerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
+      it('should be set to "Not enough data" when comparison group data is not available', async () => {
+        const { component, fixture, queryByTestId } = await setup();
+        const payDataWithoutComparisonData = {
+          meta: {
+            workplaces: 0,
+            staff: 0,
+            localAuthority: 'Oxfordshire',
           },
-          comparisonGroup: {
-            value: 0,
-            hasValue: false,
-            stateMessage: 'no-data',
+          careWorkerPay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+            goodCqc: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
           },
-          goodCqc: {
-            value: 0,
-            hasValue: false,
-            stateMessage: 'no-data',
+          seniorCareWorkerPay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+            goodCqc: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
           },
-        },
-        seniorCareWorkerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
+          registeredNursePay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-pay-data',
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+            goodCqc: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
           },
-          comparisonGroup: {
-            value: 0,
-            hasValue: false,
-            stateMessage: 'no-data',
+          registeredManagerPay: {
+            workplaceValue: {
+              value: 0,
+              hasValue: false,
+            },
+            comparisonGroup: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
+            goodCqc: {
+              value: 0,
+              hasValue: false,
+              stateMessage: 'no-data',
+            },
           },
-          goodCqc: {
-            value: 0,
-            hasValue: false,
-            stateMessage: 'no-data',
-          },
-        },
-        registeredNursePay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-            stateMessage: 'no-pay-data',
-          },
-          comparisonGroup: {
-            value: 0,
-            hasValue: false,
-            stateMessage: 'no-data',
-          },
-          goodCqc: {
-            value: 0,
-            hasValue: false,
-            stateMessage: 'no-data',
-          },
-        },
-        registeredManagerPay: {
-          workplaceValue: {
-            value: 0,
-            hasValue: false,
-          },
-          comparisonGroup: {
-            value: 0,
-            hasValue: false,
-            stateMessage: 'no-data',
-          },
-          goodCqc: {
-            value: 0,
-            hasValue: false,
-            stateMessage: 'no-data',
-          },
-        },
-      };
-      component.viewBenchmarksComparisonGroups = true;
-      component.data = payDataWithoutComparisonData;
-      component.ngOnChanges();
+        };
+        component.viewBenchmarksComparisonGroups = true;
+        component.data = payDataWithoutComparisonData;
+        component.ngOnChanges();
 
-      expect(component.comparisionGroupCareWorkerPay).toEqual('Not enough data');
-      expect(component.comparisionGroupSeniorCareWorkerPay).toEqual('Not enough data');
-      expect(component.comparisionGroupRegisteredNurseSalary).toEqual('Not enough data');
-      expect(component.comparisionGroupRegisteredManagerSalary).toEqual('Not enough data');
+        expect(component.comparisionGroupCareWorkerPay).toEqual('Not enough data');
+        expect(component.comparisionGroupSeniorCareWorkerPay).toEqual('Not enough data');
+        expect(component.comparisionGroupRegisteredNurseSalary).toEqual('Not enough data');
+        expect(component.comparisionGroupRegisteredManagerSalary).toEqual('Not enough data');
 
-      component.viewBenchmarksComparisonGroups = false;
-      component.ngOnChanges();
-      expect(component.comparisionGroupCareWorkerPay).toEqual('Not enough data');
-      expect(component.comparisionGroupSeniorCareWorkerPay).toEqual('Not enough data');
-      expect(component.comparisionGroupRegisteredNurseSalary).toEqual('Not enough data');
-      expect(component.comparisionGroupRegisteredManagerSalary).toEqual('Not enough data');
+        component.viewBenchmarksComparisonGroups = false;
+        component.ngOnChanges();
+        expect(component.comparisionGroupCareWorkerPay).toEqual('Not enough data');
+        expect(component.comparisionGroupSeniorCareWorkerPay).toEqual('Not enough data');
+        expect(component.comparisionGroupRegisteredNurseSalary).toEqual('Not enough data');
+        expect(component.comparisionGroupRegisteredManagerSalary).toEqual('Not enough data');
+      });
     });
   });
 });

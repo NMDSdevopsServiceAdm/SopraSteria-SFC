@@ -18,36 +18,50 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body comparison-table-body">
-      <tr
-        app-data-area-table-row
-        class="govuk-table__row first-row"
-        header="Care worker pay"
-        [workplaceCell]="careWorkerPay"
-        [comparisonCell]="comparisionGroupCareWorkerPay"
-      ></tr>
-      <tr
-        app-data-area-table-row
-        class="govuk-table__row"
-        header="Senior care worker pay"
-        [workplaceCell]="seniorCareWorkerPay"
-        [comparisonCell]="comparisionGroupSeniorCareWorkerPay"
-      ></tr>
-      <tr
-        *ngIf="showRegisteredNurseSalary"
-        data-testid="register-nurse-comparision"
-        app-data-area-table-row
-        class="govuk-table__row"
-        header="Registered nurse salary"
-        [workplaceCell]="registeredNurseSalary"
-        [comparisonCell]="comparisionGroupRegisteredNurseSalary"
-      ></tr>
-      <tr
-        app-data-area-table-row
-        class="govuk-table__row"
-        header="Registered manager salary"
-        [workplaceCell]="registeredManagerSalary"
-        [comparisonCell]="comparisionGroupRegisteredManagerSalary"
-      ></tr>
+      <tr class="govuk-table__row first-row" data-testid="careworkerRow">
+        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+          Care worker pay
+        </th>
+        <td class="govuk-table__cell workplace-cell">
+          {{ careWorkerPay }}
+        </td>
+        <td class="govuk-table__cell comparision-group-cell">
+          {{ comparisionGroupCareWorkerPay }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row" data-testid="seniorCareworkerRow">
+        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+          Senior care worker pay
+        </th>
+        <td class="govuk-table__cell workplace-cell">
+          {{ seniorCareWorkerPay }}
+        </td>
+        <td class="govuk-table__cell comparision-group-cell">
+          {{ comparisionGroupSeniorCareWorkerPay }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row" data-testid="register-nurse-comparision" *ngIf="showRegisteredNurseSalary">
+        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+          Registered nurse salary
+        </th>
+        <td class="govuk-table__cell workplace-cell">
+          {{ registeredNurseSalary }}
+        </td>
+        <td class="govuk-table__cell comparision-group-cell">
+          {{ comparisionGroupRegisteredNurseSalary }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row last-row" data-testid="seniorCareworkerRow">
+        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+          Registered manager salary
+        </th>
+        <td class="govuk-table__cell workplace-cell">
+          {{ registeredManagerSalary }}
+        </td>
+        <td class="govuk-table__cell comparision-group-cell">
+          {{ comparisionGroupRegisteredManagerSalary }}
+        </td>
+      </tr>
     </tbody>
   </table>
 
