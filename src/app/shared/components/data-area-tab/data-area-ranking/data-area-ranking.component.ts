@@ -24,4 +24,7 @@ export class DataAreaRankingComponent implements OnInit {
     this.options = this.builder.buildChartOptions(this.workplacesNumber, this.workplaceRankNumber);
   }
 
+  ngOnChanges(): void {
+    this.options = this.builder.buildChartOptions(this.workplacesNumber, this.workplaceRankNumber);
+  }
 }
