@@ -9,11 +9,16 @@
   }
 
   &__list-item {
-    padding: 10px 70px;
+    padding: 10px 35px;
+    margin-right: 35px;
     background-color: govuk-colour('white');
 
     &--active {
       border-bottom: 8px solid govuk-colour('blue');
+    }
+
+    &:not:first-of-type {
+      margin-left: 35px;
     }
   }
 

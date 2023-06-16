@@ -9,4 +9,6 @@ export class DataAreaBarchartComponent {
   @Input() positionedTitle: string;
   @Input() payMoreThanWorkplacesNumber: number;
   @Input() workplacesNumber: number;
+
+  public noPositionData: boolean;
 }

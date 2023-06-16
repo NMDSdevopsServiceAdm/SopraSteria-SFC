@@ -1,9 +1,11 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import {
   AllRankingsResponse,
   BenchmarksResponse,
+  Tile,
   BenchmarkValue,
   RankingsResponse,
+  CompareGroupsRankingsResponse,
 } from '@core/model/benchmarks.model';
 import { FormatUtil } from '@core/utils/format-util';
 
@@ -12,7 +14,7 @@ import { FormatUtil } from '@core/utils/format-util';
   templateUrl: './data-area-pay.component.html',
   styleUrls: ['../data-area-tab.component.scss'],
 })
-export class DataAreaPayComponent implements OnChanges {
+export class DataAreaPayComponent {
   @Input() data: BenchmarksResponse;
   @Input() rankingsData: AllRankingsResponse;
   @Input() viewBenchmarksComparisonGroups: boolean;
@@ -30,11 +32,15 @@ export class DataAreaPayComponent implements OnChanges {
   public seniorCareWorkerRankings: RankingsResponse;
   public registeredNurseRankings: RankingsResponse;
   public registeredManagerRankings: RankingsResponse;
+  public rankings;
+  public positionData;
 
   ngOnChanges(): void {
     this.setWorkplacePayAndSalary();
     this.setComparisionGroupPayAndSalary(this.viewBenchmarksComparisonGroups);
     this.setRankings(this.viewBenchmarksComparisonGroups);
+    this.initialiseRankings();
+    this.initialisePositions();
   }
 
   public handleViewBenchmarkPosition(visible: boolean): void {
@@ -100,5 +106,64 @@ export class DataAreaPayComponent implements OnChanges {
 
   private formatWorkplacePay(data: BenchmarkValue): string {
     return data.hasValue ? `${FormatUtil.formatMoney(data.value)} (hourly)` : 'No data added';
+  }
+
+  public getRankNumber(rank: RankingsResponse): number {
+    if(rank.hasValue) {
+      return rank.currentRank;
+    }
+    return undefined;
+  }
+
+  public initialisePositions(): void {
+    this.positionData = {
+      careWorkerPay: {
+        title: 'Care worker pay',
+        payMoreThanWorkplacesNumber: this.getRankNumber(this.careWorkerRankings),
+        totalWorkplaces: 72,
+      },
+      seniorCareWorkerPay: {
+        title: 'Senior care worker pay',
+        payMoreThanWorkplacesNumber: this.getRankNumber(this.seniorCareWorkerRankings),
+        totalWorkplaces: 72,
+      },
+      registeredNursePay: {
+        title: 'Registered nurse salary',
+        payMoreThanWorkplacesNumber: this.getRankNumber(this.registeredNurseRankings),
+        totalWorkplaces: 72,
+      },
+      registeredManagerPay: {
+        title: 'Registered manager salary',
+        payMoreThanWorkplacesNumber: this.getRankNumber(this.registeredManagerRankings),
+        totalWorkplaces: 72,
+      },
+    };
+  }
+
+  public initialiseRankings(): void {
+    this.rankings = {
+      careWorkerPay: {
+        title: 'Care worker pay',
+        workplacesRankNumber: this.getRankNumber(this.careWorkerRankings),
+        totalWorkplaces: 72,
+      },
+      seniorCareWorkerPay: {
+        title: 'Senior care worker pay',
+        workplacesRankNumber: this.getRankNumber(this.seniorCareWorkerRankings),
+        totalWorkplaces: 72,
+      },
+      registeredNursePay: this.showRegisteredNurseSalary
+        ? {
+            title: 'Registered nurse salary',
+            workplacesRankNumber: this.getRankNumber(this.registeredNurseRankings),
+            totalWorkplaces: 72,
+          }
+        : undefined,
+      registeredManagerPay: {
+        title: 'Registered manager salary',
+        workplacesRankNumber: this.getRankNumber(this.registeredManagerRankings),
+        totalWorkplaces: 72,
+      },
+    };
   }
 }

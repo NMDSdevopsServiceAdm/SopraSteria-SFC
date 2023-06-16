@@ -14,11 +14,14 @@ export class DataAreaRankingComponent implements OnChanges {
   @Input() workplaceRankNumber: number;
   @Input() workplacesNumber: number;
 
+  public noRankingData: boolean;
   public options: Highcharts.Options;
+  public text: string;
 
   constructor(private builder: GaugeOptionsBuilder) {}
 
   ngOnChanges(): void {
     this.options = this.builder.buildChartOptions(this.workplacesNumber, this.workplaceRankNumber);
   }
+
 }

@@ -6,7 +6,7 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header"></th>
-        <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
+        <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre govuk-!-padding-right-0">
           Your workplace
         </th>
         <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
@@ -14,7 +14,7 @@
         </th>
       </tr>
     </thead>
-    <tbody class="govuk-table__body">
+    <tbody class="govuk-table__body comparison-table-body">
       <tr
         app-data-area-table-row
         class="govuk-table__row first-row"
@@ -58,51 +58,26 @@
 
     <ng-container *ngIf="viewBenchmarksPosition; else showRankings">
       <div class="govuk-!-margin-top-7" data-testid="barcharts">
-        <app-data-area-barchart
-          [positionedTitle]="'Care worker pay'"
-          [payMoreThanWorkplacesNumber]="54"
-          [workplacesNumber]="72"
-        ></app-data-area-barchart>
-        <app-data-area-barchart
-          [positionedTitle]="'Senior care worker pay'"
-          [payMoreThanWorkplacesNumber]="21"
-          [workplacesNumber]="72"
-        ></app-data-area-barchart>
-        <app-data-area-barchart
-          [positionedTitle]="'Registered nurse salary'"
-          [payMoreThanWorkplacesNumber]="36"
-          [workplacesNumber]="72"
-        ></app-data-area-barchart>
-        <app-data-area-barchart
-          [positionedTitle]="'Registered manager salary'"
-          [payMoreThanWorkplacesNumber]="31"
-          [workplacesNumber]="72"
-        ></app-data-area-barchart>
+        <ng-container *ngFor="let position of positionData | keyvalue">
+          <app-data-area-barchart
+            [positionedTitle]="position.value.title"
+            [payMoreThanWorkplacesNumber]="position.value.payMoreThanWorkplacesNumber"
+            [workplacesNumber]="position.value.totalWorkplaces"
+          ></app-data-area-barchart>
+        </ng-container>
       </div>
     </ng-container>
     <ng-template #showRankings>
       <div class="govuk-!-margin-top-7" data-testid="rankings">
-        <app-data-area-ranking
-          [rankingTitle]="'Care worker pay'"
-          [workplaceRankNumber]="18"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="'Senior care worker pay'"
-          [workplaceRankNumber]="51"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="'Registered nurse salary'"
-          [workplaceRankNumber]="36"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="'Registered manager salary'"
-          [workplaceRankNumber]="41"
-          [workplacesNumber]="72"
-        ></app-data-area-ranking>
-      </div>
+        <ng-container *ngFor="let ranking of rankings | keyvalue">
+          <app-data-area-ranking
+            *ngIf="ranking.value !== undefined"
+            [rankingTitle]="ranking.value.title"
+            [workplaceRankNumber]="ranking.value.workplacesRankNumber"
+            [workplacesNumber]="ranking.value.totalWorkplaces"
+          ></app-data-area-ranking>
+        </ng-container>
+    </div>
     </ng-template>
   </div>
 </div>
