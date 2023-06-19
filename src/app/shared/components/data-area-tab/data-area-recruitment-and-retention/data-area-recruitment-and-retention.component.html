@@ -73,17 +73,27 @@
     <ng-container *ngIf="viewBenchmarksPosition; else showRankings">
       <div class="govuk-!-margin-top-7" data-testid="barcharts">
         <app-data-area-barchart
-          [positionedTitle]="'Vacancy rate'"
+          [section]="'Vacancy rate'"
+          [type]="'vacancy'"
+          [data]="rankingsData.vacancy"
+          [pay]="false"
           [payMoreThanWorkplacesNumber]="54"
           [workplacesNumber]="72"
+          [altDesrcripton]="'Vacancy rate barchart'"
         ></app-data-area-barchart>
         <app-data-area-barchart
-          [positionedTitle]="'Turnover rate'"
+          [section]="'Turnover rate'"
+          [type]="'turnover'"
+          [data]="rankingsData.turnover"
+          [pay]="false"
           [payMoreThanWorkplacesNumber]="21"
           [workplacesNumber]="72"
         ></app-data-area-barchart>
         <app-data-area-barchart
-          [positionedTitle]="'Percentage of staff still in their main job role after 12 months'"
+          [section]="'Percentage of staff still in their main job role after 12 months'"
+          [type]="'timeInRole'"
+          [data]="rankingsData.timeInRole"
+          [pay]="false"
           [payMoreThanWorkplacesNumber]="36"
           [workplacesNumber]="72"
         ></app-data-area-barchart>

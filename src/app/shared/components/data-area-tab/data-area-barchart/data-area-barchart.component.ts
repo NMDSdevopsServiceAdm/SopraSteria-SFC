@@ -17,6 +17,7 @@ export class DataAreaBarchartComponent implements OnInit {
   @Input() data: Tile = null;
   @Input() noData: NoData;
   @Input() altDescription = '';
+  @Input() pay: boolean;
 
   public options: Highcharts.Options;
   public numberOfWorkplaces: number;
@@ -33,6 +34,7 @@ export class DataAreaBarchartComponent implements OnInit {
       // this.noData[this.data?.workplaceValue?.stateMessage],
       this.altDescription,
     );
+    console.log(this.data);
   }
 }
 // export class DataAreaBarchartComponent {
