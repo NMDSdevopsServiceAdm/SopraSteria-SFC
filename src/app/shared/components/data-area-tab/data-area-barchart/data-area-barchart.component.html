@@ -1,9 +1,16 @@
 <div class="govuk-!-margin-top-4 govuk-!-padding-3 barchart-container">
   <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-2">{{ section }}</div>
-  <p class="govuk-body govuk-!-margin-top-2">
-    Your workplace pays more than <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces - rank }}</span> others
-    in a comparision group of <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces }} </span> workplaces.
-  </p>
+  <ng-container *ngIf="payMoreThanWorkplacesNumber; else noPositionData">
+    <p class="govuk-body govuk-!-margin-top-2">
+      Your workplace pays more than <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces - rank }}</span> others
+      in a comparision group of <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces }} </span> workplaces.
+    </p>
 
-  <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
+    <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
+  </ng-container>
+  <ng-template #noPositionData>
+    <p class="govuk-body govuk-!-margin-top-2">
+      You've not added any {{ section }} data, so we cannot show you where you're ranked.
+    </p>
+  </ng-template>
 </div>

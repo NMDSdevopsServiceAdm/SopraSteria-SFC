@@ -44,7 +44,7 @@
           </ng-template>
         </td>
       </tr>
-      <tr class="govuk-table__row last-row" data-testid="timeInRoleRow">
+      <tr class="govuk-table__row" data-testid="timeInRoleRow">
         <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">
           Percentage of staff still in their main job role after 12 months
         </th>
@@ -93,18 +93,18 @@
       <div class="govuk-!-margin-top-7" data-testid="rankings">
         <app-data-area-ranking
           [rankingTitle]="'Vacancy rate'"
-          [workplaceRankNumber]="18"
-          [workplacesNumber]="72"
+          [workplaceRankNumber]="vacancyCurrentRank"
+          [workplacesNumber]="vacancyMaxRank"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="'Turnover rate'"
-          [workplaceRankNumber]="51"
-          [workplacesNumber]="72"
+          [workplaceRankNumber]="turnoverCurrentRank"
+          [workplacesNumber]="turnoverMaxRank"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="'Percentage of staff still in their main job role after 12 months'"
-          [workplaceRankNumber]="36"
-          [workplacesNumber]="72"
+          [workplaceRankNumber]="timeInRoleCurrentRank"
+          [workplacesNumber]="timeInRoleMaxRank"
         ></app-data-area-ranking>
       </div>
     </ng-template>

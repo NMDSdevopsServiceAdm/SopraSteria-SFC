@@ -44,6 +44,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
       mainService: {
         id: selectedMainService.id,
         name: selectedMainService.name,
+        reportingID: selectedMainService.reportingID,
         ...(selectedMainService.otherName && { other: selectedMainService.otherName }),
       },
     };
