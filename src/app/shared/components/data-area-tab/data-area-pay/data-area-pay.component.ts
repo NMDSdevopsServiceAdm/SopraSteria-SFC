@@ -1,11 +1,9 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {
   AllRankingsResponse,
   BenchmarksResponse,
-  Tile,
   BenchmarkValue,
   RankingsResponse,
-  CompareGroupsRankingsResponse,
 } from '@core/model/benchmarks.model';
 import { FormatUtil } from '@core/utils/format-util';
 
@@ -109,7 +107,7 @@ export class DataAreaPayComponent {
   }
 
   public getRankNumber(rank: RankingsResponse): number {
-    if(rank.hasValue) {
+    if (rank.hasValue) {
       return rank.currentRank;
     }
     return undefined;
@@ -145,24 +143,22 @@ export class DataAreaPayComponent {
       careWorkerPay: {
         title: 'Care worker pay',
         workplacesRankNumber: this.getRankNumber(this.careWorkerRankings),
-        totalWorkplaces: 72,
+        totalWorkplaces: this.careWorkerRankings.hasValue ? this.careWorkerRankings.maxRank : undefined,
       },
       seniorCareWorkerPay: {
         title: 'Senior care worker pay',
         workplacesRankNumber: this.getRankNumber(this.seniorCareWorkerRankings),
-        totalWorkplaces: 72,
+        totalWorkplaces: this.seniorCareWorkerRankings.hasValue ? this.seniorCareWorkerRankings.maxRank : undefined,
       },
-      registeredNursePay: this.showRegisteredNurseSalary
-        ? {
-            title: 'Registered nurse salary',
-            workplacesRankNumber: this.getRankNumber(this.registeredNurseRankings),
-            totalWorkplaces: 72,
-          }
-        : undefined,
+      registeredNursePay: {
+        title: 'Registered nurse salary',
+        workplacesRankNumber: this.getRankNumber(this.registeredNurseRankings),
+        totalWorkplaces: this.registeredNurseRankings.hasValue ? this.registeredNurseRankings.maxRank : undefined,
+      },
       registeredManagerPay: {
         title: 'Registered manager salary',
         workplacesRankNumber: this.getRankNumber(this.registeredManagerRankings),
-        totalWorkplaces: 72,
+        totalWorkplaces: this.registeredManagerRankings.hasValue ? this.registeredManagerRankings.maxRank : undefined,
       },
     };
   }
