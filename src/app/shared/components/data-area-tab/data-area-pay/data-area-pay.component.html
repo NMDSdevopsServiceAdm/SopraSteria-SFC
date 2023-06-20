@@ -75,13 +75,31 @@
 
     <ng-container *ngIf="viewBenchmarksPosition; else showRankings">
       <div class="govuk-!-margin-top-7" data-testid="barcharts">
-        <ng-container *ngFor="let position of positionData | keyvalue">
-          <app-data-area-barchart
-            [positionedTitle]="position.value.title"
-            [payMoreThanWorkplacesNumber]="position.value.payMoreThanWorkplacesNumber"
-            [workplacesNumber]="position.value.totalWorkplaces"
-          ></app-data-area-barchart>
-        </ng-container>
+        <app-data-area-barchart
+          [section]="'Care worker pay'"
+          [type]="'careWorkerPay'"
+          [rankingsData]="careWorkerRankings"
+          [altDescription]="'Care worker pay barchart'"
+        ></app-data-area-barchart>
+        <app-data-area-barchart
+          [section]="'Senior care worker pay'"
+          [type]="'seniorCareWorkerPay'"
+          [rankingsData]="seniorCareWorkerRankings"
+          [altDesrcripton]="'Senior care worker pay barchart'"
+        ></app-data-area-barchart>
+        <app-data-area-barchart
+          *ngIf="showRegisteredNurseSalary"
+          [section]="'Registered nurse salary'"
+          [type]="'registeredNursePay'"
+          [rankingsData]="registeredNurseRankings"
+          [altDescription]="'Registered nurse salary barchart'"
+        ></app-data-area-barchart>
+        <app-data-area-barchart
+          [section]="'Registered manager salary'"
+          [type]="'registeredManagerPay'"
+          [rankingsData]="registeredManagerRankings"
+          [altDescription]="'Registered manager salary barchart'"
+        ></app-data-area-barchart>
       </div>
     </ng-container>
     <ng-template #showRankings>
