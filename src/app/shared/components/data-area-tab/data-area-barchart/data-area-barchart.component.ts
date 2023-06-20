@@ -21,7 +21,6 @@ export class DataAreaBarchartComponent implements OnChanges {
   public rank: number;
 
   constructor(private builder: DataAreaBarchartOptionsBuilder) {}
-
   ngOnChanges(): void {
     this.numberOfWorkplaces = this.rankingsData.maxRank ? this.rankingsData.maxRank : null;
     this.rank = this.rankingsData.currentRank ? this.rankingsData.currentRank : null;

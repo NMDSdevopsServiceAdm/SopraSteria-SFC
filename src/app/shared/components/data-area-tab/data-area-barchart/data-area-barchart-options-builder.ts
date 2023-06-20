@@ -83,6 +83,9 @@ export class DataAreaBarchartOptionsBuilder {
     },
     plotOptions: {
       series: {
+        dataLabels: {
+          enabled: false,
+        },
         states: {
           hover: {
             enabled: false,
@@ -98,10 +101,31 @@ export class DataAreaBarchartOptionsBuilder {
     type: Metric,
     altDescription: string,
   ): Highcharts.Options {
-    const noData = '';
-    // console.log('***** BUILD CHART OPTIONS *****');
-    console.log(rankingData);
-    // console.log(type);
+    const plotlines = [];
+    const currentEstablishmentValue = rankingData.allValues?.find((obj) => {
+      return obj.currentEst === true;
+    })?.value;
+    if (currentEstablishmentValue) {
+      const value =
+        type === Metric.careWorkerPay || type === Metric.seniorCareWorkerPay
+          ? currentEstablishmentValue / 100
+          : currentEstablishmentValue;
+      plotlines.push({
+        color: 'black',
+        width: 2,
+        value: value,
+        zIndex: 5,
+        label: {
+          text: `<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">You, ${this.formatLineLabel(
+            type,
+            value,
+          )}</span>`,
+          align: 'right',
+          x: 100,
+          y: 5,
+        },
+      });
+    }
     const source = {
       chart: {
         // events: {
@@ -114,9 +138,6 @@ export class DataAreaBarchartOptionsBuilder {
             description: altDescription,
           },
           data: this.buildChartData(rankingData, type),
-          // dataLabels: {
-          //   formatter: this.formatDataLabels(type),
-          // },
         },
       ],
       yAxis: {
@@ -124,6 +145,7 @@ export class DataAreaBarchartOptionsBuilder {
           text: this.getYAxisTitle(type),
         },
         formatter: this.formatLabel(),
+        plotLines: plotlines,
       },
     };
 
@@ -185,29 +207,50 @@ export class DataAreaBarchartOptionsBuilder {
     };
   }
 
-  private formatDataLabels(type: Metric): Highcharts.DataLabelsFormatterCallbackFunction {
-    return function () {
-      console.log('***** here *****');
-      console.log(this.y);
-      let value;
-      switch (type) {
-        case (Metric.pay,
-        Metric.careWorkerPay,
-        Metric.seniorCareWorkerPay,
-        Metric.registeredManagerPay,
-        Metric.registeredNursePay):
-          value = FormatUtil.formatMoney(this.y);
-          break;
-        case Metric.sickness:
-          value = this.y + ' days';
-          break;
-        default:
-          value = FormatUtil.formatPercent(this.y);
-      }
-      const size = this.key === 'Your workplace' ? 'govuk-heading-xl' : 'govuk-heading-m';
-      return '<span class="' + size + ' govuk-!-margin-bottom-2">' + value + '</span>';
-    };
+  private formatLineLabel(type: Metric, labelValue: number): string {
+    let value;
+    switch (type) {
+      case Metric.pay:
+      case Metric.careWorkerPay:
+      case Metric.seniorCareWorkerPay:
+        value = '£' + labelValue.toFixed(2);
+        break;
+      case Metric.registeredManagerPay:
+      case Metric.registeredNursePay:
+        value = FormatUtil.formatSalary(labelValue);
+        break;
+      case Metric.sickness:
+        value = labelValue + ' days';
+        break;
+      default:
+        value = FormatUtil.formatPercent(labelValue);
+    }
+    return value;
   }
+
+  // private formatDataLabels(type: Metric): Highcharts.DataLabelsFormatterCallbackFunction {
+  //   return function () {
+  //     let value;
+  //     switch (type) {
+  //       case Metric.pay:
+  //       case Metric.careWorkerPay:
+  //       case Metric.seniorCareWorkerPay:
+  //         value = '£' + this.y.toFixed(2);
+  //         break;
+  //       case Metric.registeredManagerPay:
+  //       case Metric.registeredNursePay:
+  //         value = FormatUtil.formatSalary(this.y);
+  //         break;
+  //       case Metric.sickness:
+  //         value = this.y + ' days';
+  //         break;
+  //       default:
+  //         value = FormatUtil.formatPercent(this.y);
+  //     }
+  //     const size = this.key === 'Your workplace' ? 'govuk-heading-xl' : 'govuk-body-s';
+  //     return '<span class="' + size + '">' + value + '</span>';
+  //   };
+  // }
 
   // private addEmptyStates(noData: string): Highcharts.ChartLoadCallbackFunction {
   //   return function () {
