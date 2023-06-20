@@ -2,13 +2,13 @@
   <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-1">{{ rankingTitle }}</div>
   <ng-container *ngIf="workplaceRankNumber; else noRankingData">
     <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-3" data-testid="ranking-data">
-      Your workplace ranks <span class="govuk-!-font-weight-bold">{{ workplaceRankNumber }}</span> in a comparision
-      group of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
+      Your workplace ranks <span class="govuk-!-font-weight-bold">{{ workplaceRankNumber }}</span> in a comparison group
+      of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
     </p>
   </ng-container>
   <ng-template #noRankingData>
     <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-data">
-      You've not added any {{ rankingTitle.toLowerCase() }} data, so we cannot show you where you're ranked.
+      You've not added any {{ rankingTitle | lowercase }} data, so we cannot show you where you're ranked.
     </p>
   </ng-template>
   <div class="ranking-bar">
