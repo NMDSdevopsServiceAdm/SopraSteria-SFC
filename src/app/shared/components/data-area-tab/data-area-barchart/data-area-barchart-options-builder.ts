@@ -92,7 +92,12 @@ export class DataAreaBarchartOptionsBuilder {
     },
   };
 
-  public buildChartOptions(rankingData: RankingsResponse, type: Metric, altDescription: string): Highcharts.Options {
+  public buildChartOptions(
+    title: string,
+    rankingData: RankingsResponse,
+    type: Metric,
+    altDescription: string,
+  ): Highcharts.Options {
     const noData = '';
     // console.log('***** BUILD CHART OPTIONS *****');
     console.log(rankingData);
@@ -123,6 +128,11 @@ export class DataAreaBarchartOptionsBuilder {
     };
 
     const options = cloneDeep(this.defaultOptions);
+    options.title = {
+      align: 'left',
+      text: `<span class="govuk-!-font-size-16 govuk-!-font-weight-bold" style='font-family:"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif'>${title}</span>`,
+    };
+
     return merge(options, source);
   }
 

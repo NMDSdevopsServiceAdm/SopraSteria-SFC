@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { Metric, NoData, RankingsResponse } from '@core/model/benchmarks.model';
+import { Metric, RankingsResponse } from '@core/model/benchmarks.model';
 import * as Highcharts from 'highcharts';
 
 import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-builder';
@@ -12,22 +12,24 @@ import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-bui
 export class DataAreaBarchartComponent implements OnChanges {
   Highcharts: typeof Highcharts = Highcharts;
 
-  @Input() section: string = '';
+  @Input() section = '';
   @Input() type: string;
   @Input() rankingsData: RankingsResponse = null;
-
   @Input() altDescription = '';
-
   public options: Highcharts.Options;
   public numberOfWorkplaces: number;
   public rank: number;
-  public noData: NoData;
 
   constructor(private builder: DataAreaBarchartOptionsBuilder) {}
 
   ngOnChanges(): void {
     this.numberOfWorkplaces = this.rankingsData.maxRank ? this.rankingsData.maxRank : null;
     this.rank = this.rankingsData.currentRank ? this.rankingsData.currentRank : null;
-    this.options = this.builder.buildChartOptions(this.rankingsData, Metric[this.type], this.altDescription);
+    this.options = this.builder.buildChartOptions(
+      this.section,
+      this.rankingsData,
+      Metric[this.type],
+      this.altDescription,
+    );
   }
 }
