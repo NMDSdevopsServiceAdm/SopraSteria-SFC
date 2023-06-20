@@ -82,6 +82,9 @@ export class DataAreaBarchartOptionsBuilder {
       text: null,
     },
     plotOptions: {
+      column: {
+        maxPointWidth: 100,
+      },
       series: {
         dataLabels: {
           enabled: false,
