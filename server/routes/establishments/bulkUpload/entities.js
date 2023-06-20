@@ -23,7 +23,7 @@ const restoreExistingEntities = async (
     const myEstablishments = await thisUser.myEstablishments(isParent, null);
 
     // having got this list of establishments, now need to fully restore each establishment as entities.
-    //  using an object adding entities by a known key to make lookup comparisions easier.
+    //  using an object adding entities by a known key to make lookup comparisons easier.
     const currentEntities = [];
     const restoreEntityPromises = [];
 
