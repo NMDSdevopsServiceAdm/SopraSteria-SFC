@@ -1,14 +1,21 @@
 <div class="govuk-!-margin-top-4 govuk-!-padding-3 barchart-container">
   <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-2">{{ positionedTitle }}</div>
-  <ng-container *ngIf="payMoreThanWorkplacesNumber; else noPositionData">
-  <p class="govuk-body govuk-!-margin-top-2">
-    Your workplace pays more than <span class="govuk-!-font-weight-bold">{{ payMoreThanWorkplacesNumber }}</span> others
-    in a comparision group of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
-  </p>
+  <ng-container *ngIf="workplacesNumber; else noComparisonData">
+    <ng-container *ngIf="payMoreThanWorkplacesNumber; else noPositionData">
+      <p class="govuk-body govuk-!-margin-top-2">
+        Your workplace pays more than <span class="govuk-!-font-weight-bold">{{ payMoreThanWorkplacesNumber }}</span> others
+        in a comparison group of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
+      </p>
+    </ng-container>
+    <ng-template #noPositionData>
+      <p class="govuk-body govuk-!-margin-top-2">
+        You've not added any {{ positionedTitle }} data, so we cannot show you where you're ranked.
+      </p>
+    </ng-template>
   </ng-container>
-  <ng-template #noPositionData>
+  <ng-template #noComparisonData>
     <p class="govuk-body govuk-!-margin-top-2">
-      You've not added any {{ positionedTitle }} data, so we cannot show you where you're ranked.
+      We do not have enough comparison group data to show where you're positioned yet.
     </p>
   </ng-template>
 </div>
