@@ -28,6 +28,7 @@ const getPayRanking = async function (establishmentId, mainService, workerId) {
   const annualOrHourly = [CARE_WORKER_ID, SENIOR_CARE_WORKER_ID].includes(workerId) ? 'Hourly' : 'Annually';
   const field = annualOrHourly === 'Hourly' ? 'AverageHourlyRate' : 'AverageAnnualFTE';
   const currentmetricValue = await getPay({ establishmentId, annualOrHourly, mainJob: workerId });
+  console.log({ currentmetricValue });
 
   const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
@@ -199,8 +200,13 @@ const getComparisonGroupAndCalculateRanking = async function (
 
   const mappedComparisonGroupRankings = comparisonGroupRankings.map(mapComparisonGroupCallback).filter((a) => a);
   if (mappedComparisonGroupRankings.length === 0) {
+    const values = [];
+    if (!metric.stateMessage) {
+      values.push({ value: metric.value, currentEst: true });
+    }
+
     return {
-      allValues: [{ value: metric.value, currentEst: true }],
+      allValues: values,
       hasValue: false,
       stateMessage: 'no-comparison-data',
     };
