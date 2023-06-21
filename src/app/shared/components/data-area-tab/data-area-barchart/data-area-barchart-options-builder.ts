@@ -145,7 +145,7 @@ export class DataAreaBarchartOptionsBuilder {
       ],
       yAxis: {
         title: {
-          text: this.getYAxisTitle(type),
+          text: null,
         },
         formatter: this.formatLabel(),
         plotLines: plotlines,
@@ -154,8 +154,12 @@ export class DataAreaBarchartOptionsBuilder {
 
     const options = cloneDeep(this.defaultOptions);
     options.title = {
+      y: 30,
+      x: 0,
       align: 'left',
-      text: `<span class="govuk-!-font-size-16 govuk-!-font-weight-bold" style='font-family:"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif'>${title}</span>`,
+      text: `<span class="govuk-!-font-size-16 govuk-!-font-weight-bold" style='font-family:"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif'>${this.getYAxisTitle(
+        type,
+      )}</span>`,
     };
 
     return merge(options, source);
