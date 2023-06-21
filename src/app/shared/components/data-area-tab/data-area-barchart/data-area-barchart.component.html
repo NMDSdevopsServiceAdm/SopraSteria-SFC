@@ -1,6 +1,6 @@
 <div class="govuk-!-margin-top-4 govuk-!-padding-3 barchart-container">
   <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-2">{{ section }}</div>
-  <ng-container *ngIf="data; else noPositionData">
+  <ng-container *ngIf="rankingsData; else noPositionData">
     <ng-container *ngIf="pay; else recAndRet">
       <p class="govuk-body govuk-!-margin-top-2">
         Your workplace pays more than
@@ -12,7 +12,7 @@
     </ng-container>
     <ng-template #recAndRet>
       <p class="govuk-body govuk-!-margin-top-2">
-        Your workplace has a higher {{ section.toLowerCase() }} than
+        Your workplace has a higher {{ section | lowercase }} than
         <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces - rank }}</span> others in a comparision group of
         <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces }} </span> workplaces.
       </p>
@@ -23,7 +23,7 @@
 
   <ng-template #noPositionData>
     <p class="govuk-body govuk-!-margin-top-2">
-      You've not added any {{ section.toLowerCase() }} data, so we cannot show you where you're ranked.
+      You've not added any {{ section | lowercase }} data, so we cannot show you where you're ranked.
     </p>
   </ng-template>
 </div>

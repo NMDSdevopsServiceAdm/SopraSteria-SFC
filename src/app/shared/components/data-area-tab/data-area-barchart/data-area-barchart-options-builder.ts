@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Metric, Tile } from '@core/model/benchmarks.model';
+import { Metric, RankingsResponse } from '@core/model/benchmarks.model';
 import { FormatUtil } from '@core/utils/format-util';
 import cloneDeep from 'lodash/cloneDeep';
 import merge from 'lodash/merge';
@@ -42,12 +42,16 @@ export class DataAreaBarchartOptionsBuilder {
       min: 0,
       title: {
         useHTML: true,
-        // rotation: 0,
+        rotation: 0,
+        align: 'high',
+        offset: 0,
+        y: -50,
+        x: 40,
       },
       gridLineColor: '#d4d5d5',
       labels: {
         useHTML: true,
-        formatter: this.formatLabel(),
+        // formatter: this.formatLabel(),
       },
     },
     xAxis: {
@@ -92,10 +96,10 @@ export class DataAreaBarchartOptionsBuilder {
     },
   };
 
-  public buildChartOptions(tile: Tile, type: Metric, altDescription: string): Highcharts.Options {
+  public buildChartOptions(rankingsData: RankingsResponse, type: Metric, altDescription: string): Highcharts.Options {
     const noData = '';
     // console.log('***** BUILD CHART OPTIONS *****');
-    // console.log(tile);
+    // console.log(rankingsData);
     // console.log(type);
     const source = {
       chart: {
@@ -108,7 +112,7 @@ export class DataAreaBarchartOptionsBuilder {
           accessibility: {
             description: altDescription,
           },
-          data: this.buildChartData(tile, type),
+          data: this.buildChartData(rankingsData, type),
           // dataLabels: {
           //   formatter: this.formatDataLabels(type),
           // },
@@ -118,7 +122,10 @@ export class DataAreaBarchartOptionsBuilder {
         title: {
           text: this.getYAxisTitle(type),
         },
-        formatter: this.formatLabel(),
+        labels: {
+          useHTML: true,
+          formatter: this.formatLabel(type),
+        },
       },
     };
 
@@ -169,9 +176,20 @@ export class DataAreaBarchartOptionsBuilder {
   //   return merge(this.defaultOptions, source);
   // }
 
-  private formatLabel(): Highcharts.AxisLabelsFormatterCallbackFunction {
+  private formatLabel(type: Metric): Highcharts.AxisLabelsFormatterCallbackFunction {
     return function () {
-      return '<span class="govuk-body">£' + this.value + '</span>';
+      switch (type) {
+        case Metric.pay:
+        case Metric.careWorkerPay:
+        case Metric.seniorCareWorkerPay:
+        case Metric.registeredManagerPay:
+        case Metric.registeredNursePay:
+          return '<span class="govuk-body">£' + this.value + '</span>';
+        case Metric.vacancy:
+        case Metric.turnover:
+        case Metric.timeInRole:
+          return '<span class="govuk-body">' + FormatUtil.formatPercent(this.value) + '</span>';
+      }
     };
   }
 
@@ -181,11 +199,16 @@ export class DataAreaBarchartOptionsBuilder {
       console.log(this.y);
       let value;
       switch (type) {
-        case (Metric.pay,
-        Metric.careWorkerPay,
-        Metric.seniorCareWorkerPay,
-        Metric.registeredManagerPay,
-        Metric.registeredNursePay):
+        // case (Metric.pay,
+        // Metric.careWorkerPay,
+        // Metric.seniorCareWorkerPay,
+        // Metric.registeredManagerPay,
+        // Metric.registeredNursePay):
+        case Metric.pay:
+        case Metric.careWorkerPay:
+        case Metric.seniorCareWorkerPay:
+        case Metric.registeredManagerPay:
+        case Metric.registeredNursePay:
           value = FormatUtil.formatMoney(this.y);
           break;
         case Metric.sickness:
@@ -236,8 +259,8 @@ export class DataAreaBarchartOptionsBuilder {
   //   };
   // }
 
-  private buildChartData(tile: Tile, type: Metric): any[] {
-    return tile.groupRankings.allValues
+  private buildChartData(rankingsData: RankingsResponse, type: Metric): any[] {
+    return rankingsData.allValues
       ?.map((workplace) => {
         const value =
           type === Metric.careWorkerPay || type === Metric.seniorCareWorkerPay

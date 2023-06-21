@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { Tile } from '@core/model/benchmarks.model';
+import { RankingsResponse } from '@core/model/benchmarks.model';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -12,18 +12,12 @@ describe('DataAreaBarchartComponent', () => {
       providers: [],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
-        data: {
-          groupRankings: {
-            maxRank: 14,
-            currentRank: 7,
-            hasValue: true,
-            allValues: [],
-          },
-          goodCqcRankings: {
-            hasValue: false,
-            stateMessage: 'no-comparison-data',
-          },
-        } as Tile,
+        rankingsData: {
+          maxRank: 14,
+          currentRank: 7,
+          hasValue: true,
+          allValues: [],
+        } as RankingsResponse,
       },
     });
 

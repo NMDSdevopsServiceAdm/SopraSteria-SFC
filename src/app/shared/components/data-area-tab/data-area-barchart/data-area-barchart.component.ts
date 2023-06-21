@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Metric, NoData, Tile } from '@core/model/benchmarks.model';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
 import * as Highcharts from 'highcharts';
 
 import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-builder';
@@ -9,15 +9,16 @@ import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-bui
   templateUrl: './data-area-barchart.component.html',
   styleUrls: ['./data-area-barchart.component.scss'],
 })
-export class DataAreaBarchartComponent implements OnInit {
+export class DataAreaBarchartComponent implements OnInit, OnChanges {
   Highcharts: typeof Highcharts = Highcharts;
 
   @Input() section: string;
   @Input() type: string;
-  @Input() data: Tile = null;
+  // @Input() data: Tile = null;
+  @Input() rankingsData: RankingsResponse;
   @Input() noData: NoData;
   @Input() altDescription = '';
-  @Input() pay: boolean;
+  @Input() isPay: boolean;
 
   public options: Highcharts.Options;
   public numberOfWorkplaces: number;
@@ -26,15 +27,22 @@ export class DataAreaBarchartComponent implements OnInit {
   constructor(private builder: DataAreaBarchartOptionsBuilder) {}
 
   ngOnInit(): void {
-    this.numberOfWorkplaces = this.data.groupRankings.maxRank;
-    this.rank = this.data.groupRankings.currentRank;
+    this.numberOfWorkplaces = this.rankingsData.maxRank;
+    this.rank = this.rankingsData.currentRank;
     this.options = this.builder.buildChartOptions(
-      this.data,
+      this.rankingsData,
       Metric[this.type],
       // this.noData[this.data?.workplaceValue?.stateMessage],
       this.altDescription,
     );
-    console.log(this.data);
+    // console.log(this.rankingsData);
+  }
+
+  ngOnChanges(): void {
+    this.numberOfWorkplaces = this.rankingsData.maxRank;
+    this.rank = this.rankingsData.currentRank;
+    this.options = this.builder.buildChartOptions(this.rankingsData, Metric[this.type], this.altDescription);
+    console.log(this.rankingsData);
   }
 }
 // export class DataAreaBarchartComponent {
