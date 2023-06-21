@@ -7,11 +7,14 @@ import { DataAreaBarchartComponent } from './data-area-barchart.component';
 
 describe('DataAreaBarchartComponent', () => {
   const setup = async () => {
-    const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaBarchartComponent, {
+    const { fixture, getByText, getByTestId, queryByTestId, queryByText } = await render(DataAreaBarchartComponent, {
       imports: [SharedModule],
       providers: [],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
+        isPay: false,
+        type: '',
+        section: '',
         rankingsData: {
           maxRank: 14,
           currentRank: 7,
@@ -29,6 +32,7 @@ describe('DataAreaBarchartComponent', () => {
       getByText,
       getByTestId,
       queryByTestId,
+      queryByText,
     };
   };
 
@@ -37,10 +41,24 @@ describe('DataAreaBarchartComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the default message when all data is provided', async () => {
-    const { component, queryByTestId } = await setup();
+  describe('The default message when all data is provided', () => {
+    it('should show pay message if isPay is true', async () => {
+      const { component, queryByTestId } = await setup();
 
-    expect(queryByTestId('all-data')).toBeTruthy();
+      component.isPay = true;
+
+      expect(queryByTestId('all-pay-data')).toBeTruthy();
+      expect(queryByTestId('all-recruitment-data')).toBeFalsy();
+    });
+
+    it('should show retention message if isPay is false', async () => {
+      const { component, queryByTestId } = await setup();
+
+      component.isPay = false;
+
+      expect(queryByTestId('all-recruitment-data')).toBeTruthy();
+      expect(queryByTestId('all-pay-data')).toBeFalsy();
+    });
   });
 
   it('should show the no comparison group message when no comparsion group data is provided', async () => {
@@ -61,5 +79,29 @@ describe('DataAreaBarchartComponent', () => {
       allValues: [],
     } as RankingsResponse),
       expect(queryByTestId('no-workplace-data')).toBeTruthy();
+  });
+
+  it('should show the correct summary for time in role', async () => {
+    const { component } = await setup();
+
+    component.isPay = false;
+    component.type = 'timeInRole';
+    component.section = 'percentage of staff still in their main job role after 12 months';
+
+    component.ngOnChanges();
+
+    expect(component.sectionInSummary).toEqual('percentage still in their main job role');
+  });
+
+  it('should show the correct summary for vacancy', async () => {
+    const { component } = await setup();
+
+    component.isPay = false;
+    component.type = 'vacancy';
+    component.section = 'vacancy rate';
+
+    component.ngOnChanges();
+
+    expect(component.sectionInSummary).toEqual('vacancy rate');
   });
 });

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Metric, RankingsResponse } from '@core/model/benchmarks.model';
 import * as Highcharts from 'highcharts';
 
@@ -9,7 +9,7 @@ import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-bui
   templateUrl: './data-area-barchart.component.html',
   styleUrls: ['./data-area-barchart.component.scss'],
 })
-export class DataAreaBarchartComponent implements OnChanges {
+export class DataAreaBarchartComponent implements OnChanges, OnInit {
   Highcharts: typeof Highcharts = Highcharts;
 
   @Input() section = '';
@@ -20,9 +20,14 @@ export class DataAreaBarchartComponent implements OnChanges {
   public options: Highcharts.Options;
   public numberOfWorkplaces: number;
   public rank: number;
+  public sectionInSummary: string;
 
   constructor(private builder: DataAreaBarchartOptionsBuilder) {}
+
+  ngOnInit(): void {}
+
   ngOnChanges(): void {
+    this.formatSection(this.type);
     this.numberOfWorkplaces = this.rankingsData.maxRank ? this.rankingsData.maxRank : null;
     this.rank = this.rankingsData.currentRank ? this.rankingsData.currentRank : null;
     this.options = this.builder.buildChartOptions(
@@ -31,5 +36,13 @@ export class DataAreaBarchartComponent implements OnChanges {
       Metric[this.type],
       this.altDescription,
     );
+  }
+
+  public formatSection(type: string) {
+    if (type === 'timeInRole') {
+      return (this.sectionInSummary = 'percentage still in their main job role');
+    } else {
+      return (this.sectionInSummary = this.section);
+    }
   }
 }
