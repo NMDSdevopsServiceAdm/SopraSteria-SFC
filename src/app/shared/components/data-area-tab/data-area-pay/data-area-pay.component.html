@@ -86,15 +86,16 @@
           [section]="'Senior care worker pay'"
           [type]="'seniorCareWorkerPay'"
           [rankingsData]="seniorCareWorkerRankings"
-          [isPay]="true"
           [altDesrcripton]="'Senior care worker pay barchart'"
+          [isPay]="true"
         ></app-data-area-barchart>
         <app-data-area-barchart
+          *ngIf="showRegisteredNurseSalary"
           [section]="'Registered nurse salary'"
           [type]="'registeredNursePay'"
           [rankingsData]="registeredNurseRankings"
-          [isPay]="true"
           [altDescription]="'Registered nurse salary barchart'"
+          [isPay]="true"
         ></app-data-area-barchart>
         <app-data-area-barchart
           [section]="'Registered manager salary'"

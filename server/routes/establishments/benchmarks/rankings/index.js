@@ -28,6 +28,7 @@ const getPayRanking = async function (establishmentId, mainService, workerId) {
   const annualOrHourly = [CARE_WORKER_ID, SENIOR_CARE_WORKER_ID].includes(workerId) ? 'Hourly' : 'Annually';
   const field = annualOrHourly === 'Hourly' ? 'AverageHourlyRate' : 'AverageAnnualFTE';
   const currentmetricValue = await getPay({ establishmentId, annualOrHourly, mainJob: workerId });
+  console.log({ currentmetricValue });
 
   const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
@@ -199,18 +200,28 @@ const getComparisonGroupAndCalculateRanking = async function (
 
   const mappedComparisonGroupRankings = comparisonGroupRankings.map(mapComparisonGroupCallback).filter((a) => a);
   if (mappedComparisonGroupRankings.length === 0) {
+    const values = [];
+    if (!metric.stateMessage) {
+      values.push({ value: metric.value, currentEst: true });
+    }
+
     return {
+      allValues: values,
       hasValue: false,
       stateMessage: 'no-comparison-data',
     };
   }
 
+  const valuesData = mappedComparisonGroupRankings
+    .sort((a, b) => b - a)
+    .map((rank) => {
+      return { value: rank, currentEst: false };
+    });
+
   const maxRank = mappedComparisonGroupRankings.length + 1;
   if (metric.stateMessage) {
     return {
-      allValues: mappedComparisonGroupRankings
-        .sort((a, b) => b - a)
-        .map((rank) => ({ value: rank, currentEst: false })),
+      allValues: valuesData,
       maxRank,
       hasValue: false,
       ...metric,
@@ -218,9 +229,6 @@ const getComparisonGroupAndCalculateRanking = async function (
   }
 
   const currentRank = await calculateRankingCallback(metric.value, mappedComparisonGroupRankings);
-  const valuesData = mappedComparisonGroupRankings.map((rank) => {
-    return { value: rank, currentEst: false };
-  });
   valuesData.splice(currentRank - 1, 0, { value: metric.value, currentEst: true });
   return {
     maxRank,

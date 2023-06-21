@@ -36,4 +36,30 @@ describe('DataAreaBarchartComponent', () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
+
+  it('should show the default message when all data is provided', async () => {
+    const { component, queryByTestId } = await setup();
+
+    expect(queryByTestId('all-data')).toBeTruthy();
+  });
+
+  it('should show the no comparison group message when no comparsion group data is provided', async () => {
+    const { component, queryByTestId } = await setup();
+    (component.rankingsData = {
+      stateMessage: 'no-comparison-data',
+      hasValue: false,
+      allValues: [],
+    } as RankingsResponse),
+      expect(queryByTestId('no-comparison-data')).toBeTruthy();
+  });
+
+  it('should show the no workplace data message when no workplace data is provided', async () => {
+    const { component, queryByTestId } = await setup();
+    (component.rankingsData = {
+      stateMessage: 'no-pay-data',
+      hasValue: false,
+      allValues: [],
+    } as RankingsResponse),
+      expect(queryByTestId('no-workplace-data')).toBeTruthy();
+  });
 });

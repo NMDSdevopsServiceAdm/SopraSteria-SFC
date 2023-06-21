@@ -90,6 +90,7 @@ export interface NoData {
   'no-pay-data'?: string;
   'no-sickness-data'?: string;
   'no-qualifications-data'?: string;
+  'no-comparison-data'?: string;
 }
 
 export class MetricsContent {
