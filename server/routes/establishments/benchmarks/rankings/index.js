@@ -114,7 +114,7 @@ const getTurnoverRanking = async function (establishmentId, mainService) {
     ['TurnoverRate'],
     currentmetricValue,
     (r) => parseFloat(r.TurnoverRate),
-    calculateRankAsc,
+    calculateRankDesc,
   );
 
   const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
@@ -124,7 +124,7 @@ const getTurnoverRanking = async function (establishmentId, mainService) {
     ['TurnoverRate'],
     currentmetricValue,
     (r) => parseFloat(r.TurnoverRate),
-    calculateRankAsc,
+    calculateRankDesc,
   );
   return { groupRankings, goodCqcRankings };
 };
@@ -139,7 +139,7 @@ const getVacancyRanking = async function (establishmentId, mainService) {
     ['VacancyRate'],
     currentmetricValue,
     (r) => parseFloat(r.VacancyRate),
-    calculateRankAsc,
+    calculateRankDesc,
   );
 
   const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
@@ -149,7 +149,7 @@ const getVacancyRanking = async function (establishmentId, mainService) {
     ['VacancyRate'],
     currentmetricValue,
     (r) => parseFloat(r.VacancyRate),
-    calculateRankAsc,
+    calculateRankDesc,
   );
   return { groupRankings, goodCqcRankings };
 };
@@ -164,7 +164,7 @@ const getTimeInRoleRankings = async function (establishmentId, mainService) {
     ['InRoleFor12MonthsPercentage'],
     currentmetricValue,
     (r) => parseFloat(r.InRoleFor12MonthsPercentage),
-    calculateRankAsc,
+    calculateRankDesc,
   );
 
   const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
@@ -174,7 +174,7 @@ const getTimeInRoleRankings = async function (establishmentId, mainService) {
     ['InRoleFor12MonthsPercentage'],
     currentmetricValue,
     (r) => parseFloat(r.InRoleFor12MonthsPercentage),
-    calculateRankAsc,
+    calculateRankDesc,
   );
   return { groupRankings, goodCqcRankings };
 };
@@ -198,6 +198,7 @@ const getComparisonGroupAndCalculateRanking = async function (
   });
 
   const mappedComparisonGroupRankings = comparisonGroupRankings.map(mapComparisonGroupCallback).filter((a) => a);
+
   if (mappedComparisonGroupRankings.length === 0) {
     const values = [];
     if (!metric.stateMessage) {
@@ -229,6 +230,7 @@ const getComparisonGroupAndCalculateRanking = async function (
 
   const currentRank = await calculateRankingCallback(metric.value, mappedComparisonGroupRankings);
   valuesData.splice(currentRank - 1, 0, { value: metric.value, currentEst: true });
+
   return {
     maxRank,
     currentRank,
@@ -290,20 +292,21 @@ const getTimeInRoleResponse = async (req, res) => {
 const getRankingsResponse = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
-    const { MainServiceFKValue } = await models.establishment.findbyId(establishmentId);
-    const mainService = [1, 2, 8].includes(MainServiceFKValue) ? MainServiceFKValue : 0;
+    const { mainService } = await models.establishment.findbyId(establishmentId);
+
+    const mainServiceID = [1, 2, 8].includes(mainService.reportingID) ? mainService.reportingID : 0;
 
     const data = { pay: {} };
 
-    data.pay.careWorkerPay = await getPayRanking(establishmentId, mainService, CARE_WORKER_ID);
-    data.pay.seniorCareWorkerPay = await getPayRanking(establishmentId, mainService, SENIOR_CARE_WORKER_ID);
-    data.pay.registeredNursePay = await getPayRanking(establishmentId, mainService, REGISTERED_NURSE_ID);
-    data.pay.registeredManagerPay = await getPayRanking(establishmentId, mainService, REGISTERED_MANAGER_ID);
-    data.turnover = await getTurnoverRanking(establishmentId, mainService);
-    data.sickness = await getSicknessRanking(establishmentId, mainService);
-    data.qualifications = await getQualificationsRanking(establishmentId, mainService);
-    data.vacancy = await getVacancyRanking(establishmentId, mainService);
-    data.timeInRole = await getTimeInRoleRankings(establishmentId, mainService);
+    data.pay.careWorkerPay = await getPayRanking(establishmentId, mainServiceID, CARE_WORKER_ID);
+    data.pay.seniorCareWorkerPay = await getPayRanking(establishmentId, mainServiceID, SENIOR_CARE_WORKER_ID);
+    data.pay.registeredNursePay = await getPayRanking(establishmentId, mainServiceID, REGISTERED_NURSE_ID);
+    data.pay.registeredManagerPay = await getPayRanking(establishmentId, mainServiceID, REGISTERED_MANAGER_ID);
+    data.turnover = await getTurnoverRanking(establishmentId, mainServiceID);
+    data.sickness = await getSicknessRanking(establishmentId, mainServiceID);
+    data.qualifications = await getQualificationsRanking(establishmentId, mainServiceID);
+    data.vacancy = await getVacancyRanking(establishmentId, mainServiceID);
+    data.timeInRole = await getTimeInRoleRankings(establishmentId, mainServiceID);
 
     res.status(200).json(data);
   } catch (error) {
