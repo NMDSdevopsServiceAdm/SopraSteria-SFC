@@ -118,14 +118,15 @@ export class DataAreaBarchartOptionsBuilder {
         width: 2,
         value: value,
         zIndex: 5,
+        useHTML: true,
         label: {
-          text: `<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">You, ${this.formatLineLabel(
+          text: `<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">You,<br/><span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold"> ${this.formatLineLabel(
             type,
             value,
           )}</span>`,
-          align: 'right',
-          x: 100,
-          y: 5,
+          align: 'center',
+          x: 246,
+          y: 0,
         },
       });
     }

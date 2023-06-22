@@ -28,7 +28,6 @@ const getPayRanking = async function (establishmentId, mainService, workerId) {
   const annualOrHourly = [CARE_WORKER_ID, SENIOR_CARE_WORKER_ID].includes(workerId) ? 'Hourly' : 'Annually';
   const field = annualOrHourly === 'Hourly' ? 'AverageHourlyRate' : 'AverageAnnualFTE';
   const currentmetricValue = await getPay({ establishmentId, annualOrHourly, mainJob: workerId });
-  console.log({ currentmetricValue });
 
   const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
