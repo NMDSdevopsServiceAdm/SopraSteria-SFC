@@ -39,6 +39,8 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   postcodes.firstOrCreate = async function (postcode) {
+    console.log('######################');
+    console.log('****** first or create *****');
     postcode = pCodeCheck.sanitisePostcode(postcode);
     let foundPostcode = await this.findByPostcode(postcode);
 

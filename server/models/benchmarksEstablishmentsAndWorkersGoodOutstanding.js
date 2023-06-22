@@ -27,6 +27,7 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   BenchmarksEstablishmentsAndWorkersGoodOutstanding.getComparisonData = async function (establishmentId, mainService) {
+    console.log('****** benchmarks establishments and workers good outstanding *****');
     const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
     if (!cssr) return {};
     return await this.findOne({
