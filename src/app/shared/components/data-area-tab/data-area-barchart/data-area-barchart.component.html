@@ -21,12 +21,12 @@
   <ng-template #noData>
     <ng-container *ngIf="rankingsData.stateMessage == 'no-comparison-data'; else noWorkplaceData">
       <p class="govuk-body govuk-!-margin-top-2" data-testid="no-comparison-data">
-        We do not have enough comparison group data to show where you're ranked yet.
+        We do not have enough comparison group data to show where you're positioned yet.
       </p>
     </ng-container>
     <ng-template #noWorkplaceData>
       <p class="govuk-body govuk-!-margin-top-2" data-testid="no-workplace-data">
-        You've not added any {{ section | lowercase }} data, so we cannot show you where you're ranked.
+        You've not added any {{ section | lowercase }} data, so we cannot show you where you're positioned.
       </p>
     </ng-template>
   </ng-template>

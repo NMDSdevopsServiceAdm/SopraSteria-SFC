@@ -45,7 +45,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.tilesData = this.benchmarksService.benchmarksData;
     this.rankingsData = this.benchmarksService.rankingsData;
-    console.log(this.rankingsData);
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
