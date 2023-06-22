@@ -162,6 +162,7 @@ const getComparisonGroupRankings = async function ({
   attributes,
   mainJob,
 }) {
+  console.log('*********** get comparison group rankings ***********');
   const cssr = await models.cssr.getCSSR(establishmentId);
   if (!cssr) return [];
   const where = mainJob ? { MainJobRole: mainJob } : {};
