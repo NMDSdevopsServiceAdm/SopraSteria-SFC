@@ -226,7 +226,7 @@ const getBenchmarksData = async (establishmentId, mainService) => {
   return data;
 };
 
-const getMetaData = async (establishmentId, mainService, cssr) => {
+const getMetaData = async (mainService, cssr) => {
   const benchmarksComparisonGroup = await models.benchmarksEstablishmentsAndWorkers.getComparisonData(
     mainService,
     cssr,

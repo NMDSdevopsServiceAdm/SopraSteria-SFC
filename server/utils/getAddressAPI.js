@@ -9,7 +9,7 @@ module.exports = {
           'getAddress.apikey',
         )}&expand=true`,
       );
-      return postcodeData;
+      return postcodeData.data;
     } catch (err) {
       console.error(err);
       return false;

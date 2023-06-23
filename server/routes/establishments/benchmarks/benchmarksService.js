@@ -163,7 +163,7 @@ const getComparisonGroupRankings = async function ({
   mainJob,
 }) {
   const cssr = await models.cssr.getCSSR(establishmentId);
-  if (!cssr) return [];
+  if (!cssr) return {};
   const where = mainJob ? { MainJobRole: mainJob } : {};
   return await benchmarksModel.findAll({
     attributes: ['LocalAuthorityArea', 'MainServiceFK', ...attributes],
