@@ -79,7 +79,6 @@ export class DataAreaPayComponent {
   }
 
   public setRankings(isGoodAndOutstanding: boolean): void {
-    console.log(this.rankingsData);
     if (isGoodAndOutstanding) {
       this.careWorkerRankings = this.rankingsData?.pay.careWorkerPay.goodCqcRankings;
       this.seniorCareWorkerRankings = this.rankingsData?.pay.seniorCareWorkerPay.goodCqcRankings;
@@ -133,7 +132,7 @@ export class DataAreaPayComponent {
       seniorCareWorkerPay: {
         title: 'Senior care worker pay',
         payMoreThanWorkplacesNumber: this.getRankNumber(this.seniorCareWorkerRankings),
-        totalWorkplaces: this.getRankNumber(this.seniorCareWorkerRankings),
+        totalWorkplaces: this.getMaxRank(this.seniorCareWorkerRankings),
       },
       registeredNursePay: {
         title: 'Registered nurse salary',
@@ -158,7 +157,7 @@ export class DataAreaPayComponent {
       seniorCareWorkerPay: {
         title: 'Senior care worker pay',
         workplacesRankNumber: this.getRankNumber(this.seniorCareWorkerRankings),
-        totalWorkplaces: this.getRankNumber(this.seniorCareWorkerRankings),
+        totalWorkplaces: this.getMaxRank(this.seniorCareWorkerRankings),
       },
       registeredNursePay: {
         title: 'Registered nurse salary',
