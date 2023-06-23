@@ -162,9 +162,8 @@ const getComparisonGroupRankings = async function ({
   attributes,
   mainJob,
 }) {
-  console.log('*********** get comparison group rankings ***********');
   const cssr = await models.cssr.getCSSR(establishmentId);
-  if (!cssr) return [];
+  if (!cssr) return {};
   const where = mainJob ? { MainJobRole: mainJob } : {};
   return await benchmarksModel.findAll({
     attributes: ['LocalAuthorityArea', 'MainServiceFK', ...attributes],
@@ -179,8 +178,7 @@ const getComparisonGroupRankings = async function ({
   });
 };
 
-const getComparisonData = async function (benchmarksModel, establishmentId, mainService, attributes, mainJob) {
-  const cssr = await models.cssr.getCSSR(establishmentId);
+const getComparisonData = async function (benchmarksModel, mainService, attributes, mainJob, cssr) {
   if (!cssr) return {};
 
   const where = mainJob ? { MainJobRole: mainJob } : {};

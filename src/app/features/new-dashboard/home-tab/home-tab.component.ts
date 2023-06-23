@@ -123,7 +123,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   private setBenchmarksCard(): void {
     const comparisonDataAvailable = this.meta?.staff && this.meta?.workplaces;
 
-    const localAuthority = this.meta?.localAuthority.replace('&', 'and');
+    const localAuthority = this.meta?.localAuthority?.replace('&', 'and');
 
     if (!comparisonDataAvailable) {
       this.benchmarksHeader = 'See how you compare against other workplaces';
