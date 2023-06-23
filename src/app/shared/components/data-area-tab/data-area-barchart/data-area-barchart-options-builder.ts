@@ -53,6 +53,7 @@ export class DataAreaBarchartOptionsBuilder {
     xAxis: {
       type: 'category',
       title: {
+        margin: 10,
         text: this.getXAxisTitle(),
         useHTML: true,
       },
@@ -120,10 +121,10 @@ export class DataAreaBarchartOptionsBuilder {
         zIndex: 5,
         useHTML: true,
         label: {
-          text: `<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">You,<br/><span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold"> ${this.formatLineLabel(
+          text: `<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">You,</span><br/><span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold"> ${this.formatLineLabel(
             type,
             value,
-          )}</span>`,
+          )} </span>`,
           align: 'center',
           x: 246,
           y: 0,
@@ -160,7 +161,7 @@ export class DataAreaBarchartOptionsBuilder {
     const options = cloneDeep(this.defaultOptions);
     options.title = {
       y: 30,
-      x: 0,
+      x: -10,
       align: 'left',
       text: `<span class="govuk-!-font-size-16 govuk-!-font-weight-bold" style='font-family:"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif'>${this.getYAxisTitle(
         type,
