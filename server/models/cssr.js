@@ -81,7 +81,6 @@ module.exports = function (sequelize, DataTypes) {
       return false;
     }
     let cssr = await sequelize.models.pcodedata.findOne({
-      // logging: console.log,
       attributes: ['uprn', 'postcode'],
       include: [
         {
