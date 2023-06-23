@@ -52,8 +52,6 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   CSSR.getIdFromDistrict = async function (postcode) {
-    console.log('##############################');
-    console.log('****** get Id from district **********');
     const postcodeData = await getAddressAPI.getPostcodeData(postcode);
     if (!get(postcodeData, 'addresses[0].district')) {
       return false;
@@ -83,6 +81,7 @@ module.exports = function (sequelize, DataTypes) {
       return false;
     }
     let cssr = await sequelize.models.pcodedata.findOne({
+      // logging: console.log,
       attributes: ['uprn', 'postcode'],
       include: [
         {

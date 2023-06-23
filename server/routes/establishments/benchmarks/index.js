@@ -86,13 +86,13 @@ const buildMetric = (metricValue) => {
   return comparisonGroup;
 };
 
-const payBenchmarks = async (establishmentId, mainService, workerId) => {
+const payBenchmarks = async (establishmentId, mainService, workerId, cssr) => {
   const { comparisonGroup, comparisonGoodCqcGroup } = await getComparisonGroups(
-    establishmentId,
     mainService,
     'benchmarksPayByLAAndService',
     ['AverageHourlyRate', 'AverageAnnualFTE', 'MainJobRole', 'BaseWorkers'],
     workerId,
+    cssr,
   );
 
   const annualOrHourly = [CARE_WORKER_ID, SENIOR_CARE_WORKER_ID].includes(workerId) ? 'Hourly' : 'Annually';
@@ -106,12 +106,12 @@ const payBenchmarks = async (establishmentId, mainService, workerId) => {
   return await pay({ establishmentId, mainJob: workerId, annualOrHourly }, comparisonGroups);
 };
 
-const turnoverBenchmarks = async (establishmentId, mainService) => {
+const turnoverBenchmarks = async (establishmentId, mainService, cssr) => {
   const { comparisonGroup, comparisonGoodCqcGroup } = await getComparisonGroups(
-    establishmentId,
     mainService,
     'benchmarksTurnoverByLAAndService',
     ['TurnoverRate'],
+    cssr,
   );
 
   const comparisonGroups = {
@@ -122,12 +122,12 @@ const turnoverBenchmarks = async (establishmentId, mainService) => {
   return await turnover({ establishmentId }, comparisonGroups);
 };
 
-const vacanciesBenchmarks = async (establishmentId, mainService) => {
+const vacanciesBenchmarks = async (establishmentId, mainService, cssr) => {
   const { comparisonGroup, comparisonGoodCqcGroup } = await getComparisonGroups(
-    establishmentId,
     mainService,
     'benchmarksVacanciesByLAAndService',
     ['VacancyRate'],
+    cssr,
   );
 
   const comparisonGroups = {
@@ -138,12 +138,12 @@ const vacanciesBenchmarks = async (establishmentId, mainService) => {
   return await vacancies({ establishmentId }, comparisonGroups);
 };
 
-const qualificationsBenchmarks = async (establishmentId, mainService) => {
+const qualificationsBenchmarks = async (establishmentId, mainService, cssr) => {
   const { comparisonGroup, comparisonGoodCqcGroup } = await getComparisonGroups(
-    establishmentId,
     mainService,
     'benchmarksQualificationsByLAAndService',
     ['Qualifications'],
+    cssr,
   );
 
   const comparisonGroups = {
@@ -154,12 +154,12 @@ const qualificationsBenchmarks = async (establishmentId, mainService) => {
   return await qualifications({ establishmentId }, comparisonGroups);
 };
 
-const sicknessBenchmarks = async (establishmentId, mainService) => {
+const sicknessBenchmarks = async (establishmentId, mainService, cssr) => {
   const { comparisonGroup, comparisonGoodCqcGroup } = await getComparisonGroups(
-    establishmentId,
     mainService,
     'benchmarksSicknessByLAAndService',
     ['AverageNoOfSickDays'],
+    cssr,
   );
 
   const comparisonGroups = {
@@ -170,12 +170,12 @@ const sicknessBenchmarks = async (establishmentId, mainService) => {
   return await sickness({ establishmentId }, comparisonGroups);
 };
 
-const timeInRoleBenchmarks = async (establishmentId, mainService) => {
+const timeInRoleBenchmarks = async (establishmentId, mainService, cssr) => {
   const { comparisonGroup, comparisonGoodCqcGroup } = await getComparisonGroups(
-    establishmentId,
     mainService,
     'benchmarksTimeInRoleByLAAndService',
     ['InRoleFor12MonthsPercentage'],
+    cssr,
   );
 
   const comparisonGroups = {
@@ -186,21 +186,21 @@ const timeInRoleBenchmarks = async (establishmentId, mainService) => {
   return await timeInRole({ establishmentId }, comparisonGroups);
 };
 
-const getComparisonGroups = async (establishmentId, mainService, benchmarksModel, attributes, workerId) => {
+const getComparisonGroups = async (mainService, benchmarksModel, attributes, workerId, cssr) => {
   const comparisonGroup = await benchmarksService.getComparisonData(
     models[benchmarksModel],
-    establishmentId,
     mainService,
     attributes,
     workerId && workerMap.get(workerId),
+    cssr,
   );
 
   const comparisonGoodCqcGroup = await benchmarksService.getComparisonData(
     models[`${benchmarksModel}GoodOutstanding`],
-    establishmentId,
     mainService,
     attributes,
     workerId && workerMap.get(workerId),
+    cssr,
   );
   return { comparisonGroup, comparisonGoodCqcGroup };
 };
@@ -210,28 +210,30 @@ const getBenchmarksData = async (establishmentId, mainService) => {
     meta: {},
   };
 
-  data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID);
-  data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID);
-  data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID);
-  data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID);
-  data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService);
-  data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService);
-  data.qualifications = await qualificationsBenchmarks(establishmentId, mainService);
-  data.sickness = await sicknessBenchmarks(establishmentId, mainService);
-  data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService);
+  const cssr = await models.cssr.getCSSR(establishmentId);
 
-  data.meta = await getMetaData(establishmentId, mainService);
+  data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
+  data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
+  data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssr);
+  data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID, cssr);
+  data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService, cssr);
+  data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService, cssr);
+  data.qualifications = await qualificationsBenchmarks(establishmentId, mainService, cssr);
+  data.sickness = await sicknessBenchmarks(establishmentId, mainService, cssr);
+  data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssr);
+
+  data.meta = await getMetaData(mainService, cssr);
   return data;
 };
 
-const getMetaData = async (establishmentId, mainService) => {
+const getMetaData = async (establishmentId, mainService, cssr) => {
   const benchmarksComparisonGroup = await models.benchmarksEstablishmentsAndWorkers.getComparisonData(
-    establishmentId,
     mainService,
+    cssr,
   );
 
   const benchmarksComparisonGroupGoodOutstanding =
-    await models.benchmarksEstablishmentsAndWorkersGoodOutstanding.getComparisonData(establishmentId, mainService);
+    await models.benchmarksEstablishmentsAndWorkersGoodOutstanding.getComparisonData(mainService, cssr);
 
   return {
     workplaces: benchmarksComparisonGroup ? benchmarksComparisonGroup.workplaces : 0,
