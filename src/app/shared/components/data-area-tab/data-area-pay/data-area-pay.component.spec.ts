@@ -278,22 +278,22 @@ describe('DataAreaPayComponent', () => {
     expect(getByTestId('barcharts')).toBeTruthy();
   });
 
-  it('should show registered nurse salary in comparision group table', async () => {
+  it('should show registered nurse salary in comparison group table', async () => {
     const { component, fixture, getByTestId } = await setup();
 
     component.showRegisteredNurseSalary = true;
     fixture.detectChanges();
 
-    expect(getByTestId('register-nurse-comparision')).toBeTruthy();
+    expect(getByTestId('register-nurse-comparison')).toBeTruthy();
   });
 
-  it('should not show registered nurse salary in comparision group table', async () => {
+  it('should not show registered nurse salary in comparison group table', async () => {
     const { component, fixture, queryByTestId } = await setup();
 
     component.showRegisteredNurseSalary = false;
     fixture.detectChanges();
 
-    expect(queryByTestId('register-nurse-comparision')).toBeFalsy();
+    expect(queryByTestId('register-nurse-comparison')).toBeFalsy();
   });
 
   describe('pay data', async () => {
@@ -856,19 +856,19 @@ describe('DataAreaPayComponent', () => {
         component.data = payDataForWorkplaceWithComparisonGroups;
         component.ngOnChanges();
 
-        expect(component.comparisionGroupCareWorkerPay).toEqual(
+        expect(component.comparisonGroupCareWorkerPay).toEqual(
           FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.careWorkerPay.comparisonGroup.value) +
             ' (hourly)',
         );
-        expect(component.comparisionGroupSeniorCareWorkerPay).toEqual(
+        expect(component.comparisonGroupSeniorCareWorkerPay).toEqual(
           FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.seniorCareWorkerPay.comparisonGroup.value) +
             ' (hourly)',
         );
-        expect(component.comparisionGroupRegisteredNurseSalary).toEqual(
+        expect(component.comparisonGroupRegisteredNurseSalary).toEqual(
           FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredNursePay.comparisonGroup.value) +
             ' (annually)',
         );
-        expect(component.comparisionGroupRegisteredManagerSalary).toEqual(
+        expect(component.comparisonGroupRegisteredManagerSalary).toEqual(
           FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredManagerPay.comparisonGroup.value) +
             ' (annually)',
         );
@@ -943,18 +943,18 @@ describe('DataAreaPayComponent', () => {
         component.data = payDataForWorkplaceWithComparisonGroups;
         component.ngOnChanges();
 
-        expect(component.comparisionGroupCareWorkerPay).toEqual(
+        expect(component.comparisonGroupCareWorkerPay).toEqual(
           FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.careWorkerPay.goodCqc.value) + ' (hourly)',
         );
-        expect(component.comparisionGroupSeniorCareWorkerPay).toEqual(
+        expect(component.comparisonGroupSeniorCareWorkerPay).toEqual(
           FormatUtil.formatMoney(payDataForWorkplaceWithComparisonGroups.seniorCareWorkerPay.goodCqc.value) +
             ' (hourly)',
         );
-        expect(component.comparisionGroupRegisteredNurseSalary).toEqual(
+        expect(component.comparisonGroupRegisteredNurseSalary).toEqual(
           FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredNursePay.goodCqc.value) +
             ' (annually)',
         );
-        expect(component.comparisionGroupRegisteredManagerSalary).toEqual(
+        expect(component.comparisonGroupRegisteredManagerSalary).toEqual(
           FormatUtil.formatSalary(payDataForWorkplaceWithComparisonGroups.registeredManagerPay.goodCqc.value) +
             ' (annually)',
         );
@@ -1038,17 +1038,17 @@ describe('DataAreaPayComponent', () => {
         component.data = payDataWithoutComparisonData;
         component.ngOnChanges();
 
-        expect(component.comparisionGroupCareWorkerPay).toEqual('Not enough data');
-        expect(component.comparisionGroupSeniorCareWorkerPay).toEqual('Not enough data');
-        expect(component.comparisionGroupRegisteredNurseSalary).toEqual('Not enough data');
-        expect(component.comparisionGroupRegisteredManagerSalary).toEqual('Not enough data');
+        expect(component.comparisonGroupCareWorkerPay).toEqual('Not enough data');
+        expect(component.comparisonGroupSeniorCareWorkerPay).toEqual('Not enough data');
+        expect(component.comparisonGroupRegisteredNurseSalary).toEqual('Not enough data');
+        expect(component.comparisonGroupRegisteredManagerSalary).toEqual('Not enough data');
 
         component.viewBenchmarksComparisonGroups = false;
         component.ngOnChanges();
-        expect(component.comparisionGroupCareWorkerPay).toEqual('Not enough data');
-        expect(component.comparisionGroupSeniorCareWorkerPay).toEqual('Not enough data');
-        expect(component.comparisionGroupRegisteredNurseSalary).toEqual('Not enough data');
-        expect(component.comparisionGroupRegisteredManagerSalary).toEqual('Not enough data');
+        expect(component.comparisonGroupCareWorkerPay).toEqual('Not enough data');
+        expect(component.comparisonGroupSeniorCareWorkerPay).toEqual('Not enough data');
+        expect(component.comparisonGroupRegisteredNurseSalary).toEqual('Not enough data');
+        expect(component.comparisonGroupRegisteredManagerSalary).toEqual('Not enough data');
       });
     });
   });

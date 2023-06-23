@@ -8,58 +8,58 @@
         <th scope="col" class="govuk-table__header"></th>
         <th
           scope="col"
-          class="govuk-table__header commparision-table-header govuk-!-text-align-centre govuk-!-padding-right-0"
+          class="govuk-table__header comparison-table-header govuk-!-text-align-centre govuk-!-padding-right-0"
         >
           Your workplace
         </th>
-        <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
+        <th scope="col" class="govuk-table__header comparison-table-header govuk-!-text-align-centre">
           Comparison group
         </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body comparison-table-body">
       <tr class="govuk-table__row first-row" data-testid="careworkerRow">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
           Care worker pay
         </th>
         <td class="govuk-table__cell workplace-cell">
           {{ careWorkerPay }}
         </td>
-        <td class="govuk-table__cell comparision-group-cell">
-          {{ comparisionGroupCareWorkerPay }}
+        <td class="govuk-table__cell comparison-group-cell">
+          {{ comparisonGroupCareWorkerPay }}
         </td>
       </tr>
       <tr class="govuk-table__row" data-testid="seniorCareworkerRow">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
           Senior care worker pay
         </th>
         <td class="govuk-table__cell workplace-cell">
           {{ seniorCareWorkerPay }}
         </td>
-        <td class="govuk-table__cell comparision-group-cell">
-          {{ comparisionGroupSeniorCareWorkerPay }}
+        <td class="govuk-table__cell comparison-group-cell">
+          {{ comparisonGroupSeniorCareWorkerPay }}
         </td>
       </tr>
-      <tr class="govuk-table__row" data-testid="register-nurse-comparision" *ngIf="showRegisteredNurseSalary">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+      <tr class="govuk-table__row" data-testid="register-nurse-comparison" *ngIf="showRegisteredNurseSalary">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
           Registered nurse salary
         </th>
         <td class="govuk-table__cell workplace-cell">
           {{ registeredNurseSalary }}
         </td>
-        <td class="govuk-table__cell comparision-group-cell">
-          {{ comparisionGroupRegisteredNurseSalary }}
+        <td class="govuk-table__cell comparison-group-cell">
+          {{ comparisonGroupRegisteredNurseSalary }}
         </td>
       </tr>
       <tr class="govuk-table__row last-row" data-testid="seniorCareworkerRow">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
           Registered manager salary
         </th>
         <td class="govuk-table__cell workplace-cell">
           {{ registeredManagerSalary }}
         </td>
-        <td class="govuk-table__cell comparision-group-cell">
-          {{ comparisionGroupRegisteredManagerSalary }}
+        <td class="govuk-table__cell comparison-group-cell">
+          {{ comparisonGroupRegisteredManagerSalary }}
         </td>
       </tr>
     </tbody>

@@ -32,6 +32,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   public tilesData: BenchmarksResponse;
   public showRegisteredNurseSalary: boolean;
   public rankingsData: AllRankingsResponse;
+  public comparisonDataExists: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -48,6 +49,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
+    this.checkComparisonDataExists();
     this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;
   }
 
@@ -58,6 +60,17 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
       this.workplace,
       'Benchmarks.pdf',
     );
+  }
+
+  public checkComparisonDataExists(): void {
+    const noComparisonData = 'no-comparison-data';
+    if(this.rankingsData?.pay?.careWorkerPay.groupRankings?.stateMessage === noComparisonData &&
+       this.rankingsData?.pay?.seniorCareWorkerPay.groupRankings?.stateMessage === noComparisonData &&
+       this.rankingsData?.pay?.registeredNursePay.groupRankings?.stateMessage === noComparisonData &&
+       this.rankingsData?.pay?.registeredManagerPay.groupRankings?.stateMessage === noComparisonData
+      ) {
+        this.comparisonDataExists = false;
+      } else this.comparisonDataExists = true;
   }
 
   public setDownloadBenchmarksText(): void {

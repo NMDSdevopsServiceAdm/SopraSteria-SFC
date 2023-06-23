@@ -17,12 +17,14 @@ export class DataAreaBarchartComponent implements OnChanges {
   @Input() rankingsData: RankingsResponse = null;
   @Input() altDescription = '';
   public options: Highcharts.Options;
-  public numberOfWorkplaces: number;
+  public workplacesNumber: number;
   public rank: number;
+  public noPositionData: boolean;
+  public noComparisonData: boolean;
 
   constructor(private builder: DataAreaBarchartOptionsBuilder) {}
   ngOnChanges(): void {
-    this.numberOfWorkplaces = this.rankingsData.maxRank ? this.rankingsData.maxRank : null;
+    this.workplacesNumber = this.rankingsData.maxRank ? this.rankingsData.maxRank : null;
     this.rank = this.rankingsData.currentRank ? this.rankingsData.currentRank : null;
     this.options = this.builder.buildChartOptions(
       this.section,

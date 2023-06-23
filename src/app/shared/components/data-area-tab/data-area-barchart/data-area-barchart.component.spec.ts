@@ -62,4 +62,15 @@ describe('DataAreaBarchartComponent', () => {
     } as RankingsResponse),
       expect(queryByTestId('no-workplace-data')).toBeTruthy();
   });
+
+  it('should show the no comparison data message when no comparison data is provided', async () => {
+    const { component, queryByTestId } = await setup();
+    (component.rankingsData = {
+      stateMessage: 'no-comparison-data',
+      maxRank: undefined,
+      hasValue: false,
+      allValues: [],
+    } as RankingsResponse),
+      expect(queryByTestId('no-comparison-data')).toBeTruthy();
+  });
 });

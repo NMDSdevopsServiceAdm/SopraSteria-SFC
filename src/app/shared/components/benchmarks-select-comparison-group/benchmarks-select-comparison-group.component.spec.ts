@@ -5,12 +5,13 @@ import { spy } from 'sinon';
 import { BenchmarksSelectComparisonGroupsComponent } from './benchmarks-select-comparison-group.component';
 
 describe('BenchmarksSelectComparisonGroupsComponent', () => {
-  async function setup() {
+  async function setup(comparisonDataExists = true) {
     const { fixture, getByTestId } = await render(BenchmarksSelectComparisonGroupsComponent, {
       imports: [SharedModule],
       declarations: [],
       providers: [],
       componentProperties: {
+        comparisonDataExists: comparisonDataExists,
         mainServiceName: 'main service',
         localAuthorityLocation: 'Leeds',
         viewBenchmarksComparisonGroups: false,
@@ -75,4 +76,10 @@ describe('BenchmarksSelectComparisonGroupsComponent', () => {
 
     expect(toggleViewSpy).toHaveBeenCalledWith(false);
   });
+
+  it('should show no comparison data message when no comparison data is available', async () => {
+    const {getByTestId} = await setup(false);
+
+    expect(getByTestId('no-comparison-data')).toBeTruthy();
+  })
 });
