@@ -64,7 +64,6 @@ export class DataAreaPayComponent {
         this.data?.registeredManagerPay.goodCqc,
       );
     } else {
-      console.log(this.data);
       this.comparisonGroupCareWorkerPay = this.formatComparisonGroupPay(this.data?.careWorkerPay.comparisonGroup);
       this.comparisonGroupSeniorCareWorkerPay = this.formatComparisonGroupPay(
         this.data?.seniorCareWorkerPay.comparisonGroup,
@@ -116,7 +115,7 @@ export class DataAreaPayComponent {
   }
 
   public getMaxRank(rank: RankingsResponse): number {
-    if(rank.stateMessage !== this.noComparisonDataState) {
+    if (rank.stateMessage !== this.noComparisonDataState) {
       return rank.maxRank;
     }
     return undefined;
