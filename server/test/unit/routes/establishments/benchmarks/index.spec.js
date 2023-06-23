@@ -706,7 +706,7 @@ describe('/benchmarks', () => {
     });
   });
 
-  describe('viewBenchmarks', () => {
+  describe.only('viewBenchmarks', () => {
     let req;
     let res;
 
@@ -849,7 +849,7 @@ describe('/benchmarks', () => {
     });
 
     it('should return 500 when an error is thrown', async () => {
-      sinon.stub(models.establishment, 'findbyId').returns({ MainServiceFKValue: 8 });
+      sinon.stub(models.establishment, 'findbyId').returns({ mainService: { reportingID: 8 } });
 
       sinon.stub(benchmarksService, 'getPay').throws();
       await viewBenchmarks(req, res);
