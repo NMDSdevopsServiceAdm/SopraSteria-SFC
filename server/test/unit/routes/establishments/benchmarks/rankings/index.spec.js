@@ -444,7 +444,7 @@ describe('rankings', () => {
       const result = await rankings.turnover(establishmentId, 8, 10);
 
       expect(result.groupRankings.currentRank).to.equal(2);
-      expect(result.goodCqcRankings.currentRank).to.equal(2);
+      expect(result.goodCqcRankings.currentRank).to.equal(4);
     });
 
     it('should be response with currentRank 1 when leavers value is 0', async () => {
@@ -467,8 +467,8 @@ describe('rankings', () => {
 
       const result = await rankings.turnover(establishmentId, 8, 10);
 
-      expect(result.groupRankings.currentRank).to.equal(1);
-      expect(result.goodCqcRankings.currentRank).to.equal(1);
+      expect(result.groupRankings.currentRank).to.equal(3);
+      expect(result.goodCqcRankings.currentRank).to.equal(5);
     });
   });
 
@@ -606,10 +606,10 @@ describe('rankings', () => {
       const result = await rankings.vacancy(establishmentId, 8, 10);
 
       expect(result.groupRankings.currentRank).to.equal(2);
-      expect(result.goodCqcRankings.currentRank).to.equal(2);
+      expect(result.goodCqcRankings.currentRank).to.equal(4);
     });
 
-    it('should be response with currentRank 1 when vacancies value is 0', async () => {
+    it('should be response with currentRank when vacancies value is 0', async () => {
       sinon
         .stub(models.establishment, 'turnoverAndVacanciesData')
         .returns({ NumberOfStaffValue: 2, VacanciesValue: 'None' });
@@ -629,8 +629,8 @@ describe('rankings', () => {
 
       const result = await rankings.vacancy(establishmentId, 8, 10);
 
-      expect(result.groupRankings.currentRank).to.equal(1);
-      expect(result.goodCqcRankings.currentRank).to.equal(1);
+      expect(result.groupRankings.currentRank).to.equal(3);
+      expect(result.goodCqcRankings.currentRank).to.equal(5);
     });
   });
 

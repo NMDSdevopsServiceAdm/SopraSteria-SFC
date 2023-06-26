@@ -21,9 +21,10 @@ export interface Meta {
   localAuthority: string;
 }
 export interface Tile {
-  workplaceValue: BenchmarkValue;
-  comparisonGroup: BenchmarkValue;
-  goodCqc: BenchmarkValue;
+  workplaceValue?: BenchmarkValue;
+  comparisonGroup?: BenchmarkValue;
+  groupRankings?: any;
+  goodCqc?: BenchmarkValue;
   lowTurnover?: BenchmarkValue;
   workplaces?: number;
   staff?: number;

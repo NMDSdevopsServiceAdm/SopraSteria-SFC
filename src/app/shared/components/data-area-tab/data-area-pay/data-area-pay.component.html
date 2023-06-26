@@ -80,12 +80,14 @@
           [type]="'careWorkerPay'"
           [rankingsData]="careWorkerRankings"
           [altDescription]="'Care worker pay barchart'"
+          [isPay]="true"
         ></app-data-area-barchart>
         <app-data-area-barchart
           [section]="'Senior care worker pay'"
           [type]="'seniorCareWorkerPay'"
           [rankingsData]="seniorCareWorkerRankings"
           [altDesrcripton]="'Senior care worker pay barchart'"
+          [isPay]="true"
         ></app-data-area-barchart>
         <app-data-area-barchart
           *ngIf="showRegisteredNurseSalary"
@@ -93,11 +95,13 @@
           [type]="'registeredNursePay'"
           [rankingsData]="registeredNurseRankings"
           [altDescription]="'Registered nurse salary barchart'"
+          [isPay]="true"
         ></app-data-area-barchart>
         <app-data-area-barchart
           [section]="'Registered manager salary'"
           [type]="'registeredManagerPay'"
           [rankingsData]="registeredManagerRankings"
+          [isPay]="true"
           [altDescription]="'Registered manager salary barchart'"
         ></app-data-area-barchart>
       </div>

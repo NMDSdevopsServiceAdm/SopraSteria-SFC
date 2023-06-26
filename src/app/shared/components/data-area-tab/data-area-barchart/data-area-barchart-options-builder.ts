@@ -47,12 +47,14 @@ export class DataAreaBarchartOptionsBuilder {
       gridLineColor: '#d4d5d5',
       labels: {
         useHTML: true,
-        formatter: this.formatLabel(),
+        //formatter: this.formatLabel(type),
       },
     },
     xAxis: {
       type: 'category',
       title: {
+        margin: 15,
+        y: 0,
         text: this.getXAxisTitle(),
         useHTML: true,
       },
@@ -120,10 +122,10 @@ export class DataAreaBarchartOptionsBuilder {
         zIndex: 5,
         useHTML: true,
         label: {
-          text: `<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">You,<br/><span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold"> ${this.formatLineLabel(
+          text: `<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">You,</span><br/><span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold"> ${this.formatLineLabel(
             type,
             value,
-          )}</span>`,
+          )} </span>`,
           align: 'center',
           x: 246,
           y: 0,
@@ -148,7 +150,11 @@ export class DataAreaBarchartOptionsBuilder {
         title: {
           text: null,
         },
-        formatter: this.formatLabel(),
+        labels: {
+          useHTML: true,
+          formatter: this.formatLabel(type),
+        },
+        //formatter: this.formatLabel(type),
         plotLines: plotlines,
       },
     };
@@ -156,7 +162,7 @@ export class DataAreaBarchartOptionsBuilder {
     const options = cloneDeep(this.defaultOptions);
     options.title = {
       y: 30,
-      x: 0,
+      x: -10,
       align: 'left',
       text: `<span class="govuk-!-font-size-16 govuk-!-font-weight-bold" style='font-family:"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif'>${this.getYAxisTitle(
         type,
@@ -167,7 +173,7 @@ export class DataAreaBarchartOptionsBuilder {
   }
 
   private getXAxisTitle(): string {
-    return '<span class="govuk-body govuk-!-font-size-19 govuk-!-font-weight-bold">Workplaces</span>';
+    return '<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">Workplaces</span>';
   }
 
   private getYAxisTitle(type: Metric): string {
@@ -209,9 +215,21 @@ export class DataAreaBarchartOptionsBuilder {
   //   return merge(this.defaultOptions, source);
   // }
 
-  private formatLabel(): Highcharts.AxisLabelsFormatterCallbackFunction {
+  private formatLabel(type: Metric): Highcharts.AxisLabelsFormatterCallbackFunction {
     return function () {
-      return '<span class="govuk-body">£' + this.value + '</span>';
+      //return '<span class="govuk-body">£' + this.value + '</span>';
+      switch (type) {
+        case Metric.pay:
+        case Metric.careWorkerPay:
+        case Metric.seniorCareWorkerPay:
+        case Metric.registeredManagerPay:
+        case Metric.registeredNursePay:
+          return '<span class="govuk-body">£' + this.value + '</span>';
+        case Metric.vacancy:
+        case Metric.turnover:
+        case Metric.timeInRole:
+          return '<span class="govuk-body">' + FormatUtil.formatPercent(this.value) + '</span>';
+      }
     };
   }
 
