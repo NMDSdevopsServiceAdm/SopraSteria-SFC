@@ -52,4 +52,13 @@ describe('DataAreaRankingComponent', () => {
 
     expect(getByTestId('no-workplace-data')).toBeTruthy();
   });
+
+  it('should show no comparison data message when no comparison data is provided', async () => {
+    const { fixture, component, queryByTestId, getByTestId } = await setup();
+    component.workplaceRankNumber = null;
+    component.workplacesNumber = null;
+    fixture.detectChanges();
+
+    expect(getByTestId('no-comparison-data')).toBeTruthy();
+  });
 });

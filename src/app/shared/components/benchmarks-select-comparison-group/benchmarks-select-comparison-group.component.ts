@@ -6,6 +6,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./benchmarks-select-comparison-group.component.scss'],
 })
 export class BenchmarksSelectComparisonGroupsComponent {
+  @Input() comparisonDataExists: boolean;
   @Input() viewBenchmarksComparisonGroups: boolean;
   @Input() mainServiceName: string;
   @Input() localAuthorityLocation: string;

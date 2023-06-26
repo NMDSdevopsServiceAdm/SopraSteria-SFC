@@ -1,34 +1,40 @@
 <div class="govuk-!-margin-top-4 govuk-!-padding-3 barchart-container">
   <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-2">{{ section }}</div>
-
-  <ng-container *ngIf="!rankingsData.stateMessage; else noData">
-    <ng-container *ngIf="isPay; else recruitmentAndRetention">
-      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="all-pay-data">
-        Your workplace pays more than
-        <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces - rank }}</span> others in a comparision group of
-        <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces }} </span> workplaces.
-      </p>
+  <ng-container *ngIf="numberOfWorkplaces; else noComparisonData">
+    <ng-container *ngIf="!rankingsData.stateMessage; else noData">
+      <ng-container *ngIf="isPay; else recruitmentAndRetention">
+        <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="all-pay-data">
+          Your workplace pays more than
+          <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces - rank }}</span> others in a comparision group of
+          <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces }} </span> workplaces.
+        </p>
+      </ng-container>
+      <ng-template #recruitmentAndRetention>
+        <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="all-recruitment-data">
+          Your workplace has a higher {{ sectionInSummary | lowercase }} than
+          <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces - rank }}</span> others in a comparision group of
+          <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces }} </span> workplaces.
+        </p>
+      </ng-template>
     </ng-container>
-    <ng-template #recruitmentAndRetention>
-      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="all-recruitment-data">
-        Your workplace has a higher {{ sectionInSummary | lowercase }} than
-        <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces - rank }}</span> others in a comparision group of
-        <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces }} </span> workplaces.
-      </p>
+
+    <ng-template #noData>
+      <ng-container *ngIf="rankingsData.stateMessage == 'no-comparison-data'; else noWorkplaceData">
+        <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="no-comparison-data">
+          We do not have enough comparison group data to show where you're positioned yet.
+        </p>
+      </ng-container>
+      <ng-template #noWorkplaceData>
+        <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="no-workplace-data">
+          You've not added any {{ section | lowercase }} data, so we cannot show you where you're positioned.
+        </p>
+      </ng-template>
     </ng-template>
+    <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
   </ng-container>
-
-  <ng-template #noData>
-    <ng-container *ngIf="rankingsData.stateMessage == 'no-comparison-data'; else noWorkplaceData">
-      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="no-comparison-data">
-        We do not have enough comparison group data to show where you're positioned yet.
-      </p>
-    </ng-container>
-    <ng-template #noWorkplaceData>
-      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="no-workplace-data">
-        You've not added any {{ section | lowercase }} data, so we cannot show you where you're positioned.
-      </p>
-    </ng-template>
+  <ng-template #noComparisonData>
+    <p class="govuk-body govuk-!-margin-top-2" data-testid="no-comparison-data">
+      We do not have enough comparison group data to show where you're positioned yet.
+    </p>
   </ng-template>
-  <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
 </div>

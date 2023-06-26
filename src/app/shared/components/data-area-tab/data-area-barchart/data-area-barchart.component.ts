@@ -21,6 +21,8 @@ export class DataAreaBarchartComponent implements OnChanges, OnInit {
   public numberOfWorkplaces: number;
   public rank: number;
   public sectionInSummary: string;
+  public noPositionData: boolean;
+  public noComparisonData: boolean;
 
   constructor(private builder: DataAreaBarchartOptionsBuilder) {}
 

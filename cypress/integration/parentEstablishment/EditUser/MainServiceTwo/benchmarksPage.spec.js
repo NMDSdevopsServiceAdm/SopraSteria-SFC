@@ -18,7 +18,7 @@ describe('Parent benchmark page, main service 2, as edit user', () => {
     cy.url().should('include', '#benchmarks');
   });
 
-  it('should show all the comparision panels', () => {
+  it('should show all the comparison panels', () => {
     onBenchmarksPage.benchmarkTiles();
   });
 
