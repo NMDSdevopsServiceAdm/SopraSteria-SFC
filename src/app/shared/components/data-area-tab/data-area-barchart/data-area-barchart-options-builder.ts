@@ -53,7 +53,7 @@ export class DataAreaBarchartOptionsBuilder {
     xAxis: {
       type: 'category',
       title: {
-        margin: 10,
+        margin: 15,
         text: this.getXAxisTitle(),
         useHTML: true,
       },
