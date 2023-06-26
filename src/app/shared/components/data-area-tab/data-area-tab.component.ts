@@ -64,13 +64,15 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   public checkComparisonDataExists(): void {
     const noComparisonData = 'no-comparison-data';
-    if(this.rankingsData?.pay?.careWorkerPay.groupRankings?.stateMessage === noComparisonData &&
-       this.rankingsData?.pay?.seniorCareWorkerPay.groupRankings?.stateMessage === noComparisonData &&
-       this.rankingsData?.pay?.registeredNursePay.groupRankings?.stateMessage === noComparisonData &&
-       this.rankingsData?.pay?.registeredManagerPay.groupRankings?.stateMessage === noComparisonData
-      ) {
-        this.comparisonDataExists = false;
-      } else this.comparisonDataExists = true;
+
+    if (
+      this.tilesData?.careWorkerPay.comparisonGroup.stateMessage === noComparisonData &&
+      this.tilesData?.seniorCareWorkerPay.comparisonGroup.stateMessage === noComparisonData &&
+      this.tilesData?.registeredNursePay.comparisonGroup.stateMessage === noComparisonData &&
+      this.tilesData?.registeredManagerPay.comparisonGroup.stateMessage === noComparisonData
+    ) {
+      this.comparisonDataExists = false;
+    } else this.comparisonDataExists = true;
   }
 
   public setDownloadBenchmarksText(): void {
