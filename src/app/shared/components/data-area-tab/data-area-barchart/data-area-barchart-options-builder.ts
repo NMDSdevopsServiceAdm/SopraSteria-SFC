@@ -54,6 +54,7 @@ export class DataAreaBarchartOptionsBuilder {
       type: 'category',
       title: {
         margin: 15,
+        y: 0,
         text: this.getXAxisTitle(),
         useHTML: true,
       },
@@ -172,7 +173,7 @@ export class DataAreaBarchartOptionsBuilder {
   }
 
   private getXAxisTitle(): string {
-    return '<span class="govuk-body govuk-!-font-size-19 govuk-!-font-weight-bold">Workplaces</span>';
+    return '<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">Workplaces</span>';
   }
 
   private getYAxisTitle(type: Metric): string {

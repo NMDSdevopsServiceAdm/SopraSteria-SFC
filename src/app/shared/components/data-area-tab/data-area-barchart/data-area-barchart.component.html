@@ -1,4 +1,4 @@
-<div class="govuk-!-margin-top-4 govuk-!-padding-3 barchart-container">
+<div class="govuk-!-margin-top-4 barchart-container">
   <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-2">{{ section }}</div>
   <ng-container *ngIf="numberOfWorkplaces; else noComparisonData">
     <ng-container *ngIf="!rankingsData.stateMessage; else noData">
@@ -20,7 +20,10 @@
 
     <ng-template #noData>
       <ng-container *ngIf="rankingsData.stateMessage == 'no-comparison-data'; else noWorkplaceData">
-        <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="no-comparison-data">
+        <p
+          class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8 govuk-!-padding-bottom-3"
+          data-testid="no-comparison-data"
+        >
           We do not have enough comparison group data to show where you're positioned yet.
         </p>
       </ng-container>
@@ -33,8 +36,9 @@
     <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
   </ng-container>
   <ng-template #noComparisonData>
-    <p class="govuk-body govuk-!-margin-top-2" data-testid="no-comparison-data">
+    <p class="govuk-body govuk-!-margin-top-2 govuk-!-padding-bottom-3" data-testid="no-comparison-data">
       We do not have enough comparison group data to show where you're positioned yet.
     </p>
   </ng-template>
+  <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
 </div>
