@@ -1,0 +1,50 @@
+# dependencies
+/node_modules
+*/node_modules
+
+/.angular/cache
+
+# misc
+/.sass-cache
+/connect.lock
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+/oldtest
+TESTS.xml
+*.csv
+.env
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Coverage
+/coverage
+/.nyc_output
+/fecoverage
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/extensions.json
+.vs/*
+
+# Google Lighthouse Results
+.lighthouseci/
+
+# ESLint
+.eslintcache
+test-results.xml
+
+#Cypress to ignore
+cypress/screenshots
+cypress/videos
+cypress/fixtures
+
+docker/*.sql
+

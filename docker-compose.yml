@@ -1,13 +1,14 @@
 version: '3'
 services:
-  sfc-test:
-    image: postgres:13
-    container_name: sfc-test
-    build:
-      context: ./docker
-    env_file:
-      - .env
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  sfc-redis:
+    image: redis
     ports:
-      - 90:5432
+      - '6379:6379'
+  sfc-app:
+    build: .
+    ports:
+      - '8080:8080'
+    depends_on:
+      - sfc-redis
+    links:
+      - sfc-redis:sfc-redis
