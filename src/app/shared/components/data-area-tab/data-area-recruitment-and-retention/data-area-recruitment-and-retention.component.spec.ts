@@ -200,8 +200,8 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
     expect(within(timeInRoleRow).getByText('90%')).toBeTruthy();
   });
 
-  fdescribe('no data added message', () => {
-    it('should show when there the amount of vacancies is not known', async () => {
+  describe('no data added message', () => {
+    it('should show when the amount of vacancies is not known', async () => {
       const { component, getByTestId } = await setup(true);
 
       component.data = {
@@ -287,7 +287,7 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
           goodCqc: { value: 0.545, hasValue: true },
         },
         turnoverRate: {
-          workplaceValue: { value: 0.281, hasValue: true },
+          workplaceValue: { value: 0, hasValue: false, stateMessage: 'mismatch-workers' },
           comparisonGroup: { value: 0.273, hasValue: true },
           goodCqc: { value: 0.2851, hasValue: true },
         },
@@ -337,13 +337,13 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
 
       expect(within(vacancyRow).getByText('No data added')).toBeTruthy();
       expect(within(vacancyRow).getByText('5%')).toBeTruthy();
-      expect(within(turnoverRow).getByText('28%')).toBeTruthy();
+      expect(within(turnoverRow).getByText('No data added')).toBeTruthy();
       expect(within(turnoverRow).getByText('29%')).toBeTruthy();
       expect(within(timeInRoleRow).getByText('88%')).toBeTruthy();
       expect(within(timeInRoleRow).getByText('90%')).toBeTruthy();
     });
 
-    it('should not show when there has been no vacancies in the past 12 months', async () => {
+    it('should show when the amount of leavers is not known', async () => {
       const { component, getByTestId } = await setup(true);
 
       component.data = {
@@ -358,12 +358,12 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
           goodCqc: { value: 0.545, hasValue: true },
         },
         turnoverRate: {
-          workplaceValue: { value: 0.281, hasValue: true },
+          workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-leavers' },
           comparisonGroup: { value: 0.273, hasValue: true },
           goodCqc: { value: 0.2851, hasValue: true },
         },
         vacancyRate: {
-          workplaceValue: { value: 0, hasValue: true },
+          workplaceValue: { value: 0.068, hasValue: true },
           comparisonGroup: { value: 0.063, hasValue: true },
           goodCqc: { value: 0.051, hasValue: true },
         },
@@ -406,9 +406,9 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
       const turnoverRow = getByTestId('turnoverRow');
       const timeInRoleRow = getByTestId('timeInRoleRow');
 
-      expect(within(vacancyRow).getByText('0%')).toBeTruthy();
+      expect(within(vacancyRow).getByText('7%')).toBeTruthy();
       expect(within(vacancyRow).getByText('5%')).toBeTruthy();
-      expect(within(turnoverRow).getByText('28%')).toBeTruthy();
+      expect(within(turnoverRow).getByText('No data added')).toBeTruthy();
       expect(within(turnoverRow).getByText('29%')).toBeTruthy();
       expect(within(timeInRoleRow).getByText('88%')).toBeTruthy();
       expect(within(timeInRoleRow).getByText('90%')).toBeTruthy();
