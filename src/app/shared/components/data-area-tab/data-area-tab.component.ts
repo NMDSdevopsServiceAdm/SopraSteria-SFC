@@ -63,7 +63,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   }
 
   public checkComparisonDataExists(): void {
-    const noComparisonData = 'no-comparison-data';
+    const noComparisonData = 'no-data';
 
     if (
       this.tilesData?.careWorkerPay.comparisonGroup.stateMessage === noComparisonData &&

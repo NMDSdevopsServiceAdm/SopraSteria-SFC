@@ -103,7 +103,7 @@ describe('DataAreaTabComponent', () => {
     const { component, fixture, getByTestId, queryByTestId } = await setup();
     const noCompData = {
       value: 0,
-      stateMessage: 'no-comparison-data',
+      stateMessage: 'no-data',
       hasValue: false,
     };
     component.tilesData.careWorkerPay.comparisonGroup = noCompData;
