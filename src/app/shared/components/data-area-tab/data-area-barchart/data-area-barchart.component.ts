@@ -21,14 +21,14 @@ export class DataAreaBarchartComponent implements OnChanges, OnInit {
   public numberOfWorkplaces: number;
   public rank: number;
   public sectionInSummary: string;
-  public noPositionData: boolean;
-  public noComparisonData: boolean;
+  public noWorkplaceData: boolean;
 
   constructor(private builder: DataAreaBarchartOptionsBuilder) {}
 
   ngOnInit(): void {}
 
   ngOnChanges(): void {
+    this.noWorkplaceData = this.rankingsData.allValues?.length == 0;
     this.formatSection(this.type);
     this.numberOfWorkplaces = this.rankingsData.maxRank ? this.rankingsData.maxRank : null;
     this.rank = this.rankingsData.currentRank ? this.rankingsData.currentRank : null;
