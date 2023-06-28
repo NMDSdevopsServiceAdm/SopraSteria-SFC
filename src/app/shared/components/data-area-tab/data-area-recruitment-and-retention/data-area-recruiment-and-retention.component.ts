@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { AllRankingsResponse, BenchmarksResponse, RankingsResponse } from '@core/model/benchmarks.model';
 
 @Component({
@@ -20,6 +20,9 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
   public vacancyCurrentRank;
   public turnoverCurrentRank;
   public timeInRoleCurrentRank;
+  public vacancyNoWorkplaceData: boolean;
+  public turnoverNoWorkplaceData: boolean;
+  public timeInRoleNoWorkplaceData: boolean;
 
   ngOnChanges(): void {
     this.setRankings(this.viewBenchmarksComparisonGroups);
@@ -41,6 +44,10 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
     }
   }
 
+  public hasWorkplaceData(rank: RankingsResponse): boolean {
+    return rank.allValues?.length == 0;
+  }
+
   public setRankings(isGoodAndOutstanding: boolean): void {
     if (isGoodAndOutstanding) {
       this.vacancyRankings = this.rankingsData?.vacancy.goodCqcRankings;
@@ -59,5 +66,9 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
     this.vacancyCurrentRank = this.setCurrentRank(this.vacancyRankings);
     this.turnoverCurrentRank = this.setCurrentRank(this.turnoverRankings);
     this.timeInRoleCurrentRank = this.setCurrentRank(this.timeInRoleRankings);
+
+    this.vacancyNoWorkplaceData = this.hasWorkplaceData(this.vacancyRankings);
+    this.turnoverNoWorkplaceData = this.hasWorkplaceData(this.turnoverRankings);
+    this.timeInRoleNoWorkplaceData = this.hasWorkplaceData(this.timeInRoleRankings);
   }
 }
