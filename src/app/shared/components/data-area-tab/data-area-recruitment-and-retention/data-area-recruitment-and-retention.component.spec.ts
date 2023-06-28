@@ -200,6 +200,221 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
     expect(within(timeInRoleRow).getByText('90%')).toBeTruthy();
   });
 
+  describe('no data added message', () => {
+    it('should show when the amount of vacancies is not known', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      component.data = {
+        sickness: {
+          workplaceValue: { value: 11, hasValue: true },
+          comparisonGroup: { value: 12, hasValue: true },
+          goodCqc: { value: 15, hasValue: true },
+        },
+        qualifications: {
+          workplaceValue: { value: 0.521, hasValue: true },
+          comparisonGroup: { value: 0.533, hasValue: true },
+          goodCqc: { value: 0.545, hasValue: true },
+        },
+        turnoverRate: {
+          workplaceValue: { value: 0.281, hasValue: true },
+          comparisonGroup: { value: 0.273, hasValue: true },
+          goodCqc: { value: 0.2851, hasValue: true },
+        },
+        vacancyRate: {
+          workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-vacancies' },
+          comparisonGroup: { value: 0.063, hasValue: true },
+          goodCqc: { value: 0.051, hasValue: true },
+        },
+        careWorkerPay: {
+          workplaceValue: { value: 1015, hasValue: true },
+          comparisonGroup: { value: 1013, hasValue: true },
+          goodCqc: { value: 1026, hasValue: true },
+        },
+        seniorCareWorkerPay: {
+          workplaceValue: { value: 1091, hasValue: true },
+          comparisonGroup: { value: 1091, hasValue: true },
+          goodCqc: { value: 1093, hasValue: true },
+        },
+        registeredNursePay: {
+          workplaceValue: { value: 37250, hasValue: true },
+          comparisonGroup: { value: 37200, hasValue: true },
+          goodCqc: { value: 37350, hasValue: true },
+        },
+        registeredManagerPay: {
+          workplaceValue: { value: 36075, hasValue: true },
+          comparisonGroup: { value: 36110, hasValue: true },
+          goodCqc: { value: 36200, hasValue: true },
+        },
+        timeInRole: {
+          workplaceValue: { value: 0.883, hasValue: true },
+          comparisonGroup: { value: 0.887, hasValue: true },
+          goodCqc: { value: 0.895, hasValue: true },
+        },
+        meta: {
+          workplaces: 35,
+          staff: 460,
+          workplacesGoodCqc: 22,
+          staffGoodCqc: 315,
+          localAuthority: 'LA1',
+          lastUpdated: new Date(),
+        },
+      };
+
+      const vacancyRow = getByTestId('vacancyRow');
+      const turnoverRow = getByTestId('turnoverRow');
+      const timeInRoleRow = getByTestId('timeInRoleRow');
+
+      expect(within(vacancyRow).getByText('No data added')).toBeTruthy();
+      expect(within(vacancyRow).getByText('5%')).toBeTruthy();
+      expect(within(turnoverRow).getByText('28%')).toBeTruthy();
+      expect(within(turnoverRow).getByText('29%')).toBeTruthy();
+      expect(within(timeInRoleRow).getByText('88%')).toBeTruthy();
+      expect(within(timeInRoleRow).getByText('90%')).toBeTruthy();
+    });
+
+    it('should show when there is a mis-match in staff and staff records', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      component.data = {
+        sickness: {
+          workplaceValue: { value: 11, hasValue: true },
+          comparisonGroup: { value: 12, hasValue: true },
+          goodCqc: { value: 15, hasValue: true },
+        },
+        qualifications: {
+          workplaceValue: { value: 0.521, hasValue: true },
+          comparisonGroup: { value: 0.533, hasValue: true },
+          goodCqc: { value: 0.545, hasValue: true },
+        },
+        turnoverRate: {
+          workplaceValue: { value: 0, hasValue: false, stateMessage: 'mismatch-workers' },
+          comparisonGroup: { value: 0.273, hasValue: true },
+          goodCqc: { value: 0.2851, hasValue: true },
+        },
+        vacancyRate: {
+          workplaceValue: { value: 0, hasValue: false, stateMessage: 'mismatch-workers' },
+          comparisonGroup: { value: 0.063, hasValue: true },
+          goodCqc: { value: 0.051, hasValue: true },
+        },
+        careWorkerPay: {
+          workplaceValue: { value: 1015, hasValue: true },
+          comparisonGroup: { value: 1013, hasValue: true },
+          goodCqc: { value: 1026, hasValue: true },
+        },
+        seniorCareWorkerPay: {
+          workplaceValue: { value: 1091, hasValue: true },
+          comparisonGroup: { value: 1091, hasValue: true },
+          goodCqc: { value: 1093, hasValue: true },
+        },
+        registeredNursePay: {
+          workplaceValue: { value: 37250, hasValue: true },
+          comparisonGroup: { value: 37200, hasValue: true },
+          goodCqc: { value: 37350, hasValue: true },
+        },
+        registeredManagerPay: {
+          workplaceValue: { value: 36075, hasValue: true },
+          comparisonGroup: { value: 36110, hasValue: true },
+          goodCqc: { value: 36200, hasValue: true },
+        },
+        timeInRole: {
+          workplaceValue: { value: 0.883, hasValue: true },
+          comparisonGroup: { value: 0.887, hasValue: true },
+          goodCqc: { value: 0.895, hasValue: true },
+        },
+        meta: {
+          workplaces: 35,
+          staff: 460,
+          workplacesGoodCqc: 22,
+          staffGoodCqc: 315,
+          localAuthority: 'LA1',
+          lastUpdated: new Date(),
+        },
+      };
+
+      const vacancyRow = getByTestId('vacancyRow');
+      const turnoverRow = getByTestId('turnoverRow');
+      const timeInRoleRow = getByTestId('timeInRoleRow');
+
+      expect(within(vacancyRow).getByText('No data added')).toBeTruthy();
+      expect(within(vacancyRow).getByText('5%')).toBeTruthy();
+      expect(within(turnoverRow).getByText('No data added')).toBeTruthy();
+      expect(within(turnoverRow).getByText('29%')).toBeTruthy();
+      expect(within(timeInRoleRow).getByText('88%')).toBeTruthy();
+      expect(within(timeInRoleRow).getByText('90%')).toBeTruthy();
+    });
+
+    it('should show when the amount of leavers is not known', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      component.data = {
+        sickness: {
+          workplaceValue: { value: 11, hasValue: true },
+          comparisonGroup: { value: 12, hasValue: true },
+          goodCqc: { value: 15, hasValue: true },
+        },
+        qualifications: {
+          workplaceValue: { value: 0.521, hasValue: true },
+          comparisonGroup: { value: 0.533, hasValue: true },
+          goodCqc: { value: 0.545, hasValue: true },
+        },
+        turnoverRate: {
+          workplaceValue: { value: 0, hasValue: false, stateMessage: 'no-leavers' },
+          comparisonGroup: { value: 0.273, hasValue: true },
+          goodCqc: { value: 0.2851, hasValue: true },
+        },
+        vacancyRate: {
+          workplaceValue: { value: 0.068, hasValue: true },
+          comparisonGroup: { value: 0.063, hasValue: true },
+          goodCqc: { value: 0.051, hasValue: true },
+        },
+        careWorkerPay: {
+          workplaceValue: { value: 1015, hasValue: true },
+          comparisonGroup: { value: 1013, hasValue: true },
+          goodCqc: { value: 1026, hasValue: true },
+        },
+        seniorCareWorkerPay: {
+          workplaceValue: { value: 1091, hasValue: true },
+          comparisonGroup: { value: 1091, hasValue: true },
+          goodCqc: { value: 1093, hasValue: true },
+        },
+        registeredNursePay: {
+          workplaceValue: { value: 37250, hasValue: true },
+          comparisonGroup: { value: 37200, hasValue: true },
+          goodCqc: { value: 37350, hasValue: true },
+        },
+        registeredManagerPay: {
+          workplaceValue: { value: 36075, hasValue: true },
+          comparisonGroup: { value: 36110, hasValue: true },
+          goodCqc: { value: 36200, hasValue: true },
+        },
+        timeInRole: {
+          workplaceValue: { value: 0.883, hasValue: true },
+          comparisonGroup: { value: 0.887, hasValue: true },
+          goodCqc: { value: 0.895, hasValue: true },
+        },
+        meta: {
+          workplaces: 35,
+          staff: 460,
+          workplacesGoodCqc: 22,
+          staffGoodCqc: 315,
+          localAuthority: 'LA1',
+          lastUpdated: new Date(),
+        },
+      };
+
+      const vacancyRow = getByTestId('vacancyRow');
+      const turnoverRow = getByTestId('turnoverRow');
+      const timeInRoleRow = getByTestId('timeInRoleRow');
+
+      expect(within(vacancyRow).getByText('7%')).toBeTruthy();
+      expect(within(vacancyRow).getByText('5%')).toBeTruthy();
+      expect(within(turnoverRow).getByText('No data added')).toBeTruthy();
+      expect(within(turnoverRow).getByText('29%')).toBeTruthy();
+      expect(within(timeInRoleRow).getByText('88%')).toBeTruthy();
+      expect(within(timeInRoleRow).getByText('90%')).toBeTruthy();
+    });
+  });
+
   describe('rankings area', async () => {
     it('should show when viewBenchmarksPosition is false', async () => {
       const { component, fixture, getByTestId, queryByTestId } = await setup();
