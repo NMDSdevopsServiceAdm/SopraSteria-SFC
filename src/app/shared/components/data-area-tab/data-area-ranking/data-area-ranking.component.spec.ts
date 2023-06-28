@@ -4,7 +4,7 @@ import { render } from '@testing-library/angular';
 
 import { DataAreaRankingComponent } from './data-area-ranking.component';
 
-describe('DataAreaRankingComponent', () => {
+fdescribe('DataAreaRankingComponent', () => {
   let component: DataAreaRankingComponent;
   let fixture: ComponentFixture<DataAreaRankingComponent>;
 
@@ -57,8 +57,18 @@ describe('DataAreaRankingComponent', () => {
     const { fixture, component, queryByTestId, getByTestId } = await setup();
     component.workplaceRankNumber = null;
     component.workplacesNumber = null;
+    component.noWorkplaceData = false;
     fixture.detectChanges();
 
     expect(getByTestId('no-comparison-data')).toBeTruthy();
+  });
+  it('should show no comparison and workplace data message when no comparison and workplace data is provided', async () => {
+    const { fixture, component, queryByTestId, getByTestId } = await setup();
+    component.workplaceRankNumber = null;
+    component.workplacesNumber = null;
+    component.noWorkplaceData = true;
+    fixture.detectChanges();
+
+    expect(getByTestId('no-workplace-or-comparison-data')).toBeTruthy();
   });
 });

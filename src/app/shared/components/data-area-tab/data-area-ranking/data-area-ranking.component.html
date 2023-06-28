@@ -1,21 +1,31 @@
 <div class="govuk-!-margin-top-5 govuk-!-padding-3 govuk-!-padding-bottom-5 ranking-container">
   <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-1">{{ rankingTitle }}</div>
   <ng-container *ngIf="workplacesNumber; else noComparisonData">
-  <ng-container *ngIf="workplaceRankNumber; else noRankingData">
-    <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-3" data-testid="ranking-data">
-      Your workplace ranks <span class="govuk-!-font-weight-bold">{{ workplaceRankNumber }}</span> in a comparison group
-      of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
-    </p>
-  </ng-container>
-  <ng-template #noRankingData>
-    <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-data">
-      You've not added any {{ rankingTitle | lowercase }} data, so we cannot show you where you're ranked.
-    </p>
-  </ng-template>
+    <ng-container *ngIf="workplaceRankNumber; else noRankingData">
+      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-3" data-testid="ranking-data">
+        Your workplace ranks <span class="govuk-!-font-weight-bold">{{ workplaceRankNumber }}</span> in a comparison
+        group of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
+      </p>
+    </ng-container>
+    <ng-template #noRankingData>
+      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-data">
+        You've not added any {{ rankingTitle | lowercase }} data, so we cannot show you where you're ranked.
+      </p>
+    </ng-template>
   </ng-container>
   <ng-template #noComparisonData>
-    <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-comparison-data">
-      We do not have enough comparison group data to <br/> show you where you're ranked yet.</p>
+    <ng-container *ngIf="noWorkplaceData == false; else noWorkplaceDataMessage">
+      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-comparison-data">
+        We do not have enough comparison group data to <br />
+        show you where you're ranked yet.
+      </p>
+    </ng-container>
+    <ng-template #noWorkplaceDataMessage>
+      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-or-comparison-data">
+        We do not have enough workplace and comparison group <br />
+        data to show you where you're ranked yet.
+      </p>
+    </ng-template>
   </ng-template>
   <div class="ranking-bar">
     <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
