@@ -23,13 +23,9 @@
         <ng-template #noVacancyData>
           <td class="govuk-table__cell workplace-cell">No data added</td>
         </ng-template>
+
         <td class="govuk-table__cell comparison-group-cell">
-          <ng-container *ngIf="viewBenchmarksComparisonGroups; else vacancyTotalComparison">
-            {{ data?.vacancyRate.goodCqc.value * 100 | number: '1.0-0' }}%
-          </ng-container>
-          <ng-template #vacancyTotalComparison>
-            {{ data?.vacancyRate.comparisonGroup.value * 100 | number: '1.0-0' }}%
-          </ng-template>
+          {{ vacancyComparisionGroup }}
         </td>
       </tr>
       <tr class="govuk-table__row" data-testid="turnoverRow">
@@ -43,12 +39,7 @@
           <td class="govuk-table__cell workplace-cell">No data added</td>
         </ng-template>
         <td class="govuk-table__cell comparison-group-cell">
-          <ng-container *ngIf="viewBenchmarksComparisonGroups; else turnoverTotalComparison">
-            {{ data?.turnoverRate.goodCqc.value * 100 | number: '1.0-0' }}%
-          </ng-container>
-          <ng-template #turnoverTotalComparison>
-            {{ data?.turnoverRate.comparisonGroup.value * 100 | number: '1.0-0' }}%
-          </ng-template>
+          {{ turnoverComparisionGroup }}
         </td>
       </tr>
       <tr class="govuk-table__row" data-testid="timeInRoleRow">
@@ -59,12 +50,7 @@
           {{ data?.timeInRole.workplaceValue.value * 100 | number: '1.0-0' }}%
         </td>
         <td class="govuk-table__cell comparison-group-cell">
-          <ng-container *ngIf="viewBenchmarksComparisonGroups; else timeInRoleTotalComparison">
-            {{ data?.timeInRole.goodCqc.value * 100 | number: '1.0-0' }}%
-          </ng-container>
-          <ng-template #timeInRoleTotalComparison>
-            {{ data?.timeInRole.comparisonGroup.value * 100 | number: '1.0-0' }}%
-          </ng-template>
+          {{ timeInRoleComparisionGroup }}
         </td>
       </tr>
     </tbody>
