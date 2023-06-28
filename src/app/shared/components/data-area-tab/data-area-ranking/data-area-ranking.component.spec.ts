@@ -4,7 +4,7 @@ import { render } from '@testing-library/angular';
 
 import { DataAreaRankingComponent } from './data-area-ranking.component';
 
-fdescribe('DataAreaRankingComponent', () => {
+describe('DataAreaRankingComponent', () => {
   let component: DataAreaRankingComponent;
   let fixture: ComponentFixture<DataAreaRankingComponent>;
 
