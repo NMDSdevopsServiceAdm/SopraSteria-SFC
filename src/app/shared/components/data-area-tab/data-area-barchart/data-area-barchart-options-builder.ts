@@ -143,7 +143,8 @@ export class DataAreaBarchartOptionsBuilder {
           accessibility: {
             description: altDescription,
           },
-          data: this.buildChartData(rankingData, type),
+          data: null,
+          opacity: 100,
         },
       ],
       yAxis: {
@@ -158,6 +159,12 @@ export class DataAreaBarchartOptionsBuilder {
         plotLines: plotlines,
       },
     };
+    if (rankingData.allValues?.length == 0) {
+      source.series[0].data = [{ y: 20000 }];
+      source.series[0].opacity = 0;
+    } else {
+      source.series[0].data = this.buildChartData(rankingData, type);
+    }
 
     const options = cloneDeep(this.defaultOptions);
     options.title = {
@@ -200,21 +207,6 @@ export class DataAreaBarchartOptionsBuilder {
     return '<span class="govuk-body govuk-!-font-size-19 govuk-!-font-weight-bold">' + axisTitle + '</span>';
   }
 
-  // public buildEmptyChartOptions(altDescription: string): Highcharts.Options {
-  //   const source = {
-  //     series: [
-  //       {
-  //         accessibility: {
-  //           description: altDescription,
-  //         },
-  //         data: this.buildChartData(null),
-  //       },
-  //     ],
-  //   };
-
-  //   return merge(this.defaultOptions, source);
-  // }
-
   private formatLabel(type: Metric): Highcharts.AxisLabelsFormatterCallbackFunction {
     return function () {
       //return '<span class="govuk-body">£' + this.value + '</span>';
@@ -253,67 +245,6 @@ export class DataAreaBarchartOptionsBuilder {
     }
     return value;
   }
-
-  // private formatDataLabels(type: Metric): Highcharts.DataLabelsFormatterCallbackFunction {
-  //   return function () {
-  //     let value;
-  //     switch (type) {
-  //       case Metric.pay:
-  //       case Metric.careWorkerPay:
-  //       case Metric.seniorCareWorkerPay:
-  //         value = '£' + this.y.toFixed(2);
-  //         break;
-  //       case Metric.registeredManagerPay:
-  //       case Metric.registeredNursePay:
-  //         value = FormatUtil.formatSalary(this.y);
-  //         break;
-  //       case Metric.sickness:
-  //         value = this.y + ' days';
-  //         break;
-  //       default:
-  //         value = FormatUtil.formatPercent(this.y);
-  //     }
-  //     const size = this.key === 'Your workplace' ? 'govuk-heading-xl' : 'govuk-body-s';
-  //     return '<span class="' + size + '">' + value + '</span>';
-  //   };
-  // }
-
-  // private addEmptyStates(noData: string): Highcharts.ChartLoadCallbackFunction {
-  //   return function () {
-  //     const categoryWidth = this.plotWidth / this.xAxis[0].series[0].data.length;
-  //     let width = categoryWidth - 30;
-
-  //     this.series[0].points.forEach((point, index) => {
-  //       if (point.y === null && (index === 0 || index === 1 || this.series[0].points[index - 1]?.y !== null)) {
-  //         let message;
-  //         if (point.name !== 'Your workplace') {
-  //           message = 'We do not have enough data to show this comparison yet.';
-  //           if (this.series[0].points[index + 1]?.y === null && this.series[0].points[index + 2]?.y === null) {
-  //             width = categoryWidth * 3 - 40;
-  //             message = 'We do not have enough data to show these comparisons yet.';
-  //           } else if (this.series[0].points[index + 1]?.y === null) {
-  //             width = categoryWidth * 2 - 40;
-  //             message = 'We do not have enough data to show these comparisons yet.';
-  //           }
-  //         } else {
-  //           message = noData;
-  //         }
-
-  //         const offset = point.x * categoryWidth + width / 2 + 10;
-  //         const text = this.renderer
-  //           .text('<span class="govuk-body no-data">' + message + '</span>', -999, -999, true)
-  //           .css({
-  //             width,
-  //           })
-  //           .add();
-  //         text.attr({
-  //           x: this.plotLeft + offset - text.getBBox().width / 2,
-  //           y: this.plotTop + (this.plotHeight / 3) * 2,
-  //         });
-  //       }
-  //     });
-  //   };
-  // }
 
   private buildChartData(rankingData: RankingsResponse, type: Metric): any[] {
     return rankingData.allValues

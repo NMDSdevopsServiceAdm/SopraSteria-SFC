@@ -172,7 +172,6 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
   it('should render values for the workplace and comparison data', async () => {
     const { component, getByTestId } = await setup();
 
-    console.log(component.data.turnoverRate);
     const vacancyRow = getByTestId('vacancyRow');
     const turnoverRow = getByTestId('turnoverRow');
     const timeInRoleRow = getByTestId('timeInRoleRow');
