@@ -70,20 +70,17 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
   }
 
   public setComparisonTableData(isGoodAndOutstanding: boolean): void {
+    this.vacancyWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.workplaceValue);
+    this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.workplaceValue);
+    this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.workplaceValue);
     if (isGoodAndOutstanding) {
       this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.goodCqc);
       this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.goodCqc);
       this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.goodCqc);
-      this.vacancyWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.goodCqc);
-      this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.turnoverRate.goodCqc);
-      this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.timeInRole.goodCqc);
     } else {
       this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.comparisonGroup);
       this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.comparisonGroup);
       this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.comparisonGroup);
-      this.vacancyWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.comparisonGroup);
-      this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.turnoverRate.comparisonGroup);
-      this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.timeInRole.comparisonGroup);
     }
   }
 
