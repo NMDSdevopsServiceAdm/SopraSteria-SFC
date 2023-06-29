@@ -172,7 +172,6 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
   it('should render values for the workplace and comparison data', async () => {
     const { component, getByTestId } = await setup();
 
-    console.log(component.data.turnoverRate);
     const vacancyRow = getByTestId('vacancyRow');
     const turnoverRow = getByTestId('turnoverRow');
     const timeInRoleRow = getByTestId('timeInRoleRow');
@@ -202,7 +201,7 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
 
   describe('no data added message', () => {
     it('should show when the amount of vacancies is not known', async () => {
-      const { component, getByTestId } = await setup(true);
+      const { component, getByTestId, fixture } = await setup(true);
 
       component.data = {
         sickness: {
@@ -259,6 +258,8 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
           lastUpdated: new Date(),
         },
       };
+      component.ngOnChanges();
+      fixture.detectChanges();
 
       const vacancyRow = getByTestId('vacancyRow');
       const turnoverRow = getByTestId('turnoverRow');
@@ -273,7 +274,7 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
     });
 
     it('should show when there is a mis-match in staff and staff records', async () => {
-      const { component, getByTestId } = await setup(true);
+      const { component, getByTestId, fixture } = await setup(true);
 
       component.data = {
         sickness: {
@@ -331,6 +332,9 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
         },
       };
 
+      component.ngOnChanges();
+      fixture.detectChanges();
+
       const vacancyRow = getByTestId('vacancyRow');
       const turnoverRow = getByTestId('turnoverRow');
       const timeInRoleRow = getByTestId('timeInRoleRow');
@@ -344,7 +348,7 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
     });
 
     it('should show when the amount of leavers is not known', async () => {
-      const { component, getByTestId } = await setup(true);
+      const { component, getByTestId, fixture } = await setup(true);
 
       component.data = {
         sickness: {
@@ -402,6 +406,9 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
         },
       };
 
+      component.ngOnChanges();
+      fixture.detectChanges();
+
       const vacancyRow = getByTestId('vacancyRow');
       const turnoverRow = getByTestId('turnoverRow');
       const timeInRoleRow = getByTestId('timeInRoleRow');
@@ -432,9 +439,9 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
 
         component.viewBenchmarksPosition = false;
         component.viewBenchmarksComparisonGroups = false;
-        fixture.detectChanges();
 
         component.ngOnChanges();
+        fixture.detectChanges();
 
         expect(component.vacancyMaxRank).toEqual(component.rankingsData.vacancy.groupRankings.maxRank);
         expect(component.turnoverMaxRank).toEqual(component.rankingsData.turnover.groupRankings.maxRank);
@@ -450,9 +457,8 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
 
         component.viewBenchmarksPosition = false;
         component.viewBenchmarksComparisonGroups = true;
-        fixture.detectChanges();
-
         component.ngOnChanges();
+        fixture.detectChanges();
 
         expect(component.vacancyMaxRank).toEqual(component.rankingsData.vacancy.goodCqcRankings.maxRank);
         expect(component.turnoverMaxRank).toEqual(component.rankingsData.turnover.goodCqcRankings.maxRank);
@@ -469,6 +475,7 @@ describe('DataAreaRecruitmentAndRetentionComponent', () => {
     const { component, fixture, getByTestId, queryByTestId } = await setup();
 
     component.viewBenchmarksPosition = true;
+    component.ngOnChanges();
     fixture.detectChanges();
 
     expect(getByTestId('barcharts')).toBeTruthy();

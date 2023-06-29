@@ -52,9 +52,10 @@ describe('DataAreaBarchartComponent', () => {
     });
 
     it('should show retention message if isPay is false', async () => {
-      const { component, queryByTestId } = await setup();
+      const { component, queryByTestId, fixture } = await setup();
 
       component.isPay = false;
+      fixture.detectChanges();
 
       expect(queryByTestId('all-recruitment-data')).toBeTruthy();
       expect(queryByTestId('all-pay-data')).toBeFalsy();
@@ -62,23 +63,27 @@ describe('DataAreaBarchartComponent', () => {
   });
 
   it('should show the no comparison group message when no comparsion group data is provided', async () => {
-    const { component, queryByTestId } = await setup();
-    (component.rankingsData = {
+    const { component, queryByTestId, fixture } = await setup();
+    component.rankingsData = {
       stateMessage: 'no-comparison-data',
       hasValue: false,
-      allValues: [],
-    } as RankingsResponse),
-      expect(queryByTestId('no-comparison-data')).toBeTruthy();
+      allValues: [{ value: 1, currentEst: true }],
+    } as RankingsResponse;
+
+    component.ngOnChanges();
+    expect(queryByTestId('no-comparison-data')).toBeTruthy();
   });
 
   it('should show the no workplace data message when no workplace data is provided', async () => {
-    const { component, queryByTestId } = await setup();
-    (component.rankingsData = {
+    const { component, queryByTestId, fixture } = await setup();
+    component.rankingsData = {
       stateMessage: 'no-pay-data',
       hasValue: false,
-      allValues: [],
-    } as RankingsResponse),
-      expect(queryByTestId('no-workplace-data')).toBeTruthy();
+      allValues: [{ value: 34, currentEst: false }],
+    } as RankingsResponse;
+
+    fixture.detectChanges();
+    expect(queryByTestId('no-workplace-data')).toBeTruthy();
   });
 
   it('should show the correct summary for time in role', async () => {
@@ -105,14 +110,19 @@ describe('DataAreaBarchartComponent', () => {
     expect(component.sectionInSummary).toEqual('vacancy rate');
   });
 
-  it('should show the no comparison data message when no comparison data is provided', async () => {
-    const { component, queryByTestId } = await setup();
-    (component.rankingsData = {
+  it('should show the no comparison and workplace data message when no comparison or workplace data is provided', async () => {
+    const { component, queryByTestId, fixture } = await setup();
+    component.rankingsData = {
       stateMessage: 'no-comparison-data',
       maxRank: undefined,
       hasValue: false,
       allValues: [],
-    } as RankingsResponse),
-      expect(queryByTestId('no-comparison-data')).toBeTruthy();
+    } as RankingsResponse;
+    component.noWorkplaceData = true;
+
+    fixture.detectChanges();
+    component.ngOnChanges();
+
+    expect(queryByTestId('no-workplace-or-comparison-data')).toBeTruthy();
   });
 });

@@ -39,7 +39,6 @@ export class DataAreaPayComponent {
     this.setComparisonGroupPayAndSalary(this.viewBenchmarksComparisonGroups);
     this.setRankings(this.viewBenchmarksComparisonGroups);
     this.initialiseRankings();
-    this.initialisePositions();
   }
 
   public handleViewBenchmarkPosition(visible: boolean): void {
@@ -121,29 +120,8 @@ export class DataAreaPayComponent {
     return undefined;
   }
 
-  public initialisePositions(): void {
-    this.positionData = {
-      careWorkerPay: {
-        title: 'Care worker pay',
-        payMoreThanWorkplacesNumber: this.getRankNumber(this.careWorkerRankings),
-        totalWorkplaces: this.getMaxRank(this.careWorkerRankings),
-      },
-      seniorCareWorkerPay: {
-        title: 'Senior care worker pay',
-        payMoreThanWorkplacesNumber: this.getRankNumber(this.seniorCareWorkerRankings),
-        totalWorkplaces: this.getMaxRank(this.seniorCareWorkerRankings),
-      },
-      registeredNursePay: {
-        title: 'Registered nurse salary',
-        payMoreThanWorkplacesNumber: this.getRankNumber(this.registeredNurseRankings),
-        totalWorkplaces: this.getMaxRank(this.registeredNurseRankings),
-      },
-      registeredManagerPay: {
-        title: 'Registered manager salary',
-        payMoreThanWorkplacesNumber: this.getRankNumber(this.registeredManagerRankings),
-        totalWorkplaces: this.getMaxRank(this.registeredManagerRankings),
-      },
-    };
+  public hasWorkplaceData(rank: RankingsResponse): boolean {
+    return rank.allValues?.length == 0;
   }
 
   public initialiseRankings(): void {
@@ -152,22 +130,27 @@ export class DataAreaPayComponent {
         title: 'Care worker pay',
         workplacesRankNumber: this.getRankNumber(this.careWorkerRankings),
         totalWorkplaces: this.getMaxRank(this.careWorkerRankings),
+        noWorkplaceData: this.hasWorkplaceData(this.careWorkerRankings),
       },
       seniorCareWorkerPay: {
         title: 'Senior care worker pay',
         workplacesRankNumber: this.getRankNumber(this.seniorCareWorkerRankings),
         totalWorkplaces: this.getMaxRank(this.seniorCareWorkerRankings),
+        noWorkplaceData: this.hasWorkplaceData(this.seniorCareWorkerRankings),
       },
       registeredNursePay: {
         title: 'Registered nurse salary',
         workplacesRankNumber: this.getRankNumber(this.registeredNurseRankings),
         totalWorkplaces: this.getMaxRank(this.registeredNurseRankings),
+        noWorkplaceData: this.hasWorkplaceData(this.registeredNurseRankings),
       },
       registeredManagerPay: {
         title: 'Registered manager salary',
         workplacesRankNumber: this.getRankNumber(this.registeredManagerRankings),
         totalWorkplaces: this.getMaxRank(this.registeredManagerRankings),
+        noWorkplaceData: this.hasWorkplaceData(this.registeredManagerRankings),
       },
     };
+    console.log(this.rankings);
   }
 }

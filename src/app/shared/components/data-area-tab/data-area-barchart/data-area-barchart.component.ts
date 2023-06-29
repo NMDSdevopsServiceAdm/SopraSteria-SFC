@@ -17,12 +17,11 @@ export class DataAreaBarchartComponent implements OnChanges, OnInit {
   @Input() rankingsData: RankingsResponse = null;
   @Input() altDescription = '';
   @Input() isPay: boolean;
+  @Input() noWorkplaceData: boolean = false;
   public options: Highcharts.Options;
   public numberOfWorkplaces: number;
   public rank: number;
   public sectionInSummary: string;
-  public noPositionData: boolean;
-  public noComparisonData: boolean;
 
   constructor(private builder: DataAreaBarchartOptionsBuilder) {}
 

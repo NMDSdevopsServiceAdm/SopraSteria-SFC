@@ -14,10 +14,18 @@
     </ng-template>
   </ng-container>
   <ng-template #noComparisonData>
-    <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-comparison-data">
-      We do not have enough comparison group data to <br />
-      show you where you're ranked yet.
-    </p>
+    <ng-container *ngIf="noWorkplaceData == false; else noWorkplaceDataMessage">
+      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-comparison-data">
+        We do not have enough comparison group data to <br />
+        show you where you're ranked yet.
+      </p>
+    </ng-container>
+    <ng-template #noWorkplaceDataMessage>
+      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-or-comparison-data">
+        We do not have enough workplace and comparison group <br />
+        data to show you where you're ranked yet.
+      </p>
+    </ng-template>
   </ng-template>
   <div class="ranking-bar">
     <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>

@@ -602,21 +602,25 @@ describe('DataAreaPayComponent', () => {
         title: 'Care worker pay',
         workplacesRankNumber: rankings.pay.careWorkerPay.groupRankings.currentRank,
         totalWorkplaces: rankings.pay.careWorkerPay.groupRankings.maxRank,
+        noWorkplaceData: false,
       });
       expect(component.rankings.seniorCareWorkerPay).toEqual({
         title: 'Senior care worker pay',
         workplacesRankNumber: rankings.pay.seniorCareWorkerPay.groupRankings.currentRank,
         totalWorkplaces: rankings.pay.seniorCareWorkerPay.groupRankings.maxRank,
+        noWorkplaceData: false,
       });
       expect(component.rankings.registeredNursePay).toEqual({
         title: 'Registered nurse salary',
         workplacesRankNumber: rankings.pay.registeredNursePay.groupRankings.currentRank,
         totalWorkplaces: rankings.pay.registeredNursePay.groupRankings.maxRank,
+        noWorkplaceData: false,
       });
       expect(component.rankings.registeredManagerPay).toEqual({
         title: 'Registered manager salary',
         workplacesRankNumber: rankings.pay.registeredManagerPay.groupRankings.currentRank,
         totalWorkplaces: rankings.pay.registeredManagerPay.groupRankings.maxRank,
+        noWorkplaceData: false,
       });
 
       component.viewBenchmarksComparisonGroups = true;
@@ -626,21 +630,25 @@ describe('DataAreaPayComponent', () => {
         title: 'Care worker pay',
         workplacesRankNumber: rankings.pay.careWorkerPay.goodCqcRankings.currentRank,
         totalWorkplaces: rankings.pay.careWorkerPay.goodCqcRankings.maxRank,
+        noWorkplaceData: false,
       });
       expect(component.rankings.seniorCareWorkerPay).toEqual({
         title: 'Senior care worker pay',
         workplacesRankNumber: rankings.pay.seniorCareWorkerPay.goodCqcRankings.currentRank,
         totalWorkplaces: rankings.pay.seniorCareWorkerPay.goodCqcRankings.maxRank,
+        noWorkplaceData: false,
       });
       expect(component.rankings.registeredNursePay).toEqual({
         title: 'Registered nurse salary',
         workplacesRankNumber: rankings.pay.registeredNursePay.goodCqcRankings.currentRank,
         totalWorkplaces: rankings.pay.registeredNursePay.goodCqcRankings.maxRank,
+        noWorkplaceData: false,
       });
       expect(component.rankings.registeredManagerPay).toEqual({
         title: 'Registered manager salary',
         workplacesRankNumber: rankings.pay.registeredManagerPay.goodCqcRankings.currentRank,
         totalWorkplaces: rankings.pay.registeredManagerPay.goodCqcRankings.maxRank,
+        noWorkplaceData: false,
       });
     });
 
