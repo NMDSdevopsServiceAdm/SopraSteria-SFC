@@ -1,5 +1,11 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { AllRankingsResponse, BenchmarksResponse, RankingsResponse } from '@core/model/benchmarks.model';
+import {
+  AllRankingsResponse,
+  BenchmarksResponse,
+  BenchmarkValue,
+  RankingsResponse,
+} from '@core/model/benchmarks.model';
+import { FormatUtil } from '@core/utils/format-util';
 
 @Component({
   selector: 'app-data-area-recruitment-and-retention',
@@ -23,9 +29,16 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
   public vacancyNoWorkplaceData: boolean;
   public turnoverNoWorkplaceData: boolean;
   public timeInRoleNoWorkplaceData: boolean;
+  public vacancyComparisonGroupData: string;
+  public turnoverComparisonGroupData: string;
+  public timeInRoleComparisonGroupData: string;
+  public vacancyWorkplaceData: string;
+  public turnoverWorkplaceData: string;
+  public timeInRoleWorkplaceData: string;
 
   ngOnChanges(): void {
     this.setRankings(this.viewBenchmarksComparisonGroups);
+    this.setComparisonTableData(this.viewBenchmarksComparisonGroups);
   }
 
   public handleViewBenchmarkPosition(visible: boolean): void {
@@ -46,6 +59,32 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
 
   public hasWorkplaceData(rank: RankingsResponse): boolean {
     return rank.allValues?.length == 0;
+  }
+
+  private formatComparisonGroupTableData(data: BenchmarkValue): string {
+    return data.hasValue ? `${FormatUtil.formatPercent(data.value)}` : 'Not enough data';
+  }
+
+  private formatWorkplaceTableData(data: BenchmarkValue): string {
+    return data.hasValue ? `${FormatUtil.formatPercent(data.value)}` : 'No data added';
+  }
+
+  public setComparisonTableData(isGoodAndOutstanding: boolean): void {
+    if (isGoodAndOutstanding) {
+      this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.goodCqc);
+      this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.goodCqc);
+      this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.goodCqc);
+      this.vacancyWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.goodCqc);
+      this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.turnoverRate.goodCqc);
+      this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.timeInRole.goodCqc);
+    } else {
+      this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.comparisonGroup);
+      this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.comparisonGroup);
+      this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.comparisonGroup);
+      this.vacancyWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.comparisonGroup);
+      this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.turnoverRate.comparisonGroup);
+      this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.timeInRole.comparisonGroup);
+    }
   }
 
   public setRankings(isGoodAndOutstanding: boolean): void {

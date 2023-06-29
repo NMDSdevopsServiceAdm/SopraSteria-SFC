@@ -14,47 +14,20 @@
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row first-row" data-testid="vacancyRow">
         <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">Vacancy rate</th>
-        <td class="govuk-table__cell workplace-cell">
-          {{ data?.vacancyRate.workplaceValue.value * 100 | number: '1.0-0' }}%
-        </td>
-        <td class="govuk-table__cell comparison-group-cell">
-          <ng-container *ngIf="viewBenchmarksComparisonGroups; else vacancyTotalComparison">
-            {{ data?.vacancyRate.goodCqc.value * 100 | number: '1.0-0' }}%
-          </ng-container>
-          <ng-template #vacancyTotalComparison>
-            {{ data?.vacancyRate.comparisonGroup.value * 100 | number: '1.0-0' }}%
-          </ng-template>
-        </td>
+        <td class="govuk-table__cell workplace-cell">{{ vacancyWorkplaceData }}</td>
+        <td class="govuk-table__cell comparison-group-cell">{{ vacancyComparisonGroupData }}</td>
       </tr>
       <tr class="govuk-table__row" data-testid="turnoverRow">
         <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">Turnover rate</th>
-        <td class="govuk-table__cell workplace-cell">
-          {{ data?.turnoverRate.workplaceValue.value * 100 | number: '1.0-0' }}%
-        </td>
-        <td class="govuk-table__cell comparison-group-cell">
-          <ng-container *ngIf="viewBenchmarksComparisonGroups; else turnoverTotalComparison">
-            {{ data?.turnoverRate.goodCqc.value * 100 | number: '1.0-0' }}%
-          </ng-container>
-          <ng-template #turnoverTotalComparison>
-            {{ data?.turnoverRate.comparisonGroup.value * 100 | number: '1.0-0' }}%
-          </ng-template>
-        </td>
+        <td class="govuk-table__cell workplace-cell">{{ turnoverWorkplaceData }}</td>
+        <td class="govuk-table__cell comparison-group-cell">{{ turnoverComparisonGroupData }}</td>
       </tr>
       <tr class="govuk-table__row" data-testid="timeInRoleRow">
         <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">
           Percentage of staff still in their main job role after 12 months
         </th>
-        <td class="govuk-table__cell workplace-cell">
-          {{ data?.timeInRole.workplaceValue.value * 100 | number: '1.0-0' }}%
-        </td>
-        <td class="govuk-table__cell comparison-group-cell">
-          <ng-container *ngIf="viewBenchmarksComparisonGroups; else timeInRoleTotalComparison">
-            {{ data?.timeInRole.goodCqc.value * 100 | number: '1.0-0' }}%
-          </ng-container>
-          <ng-template #timeInRoleTotalComparison>
-            {{ data?.timeInRole.comparisonGroup.value * 100 | number: '1.0-0' }}%
-          </ng-template>
-        </td>
+        <td class="govuk-table__cell workplace-cell">{{ timeInRoleWorkplaceData }}</td>
+        <td class="govuk-table__cell comparison-group-cell">{{ timeInRoleComparisonGroupData }}</td>
       </tr>
     </tbody>
   </table>
