@@ -151,5 +151,6 @@ export class DataAreaPayComponent {
         noWorkplaceData: this.hasWorkplaceData(this.registeredManagerRankings),
       },
     };
+    console.log(this.rankings);
   }
 }

@@ -71,8 +71,8 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
 
   public setComparisonTableData(isGoodAndOutstanding: boolean): void {
     this.vacancyWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.workplaceValue);
-    this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.workplaceValue);
-    this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.workplaceValue);
+    this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.turnoverRate.workplaceValue);
+    this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.timeInRole.workplaceValue);
     if (isGoodAndOutstanding) {
       this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.goodCqc);
       this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.goodCqc);

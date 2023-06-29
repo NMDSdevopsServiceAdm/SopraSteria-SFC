@@ -47,6 +47,7 @@
           [rankingsData]="vacancyRankings"
           [isPay]="false"
           [altDescription]="'Vacancy rate barchart'"
+          [noWorkplaceData]="vacancyNoWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
           [section]="'Turnover rate'"
@@ -54,6 +55,7 @@
           [rankingsData]="turnoverRankings"
           [isPay]="false"
           [altDescription]="'Turnover rate barchart'"
+          [noWorkplaceData]="turnoverNoWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
           [section]="'Percentage of staff still in their main job role after 12 months'"
@@ -61,6 +63,7 @@
           [rankingsData]="timeInRoleRankings"
           [isPay]="false"
           [altDescription]="'Time in role rate barchart'"
+          [noWorkplaceData]="timeInRoleNoWorkplaceData"
         ></app-data-area-barchart>
       </div>
     </ng-container>
