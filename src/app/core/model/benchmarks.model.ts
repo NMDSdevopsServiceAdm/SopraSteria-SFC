@@ -21,9 +21,10 @@ export interface Meta {
   localAuthority: string;
 }
 export interface Tile {
-  workplaceValue: BenchmarkValue;
-  comparisonGroup: BenchmarkValue;
-  goodCqc: BenchmarkValue;
+  workplaceValue?: BenchmarkValue;
+  comparisonGroup?: BenchmarkValue;
+  groupRankings?: any;
+  goodCqc?: BenchmarkValue;
   lowTurnover?: BenchmarkValue;
   workplaces?: number;
   staff?: number;
@@ -72,6 +73,12 @@ export enum Metric {
   'turnover',
   'qualifications',
   'sickness',
+  'vacancy',
+  'timeInRole',
+  'careWorkerPay',
+  'seniorCareWorkerPay',
+  'registeredManagerPay',
+  'registeredNursePay',
 }
 
 export interface NoData {
@@ -83,6 +90,7 @@ export interface NoData {
   'no-pay-data'?: string;
   'no-sickness-data'?: string;
   'no-qualifications-data'?: string;
+  'no-comparison-data'?: string;
 }
 
 export class MetricsContent {

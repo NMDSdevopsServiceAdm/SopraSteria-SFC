@@ -98,4 +98,21 @@ describe('DataAreaTabComponent', () => {
     expect(queryByTestId('payArea')).toBeFalsy();
     expect(within(categoryHeading).queryByText('Pay')).toBeFalsy();
   });
+
+  it('should check the pay benchmarks data to see if there is comparison data', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup();
+    const noCompData = {
+      value: 0,
+      stateMessage: 'no-data',
+      hasValue: false,
+    };
+    component.tilesData.careWorkerPay.comparisonGroup = noCompData;
+    component.tilesData.seniorCareWorkerPay.comparisonGroup = noCompData;
+    component.tilesData.registeredNursePay.comparisonGroup = noCompData;
+    component.tilesData.registeredManagerPay.comparisonGroup = noCompData;
+
+    component.checkComparisonDataExists();
+
+    expect(component.comparisonDataExists).toBeFalsy();
+  });
 });

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {
   AllRankingsResponse,
   BenchmarksResponse,
@@ -12,7 +12,7 @@ import { FormatUtil } from '@core/utils/format-util';
   templateUrl: './data-area-pay.component.html',
   styleUrls: ['../data-area-tab.component.scss'],
 })
-export class DataAreaPayComponent implements OnChanges {
+export class DataAreaPayComponent {
   @Input() data: BenchmarksResponse;
   @Input() rankingsData: AllRankingsResponse;
   @Input() viewBenchmarksComparisonGroups: boolean;
@@ -22,19 +22,24 @@ export class DataAreaPayComponent implements OnChanges {
   public seniorCareWorkerPay: string;
   public registeredNurseSalary: string;
   public registeredManagerSalary: string;
-  public comparisionGroupCareWorkerPay: string;
-  public comparisionGroupSeniorCareWorkerPay: string;
-  public comparisionGroupRegisteredNurseSalary: string;
-  public comparisionGroupRegisteredManagerSalary: string;
+  public comparisonGroupCareWorkerPay: string;
+  public comparisonGroupSeniorCareWorkerPay: string;
+  public comparisonGroupRegisteredNurseSalary: string;
+  public comparisonGroupRegisteredManagerSalary: string;
   public careWorkerRankings: RankingsResponse;
   public seniorCareWorkerRankings: RankingsResponse;
   public registeredNurseRankings: RankingsResponse;
   public registeredManagerRankings: RankingsResponse;
+  public rankings;
+  public positionData;
+  private noComparisonDataState = 'no-comparison-data';
 
   ngOnChanges(): void {
     this.setWorkplacePayAndSalary();
-    this.setComparisionGroupPayAndSalary(this.viewBenchmarksComparisonGroups);
+    this.setComparisonGroupPayAndSalary(this.viewBenchmarksComparisonGroups);
     this.setRankings(this.viewBenchmarksComparisonGroups);
+    this.initialiseRankings();
+    this.initialisePositions();
   }
 
   public handleViewBenchmarkPosition(visible: boolean): void {
@@ -48,25 +53,25 @@ export class DataAreaPayComponent implements OnChanges {
     this.registeredManagerSalary = this.formatWorkplaceSalary(this.data.registeredManagerPay.workplaceValue);
   }
 
-  public setComparisionGroupPayAndSalary(isGoodAndOutstanding: boolean): void {
+  public setComparisonGroupPayAndSalary(isGoodAndOutstanding: boolean): void {
     if (isGoodAndOutstanding) {
-      this.comparisionGroupCareWorkerPay = this.formatComparisionGroupPay(this.data?.careWorkerPay.goodCqc);
-      this.comparisionGroupSeniorCareWorkerPay = this.formatComparisionGroupPay(this.data?.seniorCareWorkerPay.goodCqc);
-      this.comparisionGroupRegisteredNurseSalary = this.formatComparisionGroupSalary(
+      this.comparisonGroupCareWorkerPay = this.formatComparisonGroupPay(this.data?.careWorkerPay.goodCqc);
+      this.comparisonGroupSeniorCareWorkerPay = this.formatComparisonGroupPay(this.data?.seniorCareWorkerPay.goodCqc);
+      this.comparisonGroupRegisteredNurseSalary = this.formatComparisonGroupSalary(
         this.data?.registeredNursePay.goodCqc,
       );
-      this.comparisionGroupRegisteredManagerSalary = this.formatComparisionGroupSalary(
+      this.comparisonGroupRegisteredManagerSalary = this.formatComparisonGroupSalary(
         this.data?.registeredManagerPay.goodCqc,
       );
     } else {
-      this.comparisionGroupCareWorkerPay = this.formatComparisionGroupPay(this.data?.careWorkerPay.comparisonGroup);
-      this.comparisionGroupSeniorCareWorkerPay = this.formatComparisionGroupPay(
+      this.comparisonGroupCareWorkerPay = this.formatComparisonGroupPay(this.data?.careWorkerPay.comparisonGroup);
+      this.comparisonGroupSeniorCareWorkerPay = this.formatComparisonGroupPay(
         this.data?.seniorCareWorkerPay.comparisonGroup,
       );
-      this.comparisionGroupRegisteredNurseSalary = this.formatComparisionGroupSalary(
+      this.comparisonGroupRegisteredNurseSalary = this.formatComparisonGroupSalary(
         this.data?.registeredNursePay.comparisonGroup,
       );
-      this.comparisionGroupRegisteredManagerSalary = this.formatComparisionGroupSalary(
+      this.comparisonGroupRegisteredManagerSalary = this.formatComparisonGroupSalary(
         this.data?.registeredManagerPay.comparisonGroup,
       );
     }
@@ -86,11 +91,11 @@ export class DataAreaPayComponent implements OnChanges {
     }
   }
 
-  private formatComparisionGroupSalary(data: BenchmarkValue): string {
+  private formatComparisonGroupSalary(data: BenchmarkValue): string {
     return data.hasValue ? `${FormatUtil.formatSalary(data.value)} (annually)` : 'Not enough data';
   }
 
-  private formatComparisionGroupPay(data: BenchmarkValue): string {
+  private formatComparisonGroupPay(data: BenchmarkValue): string {
     return data.hasValue ? `${FormatUtil.formatMoney(data.value)} (hourly)` : 'Not enough data';
   }
 
@@ -100,5 +105,69 @@ export class DataAreaPayComponent implements OnChanges {
 
   private formatWorkplacePay(data: BenchmarkValue): string {
     return data.hasValue ? `${FormatUtil.formatMoney(data.value)} (hourly)` : 'No data added';
+  }
+
+  public getRankNumber(rank: RankingsResponse): number {
+    if (rank.hasValue) {
+      return rank.currentRank;
+    }
+    return undefined;
+  }
+
+  public getMaxRank(rank: RankingsResponse): number {
+    if (rank.stateMessage !== this.noComparisonDataState) {
+      return rank.maxRank;
+    }
+    return undefined;
+  }
+
+  public initialisePositions(): void {
+    this.positionData = {
+      careWorkerPay: {
+        title: 'Care worker pay',
+        payMoreThanWorkplacesNumber: this.getRankNumber(this.careWorkerRankings),
+        totalWorkplaces: this.getMaxRank(this.careWorkerRankings),
+      },
+      seniorCareWorkerPay: {
+        title: 'Senior care worker pay',
+        payMoreThanWorkplacesNumber: this.getRankNumber(this.seniorCareWorkerRankings),
+        totalWorkplaces: this.getMaxRank(this.seniorCareWorkerRankings),
+      },
+      registeredNursePay: {
+        title: 'Registered nurse salary',
+        payMoreThanWorkplacesNumber: this.getRankNumber(this.registeredNurseRankings),
+        totalWorkplaces: this.getMaxRank(this.registeredNurseRankings),
+      },
+      registeredManagerPay: {
+        title: 'Registered manager salary',
+        payMoreThanWorkplacesNumber: this.getRankNumber(this.registeredManagerRankings),
+        totalWorkplaces: this.getMaxRank(this.registeredManagerRankings),
+      },
+    };
+  }
+
+  public initialiseRankings(): void {
+    this.rankings = {
+      careWorkerPay: {
+        title: 'Care worker pay',
+        workplacesRankNumber: this.getRankNumber(this.careWorkerRankings),
+        totalWorkplaces: this.getMaxRank(this.careWorkerRankings),
+      },
+      seniorCareWorkerPay: {
+        title: 'Senior care worker pay',
+        workplacesRankNumber: this.getRankNumber(this.seniorCareWorkerRankings),
+        totalWorkplaces: this.getMaxRank(this.seniorCareWorkerRankings),
+      },
+      registeredNursePay: {
+        title: 'Registered nurse salary',
+        workplacesRankNumber: this.getRankNumber(this.registeredNurseRankings),
+        totalWorkplaces: this.getMaxRank(this.registeredNurseRankings),
+      },
+      registeredManagerPay: {
+        title: 'Registered manager salary',
+        workplacesRankNumber: this.getRankNumber(this.registeredManagerRankings),
+        totalWorkplaces: this.getMaxRank(this.registeredManagerRankings),
+      },
+    };
   }
 }

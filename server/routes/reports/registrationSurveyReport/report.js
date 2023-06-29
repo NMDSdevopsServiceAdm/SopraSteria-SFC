@@ -46,6 +46,11 @@ const generateReport = async (_, res) => {
       },
     ],
   });
+
+  registrationSurveyResponses.sort((responseA, responseB) => {
+    return responseA.submittedDate - responseB.submittedDate;
+  });
+
   registrationSurveyResponses.forEach((response) => {
     printRow(worksheet, response);
   });

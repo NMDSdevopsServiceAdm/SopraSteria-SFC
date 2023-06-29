@@ -3,23 +3,27 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header"></th>
-        <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
+        <th scope="col" class="govuk-table__header comparison-table-header govuk-!-text-align-centre">
           Your workplace
         </th>
-        <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
+        <th scope="col" class="govuk-table__header comparison-table-header govuk-!-text-align-centre">
           Comparison group
         </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row first-row" data-testid="vacancyRow">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-          Vacancy rate
-        </th>
-        <td class="govuk-table__cell workplace-cell">
-          {{ data?.vacancyRate.workplaceValue.value * 100 | number: '1.0-0' }}%
-        </td>
-        <td class="govuk-table__cell comparision-group-cell">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">Vacancy rate</th>
+
+        <ng-container *ngIf="data?.vacancyRate.workplaceValue.hasValue; else noVacancyData">
+          <td class="govuk-table__cell workplace-cell">
+            {{ data?.vacancyRate.workplaceValue.value * 100 | number: '1.0-0' }}%
+          </td>
+        </ng-container>
+        <ng-template #noVacancyData>
+          <td class="govuk-table__cell workplace-cell">No data added</td>
+        </ng-template>
+        <td class="govuk-table__cell comparison-group-cell">
           <ng-container *ngIf="viewBenchmarksComparisonGroups; else vacancyTotalComparison">
             {{ data?.vacancyRate.goodCqc.value * 100 | number: '1.0-0' }}%
           </ng-container>
@@ -29,13 +33,16 @@
         </td>
       </tr>
       <tr class="govuk-table__row" data-testid="turnoverRow">
-        <th scope="row" class="govuk-table__header commparision-row-header govuk-!-font-weight-regular">
-          Turnover rate
-        </th>
-        <td class="govuk-table__cell workplace-cell">
-          {{ data?.turnoverRate.workplaceValue.value * 100 | number: '1.0-0' }}%
-        </td>
-        <td class="govuk-table__cell comparision-group-cell">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">Turnover rate</th>
+        <ng-container *ngIf="data?.turnoverRate.workplaceValue.hasValue; else noTurnoverData">
+          <td class="govuk-table__cell workplace-cell">
+            {{ data?.turnoverRate.workplaceValue.value * 100 | number: '1.0-0' }}%
+          </td>
+        </ng-container>
+        <ng-template #noTurnoverData>
+          <td class="govuk-table__cell workplace-cell">No data added</td>
+        </ng-template>
+        <td class="govuk-table__cell comparison-group-cell">
           <ng-container *ngIf="viewBenchmarksComparisonGroups; else turnoverTotalComparison">
             {{ data?.turnoverRate.goodCqc.value * 100 | number: '1.0-0' }}%
           </ng-container>
@@ -44,14 +51,14 @@
           </ng-template>
         </td>
       </tr>
-      <tr class="govuk-table__row last-row" data-testid="timeInRoleRow">
+      <tr class="govuk-table__row" data-testid="timeInRoleRow">
         <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">
           Percentage of staff still in their main job role after 12 months
         </th>
         <td class="govuk-table__cell workplace-cell">
           {{ data?.timeInRole.workplaceValue.value * 100 | number: '1.0-0' }}%
         </td>
-        <td class="govuk-table__cell comparision-group-cell">
+        <td class="govuk-table__cell comparison-group-cell">
           <ng-container *ngIf="viewBenchmarksComparisonGroups; else timeInRoleTotalComparison">
             {{ data?.timeInRole.goodCqc.value * 100 | number: '1.0-0' }}%
           </ng-container>
@@ -73,19 +80,25 @@
     <ng-container *ngIf="viewBenchmarksPosition; else showRankings">
       <div class="govuk-!-margin-top-7" data-testid="barcharts">
         <app-data-area-barchart
-          [positionedTitle]="'Vacancy rate'"
-          [payMoreThanWorkplacesNumber]="54"
-          [workplacesNumber]="72"
+          [section]="'Vacancy rate'"
+          [type]="'vacancy'"
+          [rankingsData]="vacancyRankings"
+          [isPay]="false"
+          [altDescription]="'Vacancy rate barchart'"
         ></app-data-area-barchart>
         <app-data-area-barchart
-          [positionedTitle]="'Turnover rate'"
-          [payMoreThanWorkplacesNumber]="21"
-          [workplacesNumber]="72"
+          [section]="'Turnover rate'"
+          [type]="'turnover'"
+          [rankingsData]="turnoverRankings"
+          [isPay]="false"
+          [altDescription]="'Turnover rate barchart'"
         ></app-data-area-barchart>
         <app-data-area-barchart
-          [positionedTitle]="'Percentage of staff still in their main job role after 12 months'"
-          [payMoreThanWorkplacesNumber]="36"
-          [workplacesNumber]="72"
+          [section]="'Percentage of staff still in their main job role after 12 months'"
+          [type]="'timeInRole'"
+          [rankingsData]="timeInRoleRankings"
+          [isPay]="false"
+          [altDescription]="'Time in role rate barchart'"
         ></app-data-area-barchart>
       </div>
     </ng-container>
@@ -93,20 +106,60 @@
       <div class="govuk-!-margin-top-7" data-testid="rankings">
         <app-data-area-ranking
           [rankingTitle]="'Vacancy rate'"
-          [workplaceRankNumber]="18"
-          [workplacesNumber]="72"
+          [workplaceRankNumber]="vacancyCurrentRank"
+          [workplacesNumber]="vacancyMaxRank"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="'Turnover rate'"
-          [workplaceRankNumber]="51"
-          [workplacesNumber]="72"
+          [workplaceRankNumber]="turnoverCurrentRank"
+          [workplacesNumber]="turnoverMaxRank"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="'Percentage of staff still in their main job role after 12 months'"
-          [workplaceRankNumber]="36"
-          [workplacesNumber]="72"
+          [workplaceRankNumber]="timeInRoleCurrentRank"
+          [workplacesNumber]="timeInRoleMaxRank"
         ></app-data-area-ranking>
       </div>
     </ng-template>
+  </div>
+  <div class="govuk-!-margin-top-7">
+    <h2 class="govuk-heading-m">Useful links</h2>
+    <app-data-area-useful-link
+      [linkTitle]="'International recruitment'"
+      [linkUrl]="['/internal-recruitment']"
+      [linkDescription]="
+        'International recruitment can help you develop a skilled and diverse workforce, but it can also be daunting for employers. We\'ve collected together the resources that\'ll support you every step of the way.'
+      "
+    ></app-data-area-useful-link>
+
+    <app-data-area-useful-link
+      [linkTitle]="'Social media for recruiting care workers'"
+      [linkUrl]="['/social-media-for-recruiting']"
+      [linkDescription]="
+        'Social media is a great way to attract new people and generate interest in your organisation. This guide offers tips and advice to help you make the most of well-known platforms and attract people of different ages.'
+      "
+    ></app-data-area-useful-link>
+
+    <app-data-area-useful-link
+      [linkTitle]="'Maximise retention'"
+      [linkUrl]="['/maximise-retention']"
+      [linkDescription]="
+        'This webinar shares sector expertise around maximising the retention of your staff. Discover top tips and innovative solutions for staff retention and practical ideas from other managers.'
+      "
+    ></app-data-area-useful-link>
+
+    <app-data-area-useful-link
+      [linkTitle]="'Planning your recruitment'"
+      [linkUrl]="['/planning-recruitment']"
+      [linkDescription]="
+        'A good workforce plan will help your organisation be more successful and make sure you have the right people in place to meet the needs and future opportunities for your business.'
+      "
+    ></app-data-area-useful-link>
+
+    <app-data-area-useful-link
+      [linkTitle]="'Maximising recruitment'"
+      [linkUrl]="['/maximising-recruitment']"
+      [linkDescription]="'This webinar shares sector expertise to support you in the recruitment process.'"
+    ></app-data-area-useful-link>
   </div>
 </div>
