@@ -81,6 +81,7 @@
           [rankingsData]="careWorkerRankings"
           [altDescription]="'Care worker pay barchart'"
           [isPay]="true"
+          [noWorkplaceData]="rankings.careWorkerPay.noWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
           [section]="'Senior care worker pay'"
@@ -88,6 +89,7 @@
           [rankingsData]="seniorCareWorkerRankings"
           [altDesrcripton]="'Senior care worker pay barchart'"
           [isPay]="true"
+          [noWorkplaceData]="rankings.seniorCareWorkerPay.noWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
           *ngIf="showRegisteredNurseSalary"
@@ -96,12 +98,14 @@
           [rankingsData]="registeredNurseRankings"
           [altDescription]="'Registered nurse salary barchart'"
           [isPay]="true"
+          [noWorkplaceData]="rankings.registeredNursePay.noWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
           [section]="'Registered manager salary'"
           [type]="'registeredManagerPay'"
           [rankingsData]="registeredManagerRankings"
           [isPay]="true"
+          [noWorkplaceData]="rankings.registeredManagerPay.noWorkplaceData"
           [altDescription]="'Registered manager salary barchart'"
         ></app-data-area-barchart>
       </div>
@@ -112,22 +116,26 @@
           [rankingTitle]="rankings.careWorkerPay.title"
           [workplaceRankNumber]="rankings.careWorkerPay.workplacesRankNumber"
           [workplacesNumber]="rankings.careWorkerPay.totalWorkplaces"
+          [noWorkplaceData]="rankings.careWorkerPay.noWorkplaceData"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="rankings.seniorCareWorkerPay.title"
           [workplaceRankNumber]="rankings.seniorCareWorkerPay.workplacesRankNumber"
           [workplacesNumber]="rankings.seniorCareWorkerPay.totalWorkplaces"
+          [noWorkplaceData]="rankings.seniorCareWorkerPay.noWorkplaceData"
         ></app-data-area-ranking>
         <app-data-area-ranking
           *ngIf="showRegisteredNurseSalary"
           [rankingTitle]="rankings.registeredNursePay.title"
           [workplaceRankNumber]="rankings.registeredNursePay.workplacesRankNumber"
           [workplacesNumber]="rankings.registeredNursePay.totalWorkplaces"
+          [noWorkplaceData]="rankings.registeredNursePay.noWorkplaceData"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="rankings.registeredManagerPay.title"
           [workplaceRankNumber]="rankings.registeredManagerPay.workplacesRankNumber"
           [workplacesNumber]="rankings.registeredManagerPay.totalWorkplaces"
+          [noWorkplaceData]="rankings.registeredManagerPay.noWorkplaceData"
         ></app-data-area-ranking>
       </div>
     </ng-template>

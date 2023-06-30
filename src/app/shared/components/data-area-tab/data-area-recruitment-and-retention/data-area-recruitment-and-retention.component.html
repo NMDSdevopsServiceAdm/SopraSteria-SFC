@@ -14,44 +14,20 @@
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row first-row" data-testid="vacancyRow">
         <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">Vacancy rate</th>
-
-        <ng-container *ngIf="data?.vacancyRate.workplaceValue.hasValue; else noVacancyData">
-          <td class="govuk-table__cell workplace-cell">
-            {{ data?.vacancyRate.workplaceValue.value * 100 | number: '1.0-0' }}%
-          </td>
-        </ng-container>
-        <ng-template #noVacancyData>
-          <td class="govuk-table__cell workplace-cell">No data added</td>
-        </ng-template>
-
-        <td class="govuk-table__cell comparison-group-cell">
-          {{ vacancyComparisionGroup }}
-        </td>
+        <td class="govuk-table__cell workplace-cell">{{ vacancyWorkplaceData }}</td>
+        <td class="govuk-table__cell comparison-group-cell">{{ vacancyComparisonGroupData }}</td>
       </tr>
       <tr class="govuk-table__row" data-testid="turnoverRow">
         <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">Turnover rate</th>
-        <ng-container *ngIf="data?.turnoverRate.workplaceValue.hasValue; else noTurnoverData">
-          <td class="govuk-table__cell workplace-cell">
-            {{ data?.turnoverRate.workplaceValue.value * 100 | number: '1.0-0' }}%
-          </td>
-        </ng-container>
-        <ng-template #noTurnoverData>
-          <td class="govuk-table__cell workplace-cell">No data added</td>
-        </ng-template>
-        <td class="govuk-table__cell comparison-group-cell">
-          {{ turnoverComparisionGroup }}
-        </td>
+        <td class="govuk-table__cell workplace-cell">{{ turnoverWorkplaceData }}</td>
+        <td class="govuk-table__cell comparison-group-cell">{{ turnoverComparisonGroupData }}</td>
       </tr>
       <tr class="govuk-table__row" data-testid="timeInRoleRow">
         <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">
           Percentage of staff still in their main job role after 12 months
         </th>
-        <td class="govuk-table__cell workplace-cell">
-          {{ data?.timeInRole.workplaceValue.value * 100 | number: '1.0-0' }}%
-        </td>
-        <td class="govuk-table__cell comparison-group-cell">
-          {{ timeInRoleComparisionGroup }}
-        </td>
+        <td class="govuk-table__cell workplace-cell">{{ timeInRoleWorkplaceData }}</td>
+        <td class="govuk-table__cell comparison-group-cell">{{ timeInRoleComparisonGroupData }}</td>
       </tr>
     </tbody>
   </table>
@@ -71,6 +47,7 @@
           [rankingsData]="vacancyRankings"
           [isPay]="false"
           [altDescription]="'Vacancy rate barchart'"
+          [noWorkplaceData]="vacancyNoWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
           [section]="'Turnover rate'"
@@ -78,6 +55,7 @@
           [rankingsData]="turnoverRankings"
           [isPay]="false"
           [altDescription]="'Turnover rate barchart'"
+          [noWorkplaceData]="turnoverNoWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
           [section]="'Percentage of staff still in their main job role after 12 months'"
@@ -85,6 +63,7 @@
           [rankingsData]="timeInRoleRankings"
           [isPay]="false"
           [altDescription]="'Time in role rate barchart'"
+          [noWorkplaceData]="timeInRoleNoWorkplaceData"
         ></app-data-area-barchart>
       </div>
     </ng-container>
@@ -94,16 +73,19 @@
           [rankingTitle]="'Vacancy rate'"
           [workplaceRankNumber]="vacancyCurrentRank"
           [workplacesNumber]="vacancyMaxRank"
+          [noWorkplaceData]="vacancyNoWorkplaceData"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="'Turnover rate'"
           [workplaceRankNumber]="turnoverCurrentRank"
           [workplacesNumber]="turnoverMaxRank"
+          [noWorkplaceData]="turnoverNoWorkplaceData"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="'Percentage of staff still in their main job role after 12 months'"
           [workplaceRankNumber]="timeInRoleCurrentRank"
           [workplacesNumber]="timeInRoleMaxRank"
+          [noWorkplaceData]="timeInRoleNoWorkplaceData"
         ></app-data-area-ranking>
       </div>
     </ng-template>

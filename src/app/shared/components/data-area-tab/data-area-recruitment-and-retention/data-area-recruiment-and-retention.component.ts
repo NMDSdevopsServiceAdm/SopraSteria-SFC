@@ -1,9 +1,9 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import {
   AllRankingsResponse,
   BenchmarksResponse,
-  RankingsResponse,
   BenchmarkValue,
+  RankingsResponse,
 } from '@core/model/benchmarks.model';
 import { FormatUtil } from '@core/utils/format-util';
 
@@ -26,13 +26,19 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
   public vacancyCurrentRank;
   public turnoverCurrentRank;
   public timeInRoleCurrentRank;
-  public vacancyComparisionGroup;
-  public turnoverComparisionGroup;
-  public timeInRoleComparisionGroup;
+  public vacancyNoWorkplaceData: boolean;
+  public turnoverNoWorkplaceData: boolean;
+  public timeInRoleNoWorkplaceData: boolean;
+  public vacancyComparisonGroupData: string;
+  public turnoverComparisonGroupData: string;
+  public timeInRoleComparisonGroupData: string;
+  public vacancyWorkplaceData: string;
+  public turnoverWorkplaceData: string;
+  public timeInRoleWorkplaceData: string;
 
   ngOnChanges(): void {
     this.setRankings(this.viewBenchmarksComparisonGroups);
-    this.setComparisonGroupRecruitmentAndRetention(this.viewBenchmarksComparisonGroups);
+    this.setComparisonTableData(this.viewBenchmarksComparisonGroups);
   }
 
   public handleViewBenchmarkPosition(visible: boolean): void {
@@ -41,18 +47,6 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
 
   public formatComparisionGroup(data: BenchmarkValue): string {
     return data.hasValue ? FormatUtil.formatPercent(data.value) : 'Not enough data';
-  }
-
-  public setComparisonGroupRecruitmentAndRetention(isGoodAndOutstanding: boolean): void {
-    if (isGoodAndOutstanding) {
-      this.vacancyComparisionGroup = this.formatComparisionGroup(this.data?.vacancyRate.goodCqc);
-      this.turnoverComparisionGroup = this.formatComparisionGroup(this.data?.turnoverRate.goodCqc);
-      this.timeInRoleComparisionGroup = this.formatComparisionGroup(this.data?.timeInRole.goodCqc);
-    } else {
-      this.vacancyComparisionGroup = this.formatComparisionGroup(this.data?.vacancyRate.comparisonGroup);
-      this.turnoverComparisionGroup = this.formatComparisionGroup(this.data?.turnoverRate.comparisonGroup);
-      this.timeInRoleComparisionGroup = this.formatComparisionGroup(this.data?.timeInRole.comparisonGroup);
-    }
   }
 
   public setCurrentRank(rankings: RankingsResponse) {
@@ -64,6 +58,33 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
   public setMaxRank(rankings: RankingsResponse) {
     if (rankings.maxRank) {
       return rankings.maxRank;
+    }
+  }
+
+  public hasWorkplaceData(rank: RankingsResponse): boolean {
+    return rank.allValues?.length == 0;
+  }
+
+  private formatComparisonGroupTableData(data: BenchmarkValue): string {
+    return data.hasValue ? `${FormatUtil.formatPercent(data.value)}` : 'Not enough data';
+  }
+
+  private formatWorkplaceTableData(data: BenchmarkValue): string {
+    return data.hasValue ? `${FormatUtil.formatPercent(data.value)}` : 'No data added';
+  }
+
+  public setComparisonTableData(isGoodAndOutstanding: boolean): void {
+    this.vacancyWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.workplaceValue);
+    this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.turnoverRate.workplaceValue);
+    this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.timeInRole.workplaceValue);
+    if (isGoodAndOutstanding) {
+      this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.goodCqc);
+      this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.goodCqc);
+      this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.goodCqc);
+    } else {
+      this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.comparisonGroup);
+      this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.comparisonGroup);
+      this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.comparisonGroup);
     }
   }
 
@@ -85,5 +106,9 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
     this.vacancyCurrentRank = this.setCurrentRank(this.vacancyRankings);
     this.turnoverCurrentRank = this.setCurrentRank(this.turnoverRankings);
     this.timeInRoleCurrentRank = this.setCurrentRank(this.timeInRoleRankings);
+
+    this.vacancyNoWorkplaceData = this.hasWorkplaceData(this.vacancyRankings);
+    this.turnoverNoWorkplaceData = this.hasWorkplaceData(this.turnoverRankings);
+    this.timeInRoleNoWorkplaceData = this.hasWorkplaceData(this.timeInRoleRankings);
   }
 }
