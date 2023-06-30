@@ -51,4 +51,12 @@ describe('FormatUtil', () => {
       expect(formatMoney).toEqual('£36,500');
     });
   });
+
+  describe('formatPercent', () => {
+    it('should show as percentage', async () => {
+      expect(FormatUtil.formatPercent(0.04)).toEqual('4%');
+      expect(FormatUtil.formatPercent(0.597609562)).toEqual('60%');
+      expect(FormatUtil.formatPercent(0.5)).toEqual('50%');
+    });
+  });
 });

@@ -45,6 +45,10 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
     this.viewBenchmarksPosition = visible;
   }
 
+  public formatComparisionGroup(data: BenchmarkValue): string {
+    return data.hasValue ? FormatUtil.formatPercent(data.value) : 'Not enough data';
+  }
+
   public setCurrentRank(rankings: RankingsResponse) {
     if (rankings.hasValue) {
       return rankings.currentRank;
