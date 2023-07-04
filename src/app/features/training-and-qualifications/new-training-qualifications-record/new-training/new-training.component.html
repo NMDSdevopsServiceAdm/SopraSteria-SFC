@@ -57,16 +57,17 @@
             </td>
             <td class="govuk-table__cell" [attr.data-testid]="'status-' + trainingRecord.uid">
               <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING">
-                <img src="/assets/images/flag-red.svg" alt="red warning flag" class="govuk-util__vertical-align-top" />
+                <img src="/assets/images/flag-red.png" alt="red warning flag" class="govuk-util__vertical-align-top" />
                 Missing
               </div>
               <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRED && trainingRecord.expires">
-                <img src="/assets/images/flag-red.svg" alt="red expired flag" class="govuk-util__vertical-align-top" />
+                <img src="/assets/images/flag-red.png" alt="red expired flag" class="govuk-util__vertical-align-top" />
+
                 Expired
               </div>
               <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRING && trainingRecord.expires">
                 <img
-                  src="/assets/images/flag-orange.svg"
+                  src="/assets/images/flag-orange.png"
                   alt="yellow expires soon flag"
                   class="govuk-util__vertical-align-top"
                 />

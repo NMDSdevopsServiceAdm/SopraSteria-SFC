@@ -47,7 +47,7 @@
         <td class="govuk-table__cell">
           <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-0">
             <img
-              src="/assets/images/flag-red.svg"
+              src="/assets/images/flag-red.png"
               alt=""
               class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
             />
@@ -55,17 +55,13 @@
             expired
           </div>
           <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-0">
-            <img
-              src="/assets/images/flag-red.svg"
-              alt=""
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-            />
+            <img src="/assets/images/flag-red.png" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
             {{ worker.missingMandatoryTrainingCount }}
             missing
           </div>
           <div *ngIf="worker.expiringTrainingCount > 0" class="govuk-!-margin-bottom-0">
             <img
-              src="/assets/images/flag-orange.svg"
+              src="/assets/images/flag-orange.png"
               alt=""
               class="govuk-!-margin-right-2 govuk-util__vertical-align-top"
             />
