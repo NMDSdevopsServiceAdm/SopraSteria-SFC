@@ -1226,7 +1226,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Worker.yearOrMoreInRoleCount = async function (establishmentId) {
-    const yearAgo = dayjs(new Date()).subtract(1, 'year');
+    const yearAgo = dayjs(new Date()).subtract(1, 'year').toDate();
     return this.count({
       where: {
         establishmentFk: establishmentId,
