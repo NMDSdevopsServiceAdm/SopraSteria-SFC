@@ -636,6 +636,9 @@ describe('rankings', () => {
 
   describe('time in role', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 3, VacanciesValue: 'With Jobs' });
       sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
@@ -701,6 +704,9 @@ describe('rankings', () => {
     });
 
     it('should be response with maxRank equal to number of comparison group rankings + current establishment', async () => {
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 3, VacanciesValue: 'With Jobs' });
       sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
