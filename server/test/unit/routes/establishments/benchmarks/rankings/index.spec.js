@@ -636,6 +636,7 @@ describe('rankings', () => {
 
   describe('time in role', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
       sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([]);
@@ -648,6 +649,7 @@ describe('rankings', () => {
     });
 
     it('should be response with stateMessage no-perm-or-temp when workplace has no perm or temp data', async () => {
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 0 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(null);
       sinon
@@ -673,6 +675,7 @@ describe('rankings', () => {
     });
 
     it('should be response with hasValue true when pay and comparison group are available', async () => {
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
       sinon
@@ -698,6 +701,7 @@ describe('rankings', () => {
     });
 
     it('should be response with maxRank equal to number of comparison group rankings + current establishment', async () => {
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
       sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([
@@ -718,6 +722,7 @@ describe('rankings', () => {
     });
 
     it('should be response with currentRank against comparison group rankings', async () => {
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
       sinon
