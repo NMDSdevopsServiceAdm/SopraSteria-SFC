@@ -279,8 +279,8 @@ describe('rankings', () => {
 
   describe('turnover', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
-      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 0 });
-      sinon.stub(models.worker, 'countForEstablishment').returns(0);
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 1 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(1);
       sinon.stub(models.benchmarksTurnoverByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksTurnoverByEstIdGoodOutstanding, 'findAll').returns([]);
 
@@ -644,6 +644,7 @@ describe('rankings', () => {
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
       sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksTimeInRoleByEstIdGoodOutstanding, 'findAll').returns([]);
+      sinon.stub(models.worker, 'countForEstablishment').returns(6);
 
       const result = await rankings.timeInRole(establishmentId, 8, 10);
 
@@ -704,6 +705,7 @@ describe('rankings', () => {
     });
 
     it('should be response with maxRank equal to number of comparison group rankings + current establishment', async () => {
+      sinon.stub(models.worker, 'countForEstablishment').returns(3);
       sinon
         .stub(models.establishment, 'turnoverAndVacanciesData')
         .returns({ NumberOfStaffValue: 3, VacanciesValue: 'With Jobs' });
