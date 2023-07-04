@@ -1239,6 +1239,17 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Worker.countForPermAndTempNoStartDate = async function (establishmentId) {
+    return this.count({
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        ContractValue: ['Permanent', 'Temporary'],
+        MainJobStartDateValue: null,
+      },
+    });
+  };
+
   Worker.getEstablishmentTrainingRecords = async function (establishmentId) {
     return this.findAll({
       attributes: [

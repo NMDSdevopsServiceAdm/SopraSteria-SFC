@@ -651,6 +651,10 @@ describe('rankings', () => {
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 0 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(null);
       sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 6, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(6);
+      sinon
         .stub(models.benchmarksTimeInRoleByEstId, 'findAll')
         .returns([
           { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1400, EstablishmentFK: 456 },
@@ -671,6 +675,10 @@ describe('rankings', () => {
     it('should be response with hasValue true when pay and comparison group are available', async () => {
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 6, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(6);
       sinon
         .stub(models.benchmarksTimeInRoleByEstId, 'findAll')
         .returns([
@@ -712,6 +720,10 @@ describe('rankings', () => {
     it('should be response with currentRank against comparison group rankings', async () => {
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 3, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(3);
       sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([
         { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1.0, EstablishmentFK: 456 },
         { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1.0, EstablishmentFK: 456 },

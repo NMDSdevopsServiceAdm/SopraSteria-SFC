@@ -258,8 +258,12 @@ describe('/benchmarks/benchmarksService', () => {
 
   describe('getTimeInRole', () => {
     it('should return the percentage of workers that have been in their jobs for 12 months or more', async () => {
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 6, VacanciesValue: 'With Jobs' });
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns(3);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(6);
+      sinon.stub(models.worker, 'countForEstablishment').returns(6);
 
       const params = { establishmentId };
       const result = await benchmarksService.getTimeInRole(params);
@@ -270,6 +274,10 @@ describe('/benchmarks/benchmarksService', () => {
     it('should return a value of 0 if there are no workers that have been more than 12 months in their jobs', async () => {
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns(0);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(6);
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 6, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(6);
 
       const params = { establishmentId };
       const result = await benchmarksService.getTimeInRole(params);
@@ -280,6 +288,10 @@ describe('/benchmarks/benchmarksService', () => {
     it('should return a stateMessage with no-perm-or-temp if the workplace has no staff', async () => {
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns(0);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(0);
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 1, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(1);
 
       const params = { establishmentId };
       const result = await benchmarksService.getTimeInRole(params);
@@ -290,11 +302,40 @@ describe('/benchmarks/benchmarksService', () => {
     it('should return a stateMessage with incorrect-time-in-role if there are more workers that have been in their job for 12 months than workers in the workplace', async () => {
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns(5);
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 1, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(1);
 
       const params = { establishmentId };
       const result = await benchmarksService.getTimeInRole(params);
 
       expect(result.stateMessage).to.equal('incorrect-time-in-role');
+    });
+
+    it('should return a stateMessage with mismatch-workers when the staff count does not match the workplace', async () => {
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 2 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(0);
+
+      const params = { establishmentId };
+      const result = await benchmarksService.getTimeInRole(params);
+
+      expect(result.stateMessage).to.equal('mismatch-workers');
+    });
+
+    it('should return a stateMessage with not-enough-data when there are staff records with no start date set for the workplace', async () => {
+      sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns(5);
+      sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(3);
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 1, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(1);
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(1);
+
+      const params = { establishmentId };
+      const result = await benchmarksService.getTimeInRole(params);
+
+      expect(result.stateMessage).to.equal('not-enough-data');
     });
   });
 });
