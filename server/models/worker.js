@@ -1230,6 +1230,8 @@ module.exports = function (sequelize, DataTypes) {
     return this.count({
       where: {
         establishmentFk: establishmentId,
+        archived: false,
+        ContractValue: ['Permanent', 'Temporary'],
         MainJobStartDateValue: {
           [Op.lt]: yearAgo,
         },
