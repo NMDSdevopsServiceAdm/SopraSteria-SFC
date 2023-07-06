@@ -8,9 +8,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
+import { isAdminRole } from '@core/utils/check-role-util';
 import { Subscription } from 'rxjs';
-
-import { isAdminRole } from '../../../../server/utils/adminUtils';
 
 @Component({
   selector: 'app-login',

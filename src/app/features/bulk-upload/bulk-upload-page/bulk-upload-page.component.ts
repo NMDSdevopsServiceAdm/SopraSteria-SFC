@@ -7,8 +7,8 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { isAdminRole } from '@core/utils/check-role-util';
 
-import { isAdminRole } from '../../../../../server/utils/adminUtils';
 import { AdminSkipService } from '../admin-skip.service';
 
 @Component({
