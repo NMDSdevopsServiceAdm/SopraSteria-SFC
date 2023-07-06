@@ -74,16 +74,61 @@ describe('DataAreaBarchartComponent', () => {
     expect(queryByTestId('no-comparison-data')).toBeTruthy();
   });
 
-  it('should show the no workplace data message when no workplace data is provided', async () => {
-    const { component, queryByTestId, fixture } = await setup();
-    component.rankingsData = {
-      stateMessage: 'no-pay-data',
-      hasValue: false,
-      allValues: [{ value: 34, currentEst: false }],
-    } as RankingsResponse;
+  fdescribe('no workplace data message', () => {
+    it('should show when no pay workplace data is provided', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+      component.rankingsData = {
+        stateMessage: 'no-pay-data',
+        hasValue: false,
+        allValues: [{ value: 34, currentEst: false }],
+      } as RankingsResponse;
+      component.isPay = true;
 
-    fixture.detectChanges();
-    expect(queryByTestId('no-workplace-data')).toBeTruthy();
+      fixture.detectChanges();
+      expect(queryByTestId('no-workplace-pay-data')).toBeTruthy();
+    });
+
+    it('should show the when no vacancy workplace data is provided', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+      component.rankingsData = {
+        stateMessage: 'no-vacancies',
+        hasValue: false,
+        allValues: [{ value: 34, currentEst: false }],
+      } as RankingsResponse;
+      component.isPay = false;
+      component.type = 'vacancy';
+
+      fixture.detectChanges();
+      expect(queryByTestId('no-workplace-vacancy-data')).toBeTruthy();
+    });
+
+    it('should show the when no turnover workplace data is provided', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+      component.rankingsData = {
+        stateMessage: 'no-leavers',
+        hasValue: false,
+        allValues: [{ value: 34, currentEst: false }],
+      } as RankingsResponse;
+      component.isPay = false;
+      component.type = 'turnover';
+
+      fixture.detectChanges();
+      expect(queryByTestId('no-workplace-turnover-or-percent-data')).toBeTruthy();
+    });
+
+    it('should show the when no time in role workplace data is provided', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+      component.rankingsData = {
+        stateMessage: 'not-enough-data',
+        hasValue: false,
+        allValues: [{ value: 34, currentEst: false }],
+      } as RankingsResponse;
+      component.isPay = false;
+      component.type = 'timeInRole';
+
+      fixture.detectChanges();
+      expect(queryByTestId('no-workplace-turnover-or-percent-data')).toBeTruthy();
+    });
   });
 
   it('should show the correct summary for time in role', async () => {

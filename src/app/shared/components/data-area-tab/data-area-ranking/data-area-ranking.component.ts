@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import * as Highcharts from 'highcharts';
 
 import { GaugeOptionsBuilder } from './data-area-ranking-options-builder';
@@ -10,11 +11,15 @@ import { GaugeOptionsBuilder } from './data-area-ranking-options-builder';
 })
 export class DataAreaRankingComponent implements OnInit, OnChanges {
   Highcharts: typeof Highcharts = Highcharts;
+
   @Input() rankingTitle: string;
   @Input() workplaceRankNumber: number;
   @Input() workplacesNumber: number;
   @Input() noWorkplaceData: boolean = false;
+  @Input() isPay: boolean;
+  @Input() type: string;
 
+  public workplace: Establishment;
   public noRankingData: boolean;
   public options: Highcharts.Options;
   public text: string;
