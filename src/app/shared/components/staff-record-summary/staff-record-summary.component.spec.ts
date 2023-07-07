@@ -337,10 +337,10 @@ describe('StaffRecordSummaryComponent', () => {
     component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
     component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
     component.worker.contract = Contracts.Permanent;
+    component.worker.zeroHoursContract = 'No';
 
     fixture.detectChanges();
 
-    expect(true).toBeTruthy();
     expect(getByText('Is this still correct?')).toBeTruthy();
     expect(getByText('Yes, it is')).toBeTruthy();
     expect(getByText('No, change it')).toBeTruthy();
@@ -356,6 +356,7 @@ describe('StaffRecordSummaryComponent', () => {
     component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
     component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
     component.worker.contract = Contracts.Permanent;
+    component.worker.zeroHoursContract = 'No';
 
     fixture.detectChanges();
 
